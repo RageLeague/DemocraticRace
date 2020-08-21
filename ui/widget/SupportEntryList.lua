@@ -93,12 +93,31 @@ function SupportEntryList:Layout()
     -- self.hitbox:SetSize(self.max_width, totalheight)
     return self
 end
+local FactionSupportEntryList = class( "DemocracyClass.Widget.FactionSupportEntryList", SupportEntryList )
+
+function FactionSupportEntryList:init(evergreen_faction, max_width)
+    local faction_list = evergreen_faction or {"FEUD_CITIZEN", "ADMIRALTY", "SPARK_BARONS",
+        "CULT_OF_HESH", "BANDITS", "JAKES", "RISE"}
+    for id, val in pairs(TheGame:GetGameState():GetMainQuest().param.faction_support) do
+        if not table.arraycontains(faction_list, id) then
+            table.insert(faction_list, id)
+        end
+    end
+    local widget_list = {}
+    for i, id in ipairs(faction_list) do
+        table.insert(widget_list, DemocracyClass.Widget.FactionSupportEntry(id))
+    end
+    FactionSupportEntryList._base.init(self, widget_list, max_width)
+end
 
 
 local TitledEntryList = class( "DemocracyClass.Widget.TitledEntryList", Widget )
 
-function TitledEntryList:init(widget_list, max_width)
+function TitledEntryList:init(widget, max_width)
     TitledEntryList._base.init(self)
+
+    self.max_width = max_width or 1200
+    self.text_content = self:AddChild(Widget())
     self.title = self.text_content:AddChild( Widget.Label("title", FONT_SIZE.SCREEN_TITLE ) )
         -- :SetText( loc.upper( "Support Analysis" ) )
         :SetGlyphColour( UICOLOURS.GRAFT )
@@ -116,5 +135,5 @@ function TitledEntryList:init(widget_list, max_width)
         :SetWordWrap(true)
         :SetTintAlpha( 0.8 )
         :Bloom(0.1)
-    self
+    self.content = self:AddChild(widget)
 end
