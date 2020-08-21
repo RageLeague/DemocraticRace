@@ -1,0 +1,112 @@
+lines:
+# These quips appear in the quest race_meet_advisor because quest based quip is broken
+##########################
+
+# Diplomacy
+- tags: [reject_advisor, advisor_diplomacy, good_relation]
+  pre: |
+    !right
+  dialog:
+  - |
+    [p] understandable. my offer still stands
+- tags: [reject_advisor, advisor_diplomacy, bad_relation]
+  pre: |
+    !right
+  dialog:
+  - |
+    [p] what a shame. we could've done so much together
+
+# Manipulate
+- tags: [reject_advisor, advisor_manipulate, good_relation]
+  pre: |
+    !right
+  dialog:
+  - |
+    [p] you might not agree now, but you will come back to me one day
+- tags: [reject_advisor, advisor_manipulate, bad_relation]
+  pre: |
+    !right
+  dialog:
+  - |
+    [p] i hope you don't regret your decision one day
+
+# Hostile
+- tags: [reject_advisor, advisor_hostile, good_relation]
+  pre: |
+    !right
+  dialog:
+  - |
+    [p] well, at least i tried
+- tags: [reject_advisor, advisor_hostile, bad_relation]
+  pre: |
+    !right
+  dialog:
+  - |
+    [p] screw you too
+- tags: [unlock_location]
+  dialog:
+  - |
+    agent:
+      There's a great place that I often visit.
+      I should let you know.
+      Just in case, you know, you want to go there during your free time.
+- tags: [unlock_location, unlock_grog_n_dog]
+  dialog:
+  - |
+    agent:
+      Ever heard of the Grog n' Dog?
+    player:
+      I think I heard of it before.
+    agent:
+      You should definitely have heard of it, if you are Sal.
+      But I don't know, 'cause I didn't bother coding to check the player character.
+      Anyway, they sell amazing drinks, and people from all factions visit there.
+      You should definitely go check it out!
+- tags: [unlock_location, unlock_spree_inn]
+  dialog:
+  - |
+    agent:
+      There's a bar called the Gutted Yote.
+      It lies in the, ah, "lawless" part of the bay.
+      Not that the rest of the bay is lawful. It's just that more questionable figures visit there.
+    player:
+      What does that have to do with me?
+    agent:
+      If you want to have connections with the darker side of the bay, that's a good place to start.
+- tags: [unlock_location, unlock_newdeltree_outfitters]
+  dialog:
+  - |
+    agent:
+      Ever considered buying some weapons?
+    player:
+      I'm a politician. I use my words instead of my fists.
+    agent:
+      While that's true, maybe consider stocking up on self-defense equipment.
+      You never know, right?
+      Anyway, check out Trusty's Outfitting. They sell all kinds of equipment.
+- tags: [unlock_location, unlock_murder_bay_chemist]
+  dialog:
+  - |
+    agent:
+      If you get hurt, you should definitely visit the Better Living Chemist.
+      They will sell you different types of chemicals and healing items.
+      It's always a good idea to keep one or two at hand.
+- tags: [unlock_location, unlock_admiralty_barracks]
+  dialog:
+  - |
+    agent:
+      You should probably know where the Admiralty Headquarters is.
+      Getting the Admiralty on your good side is always a good thing.
+    player:
+      !thought
+      I don't know. Their boons are kind of useless.
+      I mean, when am I ever going to use Authroization?
+      Every time I need Admiralty help, they are never there.
+      And when I run into trouble with the Admiralty, I can't even use it.
+    agent:
+      !dubious
+      Is that your experience with the Admiralty?
+      Well, you should try again this time. I promise your experience will be different.
+    player:
+      !shrug
+      If you say so.
