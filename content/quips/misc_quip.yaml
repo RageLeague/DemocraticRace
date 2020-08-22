@@ -36,7 +36,7 @@ lines:
     !right
   dialog:
   - |
-    [p] well, at least i tried
+    [p] well, at least i gave it the college try.
 - tags: [reject_advisor, advisor_hostile, bad_relation]
   pre: |
     !right
@@ -81,16 +81,16 @@ lines:
     player:
       I'm a politician. I use my words instead of my fists.
     agent:
-      While that's true, maybe consider stocking up on self-defense equipment.
+      Well, some people don't really care about your diplomatic immunity.
       You never know, right?
-      Anyway, check out Trusty's Outfitting. They sell all kinds of equipment.
+      Anyway, check out Trusty's Outfitting. They sell all kinds of equipment. Also hats.
 - tags: [unlock_location, unlock_murder_bay_chemist]
   dialog:
   - |
     agent:
       If you get hurt, you should definitely visit the Better Living Chemist.
       They will sell you different types of chemicals and healing items.
-      It's always a good idea to keep one or two at hand.
+      It's always a good idea to keep one or two at hand, in case push comes to shove, followed by bites and a few right hooks to the jawline.
 - tags: [unlock_location, unlock_admiralty_barracks]
   dialog:
   - |
@@ -106,7 +106,7 @@ lines:
     agent:
       !dubious
       Is that your experience with the Admiralty?
-      Well, you should try again this time. I promise your experience will be different.
+      Well, what about Sparring? Or Commander? Have they not helped in the past?
     player:
       !shrug
-      If you say so.
+      Fair enough, thanks for the location.
