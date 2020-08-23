@@ -13,7 +13,7 @@ lines:
     !right
   dialog:
   - |
-    [p] understandable. my offer still stands
+    [p] understandable, however my offer still stands
 - tags: [reject_advisor, advisor_diplomacy, bad_relation]
   pre: |
     !right
@@ -47,7 +47,7 @@ lines:
     !right
   dialog:
   - |
-    [p] screw you too
+    [p] Fine! I didn't need you anyways.
 
 ##########################
 # These dialog are triggered when you unlock a new location during a hangout with friend.
@@ -55,6 +55,7 @@ lines:
 # it must be lower case.
 # These locations are subject to changes, as I might add a new region for this campaign.
 ##########################
+
 - tags: [unlock_location]
   dialog:
   - |
@@ -66,13 +67,14 @@ lines:
   dialog:
   - |
     agent:
-      Ever heard of the Grog n' Dog?
+      Ever enjoy an ice cold cup of plonk with a nice view of the land?
     player:
-      I think I heard of it before.
+      Best view i've ever had was out of a large lumin pipe onto the sea full of flotsam.
+      Or at least, i think it was...depends on if i'm Sal or not.
     agent:
-      You should definitely have heard of it, if you are Sal.
-      But I don't know, 'cause I didn't bother coding to check the player character.
-      Anyway, they sell amazing drinks, and people from all factions visit there.
+      Well, i know this little bar where you can find the best view of Murder Bay.
+      Swing by the Grog n' Dog when you get chance.
+      They sell amazing drinks, and people from all factions visit there, incase you need some more connections.
       You should definitely go check it out!
 - tags: [unlock_location, unlock_spree_inn]
   dialog:
@@ -85,6 +87,7 @@ lines:
       What does that have to do with me?
     agent:
       If you want to have connections with the darker side of the bay, that's a good place to start.
+      Be careful though, they'll sell you some extra strong swill if that'd mean mugging you on the way out the door!
 - tags: [unlock_location, unlock_newdeltree_outfitters]
   dialog:
   - |
