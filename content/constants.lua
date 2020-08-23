@@ -15,5 +15,11 @@ return {
         engine.asset.Texture("UI/rarity_uncommon.tex"),
         engine.asset.Texture("UI/rarity_rare.tex"),
     },
+    wealth_color = {
+        0xa5daaaff,
+        0xecf2f2ff,
+        0xa5cfefff,
+        0xe9d64fff,
+    },
     opposition_data = require "DemocraticRace:content/opposition_candidates",
 }

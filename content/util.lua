@@ -123,6 +123,9 @@ end
 local function GetWealthIcon(renown)
     return DemocracyConstants.wealth_icon[GetWealth(renown)]
 end
+local function GetWealthColor(renown)
+    return DemocracyConstants.wealth_color[GetWealth(renown)]
+end
 
 local function AddOppositionCast(qdef)
     for _, data in pairs(DemocracyConstants.opposition_data) do
@@ -153,4 +156,5 @@ return {
     GetWealthString = GetWealthString,
     GetWealthIcon = GetWealthIcon,
     AddOppositionCast = AddOppositionCast,
+    GetWealthColor = GetWealthColor,
 }

@@ -109,7 +109,7 @@ function SupportScreen:init( owner, locked )
         :SetShown(false)
 
     self.testlol = self.content:AddChild(
-        DemocracyClass.Widget.FactionSupportEntryList()
+        DemocracyClass.Widget.WealthSupportEntryList()
     )
         -- :SetIcon(DemocracyConstants.icons.support)
         -- :SetText("Maybe I <i>DO</> know what I'm doing.")

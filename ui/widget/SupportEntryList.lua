@@ -110,6 +110,16 @@ function FactionSupportEntryList:init(evergreen_faction, max_width)
     FactionSupportEntryList._base.init(self, widget_list, max_width)
 end
 
+local WealthSupportEntryList = class( "DemocracyClass.Widget.WealthSupportEntryList", SupportEntryList )
+
+function WealthSupportEntryList:init(max_width)
+
+    local widget_list = {}
+    for i = 1, DemocracyConstants.wealth_levels do
+        table.insert(widget_list, DemocracyClass.Widget.WealthSupportEntry(i))
+    end
+    WealthSupportEntryList._base.init(self, widget_list, max_width)
+end
 
 local TitledEntryList = class( "DemocracyClass.Widget.TitledEntryList", Widget )
 

@@ -124,3 +124,28 @@ function FactionSupportEntry:Refresh()
     end
     return FactionSupportEntry._base.Refresh(self)
 end
+
+local WealthSupportEntry = class( "DemocracyClass.Widget.WealthSupportEntry", DemocracyClass.Widget.SupportEntry )
+
+function WealthSupportEntry:init(renown, icon_size, max_width)
+    FactionSupportEntry._base.init(self, icon_size, max_width)
+
+    self.renown = renown or 1
+
+    self:Refresh()
+end
+
+function WealthSupportEntry:Refresh()
+    self:SetIcon(DemocracyUtil.GetWealthIcon(self.renown))
+    self:SetText(
+        loc.format("{1#wealth_name}: {2}", 
+            self.renown, 
+            TheGame:GetGameState():GetMainQuest():DefFn("GetWealthSupport", self.renown)
+        )
+    )
+    self:SetColour(DemocracyUtil.GetWealthColor(self.renown))
+    -- if self.faction:GetColour() then
+    --     self:SetColour(self.faction:GetColour())
+    -- end
+    return WealthSupportEntry._base.Refresh(self)
+end

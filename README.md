@@ -29,3 +29,9 @@ Democratic Race(working title) is a mod for Griftlands that adds a new campaign 
 3. Day 3: Continue campaign, do the first presidential debate.
 4. Day 4: Some candidates drop out, potential alliance, final stretch for support.
 5. Day 5: Votes are in, and the ending is determined.
+
+## Todo
+
+* Finish day 2 quest.
+* Add new sidequests.
+* Finish support screen.
