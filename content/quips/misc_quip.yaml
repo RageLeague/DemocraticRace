@@ -1,5 +1,10 @@
 lines:
+
+##########################
 # These quips appear in the quest race_meet_advisor because quest based quip is broken
+# These quips are triggered when you reject an advisor's offer.
+# good_relation indicates no loss in relationship, while bad_relation indicates a loss in relationship.
+# Dialog should reflect that
 ##########################
 
 # Diplomacy
@@ -43,6 +48,13 @@ lines:
   dialog:
   - |
     [p] screw you too
+
+##########################
+# These dialog are triggered when you unlock a new location during a hangout with friend.
+# unlock_[location_id] are when a location with a particular id is unlocked.
+# it must be lower case.
+# These locations are subject to changes, as I might add a new region for this campaign.
+##########################
 - tags: [unlock_location]
   dialog:
   - |
