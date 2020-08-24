@@ -555,6 +555,7 @@ QDEF:AddConvo("debate_people")
                                     ConvoUtil.GiveQuestRewards(cxt)
                                     StateGraphUtil.AddLeaveLocation(cxt)
                                 end,
+                                on_run = ConvoOption.DEFAULT_RUNAWAY_NO_FAIL,
                             }
                     end,
                 }

@@ -40,14 +40,16 @@ local QDEF = QuestDef.Define
         TheGame:GetGameState():AddLocation(Location("HOST_PRES_OFFICE"))
         -- The level of which people support you. All the indifferent characters may or may not
         -- vote for you, depending on your support level.
+        -- Also they determine a whole bunch of things. Very important to keep high.
+        -- Just read the README
         quest.param.support_level = 0
-        -- Your support among factions
+        -- Your support among factions.
+        -- This is stored as the support relative to the general support
+        -- The displayed support level is already adjusted.
         quest.param.faction_support = {}
         -- Your support level among wealth levels.(renown levels)
         quest.param.wealth_support = {}
-        -- How aware people are of your campaign.
-        -- Affects the chance of first impression.
-        -- quest.param.awareness = 0
+        -- The locations you've unlocked.
         quest.param.unlocked_locations = {"MURDERBAY_NOODLE_SHOP"}
         quest.param.free_time_actions = 1
 
@@ -108,6 +110,8 @@ local QDEF = QuestDef.Define
 
         return new_quest
     end,
+    -- Offer jobs at certain point of the story.
+    -- probably should always call this.
     OfferJobs = function(quest, cxt, job_num, pool_name)
         local jobs = {}
         for k = 1, job_num do
@@ -178,6 +182,8 @@ local QDEF = QuestDef.Define
     GetSupportForAgent = function(quest, agent)
         return quest:DefFn("GetCompoundSupport", agent:GetFactionID(), agent:GetRenown() or 1)
     end,
+    -- At certain points in the story, random peope dislikes you for no reason.
+    -- call this function to do so.
     DoRandomOpposition = function(quest, num_to_do)
         num_to_do = num_to_do or 1
         for i = 1, num_to_do do
@@ -189,6 +195,8 @@ local QDEF = QuestDef.Define
             quest:UnassignCastMember("random_opposition")
         end
     end,
+
+    -- Calculate the funding level for the day using this VERY scientific calculation based on wealth support.
     CalculateFunding = function(quest, rate)
         rate = rate or 1
         local money = 0
@@ -196,7 +204,7 @@ local QDEF = QuestDef.Define
             money = money + quest:DefFn("GetWealthSupport", i) * i
         end
         money = money / 10
-        money = money + 60 - 10 * (quest.param.day or 1)
+        money = money + 50
         money = math.max(0, money)
         return math.round(money * rate)
     end,
@@ -246,6 +254,7 @@ DemocracyUtil.AddAdvisors(QDEF)
 DemocracyUtil.AddHomeCasts(QDEF)
 DemocracyUtil.AddOppositionCast(QDEF)
 
+-- A fail safe. Once you've been to a unlockable location that hasn't been unlocked, you unlock it.
 QDEF:AddConvo()
     :ConfrontState("STATE_UNLOCK", function(cxt)
         local id = cxt.location:GetContentID()

@@ -66,17 +66,15 @@ AddNotification("DELTA_AGENT_SUPPORT",{
         if delta >= 0 then
             notification.banner_txt = loc.format("Gained {1} Support From {2#agent}", delta, agent)
             notification.details = loc.format("General support increased by {1}.(To {2})\n"..
-                "Support from {3#faction} increased by {4}.(To {5})\n"..
-                "Support among {6} increased by {4}.(To {7})", delta, mainquest:DefFn("GetGeneralSupport"),
-                agent:GetFaction(), delta * 2, mainquest:DefFn("GetFactionSupportAgent", agent),
-                DemocracyUtil.GetWealthString(agent:GetRenown()), mainquest:DefFn("GetWealthSupportAgent", agent))
+                "Support from {3#faction} and among {4#wealth_name} are increased.\n"..
+                "Check your advisor for more info.", delta, mainquest:DefFn("GetGeneralSupport"),
+                agent:GetFaction(), agent:GetRenown())
         else
             notification.banner_txt = loc.format("Lost {1} Support From {2#agent}", -delta, agent)
-            notification.details = loc.format("General support decreased by {1}.(To {2})\n"..
-                "Support from {3#faction} decreased by {4}.(To {5})\n"..
-                "Support among {6} decreased by {4}.(To {7})", -delta, mainquest:DefFn("GetGeneralSupport"),
-                agent:GetFaction(), -delta * 2, mainquest:DefFn("GetFactionSupportAgent", agent),
-                DemocracyUtil.GetWealthString(agent:GetRenown()), mainquest:DefFn("GetWealthSupportAgent", agent))
+            notification.details = loc.format("General support increased by {1}.(To {2})\n"..
+                "Support from {3#faction} and among {4#wealth_name} are decreased.\n"..
+                "Check your advisor for more info.", delta, mainquest:DefFn("GetGeneralSupport"),
+                agent:GetFaction(), agent:GetRenown())
         end
         notification.img = agent
     end,
