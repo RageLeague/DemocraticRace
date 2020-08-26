@@ -8,7 +8,7 @@ function SupportEntry:init(icon_size, max_width)
     -- self.max_width = max_width or 400
     self.icon_size = icon_size or 72
     
-    self:SetWidth(max_width or 400)
+    self:SetWidth(max_width or 400, true)
     -- self.text_width = self.max_width - self.icon_size - self.spacing * 3 -- - 10 - SPACING.M1*2
 
     self.hitbox = self:AddChild( Widget.SolidBox( 100, 100, 0xffff0030 ) )
@@ -33,7 +33,7 @@ function SupportEntry:init(icon_size, max_width)
         :SetAutoSize( self.text_width )
         :LeftAlign()
         -- :LayoutBounds("left", "center", 144, 0)
-
+    
     self:Refresh()
 end
 
@@ -44,18 +44,25 @@ end
 
 function SupportEntry:SetText(text)
     self.text:SetText(text)
+        :SetAutoSize( self.text_width )
     self:Layout()
     return self
 end
-function SupportEntry:SetWidth(width)
+function SupportEntry:SetWidth(width, no_refresh)
     self.max_width = width
     self.text_width = self.max_width - self.icon_size - self.spacing * 3
+    if not no_refresh then
+        self:Refresh()
+    end
     return self
 end
 
-function SupportEntry:SetTextWidth(width)
+function SupportEntry:SetTextWidth(width, no_refresh)
     self.text_width = width
     self.max_width = self.text_width + self.icon_size + self.spacing * 3
+    if not no_refresh then
+        self:Refresh()
+    end
     return self
 end
 
@@ -66,10 +73,14 @@ end
 function SupportEntry:Refresh()
     local sizew, sizeh = self.icon:GetSize()
 
+    self.text:SetFontSize(50)
+    
     local textw, texth = self.text:GetSize()
 
+    -- self.text:SetSize(textw, texth)
+    -- self.text:TryFitToRegion(30,50)
     if textw > self.text_width then
-        self:SetTextWidth(textw)
+        self.text:SetFontSize(math.min(50, 50 * self.text_width / textw))
     end
     
     self.hitbox:SetSize(self.max_width, sizeh + self.spacing * 2)
@@ -128,7 +139,7 @@ end
 local WealthSupportEntry = class( "DemocracyClass.Widget.WealthSupportEntry", DemocracyClass.Widget.SupportEntry )
 
 function WealthSupportEntry:init(renown, icon_size, max_width)
-    FactionSupportEntry._base.init(self, icon_size, max_width)
+    WealthSupportEntry._base.init(self, icon_size, max_width)
 
     self.renown = renown or 1
 
@@ -148,4 +159,28 @@ function WealthSupportEntry:Refresh()
     --     self:SetColour(self.faction:GetColour())
     -- end
     return WealthSupportEntry._base.Refresh(self)
+end
+
+local GeneralSupportEntry = class( "DemocracyClass.Widget.GeneralSupportEntry", DemocracyClass.Widget.SupportEntry )
+
+function GeneralSupportEntry:init(icon_size, max_width)
+    GeneralSupportEntry._base.init(self, icon_size, max_width)
+
+    -- self.renown = renown or 1
+
+    self:Refresh()
+end
+
+function GeneralSupportEntry:Refresh()
+    self:SetIcon(DemocracyConstants.icons.support)
+    self:SetText(
+        loc.format("General Support: {1}", 
+            TheGame:GetGameState():GetMainQuest():DefFn("GetGeneralSupport")
+        )
+    )
+    self:SetColour(0x00cc00ff)
+    -- if self.faction:GetColour() then
+    --     self:SetColour(self.faction:GetColour())
+    -- end
+    return GeneralSupportEntry._base.Refresh(self)
 end

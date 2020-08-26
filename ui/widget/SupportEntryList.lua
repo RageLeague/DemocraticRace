@@ -1,12 +1,12 @@
 local SupportEntryList = class( "DemocracyClass.Widget.SupportEntryList", Widget )
 
-function SupportEntryList:init(widget_list, max_width)
+function SupportEntryList:init(widget_list, max_width, entry_per_row)
     SupportEntryList._base.init(self)
     self.max_width = max_width or 1200
     
     self.spacing = 10
 
-    self.entry_per_row = 3
+    self.entry_per_row = entry_per_row or 3
     self:UpdateEntryWidth()
 
     self.hitbox = self:AddChild( Widget.SolidBox( 100, 100, 0xffff0030 ) )
@@ -121,29 +121,10 @@ function WealthSupportEntryList:init(max_width)
     WealthSupportEntryList._base.init(self, widget_list, max_width)
 end
 
-local TitledEntryList = class( "DemocracyClass.Widget.TitledEntryList", Widget )
+local GeneralSupportEntryList = class( "DemocracyClass.Widget.GeneralSupportEntryList", SupportEntryList )
 
-function TitledEntryList:init(widget, max_width)
-    TitledEntryList._base.init(self)
+function GeneralSupportEntryList:init(max_width)
 
-    self.max_width = max_width or 1200
-    self.text_content = self:AddChild(Widget())
-    self.title = self.text_content:AddChild( Widget.Label("title", FONT_SIZE.SCREEN_TITLE ) )
-        -- :SetText( loc.upper( "Support Analysis" ) )
-        :SetGlyphColour( UICOLOURS.GRAFT )
-        -- :SetAutoSize(DETAILS_W)
-        :LeftAlign()
-        :SetWordWrap(true)
-        :Bloom(0.15)
-
-        :SetShown(false)
-    self.subtitle = self.text_content:AddChild( Widget.Label("title", FONT_SIZE.BODY_TEXT ) )
-        -- :SetText( "Here describes ways of support lol" )
-        :SetGlyphColour( UICOLOURS.GRAFT )
-        -- :SetAutoSize(DETAILS_W)
-        :LeftAlign()
-        :SetWordWrap(true)
-        :SetTintAlpha( 0.8 )
-        :Bloom(0.1)
-    self.content = self:AddChild(widget)
+    local widget_list = {DemocracyClass.Widget.GeneralSupportEntry()}
+    GeneralSupportEntryList._base.init(self, widget_list, max_width, 1)
 end
