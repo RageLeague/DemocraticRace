@@ -62,7 +62,7 @@ QDEF:AddConvo("win_argument")
                 Don't listen to what they tell you!
             ]],
             LABORER_BAD_OPINION = [[
-                The laborers have been oppessed for so long!
+                The laborers have been oppressed for so long!
                 Time to fight back, people!
                 !throatcut
                 Kill all those who exploit the fruit of our labor!
@@ -70,7 +70,7 @@ QDEF:AddConvo("win_argument")
                 They don't deserve to live!
             ]],
             WEALTHY_BAD_OPINION = [[
-                Y'all here complaining, but I don't see you work hard!
+                You all should be working, not gorging yourselves on fine dining!
                 !angry_accuse
                 If you had worked harder, you wouldn't have been in so much debt!
                 It's all your fault if you're indebted.
@@ -115,14 +115,14 @@ QDEF:AddConvo("win_argument")
 
             DIALOG_INTRO = [[
                 * It's a good day today. You've earned enough shills to enjoy a bowl of noodles in the morning at the Slurping Snail.
-                * The peace at the noodle shop is suddenly disturbed by a person yelling at everyone in the shop.
+                * Just as you start to get comfortable, you hear a rather loud patron causing a commotion at the bar.
                 agent:
                     !right
                     !angry
                 
             ]],
             DIALOG_INTRO_PST = [[
-                * Wow, this guy's opinion is so wrong. You wouldn't just let {agent.himher} keep sprouting nonsense, right?
+                * You feel like it's your moral obligation to correct {agent.hisher} opinion.
             ]],
             OPT_DEBATE = [[Make {agent} stop]],
             TT_DEBATE = "You will start with some {1#card} in your deck.",
@@ -142,8 +142,8 @@ QDEF:AddConvo("win_argument")
                 player:
                     And that's why your opinion is stupid.
                     You sound like a baby having a tantrum problem.
-                    Your idea is too out of touch with reality.
-                    Many people are suffering, and you choose to believe in an idea that doesn't help anyone?
+                    Your idea's are too out of touch with reality.
+                    Many people are suffering, and you choose to spout useless drivel in the middle of a restaurant?
                 agent:
                     ...
                     !sigh
@@ -157,13 +157,16 @@ QDEF:AddConvo("win_argument")
                 player:
                     Your opinion is stupid.
                 agent:
-                    I fail to see your point.
+                    And yet, you haven't provided an alternate opinion.
                     Seriously? You just said "your opinion is stupid" the entire time.
                     It's because people like you, who can't think for themselves, that there are so many problems in Havaria.
+                * Utterly humiliated, you return to your bowl and drink, covering your face from the entire bar of people laughing at you.
                 * Wow, that was an utter failure.
                 * You are never able to recover from that failure.
                 * You can never gather enough resolve to pursue politics.
                 * Seriously, you suck at this game. This is the first negotiation, and you already failed.
+                * Full resolve, WEAKEST ENEMY.
+                * Just...start a new run already. This time maybe watch the tutorial beforehand.
             ]],
 
             OPT_IGNORE = [[Ignore {agent.himher}. {agent.HeShe} isn't worth your time.]],
@@ -171,7 +174,8 @@ QDEF:AddConvo("win_argument")
                 * You leave {agent} be.
                 * You are never the one that are interested in politics.
                 * Then why did you select this mode, then?
-                * Well, good job. You failed.
+                * For the sheer novelty of it?
+                * Well, good job. You failed, ya dingus.
             ]],
             OPT_ACCEPT_LOSS = "Hesh damn it!",
         }
@@ -231,12 +235,12 @@ QDEF:AddConvo("win_argument")
                     Wow, I can't believe how good I am at political debates.
                     Maybe I should use my power for good.
                     Like running for the president.
-                * You didn't think that there is democracy in Havaria.
+                * Wait...is there ANY democracy in Havaria?
                 * Let's just say there is one.
                 * Do you really want a lore justification?
                 * Let's just say that the people in power decide to let the people vote for a president instead of constantly fighting for power.
                 player:
-                    Now, if I were to run for president, first I need to establish my campaign.
+                    Now, if I were to run for president, first I need to establish myself in the political world.
                     I need to let people know that I'm running for president.
                     And I also have to gain support while doing so.
             ]],
