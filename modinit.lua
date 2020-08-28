@@ -2,7 +2,7 @@ MountModData( "DemocraticRace" )
 
 local filepath = require "util/filepath"
 
-local player_starts = require "content/player_starts"
+-- local player_starts = require "content/player_starts"
 
 local STARTING_MONEY = 125
 
@@ -56,7 +56,7 @@ local function OnLoad()
         local act_data = shallowcopy(ACT_DATA)
         act_data.id = data.id .. "_" .. act_data.id
         data:AddAct(act_data)
-        player_starts.ACT_DATA[act_data.id] = data.acts[#data.acts]
+        Content.internal.ACT_DATA[act_data.id] = data.acts[#data.acts]
     end
     for k, filepath in ipairs( filepath.list_files( "DemocraticRace:errata/", "*.lua", true )) do
         local name = filepath:match( "(.+)[.]lua$" )
