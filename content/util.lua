@@ -136,7 +136,7 @@ local function GetWealth(renown)
     return clamp(renown, 1, DemocracyConstants.wealth_levels)
 end
 local function GetWealthString(renown)
-    return DemocracyConstants.wealth_string[GetWealth(renown)]
+    return LOC(DemocracyConstants.wealth_string[GetWealth(renown)])
 end
 local function GetWealthIcon(renown)
     return DemocracyConstants.wealth_icon[GetWealth(renown)]

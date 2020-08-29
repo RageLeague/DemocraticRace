@@ -4,10 +4,10 @@ return {
     },
     wealth_levels = 4,
     wealth_string = {
-        "Lower Class",
-        "Lower-Middle Class",
-        "Middle Class",
-        "Upper Class",
+        "DEMOCRACY.WEALTH_STRING.LVL_1",
+        "DEMOCRACY.WEALTH_STRING.LVL_2",
+        "DEMOCRACY.WEALTH_STRING.LVL_3",
+        "DEMOCRACY.WEALTH_STRING.LVL_4",
     },
     wealth_icon = {
         engine.asset.Texture("UI/rarity_basic.tex"),

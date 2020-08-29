@@ -42,6 +42,8 @@ local function LoadConvoLua( filename )
     return ok, result
 end
 
+require "DemocraticRace:content/string_table"
+
 local function OnLoad()
     rawset(_G, "DemocracyConstants", require("DemocraticRace:content/constants"))
     rawset(_G, "DemocracyUtil", require("DemocraticRace:content/util"))

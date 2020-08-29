@@ -124,7 +124,7 @@ function FactionSupportEntry:Refresh()
     if self.faction then
         self:SetIcon(self.faction:GetIcon())
         self:SetText(
-            loc.format("{1#faction}: {2}", 
+            loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.FACTION_SUPPORT", 
                 self.faction, 
                 TheGame:GetGameState():GetMainQuest():DefFn("GetFactionSupport", self.faction.id)
             )
@@ -149,7 +149,7 @@ end
 function WealthSupportEntry:Refresh()
     self:SetIcon(DemocracyUtil.GetWealthIcon(self.renown))
     self:SetText(
-        loc.format("{1#wealth_name}: {2}", 
+        loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.WEALTH_SUPPORT", 
             self.renown, 
             TheGame:GetGameState():GetMainQuest():DefFn("GetWealthSupport", self.renown)
         )
@@ -174,7 +174,7 @@ end
 function GeneralSupportEntry:Refresh()
     self:SetIcon(DemocracyConstants.icons.support)
     self:SetText(
-        loc.format("General Support: {1}", 
+        loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.GENERAL_SUPPORT", 
             TheGame:GetGameState():GetMainQuest():DefFn("GetGeneralSupport")
         )
     )

@@ -6,11 +6,11 @@ AddNotification("DELTA_GENERAL_SUPPORT",{
     FormatNotification = function( self, notification, delta, current )
         
         if delta >= 0 then
-            notification.banner_txt = loc.format("Gained {1} Support", delta)
-            notification.details = loc.format("Your support level is increased to {1}.", current)
+            notification.banner_txt = loc.format(LOC"DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.TITLE_INCREASE", delta)
+            notification.details = loc.format(LOC"DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.TITLE_DECREASE", current)
         else
-            notification.banner_txt = loc.format("Lost {1} Support", -delta)
-            notification.details = loc.format("Your support level is decreased to {1}.", current)
+            notification.banner_txt = loc.format(LOC"DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.DETAIL_INCREASE", -delta)
+            notification.details = loc.format(LOC"DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.DETAIL_DECREASE", current)
         end
     end,
 })
