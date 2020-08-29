@@ -80,20 +80,31 @@ QDEF:AddConvo("starting_out", "primary_advisor")
     :ConfrontState("STATE_CONFRONT")
     :Loc{
         DIALOG_INTRO = [[
-            * [p] you wake up to see {primary_advisor}.
-            primary_advisor:
-                Yo.
-                Do work.
+            #added a new conversation for advidor and player on the second day. bit shakier later in, may edit when i can think of a better end.
+            * [p] As you wake up, you look to see {primary_advisor} staring you down while you slept and shaking your arm.
+            * Naturally, you make the most dignified sound you could think of.
             player:
-                ok.
+                Gah! Could you not let me get some shuteye?
             primary_advisor:
-                oh, people also hate you for no reason.
+                Their ain't no shuteye for the wicked, and neither to their advisors.
+                I spent all night setting up an interview for you to get some more publicity with the masses.
+                The least you can do is pretend you're pulling your weight!
             player:
-                ok.
+                okay, okay. When's the interview scheduled?
             primary_advisor:
-                tonight is very important for you campaign.
-                you will have a interview.
-                if you do well on it, it will surely boost your popularity.
+                Later tonight.
+            player:
+                So why'd you wake me up this early?
+            primary_advisor:
+                Because the voters don't want to see you sleeping on the job.
+                No politician had gotten far by lazing about their home.
+                The opposition was working hard through the night, and some of the voters have already turned on us.
+            player:
+                Ah Hesh, People are turning on us that quickly?
+            primary_advisor:
+                Well yeah! Voting day is in a matter of days, and people are only looking up from their work now.
+                The image you have now is a lot more impactful than it was before.
+            * With {primary_advisor} yelling about your tasks you have for today, you clean yourself up and get ready for another stressful day.
         ]]
     }
     :Fn(function(cxt)
