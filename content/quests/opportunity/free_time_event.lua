@@ -141,7 +141,7 @@ convo:State("STATE_UNLOCK_LOCATION")
         -- TT_NEW_LOCATION = "You can now visit this location during your free time.",
     }
     :Fn(function(cxt)
-        cxt:Quip(cxt:GetAgent(), "unlock_location", "unlock_" .. string.lower(cxt.quest.param.loc_to_unlock))
+        cxt:Quip(cxt:GetAgent(), "unlock_location", "unlock_" .. string.lower(cxt.quest.param.loc_to_unlock), cxt.player:GetContentID())
         DemocracyUtil.DoLocationUnlock(cxt, cxt.quest.param.loc_to_unlock)
         -- cxt:Opt("OPT_NEW_LOCATION",TheGame:GetGameState():GetLocation(cxt.quest.param.loc_to_unlock))
         --     :Fn(function(cxt)

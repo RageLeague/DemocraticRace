@@ -1,15 +1,16 @@
 local FACTION_LOCATION_UNLOCK = {
     GRIFTER = {
-        "ADMIRALTY_BARRACKS",
-        "MURDERBAY_LUMIN_DOCKS",
-        "MURDERBAY_NOODLE_SHOP",
-        "MURDER_BAY_HARBOUR",
-        "LIGHTHOUSE",
-        -- "MARKET_STALL",
         "GROG_N_DOG",
-        "MURDER_BAY_CHEMIST",
-        "NEWDELTREE_OUTFITTERS",
-        "SPREE_INN",
+        -- "ADMIRALTY_BARRACKS",
+        -- "MURDERBAY_LUMIN_DOCKS",
+        -- "MURDERBAY_NOODLE_SHOP",
+        -- "MURDER_BAY_HARBOUR",
+        -- "LIGHTHOUSE",
+        -- -- "MARKET_STALL",
+        -- "GROG_N_DOG",
+        -- "MURDER_BAY_CHEMIST",
+        -- "NEWDELTREE_OUTFITTERS",
+        -- "SPREE_INN",
 
     },
     -- FEUD_CITIZEN = {"GROG_N_DOG", "MURDERBAY_NOODLE_SHOP"}

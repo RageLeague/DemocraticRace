@@ -69,13 +69,30 @@ lines:
     agent:
       Ever enjoy an ice cold cup of plonk with a nice view of the land?
     player:
-      Best view i've ever had was out of a large lumin pipe onto the sea full of flotsam.
-      Or at least, i think it was...depends on if i'm Sal or not.
+      [p] idk, some generic quip or something.
     agent:
       Well, i know this little bar where you can find the best view of Murder Bay.
       Swing by the Grog n' Dog when you get chance.
       They sell amazing drinks, and people from all factions visit there, incase you need some more connections.
       You should definitely go check it out!
+- tags: [unlock_location, unlock_grog_n_dog, sal]
+  dialog:
+  - |
+    agent:
+      Ever enjoy an ice cold cup of plonk with a nice view of the land?
+    player:
+      Best view i've ever had was out of a large lumin pipe onto the sea full of flotsam.
+    agent:
+      Well, i know this little bar where you can find the best view of Murder Bay.
+      Swing by the Grog n' Dog when you get chance.
+      They sell amazing drinks, and people from all factions visit there, incase you need some more connections.
+      You should definitely go check it out!
+    player:
+      I know the proprietor personally.
+    agent:
+      Oh. I was just trying to be helpful.
+    player:
+      It's okay. I forgot where it was before, but thanks for telling me the location.
 - tags: [unlock_location, unlock_spree_inn]
   dialog:
   - |

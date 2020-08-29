@@ -171,6 +171,15 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 Oh well.
                 Just be warned. You can't deflect the issue forever. Especially on these important issues.
         ]],
+        DIALOG_GREET_PST = [[
+            agent:
+                [p] anyway, nice to meet you.
+                if you have some questions, just ask.
+        ]],
+        DIALOG_QUESTION = [[
+            player:
+                I have some questions for you...
+        ]],
     }
     :Hub(function(cxt)
         if not cxt.quest.param.greeted then
@@ -186,6 +195,8 @@ QDEF:AddConvo("meet_opposition", "opposition")
                             TheGame:GetGameState():GetMainQuest():DefFn("DeltaGroupWealthSupport",
                                 opposition_data.wealth_support, 1, true)
                             cxt.quest.param.greeted = true
+                            cxt.quest.param.agreed = true
+                            cxt:Dialog("DIALOG_GREET_PST")
                         end)
                     cxt:Opt("OPT_DISAGREE")
                         :Dialog("DIALOG_DISAGREE")
@@ -195,6 +206,8 @@ QDEF:AddConvo("meet_opposition", "opposition")
                             TheGame:GetGameState():GetMainQuest():DefFn("DeltaGroupWealthSupport",
                                 opposition_data.wealth_support, -1, true)
                             cxt.quest.param.greeted = true
+                            cxt.quest.param.disagreed = true
+                            cxt:Dialog("DIALOG_GREET_PST")
                         end)
                     cxt:Opt("OPT_IGNORE")
                         :Dialog("DIALOG_IGNORE")
@@ -202,7 +215,100 @@ QDEF:AddConvo("meet_opposition", "opposition")
                             TheGame:GetGameState():GetMainQuest():DefFn("DeltaGeneralSupport",
                                 -1)
                             cxt.quest.param.greeted = true
+                            cxt:Dialog("DIALOG_GREET_PST")
                         end)
                 end)
+        
+        else
+            cxt:Opt("OPT_ASK_ABOUT")
+                :IsHubOption(true)
+                :Dialog("DIALOG_QUESTION")
+                :GoTo("STATE_QUESTIONS")
         end
+    end)
+    :AskAboutHubConditions("STATE_QUESTIONS", 
+    {
+        nil,
+        "Ask about {agent}'s goal",
+        [[
+            player:
+                [p] what do you plan to do if you become president?
+            agent:
+                things.
+                that helps people.
+                idk.
+            player:
+                ok...?
+        ]],
+        nil,
+
+        nil,
+        "Ask about {agent}'s plan",
+        [[
+            player:
+                [p] what's your plan?
+            agent:
+                why should i tell you?
+            player:
+                fair enough.
+        ]],
+        nil,
+        nil,
+        "Ask where to find {agent}",
+        [[
+            player:
+                [p] if i want to find you, where should i go?
+            agent:
+                here.
+            player:
+                where?
+            agent:
+                i don't know, i haven't programmed anything yet.
+        ]],
+        function()end,
+    })
+QDEF:AddConvo("meet_opposition", "primary_advisor")
+    :Loc{
+        
+    }
+    :AttractState("STATE_ATTRACT", function(cxt) return not cxt.quest.param.talked_to_advisor end)
+        :Loc{
+            DIALOG_INTRO = [[
+                {not greeted?
+                    agent:
+                        [p] if you haven't talked to {opposition} already, you should probably do so.
+                        you might gain some insights as to what other candidates are up to.
+                }
+                {greeted?
+                    agent:
+                        [p] so you talked to {opposition}. What do you make of {opposition.himher}?
+                    player:
+                        {opposition.HeShe}'s fine, i guess.
+                    {agreed?
+                        we more or less have the same ideology. we could probably get along.
+                    agent:
+                        glad to hear that.
+                        but don't let that fool you. you're still opponents.
+                        there can only be one.
+                    }
+                    {disagreed?
+                        we have some ideological differences, but we might still get along.
+                    agent:
+                        great. now you know how other's think, you need to use that to your advantage.
+                    }
+                    {not (agreed or diagreed)?
+                    agent:
+                        you don't sound so sure.
+                        oh well.
+                    }
+
+                }
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+            cxt.quest.param.talked_to_advisor = true
+        end)
+    :Hub(function(cxt)
+    
     end)
