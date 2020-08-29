@@ -43,6 +43,7 @@ local function LoadConvoLua( filename )
 end
 
 require "DemocraticRace:content/string_table"
+require "DemocraticRace:content/convo_loc_common"
 
 local function OnLoad()
     rawset(_G, "DemocracyConstants", require("DemocraticRace:content/constants"))
@@ -52,7 +53,6 @@ local function OnLoad()
     require "DemocraticRace:content/shop_defs"
     require "DemocraticRace:content/locations"
     require "DemocraticRace:content/notifications"
-    require "DemocraticRace:content/convo_loc_common"
 
     for id, data in pairs(GetAllPlayerBackgrounds()) do
         local act_data = shallowcopy(ACT_DATA)
