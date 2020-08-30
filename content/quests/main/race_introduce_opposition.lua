@@ -226,8 +226,18 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 :GoTo("STATE_QUESTIONS")
         end
     end)
+    --
     :AskAboutHubConditions("STATE_QUESTIONS", 
     {
+        ---------------------------------------
+        -- Each question is represented by 4 arguments in this table.
+        -- 1st arg: Precondition, a function that returns true if this question should show up.
+        -- 2nd arg: The question title.
+        -- 3rd arg: The dialog to display.
+        -- 4th arg: Any post-processing function that happens.
+        -- Note: The last item should always be non-null, even if it's an empty function
+        ---------------------------------------
+        
         nil,
         "Ask about {agent}'s goal",
         [[
@@ -253,6 +263,7 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 fair enough.
         ]],
         nil,
+
         nil,
         "Ask where to find {agent}",
         [[
@@ -310,5 +321,23 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             cxt.quest.param.talked_to_advisor = true
         end)
     :Hub(function(cxt)
-    
+        cxt:Opt("OPT_ASK_ABOUT")
+            :IsHubOption(true)
+            -- :Dialog("DIALOG_QUESTION")
+            :GoTo("STATE_QUESTIONS")
     end)
+    :AskAboutHubConditions("STATE_QUESTIONS", 
+    {
+        nil,
+        "Ask about opposition",
+        [[
+            player:
+                [p] beeeeeeeep
+            agent:
+                boop
+                now laugh.
+            player:s
+                !chuckle
+        ]],
+        function()end,
+    })
