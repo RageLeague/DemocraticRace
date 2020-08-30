@@ -280,7 +280,15 @@ QDEF:AddConvo("meet_opposition", "opposition")
     })
 QDEF:AddConvo("meet_opposition", "primary_advisor")
     :Loc{
-        
+        OPT_DONE_QUEST = "Finish Up",
+        DIALOG_DONE_QUEST = [[
+            player:
+                [p] i'm done with intel gathering.
+            agent:
+                good
+                remember, there's still an interview coming up.
+                you need to prepare for it.
+        ]],
     }
     :AttractState("STATE_ATTRACT", function(cxt) return not cxt.quest.param.talked_to_advisor end)
         :Loc{
@@ -325,6 +333,9 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             :IsHubOption(true)
             -- :Dialog("DIALOG_QUESTION")
             :GoTo("STATE_QUESTIONS")
+        cxt:Opt("OPT_DONE_QUEST")
+            :Dialog("DIALOG_DONE_QUEST")
+            :CompleteQuest()
     end)
     :AskAboutHubConditions("STATE_QUESTIONS", 
     {
@@ -338,6 +349,29 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 now laugh.
             player:
                 !chuckle
+        ]],
+        nil,
+        
+        nil,
+        "Ask about candidates...",
+        [[
+            player:
+                I have some questions regarding the other candidates...
+        ]],
+        function(cxt)
+            cxt:GoTo("STATE_OPPOSITION_QUESTIONS")
+        end,
+    })
+    :AskAboutHubConditions("STATE_OPPOSITION_QUESTIONS",
+    {
+        nil,
+        "Ask about Oolo",
+        [[
+            player:
+                [p] what's her deal?
+            agent:
+                Security for all.
+                lalala.
         ]],
         function()end,
     })

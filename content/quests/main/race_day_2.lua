@@ -38,7 +38,9 @@ local QDEF = QuestDef.Define
             and quest:GetLocalizedStr( "GET_JOB_ADVISOR" )
             or quest:GetLocalizedStr( "GET_JOB_ALONE" )
     end,
-    
+    on_activate = function(quest)
+        DemocracyUtil.StartFreeTime()
+    end,
     on_complete = function(quest) 
         quest:Activate("do_job")
     end,
