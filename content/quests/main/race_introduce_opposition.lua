@@ -336,7 +336,7 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             agent:
                 boop
                 now laugh.
-            player:s
+            player:
                 !chuckle
         ]],
         function()end,
