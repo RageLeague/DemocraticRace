@@ -70,7 +70,7 @@ local QDEF = QuestDef.Define
         end
     end,
 }
-DemocracyUtil.AddOptionalPrimaryAdvisor(QDEF)
+DemocracyUtil.AddPrimaryAdvisor(QDEF)
 
 QDEF:AddConvo("go_to_bar")
     :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("noodle_shop") end)

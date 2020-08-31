@@ -21,6 +21,16 @@ local QDEF = QuestDef.Define
         quest:Activate("get_job")
     end,
 }
+:AddSubQuest{
+    id = "do_interview",
+    quest_id = "RACE_INTERVIEW",
+    on_activate = function(quest)
+        UIHelpers.PassTime(DAY_PHASE.NIGHT)
+    end,
+    on_complete = function(quest)
+        -- quest:Activate("get_job")
+    end,
+}
 :AddObjective{
     id = "starting_out",
     title = "Talk to {primary_advisor} about the plan.",
@@ -75,7 +85,7 @@ local QDEF = QuestDef.Define
     end,
 
 }
-DemocracyUtil.AddOptionalPrimaryAdvisor(QDEF)
+DemocracyUtil.AddPrimaryAdvisor(QDEF)
 DemocracyUtil.AddHomeCasts(QDEF)
 
 QDEF:AddConvo("starting_out", "primary_advisor")

@@ -58,10 +58,10 @@ local function AddHomeCasts(qdef)
 end
 
 -- Add an optional primary advisor to the quest. might change the dialog of side quests.
-local function AddOptionalPrimaryAdvisor(qdef, not_optional)
+local function AddPrimaryAdvisor(qdef, mandatory)
     qdef:AddCast{
         cast_id = "primary_advisor",
-        optional = not not_optional,
+        optional = not mandatory,
         cast_fn = function(quest, t)
             local agent = TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")
             if agent then
@@ -165,7 +165,7 @@ return {
     ADVISOR_HOME = ADVISOR_HOME,
     AddAdvisors = AddAdvisors,
     AddHomeCasts = AddHomeCasts,
-    AddOptionalPrimaryAdvisor = AddOptionalPrimaryAdvisor,
+    AddPrimaryAdvisor = AddPrimaryAdvisor,
     StartFreeTime = StartFreeTime,
     SupportScore = SupportScore,
     OppositionScore = OppositionScore,

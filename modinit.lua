@@ -19,7 +19,7 @@ local ACT_DATA = {
     colour_text = "0xC3FFBFff",
     colour_background = "0x47FF31ff",
 
-    world_region = "murder_bay",
+    world_region = "democracy_murder_bay",
 
     main_quest = "DEMOCRATIC_RACE_MAIN",
     game_type = GAME_TYPE.CAMPAIGN,
@@ -54,6 +54,7 @@ local function OnLoad()
     require "DemocraticRace:content/locations"
     require "DemocraticRace:content/notifications"
     require "DemocraticRace:content/convo_loc_common"
+    require "DemocraticRace:content/region"
 
     for id, data in pairs(GetAllPlayerBackgrounds()) do
         local act_data = shallowcopy(ACT_DATA)

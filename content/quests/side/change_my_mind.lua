@@ -133,7 +133,7 @@ local QDEF = QuestDef.Define
 --     :Loc{
 
 --     }
-DemocracyUtil.AddOptionalPrimaryAdvisor(QDEF)
+DemocracyUtil.AddPrimaryAdvisor(QDEF)
 QDEF:AddConvo("go_to_junction")
     
     :Confront(function(cxt)

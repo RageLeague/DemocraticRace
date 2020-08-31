@@ -35,9 +35,9 @@ local QDEF = QuestDef.Define
 
         TheGame:GetGameState():GetCaravan():MoveToLocation(TheGame:GetGameState():GetLocation("MURDERBAY_NOODLE_SHOP"))
         
-        TheGame:GetGameState():AddLocation(Location("DIPL_PRES_OFFICE"))
-        TheGame:GetGameState():AddLocation(Location("MANI_PRES_OFFICE"))
-        TheGame:GetGameState():AddLocation(Location("HOST_PRES_OFFICE"))
+        -- TheGame:GetGameState():AddLocation(Location("DIPL_PRES_OFFICE"))
+        -- TheGame:GetGameState():AddLocation(Location("MANI_PRES_OFFICE"))
+        -- TheGame:GetGameState():AddLocation(Location("HOST_PRES_OFFICE"))
         -- The level of which people support you. All the indifferent characters may or may not
         -- vote for you, depending on your support level.
         -- Also they determine a whole bunch of things. Very important to keep high.
@@ -244,6 +244,19 @@ local QDEF = QuestDef.Define
             -- agent:GetBrain():SetHome(location)
         end
     end,
+}
+:AddCastByAlias{
+    cast_id = "host",
+    alias = "HESH_AUCTIONEER",
+    on_assign = function(quest, agent)
+        local location = TheGame:GetGameState():GetLocation("GRAND_THEATER")
+        if agent:GetBrain():GetWorkPosition() == nil and location then
+            AgentUtil.TakeJob(agent, location, "host")
+            -- agent:GetBrain():SetHome(location)
+        end
+        quest:UnassignCastMember("host")
+    end,
+    optional = true,
 }
 -- Have to do this to make plot_armour_fn work.
 :AddObjective{

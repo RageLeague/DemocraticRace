@@ -120,7 +120,7 @@ local QDEF = QuestDef.Define
         txt = "Annoyed by your preaching.",
     },
 }
-DemocracyUtil.AddOptionalPrimaryAdvisor(QDEF)
+DemocracyUtil.AddPrimaryAdvisor(QDEF)
 
 QDEF:AddConvo("go_to_junction")
     

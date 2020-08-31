@@ -104,3 +104,18 @@ Content.AddLocationContent{
         }
     },
 }
+Content.AddLocationContent{
+    id = "GRAND_THEATER",
+    name = "The Grand Theater",
+    show_agents = true,
+    plax = "INT_AuctionHouse_01",
+    desc = "A place where significant events are held frequently.",
+    icon = engine.asset.Texture("UI/location_grogndog.tex"),
+
+    map_tags = {"city"},
+    indoors = true,
+
+    work = {
+        host = CreateLabourJob(  DAY_PHASE.NIGHT, "Host", CHARACTER_ROLES.PROPRIETOR, {"PRIEST"} ),
+    },
+}
