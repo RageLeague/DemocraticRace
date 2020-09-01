@@ -117,9 +117,15 @@ QDEF:AddConvo("go_to_interview")
     :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("theater") end)
         :Loc{
             DIALOG_INTRO = [[
-                * [p] when you enter the room
+                * [p] when you enter the room, you see a bunch of people
+                * Looks liek lots of people wants to watch your interview.
+                agent:
+                    let's welcome our special guest tonight, {player}!
+                * everyone clapped.
+                * try to survive the interview, i guess?
             ]],
         }
         :Fn(function(cxt)
             cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("host"))
+            cxt:Dialog("DIALOG_INTRO")
         end)

@@ -44,6 +44,7 @@ local region = {
 
         "ZEALOT",
         "PRIEST",
+        "LUMINARI",
         
         "LABORER",
         "HEAVY_LABORER",
@@ -52,6 +53,7 @@ local region = {
         
         "JAKES_RUNNER",
         "JAKES_SMUGGLER",
+        "JAKES_LIFTER",
         
         "WEALTHY_MERCHANT",
         

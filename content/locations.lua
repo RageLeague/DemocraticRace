@@ -1,10 +1,63 @@
+local WEALTHY_PATRON_DEFS = {
+    BANDIT_RAIDER = 0.5,
+    BANDIT_CAPTAIN = 0.5,
+
+    ZEALOT = 0.5,
+    PRIEST = 1,
+    
+    FOREMAN = 1,
+    BARTENDER = 0.5,
+    
+    JAKES_SMUGGLER = 1,
+    
+    WEALTHY_MERCHANT = 1,
+    
+    ADMIRALTY_PATROL_LEADER = 0.5,
+    ADMIRALTY_CLERK = 1,
+
+    RISE_RADICAL = 0.5,
+    RISE_PAMPHLETEER = 1,
+    
+    SPARK_BARON_PROFESSIONAL = 0.75,
+    SPARK_BARON_TASKMASTER = 0.75,
+}
+
+local faction_weights = 
+{
+    [RELATIONSHIP.HATED] = 0,
+    [RELATIONSHIP.DISLIKED] = .5,
+    [RELATIONSHIP.NEUTRAL] = 1,
+    [RELATIONSHIP.LIKED] = 1.25,
+    [RELATIONSHIP.LOVED] = 1.5,
+}
+
+local function GetGeneratePatronFunction(patron_defs)
+    return function(location)
+        local candidates = {}
+        for def_id, base_w in pairs(patron_defs) do
+            local w = base_w
+
+            local def = Content.GetCharacterDef(def_id)
+            w = w * (faction_weights[TheGame:GetGameState():GetFaction(location:GetFactionID()):GetFactionRelationship( def.faction_id )] or 1)
+            if w > 0 then
+                candidates[def_id] = w
+            end
+            
+        end
+        if next(candidates) then
+            
+            local def = weightedpick(candidates)
+            TheGame:GetGameState():AddSkinnedAgent(def):GetBrain():SendToPatronize(location)
+        end
+    end
+end
 
 Content.AddLocationContent{
     id = "DIPL_PRES_OFFICE",
-    name = "\"The Way\" Campaign Office",
+    name = "Tesla Co 51th Division",
     show_agents = true,
     plax = "INT_RichHouse_1",
-    desc = "Do you know \"The Way\"? You do now.",
+    desc = "Tends to all your Big Chungus Wholesome 100 needs.",
     icon = engine.asset.Texture("UI/location_grogndog.tex"),
 
     -- faction_id = "JAKES",
@@ -36,10 +89,10 @@ Content.AddLocationContent{
 }
 Content.AddLocationContent{
     id = "MANI_PRES_OFFICE",
-    name = "\"F&L\" Campaign Office",
+    name = "Critical Point Havaria",
     show_agents = true,
     plax = "INT_RichHouse_1",
-    desc = "Destroying the opponent with F&L!",
+    desc = "The last bastion of critical thinking in Havaria. At least, that's what the owner claims.",
     icon = engine.asset.Texture("UI/location_grogndog.tex"),
 
     -- faction_id = "JAKES",
@@ -115,7 +168,18 @@ Content.AddLocationContent{
     map_tags = {"city"},
     indoors = true,
 
+    faction_id = "NEUTRAL",
+
     work = {
-        host = CreateLabourJob(  DAY_PHASE.NIGHT, "Host", CHARACTER_ROLES.PROPRIETOR, {"PRIEST"} ),
+        host = CreateLabourJob(  DAY_PHASE.NIGHT, "Host", CHARACTER_ROLES.PROPRIETOR, {"PRIEST", "WEALTHY_MERCHANT"} ),
+    },
+
+    patron_data = {
+        patron_generator = GetGeneratePatronFunction(WEALTHY_PATRON_DEFS),
+        num_patrons = 
+        {
+            [DAY_PHASE.DAY] = 2,
+            [DAY_PHASE.NIGHT] = 5,
+        },
     },
 }
