@@ -415,6 +415,53 @@ local MODIFIERS =
             CreateNewSelfMod(self)
         end,
     },
+
+    LOADED_QUESTION = 
+    {
+        name = "Loaded Question",
+        desc = "When destroyed, the player lose support equal to the remaining splash damage.",
+
+        desc_fn = function(self, fmt_str)
+            return loc.format( fmt_str, self.damage_amt)
+        end,
+
+        min_persuasion = 2,
+        max_persuasion = 2,
+
+        target_enemy = TARGET_ANY_RESOLVE,
+
+        max_stacks = 1,
+
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        OnInit = function( self )
+            self:SetResolve( 1, MODIFIER_SCALING.LOW )
+        end,
+
+        OnBeginTurn = function( self, minigame )
+            self:ApplyPersuasion()
+        end,
+
+        OnBounty = function(self)
+            local mod = self.negotiator:CreateModifier("LOADED_QUESTION_DEATH_TRIGGER")
+            mod.tracked_mod = self
+        end,
+    },
+    -- Kinda have to do it this way, since removed modifier no longer listens to events that happened because of the removal of self.
+    LOADED_QUESTION_DEATH_TRIGGER = 
+    {
+        name = "Loaded Question(Death Trigger)",
+        hidden = true,
+        event_handlers = 
+        {
+            [ EVENT.SPLASH_RESOLVE ] = function( self, modifier, overflow, params )
+                if self.tracked_mod and self.tracked_mod == modifier then
+                    TheGame:GetGameState():GetMainQuest():DefFn("DeltaGeneralSupport", overflow)
+                end
+                self.negotiator:RemoveModifier(self)
+            end
+        },
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )

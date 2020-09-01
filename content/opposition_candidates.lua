@@ -3,8 +3,9 @@ return {
         cast_id = "candidate_admiralty",
         character = "MURDER_BAY_ADMIRALTY_CONTACT",
         
-        main = "Security for all",
-        desc = "Oolo plans to improve the safety of Havaria by improving the security. Powered by the Admiralty, of course. Popular among middle class who cannot afford private security, not popular among upper class(because of increased tax rate) and lower class.",
+        -- main = "Security for all",
+        -- desc = "Oolo plans to improve the safety of Havaria by improving the security. Powered by the Admiralty, of course. Popular among middle class who cannot afford private security, not popular among upper class(because of increased tax rate) and lower class.",
+        platform = "SECURITY",
         faction_support = {
             ADMIRALTY = 3,
             FEUD_CITIZEN = 2,
