@@ -213,9 +213,10 @@ local QDEF = QuestDef.Define
         money = math.max(0, money)
         return math.round(money * rate)
     end,
-
-    UpdateStance = function(quest, stance, val, multiplier, strict)
-        multiplier = multiplier or 1
+    -- Just handle the change in stance and consistency of your opinion.
+    -- Does not handle the relationship gained from updating your stance.
+    UpdateStance = function(quest, stance, val, strict)
+        -- multiplier = multiplier or 1
         if quest.param.stances[stance] == nil then
             quest.param.stances[stance] = val
             quest.param.stance_change[stance] = 0
