@@ -53,6 +53,10 @@ local QDEF = QuestDef.Define
         quest.param.unlocked_locations = {"MURDERBAY_NOODLE_SHOP"}
         quest.param.free_time_actions = 1
 
+        quest.param.stances = {}
+        quest.param.stance_change = {}
+        quest.param.stance_change_freebie = {}
+
         TheGame:GetGameState():GetPlayerAgent().graft_owner:AddGraft(GraftInstance("relation_support_tracker"))
 
         QuestUtil.StartDayQuests(DAY_SCHEDULE, quest)
@@ -208,6 +212,32 @@ local QDEF = QuestDef.Define
         money = money + 50
         money = math.max(0, money)
         return math.round(money * rate)
+    end,
+
+    UpdateStance = function(quest, stance, val, multiplier, strict)
+        multiplier = multiplier or 1
+        if quest.param.stances[stance] == nil then
+            quest.param.stances[stance] = val
+            quest.param.stance_change[stance] = 0
+        else
+            local stance_delta = val - quest.param.stances[stance]
+            if stance_delta == 0 or (not strict and (quest.param.stances[stance] > 0) == (val > 0) and (quest.param.stances[stance] < 0) == (val < 0)) then
+                -- A little bonus for being consistent with your ideology.
+                quest:DefFn("DeltaGeneralSupport", 2)
+                quest.param.stance_change[stance] = math.max(0, quest.param.stance_change[stance] - 1)
+            else
+                if quest.param.stance_change_freebie[stance] and (quest.param.stances[stance] > 0) == (val > 0) and (quest.param.stances[stance] < 0) == (val < 0)) then
+                    
+                else
+                    -- Penalty for being inconsistent.
+                    quest.param.stance_change[stance] = quest.param.stance_change[stance] + math.abs(stance_delta)
+                    quest:DefFn("DeltaGeneralSupport", -math.max(0, quest.param.stance_change[stance] - 1))
+                end
+                quest.param.stances[stance] = val
+            end
+        end
+
+        quest.param.stance_change_freebie[stance] = not strict
     end,
 }
 :AddCast{

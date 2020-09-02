@@ -6,6 +6,10 @@ return {
         -- main = "Security for all",
         -- desc = "Oolo plans to improve the safety of Havaria by improving the security. Powered by the Admiralty, of course. Popular among middle class who cannot afford private security, not popular among upper class(because of increased tax rate) and lower class.",
         platform = "SECURITY",
+        stances = {
+            SECURITY = 2,
+            ANNEX = 2,
+        },
         faction_support = {
             ADMIRALTY = 3,
             FEUD_CITIZEN = 2,
@@ -25,8 +29,14 @@ return {
     candidate_spree = {
         cast_id = "candidate_spree",
         character = "MURDER_BAY_BANDIT_CONTACT",
-        main = "Havaria Independence",
-        desc = "Nadan wants to cut the ties of Havaria with Deltree. Popular among poorer people, but unpopular among the rich, Admiralty, and the Cult.",
+        platform = "ANNEX",
+
+        stances = {
+            SECURITY = -2,
+            ANNEX = -2,
+        },
+        -- main = "Havaria Independence",
+        -- desc = "Nadan wants to cut the ties of Havaria with Deltree. Popular among poorer people, but unpopular among the rich, Admiralty, and the Cult.",
         faction_support = {
             ADMIRALTY = -3,
             FEUD_CITIZEN = 1,

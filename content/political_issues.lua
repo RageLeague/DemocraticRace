@@ -23,7 +23,7 @@ return {
                 name = "Universal Security for All",
                 desc = "Havaria is overrun with criminals of all kind, and the only way to fix it is through drastic measures.",
             },
-        }
+        },
     },
     ANNEX = {
         name = "Deltrean-Havarian Annex",
@@ -45,10 +45,10 @@ return {
                 name = "Vassal State",
                 name = "Havaria become a vassal state of Deltree. I have no idea whether this should exchange with the Havarian Special Administration stance or not.",
             },
-            [1] = {
+            [2] = {
                 name = "Total Annexation",
                 name = "Havaria and Deltree become one country, with no special treatment.",
             },
-        }
+        },
     },
 }
