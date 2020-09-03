@@ -187,6 +187,11 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 :Dialog("DIALOG_GREET")
                 :Fn(function(cxt)
                     local opposition_data = DemocracyConstants.opposition_data[cxt.quest.param.opposition_id]
+                    local platform = opposition_data.platform
+                    local platform_stance
+                    if platform then
+                        platform_stance = opposition_data.stances[platform]
+                    end
                     cxt:Opt("OPT_AGREE")
                         :Dialog("DIALOG_AGREE")
                         :Fn(function(cxt)
@@ -194,6 +199,9 @@ QDEF:AddConvo("meet_opposition", "opposition")
                                 opposition_data.faction_support, 1, true)
                             TheGame:GetGameState():GetMainQuest():DefFn("DeltaGroupWealthSupport",
                                 opposition_data.wealth_support, 1, true)
+                            if platform and platform_stance then
+                                TheGame:GetGameState():GetMainQuest():DefFn("UpdateStance", platform, platform_stance)
+                            end
                             cxt.quest.param.greeted = true
                             cxt.quest.param.agreed = true
                             cxt:Dialog("DIALOG_GREET_PST")
@@ -205,6 +213,9 @@ QDEF:AddConvo("meet_opposition", "opposition")
                                 opposition_data.faction_support, -1, true)
                             TheGame:GetGameState():GetMainQuest():DefFn("DeltaGroupWealthSupport",
                                 opposition_data.wealth_support, -1, true)
+                            if platform and platform_stance then
+                                TheGame:GetGameState():GetMainQuest():DefFn("UpdateStance", platform, -platform_stance)
+                            end
                             cxt.quest.param.greeted = true
                             cxt.quest.param.disagreed = true
                             cxt:Dialog("DIALOG_GREET_PST")

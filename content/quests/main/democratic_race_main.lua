@@ -1,4 +1,4 @@
-local LocUnlock = require "DemocraticRace:content/get_location_unlock"
+local LocUnlock = require "DEMOCRATICRACE:content/get_location_unlock"
 local DAY_SCHEDULE = {
     {quest = "RACE_DAY_1", difficulty = 1},
     {quest = "RACE_DAY_2", difficulty = 2},
@@ -227,7 +227,9 @@ local QDEF = QuestDef.Define
                 quest:DefFn("DeltaGeneralSupport", 2)
                 quest.param.stance_change[stance] = math.max(0, quest.param.stance_change[stance] - 1)
             else
-                if quest.param.stance_change_freebie[stance] and (quest.param.stances[stance] > 0) == (val > 0) and (quest.param.stances[stance] < 0) == (val < 0)) then
+                if quest.param.stance_change_freebie[stance] 
+                    and (quest.param.stances[stance] > 0) == (val > 0) 
+                    and (quest.param.stances[stance] < 0) == (val < 0) then
                     
                 else
                     -- Penalty for being inconsistent.

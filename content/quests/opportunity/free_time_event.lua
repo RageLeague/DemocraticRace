@@ -1,4 +1,4 @@
-local unlocks = require "DemocraticRace:content/get_location_unlock"
+local unlocks = require "DEMOCRATICRACE:content/get_location_unlock"
 
 local function PickBoonForAgent( agent )
     --[[    do 

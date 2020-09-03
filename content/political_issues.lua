@@ -43,11 +43,11 @@ return {
             },
             [1] = {
                 name = "Vassal State",
-                name = "Havaria become a vassal state of Deltree. I have no idea whether this should exchange with the Havarian Special Administration stance or not.",
+                desc = "Havaria become a vassal state of Deltree. I have no idea whether this should exchange with the Havarian Special Administration stance or not.",
             },
             [2] = {
                 name = "Total Annexation",
-                name = "Havaria and Deltree become one country, with no special treatment.",
+                desc = "Havaria and Deltree become one country, with no special treatment.",
             },
         },
     },

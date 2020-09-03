@@ -1,6 +1,6 @@
 return {
     icons = {
-        support = engine.asset.Texture("DemocraticRace:assets/support_icon.png"),
+        support = engine.asset.Texture("DEMOCRATICRACE:assets/support_icon.png"),
     },
     wealth_levels = 4,
     wealth_string = {
@@ -21,5 +21,5 @@ return {
         0xa5cfefff,
         0xe9d64fff,
     },
-    opposition_data = require "DemocraticRace:content/opposition_candidates",
+    opposition_data = require "DEMOCRATICRACE:content/opposition_candidates",
 }
