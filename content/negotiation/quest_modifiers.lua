@@ -419,14 +419,17 @@ local MODIFIERS =
     LOADED_QUESTION = 
     {
         name = "Loaded Question",
-        desc = "When destroyed, the player lose support equal to the remaining splash damage.",
+        desc = "When destroyed, the player loses support equal to the remaining splash damage.\n\n"..
+        "When {address_question|addressed}, the player loses {2} support.",
 
         desc_fn = function(self, fmt_str)
-            return loc.format( fmt_str, self.damage_amt)
+            return loc.format( fmt_str, self.damage_amt, self.address_cost)
         end,
 
         min_persuasion = 2,
         max_persuasion = 2,
+
+        address_cost = 5,
 
         target_enemy = TARGET_ANY_RESOLVE,
 
@@ -435,7 +438,7 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
         OnInit = function( self )
-            self:SetResolve( 1, MODIFIER_SCALING.LOW )
+            self:SetResolve( 7, MODIFIER_SCALING.HIGH )
         end,
 
         OnBeginTurn = function( self, minigame )
@@ -445,6 +448,9 @@ local MODIFIERS =
         OnBounty = function(self)
             local mod = self.negotiator:CreateModifier("LOADED_QUESTION_DEATH_TRIGGER")
             mod.tracked_mod = self
+        end,
+
+        AddressQuestion = function(self)
         end,
     },
     -- Kinda have to do it this way, since removed modifier no longer listens to events that happened because of the removal of self.
@@ -461,6 +467,32 @@ local MODIFIERS =
                 self.negotiator:RemoveModifier(self)
             end
         },
+    },
+    CONTEMPORARY_QUESTION = 
+    {
+        name = "Contemporary Question",
+        desc = "The interviewer asks about your opinion on <b>{1}</>.\n\n"..
+            "When {address_question|addressed}, the player must state their opinion on this matter.",
+
+        issue_data = nil,
+
+        loc_strings = {
+            ISSUE_DEFAULT = "a contemporary issue",
+        },
+        
+        max_stacks = 1,
+
+        desc_fn = function(self, fmt_str)
+            return loc.format( fmt_str, self.issue_data and self.issue_data.name or self.def:GetLocalizedString("ISSUE_DEFAULT"))
+        end,
+        OnInit = function( self )
+            self:SetResolve( 30 )
+        end,
+        min_persuasion = 2,
+        max_persuasion = 2,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+        AddressQuestion = function(self)
+        end,
     },
 }
 for id, def in pairs( MODIFIERS ) do
