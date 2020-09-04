@@ -1,6 +1,13 @@
-MountModData( "DEMOCRATICRACE" )
+-- MountModData( "DEMOCRATICRACE" )
 
 local filepath = require "util/filepath"
+
+local function OnNewGame( mod, game_state )
+    -- Require this Mod to be installed to launch this save game.
+    if string.find(game_state:GetCurrentActID(), "DEMOCRATIC_RACE") then
+        game_state:RequireMod( mod )
+    end
+end
 
 local function OnLoad()
     local STARTING_MONEY = 125
@@ -108,5 +115,12 @@ local function OnLoad()
 end
 
 return {
-    OnLoad = OnLoad
+    version = "0.0.1",
+    alias = "DEMOCRATICRACE",
+    
+    OnLoad = OnLoad,
+    OnNewGame = OnNewGame,
+
+    title = "Democratic Race(Working title)",
+    description = "The Pioneer campaign mod for the (currently) Early Access game Griftlands, Democratic Race(working title) is a mod for Griftlands that adds a negotiation based campaign mode to the game, in contrast to the direct combat. Your goal in this campaign is to campaign and gain support among the people so you can be voted in as president. This story is heavily negotiation focused, and combat is only necessary if you failed certain negotiations.",
 }
