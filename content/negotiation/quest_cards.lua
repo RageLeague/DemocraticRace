@@ -76,9 +76,13 @@ local CARDS = {
         name = "Address Question",
         desc = "Target a question argument. Resolve the effect based on the question being addressed. "..
             "Remove the argument afterwards.\nIf this card leaves the hand, {EXPEND} it.",
+        loc_string = {
+            NOT_A_QUESTION = "Target is not a question",
+        },
         cost = 2,
         flags = CARD_FLAGS.DIPLOMACY,
         rarity = CARD_RARITY.UNIQUE,
+        target_enemy = TARGET_FLAG.ARGUMENT | TARGET_FLAG.BOUNTY,
         deck_handlers = ALL_DECKS,
         event_handlers =
         {
@@ -88,6 +92,20 @@ local CARDS = {
                 end
             end,
         },
+        CanTarget = function(self, target)
+            if is_instance( target, Negotiation.Modifier ) and target.AddressQuestion then
+                return true
+            end
+            return false, self.def:GetLocalizedString("NOT_A_QUESTION")
+        end,
+        OnPostResolve = function( self, minigame, targets )
+            for i, target in ipairs(targets) do
+                if is_instance( target, Negotiation.Modifier ) and target.AddressQuestion then
+                    target:AddressQuestion()
+                    target:GetNegotiator():RemoveModifier( target )
+                end
+            end
+        end,
     },
 }
 for id, def in pairs( CARDS ) do
