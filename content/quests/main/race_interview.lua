@@ -1,3 +1,27 @@
+local INTERVIEWER_BEHAVIOR = {
+    OnInit = function( self, difficulty )
+		-- self.bog_boil = self:AddCard("bog_boil")
+		self:SetPattern( self.BasicCycle )
+        -- local modifier = self.negotiator:AddModifier("PREACH_CROWD")
+        -- modifier.agents = shallowcopy(self.agents)
+        -- modifier:InitModifiers()
+    end,
+
+	-- Duplicated from Bandits. Needs revision
+	BasicCycle = function( self, turns )
+		-- Double attack every 2 rounds; Single attack otherwise.
+		if self.difficulty >= 4 and turns % 2 == 0 then
+			self:ChooseGrowingNumbers( 3, -1 )
+		elseif turns % 2 == 0 then
+			self:ChooseGrowingNumbers( 2, 0 )
+		else
+			self:ChooseGrowingNumbers( 1, 1 )
+        end
+        
+	end,
+}
+
+
 local QDEF = QuestDef.Define
 {
     title = "Interview",

@@ -13,7 +13,7 @@ if not Content.GetLocationContent(LOCATION_DEF.id) then
     Content.AddLocationContent(LOCATION_DEF)
 end
 
-local TEST_BEHAVIOR = {
+local CROWD_BEHAVIOR = {
 	OnInit = function( self, difficulty )
 		-- self.bog_boil = self:AddCard("bog_boil")
 		self:SetPattern( self.BasicCycle )
@@ -31,7 +31,7 @@ local TEST_BEHAVIOR = {
 		elseif turns % 2 == 0 then
 			self:ChooseGrowingNumbers( 2, 0 )
 		else
-			self:ChooseGrowingNumbers( 1, 0 )
+			self:ChooseGrowingNumbers( 1, 1 )
 		end
 		-- if turns % 3 == 0 then
 		-- 	self:ChooseCard(self.bog_boil)
@@ -158,8 +158,8 @@ QDEF:AddConvo("go_to_junction")
             cxt.quest:Complete("go_to_junction")
             cxt.quest:Activate("preach")
             cxt.enc:SetPrimaryCast(cxt.quest.param.crowd[1])
-            cxt:GetAgent().temp_negotiation_behaviour = TEST_BEHAVIOR
-            TEST_BEHAVIOR.agents = cxt.quest.param.crowd
+            cxt:GetAgent().temp_negotiation_behaviour = CROWD_BEHAVIOR
+            CROWD_BEHAVIOR.agents = cxt.quest.param.crowd
 
             local postProcessingFn = function(cxt, minigame)
                 cxt.quest.param.convinced_people = {}

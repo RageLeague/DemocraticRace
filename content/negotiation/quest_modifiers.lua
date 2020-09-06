@@ -77,7 +77,7 @@ local MODIFIERS =
     PREACH_TARGET_INTEREST = 
     {
         name = "Potential Interest",
-        desc = "<b>{1.fullname}</> might be interested in listening to you if you can convince them. "..
+        desc = "<b>{1.fullname}</> might be interested in listening to you if you can convince {1.himher}. "..
             "Destroy this argument to make {1.himher} join your side.\n\n"..
             "<#PENALTY>After {2} turns, this argument removes itself, as <b>{1.name}</> loses interest in you.</>",
         loc_strings = {
@@ -492,6 +492,42 @@ local MODIFIERS =
         max_persuasion = 2,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
         AddressQuestion = function(self)
+        end,
+    },
+
+    INTERVIEWER =
+    {
+        name = "Interviewer",
+        desc = "This argument takes 1 less damage for every question arguments the owner has(to a minimum of 1).",
+        desc_fn = function(self, fmt_str )
+
+            return loc.format(fmt_str)
+        end,
+        -- icon = engine.asset.Texture("negotiation/modifiers/heckler.tex"),
+        modifier_type = MODIFIER_TYPE.CORE,
+        
+        event_priorities =
+        {
+            [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_ADDITIVE,
+        },
+
+        event_handlers = {
+            [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
+                if target and target == self then
+                    local question_count = 0
+                    for i, data in self.negotiator:Modifiers() do
+                        if data.AddressQuestion then
+                            question_count = question_count + 1
+                        end
+                    end
+                    persuasion:AddPersuasion( - math.min(question_count, persuasion.min_persuasion - 1), - math.min(question_count, persuasion.max_persuasion - 1), self )
+                end
+            end,
+        },
+        InitModifiers = function(self)
+            -- for i = 1, 2 + math.floor(self.engine:GetDifficulty() / 2) do
+            --     self:TryCreateNewTarget()
+            -- end
         end,
     },
 }

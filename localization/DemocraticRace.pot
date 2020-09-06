@@ -1,0 +1,805 @@
+﻿#: CARD.ADDRESS_QUESTION.DESC
+msgctxt "CARD.ADDRESS_QUESTION.DESC"
+msgid "Target a question argument. Resolve the effect based on the question being addressed. Remove the argument afterwards.\nIf this card leaves the hand, {EXPEND} it."
+msgstr ""
+
+#: CARD.ADDRESS_QUESTION.NAME
+msgctxt "CARD.ADDRESS_QUESTION.NAME"
+msgid "Address Question"
+msgstr ""
+
+#: CARD.ASSASSIN_FIGHT_CALL_FOR_HELP.DESC
+msgctxt "CARD.ASSASSIN_FIGHT_CALL_FOR_HELP.DESC"
+msgid "Attempt to call for help and ask someone to deal with the assassin."
+msgstr ""
+
+#: CARD.ASSASSIN_FIGHT_CALL_FOR_HELP.NAME
+msgctxt "CARD.ASSASSIN_FIGHT_CALL_FOR_HELP.NAME"
+msgid "Call For Help"
+msgstr ""
+
+#: CARD.ASSASSIN_FIGHT_DESCRIBE_INFORMATION.DESC
+msgctxt "CARD.ASSASSIN_FIGHT_DESCRIBE_INFORMATION.DESC"
+msgid "Discribe your current situation to the dispacher.\nIncrease the stacks of <b>Connected Line</> by 1."
+msgstr ""
+
+#: CARD.ASSASSIN_FIGHT_DESCRIBE_INFORMATION.NAME
+msgctxt "CARD.ASSASSIN_FIGHT_DESCRIBE_INFORMATION.NAME"
+msgid "Describe Situation"
+msgstr ""
+
+#: CONVO.CHANGE_MY_MIND_3.DIALOG_INTRO
+msgctxt "CONVO.CHANGE_MY_MIND_3.DIALOG_INTRO"
+msgid "player:\n!left\nPerhaps a good idea would be to set up a booth that says \"change my mind\" on it.\n{not has_primary_advisor?\nPeople might get interested in it and stop by, and I can spread my ideology.\nPeople might also try and debate me about my ideology.\nI can convince them to join my side.\n}\n{has_primary_advisor?\nprimary_advisor:\nInteresting. It's just like that meme, but this time, it's serious.\nPeople might get interested by this premise and stop by.\nplayer:\nThen we can use this opportunity to spread our ideology!\nprimary_advisor:\nJust try not to make a fool out of yourself, okay?\n}"
+msgstr ""
+
+#: CONVO.CHANGE_MY_MIND_4.DIALOG_INTRO
+msgctxt "CONVO.CHANGE_MY_MIND_4.DIALOG_INTRO"
+msgid "player:\n!left\n{not has_primary_advisor?\nGood idea. I'll go to a junction with many people passing by and set up my booth.\n}\n{has_primary_advisor?\nI think I can handle a few hecklers.\nprimary_advisor:\nVery well. Now find a populous junction and set up your booth.\n}"
+msgstr ""
+
+#: CONVO.CHANGE_MY_MIND_5.DIALOG_INTRO
+msgctxt "CONVO.CHANGE_MY_MIND_5.DIALOG_INTRO"
+msgid "player:\n!left\n{not has_primary_advisor?\nToo risky. I might embarrass myself in front of a huge crowd.\n}\n{has_primary_advisor?\nGood point. I guess we need to find another way.\n}"
+msgstr ""
+
+#: CONVO.ROADSIDE_PREACHING_2.DIALOG_INTRO
+msgctxt "CONVO.ROADSIDE_PREACHING_2.DIALOG_INTRO"
+msgid "player:\n!left\n[p] maybe i should preach"
+msgstr ""
+
+#: CONVO.ROADSIDE_PREACHING_3.DIALOG_INTRO
+msgctxt "CONVO.ROADSIDE_PREACHING_3.DIALOG_INTRO"
+msgid "player:\n!left\n[p] cool cool"
+msgstr ""
+
+#: CONVO.ROADSIDE_PREACHING_4.DIALOG_INTRO
+msgctxt "CONVO.ROADSIDE_PREACHING_4.DIALOG_INTRO"
+msgid "player:\n!left\n[p] nah"
+msgstr ""
+
+#: CONVO_COMMON.OPT_UNLOCK_NEW_LOCATION
+msgctxt "CONVO_COMMON.OPT_UNLOCK_NEW_LOCATION"
+msgid "Unlock new location: {1#location}"
+msgstr ""
+
+#: CONVO_COMMON.TT_UNLOCK_NEW_LOCATION
+msgctxt "CONVO_COMMON.TT_UNLOCK_NEW_LOCATION"
+msgid "You can now visit this location during your free time."
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.DETAIL_DECREASE
+msgctxt "DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.DETAIL_DECREASE"
+msgid "General support decreased by {1}.(To {2})\nSupport from {3#faction} and among {4#wealth_name} are decreased.\nCheck your advisor for more info."
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.DETAIL_INCREASE
+msgctxt "DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.DETAIL_INCREASE"
+msgid "General support increased by {1}.(To {2})\nSupport from {3#faction} and among {4#wealth_name} are increased.\nCheck your advisor for more info."
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.TITLE_DECREASE
+msgctxt "DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.TITLE_DECREASE"
+msgid "Lost {1} Support From {2#agent}"
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.TITLE_INCREASE
+msgctxt "DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.TITLE_INCREASE"
+msgid "Gained {1} Support From {2#agent}"
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.DETAIL_DECREASE
+msgctxt "DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.DETAIL_DECREASE"
+msgid "Your support level from {2#faction} is decreased to {1}."
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.DETAIL_INCREASE
+msgctxt "DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.DETAIL_INCREASE"
+msgid "Your support level from {2#faction} is increased to {1}."
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.TITLE_DECREASE
+msgctxt "DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.TITLE_DECREASE"
+msgid "Lost {1} Support From {2#faction}"
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.TITLE_INCREASE
+msgctxt "DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.TITLE_INCREASE"
+msgid "Gained {1} Support From {2#faction}"
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.DETAIL_DECREASE
+msgctxt "DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.DETAIL_DECREASE"
+msgid "Your support level is decreased to {1}."
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.DETAIL_INCREASE
+msgctxt "DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.DETAIL_INCREASE"
+msgid "Your support level is increased to {1}."
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.TITLE_DECREASE
+msgctxt "DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.TITLE_DECREASE"
+msgid "Lost {1} Support"
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.TITLE_INCREASE
+msgctxt "DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.TITLE_INCREASE"
+msgid "Gained {1} Support"
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.DETAIL_DECREASE
+msgctxt "DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.DETAIL_DECREASE"
+msgid "Your support level among the {2#wealth_name} is decreased to {1}."
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.DETAIL_INCREASE
+msgctxt "DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.DETAIL_INCREASE"
+msgid "Your support level among the {2#wealth_name} is increased to {1}."
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.TITLE_DECREASE
+msgctxt "DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.TITLE_DECREASE"
+msgid "Lost {1} Support Among The {2#wealth_name}"
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.TITLE_INCREASE
+msgctxt "DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.TITLE_INCREASE"
+msgid "Gained {1} Support Among The {2#wealth_name}"
+msgstr ""
+
+#: DEMOCRACY.SUPPORT_ENTRY.FACTION_SUPPORT
+msgctxt "DEMOCRACY.SUPPORT_ENTRY.FACTION_SUPPORT"
+msgid "{1#faction}: {2}"
+msgstr ""
+
+#: DEMOCRACY.SUPPORT_ENTRY.GENERAL_SUPPORT
+msgctxt "DEMOCRACY.SUPPORT_ENTRY.GENERAL_SUPPORT"
+msgid "General Support: {1}"
+msgstr ""
+
+#: DEMOCRACY.SUPPORT_ENTRY.WEALTH_SUPPORT
+msgctxt "DEMOCRACY.SUPPORT_ENTRY.WEALTH_SUPPORT"
+msgid "{1#wealth_name}: {2}"
+msgstr ""
+
+#: DEMOCRACY.SUPPORT_SCREEN.DESC
+msgctxt "DEMOCRACY.SUPPORT_SCREEN.DESC"
+msgid "To get elected, you need to have high support among the people. Your advisor has compiled the support breakdown for your campaign. Use this to carefully plan your campaign."
+msgstr ""
+
+#: DEMOCRACY.SUPPORT_SCREEN.TITLE
+msgctxt "DEMOCRACY.SUPPORT_SCREEN.TITLE"
+msgid "Support Analysis"
+msgstr ""
+
+#: DEMOCRACY.WEALTH_STRING.LVL_1
+msgctxt "DEMOCRACY.WEALTH_STRING.LVL_1"
+msgid "Lower Class"
+msgstr ""
+
+#: DEMOCRACY.WEALTH_STRING.LVL_2
+msgctxt "DEMOCRACY.WEALTH_STRING.LVL_2"
+msgid "Lower-Middle Class"
+msgstr ""
+
+#: DEMOCRACY.WEALTH_STRING.LVL_3
+msgctxt "DEMOCRACY.WEALTH_STRING.LVL_3"
+msgid "Middle Class"
+msgstr ""
+
+#: DEMOCRACY.WEALTH_STRING.LVL_4
+msgctxt "DEMOCRACY.WEALTH_STRING.LVL_4"
+msgid "Upper Class"
+msgstr ""
+
+#: MODIFIER.CONNECTED_LINE.DESC
+msgctxt "MODIFIER.CONNECTED_LINE.DESC"
+msgid "Reach {1} stacks for the help to be sent. <#PENALTY>The opponent will also gain 1 {IMPATIENCE} when that happens.</>\n\nThe opponent must target this argument before anything else.\n\n<#PENALTY>If this gets destroyed, the opponent gains 1 {IMPATIENCE}, and you need to play Call For Help again!</>"
+msgstr ""
+
+#: MODIFIER.CONNECTED_LINE.NAME
+msgctxt "MODIFIER.CONNECTED_LINE.NAME"
+msgid "Connected Line"
+msgstr ""
+
+#: MODIFIER.CONTEMPORARY_QUESTION.DESC
+msgctxt "MODIFIER.CONTEMPORARY_QUESTION.DESC"
+msgid "The interviewer asks about your opinion on <b>{1}</>.\n\nWhen {address_question|addressed}, the player must state their opinion on this matter."
+msgstr ""
+
+#: MODIFIER.CONTEMPORARY_QUESTION.ISSUE_DEFAULT
+msgctxt "MODIFIER.CONTEMPORARY_QUESTION.ISSUE_DEFAULT"
+msgid "a contemporary issue"
+msgstr ""
+
+#: MODIFIER.CONTEMPORARY_QUESTION.NAME
+msgctxt "MODIFIER.CONTEMPORARY_QUESTION.NAME"
+msgid "Contemporary Question"
+msgstr ""
+
+#: MODIFIER.DISTRACTION_CONFUSION.DESC
+msgctxt "MODIFIER.DISTRACTION_CONFUSION.DESC"
+msgid "When destroyed, {1} gain 1 {FLUSTERED} and create a copy of this bounty with {2} more starting resolve."
+msgstr ""
+
+#: MODIFIER.DISTRACTION_CONFUSION.NAME
+msgctxt "MODIFIER.DISTRACTION_CONFUSION.NAME"
+msgid "Distraction: Confusion"
+msgstr ""
+
+#: MODIFIER.DISTRACTION_ENTERTAINMENT.DESC
+msgctxt "MODIFIER.DISTRACTION_ENTERTAINMENT.DESC"
+msgid "When destroyed, {1} loses 1 {IMPATIENCE} if able and create a copy of this bounty with {2} more starting resolve."
+msgstr ""
+
+#: MODIFIER.DISTRACTION_ENTERTAINMENT.NAME
+msgctxt "MODIFIER.DISTRACTION_ENTERTAINMENT.NAME"
+msgid "Distraction: Entertainment"
+msgstr ""
+
+#: MODIFIER.DISTRACTION_GUILTY_CONSCIENCE.DESC
+msgctxt "MODIFIER.DISTRACTION_GUILTY_CONSCIENCE.DESC"
+msgid "When destroyed, remove a random intent and create a copy of this bounty with {2} more starting resolve."
+msgstr ""
+
+#: MODIFIER.DISTRACTION_GUILTY_CONSCIENCE.NAME
+msgctxt "MODIFIER.DISTRACTION_GUILTY_CONSCIENCE.NAME"
+msgid "Distraction: Guilty Conscience"
+msgstr ""
+
+#: MODIFIER.HELP_UNDERWAY.DESC
+msgctxt "MODIFIER.HELP_UNDERWAY.DESC"
+msgid "Distract <b>{1}</> for {2} more turns until the help arrives!"
+msgstr ""
+
+#: MODIFIER.HELP_UNDERWAY.NAME
+msgctxt "MODIFIER.HELP_UNDERWAY.NAME"
+msgid "Help Underway!"
+msgstr ""
+
+#: MODIFIER.IMPATIENCE_WIN.DESC
+msgctxt "MODIFIER.IMPATIENCE_WIN.DESC"
+msgid "Win at the beginning of the player's turn if the opponent has {1} or more {IMPATIENCE}."
+msgstr ""
+
+#: MODIFIER.IMPATIENCE_WIN.NAME
+msgctxt "MODIFIER.IMPATIENCE_WIN.NAME"
+msgid "Player Advantage"
+msgstr ""
+
+#: MODIFIER.INTERVIEWER.DESC
+msgctxt "MODIFIER.INTERVIEWER.DESC"
+msgid "This argument takes 1 less damage for every question arguments the owner has(to a minimum of 1)."
+msgstr ""
+
+#: MODIFIER.INTERVIEWER.NAME
+msgctxt "MODIFIER.INTERVIEWER.NAME"
+msgid "Interviewer"
+msgstr ""
+
+#: MODIFIER.LOADED_QUESTION.DESC
+msgctxt "MODIFIER.LOADED_QUESTION.DESC"
+msgid "When destroyed, the player loses support equal to the remaining splash damage.\n\nWhen {address_question|addressed}, the player loses {2} support."
+msgstr ""
+
+#: MODIFIER.LOADED_QUESTION.NAME
+msgctxt "MODIFIER.LOADED_QUESTION.NAME"
+msgid "Loaded Question"
+msgstr ""
+
+#: MODIFIER.LOADED_QUESTION_DEATH_TRIGGER.NAME
+msgctxt "MODIFIER.LOADED_QUESTION_DEATH_TRIGGER.NAME"
+msgid "Loaded Question(Death Trigger)"
+msgstr ""
+
+#: MODIFIER.PREACH_CROWD.DESC
+msgctxt "MODIFIER.PREACH_CROWD.DESC"
+msgid "At the beginning of the player's turn, create a new <b>Potential Interest</> argument({1} left)."
+msgstr ""
+
+#: MODIFIER.PREACH_CROWD.NAME
+msgctxt "MODIFIER.PREACH_CROWD.NAME"
+msgid "Crowd Mentality"
+msgstr ""
+
+#: MODIFIER.PREACH_TARGET_INTEREST.BONUS_BRIBED
+msgctxt "MODIFIER.PREACH_TARGET_INTEREST.BONUS_BRIBED"
+msgid "<#BONUS><b>{1.name} is bribed.</> {2} max resolve.</>"
+msgstr ""
+
+#: MODIFIER.PREACH_TARGET_INTEREST.BONUS_DISLIKED
+msgctxt "MODIFIER.PREACH_TARGET_INTEREST.BONUS_DISLIKED"
+msgid "<#PENALTY><b>{1.name} dislikes you.</> +{3} max resolve.</>"
+msgstr ""
+
+#: MODIFIER.PREACH_TARGET_INTEREST.BONUS_HATED
+msgctxt "MODIFIER.PREACH_TARGET_INTEREST.BONUS_HATED"
+msgid "<#PENALTY><b>{1.name} hates you.</> +{3} max resolve.</>"
+msgstr ""
+
+#: MODIFIER.PREACH_TARGET_INTEREST.BONUS_LIKED
+msgctxt "MODIFIER.PREACH_TARGET_INTEREST.BONUS_LIKED"
+msgid "<#BONUS><b>{1.name} likes you.</> {3} max resolve.</>"
+msgstr ""
+
+#: MODIFIER.PREACH_TARGET_INTEREST.BONUS_LOVED
+msgctxt "MODIFIER.PREACH_TARGET_INTEREST.BONUS_LOVED"
+msgid "<#BONUS><b>{1.name} loves you.</> {3} max resolve.</>"
+msgstr ""
+
+#: MODIFIER.PREACH_TARGET_INTEREST.DESC
+msgctxt "MODIFIER.PREACH_TARGET_INTEREST.DESC"
+msgid "<b>{1.fullname}</> might be interested in listening to you if you can convince them. Destroy this argument to make {1.himher} join your side.\n\n<#PENALTY>After {2} turns, this argument removes itself, as <b>{1.name}</> loses interest in you.</>"
+msgstr ""
+
+#: MODIFIER.PREACH_TARGET_INTEREST.NAME
+msgctxt "MODIFIER.PREACH_TARGET_INTEREST.NAME"
+msgid "Potential Interest"
+msgstr ""
+
+#: MODIFIER.PREACH_TARGET_INTERESTED.DESC
+msgctxt "MODIFIER.PREACH_TARGET_INTERESTED.DESC"
+msgid "{1.fullname} is interested in your ideology! Protect this argument until the end of the negotiation."
+msgstr ""
+
+#: MODIFIER.PREACH_TARGET_INTERESTED.NAME
+msgctxt "MODIFIER.PREACH_TARGET_INTERESTED.NAME"
+msgid "Interested Target"
+msgstr ""
+
+#: NEGOTIATION_FEATURE.CONNECTED_LINE.DESC
+msgctxt "NEGOTIATION_FEATURE.CONNECTED_LINE.DESC"
+msgid "Reach {1} stacks for the help to be sent. <#PENALTY>The opponent will also gain 1 {IMPATIENCE} when that happens.</>\n\nThe opponent must target this argument before anything else.\n\n<#PENALTY>If this gets destroyed, the opponent gains 1 {IMPATIENCE}, and you need to play Call For Help again!</>"
+msgstr ""
+
+#: NEGOTIATION_FEATURE.CONNECTED_LINE.NAME
+msgctxt "NEGOTIATION_FEATURE.CONNECTED_LINE.NAME"
+msgid "Connected Line"
+msgstr ""
+
+#: NEGOTIATION_FEATURE.CONTEMPORARY_QUESTION.DESC
+msgctxt "NEGOTIATION_FEATURE.CONTEMPORARY_QUESTION.DESC"
+msgid "The interviewer asks about your opinion on <b>{1}</>.\n\nWhen {address_question|addressed}, the player must state their opinion on this matter."
+msgstr ""
+
+#: NEGOTIATION_FEATURE.CONTEMPORARY_QUESTION.NAME
+msgctxt "NEGOTIATION_FEATURE.CONTEMPORARY_QUESTION.NAME"
+msgid "Contemporary Question"
+msgstr ""
+
+#: NEGOTIATION_FEATURE.DISTRACTION_CONFUSION.DESC
+msgctxt "NEGOTIATION_FEATURE.DISTRACTION_CONFUSION.DESC"
+msgid "When destroyed, {1} gain 1 {FLUSTERED} and create a copy of this bounty with {2} more starting resolve."
+msgstr ""
+
+#: NEGOTIATION_FEATURE.DISTRACTION_CONFUSION.NAME
+msgctxt "NEGOTIATION_FEATURE.DISTRACTION_CONFUSION.NAME"
+msgid "Distraction: Confusion"
+msgstr ""
+
+#: NEGOTIATION_FEATURE.DISTRACTION_ENTERTAINMENT.DESC
+msgctxt "NEGOTIATION_FEATURE.DISTRACTION_ENTERTAINMENT.DESC"
+msgid "When destroyed, {1} loses 1 {IMPATIENCE} if able and create a copy of this bounty with {2} more starting resolve."
+msgstr ""
+
+#: NEGOTIATION_FEATURE.DISTRACTION_ENTERTAINMENT.NAME
+msgctxt "NEGOTIATION_FEATURE.DISTRACTION_ENTERTAINMENT.NAME"
+msgid "Distraction: Entertainment"
+msgstr ""
+
+#: NEGOTIATION_FEATURE.DISTRACTION_GUILTY_CONSCIENCE.DESC
+msgctxt "NEGOTIATION_FEATURE.DISTRACTION_GUILTY_CONSCIENCE.DESC"
+msgid "When destroyed, remove a random intent and create a copy of this bounty with {2} more starting resolve."
+msgstr ""
+
+#: NEGOTIATION_FEATURE.DISTRACTION_GUILTY_CONSCIENCE.NAME
+msgctxt "NEGOTIATION_FEATURE.DISTRACTION_GUILTY_CONSCIENCE.NAME"
+msgid "Distraction: Guilty Conscience"
+msgstr ""
+
+#: NEGOTIATION_FEATURE.HELP_UNDERWAY.DESC
+msgctxt "NEGOTIATION_FEATURE.HELP_UNDERWAY.DESC"
+msgid "Distract <b>{1}</> for {2} more turns until the help arrives!"
+msgstr ""
+
+#: NEGOTIATION_FEATURE.HELP_UNDERWAY.NAME
+msgctxt "NEGOTIATION_FEATURE.HELP_UNDERWAY.NAME"
+msgid "Help Underway!"
+msgstr ""
+
+#: NEGOTIATION_FEATURE.IMPATIENCE_WIN.DESC
+msgctxt "NEGOTIATION_FEATURE.IMPATIENCE_WIN.DESC"
+msgid "Win at the beginning of the player's turn if the opponent has {1} or more {IMPATIENCE}."
+msgstr ""
+
+#: NEGOTIATION_FEATURE.IMPATIENCE_WIN.NAME
+msgctxt "NEGOTIATION_FEATURE.IMPATIENCE_WIN.NAME"
+msgid "Player Advantage"
+msgstr ""
+
+#: NEGOTIATION_FEATURE.INTERVIEWER.DESC
+msgctxt "NEGOTIATION_FEATURE.INTERVIEWER.DESC"
+msgid "This argument takes 1 less damage for every question arguments the owner has(to a minimum of 1)."
+msgstr ""
+
+#: NEGOTIATION_FEATURE.INTERVIEWER.NAME
+msgctxt "NEGOTIATION_FEATURE.INTERVIEWER.NAME"
+msgid "Interviewer"
+msgstr ""
+
+#: NEGOTIATION_FEATURE.LOADED_QUESTION.DESC
+msgctxt "NEGOTIATION_FEATURE.LOADED_QUESTION.DESC"
+msgid "When destroyed, the player loses support equal to the remaining splash damage.\n\nWhen {address_question|addressed}, the player loses {2} support."
+msgstr ""
+
+#: NEGOTIATION_FEATURE.LOADED_QUESTION.NAME
+msgctxt "NEGOTIATION_FEATURE.LOADED_QUESTION.NAME"
+msgid "Loaded Question"
+msgstr ""
+
+#: NEGOTIATION_FEATURE.LOADED_QUESTION_DEATH_TRIGGER.NAME
+msgctxt "NEGOTIATION_FEATURE.LOADED_QUESTION_DEATH_TRIGGER.NAME"
+msgid "Loaded Question(Death Trigger)"
+msgstr ""
+
+#: NEGOTIATION_FEATURE.PREACH_CROWD.DESC
+msgctxt "NEGOTIATION_FEATURE.PREACH_CROWD.DESC"
+msgid "At the beginning of the player's turn, create a new <b>Potential Interest</> argument({1} left)."
+msgstr ""
+
+#: NEGOTIATION_FEATURE.PREACH_CROWD.NAME
+msgctxt "NEGOTIATION_FEATURE.PREACH_CROWD.NAME"
+msgid "Crowd Mentality"
+msgstr ""
+
+#: NEGOTIATION_FEATURE.PREACH_TARGET_INTEREST.DESC
+msgctxt "NEGOTIATION_FEATURE.PREACH_TARGET_INTEREST.DESC"
+msgid "<b>{1.fullname}</> might be interested in listening to you if you can convince them. Destroy this argument to make {1.himher} join your side.\n\n<#PENALTY>After {2} turns, this argument removes itself, as <b>{1.name}</> loses interest in you.</>"
+msgstr ""
+
+#: NEGOTIATION_FEATURE.PREACH_TARGET_INTEREST.NAME
+msgctxt "NEGOTIATION_FEATURE.PREACH_TARGET_INTEREST.NAME"
+msgid "Potential Interest"
+msgstr ""
+
+#: NEGOTIATION_FEATURE.PREACH_TARGET_INTERESTED.DESC
+msgctxt "NEGOTIATION_FEATURE.PREACH_TARGET_INTERESTED.DESC"
+msgid "{1.fullname} is interested in your ideology! Protect this argument until the end of the negotiation."
+msgstr ""
+
+#: NEGOTIATION_FEATURE.PREACH_TARGET_INTERESTED.NAME
+msgctxt "NEGOTIATION_FEATURE.PREACH_TARGET_INTERESTED.NAME"
+msgid "Interested Target"
+msgstr ""
+
+#: QUEST.CHANGE_MY_MIND.DESC
+msgctxt "QUEST.CHANGE_MY_MIND.DESC"
+msgid "Set up a booth that opens up debate to those who has doubt with your ideology. You might change their mind instead!"
+msgstr ""
+
+#: QUEST.CHANGE_MY_MIND.OBJECTIVE.DEBATE_PEOPLE.DESC
+msgctxt "QUEST.CHANGE_MY_MIND.OBJECTIVE.DEBATE_PEOPLE.DESC"
+msgid "Await people to come and debate you."
+msgstr ""
+
+#: QUEST.CHANGE_MY_MIND.OBJECTIVE.DEBATE_PEOPLE.TITLE
+msgctxt "QUEST.CHANGE_MY_MIND.OBJECTIVE.DEBATE_PEOPLE.TITLE"
+msgid "Debate people"
+msgstr ""
+
+#: QUEST.CHANGE_MY_MIND.OBJECTIVE.GO_TO_JUNCTION.DESC
+msgctxt "QUEST.CHANGE_MY_MIND.OBJECTIVE.GO_TO_JUNCTION.DESC"
+msgid "Go to {junction#location} to set up a debate booth."
+msgstr ""
+
+#: QUEST.CHANGE_MY_MIND.OBJECTIVE.GO_TO_JUNCTION.TITLE
+msgctxt "QUEST.CHANGE_MY_MIND.OBJECTIVE.GO_TO_JUNCTION.TITLE"
+msgid "Go to {junction#location}"
+msgstr ""
+
+#: QUEST.CHANGE_MY_MIND.TITLE
+msgctxt "QUEST.CHANGE_MY_MIND.TITLE"
+msgid "Change My Mind"
+msgstr ""
+
+#: QUEST.DEMOCRATIC_RACE_MAIN.DESC
+msgctxt "QUEST.DEMOCRATIC_RACE_MAIN.DESC"
+msgid "Become the president as you run a democratic campaign."
+msgstr ""
+
+#: QUEST.DEMOCRATIC_RACE_MAIN.TITLE
+msgctxt "QUEST.DEMOCRATIC_RACE_MAIN.TITLE"
+msgid "The Democratic Race"
+msgstr ""
+
+#: QUEST.FREE_TIME_EVENT.DESC
+msgctxt "QUEST.FREE_TIME_EVENT.DESC"
+msgid "You have free time! Spend this time at your favorite location!"
+msgstr ""
+
+#: QUEST.FREE_TIME_EVENT.OBJECTIVE.VISIT_LOCATION.DESC
+msgctxt "QUEST.FREE_TIME_EVENT.OBJECTIVE.VISIT_LOCATION.DESC"
+msgid "Murder Bay is vast! Choose a location to go to."
+msgstr ""
+
+#: QUEST.FREE_TIME_EVENT.OBJECTIVE.VISIT_LOCATION.TITLE
+msgctxt "QUEST.FREE_TIME_EVENT.OBJECTIVE.VISIT_LOCATION.TITLE"
+msgid "Choose a location to visit"
+msgstr ""
+
+#: QUEST.FREE_TIME_EVENT.TITLE
+msgctxt "QUEST.FREE_TIME_EVENT.TITLE"
+msgid "Free Time Event"
+msgstr ""
+
+#: QUEST.RACE_DAY_1.DESC
+msgctxt "QUEST.RACE_DAY_1.DESC"
+msgid "Let people know you're running for president, and gain some support among the people."
+msgstr ""
+
+#: QUEST.RACE_DAY_1.GET_JOB_ADVISOR
+msgctxt "QUEST.RACE_DAY_1.GET_JOB_ADVISOR"
+msgid "Discuss with {primary_advisor} about how to gain support."
+msgstr ""
+
+#: QUEST.RACE_DAY_1.GET_JOB_ALONE
+msgctxt "QUEST.RACE_DAY_1.GET_JOB_ALONE"
+msgid "Think of a way to gain support."
+msgstr ""
+
+#: QUEST.RACE_DAY_1.OBJECTIVE.GET_JOB.DESC
+msgctxt "QUEST.RACE_DAY_1.OBJECTIVE.GET_JOB.DESC"
+msgid ""
+msgstr ""
+
+#: QUEST.RACE_DAY_1.OBJECTIVE.GET_JOB.TITLE
+msgctxt "QUEST.RACE_DAY_1.OBJECTIVE.GET_JOB.TITLE"
+msgid "Find on a way to gain support"
+msgstr ""
+
+#: QUEST.RACE_DAY_1.TITLE
+msgctxt "QUEST.RACE_DAY_1.TITLE"
+msgid "Establish Authority"
+msgstr ""
+
+#: QUEST.RACE_DAY_1_SUMMARY.DESC
+msgctxt "QUEST.RACE_DAY_1_SUMMARY.DESC"
+msgid "Review the progress you've made today with {primary_advisor}, and go to sleep."
+msgstr ""
+
+#: QUEST.RACE_DAY_1_SUMMARY.OBJECTIVE.GO_TO_SLEEP.DESC
+msgctxt "QUEST.RACE_DAY_1_SUMMARY.OBJECTIVE.GO_TO_SLEEP.DESC"
+msgid "Aren't you tired? Go to sleep."
+msgstr ""
+
+#: QUEST.RACE_DAY_1_SUMMARY.OBJECTIVE.GO_TO_SLEEP.TITLE
+msgctxt "QUEST.RACE_DAY_1_SUMMARY.OBJECTIVE.GO_TO_SLEEP.TITLE"
+msgid "Go to sleep"
+msgstr ""
+
+#: QUEST.RACE_DAY_1_SUMMARY.OBJECTIVE.MEET_ADVISOR.DESC
+msgctxt "QUEST.RACE_DAY_1_SUMMARY.OBJECTIVE.MEET_ADVISOR.DESC"
+msgid "Review the progress you've made today with {primary_advisor}, and plan for your next move."
+msgstr ""
+
+#: QUEST.RACE_DAY_1_SUMMARY.OBJECTIVE.MEET_ADVISOR.TITLE
+msgctxt "QUEST.RACE_DAY_1_SUMMARY.OBJECTIVE.MEET_ADVISOR.TITLE"
+msgid "Meet up with {primary_advisor}"
+msgstr ""
+
+#: QUEST.RACE_DAY_1_SUMMARY.TITLE
+msgctxt "QUEST.RACE_DAY_1_SUMMARY.TITLE"
+msgid "Final Steps"
+msgstr ""
+
+#: QUEST.RACE_DAY_2.DESC
+msgctxt "QUEST.RACE_DAY_2.DESC"
+msgid "Continue to campaign and gain support among the people."
+msgstr ""
+
+#: QUEST.RACE_DAY_2.GET_JOB_ADVISOR
+msgctxt "QUEST.RACE_DAY_2.GET_JOB_ADVISOR"
+msgid "Discuss with {primary_advisor} about how to gain support."
+msgstr ""
+
+#: QUEST.RACE_DAY_2.GET_JOB_ALONE
+msgctxt "QUEST.RACE_DAY_2.GET_JOB_ALONE"
+msgid "Think of a way to gain support."
+msgstr ""
+
+#: QUEST.RACE_DAY_2.OBJECTIVE.GET_JOB.DESC
+msgctxt "QUEST.RACE_DAY_2.OBJECTIVE.GET_JOB.DESC"
+msgid ""
+msgstr ""
+
+#: QUEST.RACE_DAY_2.OBJECTIVE.GET_JOB.TITLE
+msgctxt "QUEST.RACE_DAY_2.OBJECTIVE.GET_JOB.TITLE"
+msgid "Find on a way to gain support"
+msgstr ""
+
+#: QUEST.RACE_DAY_2.OBJECTIVE.STARTING_OUT.TITLE
+msgctxt "QUEST.RACE_DAY_2.OBJECTIVE.STARTING_OUT.TITLE"
+msgid "Talk to {primary_advisor} about the plan."
+msgstr ""
+
+#: QUEST.RACE_DAY_2.TITLE
+msgctxt "QUEST.RACE_DAY_2.TITLE"
+msgid "Campaign Time"
+msgstr ""
+
+#: QUEST.RACE_INITIAL_BAR_DEBATE.DESC
+msgctxt "QUEST.RACE_INITIAL_BAR_DEBATE.DESC"
+msgid "Debate the person with the wrong opinion."
+msgstr ""
+
+#: QUEST.RACE_INITIAL_BAR_DEBATE.OBJECTIVE.WIN_ARGUMENT.DESC
+msgctxt "QUEST.RACE_INITIAL_BAR_DEBATE.OBJECTIVE.WIN_ARGUMENT.DESC"
+msgid "Convince {heckler} that {heckler.hisher} opinion is trash."
+msgstr ""
+
+#: QUEST.RACE_INITIAL_BAR_DEBATE.OBJECTIVE.WIN_ARGUMENT.TITLE
+msgctxt "QUEST.RACE_INITIAL_BAR_DEBATE.OBJECTIVE.WIN_ARGUMENT.TITLE"
+msgid "Win This Argument"
+msgstr ""
+
+#: QUEST.RACE_INITIAL_BAR_DEBATE.TITLE
+msgctxt "QUEST.RACE_INITIAL_BAR_DEBATE.TITLE"
+msgid "Political Debate at Bar"
+msgstr ""
+
+#: QUEST.RACE_INTERVIEW.DESC
+msgctxt "QUEST.RACE_INTERVIEW.DESC"
+msgid "Do the interview and gain support."
+msgstr ""
+
+#: QUEST.RACE_INTERVIEW.OBJECTIVE.DO_INTERVIEW.DESC
+msgctxt "QUEST.RACE_INTERVIEW.OBJECTIVE.DO_INTERVIEW.DESC"
+msgid "Try not to embarrass yourself."
+msgstr ""
+
+#: QUEST.RACE_INTERVIEW.OBJECTIVE.DO_INTERVIEW.TITLE
+msgctxt "QUEST.RACE_INTERVIEW.OBJECTIVE.DO_INTERVIEW.TITLE"
+msgid "Do the interview"
+msgstr ""
+
+#: QUEST.RACE_INTERVIEW.OBJECTIVE.GO_TO_INTERVIEW.DESC
+msgctxt "QUEST.RACE_INTERVIEW.OBJECTIVE.GO_TO_INTERVIEW.DESC"
+msgid "Meet up with {primary_advisor} at the Grand Theater."
+msgstr ""
+
+#: QUEST.RACE_INTERVIEW.OBJECTIVE.GO_TO_INTERVIEW.TITLE
+msgctxt "QUEST.RACE_INTERVIEW.OBJECTIVE.GO_TO_INTERVIEW.TITLE"
+msgid "Go to interview"
+msgstr ""
+
+#: QUEST.RACE_INTERVIEW.TITLE
+msgctxt "QUEST.RACE_INTERVIEW.TITLE"
+msgid "Interview"
+msgstr ""
+
+#: QUEST.RACE_INTRODUCE_OPPOSITION.DESC
+msgctxt "QUEST.RACE_INTRODUCE_OPPOSITION.DESC"
+msgid "Discuss the oppositions with your advisor"
+msgstr ""
+
+#: QUEST.RACE_INTRODUCE_OPPOSITION.OBJECTIVE.DISCUSS_PLAN.TITLE
+msgctxt "QUEST.RACE_INTRODUCE_OPPOSITION.OBJECTIVE.DISCUSS_PLAN.TITLE"
+msgid "Discuss plan with {primary_advisor}"
+msgstr ""
+
+#: QUEST.RACE_INTRODUCE_OPPOSITION.OBJECTIVE.GO_TO_BAR.DESC
+msgctxt "QUEST.RACE_INTRODUCE_OPPOSITION.OBJECTIVE.GO_TO_BAR.DESC"
+msgid "Visit the noodle shop and talk to your advisor about the upcoming plan."
+msgstr ""
+
+#: QUEST.RACE_INTRODUCE_OPPOSITION.OBJECTIVE.GO_TO_BAR.TITLE
+msgctxt "QUEST.RACE_INTRODUCE_OPPOSITION.OBJECTIVE.GO_TO_BAR.TITLE"
+msgid "Visit the Noodle Shop"
+msgstr ""
+
+#: QUEST.RACE_INTRODUCE_OPPOSITION.OBJECTIVE.MEET_OPPOSITION.TITLE
+msgctxt "QUEST.RACE_INTRODUCE_OPPOSITION.OBJECTIVE.MEET_OPPOSITION.TITLE"
+msgid "Acquaint with {opposition}"
+msgstr ""
+
+#: QUEST.RACE_INTRODUCE_OPPOSITION.TITLE
+msgctxt "QUEST.RACE_INTRODUCE_OPPOSITION.TITLE"
+msgid "Opinions and Oppositions"
+msgstr ""
+
+#: QUEST.RACE_LIVING_WITH_ADVISOR.OBJECTIVE.VISIT.DESC
+msgctxt "QUEST.RACE_LIVING_WITH_ADVISOR.OBJECTIVE.VISIT.DESC"
+msgid "{primary_advisor} provides help with your negotiation."
+msgstr ""
+
+#: QUEST.RACE_LIVING_WITH_ADVISOR.OBJECTIVE.VISIT.TITLE
+msgctxt "QUEST.RACE_LIVING_WITH_ADVISOR.OBJECTIVE.VISIT.TITLE"
+msgid "Visit {primary_advisor}"
+msgstr ""
+
+#: QUEST.RACE_LIVING_WITH_ADVISOR.TITLE
+msgctxt "QUEST.RACE_LIVING_WITH_ADVISOR.TITLE"
+msgid "Go To Your Advisor"
+msgstr ""
+
+#: QUEST.RACE_MEET_ADVISOR.DESC
+msgctxt "QUEST.RACE_MEET_ADVISOR.DESC"
+msgid "Get an advisor."
+msgstr ""
+
+#: QUEST.RACE_MEET_ADVISOR.OBJECTIVE.CHOOSE_ADVISOR.DESC
+msgctxt "QUEST.RACE_MEET_ADVISOR.OBJECTIVE.CHOOSE_ADVISOR.DESC"
+msgid "Choose an advisor for your campaign."
+msgstr ""
+
+#: QUEST.RACE_MEET_ADVISOR.OBJECTIVE.CHOOSE_ADVISOR.TITLE
+msgctxt "QUEST.RACE_MEET_ADVISOR.OBJECTIVE.CHOOSE_ADVISOR.TITLE"
+msgid "Choose an advisor"
+msgstr ""
+
+#: QUEST.RACE_MEET_ADVISOR.OBJECTIVE.DISCUSS_PLAN.DESC
+msgctxt "QUEST.RACE_MEET_ADVISOR.OBJECTIVE.DISCUSS_PLAN.DESC"
+msgid "Come up with a plan for the campaign."
+msgstr ""
+
+#: QUEST.RACE_MEET_ADVISOR.OBJECTIVE.DISCUSS_PLAN.TITLE
+msgctxt "QUEST.RACE_MEET_ADVISOR.OBJECTIVE.DISCUSS_PLAN.TITLE"
+msgid "Discuss a plan"
+msgstr ""
+
+#: QUEST.RACE_MEET_ADVISOR.OBJECTIVE.GO_TO_BAR.DESC
+msgctxt "QUEST.RACE_MEET_ADVISOR.OBJECTIVE.GO_TO_BAR.DESC"
+msgid "It's noon. Time to go to your favorite noodle shop!"
+msgstr ""
+
+#: QUEST.RACE_MEET_ADVISOR.OBJECTIVE.GO_TO_BAR.TITLE
+msgctxt "QUEST.RACE_MEET_ADVISOR.OBJECTIVE.GO_TO_BAR.TITLE"
+msgid "Visit the bar"
+msgstr ""
+
+#: QUEST.RACE_MEET_ADVISOR.OBJECTIVE.VISIT_OFFICE.DESC
+msgctxt "QUEST.RACE_MEET_ADVISOR.OBJECTIVE.VISIT_OFFICE.DESC"
+msgid "{primary_advisor} told you to visit {primary_advisor.hisher} office. You can stay there for the campaign."
+msgstr ""
+
+#: QUEST.RACE_MEET_ADVISOR.OBJECTIVE.VISIT_OFFICE.TITLE
+msgctxt "QUEST.RACE_MEET_ADVISOR.OBJECTIVE.VISIT_OFFICE.TITLE"
+msgid "Visit the office"
+msgstr ""
+
+#: QUEST.RACE_MEET_ADVISOR.TITLE
+msgctxt "QUEST.RACE_MEET_ADVISOR.TITLE"
+msgid "A Good Advice"
+msgstr ""
+
+#: QUEST.ROADSIDE_PREACHING.DESC
+msgctxt "QUEST.ROADSIDE_PREACHING.DESC"
+msgid "Preach on the roadside. You might convince people to join your ideology!"
+msgstr ""
+
+#: QUEST.ROADSIDE_PREACHING.OBJECTIVE.GO_TO_JUNCTION.DESC
+msgctxt "QUEST.ROADSIDE_PREACHING.OBJECTIVE.GO_TO_JUNCTION.DESC"
+msgid "Go to {junction#location} to preach there."
+msgstr ""
+
+#: QUEST.ROADSIDE_PREACHING.OBJECTIVE.GO_TO_JUNCTION.TITLE
+msgctxt "QUEST.ROADSIDE_PREACHING.OBJECTIVE.GO_TO_JUNCTION.TITLE"
+msgid "Go to {junction#location}"
+msgstr ""
+
+#: QUEST.ROADSIDE_PREACHING.OBJECTIVE.PREACH.DESC
+msgctxt "QUEST.ROADSIDE_PREACHING.OBJECTIVE.PREACH.DESC"
+msgid "Start preaching until you can convert significant amount of people."
+msgstr ""
+
+#: QUEST.ROADSIDE_PREACHING.OBJECTIVE.PREACH.TITLE
+msgctxt "QUEST.ROADSIDE_PREACHING.OBJECTIVE.PREACH.TITLE"
+msgid "Preach"
+msgstr ""
+
+#: QUEST.ROADSIDE_PREACHING.TITLE
+msgctxt "QUEST.ROADSIDE_PREACHING.TITLE"
+msgid "Roadside Preaching"
+msgstr ""
+

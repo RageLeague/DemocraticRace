@@ -113,12 +113,23 @@ local function OnLoad()
         end
     end
 end
-
+local function OnPreLoad()
+    for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:localization", "*.po", true )) do
+        local name = filepath:match( "(.+)[.]po$" )
+        print(name)
+        if name then
+            local id = filepath:match("([^/]+)[.]po$")
+            print(id)
+            Content.AddPOFileToLocalization(id, filepath)
+        end
+    end
+end
 return {
     version = "0.0.1",
     alias = "DEMOCRATICRACE",
     
     OnLoad = OnLoad,
+    OnPreLoad = OnPreLoad,
     OnNewGame = OnNewGame,
 
     title = "Democratic Race(Working title)",
