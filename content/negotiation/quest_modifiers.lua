@@ -462,7 +462,7 @@ local MODIFIERS =
         {
             [ EVENT.SPLASH_RESOLVE ] = function( self, modifier, overflow, params )
                 if self.tracked_mod and self.tracked_mod == modifier then
-                    TheGame:GetGameState():GetMainQuest():DefFn("DeltaGeneralSupport", overflow)
+                    DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", overflow)
                 end
                 self.negotiator:RemoveModifier(self)
             end

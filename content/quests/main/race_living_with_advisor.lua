@@ -90,16 +90,16 @@ QDEF:AddConvo(nil, "primary_advisor")
         StateGraphUtil.AddRemoveNegotiationCardOption( cxt, "DIALOG_REMOVE" )
         
         cxt:Opt("OPT_CHECK_SUPPORT")
-            :Dialog("DIALOG_CHECK_SUPPORT", TheGame:GetGameState():GetMainQuest():DefFn("GetGeneralSupport"))
+            :Dialog("DIALOG_CHECK_SUPPORT", DemocracyUtil.TryMainQuestFn("GetGeneralSupport"))
             :Fn(function(cxt)
                 for id, data in pairs(TheGame:GetGameState():GetMainQuest().param.faction_support) do
                     cxt:Dialog("DIALOG_FACTION_SUPPORT", 
                         TheGame:GetGameState():GetFaction(id), 
-                        TheGame:GetGameState():GetMainQuest():DefFn("GetFactionSupport", id)
+                        DemocracyUtil.TryMainQuestFn("GetFactionSupport", id)
                     )
                 end
                 for i = 1, DemocracyConstants.wealth_levels do
-                    cxt:Dialog("DIALOG_WEALTH_SUPPORT", i, TheGame:GetGameState():GetMainQuest():DefFn("GetWealthSupport", i))
+                    cxt:Dialog("DIALOG_WEALTH_SUPPORT", i, DemocracyUtil.TryMainQuestFn("GetWealthSupport", i))
                 end
                 TheGame:FE():InsertScreen( DemocracyClass.Screen.SupportScreen() )
             end)

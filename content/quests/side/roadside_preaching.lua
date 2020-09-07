@@ -67,10 +67,10 @@ local QDEF = QuestDef.Define
         end
     end,
     on_complete = function( quest )
-        TheGame:GetGameState():GetMainQuest():DefFn("DeltaGeneralSupport", 6 * #quest.param.convinced_people)
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 6 * #quest.param.convinced_people)
     end,
     on_fail = function(quest)
-        TheGame:GetGameState():GetMainQuest():DefFn("DeltaGeneralSupport", -2 * #quest.param.crowd)
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2 * #quest.param.crowd)
     end,
 }
 :AddLocationCast{

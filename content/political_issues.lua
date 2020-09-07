@@ -6,6 +6,7 @@ local val =  {
             [-2] = {
                 name = "Defund the Admiralty",
                 desc = "The Admiralty has always abused their power and made many false arrests. It's better if the Admiralty is defunded, and measures must be put in place to prevent anyone else from taking this power.",
+                
             },
             [-1] = {
                 name = "Cut Funding for the Admiralty",
@@ -14,14 +15,52 @@ local val =  {
             [0] = {
                 name = "No Change",
                 desc = "The current system works just fine. There's no need to change it.",
+                faction_support = {
+                    ADMIRALTY = 1,
+                    FEUD_CITIZEN = -1,
+                    BANDITS = -1,
+                },
+                wealth_support = {
+                    0,
+                    -1,
+                },
             },
             [1] = {
                 name = "Increase Funding for the Admiralty",
                 desc = "Havaria is overrun with criminals of all kind. That's why we need to improve the security by increasing funding for the Admiralty. This way, the people can live in peace.",
+                faction_support = {
+                    ADMIRALTY = 3,
+                    FEUD_CITIZEN = 2,
+                    BANDITS = -3,
+                    RISE = -2,
+                    SPARK_BARONS = -1,
+                    JAKES = -1,
+                },
+                wealth_support = {
+                    -2,
+                    2,
+                    1,
+                    -1,
+                },
             },
             [2] = {
                 name = "Universal Security for All",
                 desc = "Havaria is overrun with criminals of all kind, and the only way to fix it is through drastic measures.",
+                faction_support = {
+                    ADMIRALTY = 5,
+                    FEUD_CITIZEN = 3,
+                    BANDITS = -5,
+                    RISE = -4,
+                    SPARK_BARONS = -2,
+                    CULT_OF_HESH = 2,
+                    JAKES = -2,
+                },
+                wealth_support = {
+                    -4,
+                    4,
+                    2,
+                    -3,
+                },
             },
         },
     },

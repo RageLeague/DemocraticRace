@@ -35,9 +35,9 @@ local GRAFTS =
                 local support_delta = DELTA_SUPPORT[new_rel] - DELTA_SUPPORT[old_rel]
                 if support_delta ~= 0 then
                     local ignore = true
-                    TheGame:GetGameState():GetMainQuest():DefFn("DeltaGeneralSupport", support_delta, ignore)
-                    TheGame:GetGameState():GetMainQuest():DefFn("DeltaFactionSupportAgent", support_delta, agent, ignore)
-                    TheGame:GetGameState():GetMainQuest():DefFn("DeltaWealthSupportAgent", support_delta, agent, ignore)
+                    DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", support_delta, ignore)
+                    DemocracyUtil.TryMainQuestFn("DeltaFactionSupportAgent", support_delta, agent, ignore)
+                    DemocracyUtil.TryMainQuestFn("DeltaWealthSupportAgent", support_delta, agent, ignore)
                     TheGame:GetGameState():LogNotification( NOTIFY.DELTA_AGENT_SUPPORT, support_delta, agent ) 
                 end
                 -- if new_rel == RELATIONSHIP.LOVED and old_rel ~= RELATIONSHIP.LOVED then
@@ -50,9 +50,9 @@ local GRAFTS =
                     if agent:IsSentient() and agent:IsDead() and fighter:GetKiller() and fighter:GetKiller():IsPlayer() then
                         local support_delta = CheckBits( battle:GetScenario():GetFlags(), BATTLE_FLAGS.ISOLATED ) and ISOLATED_DEATH_DELTA or DEATH_DELTA
                         local ignore = true
-                        TheGame:GetGameState():GetMainQuest():DefFn("DeltaGeneralSupport", support_delta, ignore)
-                        TheGame:GetGameState():GetMainQuest():DefFn("DeltaFactionSupportAgent", support_delta, agent, ignore)
-                        TheGame:GetGameState():GetMainQuest():DefFn("DeltaWealthSupportAgent", support_delta, agent, ignore)
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", support_delta, ignore)
+                        DemocracyUtil.TryMainQuestFn("DeltaFactionSupportAgent", support_delta, agent, ignore)
+                        DemocracyUtil.TryMainQuestFn("DeltaWealthSupportAgent", support_delta, agent, ignore)
                         TheGame:GetGameState():LogNotification( NOTIFY.DELTA_AGENT_SUPPORT, support_delta, agent )
                     end
                 end

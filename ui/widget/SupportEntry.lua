@@ -126,7 +126,7 @@ function FactionSupportEntry:Refresh()
         self:SetText(
             loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.FACTION_SUPPORT", 
                 self.faction, 
-                TheGame:GetGameState():GetMainQuest():DefFn("GetFactionSupport", self.faction.id)
+                DemocracyUtil.TryMainQuestFn("GetFactionSupport", self.faction.id)
             )
         )
         if self.faction:GetColour() then
@@ -151,7 +151,7 @@ function WealthSupportEntry:Refresh()
     self:SetText(
         loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.WEALTH_SUPPORT", 
             self.renown, 
-            TheGame:GetGameState():GetMainQuest():DefFn("GetWealthSupport", self.renown)
+            DemocracyUtil.TryMainQuestFn("GetWealthSupport", self.renown)
         )
     )
     self:SetColour(DemocracyUtil.GetWealthColor(self.renown))
@@ -175,7 +175,7 @@ function GeneralSupportEntry:Refresh()
     self:SetIcon(DemocracyConstants.icons.support)
     self:SetText(
         loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.GENERAL_SUPPORT", 
-            TheGame:GetGameState():GetMainQuest():DefFn("GetGeneralSupport")
+            DemocracyUtil.TryMainQuestFn("GetGeneralSupport")
         )
     )
     self:SetColour(0x00cc00ff)

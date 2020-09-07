@@ -53,15 +53,15 @@ local QDEF = QuestDef.Define
         end
     end,
     on_complete = function( quest )
-        TheGame:GetGameState():GetMainQuest():DefFn("DeltaGeneralSupport", 2 * quest.param.debated_people + #quest.param.crowd)
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 2 * quest.param.debated_people + #quest.param.crowd)
         if quest.param.poor_performance then
-            TheGame:GetGameState():GetMainQuest():DefFn("DeltaGeneralSupport", -10)
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -10)
         end
     end,
     on_fail = function( quest )
-        TheGame:GetGameState():GetMainQuest():DefFn("DeltaGeneralSupport", -4 * quest.param.debated_people - 2 * #quest.param.crowd)
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -4 * quest.param.debated_people - 2 * #quest.param.crowd)
         -- if quest.param.poor_performance then
-        --     TheGame:GetGameState():GetMainQuest():DefFn("DeltaGeneralSupport", -5)
+        --     DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5)
         -- end
     end,
 }
@@ -427,11 +427,11 @@ QDEF:AddConvo("debate_people")
                             cxt:Dialog("DIALOG_DEBATE_LOST_BRIBED")
                             if cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL then
                                 cxt.quest:GetCastMember("debater"):OpinionEvent(OPINION.BETRAYED)
-                                TheGame:GetGameState():GetMainQuest():DefFn("DeltaGeneralSupport", -8)
+                                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -8)
                                 cxt:Opt("OPT_ACCEPT_FAILURE")
                                     :FailQuest()
                             else
-                                TheGame:GetGameState():GetMainQuest():DefFn("DeltaGeneralSupport", -6)
+                                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -6)
                             end
                         else
                             cxt:Dialog("DIALOG_DEBATE_LOST")

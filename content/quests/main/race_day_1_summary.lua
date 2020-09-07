@@ -85,8 +85,8 @@ QDEF:AddConvo("meet_advisor", "primary_advisor")
             ]]
         }
         :Fn(function(cxt)
-            if TheGame:GetGameState():GetMainQuest():DefFn("GetGeneralSupport") >= 10 then
-                local money = TheGame:GetGameState():GetMainQuest():DefFn("CalculateFunding")
+            if DemocracyUtil.TryMainQuestFn("GetGeneralSupport") >= 10 then
+                local money = DemocracyUtil.TryMainQuestFn("CalculateFunding")
                 
                 cxt:Dialog("DIALOG_INTRO")
                 cxt.enc:GainMoney(money)

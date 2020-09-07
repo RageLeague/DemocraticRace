@@ -195,12 +195,12 @@ QDEF:AddConvo("meet_opposition", "opposition")
                     cxt:Opt("OPT_AGREE")
                         :Dialog("DIALOG_AGREE")
                         :Fn(function(cxt)
-                            TheGame:GetGameState():GetMainQuest():DefFn("DeltaGroupFactionSupport",
+                            DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport",
                                 opposition_data.faction_support, 1, true)
-                            TheGame:GetGameState():GetMainQuest():DefFn("DeltaGroupWealthSupport",
+                            DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport",
                                 opposition_data.wealth_support, 1, true)
                             if platform and platform_stance then
-                                TheGame:GetGameState():GetMainQuest():DefFn("UpdateStance", platform, platform_stance)
+                                DemocracyUtil.TryMainQuestFn("UpdateStance", platform, platform_stance)
                             end
                             cxt.quest.param.greeted = true
                             cxt.quest.param.agreed = true
@@ -209,12 +209,12 @@ QDEF:AddConvo("meet_opposition", "opposition")
                     cxt:Opt("OPT_DISAGREE")
                         :Dialog("DIALOG_DISAGREE")
                         :Fn(function(cxt)
-                            TheGame:GetGameState():GetMainQuest():DefFn("DeltaGroupFactionSupport",
+                            DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport",
                                 opposition_data.faction_support, -1, true)
-                            TheGame:GetGameState():GetMainQuest():DefFn("DeltaGroupWealthSupport",
+                            DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport",
                                 opposition_data.wealth_support, -1, true)
                             if platform and platform_stance then
-                                TheGame:GetGameState():GetMainQuest():DefFn("UpdateStance", platform, -platform_stance)
+                                DemocracyUtil.TryMainQuestFn("UpdateStance", platform, -platform_stance)
                             end
                             cxt.quest.param.greeted = true
                             cxt.quest.param.disagreed = true
@@ -223,7 +223,7 @@ QDEF:AddConvo("meet_opposition", "opposition")
                     cxt:Opt("OPT_IGNORE")
                         :Dialog("DIALOG_IGNORE")
                         :Fn(function(cxt)
-                            TheGame:GetGameState():GetMainQuest():DefFn("DeltaGeneralSupport",
+                            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport",
                                 -1)
                             cxt.quest.param.greeted = true
                             cxt:Dialog("DIALOG_GREET_PST")

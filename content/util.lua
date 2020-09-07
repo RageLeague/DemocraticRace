@@ -99,7 +99,7 @@ local SUPPORT_DELTA = {
 -- faction supports you more, and whose wealth class supports you more, will be more 
 -- likely to be casted.
 local function SupportScore(agent)
-    return TheGame:GetGameState():GetMainQuest():DefFn("GetSupportForAgent", agent)
+    return DemocracyUtil.TryMainQuestFn("GetSupportForAgent", agent)
         + SUPPORT_DELTA[agent:GetRelationship()] + (math.random() * 30) -15
 end
 
@@ -160,6 +160,15 @@ local function AddOppositionCast(qdef)
         end
     end
 end
+
+local function TryMainQuestFn(id, ...)
+    local arguments = {...}
+    local ok, result = xpcall(function(...) return TheGame:GetGameState():GetMainQuest():DefFn(id, ...) end, generic_error, ...)
+        -- print(loc.format("Call main quest fn: {1} (params: {2#listing})", id, arguments))
+    print(ok, id, ...)
+    print(result)
+    return result
+end
 return {
     ADVISOR_IDS = ADVISOR_IDS,
     ADVISOR_HOME = ADVISOR_HOME,
@@ -176,4 +185,5 @@ return {
     GetWealthIcon = GetWealthIcon,
     AddOppositionCast = AddOppositionCast,
     GetWealthColor = GetWealthColor,
+    TryMainQuestFn = TryMainQuestFn,
 }
