@@ -76,7 +76,7 @@ local CARDS = {
         name = "Address Question",
         desc = "Target a question argument. Resolve the effect based on the question being addressed. "..
             "Remove the argument afterwards.\nIf this card leaves the hand, {EXPEND} it.",
-        loc_string = {
+        loc_strings = {
             NOT_A_QUESTION = "Target is not a question",
         },
         cost = 2,
@@ -105,6 +105,52 @@ local CARDS = {
                     target:GetNegotiator():RemoveModifier( target )
                 end
             end
+        end,
+    },
+    question_answer = 
+    {
+        name = "Question answer",
+        name_fn = function(self, fmt_str)
+            print("wololo")
+            print(self.issue_data)
+            print(self.stance)
+            if self.issue_data and self.stance then
+                print("narvini")
+                return self.issue_data.stances[self.stance].name
+            end
+            return loc.format(fmt_str)
+        end,
+        desc = "This is a place that describes the answer to a question.",
+        desc_fn = function(self, fmt_str)
+            if self.issue_data and self.stance then
+                return self.issue_data.stances[self.stance].desc
+            end
+            return loc.format(fmt_str)
+        end,
+        flavour = "Here's what I think...",
+        loc_strings = {
+            ISSUE_DESC = "About <b>{1}</>:\n{2}",
+        },
+        flavour_fn = function(self, fmt_str)
+            if self.issue_data then
+                return loc.format(self.def:GetLocalizedString("ISSUE_DESC"), self.issue_data.name, self.issue_data.desc)
+            end
+            return loc.format(fmt_str)
+        end,
+        -- hide_in_cardex = true,
+        manual_desc = true,
+
+        cost = 0,
+        flags = CARD_FLAGS.UNPLAYABLE | CARD_FLAGS.DIPLOMACY,
+        rarity = CARD_RARITY.UNIQUE,
+
+        UpdateIssue = function(self, issue_data, stance)
+            self.issue_data = issue_data
+            self.stance = stance
+            -- self.title = self.issue_data.stances[self.stance].name
+            -- if self.engine then
+                self.engine:BroadcastEvent( EVENT.CARD_CHANGED, self, self:Clone() )
+            -- end
         end,
     },
 }

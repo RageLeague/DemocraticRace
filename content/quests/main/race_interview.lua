@@ -2,7 +2,7 @@ local INTERVIEWER_BEHAVIOR = {
     OnInit = function( self, difficulty )
 		-- self.bog_boil = self:AddCard("bog_boil")
 		self:SetPattern( self.BasicCycle )
-        -- local modifier = self.negotiator:AddModifier("PREACH_CROWD")
+        local modifier = self.negotiator:AddModifier("INTERVIEWER")
         -- modifier.agents = shallowcopy(self.agents)
         -- modifier:InitModifiers()
     end,
@@ -30,6 +30,7 @@ local QDEF = QuestDef.Define
     qtype = QTYPE.STORY,
     collect_agent_locations = function(quest, t)
         table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('backroom'), role = CHARACTER_ROLES.VISITOR})
+        table.insert(t, { agent = quest:GetCastMember("host"), location = quest:GetCastMember('theater')})
     end,
     -- on_start = function(quest)
         
@@ -92,7 +93,7 @@ local QDEF = QuestDef.Define
     id = "do_interview",
     title = "Do the interview",
     desc = "Try not to embarrass yourself.",
-    -- mark = {"backroom"},
+    mark = {"theater"},
     -- state = QSTATUS.ACTIVE,
 }
 
@@ -137,7 +138,7 @@ QDEF:AddConvo("go_to_interview")
                 end)
                 :MakeUnder()
         end)
-QDEF:AddConvo("go_to_interview")
+QDEF:AddConvo("do_interview")
     :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("theater") end)
         :Loc{
             DIALOG_INTRO = [[
@@ -148,8 +149,14 @@ QDEF:AddConvo("go_to_interview")
                 * everyone clapped.
                 * try to survive the interview, i guess?
             ]],
+            OPT_DO_INTERVIEW = "Do the interview",
         }
         :Fn(function(cxt)
             cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("host"))
             cxt:Dialog("DIALOG_INTRO")
+            cxt:GetAgent().temp_negotiation_behaviour = INTERVIEWER_BEHAVIOR
+            cxt:Opt("OPT_DO_INTERVIEW")
+                :Negotiation{
+
+                }
         end)

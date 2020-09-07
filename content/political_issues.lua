@@ -1,4 +1,4 @@
-return {
+local val =  {
     SECURITY = {
         name = "Universal Security",
         desc = "Security is a big issue in Havaria. On the one hand, improving security can drastically reduce crime and improve everyone's lives. On the other hand, it can leads to corruption and abuse of power.",
@@ -25,17 +25,17 @@ return {
             },
         },
     },
-    ANNEX = {
+    INDEPENDENCE = {
         name = "Deltrean-Havarian Annex",
         desc = "The annexation of Havaria into Deltree has stroke controversies across Havaria. On the one hand, a full integration of Havaria to Deltree will likely improve Havaria's prosperity. On the other hand, it is a blatant disregard to Havaria's sovereignty.",
         stances = {
             [-2] = {
-                name = "Havaria Independence",
-                desc = "Havaria will become completely independent of Deltree.",
+                name = "Total Annexation",
+                desc = "Havaria and Deltree become one country, with no special treatment.",
             },
             [-1] = {
                 name = "Havarian Special Administration",
-                desc = "Havaria is part of Deltree by name, but Deltree must respect the autonomy of Havaria.",
+                desc = "Havaria is part of Deltree by name, but Deltree must not intervene with Havaria's internal affairs too much to allow better integration.",
             },
             [0] = {
                 name = "I don't care",
@@ -43,12 +43,16 @@ return {
             },
             [1] = {
                 name = "Vassal State",
-                desc = "Havaria become a vassal state of Deltree. I have no idea whether this should exchange with the Havarian Special Administration stance or not.",
+                desc = "Havaria become a vassal state of Deltree. However, they are still different nations, and Deltree must respect the autonomy of Havaria.",
             },
             [2] = {
-                name = "Total Annexation",
-                desc = "Havaria and Deltree become one country, with no special treatment.",
+                name = "Havaria Independence",
+                desc = "Havaria will become completely independent of Deltree, and Deltree should recognize the independence and respect Havaria's autonomy.",
             },
         },
     },
 }
+for id, data in pairs(val) do
+    data.id = id
+end
+return val

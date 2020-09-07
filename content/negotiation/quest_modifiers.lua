@@ -487,21 +487,76 @@ local MODIFIERS =
         end,
         OnInit = function( self )
             self:SetResolve( 30 )
+            -- self:SetIssue{
+            --     name = "Deltrean-Havarian Annex",
+            --     desc = "The annexation of Havaria into Deltree has stroke controversies across Havaria. On the one hand, a full integration of Havaria to Deltree will likely improve Havaria's prosperity. On the other hand, it is a blatant disregard to Havaria's sovereignty.",
+            --     stances = {
+            --         [-2] = {
+            --             name = "Havaria Independence",
+            --             desc = "Havaria will become completely independent of Deltree.",
+            --         },
+            --         [-1] = {
+            --             name = "Havarian Special Administration",
+            --             desc = "Havaria is part of Deltree by name, but Deltree must respect the autonomy of Havaria.",
+            --         },
+            --         [0] = {
+            --             name = "I don't care",
+            --             desc = "[p] i just want to grill for hesh sake",
+            --         },
+            --         [1] = {
+            --             name = "Vassal State",
+            --             desc = "Havaria become a vassal state of Deltree. I have no idea whether this should exchange with the Havarian Special Administration stance or not.",
+            --         },
+            --         [2] = {
+            --             name = "Total Annexation",
+            --             desc = "Havaria and Deltree become one country, with no special treatment.",
+            --         },
+            --     },
+            -- }
         end,
         min_persuasion = 2,
         max_persuasion = 2,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
+        SetIssue = function(self, issue_data)
+            self.issue_data = issue_data
+        end,
         AddressQuestion = function(self)
+            if self.issue_data ~= nil then
+                local cards = {}
+                for id = -2, 2 do
+                    local data = self.issue_data.stances[id]
+                    if data then
+                        local card = Negotiation.Card( "question_answer", self.owner )
+                        card.engine = self.engine
+                        card:UpdateIssue(self.issue_data, id)
+                        table.insert(cards, card)
+                    end
+                end
+                local pick = self.engine:ChooseCardsFromTable( cards, 1, 1, nil, "Choose an answer" )[1]
+                if pick then
+                    print(pick.name)
+                end
+            end
         end,
     },
 
     INTERVIEWER =
     {
         name = "Interviewer",
-        desc = "This argument takes 1 less damage for every question arguments the owner has(to a minimum of 1).",
+        desc = "The owner's arguments takes 1 less damage for every question arguments the owner has(to a minimum of 1).",
+        alt_desc = "{1}'s arguments takes 1 less damage for every question arguments the owner has(to a minimum of 1).\n\nCurrently taking {2} less damage.",
         desc_fn = function(self, fmt_str )
-
-            return loc.format(fmt_str)
+            if self.negotiator then
+                local question_count = 0
+                for i, data in self.negotiator:Modifiers() do
+                    if data.AddressQuestion then
+                        question_count = question_count + 1
+                    end
+                end
+                return loc.format(self.def:GetLocalizedString("ALT_DESC"), self.negotiator:GetName(), question_count)
+            else
+                return loc.format(fmt_str)
+            end
         end,
         -- icon = engine.asset.Texture("negotiation/modifiers/heckler.tex"),
         modifier_type = MODIFIER_TYPE.CORE,
@@ -513,7 +568,7 @@ local MODIFIERS =
 
         event_handlers = {
             [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
-                if target and target == self then
+                if target and target.owner == self.owner then
                     local question_count = 0
                     for i, data in self.negotiator:Modifiers() do
                         if data.AddressQuestion then

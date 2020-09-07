@@ -8,7 +8,7 @@ return {
         platform = "SECURITY",
         stances = {
             SECURITY = 2,
-            ANNEX = 2,
+            INDEPENDENCE = -2,
         },
         faction_support = {
             ADMIRALTY = 3,
@@ -29,11 +29,11 @@ return {
     candidate_spree = {
         cast_id = "candidate_spree",
         character = "MURDER_BAY_BANDIT_CONTACT",
-        platform = "ANNEX",
+        platform = "INDEPENDENCE",
 
         stances = {
             SECURITY = -2,
-            ANNEX = -2,
+            INDEPENDENCE = 2,
         },
         -- main = "Havaria Independence",
         -- desc = "Nadan wants to cut the ties of Havaria with Deltree. Popular among poorer people, but unpopular among the rich, Admiralty, and the Cult.",
