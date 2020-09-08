@@ -22,4 +22,5 @@ return {
         0xe9d64fff,
     },
     opposition_data = require "DEMOCRATICRACE:content/opposition_candidates",
+    issue_data = require "DEMOCRATICRACE:content/political_issues",
 }

@@ -9,7 +9,8 @@ local function OnNewGame( mod, game_state )
     end
 end
 
-local function OnLoad()
+local function OnLoad( mod )
+    rawset(_G, "CURRENT_MOD_ID", mod.id)
     local STARTING_MONEY = 125
 
     local ACT_DATA = {
@@ -113,7 +114,7 @@ local function OnLoad()
         end
     end
 end
-local function OnPreLoad()
+local function OnPreLoad( mod )
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:localization", "*.po", true )) do
         local name = filepath:match( "(.+)[.]po$" )
         print(name)

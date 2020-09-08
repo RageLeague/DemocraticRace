@@ -4,6 +4,7 @@ function IssueStanceLocDef:init(issue_id, stance_intensity, data)
     IssueStanceLocDef._base.init(self, issue_id .. "_" .. stance_intensity, data)
     self.issue_id = issue_id
     self.stance_intensity = stance_intensity
+    self:SetModID(CURRENT_MOD_ID)
 end
 function IssueStanceLocDef:GetLocPrefix()
     return "POLITICAL_ISSUE." .. string.upper(self.issue_id) .. ".STANCE_" .. self.stance_intensity
@@ -13,9 +14,23 @@ local IssueLocDef = class("DemocracyClass.IssueLocDef", BasicLocalizedDef)
 
 function IssueLocDef:init(id, data)
     if data.stances then
-        
+        for stance_id, data2 in pairs(data.stances) do
+            if not is_instance(data2, IssueStanceLocDef) then
+                data.stances[stance_id] = IssueStanceLocDef(id, stance_id, data2)
+            end
+        end
     end
-    IssueLocDef._base.init(id, data)
+    IssueLocDef._base.init(self, id, data)
+    self:SetModID(CURRENT_MOD_ID)
+end
+function IssueLocDef:HarvestStrings(t)
+    IssueLocDef._base.HarvestStrings(self, t)
+    for stance_id, data in pairs(self.stances) do
+        data:HarvestStrings(t)
+    end
+end
+function IssueLocDef:GetLocPrefix()
+    return "POLITICAL_ISSUE." .. string.upper(self.id)
 end
 
 local val =  {
@@ -245,5 +260,7 @@ local val =  {
 }
 for id, data in pairs(val) do
     data.id = id
+    val[id] = IssueLocDef(id, data)
 end
+Content.internal.POLITICAL_ISSUE = val
 return val
