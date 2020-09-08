@@ -1,3 +1,23 @@
+local IssueStanceLocDef = class("DemocracyClass.IssueStanceLocDef", BasicLocalizedDef)
+
+function IssueStanceLocDef:init(issue_id, stance_intensity, data)
+    IssueStanceLocDef._base.init(self, issue_id .. "_" .. stance_intensity, data)
+    self.issue_id = issue_id
+    self.stance_intensity = stance_intensity
+end
+function IssueStanceLocDef:GetLocPrefix()
+    return "POLITICAL_ISSUE." .. string.upper(self.issue_id) .. ".STANCE_" .. self.stance_intensity
+end
+
+local IssueLocDef = class("DemocracyClass.IssueLocDef", BasicLocalizedDef)
+
+function IssueLocDef:init(id, data)
+    if data.stances then
+        
+    end
+    IssueLocDef._base.init(id, data)
+end
+
 local val =  {
     SECURITY = {
         name = "Universal Security",
@@ -6,18 +26,46 @@ local val =  {
             [-2] = {
                 name = "Defund the Admiralty",
                 desc = "The Admiralty has always abused their power and made many false arrests. It's better if the Admiralty is defunded, and measures must be put in place to prevent anyone else from taking this power.",
-                
+                faction_support = {
+                    ADMIRALTY = -5,
+                    FEUD_CITIZEN = -4,
+                    BANDITS = 5,
+                    RISE = 3,
+                    CULT_OF_HESH = -3,
+                    JAKES = 2,
+                },
+                wealth_support = {
+                    5,
+                    -4,
+                    -2,
+                    -1,
+                },
             },
             [-1] = {
                 name = "Cut Funding for the Admiralty",
                 desc = "While it's important to have some sort of public security, at the current state, the Admiralty has too much power and is abusing it. By cutting their funding, their influence will be reduced.",
+                faction_support = {
+                    ADMIRALTY = -3,
+                    FEUD_CITIZEN = -2,
+                    BANDITS = 3,
+                    RISE = 1,
+                    SPARK_BARONS = 2,
+                    CULT_OF_HESH = -2,
+                    JAKES = 1,
+                },
+                wealth_support = {
+                    2,
+                    -2,
+                    -1,
+                    1,
+                },
             },
             [0] = {
                 name = "No Change",
                 desc = "The current system works just fine. There's no need to change it.",
                 faction_support = {
                     ADMIRALTY = 1,
-                    FEUD_CITIZEN = -1,
+                    RISE = -1,
                     BANDITS = -1,
                 },
                 wealth_support = {
@@ -87,6 +135,110 @@ local val =  {
             [2] = {
                 name = "Havaria Independence",
                 desc = "Havaria will become completely independent of Deltree, and Deltree should recognize the independence and respect Havaria's autonomy.",
+            },
+        },
+    },
+    TAX_POLICY = {
+        name = "Tax Policy",
+        desc = "Taxes are huge issues in society. [p] seriously, i'm lazy, you know what tax is right",
+        stances = {
+            [-2] = {
+                name = "Minimum Taxes",
+                desc = "tax kept to min",
+            },
+            [-1] = {
+                name = "Reduced Taxes",
+                desc = "low tax",
+            },
+            [0] = {
+                name = "Keep As It Is",
+                desc = "tax is good for now",
+            },
+            [1] = {
+                name = "Increase Taxes",
+                desc = "more taxes",
+            },
+            [2] = {
+                name = "Max Taxes",
+                desc = "no one likes that, but you don't know that for sure.",
+            },
+        },
+    },
+    LABOR_LAW = {
+        name = "Labor Laws",
+        desc = "pro-employer? pro-workers?",
+        stances = {
+            [-2] = {
+                name = "Laissez Faire",
+                desc = "i can never remember how to spell this.",
+            },
+            [-1] = {
+                name = "Pro-Employer",
+                desc = "Employers have more rights than workers.",
+            },
+            [0] = {
+                name = "Balanced",
+                desc = "how do you even define 'balanced' in this situation?",
+            },
+            [1] = {
+                name = "Pro-Worker",
+                desc = "laws protects workers.",
+            },
+            [2] = {
+                name = "Socialism",
+                desc = "Seize the means of production.",
+            },
+        },
+    },
+    ARTIFACT_TREATMENT = {
+        name = "Artifact Treatment",
+        desc = "if you have a better name, help me out here",
+        stances = {
+            [-2] = {
+                name = "Extensive Research & Use",
+                desc = "Research all the artifacts extensively and utilize them to restore the former glory of the Vagrant Age"
+            },
+            [-1] = {
+                name = "Commercial Use",
+                desc = "Sell the artifacts as weapons, idk"
+            },
+            [0] = {
+                name = "Don't care",
+                desc = "Why would I care?",
+            },
+            [1] = {
+                name = "Restrict Research & Use",
+                desc = "Research and use of artifacts are regulated.",
+            },
+            [2] = {
+                name = "Artifact Preservation",
+                desc = "Forbid anyone from using them or researching them. For religious reasons.",
+            },
+        },
+    },
+    SUBSTANCE_REGULATION = {
+        name = "Substance Regulation",
+        desc = "Policies regarding the restriction of certain items.",
+        stances = {
+            [-2] = {
+                name = "Legalize Everything",
+                desc = "everything, yeah",
+            },
+            [-1] = {
+                name = "Relax Restriction",
+                desc = "save some resources",
+            },
+            [0] = {
+                name = "Keep Unchanged",
+                desc = "Policy good enough",
+            },
+            [1] = {
+                name = "Tighten Restriction",
+                desc = "liek relax restriction, but reverse",
+            },
+            [2] = {
+                name = "Heavily Enforced Restriction",
+                desc = "not only are you adding restriction, you're also actually enforcing it.",
             },
         },
     },
