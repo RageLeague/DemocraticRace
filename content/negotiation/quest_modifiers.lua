@@ -451,6 +451,7 @@ local MODIFIERS =
         end,
 
         AddressQuestion = function(self)
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -self.address_cost)
         end,
     },
     -- Kinda have to do it this way, since removed modifier no longer listens to events that happened because of the removal of self.
@@ -487,32 +488,6 @@ local MODIFIERS =
         end,
         OnInit = function( self )
             self:SetResolve( 30 )
-            -- self:SetIssue{
-            --     name = "Deltrean-Havarian Annex",
-            --     desc = "The annexation of Havaria into Deltree has stroke controversies across Havaria. On the one hand, a full integration of Havaria to Deltree will likely improve Havaria's prosperity. On the other hand, it is a blatant disregard to Havaria's sovereignty.",
-            --     stances = {
-            --         [-2] = {
-            --             name = "Havaria Independence",
-            --             desc = "Havaria will become completely independent of Deltree.",
-            --         },
-            --         [-1] = {
-            --             name = "Havarian Special Administration",
-            --             desc = "Havaria is part of Deltree by name, but Deltree must respect the autonomy of Havaria.",
-            --         },
-            --         [0] = {
-            --             name = "I don't care",
-            --             desc = "[p] i just want to grill for hesh sake",
-            --         },
-            --         [1] = {
-            --             name = "Vassal State",
-            --             desc = "Havaria become a vassal state of Deltree. I have no idea whether this should exchange with the Havarian Special Administration stance or not.",
-            --         },
-            --         [2] = {
-            --             name = "Total Annexation",
-            --             desc = "Havaria and Deltree become one country, with no special treatment.",
-            --         },
-            --     },
-            -- }
         end,
         min_persuasion = 2,
         max_persuasion = 2,
@@ -543,8 +518,8 @@ local MODIFIERS =
     INTERVIEWER =
     {
         name = "Interviewer",
-        desc = "The owner's arguments takes 1 less damage for every question arguments the owner has(to a minimum of 1).",
-        alt_desc = "{1}'s arguments takes 1 less damage for every question arguments the owner has(to a minimum of 1).\n\nCurrently taking {2} less damage.",
+        desc = "The owner's arguments takes 1 less damage for every question arguments the owner has(to a minimum of 1).\n\nAt the beginning of the player's turn, add an {address_question} card to the player's hand.",
+        alt_desc = "<#UPGRADE>Currently taking {2} less damage.</>",
         desc_fn = function(self, fmt_str )
             if self.negotiator then
                 local question_count = 0
@@ -553,7 +528,7 @@ local MODIFIERS =
                         question_count = question_count + 1
                     end
                 end
-                return loc.format(self.def:GetLocalizedString("ALT_DESC"), self.negotiator:GetName(), question_count)
+                return loc.format(fmt_str .. "\n\n" .. self.def:GetLocalizedString("ALT_DESC"), self.negotiator:GetName(), question_count)
             else
                 return loc.format(fmt_str)
             end
@@ -577,6 +552,11 @@ local MODIFIERS =
                     end
                     persuasion:AddPersuasion( - math.min(question_count, persuasion.min_persuasion - 1), - math.min(question_count, persuasion.max_persuasion - 1), self )
                 end
+            end,
+            [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
+                local card = Negotiation.Card( "address_question", minigame:GetPlayer() )
+                card.show_dealt = true
+                minigame:DealCards( {card}, minigame:GetHandDeck() )
             end,
         },
         InitModifiers = function(self)

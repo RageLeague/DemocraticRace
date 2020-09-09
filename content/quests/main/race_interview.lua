@@ -5,8 +5,12 @@ local INTERVIEWER_BEHAVIOR = {
         local modifier = self.negotiator:AddModifier("INTERVIEWER")
         -- modifier.agents = shallowcopy(self.agents)
         -- modifier:InitModifiers()
+        self.cont_question_card = self:AddCard("contemporary_question_card")
+        self.modifier_picker = self:MakePicker()
+            :AddArgument("LOADED_QUESTION", 2)
+            :AddCard(self.cont_question_card, 1)
     end,
-
+    available_issues = copyvalues(DemocracyConstants.issue_data),
 	-- Duplicated from Bandits. Needs revision
 	BasicCycle = function( self, turns )
 		-- Double attack every 2 rounds; Single attack otherwise.
@@ -17,7 +21,7 @@ local INTERVIEWER_BEHAVIOR = {
 		else
 			self:ChooseGrowingNumbers( 1, 1 )
         end
-        
+        self.modifier_picker:ChooseCard()
 	end,
 }
 

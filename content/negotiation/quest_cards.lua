@@ -79,7 +79,7 @@ local CARDS = {
         loc_strings = {
             NOT_A_QUESTION = "Target is not a question",
         },
-        cost = 2,
+        cost = 1,
         flags = CARD_FLAGS.DIPLOMACY,
         rarity = CARD_RARITY.UNIQUE,
         target_enemy = TARGET_FLAG.ARGUMENT | TARGET_FLAG.BOUNTY,
@@ -151,6 +151,45 @@ local CARDS = {
             -- if self.engine then
                 self.engine:BroadcastEvent( EVENT.CARD_CHANGED, self, self:Clone() )
             -- end
+        end,
+    },
+    
+    contemporary_question_card =
+    {
+
+        flags = CARD_FLAGS.SPECIAL | CARD_FLAGS.OPPONENT,
+        cost = 0,
+        stacks = 1,
+        rarity = CARD_RARITY.UNIQUE,
+
+        series = CARD_SERIES.NPC,
+
+        CanPlayCard = function( self, card, engine, target )
+            if card == self then
+                if self.issue_data then
+                    return true
+                else
+                    self:TrySelectIssue()
+                    return self.issue_data ~= nil
+                end
+            end
+            return true
+        end,
+        TrySelectIssue = function(self)
+            if self.negotiator and self.negotiator.behaviour.available_issues then
+                self.issue_data = table.arraypick(self.negotiator.behaviour.available_issues)
+            end
+        end,
+
+        OnPostResolve = function( self, engine, targets )
+            local modifier = self.negotiator:CreateModifier("CONTEMPORARY_QUESTION")
+            if modifier then
+                modifier:SetIssue(self.issue_data)
+            end
+            if self.issue_data and self.negotiator.behaviour.available_issues then
+                table.arrayremove(self.negotiator.behaviour.available_issues, self.issue_data)
+                self.issue_data = nil
+            end
         end,
     },
 }
