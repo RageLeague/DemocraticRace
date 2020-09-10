@@ -13,7 +13,7 @@ local INTERVIEWER_BEHAVIOR = {
         self.questions_answered = 0 -- jus to make sure
     end,
     available_issues = copyvalues(DemocracyConstants.issue_data),
-    questions_answered = 0,
+    params = {},
 	BasicCycle = function( self, turns )
 		-- Double attack every 2 rounds; Single attack otherwise.
 		if self.difficulty >= 4 and turns % 2 == 0 then
@@ -23,10 +23,7 @@ local INTERVIEWER_BEHAVIOR = {
 		else
 			self:ChooseGrowingNumbers( 1, 1 )
         end
-        if turns == 1 then
-            self:ChooseCard(self.cont_question_card)
-        end
-        self.modifier_picker:ChooseCard()
+        self.modifier_picker:ChooseCards(turns == 1 and 2 or 1)
 	end,
 }
 
@@ -176,6 +173,9 @@ QDEF:AddConvo("do_interview")
                 * oh no.
                 * this embarrassment is so huge you lost the game!
             ]],
+            DIALOG_INTERVIEW_AFTER = [[
+                * After the interview, {1*a person confronts you|several people confront you}.
+            ]],
             OPT_ACCEPT_LOSS = "Accept your failure",
         }
         :Fn(function(cxt)
@@ -186,6 +186,9 @@ QDEF:AddConvo("do_interview")
                 :Negotiation{
                     on_success = function(cxt, minigame)
                         cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
+                        TheGame:GetDebug():CreatePanel(DebugTable(INTERVIEWER_BEHAVIOR))
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", (INTERVIEWER_BEHAVIOR.params.questions_answered or 0) * 2)
+                        cxt:Opt("OPT_DONE")
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_INTERVIEW_FAIL")

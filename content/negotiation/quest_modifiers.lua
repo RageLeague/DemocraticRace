@@ -552,10 +552,10 @@ local MODIFIERS =
                         DemocracyUtil.TryMainQuestFn("UpdateStance", issue.id, pick.stance)
                         local stance = issue.stances[pick.stance]
                         if stance.faction_support then
-                            DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport", stance.faction_support)
+                            DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport", stance.faction_support, nil, true)
                         end
                         if stance.wealth_support then
-                            DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport", stance.wealth_support)
+                            DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport", stance.wealth_support, nil, true)
                         end
                     end
                     self.engine:DealCard(pick, self.engine:GetTrashDeck())
@@ -614,7 +614,9 @@ local MODIFIERS =
             end,
             [ EVENT.MODIFIER_REMOVED ] = function( self, modifier )
                 if modifier.AddressQuestion then
-                    self.negotiator.behaviour.questions_answered = (self.negotiator.behaviour.questions_answered or 0) + 1
+                    local behaviour = self.negotiator.behaviour
+                    if not behaviour.params then behaviour.params = {} end
+                    behaviour.params.questions_answered = (behaviour.params.questions_answered or 0) + 1
                 end
             end,
         },
