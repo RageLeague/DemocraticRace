@@ -75,6 +75,7 @@ lines:
       Swing by the Grog n' Dog when you get chance.
       They sell amazing drinks, and people from all factions visit there, incase you need some more connections.
       You should definitely go check it out!
+#I'm assuming just attaching this little thing at the end will check for the character. pardon me while i make the common smith conversation.
 - tags: [unlock_location, unlock_grog_n_dog, sal]
   dialog:
   - |
@@ -93,6 +94,23 @@ lines:
       Oh. I was just trying to be helpful.
     player:
       It's okay. I forgot where it was before, but thanks for telling me the location.
+- tags: [unlock_location, unlock_grog_n_dog, smith]
+  dialog:
+  - |
+    agent:
+     Smith...Smith do i even need to tell you where the bar is?
+    player:
+     [p]Well, no. If anything you'd be saving them the trouble of dealing with me.
+     But since you proposed...
+    agent:
+     It's called the Grog n' Dog. They're pretty cheap and everyone from the Law to the Lawless go there
+    player:
+     Why thank you, my dear friend. I shall escort myself there at once!
+    agent:
+     Just...just don't run a tab. The bartender's is a no-nonsense type, and she's got sal herself in her back pocket.
+    player:
+     If i knew who that was, i'd care. I don't however, and therefore don't mind.
+     No bartender had stood a chance to my improvisation!
 - tags: [unlock_location, unlock_spree_inn]
   dialog:
   - |
