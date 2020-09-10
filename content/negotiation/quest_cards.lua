@@ -166,6 +166,9 @@ local CARDS = {
 
         CanPlayCard = function( self, card, engine, target )
             if card == self then
+                if not table.arraycontains(self.negotiator.behaviour.available_issues, self.issue_data) then
+                    self.issue_data = nil
+                end
                 if self.issue_data then
                     return true
                 else

@@ -78,7 +78,6 @@ QDEF:AddConvo("meet_advisor", "primary_advisor")
                 player:
                     oh come on!
             ]],
-            DIALOG_ACCEPT_LOSS = "Accept your failure",
             DIALOG_INTRO_PST = [[
                 agent:
                     go to bed when you're ready.
@@ -95,7 +94,7 @@ QDEF:AddConvo("meet_advisor", "primary_advisor")
                 cxt.quest:Activate("go_to_sleep")
             else
                 cxt:Dialog("DIALOG_INTRO_LOW_SUPPORT")
-                cxt:Opt("DIALOG_ACCEPT_LOSS")
+                cxt:Opt("OPT_ACCEPT_FAILURE")
                     :Fn(function(cxt)
                         TheGame:Lose()
                     end)

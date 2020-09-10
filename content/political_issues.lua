@@ -127,136 +127,136 @@ local val =  {
             },
         },
     },
-    INDEPENDENCE = {
-        name = "Deltrean-Havarian Annex",
-        desc = "The annexation of Havaria into Deltree has stroke controversies across Havaria. On the one hand, a full integration of Havaria to Deltree will likely improve Havaria's prosperity. On the other hand, it is a blatant disregard to Havaria's sovereignty.",
-        stances = {
-            [-2] = {
-                name = "Total Annexation",
-                desc = "Havaria and Deltree become one country, with no special treatment.",
-            },
-            [-1] = {
-                name = "Havarian Special Administration",
-                desc = "Havaria is part of Deltree by name, but Deltree must not intervene with Havaria's internal affairs too much to allow better integration.",
-            },
-            [0] = {
-                name = "I don't care",
-                desc = "[p] i just want to grill for hesh sake",
-            },
-            [1] = {
-                name = "Vassal State",
-                desc = "Havaria become a vassal state of Deltree. However, they are still different nations, and Deltree must respect the autonomy of Havaria.",
-            },
-            [2] = {
-                name = "Havaria Independence",
-                desc = "Havaria will become completely independent of Deltree, and Deltree should recognize the independence and respect Havaria's autonomy.",
-            },
-        },
-    },
-    TAX_POLICY = {
-        name = "Tax Policy",
-        desc = "Taxes are huge issues in society. [p] seriously, i'm lazy, you know what tax is right",
-        stances = {
-            [-2] = {
-                name = "Minimum Taxes",
-                desc = "tax kept to min",
-            },
-            [-1] = {
-                name = "Reduced Taxes",
-                desc = "low tax",
-            },
-            [0] = {
-                name = "Keep As It Is",
-                desc = "tax is good for now",
-            },
-            [1] = {
-                name = "Increase Taxes",
-                desc = "more taxes",
-            },
-            [2] = {
-                name = "Max Taxes",
-                desc = "no one likes that, but you don't know that for sure.",
-            },
-        },
-    },
-    LABOR_LAW = {
-        name = "Labor Laws",
-        desc = "pro-employer? pro-workers?",
-        stances = {
-            [-2] = {
-                name = "Laissez Faire",
-                desc = "i can never remember how to spell this.",
-            },
-            [-1] = {
-                name = "Pro-Employer",
-                desc = "Employers have more rights than workers.",
-            },
-            [0] = {
-                name = "Balanced",
-                desc = "how do you even define 'balanced' in this situation?",
-            },
-            [1] = {
-                name = "Pro-Worker",
-                desc = "laws protects workers.",
-            },
-            [2] = {
-                name = "Socialism",
-                desc = "Seize the means of production.",
-            },
-        },
-    },
-    ARTIFACT_TREATMENT = {
-        name = "Artifact Treatment",
-        desc = "if you have a better name, help me out here",
-        stances = {
-            [-2] = {
-                name = "Extensive Research & Use",
-                desc = "Research all the artifacts extensively and utilize them to restore the former glory of the Vagrant Age"
-            },
-            [-1] = {
-                name = "Commercial Use",
-                desc = "Sell the artifacts as weapons, idk"
-            },
-            [0] = {
-                name = "Don't care",
-                desc = "Why would I care?",
-            },
-            [1] = {
-                name = "Restrict Research & Use",
-                desc = "Research and use of artifacts are regulated.",
-            },
-            [2] = {
-                name = "Artifact Preservation",
-                desc = "Forbid anyone from using them or researching them. For religious reasons.",
-            },
-        },
-    },
-    SUBSTANCE_REGULATION = {
-        name = "Substance Regulation",
-        desc = "Policies regarding the restriction of certain items.",
-        stances = {
-            [-2] = {
-                name = "Legalize Everything",
-                desc = "everything, yeah",
-            },
-            [-1] = {
-                name = "Relax Restriction",
-                desc = "save some resources",
-            },
-            [0] = {
-                name = "Keep Unchanged",
-                desc = "Policy good enough",
-            },
-            [1] = {
-                name = "Tighten Restriction",
-                desc = "liek relax restriction, but reverse",
-            },
-            [2] = {
-                name = "Heavily Enforced Restriction",
-                desc = "not only are you adding restriction, you're also actually enforcing it.",
-            },
-        },
-    },
+    -- INDEPENDENCE = {
+    --     name = "Deltrean-Havarian Annex",
+    --     desc = "The annexation of Havaria into Deltree has stroke controversies across Havaria. On the one hand, a full integration of Havaria to Deltree will likely improve Havaria's prosperity. On the other hand, it is a blatant disregard to Havaria's sovereignty.",
+    --     stances = {
+    --         [-2] = {
+    --             name = "Total Annexation",
+    --             desc = "Havaria and Deltree become one country, with no special treatment.",
+    --         },
+    --         [-1] = {
+    --             name = "Havarian Special Administration",
+    --             desc = "Havaria is part of Deltree by name, but Deltree must not intervene with Havaria's internal affairs too much to allow better integration.",
+    --         },
+    --         [0] = {
+    --             name = "I don't care",
+    --             desc = "[p] i just want to grill for hesh sake",
+    --         },
+    --         [1] = {
+    --             name = "Vassal State",
+    --             desc = "Havaria become a vassal state of Deltree. However, they are still different nations, and Deltree must respect the autonomy of Havaria.",
+    --         },
+    --         [2] = {
+    --             name = "Havaria Independence",
+    --             desc = "Havaria will become completely independent of Deltree, and Deltree should recognize the independence and respect Havaria's autonomy.",
+    --         },
+    --     },
+    -- },
+    -- TAX_POLICY = {
+    --     name = "Tax Policy",
+    --     desc = "Taxes are huge issues in society. [p] seriously, i'm lazy, you know what tax is right",
+    --     stances = {
+    --         [-2] = {
+    --             name = "Minimum Taxes",
+    --             desc = "tax kept to min",
+    --         },
+    --         [-1] = {
+    --             name = "Reduced Taxes",
+    --             desc = "low tax",
+    --         },
+    --         [0] = {
+    --             name = "Keep As It Is",
+    --             desc = "tax is good for now",
+    --         },
+    --         [1] = {
+    --             name = "Increase Taxes",
+    --             desc = "more taxes",
+    --         },
+    --         [2] = {
+    --             name = "Max Taxes",
+    --             desc = "no one likes that, but you don't know that for sure.",
+    --         },
+    --     },
+    -- },
+    -- LABOR_LAW = {
+    --     name = "Labor Laws",
+    --     desc = "pro-employer? pro-workers?",
+    --     stances = {
+    --         [-2] = {
+    --             name = "Laissez Faire",
+    --             desc = "i can never remember how to spell this.",
+    --         },
+    --         [-1] = {
+    --             name = "Pro-Employer",
+    --             desc = "Employers have more rights than workers.",
+    --         },
+    --         [0] = {
+    --             name = "Balanced",
+    --             desc = "how do you even define 'balanced' in this situation?",
+    --         },
+    --         [1] = {
+    --             name = "Pro-Worker",
+    --             desc = "laws protects workers.",
+    --         },
+    --         [2] = {
+    --             name = "Socialism",
+    --             desc = "Seize the means of production.",
+    --         },
+    --     },
+    -- },
+    -- ARTIFACT_TREATMENT = {
+    --     name = "Artifact Treatment",
+    --     desc = "if you have a better name, help me out here",
+    --     stances = {
+    --         [-2] = {
+    --             name = "Extensive Research & Use",
+    --             desc = "Research all the artifacts extensively and utilize them to restore the former glory of the Vagrant Age"
+    --         },
+    --         [-1] = {
+    --             name = "Commercial Use",
+    --             desc = "Sell the artifacts as weapons, idk"
+    --         },
+    --         [0] = {
+    --             name = "Don't care",
+    --             desc = "Why would I care?",
+    --         },
+    --         [1] = {
+    --             name = "Restrict Research & Use",
+    --             desc = "Research and use of artifacts are regulated.",
+    --         },
+    --         [2] = {
+    --             name = "Artifact Preservation",
+    --             desc = "Forbid anyone from using them or researching them. For religious reasons.",
+    --         },
+    --     },
+    -- },
+    -- SUBSTANCE_REGULATION = {
+    --     name = "Substance Regulation",
+    --     desc = "Policies regarding the restriction of certain items.",
+    --     stances = {
+    --         [-2] = {
+    --             name = "Legalize Everything",
+    --             desc = "everything, yeah",
+    --         },
+    --         [-1] = {
+    --             name = "Relax Restriction",
+    --             desc = "save some resources",
+    --         },
+    --         [0] = {
+    --             name = "Keep Unchanged",
+    --             desc = "Policy good enough",
+    --         },
+    --         [1] = {
+    --             name = "Tighten Restriction",
+    --             desc = "liek relax restriction, but reverse",
+    --         },
+    --         [2] = {
+    --             name = "Heavily Enforced Restriction",
+    --             desc = "not only are you adding restriction, you're also actually enforcing it.",
+    --         },
+    --     },
+    -- },
 }
 for id, data in pairs(val) do
     data.id = id

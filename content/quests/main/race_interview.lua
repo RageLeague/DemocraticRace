@@ -8,10 +8,12 @@ local INTERVIEWER_BEHAVIOR = {
         self.cont_question_card = self:AddCard("contemporary_question_card")
         self.modifier_picker = self:MakePicker()
             :AddArgument("LOADED_QUESTION", 2)
+            :AddArgument("PLEASANT_QUESTION", 1)
             :AddCard(self.cont_question_card, 1)
+        self.questions_answered = 0 -- jus to make sure
     end,
     available_issues = copyvalues(DemocracyConstants.issue_data),
-	-- Duplicated from Bandits. Needs revision
+    questions_answered = 0,
 	BasicCycle = function( self, turns )
 		-- Double attack every 2 rounds; Single attack otherwise.
 		if self.difficulty >= 4 and turns % 2 == 0 then
@@ -20,6 +22,9 @@ local INTERVIEWER_BEHAVIOR = {
 			self:ChooseGrowingNumbers( 2, 0 )
 		else
 			self:ChooseGrowingNumbers( 1, 1 )
+        end
+        if turns == 1 then
+            self:ChooseCard(self.cont_question_card)
         end
         self.modifier_picker:ChooseCard()
 	end,
@@ -149,11 +154,29 @@ QDEF:AddConvo("do_interview")
                 * [p] when you enter the room, you see a bunch of people
                 * Looks liek lots of people wants to watch your interview.
                 agent:
+                    !right
                     let's welcome our special guest tonight, {player}!
+                player:
+                    !left
                 * everyone clapped.
                 * try to survive the interview, i guess?
             ]],
             OPT_DO_INTERVIEW = "Do the interview",
+            DIALOG_INTERVIEW_SUCCESS = [[
+                agent:
+                    [p] once again, thank you for coming.
+                player:
+                    no problems.
+                * phew! you survived the interview.
+            ]],
+            DIALOG_INTERVIEW_FAIL = [[
+                player:
+                    [p] i said something embarrassing and outrageous in front of everyone!
+                * awkward silence.
+                * oh no.
+                * this embarrassment is so huge you lost the game!
+            ]],
+            OPT_ACCEPT_LOSS = "Accept your failure",
         }
         :Fn(function(cxt)
             cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("host"))
@@ -161,6 +184,15 @@ QDEF:AddConvo("do_interview")
             cxt:GetAgent().temp_negotiation_behaviour = INTERVIEWER_BEHAVIOR
             cxt:Opt("OPT_DO_INTERVIEW")
                 :Negotiation{
-
+                    on_success = function(cxt, minigame)
+                        cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
+                    end,
+                    on_fail = function(cxt)
+                        cxt:Dialog("DIALOG_INTERVIEW_FAIL")
+                        cxt:Opt("OPT_ACCEPT_LOSS")
+                            :Fn(function(cxt)
+                                TheGame:Lose()
+                            end)
+                    end,
                 }
         end)

@@ -177,7 +177,6 @@ QDEF:AddConvo("win_argument")
                 * For the sheer novelty of it?
                 * Well, good job. You failed, ya dingus.
             ]],
-            OPT_ACCEPT_LOSS = "Hesh damn it!",
         }
         :Fn(function(cxt)
             if cxt:FirstLoop() then
@@ -209,7 +208,7 @@ QDEF:AddConvo("win_argument")
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_DEBATE_LOST")
-                        cxt:Opt("OPT_ACCEPT_LOSS")
+                        cxt:Opt("OPT_ACCEPT_FAILURE")
                             :Fn(function(cxt)
                                 TheGame:Lose()
                             end)
@@ -219,7 +218,7 @@ QDEF:AddConvo("win_argument")
             cxt:Opt("OPT_IGNORE")
                 :Dialog("DIALOG_IGNORE")
                 :Fn(function(cxt)
-                    cxt:Opt("OPT_ACCEPT_LOSS")
+                    cxt:Opt("OPT_ACCEPT_FAILURE")
                         :Fn(function(cxt)
                             TheGame:Lose()
                         end)

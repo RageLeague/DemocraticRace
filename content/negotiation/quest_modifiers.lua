@@ -420,10 +420,10 @@ local MODIFIERS =
     {
         name = "Loaded Question",
         desc = "When destroyed, the player loses support equal to the remaining splash damage.\n\n"..
-        "When {address_question|addressed}, the player loses {2} support.",
+        "When {address_question|addressed}, the player loses {1} support.",
 
         desc_fn = function(self, fmt_str)
-            return loc.format( fmt_str, self.damage_amt, self.address_cost)
+            return loc.format( fmt_str, self.address_cost)
         end,
 
         min_persuasion = 2,
@@ -469,6 +469,42 @@ local MODIFIERS =
             end
         },
     },
+    PLEASANT_QUESTION = 
+    {
+        name = "Pleasant Question",
+        desc = "When destroyed or {address_question|addressed}, the player gains {1} resolve.",
+
+        desc_fn = function(self, fmt_str)
+            return loc.format( fmt_str, self.resolve_gain)
+        end,
+
+        min_persuasion = 2,
+        max_persuasion = 2,
+
+        resolve_gain = 2,
+
+        target_enemy = TARGET_ANY_RESOLVE,
+
+        max_stacks = 1,
+
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        OnInit = function( self )
+            self:SetResolve( 7, MODIFIER_SCALING.HIGH )
+        end,
+
+        OnBeginTurn = function( self, minigame )
+            self:ApplyPersuasion()
+        end,
+
+        OnBounty = function(self)
+            self.anti_negotiator:RestoreResolve(self.resolve_gain, self)
+        end,
+
+        AddressQuestion = function(self)
+            self.anti_negotiator:RestoreResolve(self.resolve_gain, self)
+        end,
+    },
     CONTEMPORARY_QUESTION = 
     {
         name = "Contemporary Question",
@@ -479,6 +515,7 @@ local MODIFIERS =
 
         loc_strings = {
             ISSUE_DEFAULT = "a contemporary issue",
+            CHOOSE_AN_ANSWER = "Choose An Answer",
         },
         
         max_stacks = 1,
@@ -487,10 +524,10 @@ local MODIFIERS =
             return loc.format( fmt_str, self.issue_data and self.issue_data.name or self.def:GetLocalizedString("ISSUE_DEFAULT"))
         end,
         OnInit = function( self )
-            self:SetResolve( 30 )
+            self:SetResolve( 25 )
         end,
-        min_persuasion = 2,
-        max_persuasion = 2,
+        min_persuasion = 3,
+        max_persuasion = 3,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
         SetIssue = function(self, issue_data)
             self.issue_data = issue_data
@@ -498,20 +535,38 @@ local MODIFIERS =
         AddressQuestion = function(self)
             if self.issue_data ~= nil then
                 local cards = {}
+                local issue = self.issue_data
                 for id = -2, 2 do
-                    local data = self.issue_data.stances[id]
+                    local data = issue.stances[id]
                     if data then
                         local card = Negotiation.Card( "question_answer", self.owner )
                         card.engine = self.engine
-                        card:UpdateIssue(self.issue_data, id)
+                        card:UpdateIssue(issue, id)
                         table.insert(cards, card)
                     end
                 end
-                local pick = self.engine:ChooseCardsFromTable( cards, 1, 1, nil, "Choose an answer" )[1]
+                local pick = self.engine:ChooseCardsFromTable( cards, 1, 1, nil, self.def:GetLocalizedString("CHOOSE_AN_ANSWER") )[1]
                 if pick then
                     print(pick.name)
+                    if pick.stance then
+                        DemocracyUtil.TryMainQuestFn("UpdateStance", issue.id, pick.stance)
+                        local stance = issue.stances[pick.stance]
+                        if stance.faction_support then
+                            DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport", stance.faction_support)
+                        end
+                        if stance.wealth_support then
+                            DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport", stance.wealth_support)
+                        end
+                    end
+                    self.engine:DealCard(pick, self.engine:GetTrashDeck())
+                    print("should be expended")
                 end
+
             end
+        end,
+
+        OnBeginTurn = function( self, minigame )
+            self:ApplyPersuasion()
         end,
     },
 
@@ -535,7 +590,6 @@ local MODIFIERS =
         end,
         -- icon = engine.asset.Texture("negotiation/modifiers/heckler.tex"),
         modifier_type = MODIFIER_TYPE.CORE,
-        
         event_priorities =
         {
             [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_ADDITIVE,
@@ -557,6 +611,11 @@ local MODIFIERS =
                 local card = Negotiation.Card( "address_question", minigame:GetPlayer() )
                 card.show_dealt = true
                 minigame:DealCards( {card}, minigame:GetHandDeck() )
+            end,
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier )
+                if modifier.AddressQuestion then
+                    self.negotiator.behaviour.questions_answered = (self.negotiator.behaviour.questions_answered or 0) + 1
+                end
             end,
         },
         InitModifiers = function(self)

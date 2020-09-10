@@ -341,8 +341,6 @@ QDEF:AddConvo("debate_people")
                     I'm here to debate people, not fall back like a coward.
                     Bring it on!
             ]],
-
-            OPT_ACCEPT_FAILURE = "Accept your utter failure",
         }
         -- :SetLooping(true)
         :Fn(function(cxt)

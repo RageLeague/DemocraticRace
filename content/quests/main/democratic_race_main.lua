@@ -158,11 +158,13 @@ local QDEF = QuestDef.Define
         quest:DefFn("DeltaWealthSupport", amt, agent:GetRenown() or 1, ignore_notification)
     end,
     DeltaGroupFactionSupport = function(quest, group_delta, multiplier, ignore_notification)
+        multiplier = multiplier or 1
         for id, val in pairs(group_delta or {}) do
             quest:DefFn("DeltaFactionSupport", math.round(val * multiplier), id, ignore_notification)
         end
     end,
     DeltaGroupWealthSupport = function(quest, group_delta, multiplier, ignore_notification)
+        multiplier = multiplier or 1
         for id, val in pairs(group_delta or {}) do
             quest:DefFn("DeltaWealthSupport", math.round(val * multiplier), id, ignore_notification)
         end
@@ -241,6 +243,8 @@ local QDEF = QuestDef.Define
         end
 
         quest.param.stance_change_freebie[stance] = not strict
+
+        print(loc.format("Updated stance: '{1}': {2}(strict: {3})", stance, val, strict))
     end,
 }
 :AddCast{

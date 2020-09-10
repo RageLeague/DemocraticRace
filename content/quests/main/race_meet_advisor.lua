@@ -137,11 +137,10 @@ QDEF:AddConvo("go_to_bar")
                 * You ordered a bowl of noodles, thinking about today's failure.
                 * Perhaps you shouldn't run for president after all.
             ]],
-            OPT_ACCEPT_LOSS = "Accept your failure",
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-            cxt:Opt("OPT_ACCEPT_LOSS")
+            cxt:Opt("OPT_ACCEPT_FAILURE")
                 :Fn(function(cxt)
                     TheGame:Lose()
                 end)
