@@ -27,6 +27,14 @@ local INTERVIEWER_BEHAVIOR = {
 	end,
 }
 
+local RELATION_OFFSET = {
+    [RELATIONSHIP.HATED] = -20,
+    [RELATIONSHIP.DISLIKED] = -10,
+    [RELATIONSHIP.NEUTRAL] = 0,
+    [RELATIONSHIP.LIKED] = 10,
+    [RELATIONSHIP.LOVED] = 20,
+}
+
 
 local QDEF = QuestDef.Define
 {
@@ -39,7 +47,7 @@ local QDEF = QuestDef.Define
         table.insert(t, { agent = quest:GetCastMember("host"), location = quest:GetCastMember('theater')})
     end,
     -- on_start = function(quest)
-        
+
     -- end,
 }
 :AddCast{
@@ -112,6 +120,17 @@ local QDEF = QuestDef.Define
     },
 }
 
+:AddOpinionEvents{
+    likes_interview = {
+        delta = OPINION_DELTAS.OPINION_UP,
+        txt = "Likes your interview",
+    },
+    dislikes_interview = {
+        delta = OPINION_DELTAS.TO_HATED,
+        txt = "Dislikes your interview",
+    }
+}
+
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 
 QDEF:AddConvo("go_to_interview")
@@ -182,12 +201,38 @@ QDEF:AddConvo("do_interview")
             cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("host"))
             cxt:Dialog("DIALOG_INTRO")
             cxt:GetAgent().temp_negotiation_behaviour = INTERVIEWER_BEHAVIOR
+            local agent_supports = {}
+            for i, agent in cxt.quest:GetCastMember("theater"):Agents() do
+                if agent:GetBrain():IsPatronizing() then
+                    table.insert(agent_supports, {agent, DemocracyUtil.TryMainQuestFn("GetSupportForAgent", agent)})
+                end
+            end
             cxt:Opt("OPT_DO_INTERVIEW")
                 :Negotiation{
                     on_success = function(cxt, minigame)
                         cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
                         TheGame:GetDebug():CreatePanel(DebugTable(INTERVIEWER_BEHAVIOR))
                         DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", (INTERVIEWER_BEHAVIOR.params.questions_answered or 0) * 2)
+                        -- Big calculations that happens.
+                        local agent_response = {}
+                        for i, data in ipairs(agent_supports) do
+                            local current_support = DemocracyUtil.TryMainQuestFn("GetSupportForAgent", data[1])
+                            local support_delta = current_support - data[2] + RELATION_OFFSET[data[1]:GetRelationship()] + math.random(-30, 30)
+                            if support_delta > 25 then
+                                table.insert(agent_response, {data[1], "likes_interview"})
+                            elseif support_delta < -25 then
+                                table.insert(agent_response, {data[1], "dislikes_interview"})
+                            end
+                        end
+                        if #agent_response > 0 then
+                            cxt:Dialog("DIALOG_INTERVIEW_AFTER", #agent_response)
+                            for i, data in ipairs(agent_response) do
+                                cxt.enc:PresentAgent(data[1], SIDE.RIGHT)
+                                cxt:Quip(data[1], "post_interview", data[2])
+                                data[1]:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent(data[2]))
+                            end
+                        end
+
                         cxt:Opt("OPT_DONE")
                     end,
                     on_fail = function(cxt)

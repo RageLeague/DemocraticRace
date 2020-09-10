@@ -117,16 +117,16 @@ local QDEF = QuestDef.Define
     convinced_political_idea =  
     {
         delta = OPINION_DELTAS.LIKE,
-        txt = "Enlightened them with your ideology.",
+        txt = "Enlightened them with your ideology",
     },
     reach_impasse = {
         delta = OPINION_DELTAS.DIMINISH,
-        txt = "Reached an impasse in a debate against them.",
+        txt = "Reached an impasse in a debate against them",
     },
     lost_debate = 
     {
         delta = OPINION_DELTAS.DISLIKE,
-        txt = "Lost a debate against them.",
+        txt = "Lost a debate against them",
     },
 }
 -- QDEF:AddConvo("go_to_junction")

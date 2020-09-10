@@ -1,0 +1,31 @@
+lines:
+
+
+
+- tags: [post_interview, likes_interview]
+  dialog:
+  - |
+    [p] i was inspired by your performance
+
+- tags: [post_interview, likes_interview, disliked]
+  dialog:
+  - |
+    [p] i dislike what you're doing at first, but after hearing your awesome performance, i am reconsidering my position.
+
+
+- tags: [post_interview, dislikes_interview]
+  dialog:
+  - |
+    [p] wow, you suck.
+  - |
+    [p] try harder next time.
+
+- tags: [post_interview, dislikes_interview, disliked]
+  dialog:
+  - |
+    [p] my expectations for you was low, but that was something else.
+    
+- tags: [post_interview, dislikes_interview, liked]
+  dialog:
+  - |
+    [p] to be honest, i liked you before. but now, i'm not so sure.
