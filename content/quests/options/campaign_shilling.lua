@@ -2,6 +2,10 @@ local QDEF = QuestDef.Define
 {
     qtype = QTYPE.STORY,
 }
+:AddObjective{
+    id = "start",
+    state = QSTATUS.ACTIVE,
+}
 :AddConvo()
     :Loc{
         OPT_BRIBE = "Pay {agent} to shill for you",
@@ -21,7 +25,7 @@ local QDEF = QuestDef.Define
         ]],
     }
     :Hub(function(cxt, who)
-        if DemocracyUtil.RandomBystanderCondition(who) then
+        if who and DemocracyUtil.RandomBystanderCondition(who) then
             local cost = 15 * who:GetRenown()
             if not who:HasAspect( "bribed" ) then
                 cxt:Opt("OPT_BRIBE")

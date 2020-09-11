@@ -66,7 +66,7 @@ local QDEF = QuestDef.Define
             QuestUtil.SpawnQuest("RACE_LIVING_WITH_ADVISOR")
             quest:DefFn("DeltaGeneralSupport", (quest.param.init_support_level or 0) * (quest.param.start_on_day - 1))
         end
-        
+        QuestUtil.SpawnQuest("CAMPAIGN_SHILLING")
         QuestUtil.DoNextDay(DAY_SCHEDULE, quest, quest.param.start_on_day )
         
         DoAutoSave()
@@ -78,6 +78,7 @@ local QDEF = QuestDef.Define
     {
         quests_changed = function(quest, event_quest) 
             if event_quest == quest.param.day_quest and quest.param.day_quest:IsComplete() then
+                DemocracyUtil.EndFreeTime()
                 QuestUtil.DoNextDay(DAY_SCHEDULE, quest)
             end
         end,

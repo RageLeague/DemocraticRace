@@ -67,6 +67,7 @@ QDEF:AddConvo("meet_advisor", "primary_advisor")
                 agent:
                     !give
                     here's your pay.
+                    do your free time or whatever.
             ]],
             DIALOG_INTRO_LOW_SUPPORT = [[
                 player:
@@ -92,6 +93,7 @@ QDEF:AddConvo("meet_advisor", "primary_advisor")
                 cxt:Dialog("DIALOG_INTRO_PST")
                 cxt.quest:Complete("meet_advisor")
                 cxt.quest:Activate("go_to_sleep")
+                DemocracyUtil.StartFreeTime()
             else
                 cxt:Dialog("DIALOG_INTRO_LOW_SUPPORT")
                 cxt:Opt("OPT_ACCEPT_FAILURE")

@@ -67,7 +67,9 @@ local QDEF = QuestDef.Define
             end
         end
     },
-
+    on_activate = function(quest)
+        DemocracyUtil.EndFreeTime()
+    end,
     on_complete = function(quest) 
         quest.param.job_history = quest.param.job_history or {}
         table.insert(quest.param.job_history, quest.param.current_job)

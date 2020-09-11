@@ -48,7 +48,9 @@ local QDEF = QuestDef.Define
             end
         end
     },
-
+    on_activate = function(quest)
+        DemocracyUtil.EndFreeTime()
+    end,
     on_complete = function(quest) 
         quest.param.job_history = quest.param.job_history or {}
         table.insert(quest.param.job_history, quest.param.current_job)
@@ -78,7 +80,6 @@ local QDEF = QuestDef.Define
     quest_id = "RACE_DAY_1_SUMMARY",
     on_activate = function(quest) 
         UIHelpers.PassTime(DAY_PHASE.NIGHT)
-        DemocracyUtil.StartFreeTime()
     end,
     on_complete = function(quest)
         quest:Complete()

@@ -190,7 +190,7 @@ QDEF:AddConvo("do_interview")
                     [p] i said something embarrassing and outrageous in front of everyone!
                 * awkward silence.
                 * oh no.
-                * this embarrassment is so huge you lost the game!
+                * this embarrassment is going to cost you.
             ]],
             DIALOG_INTERVIEW_AFTER = [[
                 * After the interview, {1*a person confronts you|several people confront you}.
@@ -207,36 +207,42 @@ QDEF:AddConvo("do_interview")
                     table.insert(agent_supports, {agent, DemocracyUtil.TryMainQuestFn("GetSupportForAgent", agent)})
                 end
             end
+
+            local function ResolvePostInterview()
+                local agent_response = {}
+                for i, data in ipairs(agent_supports) do
+                    local current_support = DemocracyUtil.TryMainQuestFn("GetSupportForAgent", data[1])
+                    local support_delta = current_support - data[2] + RELATION_OFFSET[data[1]:GetRelationship()] + math.random(-25, 25)
+                    if support_delta > 20 then
+                        table.insert(agent_response, {data[1], "likes_interview"})
+                    elseif support_delta < -20 then
+                        table.insert(agent_response, {data[1], "dislikes_interview"})
+                    end
+                end
+                if #agent_response > 0 then
+                    cxt:Dialog("DIALOG_INTERVIEW_AFTER", #agent_response)
+                    for i, data in ipairs(agent_response) do
+                        cxt.enc:PresentAgent(data[1], SIDE.RIGHT)
+                        cxt:Quip(data[1], "post_interview", data[2])
+                        data[1]:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent(data[2]))
+                    end
+                end
+            end
             cxt:Opt("OPT_DO_INTERVIEW")
                 :Negotiation{
                     on_success = function(cxt, minigame)
                         cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
-                        TheGame:GetDebug():CreatePanel(DebugTable(INTERVIEWER_BEHAVIOR))
+                        -- TheGame:GetDebug():CreatePanel(DebugTable(INTERVIEWER_BEHAVIOR))
                         DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", (INTERVIEWER_BEHAVIOR.params.questions_answered or 0) * 2)
                         -- Big calculations that happens.
-                        local agent_response = {}
-                        for i, data in ipairs(agent_supports) do
-                            local current_support = DemocracyUtil.TryMainQuestFn("GetSupportForAgent", data[1])
-                            local support_delta = current_support - data[2] + RELATION_OFFSET[data[1]:GetRelationship()] + math.random(-30, 30)
-                            if support_delta > 25 then
-                                table.insert(agent_response, {data[1], "likes_interview"})
-                            elseif support_delta < -25 then
-                                table.insert(agent_response, {data[1], "dislikes_interview"})
-                            end
-                        end
-                        if #agent_response > 0 then
-                            cxt:Dialog("DIALOG_INTERVIEW_AFTER", #agent_response)
-                            for i, data in ipairs(agent_response) do
-                                cxt.enc:PresentAgent(data[1], SIDE.RIGHT)
-                                cxt:Quip(data[1], "post_interview", data[2])
-                                data[1]:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent(data[2]))
-                            end
-                        end
+                        ResolvePostInterview()
 
                         cxt:Opt("OPT_DONE")
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_INTERVIEW_FAIL")
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -20)
+                        ResolvePostInterview()
                         cxt:Opt("OPT_ACCEPT_LOSS")
                             :Fn(function(cxt)
                                 TheGame:Lose()

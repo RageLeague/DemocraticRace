@@ -429,7 +429,7 @@ local MODIFIERS =
         min_persuasion = 2,
         max_persuasion = 2,
 
-        address_cost = 5,
+        address_cost = 4,
 
         target_enemy = TARGET_ANY_RESOLVE,
 
@@ -573,40 +573,31 @@ local MODIFIERS =
     INTERVIEWER =
     {
         name = "Interviewer",
-        desc = "The owner's arguments takes 1 less damage for every question arguments the owner has(to a minimum of 1).\n\nAt the beginning of the player's turn, add an {address_question} card to the player's hand.",
-        alt_desc = "<#UPGRADE>Currently taking {2} less damage.</>",
+        desc = "At the end of {2}'s turn, apply {1} {COMPOSURE} to each of their's argument for every question arguments they have.\n\nAt the beginning of the player's turn, add an {address_question} card to the player's hand.",
         desc_fn = function(self, fmt_str )
-            if self.negotiator then
-                local question_count = 0
-                for i, data in self.negotiator:Modifiers() do
-                    if data.AddressQuestion then
-                        question_count = question_count + 1
-                    end
-                end
-                return loc.format(fmt_str .. "\n\n" .. self.def:GetLocalizedString("ALT_DESC"), self.negotiator:GetName(), question_count)
-            else
-                return loc.format(fmt_str)
-            end
+            return loc.format(fmt_str, self.composure_multiplier, self.owner:GetName() or LOC "UI.CARDS.OWNER")
         end,
         -- icon = engine.asset.Texture("negotiation/modifiers/heckler.tex"),
         modifier_type = MODIFIER_TYPE.CORE,
-        event_priorities =
-        {
-            [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_ADDITIVE,
-        },
-
-        event_handlers = {
-            [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
-                if target and target.owner == self.owner then
-                    local question_count = 0
-                    for i, data in self.negotiator:Modifiers() do
-                        if data.AddressQuestion then
-                            question_count = question_count + 1
-                        end
-                    end
-                    persuasion:AddPersuasion( - math.min(question_count, persuasion.min_persuasion - 1), - math.min(question_count, persuasion.max_persuasion - 1), self )
+        composure_multiplier = 1,
+        OnEndTurn = function(self)
+            local question_count = 0
+            for i, data in self.negotiator:Modifiers() do
+                if data.AddressQuestion then
+                    question_count = question_count + 1
                 end
-            end,
+            end
+            local targets = {}
+            for i, modifier in self.negotiator:ModifierSlots() do
+                if modifier:GetResolve() ~= nil then
+                    table.insert( targets, {modifier=modifier, count=0} )
+                end
+            end
+            for i, target in ipairs(targets) do
+                target.modifier:DeltaComposure( self.composure_multiplier * question_count, self)
+            end
+        end,
+        event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
                 local card = Negotiation.Card( "address_question", minigame:GetPlayer() )
                 card.show_dealt = true

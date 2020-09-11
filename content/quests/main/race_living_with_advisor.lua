@@ -56,15 +56,8 @@ QDEF:AddConvo(nil, "primary_advisor")
         OPT_CHECK_SUPPORT = "Check support...",
         DIALOG_CHECK_SUPPORT = [[
             agent:
-                Your current support level is at {1}.
-        ]],
-        DIALOG_FACTION_SUPPORT = [[
-            agent:
-                Your support from {1#faction} is equal to {2}.
-        ]],
-        DIALOG_WEALTH_SUPPORT = [[
-            agent:
-                Your support from {1#wealth_name} is equal to {2}.
+                !give
+                Here's the analysis of your support level.
         ]],
         OPT_CHANGE_OUTFIT = "Go to your room",
         TT_OUTFIT = "Change into another of {player}'s outfits.",
@@ -92,15 +85,6 @@ QDEF:AddConvo(nil, "primary_advisor")
         cxt:Opt("OPT_CHECK_SUPPORT")
             :Dialog("DIALOG_CHECK_SUPPORT", DemocracyUtil.TryMainQuestFn("GetGeneralSupport"))
             :Fn(function(cxt)
-                for id, data in pairs(TheGame:GetGameState():GetMainQuest().param.faction_support) do
-                    cxt:Dialog("DIALOG_FACTION_SUPPORT", 
-                        TheGame:GetGameState():GetFaction(id), 
-                        DemocracyUtil.TryMainQuestFn("GetFactionSupport", id)
-                    )
-                end
-                for i = 1, DemocracyConstants.wealth_levels do
-                    cxt:Dialog("DIALOG_WEALTH_SUPPORT", i, DemocracyUtil.TryMainQuestFn("GetWealthSupport", i))
-                end
                 TheGame:FE():InsertScreen( DemocracyClass.Screen.SupportScreen() )
             end)
         local unlocked_outfits = 1

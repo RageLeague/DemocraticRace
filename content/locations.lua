@@ -178,8 +178,8 @@ Content.AddLocationContent{
         patron_generator = GetGeneratePatronFunction(WEALTHY_PATRON_DEFS),
         num_patrons = 
         {
-            [DAY_PHASE.DAY] = 2,
-            [DAY_PHASE.NIGHT] = 5,
+            [DAY_PHASE.DAY] = 3,
+            [DAY_PHASE.NIGHT] = 7,
         },
     },
 }

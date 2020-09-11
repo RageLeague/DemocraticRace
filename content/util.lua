@@ -85,7 +85,9 @@ local function StartFreeTime(actions)
         quest.param.free_time_actions = actions
     end
 end
-
+local function EndFreeTime()
+    TheGame:GetGameState():ClearOpportunities()
+end
 local SUPPORT_DELTA = {
     [RELATIONSHIP.HATED] = -60,
     [RELATIONSHIP.DISLIKED] = -30,
@@ -169,6 +171,10 @@ local function TryMainQuestFn(id, ...)
     print(result)
     return result
 end
+
+local function DebugSupportScreen()
+    TheGame:FE():InsertScreen( DemocracyClass.Screen.SupportScreen() )
+end
 return {
     ADVISOR_IDS = ADVISOR_IDS,
     ADVISOR_HOME = ADVISOR_HOME,
@@ -176,6 +182,7 @@ return {
     AddHomeCasts = AddHomeCasts,
     AddPrimaryAdvisor = AddPrimaryAdvisor,
     StartFreeTime = StartFreeTime,
+    EndFreeTime = EndFreeTime,
     SupportScore = SupportScore,
     OppositionScore = OppositionScore,
     RandomBystanderCondition = RandomBystanderCondition,
@@ -186,4 +193,5 @@ return {
     AddOppositionCast = AddOppositionCast,
     GetWealthColor = GetWealthColor,
     TryMainQuestFn = TryMainQuestFn,
+    DebugSupportScreen = DebugSupportScreen,
 }
