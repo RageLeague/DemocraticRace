@@ -211,7 +211,7 @@ local QDEF = QuestDef.Define
         for i = 1, DemocracyConstants.wealth_levels do
             money = money + quest:DefFn("GetWealthSupport", i) * i
         end
-        money = money / 10
+        money = money / 5
         money = money + 50
         money = math.max(0, money)
         return math.round(money * rate)

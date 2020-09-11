@@ -76,17 +76,19 @@ QDEF:AddConvo(nil, "primary_advisor")
         ]],
     }
     :Hub(function(cxt)
+        cxt:Opt("OPT_CHECK_SUPPORT")
+            :Dialog("DIALOG_CHECK_SUPPORT", DemocracyUtil.TryMainQuestFn("GetGeneralSupport"))
+            :Fn(function(cxt)
+                TheGame:FE():InsertScreen( DemocracyClass.Screen.SupportScreen() )
+            end)
+            
         if not cxt:GetAgent():GetBrain():IsOnDuty() then
             return
         end
 
         StateGraphUtil.AddRemoveNegotiationCardOption( cxt, "DIALOG_REMOVE" )
         
-        cxt:Opt("OPT_CHECK_SUPPORT")
-            :Dialog("DIALOG_CHECK_SUPPORT", DemocracyUtil.TryMainQuestFn("GetGeneralSupport"))
-            :Fn(function(cxt)
-                TheGame:FE():InsertScreen( DemocracyClass.Screen.SupportScreen() )
-            end)
+        
         local unlocked_outfits = 1
         for k,v in ipairs( Content.GetOutfitsForCharacter(cxt.player.id) ) do
             if v.unlocked or TheGame:GetGameProfile():HasUnlock( v.id ) then

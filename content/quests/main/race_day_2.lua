@@ -28,7 +28,17 @@ local QDEF = QuestDef.Define
         UIHelpers.PassTime(DAY_PHASE.NIGHT)
     end,
     on_complete = function(quest)
-        -- quest:Activate("get_job")
+        quest:Activate("go_to_sleep")
+    end,
+}
+:AddObjective{
+    id = "go_to_sleep",
+    title = "Go to sleep",
+    on_activate = function(quest)
+        DemocracyUtil.StartFreeTime()
+    end,
+    on_complete = function(quest)
+        quest:Complete()
     end,
 }
 :AddObjective{
@@ -78,8 +88,8 @@ local QDEF = QuestDef.Define
 
         if (#quest.param.job_history == 1) then 
             quest:Activate("meet_opposition")
-        -- elseif (#quest.param.job_history >= 2) then
-        --     quest:Activate("do_summary")
+        elseif (#quest.param.job_history >= 2) then
+            quest:Activate("do_interview")
         else
             quest:Activate("get_job")
             DemocracyUtil.StartFreeTime()
@@ -166,3 +176,54 @@ QDEF:AddConvo("get_job", "primary_advisor")
                 DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 2, "RALLY_JOB")
             end)
     end)
+QDEF:AddConvo("go_to_sleep", "primary_advisor")
+    :Loc{
+        DIALOG_GO_TO_SLEEP = [[
+            player:
+                [p] you win. i'm going to sleep.
+            agent:
+                i'm glad you understand
+                !exit
+            player:
+                !exit
+        ]],
+        DIALOG_WAKE = [[
+            * Another day, another battle.
+        ]],
+    }
+    :Hub(function(cxt)
+        cxt:Opt("OPT_SLEEP")
+            :PreIcon(global_images.sleep)
+            :Dialog("DIALOG_GO_TO_SLEEP")
+            :Fn(function(cxt) 
+                -- local grog = cxt.location
+                -- cxt.encounter:DoLocationTransition( cxt.quest:GetCastMember("player_room") )
+                -- grog:SetPlax()
+                ConvoUtil.DoSleep(cxt, "DIALOG_WAKE")
+                
+                cxt.quest:Complete()
+
+                cxt:Opt("OPT_LEAVE")
+                    :MakeUnder()
+                    :Fn(function() 
+                        cxt.encounter:DoLocationTransition( cxt.quest:GetCastMember("home") )
+                        cxt:End()
+                    end)
+
+            end)
+    end)
+    :AttractState("STATE_ATTRACT")
+        :Loc{
+            DIALOG_INTRO = [[
+                agent:
+                    [p] aren't you tired? go to sleep?
+                player:
+                    who are you, morgana?
+                * just imagine {agent} is switched to the cat from persona 5.
+                agent:
+                    yes
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+        end)

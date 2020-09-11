@@ -380,7 +380,7 @@ QDEF:AddConvo("debate_people")
                     
                     situation_modifiers =
                     {
-                        { value = 5 + 5 * cxt.quest:GetRank(), text = cxt:GetLocString("SIT_MOD") }
+                        { value = 10, text = cxt:GetLocString("SIT_MOD") }
                     },
 
                     on_start_negotiation = function(minigame)

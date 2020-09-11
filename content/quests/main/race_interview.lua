@@ -43,7 +43,11 @@ local QDEF = QuestDef.Define
 
     qtype = QTYPE.STORY,
     collect_agent_locations = function(quest, t)
-        table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('backroom'), role = CHARACTER_ROLES.VISITOR})
+        if quest:IsActive("return_to_advisor") then
+            table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('home')})
+        else
+            table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('backroom'), role = CHARACTER_ROLES.VISITOR})
+        end
         table.insert(t, { agent = quest:GetCastMember("host"), location = quest:GetCastMember('theater')})
     end,
     -- on_start = function(quest)
@@ -110,6 +114,12 @@ local QDEF = QuestDef.Define
     mark = {"theater"},
     -- state = QSTATUS.ACTIVE,
 }
+:AddObjective{
+    id = "return_to_advisor",
+    title = "Return to your advisor",
+    desc = "Return to your advisor and discuss your current situation.",
+    mark = {"primary_advisor"},
+}
 
 :AddLocationDefs{
     BACKROOM = {
@@ -132,7 +142,7 @@ local QDEF = QuestDef.Define
 }
 
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
-
+DemocracyUtil.AddHomeCasts(QDEF)
 QDEF:AddConvo("go_to_interview")
     :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("backroom") end)
         :Loc{
@@ -195,6 +205,12 @@ QDEF:AddConvo("do_interview")
             DIALOG_INTERVIEW_AFTER = [[
                 * After the interview, {1*a person confronts you|several people confront you}.
             ]],
+            DIALOG_INTERVIEW_AFTER_GOOD = [[
+                * It seems a lot of people liked your interview! Nice!
+            ]],
+            DIALOG_INTERVIEW_AFTER_BAD = [[
+                * That's not good. People don't like your interview!
+            ]],
             OPT_ACCEPT_LOSS = "Accept your failure",
         }
         :Fn(function(cxt)
@@ -210,13 +226,17 @@ QDEF:AddConvo("do_interview")
 
             local function ResolvePostInterview()
                 local agent_response = {}
+                cxt.quest.param.num_likes = 0
+                cxt.quest.param.num_dislikes = 0
                 for i, data in ipairs(agent_supports) do
                     local current_support = DemocracyUtil.TryMainQuestFn("GetSupportForAgent", data[1])
                     local support_delta = current_support - data[2] + RELATION_OFFSET[data[1]:GetRelationship()] + math.random(-25, 25)
                     if support_delta > 20 then
                         table.insert(agent_response, {data[1], "likes_interview"})
+                        cxt.quest.param.num_likes = cxt.quest.param.num_likes + 1
                     elseif support_delta < -20 then
                         table.insert(agent_response, {data[1], "dislikes_interview"})
+                        cxt.quest.param.num_dislikes = cxt.quest.param.num_dislikes + 1
                     end
                 end
                 if #agent_response > 0 then
@@ -225,6 +245,13 @@ QDEF:AddConvo("do_interview")
                         cxt.enc:PresentAgent(data[1], SIDE.RIGHT)
                         cxt:Quip(data[1], "post_interview", data[2])
                         data[1]:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent(data[2]))
+                    end
+                    if cxt.quest.param.num_likes - cxt.quest.param.num_dislikes >= 2 then
+                        cxt:Dialog("DIALOG_INTERVIEW_AFTER_GOOD")
+                        cxt.quest.param.good_interview = true
+                    elseif cxt.quest.param.num_likes - cxt.quest.param.num_dislikes <= 2 then
+                        cxt:Dialog("DIALOG_INTERVIEW_AFTER_BAD")
+                        cxt.quest.param.bad_interview = true
                     end
                 end
             end
@@ -236,8 +263,9 @@ QDEF:AddConvo("do_interview")
                         DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", (INTERVIEWER_BEHAVIOR.params.questions_answered or 0) * 2)
                         -- Big calculations that happens.
                         ResolvePostInterview()
-
-                        cxt:Opt("OPT_DONE")
+                        cxt.quest:Complete("do_interview")
+                        cxt.quest:Activate("return_to_advisor")
+                        StateGraphUtil.AddEndOption(cxt)
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_INTERVIEW_FAIL")
@@ -249,4 +277,43 @@ QDEF:AddConvo("do_interview")
                             end)
                     end,
                 }
+        end)
+
+QDEF:AddConvo("return_to_advisor", "primary_advisor")
+    :AttractState("STATE_TALK")
+        :Loc{
+            DIALOG_INTRO = [[
+                agent:
+                {good_interview?
+                    [p] well done!
+                    im impressed by your work today.
+                }
+                {bad_interview?
+                    [p] i'm a bit disappointed by you.
+                    i can't believe you throw away a good opportunity like that.
+                }
+                {not (good_interview or bad_interview)?
+                    [p] you did good.
+                    hopefully that will be good enough.
+                }
+                    !give
+                    here's your pay.
+            ]],
+            DIALOG_INTRO_PST = [[
+                agent:
+                    [p] go to sleep when you're ready.
+                    i promise there's not going to be an assassin tonight.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+            local money = DemocracyUtil.TryMainQuestFn("CalculateFunding")
+            cxt.enc:GainMoney(money)
+            if cxt.quest.param.good_interview and cxt.quest:GetCastMember("primary_advisor"):GetRelationship() < RELATIONSHIP.LOVED then
+                cxt.quest:GetCastMember("primary_advisor"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("likes_interview"))
+            elseif cxt.quest.param.bad_interview and cxt.quest:GetCastMember("primary_advisor"):GetRelationship() > RELATIONSHIP.HATED then
+                cxt.quest:GetCastMember("primary_advisor"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("dislikes_interview"))
+            end
+            cxt.quest:Complete()
+            cxt:Dialog("DIALOG_INTRO_PST")
         end)
