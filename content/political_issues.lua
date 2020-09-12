@@ -134,22 +134,80 @@ local val =  {
             [-2] = {
                 name = "Total Annexation",
                 desc = "Havaria and Deltree become one country, with no special treatment.",
+                faction_support = {
+                    ADMIRALTY = 5,
+                    FEUD_CITIZEN = -4,
+                    BANDITS = -5,
+                    CULT_OF_HESH = 3,
+                    JAKES = -3,
+                },
+                wealth_support = {
+                    -5,
+                    -2,
+                    0,
+                    5,
+                },
             },
             [-1] = {
                 name = "Havarian Special Administration",
-                desc = "Havaria is part of Deltree by name, but Deltree must not intervene with Havaria's internal affairs too much to allow better integration.",
+                desc = "Havaria is part of Deltree by name, but Havaria has partial autonomy to allow better integration.",
+                faction_support = {
+                    ADMIRALTY = 3,
+                    FEUD_CITIZEN = -2,
+                    BANDITS = -3,
+                    CULT_OF_HESH = 2,
+                    JAKES = -1,
+                },
+                wealth_support = {
+                    -3,
+                    0,
+                    0,
+                    2,
+                },
             },
             [0] = {
                 name = "I don't care",
                 desc = "[p] i just want to grill for hesh sake",
+                faction_support = {
+                    ADMIRALTY = -1,
+                    FEUD_CITIZEN = -1,
+                },
+                wealth_support = {
+                    -1,
+                },
             },
             [1] = {
                 name = "Vassal State",
                 desc = "Havaria become a vassal state of Deltree. However, they are still different nations, and Deltree must respect the autonomy of Havaria.",
+                faction_support = {
+                    ADMIRALTY = -4,
+                    FEUD_CITIZEN = 2,
+                    BANDITS = 3,
+                    CULT_OF_HESH = -2,
+                },
+                wealth_support = {
+                    1,
+                    0,
+                    0,
+                    -2,
+                },
             },
             [2] = {
                 name = "Havaria Independence",
                 desc = "Havaria will become completely independent of Deltree, and Deltree should recognize the independence and respect Havaria's autonomy.",
+                faction_support = {
+                    ADMIRALTY = -5,
+                    FEUD_CITIZEN = 3,
+                    BANDITS = 5,
+                    CULT_OF_HESH = -4,
+                    JAKES = 2,
+                },
+                wealth_support = {
+                    3,
+                    0,
+                    -2,
+                    -5,
+                },
             },
         },
     },
