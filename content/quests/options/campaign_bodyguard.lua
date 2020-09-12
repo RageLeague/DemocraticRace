@@ -27,19 +27,18 @@ local QDEF = QuestDef.Define
     :Hub(function(cxt, who)
         if who and DemocracyUtil.RandomBystanderCondition(who) and TheGame:GetGameState():GetCaravan():HasHireling() == false and TheGame:GetGameState():IsHiringAvailable() then
             local cost = 60 + 30 * who:GetCombatStrength()
-            if not who:HasAspect( "bribed" ) then
-                cxt:Opt("OPT_HIRE")
-                    :PostText("OPT_HIRE_TT")
-                    :IsHubOption(true)
-                    :ReqRelationship( RELATIONSHIP.DISLIKED )
-                    :PreIcon( global_images.hire )
-                    -- :ReqCondition( not bribe_params.disable, bribe_params.disable_reason )
-                    :Dialog("DIALOG_HIRE")
-                    :DeliverMoney( cost )
-                    :Fn(function() 
-                        who:Recruit( PARTY_MEMBER_TYPE.HIRED )
-                        -- who:AddAspectStacks("bribed", 2)
-                    end)
-            end
+            cxt:Opt("OPT_HIRE")
+                :PostText("OPT_HIRE_TT")
+                :IsHubOption(true)
+                :ReqRelationship( RELATIONSHIP.DISLIKED )
+                :PreIcon( global_images.hire )
+                -- :ReqCondition( not bribe_params.disable, bribe_params.disable_reason )
+                :Dialog("DIALOG_HIRE")
+                :DeliverMoney( cost )
+                :Fn(function() 
+                    who:Recruit( PARTY_MEMBER_TYPE.HIRED )
+                    -- who:AddAspectStacks("bribed", 2)
+                end)
+        
         end
     end)
