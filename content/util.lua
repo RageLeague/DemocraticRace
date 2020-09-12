@@ -117,6 +117,7 @@ local function RandomBystanderCondition(agent)
     return not (AgentUtil.IsInHiding(agent) or agent:IsRetired() or agent:IsInPlayerParty()
         or AgentUtil.HasPlotArmour(agent) or not agent:IsSentient())
         and not (agent:GetBrain() and agent:GetBrain():IsOnDuty())
+        and not agent:HasQuestMembership()
 end
 
 -- Do the convo for unlocking a location.
@@ -197,6 +198,7 @@ local function AddAutofail(cxt, param)
     cxt:Opt("OPT_ACCEPT_FAILURE")
         :Fn(function(cxt)
             cxt:Wait()
+            -- cxt.enc:YieldEncounter()
             TheGame:Lose()
         end)
     return AddDebugBypass(cxt, param or not TheGame:GetLocalSettings().DEBUG)

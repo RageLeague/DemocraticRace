@@ -384,5 +384,53 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 Security for all.
                 lalala.
         ]],
+        nil,
+        nil,
+        "Ask about Nadan",
+        [[
+            player:
+                [p] what's his deal?
+            agent:
+                independence.
+                lalala.
+        ]],
+        nil,
+        nil,
+        "Ask about Fellemo",
+        [[
+            player:
+                [p] what's his deal?
+            agent:
+                low tax.
+                lalala.
+        ]],
+        nil,
+        nil,
+        "Ask about Kalandra",
+        [[
+            player:
+                [p] what's her deal?
+            agent:
+                unions.
+                lalala.
+        ]],
+        nil,
+        nil,
+        "Ask about Vixmali",
+        [[
+            player:
+                [p] what's his deal?
+            agent:
+                idk
+        ]],
+        nil,
+        nil,
+        "Ask about jakes guy",
+        [[
+            player:
+                [p] what's his deal?
+            agent:
+                legalize everything
+        ]],
         function()end,
     })

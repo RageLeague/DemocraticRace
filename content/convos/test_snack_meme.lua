@@ -1,0 +1,10 @@
+-- Convo("MEME")
+--     :Priority(CONVO_PRIORITY_LOWEST)
+--     :AttractState("STATE_ATTRACT", function(cxt) return cxt:GetAgent():GetSkinID() == "5ab12917-a659-455c-8df6-b2843caa05d7" end)
+--         :Loc{
+--             DIALOG_INTRO = "もう何も恐くない。",
+--         }
+--         :Fn(function(cxt)
+--             print(cxt:GetAgent():GetSkinID())
+--             cxt:Dialog("DIALOG_INTRO")
+--         end)

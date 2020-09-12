@@ -104,7 +104,6 @@ QDEF:AddConvo("starting_out", "primary_advisor")
     :ConfrontState("STATE_CONFRONT")
     :Loc{
         DIALOG_INTRO = [[
-            #added a new conversation for advidor and player on the second day. bit shakier later in, may edit when i can think of a better end.
             * [p] As you wake up, you look to see {primary_advisor} staring you down while you slept and shaking your arm.
             * Naturally, you make the most dignified sound you could think of.
             player:
@@ -123,17 +122,30 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 Because the voters don't want to see you sleeping on the job.
                 No politician had gotten far by lazing about their home.
                 The opposition was working hard through the night, and some of the voters have already turned on us.
+        ]],
+        DIALOG_INTRO_PST = [[
             player:
                 Ah Hesh, People are turning on us that quickly?
             primary_advisor:
                 Well yeah! Voting day is in a matter of days, and people are only looking up from their work now.
                 The image you have now is a lot more impactful than it was before.
             * With {primary_advisor} yelling about your tasks you have for today, you clean yourself up and get ready for another stressful day.
-        ]]
+
+            primary_advisor:
+                [p] also i heard someone tried to assassinate you today.
+            player:
+                i already got used to it.
+                they won't get me.
+            primary_advisor:
+                even still, it's probably better to keep a bodyguard around.
+            ** You can now hire bodyguards!
+        ]],
     }
     :Fn(function(cxt)
         cxt:Dialog("DIALOG_INTRO")
         DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 3)
+        cxt:Dialog("DIALOG_INTRO_PST")
+        QuestUtil.SpawnQuest("CAMPAIGN_BODYGUARD")
         cxt.quest:Complete("starting_out")
     end)
 
