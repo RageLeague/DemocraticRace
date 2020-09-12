@@ -196,6 +196,7 @@ end
 local function AddAutofail(cxt, param)
     cxt:Opt("OPT_ACCEPT_FAILURE")
         :Fn(function(cxt)
+            cxt:Wait()
             TheGame:Lose()
         end)
     return AddDebugBypass(cxt, param or not TheGame:GetLocalSettings().DEBUG)

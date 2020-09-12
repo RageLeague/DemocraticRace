@@ -107,9 +107,9 @@ local function OnLoad( mod )
         if filepath:find( "/deprecated/" ) then
         else
             if name then
-                package.loaded[ name ] = nil
+                -- package.loaded[ name ] = nil
                 require( name )
-                assert( rawget( _G, "QDEF" ) == nil or error( string.format( "Stop declaring global QDEFS %s", name )))
+                -- assert( rawget( _G, "QDEF" ) == nil or error( string.format( "Stop declaring global QDEFS %s", name )))
             end
         end
     end
