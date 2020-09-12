@@ -271,10 +271,7 @@ QDEF:AddConvo("do_interview")
                         cxt:Dialog("DIALOG_INTERVIEW_FAIL")
                         DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -20)
                         ResolvePostInterview()
-                        cxt:Opt("OPT_ACCEPT_LOSS")
-                            :Fn(function(cxt)
-                                TheGame:Lose()
-                            end)
+                        DemocracyUtil.AddAutofail(cxt, false)
                     end,
                 }
         end)

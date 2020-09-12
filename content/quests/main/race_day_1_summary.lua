@@ -86,9 +86,9 @@ QDEF:AddConvo("meet_advisor", "primary_advisor")
         }
         :Fn(function(cxt)
             if DemocracyUtil.TryMainQuestFn("GetGeneralSupport") >= 10 then
-                local money = DemocracyUtil.TryMainQuestFn("CalculateFunding")
-                
                 cxt:Dialog("DIALOG_INTRO")
+
+                local money = DemocracyUtil.TryMainQuestFn("CalculateFunding")
                 cxt.enc:GainMoney(money)
                 cxt:Dialog("DIALOG_INTRO_PST")
                 cxt.quest:Complete("meet_advisor")
@@ -96,10 +96,11 @@ QDEF:AddConvo("meet_advisor", "primary_advisor")
                 DemocracyUtil.StartFreeTime()
             else
                 cxt:Dialog("DIALOG_INTRO_LOW_SUPPORT")
-                cxt:Opt("OPT_ACCEPT_FAILURE")
-                    :Fn(function(cxt)
-                        TheGame:Lose()
-                    end)
+                DemocracyUtil.AddAutofail(cxt, function(cxt)
+                    cxt.quest:Complete("meet_advisor")
+                    cxt.quest:Activate("go_to_sleep")
+                    DemocracyUtil.StartFreeTime()
+                end)
             end
         end)
 QDEF:AddConvo("go_to_sleep", "primary_advisor")

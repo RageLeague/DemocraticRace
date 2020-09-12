@@ -140,10 +140,7 @@ QDEF:AddConvo("go_to_bar")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-            cxt:Opt("OPT_ACCEPT_FAILURE")
-                :Fn(function(cxt)
-                    TheGame:Lose()
-                end)
+            DemocracyUtil.AddAutofail(cxt, function() cxt:GoTo("STATE_CONFRONT") end)
         end)
     :State("STATE_CONFRONT")
         :Loc{

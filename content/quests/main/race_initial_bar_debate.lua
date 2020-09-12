@@ -208,21 +208,14 @@ QDEF:AddConvo("win_argument")
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_DEBATE_LOST")
-                        cxt:Opt("OPT_ACCEPT_FAILURE")
-                            :Fn(function(cxt)
-                                TheGame:Lose()
-                            end)
+                        DemocracyUtil.AddAutofail(cxt, false)
                     end,
                 }
 
             cxt:Opt("OPT_IGNORE")
                 :Dialog("DIALOG_IGNORE")
                 :Fn(function(cxt)
-                    cxt:Opt("OPT_ACCEPT_FAILURE")
-                        :Fn(function(cxt)
-                            TheGame:Lose()
-                        end)
-                    
+                    DemocracyUtil.AddAutofail(cxt, function() cxt:GoTo("STATE_DEVELOP_IDEA") end)
                 end)
         end)
     :State("STATE_DEVELOP_IDEA")

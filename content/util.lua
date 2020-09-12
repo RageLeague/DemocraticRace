@@ -175,6 +175,31 @@ end
 local function DebugSupportScreen()
     TheGame:FE():InsertScreen( DemocracyClass.Screen.SupportScreen() )
 end
+
+-- Param can be:
+-- false: ignore stuff
+-- true: not ignore
+local function AddDebugBypass(cxt, param)
+    if param == false then
+        return
+    end
+
+    local r = cxt:Opt("OPT_DEBUG_BYPASS_HARD_CHECK")
+        :PostText("TT_DEBUG_BYPASS_HARD_CHECK")
+        :Fn(function()
+            TheGame:GetGameState():GetOptions().is_custom_mode = true
+        end)
+    if type( param ) == "function" then r:Fn(param) end
+
+    return r
+end
+local function AddAutofail(cxt, param)
+    cxt:Opt("OPT_ACCEPT_FAILURE")
+        :Fn(function(cxt)
+            TheGame:Lose()
+        end)
+    return AddDebugBypass(cxt, param or not TheGame:GetLocalSettings().DEBUG)
+end
 return {
     ADVISOR_IDS = ADVISOR_IDS,
     ADVISOR_HOME = ADVISOR_HOME,
@@ -194,4 +219,6 @@ return {
     GetWealthColor = GetWealthColor,
     TryMainQuestFn = TryMainQuestFn,
     DebugSupportScreen = DebugSupportScreen,
+    AddDebugBypass = AddDebugBypass,
+    AddAutofail = AddAutofail,
 }
