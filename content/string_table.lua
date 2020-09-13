@@ -18,29 +18,36 @@ Content.AddStringTable("DEMOCRACY", {
             {
                 TITLE_INCREASE = "Gained {1} Support From {2#faction}",
                 TITLE_DECREASE = "Lost {1} Support From {2#faction}",
-                DETAIL_INCREASE = "Your support level from {2#faction} is increased to {1}.",
-                DETAIL_DECREASE = "Your support level from {2#faction} is decreased to {1}.",
+                DETAIL_INCREASE = "Your support from {2#faction} is increased to {1}.",
+                DETAIL_DECREASE = "Your support from {2#faction} is decreased to {1}.",
             },
             GENERAL_SUPPORT =
             {
                 TITLE_INCREASE = "Gained {1} Support",
                 TITLE_DECREASE = "Lost {1} Support",
-                DETAIL_INCREASE = "Your support level is increased to {1}.",
-                DETAIL_DECREASE = "Your support level is decreased to {1}.",
+                DETAIL_INCREASE = "Your support is increased to {1}.",
+                DETAIL_DECREASE = "Your support is decreased to {1}.",
             },
             GROUP_FACTION_SUPPORT = 
             {
-                TITLE = "Support Among Factions Changed",
-                DETAIL_INCREASE = "Your support levels from {1#faction_list} are increased.",
-                DETAIL_DECREASE = "Your support levels from {1#faction_list} are decreased.",
-                DETAIL_BOTH = "Your support levels from {1#faction_list} are increased, while your support levels from {2#faction_list} are decreased.",
+                TITLE = "Support From Factions Changed",
+                DETAIL_INCREASE = "Your support from {1#faction_list} are increased.",
+                DETAIL_DECREASE = "Your support from {1#faction_list} are decreased.",
+                DETAIL_BOTH = "Your support from {1#faction_list} are increased, while your support from {2#faction_list} are decreased.",
+            },
+            GROUP_WEALTH_SUPPORT = 
+            {
+                TITLE = "Support Among Classes Changed",
+                DETAIL_INCREASE = "Your support among {1#wealth_name_list} are increased.",
+                DETAIL_DECREASE = "Your support among {1#wealth_name_list} are decreased.",
+                DETAIL_BOTH = "Your support among {1#wealth_name_list} are increased, while your support among {2#wealth_name_list} are decreased.",
             },
             WEALTH_SUPPORT =
             {
                 TITLE_INCREASE = "Gained {1} Support Among The {2#wealth_name}",
                 TITLE_DECREASE = "Lost {1} Support Among The {2#wealth_name}",
-                DETAIL_INCREASE = "Your support level among the {2#wealth_name} is increased to {1}.",
-                DETAIL_DECREASE = "Your support level among the {2#wealth_name} is decreased to {1}.",
+                DETAIL_INCREASE = "Your support among the {2#wealth_name} is increased to {1}.",
+                DETAIL_DECREASE = "Your support among the {2#wealth_name} is decreased to {1}.",
             },
         },
         SUPPORT_ENTRY = 

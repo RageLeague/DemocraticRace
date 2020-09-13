@@ -171,19 +171,26 @@ local QDEF = QuestDef.Define
     end,
     DeltaGroupWealthSupport = function(quest, group_delta, multiplier, ignore_notification)
         multiplier = multiplier or 1
+        local actual_group = {}
         for id, val in pairs(group_delta or {}) do
-            quest:DefFn("DeltaWealthSupport", math.round(val * multiplier), id, ignore_notification)
+            actual_group[id] = math.round(val * multiplier)
+            quest:DefFn("DeltaWealthSupport", math.round(val * multiplier), id, true)
+        end
+        if not ignore_notification then
+            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GROUP_WEALTH_SUPPORT, actual_group)
         end
     end,
     -- Getters
     GetGeneralSupport = function(quest) return quest.param.support_level end,
     GetFactionSupport = function(quest, faction)
+        if type(faction) ~= "string" then faction = faction:GetID() end
         return quest.param.support_level + (quest.param.faction_support[faction] or 0)
     end,
     GetWealthSupport = function(quest, renown)
         return quest.param.support_level + (quest.param.wealth_support[DemocracyUtil.GetWealth(renown)] or 0)
     end,
     GetCompoundSupport = function(quest, faction, renown)
+        if type(faction) ~= "string" then faction = faction:GetID() end
         return quest.param.support_level + (quest.param.faction_support[faction] or 0) + (quest.param.wealth_support[DemocracyUtil.GetWealth(renown)] or 0)
     end,
     GetFactionSupportAgent = function(quest, agent)
