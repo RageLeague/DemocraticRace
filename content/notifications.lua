@@ -4,6 +4,7 @@ AddNotification("DELTA_GENERAL_SUPPORT",{
     sfx = SoundEvents.notification_relationship_new,
     img = DemocracyConstants.icons.support,
     FormatNotification = function( self, notification, delta, current )
+        current = current or DemocracyUtil.TryMainQuestFn("GetGeneralSupport")
         local addendum = delta >= 0 and "INCREASE" or "DECREASE"
 
         notification.banner_txt = loc.format(LOC("DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.TITLE_"..addendum), math.abs(delta))
@@ -47,5 +48,41 @@ AddNotification("DELTA_AGENT_SUPPORT",{
             mainquest:DefFn("GetGeneralSupport"), agent:GetFaction(), agent:GetRenown())
         
         notification.img = agent
+    end,
+})
+AddNotification("DELTA_GROUP_FACTION_SUPPORT", {
+    sfx = SoundEvents.notification_relationship_new,
+    img = DemocracyConstants.icons.support,
+    FormatNotification = function( self, notification, group_deltas )
+        local liked = {}
+        local disliked = {}
+        for id, val in pairs(group_deltas) do
+            if type(val) == "number" then
+                if val > 0 then
+                    table.insert(liked, id)
+                elseif val < 0 then
+                    table.insert(disliked, id)
+                end
+            end
+        end
+        table.sort(liked)
+        table.sort(disliked)
+        if #liked + #disliked == 1 then
+            local solokey = #liked > 0 and liked[1] or disliked[1]
+            return NOTIFY.DELTA_FACTION_SUPPORT.FormatNotification(self, notification, solokey, group_deltas[solokey])
+        end
+        if #liked + #disliked == 0 then
+            return NOTIFY.DELTA_GENERAL_SUPPORT.FormatNotification(self, notification, 0)
+        end
+        notification.banner_txt = LOC"DEMOCRACY.NOTIFICATION.GROUP_FACTION_SUPPORT.TITLE"
+        if #liked > 0 then
+            if #disliked > 0 then
+                notification.details = loc.format(LOC"DEMOCRACY.NOTIFICATION.GROUP_FACTION_SUPPORT.DETAIL_BOTH", liked, disliked)
+            else
+                notification.details = loc.format(LOC"DEMOCRACY.NOTIFICATION.GROUP_FACTION_SUPPORT.DETAIL_INCREASE", liked)
+            end
+        else
+            notification.details = loc.format(LOC"DEMOCRACY.NOTIFICATION.GROUP_FACTION_SUPPORT.DETAIL_DECREASE", disliked)
+        end
     end,
 })

@@ -28,6 +28,13 @@ Content.AddStringTable("DEMOCRACY", {
                 DETAIL_INCREASE = "Your support level is increased to {1}.",
                 DETAIL_DECREASE = "Your support level is decreased to {1}.",
             },
+            GROUP_FACTION_SUPPORT = 
+            {
+                TITLE = "Support Among Factions Changed",
+                DETAIL_INCREASE = "Your support levels from {1#faction_list} are increased.",
+                DETAIL_DECREASE = "Your support levels from {1#faction_list} are decreased.",
+                DETAIL_BOTH = "Your support levels from {1#faction_list} are increased, while your support levels from {2#faction_list} are decreased.",
+            },
             WEALTH_SUPPORT =
             {
                 TITLE_INCREASE = "Gained {1} Support Among The {2#wealth_name}",

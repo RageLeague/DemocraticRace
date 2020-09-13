@@ -76,6 +76,48 @@ local function AddPrimaryAdvisor(qdef, mandatory)
         end,
         no_validation = true,
     }
+    if mandatory then
+        -- for debugging purpose to not crash game
+        qdef:AddCastFallback{
+            cast_fn = function( quest, t )
+        
+                local alias = "ENDO"
+        
+                local agent = TheGame:GetGameState():GetAgentOrMemento( alias )
+                if agent == nil then
+                    local def = Content.GetCharacterDef( alias )
+                    local content_id, skin_table
+                    if def then
+                        content_id = def.id
+                        local skins = Content.GetAllCharacterSkins( content_id )
+                        if skins and #skins == 1 then
+                            -- If there's a singular skin, use it automatically.
+                            skin_table = skins[1]
+                        end
+        
+                    else
+                        content_id, skin_table = Content.GetCharacterSkinByAlias( alias )
+                        if not TheGame:GetGameState():IsSkinAvailable( skin_table.uuid ) then
+                            content_id, skin_table = nil, nil
+                        end
+                    end
+                    if content_id then
+                        agent = Agent( content_id, skin_table )
+                    end
+                end
+                if not agent:IsRetired() then
+                    table.insert( t, agent )
+                end
+            end,
+            no_validation = true,
+            on_assign = function(quest, agent)
+                quest.param.has_primary_advisor = true
+                if quest:GetQuestDef():GetCast("home") then
+                    quest:AssignCastMember("home")
+                end
+            end,
+        }
+    end
 end
 
 -- Start the free time event. spawn the opportunity and change the actions

@@ -160,8 +160,13 @@ local QDEF = QuestDef.Define
     end,
     DeltaGroupFactionSupport = function(quest, group_delta, multiplier, ignore_notification)
         multiplier = multiplier or 1
+        local actual_group = {}
         for id, val in pairs(group_delta or {}) do
-            quest:DefFn("DeltaFactionSupport", math.round(val * multiplier), id, ignore_notification)
+            actual_group[id] = math.round(val * multiplier)
+            quest:DefFn("DeltaFactionSupport", actual_group[id], id, true)
+        end
+        if not ignore_notification then
+            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GROUP_FACTION_SUPPORT, actual_group)
         end
     end,
     DeltaGroupWealthSupport = function(quest, group_delta, multiplier, ignore_notification)

@@ -210,9 +210,9 @@ QDEF:AddConvo("meet_opposition", "opposition")
                         :Dialog("DIALOG_DISAGREE")
                         :Fn(function(cxt)
                             DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport",
-                                opposition_data.faction_support, -1, true)
+                                opposition_data.faction_support, -1)
                             DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport",
-                                opposition_data.wealth_support, -1, true)
+                                opposition_data.wealth_support, -1)
                             if platform and platform_stance then
                                 DemocracyUtil.TryMainQuestFn("UpdateStance", platform, -platform_stance)
                             end
