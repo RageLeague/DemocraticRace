@@ -679,8 +679,7 @@ msgid ""
 "When destroyed, remove a random intent and create a copy of this bounty with "
 "{2} more starting resolve."
 msgstr ""
-"当摧毁时，随机移除一个意图，然后创造一个这个赏金的复制品，但有{2}点额外的意志"
-"力。"
+"当摧毁时，随机移除一个意图，然后创造一个这个赏金的复制品，但有{2}点额外的意志力。"
 
 #: NEGOTIATION_FEATURE.DISTRACTION_GUILTY_CONSCIENCE.NAME
 msgctxt "NEGOTIATION_FEATURE.DISTRACTION_GUILTY_CONSCIENCE.NAME"
