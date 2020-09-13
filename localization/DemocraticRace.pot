@@ -8,6 +8,11 @@ msgctxt "CARD.ADDRESS_QUESTION.NAME"
 msgid "Address Question"
 msgstr ""
 
+#: CARD.ADDRESS_QUESTION.NOT_A_QUESTION
+msgctxt "CARD.ADDRESS_QUESTION.NOT_A_QUESTION"
+msgid "Target is not a question"
+msgstr ""
+
 #: CARD.ASSASSIN_FIGHT_CALL_FOR_HELP.DESC
 msgctxt "CARD.ASSASSIN_FIGHT_CALL_FOR_HELP.DESC"
 msgid "Attempt to call for help and ask someone to deal with the assassin."
@@ -26,6 +31,26 @@ msgstr ""
 #: CARD.ASSASSIN_FIGHT_DESCRIBE_INFORMATION.NAME
 msgctxt "CARD.ASSASSIN_FIGHT_DESCRIBE_INFORMATION.NAME"
 msgid "Describe Situation"
+msgstr ""
+
+#: CARD.QUESTION_ANSWER.DESC
+msgctxt "CARD.QUESTION_ANSWER.DESC"
+msgid "This is a place that describes the answer to a question."
+msgstr ""
+
+#: CARD.QUESTION_ANSWER.FLAVOUR
+msgctxt "CARD.QUESTION_ANSWER.FLAVOUR"
+msgid "Here's what I think..."
+msgstr ""
+
+#: CARD.QUESTION_ANSWER.ISSUE_DESC
+msgctxt "CARD.QUESTION_ANSWER.ISSUE_DESC"
+msgid "About <b>{1}</>:\n{2}"
+msgstr ""
+
+#: CARD.QUESTION_ANSWER.NAME
+msgctxt "CARD.QUESTION_ANSWER.NAME"
+msgid "Question answer"
 msgstr ""
 
 #: CONVO.CHANGE_MY_MIND_3.DIALOG_INTRO
@@ -58,9 +83,24 @@ msgctxt "CONVO.ROADSIDE_PREACHING_4.DIALOG_INTRO"
 msgid "player:\n!left\n[p] nah"
 msgstr ""
 
+#: CONVO_COMMON.OPT_ACCEPT_FAILURE
+msgctxt "CONVO_COMMON.OPT_ACCEPT_FAILURE"
+msgid "Accept your failure"
+msgstr ""
+
+#: CONVO_COMMON.OPT_DEBUG_BYPASS_HARD_CHECK
+msgctxt "CONVO_COMMON.OPT_DEBUG_BYPASS_HARD_CHECK"
+msgid "[Debug] Bypass hard check."
+msgstr ""
+
 #: CONVO_COMMON.OPT_UNLOCK_NEW_LOCATION
 msgctxt "CONVO_COMMON.OPT_UNLOCK_NEW_LOCATION"
 msgid "Unlock new location: {1#location}"
+msgstr ""
+
+#: CONVO_COMMON.TT_DEBUG_BYPASS_HARD_CHECK
+msgctxt "CONVO_COMMON.TT_DEBUG_BYPASS_HARD_CHECK"
+msgid "This will bypass a hard check in the game for debug purpose. Choosing this makes this run illegitimate."
 msgstr ""
 
 #: CONVO_COMMON.TT_UNLOCK_NEW_LOCATION
@@ -90,12 +130,12 @@ msgstr ""
 
 #: DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.DETAIL_DECREASE
 msgctxt "DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.DETAIL_DECREASE"
-msgid "Your support level from {2#faction} is decreased to {1}."
+msgid "Your support from {2#faction} is decreased to {1}."
 msgstr ""
 
 #: DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.DETAIL_INCREASE
 msgctxt "DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.DETAIL_INCREASE"
-msgid "Your support level from {2#faction} is increased to {1}."
+msgid "Your support from {2#faction} is increased to {1}."
 msgstr ""
 
 #: DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.TITLE_DECREASE
@@ -110,12 +150,12 @@ msgstr ""
 
 #: DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.DETAIL_DECREASE
 msgctxt "DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.DETAIL_DECREASE"
-msgid "Your support level is decreased to {1}."
+msgid "Your support is decreased to {1}."
 msgstr ""
 
 #: DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.DETAIL_INCREASE
 msgctxt "DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.DETAIL_INCREASE"
-msgid "Your support level is increased to {1}."
+msgid "Your support is increased to {1}."
 msgstr ""
 
 #: DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.TITLE_DECREASE
@@ -128,14 +168,54 @@ msgctxt "DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.TITLE_INCREASE"
 msgid "Gained {1} Support"
 msgstr ""
 
+#: DEMOCRACY.NOTIFICATION.GROUP_FACTION_SUPPORT.DETAIL_BOTH
+msgctxt "DEMOCRACY.NOTIFICATION.GROUP_FACTION_SUPPORT.DETAIL_BOTH"
+msgid "Your support from {1#faction_list} are increased, while your support from {2#faction_list} are decreased."
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.GROUP_FACTION_SUPPORT.DETAIL_DECREASE
+msgctxt "DEMOCRACY.NOTIFICATION.GROUP_FACTION_SUPPORT.DETAIL_DECREASE"
+msgid "Your support from {1#faction_list} are decreased."
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.GROUP_FACTION_SUPPORT.DETAIL_INCREASE
+msgctxt "DEMOCRACY.NOTIFICATION.GROUP_FACTION_SUPPORT.DETAIL_INCREASE"
+msgid "Your support from {1#faction_list} are increased."
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.GROUP_FACTION_SUPPORT.TITLE
+msgctxt "DEMOCRACY.NOTIFICATION.GROUP_FACTION_SUPPORT.TITLE"
+msgid "Support From Factions Changed"
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.GROUP_WEALTH_SUPPORT.DETAIL_BOTH
+msgctxt "DEMOCRACY.NOTIFICATION.GROUP_WEALTH_SUPPORT.DETAIL_BOTH"
+msgid "Your support among {1#wealth_name_list} are increased, while your support among {2#wealth_name_list} are decreased."
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.GROUP_WEALTH_SUPPORT.DETAIL_DECREASE
+msgctxt "DEMOCRACY.NOTIFICATION.GROUP_WEALTH_SUPPORT.DETAIL_DECREASE"
+msgid "Your support among {1#wealth_name_list} are decreased."
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.GROUP_WEALTH_SUPPORT.DETAIL_INCREASE
+msgctxt "DEMOCRACY.NOTIFICATION.GROUP_WEALTH_SUPPORT.DETAIL_INCREASE"
+msgid "Your support among {1#wealth_name_list} are increased."
+msgstr ""
+
+#: DEMOCRACY.NOTIFICATION.GROUP_WEALTH_SUPPORT.TITLE
+msgctxt "DEMOCRACY.NOTIFICATION.GROUP_WEALTH_SUPPORT.TITLE"
+msgid "Support Among Classes Changed"
+msgstr ""
+
 #: DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.DETAIL_DECREASE
 msgctxt "DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.DETAIL_DECREASE"
-msgid "Your support level among the {2#wealth_name} is decreased to {1}."
+msgid "Your support among the {2#wealth_name} is decreased to {1}."
 msgstr ""
 
 #: DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.DETAIL_INCREASE
 msgctxt "DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.DETAIL_INCREASE"
-msgid "Your support level among the {2#wealth_name} is increased to {1}."
+msgid "Your support among the {2#wealth_name} is increased to {1}."
 msgstr ""
 
 #: DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.TITLE_DECREASE
@@ -201,6 +281,11 @@ msgstr ""
 #: MODIFIER.CONNECTED_LINE.NAME
 msgctxt "MODIFIER.CONNECTED_LINE.NAME"
 msgid "Connected Line"
+msgstr ""
+
+#: MODIFIER.CONTEMPORARY_QUESTION.CHOOSE_AN_ANSWER
+msgctxt "MODIFIER.CONTEMPORARY_QUESTION.CHOOSE_AN_ANSWER"
+msgid "Choose An Answer"
 msgstr ""
 
 #: MODIFIER.CONTEMPORARY_QUESTION.DESC
@@ -270,7 +355,7 @@ msgstr ""
 
 #: MODIFIER.INTERVIEWER.DESC
 msgctxt "MODIFIER.INTERVIEWER.DESC"
-msgid "This argument takes 1 less damage for every question arguments the owner has(to a minimum of 1)."
+msgid "At the end of {2}'s turn, apply {1} {COMPOSURE} to each of their's argument for every question arguments they have.\n\nAt the beginning of the player's turn, add an {address_question} card to the player's hand."
 msgstr ""
 
 #: MODIFIER.INTERVIEWER.NAME
@@ -280,7 +365,7 @@ msgstr ""
 
 #: MODIFIER.LOADED_QUESTION.DESC
 msgctxt "MODIFIER.LOADED_QUESTION.DESC"
-msgid "When destroyed, the player loses support equal to the remaining splash damage.\n\nWhen {address_question|addressed}, the player loses {2} support."
+msgid "When destroyed, the player loses support equal to the remaining splash damage.\n\nWhen {address_question|addressed}, the player loses {1} support."
 msgstr ""
 
 #: MODIFIER.LOADED_QUESTION.NAME
@@ -291,6 +376,16 @@ msgstr ""
 #: MODIFIER.LOADED_QUESTION_DEATH_TRIGGER.NAME
 msgctxt "MODIFIER.LOADED_QUESTION_DEATH_TRIGGER.NAME"
 msgid "Loaded Question(Death Trigger)"
+msgstr ""
+
+#: MODIFIER.PLEASANT_QUESTION.DESC
+msgctxt "MODIFIER.PLEASANT_QUESTION.DESC"
+msgid "When destroyed or {address_question|addressed}, the player gains {1} resolve."
+msgstr ""
+
+#: MODIFIER.PLEASANT_QUESTION.NAME
+msgctxt "MODIFIER.PLEASANT_QUESTION.NAME"
+msgid "Pleasant Question"
 msgstr ""
 
 #: MODIFIER.PREACH_CROWD.DESC
@@ -330,7 +425,7 @@ msgstr ""
 
 #: MODIFIER.PREACH_TARGET_INTEREST.DESC
 msgctxt "MODIFIER.PREACH_TARGET_INTEREST.DESC"
-msgid "<b>{1.fullname}</> might be interested in listening to you if you can convince them. Destroy this argument to make {1.himher} join your side.\n\n<#PENALTY>After {2} turns, this argument removes itself, as <b>{1.name}</> loses interest in you.</>"
+msgid "<b>{1.fullname}</> might be interested in listening to you if you can convince {1.himher}. Destroy this argument to make {1.himher} join your side.\n\n<#PENALTY>After {2} turns, this argument removes itself, as <b>{1.name}</> loses interest in you.</>"
 msgstr ""
 
 #: MODIFIER.PREACH_TARGET_INTEREST.NAME
@@ -420,7 +515,7 @@ msgstr ""
 
 #: NEGOTIATION_FEATURE.INTERVIEWER.DESC
 msgctxt "NEGOTIATION_FEATURE.INTERVIEWER.DESC"
-msgid "This argument takes 1 less damage for every question arguments the owner has(to a minimum of 1)."
+msgid "At the end of {2}'s turn, apply {1} {COMPOSURE} to each of their's argument for every question arguments they have.\n\nAt the beginning of the player's turn, add an {address_question} card to the player's hand."
 msgstr ""
 
 #: NEGOTIATION_FEATURE.INTERVIEWER.NAME
@@ -430,7 +525,7 @@ msgstr ""
 
 #: NEGOTIATION_FEATURE.LOADED_QUESTION.DESC
 msgctxt "NEGOTIATION_FEATURE.LOADED_QUESTION.DESC"
-msgid "When destroyed, the player loses support equal to the remaining splash damage.\n\nWhen {address_question|addressed}, the player loses {2} support."
+msgid "When destroyed, the player loses support equal to the remaining splash damage.\n\nWhen {address_question|addressed}, the player loses {1} support."
 msgstr ""
 
 #: NEGOTIATION_FEATURE.LOADED_QUESTION.NAME
@@ -441,6 +536,16 @@ msgstr ""
 #: NEGOTIATION_FEATURE.LOADED_QUESTION_DEATH_TRIGGER.NAME
 msgctxt "NEGOTIATION_FEATURE.LOADED_QUESTION_DEATH_TRIGGER.NAME"
 msgid "Loaded Question(Death Trigger)"
+msgstr ""
+
+#: NEGOTIATION_FEATURE.PLEASANT_QUESTION.DESC
+msgctxt "NEGOTIATION_FEATURE.PLEASANT_QUESTION.DESC"
+msgid "When destroyed or {address_question|addressed}, the player gains {1} resolve."
+msgstr ""
+
+#: NEGOTIATION_FEATURE.PLEASANT_QUESTION.NAME
+msgctxt "NEGOTIATION_FEATURE.PLEASANT_QUESTION.NAME"
+msgid "Pleasant Question"
 msgstr ""
 
 #: NEGOTIATION_FEATURE.PREACH_CROWD.DESC
@@ -455,7 +560,7 @@ msgstr ""
 
 #: NEGOTIATION_FEATURE.PREACH_TARGET_INTEREST.DESC
 msgctxt "NEGOTIATION_FEATURE.PREACH_TARGET_INTEREST.DESC"
-msgid "<b>{1.fullname}</> might be interested in listening to you if you can convince them. Destroy this argument to make {1.himher} join your side.\n\n<#PENALTY>After {2} turns, this argument removes itself, as <b>{1.name}</> loses interest in you.</>"
+msgid "<b>{1.fullname}</> might be interested in listening to you if you can convince {1.himher}. Destroy this argument to make {1.himher} join your side.\n\n<#PENALTY>After {2} turns, this argument removes itself, as <b>{1.name}</> loses interest in you.</>"
 msgstr ""
 
 #: NEGOTIATION_FEATURE.PREACH_TARGET_INTEREST.NAME
@@ -471,6 +576,366 @@ msgstr ""
 #: NEGOTIATION_FEATURE.PREACH_TARGET_INTERESTED.NAME
 msgctxt "NEGOTIATION_FEATURE.PREACH_TARGET_INTERESTED.NAME"
 msgid "Interested Target"
+msgstr ""
+
+#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.DESC
+msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.DESC"
+msgid "if you have a better name, help me out here"
+msgstr ""
+
+#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.NAME
+msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.NAME"
+msgid "Artifact Treatment"
+msgstr ""
+
+#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-1.DESC
+msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-1.DESC"
+msgid "Sell the artifacts as weapons, idk"
+msgstr ""
+
+#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-1.NAME
+msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-1.NAME"
+msgid "Commercial Use"
+msgstr ""
+
+#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-2.DESC
+msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-2.DESC"
+msgid "Research all the artifacts extensively and utilize them to restore the former glory of the Vagrant Age"
+msgstr ""
+
+#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-2.NAME
+msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-2.NAME"
+msgid "Extensive Research & Use"
+msgstr ""
+
+#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_0.DESC
+msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_0.DESC"
+msgid "Why would I care?"
+msgstr ""
+
+#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_0.NAME
+msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_0.NAME"
+msgid "Don't care"
+msgstr ""
+
+#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_1.DESC
+msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_1.DESC"
+msgid "Research and use of artifacts are regulated."
+msgstr ""
+
+#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_1.NAME
+msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_1.NAME"
+msgid "Restrict Research & Use"
+msgstr ""
+
+#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_2.DESC
+msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_2.DESC"
+msgid "Forbid anyone from using them or researching them. For religious reasons."
+msgstr ""
+
+#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_2.NAME
+msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_2.NAME"
+msgid "Artifact Preservation"
+msgstr ""
+
+#: POLITICAL_ISSUE.INDEPENDENCE.DESC
+msgctxt "POLITICAL_ISSUE.INDEPENDENCE.DESC"
+msgid "The annexation of Havaria into Deltree has stroke controversies across Havaria. On the one hand, a full integration of Havaria to Deltree will likely improve Havaria's prosperity. On the other hand, it is a blatant disregard to Havaria's sovereignty."
+msgstr ""
+
+#: POLITICAL_ISSUE.INDEPENDENCE.NAME
+msgctxt "POLITICAL_ISSUE.INDEPENDENCE.NAME"
+msgid "Deltrean-Havarian Annex"
+msgstr ""
+
+#: POLITICAL_ISSUE.INDEPENDENCE.STANCE_-1.DESC
+msgctxt "POLITICAL_ISSUE.INDEPENDENCE.STANCE_-1.DESC"
+msgid "Havaria is part of Deltree by name, but Havaria has partial autonomy to allow better integration."
+msgstr ""
+
+#: POLITICAL_ISSUE.INDEPENDENCE.STANCE_-1.NAME
+msgctxt "POLITICAL_ISSUE.INDEPENDENCE.STANCE_-1.NAME"
+msgid "Havarian Special Administration"
+msgstr ""
+
+#: POLITICAL_ISSUE.INDEPENDENCE.STANCE_-2.DESC
+msgctxt "POLITICAL_ISSUE.INDEPENDENCE.STANCE_-2.DESC"
+msgid "Havaria and Deltree become one country, with no special treatment."
+msgstr ""
+
+#: POLITICAL_ISSUE.INDEPENDENCE.STANCE_-2.NAME
+msgctxt "POLITICAL_ISSUE.INDEPENDENCE.STANCE_-2.NAME"
+msgid "Total Annexation"
+msgstr ""
+
+#: POLITICAL_ISSUE.INDEPENDENCE.STANCE_0.DESC
+msgctxt "POLITICAL_ISSUE.INDEPENDENCE.STANCE_0.DESC"
+msgid "[p] i just want to grill for hesh sake"
+msgstr ""
+
+#: POLITICAL_ISSUE.INDEPENDENCE.STANCE_0.NAME
+msgctxt "POLITICAL_ISSUE.INDEPENDENCE.STANCE_0.NAME"
+msgid "I don't care"
+msgstr ""
+
+#: POLITICAL_ISSUE.INDEPENDENCE.STANCE_1.DESC
+msgctxt "POLITICAL_ISSUE.INDEPENDENCE.STANCE_1.DESC"
+msgid "Havaria become a vassal state of Deltree. However, they are still different nations, and Deltree must respect the autonomy of Havaria."
+msgstr ""
+
+#: POLITICAL_ISSUE.INDEPENDENCE.STANCE_1.NAME
+msgctxt "POLITICAL_ISSUE.INDEPENDENCE.STANCE_1.NAME"
+msgid "Vassal State"
+msgstr ""
+
+#: POLITICAL_ISSUE.INDEPENDENCE.STANCE_2.DESC
+msgctxt "POLITICAL_ISSUE.INDEPENDENCE.STANCE_2.DESC"
+msgid "Havaria will become completely independent of Deltree, and Deltree should recognize the independence and respect Havaria's autonomy."
+msgstr ""
+
+#: POLITICAL_ISSUE.INDEPENDENCE.STANCE_2.NAME
+msgctxt "POLITICAL_ISSUE.INDEPENDENCE.STANCE_2.NAME"
+msgid "Havaria Independence"
+msgstr ""
+
+#: POLITICAL_ISSUE.LABOR_LAW.DESC
+msgctxt "POLITICAL_ISSUE.LABOR_LAW.DESC"
+msgid "pro-employer? pro-workers?"
+msgstr ""
+
+#: POLITICAL_ISSUE.LABOR_LAW.NAME
+msgctxt "POLITICAL_ISSUE.LABOR_LAW.NAME"
+msgid "Labor Laws"
+msgstr ""
+
+#: POLITICAL_ISSUE.LABOR_LAW.STANCE_-1.DESC
+msgctxt "POLITICAL_ISSUE.LABOR_LAW.STANCE_-1.DESC"
+msgid "Employers have more rights than workers."
+msgstr ""
+
+#: POLITICAL_ISSUE.LABOR_LAW.STANCE_-1.NAME
+msgctxt "POLITICAL_ISSUE.LABOR_LAW.STANCE_-1.NAME"
+msgid "Pro-Employer"
+msgstr ""
+
+#: POLITICAL_ISSUE.LABOR_LAW.STANCE_-2.DESC
+msgctxt "POLITICAL_ISSUE.LABOR_LAW.STANCE_-2.DESC"
+msgid "i can never remember how to spell this."
+msgstr ""
+
+#: POLITICAL_ISSUE.LABOR_LAW.STANCE_-2.NAME
+msgctxt "POLITICAL_ISSUE.LABOR_LAW.STANCE_-2.NAME"
+msgid "Laissez Faire"
+msgstr ""
+
+#: POLITICAL_ISSUE.LABOR_LAW.STANCE_0.DESC
+msgctxt "POLITICAL_ISSUE.LABOR_LAW.STANCE_0.DESC"
+msgid "how do you even define 'balanced' in this situation?"
+msgstr ""
+
+#: POLITICAL_ISSUE.LABOR_LAW.STANCE_0.NAME
+msgctxt "POLITICAL_ISSUE.LABOR_LAW.STANCE_0.NAME"
+msgid "Balanced"
+msgstr ""
+
+#: POLITICAL_ISSUE.LABOR_LAW.STANCE_1.DESC
+msgctxt "POLITICAL_ISSUE.LABOR_LAW.STANCE_1.DESC"
+msgid "laws protects workers."
+msgstr ""
+
+#: POLITICAL_ISSUE.LABOR_LAW.STANCE_1.NAME
+msgctxt "POLITICAL_ISSUE.LABOR_LAW.STANCE_1.NAME"
+msgid "Pro-Worker"
+msgstr ""
+
+#: POLITICAL_ISSUE.LABOR_LAW.STANCE_2.DESC
+msgctxt "POLITICAL_ISSUE.LABOR_LAW.STANCE_2.DESC"
+msgid "Seize the means of production."
+msgstr ""
+
+#: POLITICAL_ISSUE.LABOR_LAW.STANCE_2.NAME
+msgctxt "POLITICAL_ISSUE.LABOR_LAW.STANCE_2.NAME"
+msgid "Socialism"
+msgstr ""
+
+#: POLITICAL_ISSUE.SECURITY.DESC
+msgctxt "POLITICAL_ISSUE.SECURITY.DESC"
+msgid "Security is a big issue in Havaria. On the one hand, improving security can drastically reduce crime and improve everyone's lives. On the other hand, it can leads to corruption and abuse of power."
+msgstr ""
+
+#: POLITICAL_ISSUE.SECURITY.NAME
+msgctxt "POLITICAL_ISSUE.SECURITY.NAME"
+msgid "Universal Security"
+msgstr ""
+
+#: POLITICAL_ISSUE.SECURITY.STANCE_-1.DESC
+msgctxt "POLITICAL_ISSUE.SECURITY.STANCE_-1.DESC"
+msgid "While it's important to have some sort of public security, at the current state, the Admiralty has too much power and is abusing it. By cutting their funding, their influence will be reduced."
+msgstr ""
+
+#: POLITICAL_ISSUE.SECURITY.STANCE_-1.NAME
+msgctxt "POLITICAL_ISSUE.SECURITY.STANCE_-1.NAME"
+msgid "Cut Funding for the Admiralty"
+msgstr ""
+
+#: POLITICAL_ISSUE.SECURITY.STANCE_-2.DESC
+msgctxt "POLITICAL_ISSUE.SECURITY.STANCE_-2.DESC"
+msgid "The Admiralty has always abused their power and made many false arrests. It's better if the Admiralty is defunded, and measures must be put in place to prevent anyone else from taking this power."
+msgstr ""
+
+#: POLITICAL_ISSUE.SECURITY.STANCE_-2.NAME
+msgctxt "POLITICAL_ISSUE.SECURITY.STANCE_-2.NAME"
+msgid "Defund the Admiralty"
+msgstr ""
+
+#: POLITICAL_ISSUE.SECURITY.STANCE_0.DESC
+msgctxt "POLITICAL_ISSUE.SECURITY.STANCE_0.DESC"
+msgid "The current system works just fine. There's no need to change it."
+msgstr ""
+
+#: POLITICAL_ISSUE.SECURITY.STANCE_0.NAME
+msgctxt "POLITICAL_ISSUE.SECURITY.STANCE_0.NAME"
+msgid "No Change"
+msgstr ""
+
+#: POLITICAL_ISSUE.SECURITY.STANCE_1.DESC
+msgctxt "POLITICAL_ISSUE.SECURITY.STANCE_1.DESC"
+msgid "Havaria is overrun with criminals of all kind. That's why we need to improve the security by increasing funding for the Admiralty. This way, the people can live in peace."
+msgstr ""
+
+#: POLITICAL_ISSUE.SECURITY.STANCE_1.NAME
+msgctxt "POLITICAL_ISSUE.SECURITY.STANCE_1.NAME"
+msgid "Increase Funding for the Admiralty"
+msgstr ""
+
+#: POLITICAL_ISSUE.SECURITY.STANCE_2.DESC
+msgctxt "POLITICAL_ISSUE.SECURITY.STANCE_2.DESC"
+msgid "Havaria is overrun with criminals of all kind, and the only way to fix it is through drastic measures."
+msgstr ""
+
+#: POLITICAL_ISSUE.SECURITY.STANCE_2.NAME
+msgctxt "POLITICAL_ISSUE.SECURITY.STANCE_2.NAME"
+msgid "Universal Security for All"
+msgstr ""
+
+#: POLITICAL_ISSUE.SUBSTANCE_REGULATION.DESC
+msgctxt "POLITICAL_ISSUE.SUBSTANCE_REGULATION.DESC"
+msgid "Policies regarding the restriction of certain items."
+msgstr ""
+
+#: POLITICAL_ISSUE.SUBSTANCE_REGULATION.NAME
+msgctxt "POLITICAL_ISSUE.SUBSTANCE_REGULATION.NAME"
+msgid "Substance Regulation"
+msgstr ""
+
+#: POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_-1.DESC
+msgctxt "POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_-1.DESC"
+msgid "save some resources"
+msgstr ""
+
+#: POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_-1.NAME
+msgctxt "POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_-1.NAME"
+msgid "Relax Restriction"
+msgstr ""
+
+#: POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_-2.DESC
+msgctxt "POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_-2.DESC"
+msgid "everything, yeah"
+msgstr ""
+
+#: POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_-2.NAME
+msgctxt "POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_-2.NAME"
+msgid "Legalize Everything"
+msgstr ""
+
+#: POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_0.DESC
+msgctxt "POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_0.DESC"
+msgid "Policy good enough"
+msgstr ""
+
+#: POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_0.NAME
+msgctxt "POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_0.NAME"
+msgid "Keep Unchanged"
+msgstr ""
+
+#: POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_1.DESC
+msgctxt "POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_1.DESC"
+msgid "liek relax restriction, but reverse"
+msgstr ""
+
+#: POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_1.NAME
+msgctxt "POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_1.NAME"
+msgid "Tighten Restriction"
+msgstr ""
+
+#: POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_2.DESC
+msgctxt "POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_2.DESC"
+msgid "not only are you adding restriction, you're also actually enforcing it."
+msgstr ""
+
+#: POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_2.NAME
+msgctxt "POLITICAL_ISSUE.SUBSTANCE_REGULATION.STANCE_2.NAME"
+msgid "Heavily Enforced Restriction"
+msgstr ""
+
+#: POLITICAL_ISSUE.TAX_POLICY.DESC
+msgctxt "POLITICAL_ISSUE.TAX_POLICY.DESC"
+msgid "Taxes are huge issues in society. [p] seriously, i'm lazy, you know what tax is right"
+msgstr ""
+
+#: POLITICAL_ISSUE.TAX_POLICY.NAME
+msgctxt "POLITICAL_ISSUE.TAX_POLICY.NAME"
+msgid "Tax Policy"
+msgstr ""
+
+#: POLITICAL_ISSUE.TAX_POLICY.STANCE_-1.DESC
+msgctxt "POLITICAL_ISSUE.TAX_POLICY.STANCE_-1.DESC"
+msgid "low tax"
+msgstr ""
+
+#: POLITICAL_ISSUE.TAX_POLICY.STANCE_-1.NAME
+msgctxt "POLITICAL_ISSUE.TAX_POLICY.STANCE_-1.NAME"
+msgid "Reduced Taxes"
+msgstr ""
+
+#: POLITICAL_ISSUE.TAX_POLICY.STANCE_-2.DESC
+msgctxt "POLITICAL_ISSUE.TAX_POLICY.STANCE_-2.DESC"
+msgid "tax kept to min"
+msgstr ""
+
+#: POLITICAL_ISSUE.TAX_POLICY.STANCE_-2.NAME
+msgctxt "POLITICAL_ISSUE.TAX_POLICY.STANCE_-2.NAME"
+msgid "Minimum Taxes"
+msgstr ""
+
+#: POLITICAL_ISSUE.TAX_POLICY.STANCE_0.DESC
+msgctxt "POLITICAL_ISSUE.TAX_POLICY.STANCE_0.DESC"
+msgid "tax is good for now"
+msgstr ""
+
+#: POLITICAL_ISSUE.TAX_POLICY.STANCE_0.NAME
+msgctxt "POLITICAL_ISSUE.TAX_POLICY.STANCE_0.NAME"
+msgid "Keep As It Is"
+msgstr ""
+
+#: POLITICAL_ISSUE.TAX_POLICY.STANCE_1.DESC
+msgctxt "POLITICAL_ISSUE.TAX_POLICY.STANCE_1.DESC"
+msgid "more taxes"
+msgstr ""
+
+#: POLITICAL_ISSUE.TAX_POLICY.STANCE_1.NAME
+msgctxt "POLITICAL_ISSUE.TAX_POLICY.STANCE_1.NAME"
+msgid "Increase Taxes"
+msgstr ""
+
+#: POLITICAL_ISSUE.TAX_POLICY.STANCE_2.DESC
+msgctxt "POLITICAL_ISSUE.TAX_POLICY.STANCE_2.DESC"
+msgid "no one likes that, but you don't know that for sure."
+msgstr ""
+
+#: POLITICAL_ISSUE.TAX_POLICY.STANCE_2.NAME
+msgctxt "POLITICAL_ISSUE.TAX_POLICY.STANCE_2.NAME"
+msgid "Max Taxes"
 msgstr ""
 
 #: QUEST.CHANGE_MY_MIND.DESC
@@ -618,6 +1083,11 @@ msgctxt "QUEST.RACE_DAY_2.OBJECTIVE.GET_JOB.TITLE"
 msgid "Find on a way to gain support"
 msgstr ""
 
+#: QUEST.RACE_DAY_2.OBJECTIVE.GO_TO_SLEEP.TITLE
+msgctxt "QUEST.RACE_DAY_2.OBJECTIVE.GO_TO_SLEEP.TITLE"
+msgid "Go to sleep"
+msgstr ""
+
 #: QUEST.RACE_DAY_2.OBJECTIVE.STARTING_OUT.TITLE
 msgctxt "QUEST.RACE_DAY_2.OBJECTIVE.STARTING_OUT.TITLE"
 msgid "Talk to {primary_advisor} about the plan."
@@ -671,6 +1141,16 @@ msgstr ""
 #: QUEST.RACE_INTERVIEW.OBJECTIVE.GO_TO_INTERVIEW.TITLE
 msgctxt "QUEST.RACE_INTERVIEW.OBJECTIVE.GO_TO_INTERVIEW.TITLE"
 msgid "Go to interview"
+msgstr ""
+
+#: QUEST.RACE_INTERVIEW.OBJECTIVE.RETURN_TO_ADVISOR.DESC
+msgctxt "QUEST.RACE_INTERVIEW.OBJECTIVE.RETURN_TO_ADVISOR.DESC"
+msgid "Return to your advisor and discuss your current situation."
+msgstr ""
+
+#: QUEST.RACE_INTERVIEW.OBJECTIVE.RETURN_TO_ADVISOR.TITLE
+msgctxt "QUEST.RACE_INTERVIEW.OBJECTIVE.RETURN_TO_ADVISOR.TITLE"
+msgid "Return to your advisor"
 msgstr ""
 
 #: QUEST.RACE_INTERVIEW.TITLE

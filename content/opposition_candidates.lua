@@ -56,8 +56,14 @@ return {
     candidate_baron = {
         cast_id = "candidate_baron",
         character = "SPARK_CONTACT",
-        main = "Tax cut",
-        desc = "Reduce taxes for all. That's it. That's their plan. Fellemo isn't really that bright. Popular among rich people(and some poor people), but unpopular among those who care about equality and those who have plans for utilizing the taxes.",
+        -- main = "Tax cut",
+        -- desc = "Reduce taxes for all. That's it. That's their plan. Fellemo isn't really that bright. Popular among rich people(and some poor people), but unpopular among those who care about equality and those who have plans for utilizing the taxes.",
+        platform = "TAX_POLICY",
+
+        stances = {
+            TAX_POLICY = -2,
+        },
+        
         faction_support = {
             ADMIRALTY = -3,
             FEUD_CITIZEN = 1,
@@ -77,8 +83,13 @@ return {
     candidate_rise = {
         cast_id = "candidate_rise",
         character = "KALANDRA",
-        main = "Universal Rights",
-        desc = "Grant rights to every citizen of Havaria, I don't know, read the Declaration of Rights or something. That mostly means slavery is illegal! Popular among the workers, but unpopular among the Cult, Barons, and all those who exploit the labour of the people.",
+        -- main = "Universal Rights",
+        -- desc = "Grant rights to every citizen of Havaria, I don't know, read the Declaration of Rights or something. That mostly means slavery is illegal! Popular among the workers, but unpopular among the Cult, Barons, and all those who exploit the labour of the people.",
+        platform = "LABOR_LAW",
+
+        stances = {
+            LABOR_LAW = 2,
+        },
         faction_support = {
             ADMIRALTY = -1,
             FEUD_CITIZEN = 2,
@@ -99,30 +110,30 @@ return {
         cast_id = "candidate_cult",
         -- temp character
         character = "HESH_OUTPOST_PRIEST",
-        main = "Public Education",
-        desc = "Grant \"public education\" among the people.",
+
+        platform = "ARTIFACT_TREATMENT",
+
+        stances = {
+            ARTIFACT_TREATMENT = 2,
+        },
         faction_support = {
-            ADMIRALTY = -2,
-            FEUD_CITIZEN = 2,
-            BANDITS = -1,
-            RISE = 1,
-            SPARK_BARONS = -3,
-            CULT_OF_HESH = 3,
-            -- JAKES = ,
+            -- rewrite this entire thing
         },
         wealth_support = {
-            2,
-            1,
-            -1,
-            -2,
+            
         },
     },
     candidate_jakes = {
         cast_id = "candidate_jakes",
         -- temp character
         character = "GAMBLER",
-        main = "Deregulation",
-        desc = "Drops many regulation to allow a healthier economy.",
+        -- main = "Deregulation",
+        -- desc = "Drops many regulation to allow a healthier economy.",
+        platform = "SUBSTANCE_REGULATION",
+
+        stances = {
+            SUBSTANCE_REGULATION = -2,
+        },
         faction_support = {
             ADMIRALTY = -3,
             FEUD_CITIZEN = 1,
@@ -135,8 +146,8 @@ return {
         wealth_support = {
             2,
             -2,
-            -1,
             1,
+            -1,
         },
     },
 }

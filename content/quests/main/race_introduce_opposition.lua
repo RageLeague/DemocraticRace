@@ -135,8 +135,6 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 I have to say that I sympathize with your cause.
             agent:
                 I'm glad we can come to an agreement.
-            ** This exchange causes your support among different factions to change.
-            ** Check with your advisor for more details.
             player:
                 That said, we're still opponents.
                 I'll beat you in this democratic race!
@@ -149,8 +147,6 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 With all due respect, I can't say that I agree with your idea.
             agent:
                 A shame. We could've been great allies.
-            ** This exchange causes your support among different factions to change.
-            ** Check with your advisor for more details.
             player:
                 But aren't we political opponents, though?
             agent:
