@@ -222,6 +222,7 @@ end
 -- Param can be:
 -- false: ignore stuff
 -- true: not ignore
+-- function: something to run after the debug bypass option
 local function AddDebugBypass(cxt, param)
     if param == false then
         return
@@ -243,7 +244,7 @@ local function AddAutofail(cxt, param)
             -- cxt.enc:YieldEncounter()
             TheGame:Lose()
         end)
-    return AddDebugBypass(cxt, param or not TheGame:GetLocalSettings().DEBUG)
+    return AddDebugBypass(cxt, param and (TheGame:GetLocalSettings().DEBUG or false))
 end
 
 local function DetermineSupportTarget(target)
