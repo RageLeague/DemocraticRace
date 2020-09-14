@@ -47,7 +47,11 @@ function IssueLocDef:GetAgentStanceIndex(agent)
     local has_vals = false
     for id, data in pairs(self.stances) do
         stance_score[id] = math.max (0, data:GetAgentSupport(agent))
+        if math.abs(id) >= 2 and stance_score[id] < 5 then stance_score[id] = 0 end
+        if math.abs(id) == 1 and stance_score[id] < 2 then stance_score[id] = 0 end
+
         if stance_score[id] > 0 then has_vals = true end
+        
     end
     if has_vals then
         return weightedpick(stance_score)
@@ -59,7 +63,7 @@ function IssueLocDef:GetAgentStance(agent)
     return self.stances[self:GetAgentStanceIndex(agent)]
 end
 
-function ConvoOption:UpdatePoliticalStance(issue, newval, strict)
+function ConvoOption:UpdatePoliticalStance(issue, newval, strict, autosupport)
     if type(issue) == "string" then
         issue = DemocracyConstants.issue_data[issue]
     end

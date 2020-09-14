@@ -245,6 +245,28 @@ local function AddAutofail(cxt, param)
         end)
     return AddDebugBypass(cxt, param or not TheGame:GetLocalSettings().DEBUG)
 end
+
+local function DetermineSupportTarget(target)
+    local support_type
+    if type(target) == "string" then
+        -- faction, probably convert.
+        target = TheGame:GetGameState():GetFaction(target)
+    end
+    if type(target) == "number" then
+        support_type = "WEALTH"
+    elseif is_instance(target, Faction) then
+        support_type = "FACTION"
+    else
+        support_type = "GENERAL"
+    end
+    return support_type, target
+end
+--
+
+function ConvoOption:DeltaSupport(amt, target)
+    
+    return self
+end
 return {
     ADVISOR_IDS = ADVISOR_IDS,
     ADVISOR_HOME = ADVISOR_HOME,

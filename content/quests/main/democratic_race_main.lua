@@ -11,6 +11,7 @@ AddOpinionEvent("DISLIKE_IDEOLOGY", {
     delta = OPINION_DELTAS.OPINION_DOWN,
     txt = "Dislike your ideology",
 })
+print("try load main function")
 local QDEF = QuestDef.Define
 {
     title = "The Democratic Race",

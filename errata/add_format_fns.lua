@@ -14,13 +14,13 @@ loc.pol_issue = function(issue)
         if not DemocracyConstants.issue_data[issue] then return issue end
         issue = DemocracyConstants.issue_data[issue]
     end
-    if issue and issue.GetName then
-        return issue:GetName()
+    if issue and issue.GetLocalizedName then
+        return issue:GetLocalizedName()
     end
     return tostring(issue)
 end
 
 loc.pol_stance = function(stance)
     -- can't really autoconvert, since stances aren't really tracked by id.
-    return stance and stance.GetName and stance:GetName() or stance
+    return stance and stance.GetLocalizedName and stance:GetLocalizedName() or stance
 end
