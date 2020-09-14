@@ -9,6 +9,16 @@ end
 function IssueStanceLocDef:GetLocPrefix()
     return "POLITICAL_ISSUE." .. string.upper(self.issue_id) .. ".STANCE_" .. self.stance_intensity
 end
+function IssueStanceLocDef:GetAgentSupport(agent)
+    local score = 0
+    if self.faction_support and self.faction_support[agent:GetFactionID()] then
+        score = score + self.faction_support[agent:GetFactionID()]
+    end
+    if self.wealth_support and self.wealth_support[DemocracyUtil.GetWealth(agent:GetRenown())] then
+        score = score + self.wealth_support[DemocracyUtil.GetWealth(agent:GetRenown())]
+    end
+    return score
+end
 
 local IssueLocDef = class("DemocracyClass.IssueLocDef", BasicLocalizedDef)
 
@@ -31,6 +41,22 @@ function IssueLocDef:HarvestStrings(t)
 end
 function IssueLocDef:GetLocPrefix()
     return "POLITICAL_ISSUE." .. string.upper(self.id)
+end
+function IssueLocDef:GetAgentStanceIndex(agent)
+    local stance_score = {}
+    local has_vals = false
+    for id, data in pairs(self.stances) do
+        stance_score[id] = math.max (0, data:GetAgentSupport(agent))
+        if stance_score[id] > 0 then has_vals = true end
+    end
+    if has_vals then
+        return weightedpick(stance_score)
+    else
+        return 0
+    end
+end
+function IssueLocDef:GetAgentStance(agent)
+    return self.stances[self:GetAgentStanceIndex(agent)]
 end
 
 local val =  {

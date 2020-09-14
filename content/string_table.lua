@@ -69,4 +69,9 @@ Content.AddStringTable("DEMOCRACY", {
             LVL_4 = "Upper Class",
         },
     },
+    PUNCTUATION = 
+    {
+        PERIOD = ".",
+        EXCLAMATION = "!",
+    },
 })

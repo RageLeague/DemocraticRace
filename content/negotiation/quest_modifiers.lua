@@ -521,7 +521,7 @@ local MODIFIERS =
         max_stacks = 1,
 
         desc_fn = function(self, fmt_str)
-            return loc.format( fmt_str, self.issue_data and self.issue_data.name or self.def:GetLocalizedString("ISSUE_DEFAULT"))
+            return loc.format( fmt_str, self.issue_data and self.issue_data:GetLocalizedName() or self.def:GetLocalizedString("ISSUE_DEFAULT"))
         end,
         OnInit = function( self )
             self:SetResolve( 25 )

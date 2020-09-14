@@ -76,6 +76,13 @@ local QDEF = QuestDef.Define
     end,
     events = 
     {
+        action_clock_advance = function(quest, location)
+            quest.param.event_delays = (quest.param.event_delays or 0) + 1
+            if math.random() < 0.12 * (quest.param.event_delays - 1) then
+                TheGame:GetGameState():AddPendingEvent()
+                quest.param.event_delays = 0
+            end
+        end,
         quests_changed = function(quest, event_quest) 
             if event_quest == quest.param.day_quest and quest.param.day_quest:IsComplete() then
                 DemocracyUtil.EndFreeTime()

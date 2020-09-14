@@ -111,19 +111,19 @@ local CARDS = {
     {
         name = "Question answer",
         name_fn = function(self, fmt_str)
-            print("wololo")
-            print(self.issue_data)
-            print(self.stance)
+            -- print("wololo")
+            -- print(self.issue_data)
+            -- print(self.stance)
             if self.issue_data and self.stance then
-                print("narvini")
-                return self.issue_data.stances[self.stance].name
+                -- print("narvini")
+                return self.issue_data.stances[self.stance]:GetLocalizedName()
             end
             return loc.format(fmt_str)
         end,
         desc = "This is a place that describes the answer to a question.",
         desc_fn = function(self, fmt_str)
             if self.issue_data and self.stance then
-                return self.issue_data.stances[self.stance].desc
+                return self.issue_data.stances[self.stance]:GetLocalizedDesc()
             end
             return loc.format(fmt_str)
         end,

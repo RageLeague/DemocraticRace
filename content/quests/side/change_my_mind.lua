@@ -172,13 +172,6 @@ QDEF:AddConvo("debate_people")
     :State("STATE_DEBATE")
         :Quips{
             {
-                tags = "confront_argument",
-                "Your opinion is wrong!",
-                "You're wrong. Here's 100 reasons why.",
-                "Sore wa chigau yo!",
-                "You want to get your mind changed? I'll help you with that!",
-            },
-            {
                 tags = "rebuttal",
                 "Your argument is not sound.",
                 "Here's why your claim is wrong.",

@@ -8,3 +8,7 @@ loc.wealth_name_list = function(list)
     end
     return loc.format( "{1#listing}", t )
 end
+
+loc.angrify = function(str)
+    return str:gsub("[" .. LOC"PUNCTUATION.PERIOD" .. "]", LOC"PUNCTUATION.EXCLAMATION")
+end
