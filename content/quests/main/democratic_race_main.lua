@@ -237,34 +237,57 @@ local QDEF = QuestDef.Define
     end,
     -- Just handle the change in stance and consistency of your opinion.
     -- Does not handle the relationship gained from updating your stance.
-    UpdateStance = function(quest, stance, val, strict)
+    UpdateStance = function(quest, issue, val, strict)
+        if type(issue) == "table" then
+            issue = issue.id
+        end
         -- multiplier = multiplier or 1
-        if quest.param.stances[stance] == nil then
-            quest.param.stances[stance] = val
-            quest.param.stance_change[stance] = 0
+        if quest.param.stances[issue] == nil then
+            quest.param.stances[issue] = val
+            quest.param.stance_change[issue] = 0
         else
-            local stance_delta = val - quest.param.stances[stance]
-            if stance_delta == 0 or (not strict and (quest.param.stances[stance] > 0) == (val > 0) and (quest.param.stances[stance] < 0) == (val < 0)) then
+            local stance_delta = val - quest.param.stances[issue]
+            if stance_delta == 0 or (not strict and (quest.param.stances[issue] > 0) == (val > 0) and (quest.param.stances[issue] < 0) == (val < 0)) then
                 -- A little bonus for being consistent with your ideology.
                 quest:DefFn("DeltaGeneralSupport", 2)
-                quest.param.stance_change[stance] = math.max(0, quest.param.stance_change[stance] - 1)
+                quest.param.stance_change[issue] = math.max(0, quest.param.stance_change[issue] - 1)
+                quest.param.stance_change_freebie[issue] = false
             else
-                if quest.param.stance_change_freebie[stance] 
-                    and (quest.param.stances[stance] > 0) == (val > 0) 
-                    and (quest.param.stances[stance] < 0) == (val < 0) then
-                    
+                if quest.param.stance_change_freebie[issue] 
+                    and (quest.param.stances[issue] > 0) == (val > 0) 
+                    and (quest.param.stances[issue] < 0) == (val < 0) then
+
+                    quest:DefFn("DeltaGeneralSupport", 2)
+                    quest.param.stance_change[issue] = math.max(0, quest.param.stance_change[issue] - 1)
+                    -- quest.param.stances[issue] = val
                 else
                     -- Penalty for being inconsistent.
-                    quest.param.stance_change[stance] = quest.param.stance_change[stance] + math.abs(stance_delta)
-                    quest:DefFn("DeltaGeneralSupport", -math.max(0, quest.param.stance_change[stance] - 1))
+                    quest.param.stance_change[issue] = quest.param.stance_change[issue] + math.abs(stance_delta)
+                    quest:DefFn("DeltaGeneralSupport", -math.max(0, quest.param.stance_change[issue] - 1))
                 end
-                quest.param.stances[stance] = val
+                quest.param.stances[issue] = val
+                quest.param.stance_change_freebie[issue] = not strict
             end
         end
-
-        quest.param.stance_change_freebie[stance] = not strict
-
-        print(loc.format("Updated stance: '{1}': {2}(strict: {3})", stance, val, strict))
+        print(loc.format("Updated stance: '{1}': {2}(strict: {3})", issue, val, strict))
+    end,
+    GetStance = function(quest, issue)
+        if type(issue) == "table" then
+            issue = issue.id
+        end
+        return quest.param.stances[issue]
+    end,
+    GetStanceChange = function(quest, issue)
+        if type(issue) == "table" then
+            issue = issue.id
+        end
+        return quest.param.stance_change[issue]
+    end,
+    GetStanceChangeFreebie = function(quest, issue)
+        if type(issue) == "table" then
+            issue = issue.id
+        end
+        return quest.param.stance_change_freebie[issue]
     end,
 }
 :AddCast{

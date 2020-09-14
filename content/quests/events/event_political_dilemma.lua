@@ -61,6 +61,34 @@ QDEF:AddConvo()
                 player:
                     !left
                     i have to say, i must agree with {agent} here.
+                other:
+                    !angry
+                    what?!
+                agent:
+                    !left
+                    nananananana, hahahahahaha.
+                other:
+                    i'll remember this.
+                player:
+                    !left
+                agent:
+                    !right
+                    so will i.
+                    thanks, {player}!
+                * you made some friends, but that means taking sides. hopefully your friendship lasts.
+            ]],
+            OPT_CHOOSE_NO_ONE = "Choose no one",
+            DIALOG_CHOOSE_NO_ONE = [[
+                player:
+                    screw you both, i ain't taking sides!
+                extremist_neg:
+                    !right
+                    wtf?
+                extremist_pos:
+                    !right
+                    fine! have it your way then.
+                * you might made some enemies, but at least you stayed neutral.
+                * right?
             ]],
         }
         :Fn(function(cxt)
@@ -68,5 +96,14 @@ QDEF:AddConvo()
             cxt:Dialog("DIALOG_INTRO")
 
             cxt:Opt("OPT_SIDE_WITH", cxt.quest:GetCastMember("extremist_pos"))
+                :Fn(function(cxt)
+                    cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("extremist_pos"))
+                    cxt:ReassignCastMember("other", cxt.quest:GetCastMember("extremist_neg"))
+                end)
+                :Dialog("DIALOG_SIDED")
+                :ReceiveOpinion(OPINION.DISAPPROVE_MINOR, nil, cxt.quest:GetCastMember("extremist_neg"))
+                :ReceiveOpinion(OPINION.APPROVE, nil, cxt.quest:GetCastMember("extremist_pos"))
+                :UpdatePoliticalStance(cxt.quest.param.issue, 2, true)
+                :Travel()
             cxt:Opt("OPT_SIDE_WITH", cxt.quest:GetCastMember("extremist_neg"))
         end)

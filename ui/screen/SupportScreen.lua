@@ -69,11 +69,11 @@ function SupportScreen:init( owner, locked )
     self.character:SetClickFn( function()
         if self.character_animation_done then
             self.character_animation_done = false
-            self.character:Emote( "thought", true )
+            self.character:Emote( "neutral_notepad", true )
         end
     end )
     self.character:SetAutoLoopEnabled( false )
-    self.character:Emote( "thought", true )
+    self.character:Emote( "neutral_notepad", true )
     self.character:SetPos( -RES_X*0.35, -350 )
 
     -- Our scroll container

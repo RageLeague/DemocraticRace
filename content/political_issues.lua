@@ -59,6 +59,46 @@ function IssueLocDef:GetAgentStance(agent)
     return self.stances[self:GetAgentStanceIndex(agent)]
 end
 
+function ConvoOption:UpdatePoliticalStance(issue, newval, strict)
+    if type(issue) == "string" then
+        issue = DemocracyConstants.issue_data[issue]
+    end
+    assert(issue, "issue must be non-nil")
+    local old_stance = DemocracyUtil.TryMainQuestFn("GetStance", issue)
+    local new_stance_data = issue.stances[newval]
+    if old_stance then
+        local old_stance_data = issue.stances[old_stance]
+
+        if not strict or DemocracyUtil.TryMainQuestFn("GetStanceChangeFreebie", issue) then
+            if (old_stance < 0) == (newval < 0) and (old_stance > 0) == (newval > 0) then
+                self:PostText("TT_UPDATE_STANCE_SAME", issue, old_stance_data)
+                self:PostText("TT_UPDATE_STANCE_BONUS")
+            else
+                self:PostText("TT_UPDATE_STANCE_LOOSE_OLD", issue, new_stance_data, old_stance_data)
+                self:PostText("TT_UPDATE_STANCE_WARNING")
+            end
+        else
+            if old_stance == newval then
+                self:PostText("TT_UPDATE_STANCE_SAME", issue, old_stance_data)
+                self:PostText("TT_UPDATE_STANCE_BONUS")
+            else
+                self:PostText("TT_UPDATE_STANCE_OLD", issue, new_stance_data, old_stance_data)
+                self:PostText("TT_UPDATE_STANCE_WARNING")
+            end
+        end
+    else
+        if strict then
+            self:PostText("TT_UPDATE_STANCE", issue, new_stance_data)
+        else
+            self:PostText("TT_UPDATE_STANCE_LOOSE", issue, new_stance_data)
+        end
+    end
+    self:Fn(function()
+        DemocracyUtil.TryMainQuestFn("UpdateStance", issue, newval, strict)
+    end)
+    return self
+end
+
 local val =  {
     SECURITY = {
         name = "Universal Security",
