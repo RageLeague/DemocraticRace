@@ -264,8 +264,10 @@ local function DetermineSupportTarget(target)
 end
 --
 
-function ConvoOption:DeltaSupport(amt, target)
-    
+function ConvoOption:DeltaSupport(amt, target, ignore_notification)
+    self:Fn(function()
+        TryMainQuestFn("DeltaSupport", amt, target, ignore_notification)
+    end)
     return self
 end
 return {
@@ -289,4 +291,5 @@ return {
     DebugSupportScreen = DebugSupportScreen,
     AddDebugBypass = AddDebugBypass,
     AddAutofail = AddAutofail,
+    DetermineSupportTarget = DetermineSupportTarget,
 }

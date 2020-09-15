@@ -2,20 +2,25 @@ local QDEF = QuestDef.Define
 {
     qtype = QTYPE.EVENT,
     spawn_event_mask = QEVENT_TRIGGER.TRAVEL,
-
-    on_init = function(quest)
+    precondition = function(quest)
         local issues = DemocracyConstants.issue_data
         quest.param.issue = table.arraypick(copyvalues(issues))
         quest.param.issue_name = quest.param.issue:GetLocalizedName()
         quest.param.pos_stance_txt = quest.param.issue.stances[2]:GetLocalizedDesc()
         quest.param.neg_stance_txt = quest.param.issue.stances[-2]:GetLocalizedDesc()
-        quest:AssignCastMember("extremist_pos")
-        quest:AssignCastMember("extremist_neg")
+        return true
+    end,
+    on_init = function(quest)
+        
+        -- quest:AssignCastMember("extremist_pos")
+        -- quest:AssignCastMember("extremist_neg")
+        -- assert(quest:GetCastMember("extremist_pos"))
+        -- assert(quest:GetCastMember("extremist_neg"))
     end,
 }
 :AddCast{
     cast_id = "extremist_pos",
-    when = QWHEN.MANUAL,
+    -- when = QWHEN.MANUAL,
     condition = function(agent, quest)
         return quest.param.issue:GetAgentStanceIndex(agent) >= 2
     end,
@@ -23,7 +28,7 @@ local QDEF = QuestDef.Define
 -- too lazy to add fallbacks.
 :AddCast{
     cast_id = "extremist_neg",
-    when = QWHEN.MANUAL,
+    -- when = QWHEN.MANUAL,
     condition = function(agent, quest)
         return quest.param.issue:GetAgentStanceIndex(agent) <= -2
     end,
@@ -113,9 +118,11 @@ QDEF:AddConvo()
                 :Dialog("DIALOG_SIDED")
                 :ReceiveOpinion(OPINION.DISAPPROVE_MINOR, nil, cxt.quest:GetCastMember("extremist_pos"))
                 :ReceiveOpinion(OPINION.APPROVE, nil, cxt.quest:GetCastMember("extremist_neg"))
-                :UpdatePoliticalStance(cxt.quest.param.issue, 2, true, true)
+                :UpdatePoliticalStance(cxt.quest.param.issue, -2, true, true)
                 :Travel()
             cxt:Opt("OPT_CHOOSE_NO_ONE")
                 :Dialog("DIALOG_CHOOSE_NO_ONE")
+                :ReceiveOpinion(OPINION.DISAPPROVE_MINOR, nil, cxt.quest:GetCastMember("extremist_pos"))
+                :ReceiveOpinion(OPINION.DISAPPROVE_MINOR, nil, cxt.quest:GetCastMember("extremist_neg"))
                 :Travel()
         end)

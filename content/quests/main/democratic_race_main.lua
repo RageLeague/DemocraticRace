@@ -142,6 +142,16 @@ local QDEF = QuestDef.Define
             StateGraphUtil.AddEndOption(cxt)
         end)
     end,
+    DeltaSupport = function(quest, amt, target, ignore_notification)
+        local type, t = DemocracyUtil.DetermineSupportTarget(target)
+        if type == "FACTION" then
+            quest:DefFn("DeltaFactionSupport", amt, t, ignore_notification)
+        elseif type == "WEALTH" then
+            quest:DefFn("DeltaWealthSupport", amt, t, ignore_notification)
+        else
+            quest:DefFn("DeltaGeneralSupport", amt, ignore_notification)
+        end
+    end,
     DeltaGeneralSupport = function(quest, amt, ignore_notification)
         quest.param.support_level = (quest.param.support_level or 0) + amt
         if not ignore_notification and amt ~= 0 then
@@ -149,6 +159,7 @@ local QDEF = QuestDef.Define
         end
     end,
     DeltaFactionSupport = function(quest, amt, faction, ignore_notification)
+        if type(faction) ~= "string" then faction = faction:GetID() end
         quest.param.faction_support[faction] = (quest.param.faction_support[faction] or 0) + amt
         if not ignore_notification and amt ~= 0 then
             TheGame:GetGameState():LogNotification( NOTIFY.DELTA_FACTION_SUPPORT, amt, quest:DefFn("GetFactionSupport", faction), TheGame:GetGameState():GetFaction(faction) ) 
