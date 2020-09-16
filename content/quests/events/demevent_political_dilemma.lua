@@ -1,6 +1,7 @@
 local QDEF = QuestDef.Define
 {
     qtype = QTYPE.EVENT,
+    act_filter = DemocracyUtil.DemocracyActFilter,
     spawn_event_mask = QEVENT_TRIGGER.TRAVEL,
     precondition = function(quest)
         local issues = DemocracyConstants.issue_data
@@ -11,11 +12,7 @@ local QDEF = QuestDef.Define
         return true
     end,
     on_init = function(quest)
-        
-        -- quest:AssignCastMember("extremist_pos")
-        -- quest:AssignCastMember("extremist_neg")
-        -- assert(quest:GetCastMember("extremist_pos"))
-        -- assert(quest:GetCastMember("extremist_neg"))
+
     end,
 }
 :AddCast{

@@ -641,6 +641,33 @@ local val =  {
             },
         },
     },
+    -- small issues
+    WELFARE = {
+        name = "Welfare Policy",
+        desc = "[p] it's obvious to everyone what that is",
+        stances = {
+            [-2] = {
+                name = "Welfare Ban",
+                desc = "pull yourself up by your bootstrap.",
+            },
+            [-1] = {
+                name = "No Welfare",
+                desc = "just no",
+            },
+            [0] = {
+                name = "Token Effort",
+                desc = "pretend you are the good guy",
+            },
+            [1] = {
+                name = "Social Safety Net",
+                desc = "In case you lost your job.",
+            },
+            [2] = {
+                name = "Universal Basic Income",
+                desc = "yang gang",
+            },
+        },
+    },
 }
 for id, data in pairs(val) do
     data.id = id

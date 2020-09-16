@@ -46,7 +46,7 @@ local QDEF = QuestDef.Define{
     desc = "You have free time! Spend this time at your favorite location!",
     icon = engine.asset.Texture("icons/quests/oppo_battle_aftermath.tex"),
     qtype = QTYPE.OPPORTUNITY,
-    act_filter = "DEMOCRACY",
+    act_filter = DemocracyUtil.DemocracyActFilter,
     on_init = function(quest)
         quest.param.free_time_actions = 2
     end,

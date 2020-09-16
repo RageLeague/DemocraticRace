@@ -34,7 +34,7 @@ local QDEF = QuestDef.Define
     desc = "Set up a booth that opens up debate to those who has doubt with your ideology. You might change their mind instead!",
 
     qtype = QTYPE.SIDE,
-    act_filter = "DEMOCRACY",
+    act_filter = DemocracyUtil.DemocracyActFilter,
     focus = QUEST_FOCUS.NEGOTIATION,
     tags = {"RALLY_JOB"},
     reward_mod = 0,

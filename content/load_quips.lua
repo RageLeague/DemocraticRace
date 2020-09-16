@@ -1,5 +1,7 @@
 local filepath = require "util/filepath"
+local db = QuipDatabase( "DEMOCRATICRACE" )
 for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:content/quips/", "*.yaml", true )) do
     -- local name = filepath:match( "(.+)[.]yaml$" )
-    Content.GetQuips():AddFilename(filepath)
+    db:AddFilename(filepath)
 end
+Content.AddQuips(db)

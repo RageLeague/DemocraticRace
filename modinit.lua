@@ -4,7 +4,7 @@ local filepath = require "util/filepath"
 
 local function OnNewGame( mod, game_state )
     -- Require this Mod to be installed to launch this save game.
-    if string.find(game_state:GetCurrentActID(), "DEMOCRATIC_RACE") then
+    if DemocracyUtil.IsDemocracyCampaign(game_state:GetCurrentActID()) then
         game_state:RequireMod( mod )
     end
 end

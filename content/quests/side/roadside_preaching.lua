@@ -44,7 +44,7 @@ local QDEF = QuestDef.Define
     desc = "Preach on the roadside. You might convince people to join your ideology!",
 
     qtype = QTYPE.SIDE,
-    act_filter = "DEMOCRACY",
+    act_filter = DemocracyUtil.DemocracyActFilter,
     focus = QUEST_FOCUS.NEGOTIATION,
     tags = {"RALLY_JOB"},
     reward_mod = 0,

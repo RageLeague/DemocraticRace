@@ -262,6 +262,12 @@ local function DetermineSupportTarget(target)
     end
     return support_type, target
 end
+local function IsDemocracyCampaign(act_id)
+    return string.find(act_id, "DEMOCRATIC_RACE")
+end
+local function DemocracyActFilter(self, act_id)
+    return IsDemocracyCampaign(act_id)
+end
 --
 
 function ConvoOption:DeltaSupport(amt, target, ignore_notification)
@@ -292,4 +298,6 @@ return {
     AddDebugBypass = AddDebugBypass,
     AddAutofail = AddAutofail,
     DetermineSupportTarget = DetermineSupportTarget,
+    IsDemocracyCampaign = IsDemocracyCampaign,
+    DemocracyActFilter= DemocracyActFilter,
 }
