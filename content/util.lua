@@ -228,14 +228,14 @@ local function AddDebugBypass(cxt, param)
         return
     end
 
-    local r = cxt:Opt("OPT_DEBUG_BYPASS_HARD_CHECK")
+    local option = cxt:Opt("OPT_DEBUG_BYPASS_HARD_CHECK")
         :PostText("TT_DEBUG_BYPASS_HARD_CHECK")
         :Fn(function()
             TheGame:GetGameState():GetOptions().is_custom_mode = true
         end)
-    if type( param ) == "function" then r:Fn(param) end
+    if type( param ) == "function" then option:Fn(param) end
 
-    return r
+    return option
 end
 local function AddAutofail(cxt, param)
     cxt:Opt("OPT_ACCEPT_FAILURE")
@@ -244,7 +244,7 @@ local function AddAutofail(cxt, param)
             -- cxt.enc:YieldEncounter()
             TheGame:Lose()
         end)
-    return AddDebugBypass(cxt, param and (TheGame:GetLocalSettings().DEBUG or false))
+    return AddDebugBypass(cxt, (TheGame:GetLocalSettings().DEBUG or false) and param)
 end
 
 local function DetermineSupportTarget(target)
@@ -267,6 +267,19 @@ local function IsDemocracyCampaign(act_id)
 end
 local function DemocracyActFilter(self, act_id)
     return IsDemocracyCampaign(act_id)
+end
+
+local function PresentRequestQuest(cxt, quest_id, spawn_override, accept_fn, decline_fn, objective_id)
+    local quest = QuestUtil.SpawnQuest(quest_id, spawn_override)
+    StateGraphUtil.PresentQuestOffer(
+        cxt, quest, objective_id, 
+        function(cxt)
+            cxt:PlayQuestConvo(quest, QUEST_CONVO_HOOK.ACCEPTED)
+            if accept_fn then
+                accept_fn(cxt,quest)
+            end
+        end,
+        decline_fn or function() end, false)
 end
 --
 
@@ -300,4 +313,5 @@ return {
     DetermineSupportTarget = DetermineSupportTarget,
     IsDemocracyCampaign = IsDemocracyCampaign,
     DemocracyActFilter= DemocracyActFilter,
+    PresentRequestQuest = PresentRequestQuest,
 }

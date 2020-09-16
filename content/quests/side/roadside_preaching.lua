@@ -56,6 +56,9 @@ local QDEF = QuestDef.Define
         quest.param.convinced_people = {}
         quest.param.unconvinced_people = {}
     end,
+    on_start = function(quest)
+        quest:Activate("go_to_junction")
+    end,
     -- icon = engine.asset.Texture("icons/quests/bounty_hunt.tex"),
 
     on_destroy = function( quest )
@@ -257,7 +260,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-            cxt.quest:Activate("go_to_junction")
+            
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{
