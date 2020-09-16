@@ -10,5 +10,18 @@ local QDEF = QuestDef.Define
     tags = {"REQUEST_JOB"},
     reward_mod = 0,
 }
-:AddDefCastSpawn("foreman", "FOREMAN")
-:AddDefCastSpawn("worker", "LABORER")
+:AddCast{
+    cast_id = "foreman",
+    no_validation = true,
+    cast_fn = function(quest, t)
+        table.insert( t, quest:CreateSkinnedAgent( "FOREMAN" ) )
+    end,
+}
+:AddCast{
+    cast_id = "worker",
+    no_validation = true,
+    provider = true,
+    cast_fn = function(quest, t)
+        table.insert( t, quest:CreateSkinnedAgent( "LABORER" ) )
+    end,
+}

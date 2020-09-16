@@ -269,17 +269,33 @@ local function DemocracyActFilter(self, act_id)
     return IsDemocracyCampaign(act_id)
 end
 
-local function PresentRequestQuest(cxt, quest_id, spawn_override, accept_fn, decline_fn, objective_id)
-    local quest = QuestUtil.SpawnQuest(quest_id, spawn_override)
-    StateGraphUtil.PresentQuestOffer(
-        cxt, quest, objective_id, 
-        function(cxt)
-            cxt:PlayQuestConvo(quest, QUEST_CONVO_HOOK.ACCEPTED)
-            if accept_fn then
-                accept_fn(cxt,quest)
-            end
-        end,
-        decline_fn or function() end, false)
+local function PresentRequestQuest(cxt, quest, accept_fn, decline_fn, objective_id)
+    local accepted = cxt.encounter:ShowJobOffer(quest, objective_id)
+
+    if accepted then
+        quest:Activate()
+        TheGame:GetGameState():AddActiveQuest( quest )
+        if objective_id then
+            quest:SetObjectiveState( objective_id, QSTATUS.ACTIVE )
+        end
+        if accept_fn then
+            accept_fn(cxt, quest)
+        end
+    else
+        if decline_fn then
+            decline_fn(cxt, quest)
+        end
+    end
+    -- local quest = QuestUtil.SpawnInactiveQuest(quest_id, spawn_override)
+    -- StateGraphUtil.PresentQuestOffer(
+    --     cxt, quest, objective_id, 
+    --     function(cxt)
+    --         cxt:PlayQuestConvo(quest, QUEST_CONVO_HOOK.ACCEPTED)
+    --         if accept_fn then
+    --             accept_fn(cxt,quest)
+    --         end
+    --     end,
+    --     decline_fn or function() end, false)
 end
 --
 

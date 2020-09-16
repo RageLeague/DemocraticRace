@@ -6,6 +6,8 @@ local QDEF = QuestDef.Define
     spawn_event_mask = QEVENT_TRIGGER.TRAVEL,
     on_init = function(quest) 
         quest.param.wants_job = math.random() > .5
+        quest.param.request_quest, quest.param.traced_q = QuestUtil.SpawnInactiveQuest("DEMSIDE_REVENGE_STARVING_WORKER",
+            {cast = {worker = quest:GetCastMember("worker"), foreman = quest:GetCastMember("foreman")}})
     end,
 }
 :AddCast{
@@ -128,10 +130,21 @@ QDEF:AddConvo()
             DIALOG_OFFER_HELP = [[
                 player:
                     [p] as a politician, i can't just stand by and see the people suffer.
-                    what can i do to help?
+                    i'll help you.
                 agent:
                     really?
                     if you can help me, i owe you big time.
+                player:
+                    what can i do to help?
+                agent:
+                    make sure {foreman} treat the workers right.
+                    or punish {foreman.himher} for {foreman.hisher} wrongdoing, whichever is easier for you.
+                    but please, try not to kill {foreman}. it will cause way too much trouble.
+                player:
+                    ok, i'll see what i can do.
+                agent:
+                    still, that doesn't solve the immediate problem.
+                    i need money, right now.
             ]],
 
             OPT_GIVE_A_LITTLE = "Give {agent} some spare change",
@@ -229,9 +242,20 @@ QDEF:AddConvo()
                         cxt.quest.param.asked_about_foreman = true
                     end)
             else
-                cxt:Opt("OPT_OFFER_HELP")
-                    :Dialog("DIALOG_OFFER_HELP")
-                    :UpdatePoliticalStance("LABOR_LAW", 1, false, true)
+                if cxt.quest.param.request_quest and not cxt.quest.param.offered_to_help then
+                    cxt:Opt("OPT_OFFER_HELP")
+                        :SetQuestMark(cxt.quest.param.request_quest, cxt:GetAgent())
+                        :UpdatePoliticalStance("LABOR_LAW", 1, false, true, true)
+                        :Fn(function(cxt)
+                            DemocracyUtil.PresentRequestQuest(cxt, cxt.quest.param.request_quest, function(cxt,quest)
+                                cxt:Dialog("DIALOG_OFFER_HELP")
+                                DemocracyUtil.TryMainQuestFn("UpdateStance", "LABOR_LAW", 1, false, true)
+                                cxt.quest.param.offered_to_help = true
+                            end)
+                            
+                        end)
+                end
+                    
                     -- spawn a side quest or something
             end
 

@@ -63,7 +63,7 @@ function IssueLocDef:GetAgentStance(agent)
     return self.stances[self:GetAgentStanceIndex(agent)]
 end
 
-function ConvoOption:UpdatePoliticalStance(issue, newval, strict, autosupport)
+function ConvoOption:UpdatePoliticalStance(issue, newval, strict, autosupport, for_show)
     if type(issue) == "string" then
         issue = DemocracyConstants.issue_data[issue]
     end
@@ -97,9 +97,11 @@ function ConvoOption:UpdatePoliticalStance(issue, newval, strict, autosupport)
             self:PostText("TT_UPDATE_STANCE_LOOSE", issue, new_stance_data)
         end
     end
-    self:Fn(function()
-        DemocracyUtil.TryMainQuestFn("UpdateStance", issue, newval, strict)
-    end)
+    if not for_show then
+        self:Fn(function()
+            DemocracyUtil.TryMainQuestFn("UpdateStance", issue, newval, strict, autosupport)
+        end)
+    end
     return self
 end
 
