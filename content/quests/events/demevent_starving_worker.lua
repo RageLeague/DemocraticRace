@@ -120,6 +120,9 @@ QDEF:AddConvo()
                     [p] bad.
                 player:
                     thanx, that's very helpful.
+                    can you at least give me a name?
+                agent:
+                    {foreman}.
             ]],
             OPT_OFFER_HELP = "Offer to deal with the foreman",
             DIALOG_OFFER_HELP = [[
@@ -130,7 +133,6 @@ QDEF:AddConvo()
                     really?
                     if you can help me, i owe you big time.
             ]],
-
 
             OPT_GIVE_A_LITTLE = "Give {agent} some spare change",
             DIALOG_GIVE_A_LITTLE = [[
