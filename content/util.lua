@@ -177,6 +177,7 @@ end
 
 -- Get wealth based on renown.
 local function GetWealth(renown)
+    if is_instance(renown, Agent) then renown = renown:GetRenown() end
     renown = renown or 1
     return clamp(renown, 1, DemocracyConstants.wealth_levels)
 end

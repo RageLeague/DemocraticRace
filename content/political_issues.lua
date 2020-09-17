@@ -14,8 +14,8 @@ function IssueStanceLocDef:GetAgentSupport(agent)
     if self.faction_support and self.faction_support[agent:GetFactionID()] then
         score = score + self.faction_support[agent:GetFactionID()]
     end
-    if self.wealth_support and self.wealth_support[DemocracyUtil.GetWealth(agent:GetRenown())] then
-        score = score + self.wealth_support[DemocracyUtil.GetWealth(agent:GetRenown())]
+    if self.wealth_support and self.wealth_support[DemocracyUtil.GetWealth(agent)] then
+        score = score + self.wealth_support[DemocracyUtil.GetWealth(agent)]
     end
     return score
 end

@@ -46,7 +46,7 @@ AddNotification("DELTA_AGENT_SUPPORT",{
 
         notification.banner_txt = loc.format(LOC("DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.TITLE_"..addendum), math.abs(delta), agent)
         notification.details = loc.format(LOC("DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.DETAIL_"..addendum), math.abs(delta),
-            mainquest:DefFn("GetGeneralSupport"), agent:GetFaction(), agent:GetRenown())
+            mainquest:DefFn("GetGeneralSupport"), agent:GetFaction(), agent)
         
         notification.img = agent
     end,

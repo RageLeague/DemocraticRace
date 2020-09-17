@@ -170,17 +170,18 @@ local QDEF = QuestDef.Define
         end
     end,
     DeltaWealthSupport = function(quest, amt, renown, ignore_notification)
-        quest.param.wealth_support[DemocracyUtil.GetWealth(renown)] = (quest.param.wealth_support[DemocracyUtil.GetWealth(renown)] or 0) + amt
+        local r = DemocracyUtil.GetWealth(renown)
+        quest.param.wealth_support[r] = (quest.param.wealth_support[r] or 0) + amt
         if not ignore_notification and amt ~= 0 then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_WEALTH_SUPPORT, amt, quest:DefFn("GetWealthSupport", DemocracyUtil.GetWealth(renown)), DemocracyUtil.GetWealth(renown) ) 
+            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_WEALTH_SUPPORT, amt, quest:DefFn("GetWealthSupport", r), r ) 
         end
     end,
-    DeltaFactionSupportAgent = function(quest, amt, agent, ignore_notification)
-        quest:DefFn("DeltaFactionSupport", amt, agent:GetFactionID(), ignore_notification)
-    end,
-    DeltaWealthSupportAgent = function(quest, amt, agent, ignore_notification)
-        quest:DefFn("DeltaWealthSupport", amt, agent:GetRenown() or 1, ignore_notification)
-    end,
+    -- DeltaFactionSupportAgent = function(quest, amt, agent, ignore_notification)
+    --     quest:DefFn("DeltaFactionSupport", amt, agent:GetFactionID(), ignore_notification)
+    -- end,
+    -- DeltaWealthSupportAgent = function(quest, amt, agent, ignore_notification)
+    --     quest:DefFn("DeltaWealthSupport", amt, agent:GetRenown() or 1, ignore_notification)
+    -- end,
     DeltaGroupFactionSupport = function(quest, group_delta, multiplier, ignore_notification)
         multiplier = multiplier or 1
         local actual_group = {}
@@ -210,18 +211,19 @@ local QDEF = QuestDef.Define
         return quest.param.support_level + (quest.param.faction_support[faction] or 0)
     end,
     GetWealthSupport = function(quest, renown)
-        return quest.param.support_level + (quest.param.wealth_support[DemocracyUtil.GetWealth(renown)] or 0)
+        local r = DemocracyUtil.GetWealth(renown)
+        return quest.param.support_level + (quest.param.wealth_support[r] or 0)
     end,
     GetCompoundSupport = function(quest, faction, renown)
         if type(faction) ~= "string" then faction = faction:GetID() end
         return quest.param.support_level + (quest.param.faction_support[faction] or 0) + (quest.param.wealth_support[DemocracyUtil.GetWealth(renown)] or 0)
     end,
-    GetFactionSupportAgent = function(quest, agent)
-        return quest:DefFn("GetFactionSupport", agent:GetFactionID())
-    end,
-    GetWealthSupportAgent = function(quest, agent)
-        return quest:DefFn("GetWealthSupport", agent:GetRenown() or 1)
-    end,
+    -- GetFactionSupportAgent = function(quest, agent)
+    --     return quest:DefFn("GetFactionSupport", agent:GetFactionID())
+    -- end,
+    -- GetWealthSupportAgent = function(quest, agent)
+    --     return quest:DefFn("GetWealthSupport", agent:GetRenown() or 1)
+    -- end,
     GetSupportForAgent = function(quest, agent)
         return quest:DefFn("GetCompoundSupport", agent:GetFactionID(), agent:GetRenown() or 1)
     end,

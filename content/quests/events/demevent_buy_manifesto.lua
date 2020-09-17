@@ -4,6 +4,7 @@ local MANIFESTO_COST = 50
 local QDEF = QuestDef.Define
 {
     qtype = QTYPE.EVENT,
+    act_filter = DemocracyUtil.DemocracyActFilter,
     spawn_event_mask = QEVENT_TRIGGER.TRAVEL,
     precondition = function(quest) 
         return TheGame:GetGameState():GetCaravan():GetMoney() >= MANIFESTO_COST
