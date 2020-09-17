@@ -9,7 +9,11 @@ local DAY_SCHEDULE = {
 local MAX_DAYS = #DAY_SCHEDULE-- 5
 AddOpinionEvent("DISLIKE_IDEOLOGY", {
     delta = OPINION_DELTAS.OPINION_DOWN,
-    txt = "Dislike your ideology",
+    txt = "Dislikes your ideology",
+})
+AddOpinionEvent("SHARE_IDEOLOGY", {
+    delta = OPINION_DELTAS.LIKE,
+    txt = "Shares an ideology with you",
 })
 print("try load main function")
 local QDEF = QuestDef.Define
