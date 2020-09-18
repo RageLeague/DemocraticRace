@@ -67,6 +67,7 @@ local function OnLoad( mod )
     require "DEMOCRATICRACE:content/notifications"
     require "DEMOCRATICRACE:content/convo_loc_common"
     require "DEMOCRATICRACE:content/region"
+    require "DEMOCRATICRACE:content/expand_existing_quest_filters"
 
     for id, data in pairs(GetAllPlayerBackgrounds()) do
         local act_data = shallowcopy(ACT_DATA)
