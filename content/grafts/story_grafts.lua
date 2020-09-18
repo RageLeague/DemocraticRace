@@ -56,6 +56,10 @@ local GRAFTS =
                         TheGame:GetGameState():LogNotification( NOTIFY.DELTA_AGENT_SUPPORT, support_delta, agent )
                     end
                 end
+                if not CheckBits( battle:GetScenario():GetFlags(), battle_defs.BATTLE_FLAGS.SELF_DEFENCE ) then
+                    -- Being aggressive hurts your reputation
+                    DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -10)
+                end
             end,
         }
     },

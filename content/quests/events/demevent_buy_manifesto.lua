@@ -385,7 +385,7 @@ local convo = QDEF:AddConvo()
                     on_win = function(cxt) 
                         cxt:Dialog("DIALOG_ATTACK_WIN")
                         -- if not cxt:GetAgent():IsDead() then
-                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -10)
+                        -- DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -10)
                         DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", -10, "RISE")
                         
                         -- end

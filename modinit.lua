@@ -46,11 +46,20 @@ local function OnLoad( mod )
         end
         return ok, result
     end
-
+    
     require "DEMOCRATICRACE:content/string_table"
 
     rawset(_G, "DemocracyConstants", require("DEMOCRATICRACE:content/constants"))
     rawset(_G, "DemocracyUtil", require("DEMOCRATICRACE:content/util"))
+
+    -- Patch existing files first
+    for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:patches/", "*.lua", true )) do
+        local name = filepath:match( "(.+)[.]lua$" )
+        -- print(name)
+        if name then
+            require(name)
+        end
+    end
     -- require "DEMOCRATICRACE:content/wealth_level"
     require "DEMOCRATICRACE:content/load_quips"
     require "DEMOCRATICRACE:content/shop_defs"
@@ -65,13 +74,7 @@ local function OnLoad( mod )
         data:AddAct(act_data)
         Content.internal.ACT_DATA[act_data.id] = data.acts[#data.acts]
     end
-    for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:errata/", "*.lua", true )) do
-        local name = filepath:match( "(.+)[.]lua$" )
-        -- print(name)
-        if name then
-            require(name)
-        end
-    end
+    
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:ui/", "*.lua", true )) do
         local name = filepath:match( "(.+)[.]lua$" )
         -- print(name)

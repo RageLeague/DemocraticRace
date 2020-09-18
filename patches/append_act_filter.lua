@@ -15,10 +15,13 @@ function AppendActFilterToQuest(qdef, additional_options)
     if type(qdef) == "string" then -- that tells me it's an id to quest.
         qdef = Content.GetQuestDef(qdef)
     end
-
+    if not is_instance(qdef, QuestDef) then
+        return false, "not a QuestDef"
+    end
     if not qdef.act_filter then
         qdef.act_filter = additional_options
         return false, "already allows everything"--true, loc.format("add an act filter {1}",additional_options)
+    end
     local old_filter = qdef.act_filter
     if type(old_filter) == "function" then
         if type(additional_options) == "function" then
