@@ -145,21 +145,35 @@ QDEF:AddConvo("go_to_bar")
     :State("STATE_CONFRONT")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] you arrive at the noodle shop, and are greeted by some people.
+                --my thought for this section was all three advisors we're buddies, and they just don't want to put all their eggs in one basket, so the other advisors will just go to different politicians and they'll split the money once the election's done and dusted.
+                * You walk into the Bar and immediately notice three people sitting at a table, drinking and chatting.
+                * It sounds like politics. Your prepare your wittiest retort for when things go like they did earlier.
+                * When they notice you, one of them pulls out a chair and asks you sit down.
                 player:
                     !left
                 advisor_diplomacy:
                     !right
-                    i heard you are running for president
+                    So, word around the grapevine says you are running for president of Havaria.
                 advisor_manipulate:
                     !right
-                    you should pick one of us as your advisor
+                    That's quite the large task for a single person, don't you think?
+                    See, we have a proposition for you
                 advisor_hostile:
                     !right
-                    shut up, both of you. {player.HeShe}'s mine!
-                advisor_diplomacy:
+                    shut up, both of you. Listen kid.
+                    The realm of Havarian politics is cut-throat. You're not going to last long trying to juggle all of it at once.
+                advisor_manipulate:
                     !right
-                    take your time
+                    Which is why you're here, right now.
+                advisor_diplomacy:
+                    All three of us are willing to help you on your way to the top, but unfortunately Havarian rules say you can only have one advisor.
+                advisor_hostile:
+                    Wait, there is?
+                * {advisor_manipulate} throws them an angry glance.
+                advisor_hostile:
+                    I mean, Yes! Yes. Only one advisor...
+                advisor_diplomacy:
+                    Take your time on this. We'll be here whenever you make a decision.
             ]]
         }
         :Fn(function(cxt)
@@ -194,7 +208,9 @@ QDEF:AddConvo("choose_advisor", "advisor_hostile")
         :Loc{
             DIALOG_INTRO = [[
                 agent:
-                    [p] the other's suck. choose me
+                    Listen kid. Those other two, they won't help you reach the heights i can take you to.
+                    Politics is much more about being more bark then bite.
+                    And kid. Join me, and you'll literally howl your opposition away.
             ]],
             OPT_PICK = "Choose {agent} as your main advisor.",
             DIALOG_PICK = [[
@@ -216,7 +232,7 @@ QDEF:AddConvo("choose_advisor", "advisor_manipulate")
         :Loc{
             DIALOG_INTRO = [[
                 agent:
-                    [p] i know you want to pick me
+                    [p]  We both know you want to pick me instead of the others.
             ]],
             OPT_PICK = "Choose {agent} as your main advisor.",
             DIALOG_PICK = [[
