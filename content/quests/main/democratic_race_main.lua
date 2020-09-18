@@ -163,7 +163,7 @@ local QDEF = QuestDef.Define
         end
     end,
     DeltaFactionSupport = function(quest, amt, faction, ignore_notification)
-        if type(faction) ~= "string" then faction = faction:GetID() end
+        faction = DemocracyUtil.ToFactionID(faction)
         quest.param.faction_support[faction] = (quest.param.faction_support[faction] or 0) + amt
         if not ignore_notification and amt ~= 0 then
             TheGame:GetGameState():LogNotification( NOTIFY.DELTA_FACTION_SUPPORT, amt, quest:DefFn("GetFactionSupport", faction), TheGame:GetGameState():GetFaction(faction) ) 
@@ -207,7 +207,7 @@ local QDEF = QuestDef.Define
     -- Getters
     GetGeneralSupport = function(quest) return quest.param.support_level end,
     GetFactionSupport = function(quest, faction)
-        if type(faction) ~= "string" then faction = faction:GetID() end
+        faction = DemocracyUtil.ToFactionID(faction)
         return quest.param.support_level + (quest.param.faction_support[faction] or 0)
     end,
     GetWealthSupport = function(quest, renown)
@@ -215,7 +215,7 @@ local QDEF = QuestDef.Define
         return quest.param.support_level + (quest.param.wealth_support[r] or 0)
     end,
     GetCompoundSupport = function(quest, faction, renown)
-        if type(faction) ~= "string" then faction = faction:GetID() end
+        faction = DemocracyUtil.ToFactionID(faction)
         return quest.param.support_level + (quest.param.faction_support[faction] or 0) + (quest.param.wealth_support[DemocracyUtil.GetWealth(renown)] or 0)
     end,
     -- GetFactionSupportAgent = function(quest, agent)

@@ -116,7 +116,7 @@ function FactionSupportEntry:init(faction, icon_size, max_width)
     else
         self.faction = faction
     end
-
+    assert(is_instance(self.faction, Faction), loc.format("Not a faction:{1}", self.faction))
     self:Refresh()
 end
 

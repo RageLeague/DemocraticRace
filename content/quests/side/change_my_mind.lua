@@ -342,15 +342,29 @@ QDEF:AddConvo("debate_people")
         :Fn(function(cxt)
             print(#(TheGame:GetGameState().agents))
             local interested_people = math.random(
-                math.floor(cxt.quest:GetRank() / 2),
-                math.ceil(cxt.quest:GetRank() / 2) + 1
+                math.ceil(cxt.quest:GetRank() / 2),
+                math.floor(cxt.quest:GetRank() / 2) + 2
             )
+            local leaving_people = math.random(
+                0,
+                math.ceil(cxt.quest:GetRank() / 2)
+            )
+            for i = 1, leaving_people do
+                for _, agent in cxt.location:Agents() do
+                    if table.arrayfind(cxt.quest.param.crowd, agent) and agent ~= cxt.quest:GetCastMember("debater") then
+                        agent:MoveToLimbo()
+                        break
+                    end
+                end
+            end
+
             for i = 1, interested_people do
                 cxt.quest:AssignCastMember("crowd")
                 cxt.quest:GetCastMember("crowd"):MoveToLocation(cxt.location)
                 table.insert(cxt.quest.param.crowd, cxt.quest:GetCastMember("crowd"))
                 cxt.quest:UnassignCastMember("crowd")
             end
+            
             
             if cxt.quest.param.debated_people == 0 then
                 

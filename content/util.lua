@@ -263,6 +263,14 @@ local function DetermineSupportTarget(target)
     end
     return support_type, target
 end
+local function ToFactionID(a)
+    if is_instance(a, Faction) then
+        return a:GetID()
+    elseif is_instance(a, Agent) then
+        return a:GetFactionID()
+    end
+    return a
+end
 local function IsDemocracyCampaign(act_id)
     return string.find(act_id, "DEMOCRATIC_RACE")
 end
@@ -328,6 +336,7 @@ return {
     AddDebugBypass = AddDebugBypass,
     AddAutofail = AddAutofail,
     DetermineSupportTarget = DetermineSupportTarget,
+    ToFactionID = ToFactionID,
     IsDemocracyCampaign = IsDemocracyCampaign,
     DemocracyActFilter= DemocracyActFilter,
     PresentRequestQuest = PresentRequestQuest,
