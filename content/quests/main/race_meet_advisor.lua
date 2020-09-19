@@ -145,21 +145,47 @@ QDEF:AddConvo("go_to_bar")
     :State("STATE_CONFRONT")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] you arrive at the noodle shop, and are greeted by some people.
+                * You walk into the restaurant.
+                * You see {primary_advisor} walk up to you.
                 player:
                     !left
                 advisor_diplomacy:
                     !right
-                    i heard you are running for president
+                    I've heard you we're running for president.
+                player:
+                    Maybe I am, and maybe i'm not. Why's that your beeswax?
+                advisor_diplomacy:
+                    It's my "beeswax", because i'm willing to help you run your campaign.
+                    So if you'll just fo-
+                * One of the other patrons shoves {advisor_diplomacy} aside.
+                advisor_hostile:
+                    Shut up! Listen kid, 'cause I got a proposition for you.
+                    The political world is cut-throat. You wanna win this race, i'm your {agent.GuyGal}!
+                * {advisor_diplomacy} recovers from the shock, and it's not long before {agent.HimHer} and {advisor_hostile} start arguing.
+                * You feel a light tap on your back, and turn around to see {advisor_manipulate}.
                 advisor_manipulate:
                     !right
-                    you should pick one of us as your advisor
+                    You see these two clowns. Do you REALLY want them to help you run your campaign?
+                player:
+                    I geuss your right.
+                advisor_manipulate:
+                    Y'see? So how about you and I just waltz out of the bar and-
                 advisor_hostile:
+                    Dont't listen to that rat!
+                advisor_manipulate:
+                    Wha-I would never!
+                advisor_diplomacy:
+                    It's increasingly clear this approach isn't working.
+                player:
                     !right
-                    shut up, both of you. {player.HeShe}'s mine!
+                    can any of you explain what's happenening?
+                advisor_hostile:
+                    Look, you pick one of us to be your primary advisor.
+                advisor_manipulate:
+                    And we all know you'll pick me.
                 advisor_diplomacy:
                     !right
-                    take your time
+                    Take your time, this isn't a decision to take lightly.
             ]]
         }
         :Fn(function(cxt)
