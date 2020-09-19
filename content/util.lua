@@ -128,7 +128,15 @@ local function StartFreeTime(actions)
     end
 end
 local function EndFreeTime()
-    TheGame:GetGameState():ClearOpportunities()
+    -- TheGame:GetGameState():ClearOpportunities()
+    local events = TheGame:GetGameState():GetActiveQuestWithContentID( "FREE_TIME_EVENT" )
+    for i, event in ipairs(events) do
+        print("End quest: " .. tostring(event))
+        event:Complete()
+    end
+end
+local function IsFreeTimeActive()
+    return #(TheGame:GetGameState():GetActiveQuestWithContentID( "FREE_TIME_EVENT" )) > 0
 end
 local SUPPORT_DELTA = {
     [RELATIONSHIP.HATED] = -60,
@@ -322,6 +330,7 @@ return {
     AddPrimaryAdvisor = AddPrimaryAdvisor,
     StartFreeTime = StartFreeTime,
     EndFreeTime = EndFreeTime,
+    IsFreeTimeActive = IsFreeTimeActive,
     SupportScore = SupportScore,
     OppositionScore = OppositionScore,
     RandomBystanderCondition = RandomBystanderCondition,

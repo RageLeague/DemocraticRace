@@ -48,7 +48,7 @@ local QDEF = QuestDef.Define{
     icon = function(self, obj)
     
     end,
-    qtype = QTYPE.OPPORTUNITY,
+    qtype = QTYPE.STORY,--QTYPE.OPPORTUNITY,
     act_filter = DemocracyUtil.DemocracyActFilter,
     on_init = function(quest)
         quest.param.free_time_actions = 2

@@ -55,8 +55,23 @@ local QDEF = QuestDef.Define
         -- Your support level among wealth levels.(renown levels)
         quest.param.wealth_support = {}
         -- The locations you've unlocked.
-        quest.param.unlocked_locations = {"MURDERBAY_NOODLE_SHOP"}
-        quest.param.free_time_actions = 1
+        quest.param.unlocked_locations = --{"MURDERBAY_NOODLE_SHOP"}
+        {
+            "GROG_N_DOG",
+            "ADMIRALTY_BARRACKS",
+            "MURDERBAY_LUMIN_DOCKS",
+            "MURDERBAY_NOODLE_SHOP",
+            "MURDER_BAY_HARBOUR",
+            "LIGHTHOUSE",
+            -- "MARKET_STALL",
+            "GROG_N_DOG",
+            "MURDER_BAY_CHEMIST",
+            "NEWDELTREE_OUTFITTERS",
+            "SPREE_INN",
+            "GRAND_THEATER",
+        }
+        
+        -- quest.param.free_time_actions = 1
 
         quest.param.stances = {}
         quest.param.stance_change = {}

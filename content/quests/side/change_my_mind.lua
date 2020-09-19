@@ -78,7 +78,7 @@ local QDEF = QuestDef.Define
     title = "Go to {junction#location}",
     desc = "Go to {junction#location} to set up a debate booth.",
     mark = { "junction" },
-    state = QSTATUS.ACTIVE,
+    -- state = QSTATUS.ACTIVE,
     
     on_activate = function( quest)
         local location = Location( LOCATION_DEF.id )
