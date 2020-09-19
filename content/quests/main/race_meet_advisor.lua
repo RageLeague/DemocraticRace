@@ -146,7 +146,7 @@ QDEF:AddConvo("go_to_bar")
         :Loc{
             DIALOG_INTRO = [[
                 * You walk into the restaurant.
-                * You see {primary_advisor} walk up to you.
+                * You see {advisor_diplomacy} walk up to you.
                 player:
                     !left
                 advisor_diplomacy:
@@ -160,7 +160,7 @@ QDEF:AddConvo("go_to_bar")
                 * One of the other patrons shoves {advisor_diplomacy} aside.
                 advisor_hostile:
                     Shut up! Listen kid, 'cause I got a proposition for you.
-                    The political world is cut-throat. You wanna win this race, i'm your {agent.GuyGal}!
+                    The political world is cut-throat. You wanna win this race, i'm your {advisor_hostile.gender:guy|gal|non-gendered word}!
                 * {advisor_diplomacy} recovers from the shock, and it's not long before {agent.HimHer} and {advisor_hostile} start arguing.
                 * You feel a light tap on your back, and turn around to see {advisor_manipulate}.
                 advisor_manipulate:
