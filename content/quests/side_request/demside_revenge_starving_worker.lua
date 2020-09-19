@@ -9,9 +9,13 @@ local QDEF = QuestDef.Define
     focus = QUEST_FOCUS.NEGOTIATION,
     tags = {"REQUEST_JOB"},
     reward_mod = 0,
-
+    on_init = function(quest)
+        local motivation = {"make_example", "rush_quota"}
+        local id = table.arraypick(motivation)
+        quest.param[id] = true
+    end,
     on_start = function(quest)
-        quest:Activate("go_to_junction")
+        quest:Activate("take_your_heart")
     end,
 }
 :AddLocationCast{
@@ -104,3 +108,97 @@ local QDEF = QuestDef.Define
     title = "Destroy {foreman}'s reputation.",
     desc = "Find a way to publicly destroy {foreman}'s reputation.",
 }
+
+QDEF:AddConvo("take_your_heart", "foreman")
+    :Loc{
+        OPT_CONFRONT = "Confront {agent} about the firing of {worker}",
+        DIALOG_CONFRONT = [[
+            {first_time?
+                player:
+                    [p] so, i heard you fired {worker}, right?
+                agent:
+                    what's it to you?
+                player:
+                    you know, just asking a few things.
+            }
+            {not first_time?
+                player:
+                    [p] so about {worker}...
+                agent:
+                    what do you want?
+            }
+        ]],
+        OPT_PROBE = "Probe information",
+        DIALOG_PROBE = [[
+            player:
+                What kind of circumstances leads you to fire {worker}?
+            agent:
+                What's it to you?
+            player:
+                You know, just asking...
+        ]],
+        DIALOG_PROBE_SUCCESS = [[
+            agent:
+                Fine, I guess I have to tell you.
+            {make_example?
+                [p] {worker} is too rebellious! I have to make an example out of {worker.himher} so others don't follow {worker.hisher} lead.
+            }
+            {rush_quota?
+                [p] it's not my fault! the higher ups demands progress, so i have to make my workers work harder!
+                i have no other choice!
+            }
+        ]],
+        DIALOG_PROBE_NO_INTEL = [[
+            agent:
+                ...
+                [p] is that all?
+            player:
+                well, yeah.
+            agent:
+                good talk.
+        ]],
+        DIALOG_PROBE_FAIL = [[
+            agent:
+                [p] hey! are you trying to get me say something incriminating?
+                get out of my face!
+            * welp, you failed on this front. maybe try some other ways
+        ]],
+        DIALOG_BACK = [[
+            player:
+                Never mind.
+        ]],
+    }
+    :Hub(function(cxt)
+        cxt:Opt("OPT_CONFRONT")
+            :SetQuestMark(cxt.quest)
+            :Dialog("DIALOG_CONFRONT")
+            :RequireFreeTimeAction()
+            :LoopingFn(function(cxt)
+                if not cxt.quest.param.probed_info then
+                    cxt:Opt("OPT_PROBE")
+                        :Dialog("DIALOG_PROBE")
+                        :Negotiation{
+                            on_start_negotiation = function(minigame)
+                                -- for i = 1, 3 do
+                                minigame:GetOpponentNegotiator():CreateModifier( "secret_intel", 1 )
+                                -- end
+                            end,
+                            on_success = function(cxt, minigame)
+                                local count = minigame:GetPlayerNegotiator():GetModifierStacks( "secret_intel" )
+                                if count > 0 then
+                                    cxt:Dialog("DIALOG_PROBE_SUCCESS")
+                                    cxt.quest.param.probed_info = true
+                                else
+                                    cxt:Dialog("DIALOG_PROBE_NO_INTEL")
+                                end
+                            end,
+                            on_fail = function(cxt, minigame)
+                                cxt:Dialog("DIALOG_PROBE_FAIL")
+                                cxt.quest:Fail("take_your_heart")
+                            end,
+                        }
+                end
+                StateGraphUtil.AddBackButton(cxt)
+                    :Dialog("DIALOG_BACK")
+            end)
+    end)

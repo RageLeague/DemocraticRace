@@ -322,6 +322,23 @@ function ConvoOption:DeltaSupport(amt, target, ignore_notification)
     end)
     return self
 end
+function ConvoOption:RequireFreeTimeAction(actions)
+    if actions then
+        self:PostText("TT_FREE_TIME_ACTION_COST", actions)
+    end
+    local freetimeevents = TheGame:GetGameState():GetActiveQuestWithContentID( "FREE_TIME_EVENT" )
+    -- local q = freetimeevents[1]
+    self:ReqCondition(#freetimeevents > 0, "REQ_FREE_TIME")
+    if freetimeevents and actions then
+        local q = freetimeevents[1]
+        self:ReqCondition(q.param.free_time_actions >= actions, "REQ_FREE_TIME_ACTIONS")
+        self:Fn(function(cxt)
+            q:DefFn("DeltaActions", -actions)
+        end)
+    end
+
+    return self
+end
 return {
     ADVISOR_IDS = ADVISOR_IDS,
     ADVISOR_HOME = ADVISOR_HOME,

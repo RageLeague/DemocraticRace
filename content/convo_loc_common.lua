@@ -5,6 +5,10 @@ Content.AddStringTable( "DEM_CONVO", {
         OPT_DEBUG_BYPASS_HARD_CHECK = "[Debug] Bypass hard check",
         TT_DEBUG_BYPASS_HARD_CHECK = "This will bypass a hard check in the game for debug purpose. Choosing this makes this run illegitimate.",
 
+        REQ_FREE_TIME = "You don't have free time to choose this action.",
+        REQ_FREE_TIME_ACTIONS = "You don't have enough free time actions to choose this action.",
+        TT_FREE_TIME_ACTION_COST = "This option requires {1} free time {1*action|actions}.",
+
         OPT_UNLOCK_NEW_LOCATION = "Unlock new location: {1#location}",
         TT_UNLOCK_NEW_LOCATION = "You can now visit this location during your free time.",
         

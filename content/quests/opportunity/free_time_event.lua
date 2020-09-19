@@ -51,13 +51,35 @@ local QDEF = QuestDef.Define{
     qtype = QTYPE.STORY,--QTYPE.OPPORTUNITY,
     act_filter = DemocracyUtil.DemocracyActFilter,
     on_init = function(quest)
-        quest.param.free_time_actions = 2
+        quest.param.free_time_actions = 8
     end,
+    events = 
+    {
+        action_clock_advance = function(quest, location)
+            quest:DefFn("DeltaActions", -2)
+        end,
+        caravan_move_location = function(quest, location)
+            if location:HasTag("road") then
+                quest:DefFn("DeltaActions", -1)
+            end
+        end,
+    },
+    DeltaActions = function(quest, delta)
+        quest.param.free_time_actions = quest.param.free_time_actions + delta
+        print("New action count: "..quest.param.free_time_actions)
+        if quest.param.free_time_actions <= 0 then
+            quest:Complete()
+        end
+        quest:NotifyChanged()
+    end
 }
 :AddObjective{
-    id = "visit_location",
-    title = "Choose a location to visit",
-    desc = "Murder Bay is vast! Choose a location to go to.",
+    id = "action_tracker",
+    title = "You have {1} {1*action|actions} left",
+    title_fn = function(quest, str)
+        return loc.format(str, quest.param.free_time_actions or 0)
+    end,
+    desc = "You can choose to visit a location during your free time.",
 
     state = QSTATUS.ACTIVE,
     mark = function(quest, t, in_location)
@@ -65,7 +87,7 @@ local QDEF = QuestDef.Define{
             table.insert(t, TheGame:GetGameState():GetLocation(id))
         end
     end,
-    terminal = true,
+    -- terminal = true,
 }
 :AddCast{
     cast_id = "friend",
@@ -76,29 +98,27 @@ local QDEF = QuestDef.Define{
 local convo = QDEF:AddConvo()
     :Loc{
         OPT_SOCIALIZE = "Socialize with {1#agent}",
-        TT_SOCIALIZE = "Socializing with a friend will cause time to pass, but will grant the player random benefits.",
-        REQ_MUST_HAVE_FREE_TIME = "You are too busy to socialize.",
+        TT_SOCIALIZE = "Socializing with a friend requires you to spend free time, but will grant the player random benefits or unlock a new location.",
+        -- REQ_MUST_HAVE_FREE_TIME = "You are too busy to socialize.",
         REQ_NOT_SOCIALIZED = "You can only socialize with a person once per day.",
         DIALOG_SOCIALIZE = [[
             * You spent some with {agent}.
         ]],
     }
     :Hub(function(cxt, who)
-        local mainquest = cxt.quest--TheGame:GetGameState():GetMainQuest()
-        if mainquest.param.free_time_actions ~= nil  and who
+        if cxt.quest.param.free_time_actions ~= nil  and who
             and who:GetRelationship() > RELATIONSHIP.NEUTRAL then
             
+            local action_cost = 3
             -- print("lo yes!")
             cxt:Opt("OPT_SOCIALIZE", who)
                 :PostText("TT_SOCIALIZE")
                 :IsHubOption( true )
-                :ReqCondition(mainquest.param.free_time_actions > 0, "REQ_MUST_HAVE_FREE_TIME")
+                -- :ReqCondition(cxt.quest.param.free_time_actions >= action_cost, "REQ_MUST_HAVE_FREE_TIME")
                 :ReqCondition(not who:HasMemory("OFFERED_BOON", GameState:GetDayPhase() == DAY_PHASE.DAY and 1 or 2), "REQ_NOT_SOCIALIZED")
+                :RequireFreeTimeAction(action_cost)
                 :Fn(function(cxt)
-                    mainquest.param.free_time_actions = mainquest.param.free_time_actions - 1
-                    if mainquest.param.free_time_actions <= 0 then
-                        cxt.quest:Complete()
-                    end
+                    -- cxt.quest:DefFn("DeltaActions", -action_cost)
                     cxt:GetAgent():Remember("OFFERED_BOON")
                     cxt:Dialog("DIALOG_SOCIALIZE")
                     local chosen_boon = PickBoonForAgent(who) or "SOCIALIZE"
@@ -118,7 +138,7 @@ local convo = QDEF:AddConvo()
                     end
                     if unlock_location then
                         if math.random() < 0.5 then
-                            mainquest.param.loc_to_unlock = unlock_location
+                            cxt.quest.param.loc_to_unlock = unlock_location
                             cxt:GoTo("STATE_UNLOCK_LOCATION")
                         else
                             doboon(cxt, chosen_boon)
