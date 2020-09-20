@@ -146,43 +146,47 @@ QDEF:AddConvo("go_to_bar")
         :Loc{
             DIALOG_INTRO = [[
                 * You walk into the restaurant.
-                * You see {primary_advisor} walk up to you.
+                * You see a person walking up to you.
                 player:
                     !left
                 advisor_diplomacy:
                     !right
-                    I've heard you we're running for president.
+                    How do you do, fellow grifter?
+                    I've heard you were running for president.
                 player:
-                    Maybe I am, and maybe i'm not. Why's that your beeswax?
+                    Yeah, that's me. What do you want?
                 advisor_diplomacy:
-                    It's my "beeswax", because i'm willing to help you run your campaign.
-                    So if you'll just fo-
+                    I can offer you my help.
+                    If you even want to think about winning, you need my Speech 100 skills.
+                    So what do you sa-
                 * One of the other patrons shoves {advisor_diplomacy} aside.
                 advisor_hostile:
-                    Shut up! Listen kid, 'cause I got a proposition for you.
-                    The political world is cut-throat. You wanna win this race, i'm your {agent.GuyGal}!
-                * {advisor_diplomacy} recovers from the shock, and it's not long before {agent.HimHer} and {advisor_hostile} start arguing.
+                    Listen, if you want to win, you have to pick me.
+                    'Cause nobody knows how to run a campaign better than me.
+                    I can help you win. Win bigly. Win tremendously.
+                * {advisor_diplomacy} recovers from the shock, and it's not long before {advisor_diplomacy.himher} and {advisor_hostile} start arguing.
                 * You feel a light tap on your back, and turn around to see {advisor_manipulate}.
                 advisor_manipulate:
                     !right
                     You see these two clowns. Do you REALLY want them to help you run your campaign?
+                    Let's say, hypothetically, you wanna win, right?
+                    So if you wanna win, you need to have a competent advisor, someone who can own these idiots with FACTS and LOGIC.
+                    And let's say hypothetically, I am that person. Which means that you need me to help you campaign.
                 player:
-                    I geuss your right.
-                advisor_manipulate:
-                    Y'see? So how about you and I just waltz out of the bar and-
+                    What kind of logic-
                 advisor_hostile:
-                    Dont't listen to that rat!
+                    Dont't listen to that Parasitic {advisor_manipulate}!
                 advisor_manipulate:
-                    Wha-I would never!
+                    You came up with a name for me already?
                 advisor_diplomacy:
-                    It's increasingly clear this approach isn't working.
+                    Bunch of normies.
                 player:
                     !right
-                    can any of you explain what's happenening?
+                    Can any of you explain what's happenening?
                 advisor_hostile:
-                    Look, you pick one of us to be your primary advisor.
+                    Look, you pick one of us to be your advisor.
                 advisor_manipulate:
-                    And we all know you'll pick me.
+                    Factually and logically speaking, I'm the best choice for you.
                 advisor_diplomacy:
                     !right
                     Take your time, this isn't a decision to take lightly.
