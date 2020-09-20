@@ -31,6 +31,52 @@ Here lists all the different things you can work on.
 * Adding arts to card/modifiers. If you want. It would probably be more efficient if everything is done at the end, but if you want to, you can. The only guideline is that the art has to fit the card/modifier, and does not break the game's rating.
 * You can do more complicated things such as writing main stories, adding new locations, adding convos for new/existing locations, or add ways you can "deal" with certain(read "hated") characters without provoke-killing(maybe something like a criminal investigation, or hire assassination services). Make sure you actually know what you're doing, and you let me know beforehand what you're doing.
 
+## Mechanics
+
+Here are the mechanics present in this campaign. If you want to make new quests, try to incorporate a lot of them.
+
+* **Wealth Level**: In addition to grouping voter groups by factions, I also decided to group voter groups by wealth. The wealth level of a character determines how much wealth they have(duh), and determines what political stance they will be likely to take.
+  * It is determined by a character's "renown", a hidden stat in game that determines a person's social standing.
+  * It is represented with an integer, and has 4 levels: Lower, Lower-Middle, Middle, and Upper Class.
+  * Anyone with a renown above 4 is in the upper class. I might make civilians with the tag "wealthy" a level higher, since that will align with their voting groups more.
+  * To query, use `DemocracyUtil.GetWealth(a)`, where `a` is either an Agent or a number representing the renown.
+* **Support**: The big selling point of this mod, although legally I'm not allowed to "sell" this mod.
+  * There are 3 categories related to this:
+    * General Support: Everyone's opinion about you. Involved in certain hard-checks, and is used as the base level to calculate other types of support.
+    * Faction Support: A faction's opinion about you. Affects your standing in a faction, and may affect how likely you can ally with other candidates of that faction.
+    * Wealth Support: A wealth class' opinion about you. Affects your standing in a faction, and is used to calculate the funding you get at the end of each day.
+  * Faction Support and Wealth Support are stored as a relative value, the difference from general support. This means that if your general support increases, your apparent faction support and wealth support also increases.
+  * There's another type of support called Compund Support. It factors in both the faction and wealth of a character, and is used to determine how likely this character will support you. Used to calculate scores in quest casts. The higher that agent's support is, the more likely they will show up as casts that require supporters, and the lower that agent's support is, the more likely they will show up as casts that require oppositions.
+  * Support can be affected by various means:
+    * Completing quests(increase general support by a lot).
+    * Getting characters to change their relationship with you(affects all three support stats).
+    * Murdering a character(high decrease in all three stats, but less if done so in an isolated environment). Being an accomplice of killing or letting your teammate die will also reduce the stats. Note killing will not get rid of support loss from getting a character to hate you.
+    * Taking stances on issues(affects faction/wealth support). Note: taking a consistent stance on issues will increase support slightly, while constantly changing stances will decrease support.
+    * Choosing certain options in quests.
+* **Issues and Stances**: As a politician, your main job is supposed to be solving people's problems. You are able to take stances on certain issues, which have various effects.
+  * Each issue has a name, a description about it, and stances on this issue ranging from -2 ~ 2. The magnitude of the stance represent how extreme your opinion on this issue is, while the sign represents which general side you're on. Generally, the more extreme you are, the more support you will gain/lose from individual factions/wealth levels.
+  * The sum of support gain/loss of a certain stance is always slightly negative, because people will hate you more than they like you.
+  * If you take a consistant stance(stance that is the same as/similar to your old stance), you will be rewarded with a little bit of support. But if you switch stances, you might lose support, depending on how much you changed. This encourages you to not easily take stances to appease people, and if you do, at least stick to it.
+  * When you take a stance, it can be "strict" or not. For a strict stance to be consistent, it must be the exactly the same as your old stance. For a non-strict stance to be consistent, it just needs to be the same sign as your old stance.
+  * Each NPC can also take a stance on an issue. This is useful when casting characters, where only someone with a certain stance is allowed. Use `IssueLocDef:GetAgentStanceIndex(agent)` to deterimine an agent's stance on an issue.
+* **Advisors**: Some time during day 1, you will get a primary advisor. Their office is your home location, and you can buy cards, remove cards, check support level, etc.
+* **Special Negotiation**: Because negotiations are a big focus of this campaign, a lot of the negotiations have special quirks to them. Feel free to add some quirks to negotiations. I also encourages the results of some negotiations to be non-binary, which means that other than win/lose, depending on how well you do on this negotiation, there are some other effects.
+* **Free Time**: This mod gets rid of the opportunity system in favour of the free time system. During a free time event, you are given action points(8) that you can spend on various activities.
+  * You can spend action points on:
+    * Travelling to new locations by road(1).
+    * Doing a negotiation or battle(2).
+    * Spend time with your friends(3).
+* **Spend Time With Friends**: This is an action you can take during your free time. Spend 3 actions to choose someone who at least likes you, and they will give you a random boon service, or tell you a random location(that is appropriate for their faction). You can do this once per day for each person.
+* **Funding Gain**: At the end of each day, you will get funding for you to spend on various activities. Just look at the CalculateFunding function under the main quest file.
+* **Shilling**: In place of the bribery system in regular quests, we have paying for shills. You spend money on people who are free to shill for you, which means that they will have the "bribed" status, and people with "bribed" status will be more likely to show up in rally jobs.
+  * The shill cost is determined by that agent's renown.
+  * You can bribe anyone with relationship dislike or up. The cost will also be affected.
+  * People who are bribed might also turn an otherwise unfavourable situation into a less unfavourable situation.
+  * The "bribed" status is removed at the end of the quest if they are involved in that quest.
+* **Bodyguard**: You can hire a free person to protect you. Basically that means they are a hired mercenary, and follows the same rule as in the base game. Slightly cheaper, though.
+* **Rally Quest**: You periodically get rally quests. They are your primary means of gaining support levels. The result of these quests are non-binary for the purpose of the effect on your campaign, because depending on how well you do, you get higher support levels and more people to like you. You don't get money from those quests, except as extra reward, or directly gained from the quest. I might make it so that in place of a rally quest, you can get a free time.
+* **Request Quest**: During certain events, you will occasionally encounter request quests from NPCs. They ask you to solve a problem that they can't solve themself, but you as a politician and a grifter can solve it. They may or may not provide money for you, but most importantly, they provide a huge support boost and a person loving you. They are only solvable during your free time, and there are various ways to solve it.
+
 ## Lore
 
 It's important that anyone who works on dialogs, quests or stories should know the lore of this campaign. It's basically an AU of Griftlands where different factions simultaneously decide to determine who rules Havaria through democracy. Here are some details.
@@ -81,5 +127,5 @@ They may or may not be added. It might be too much work. If they were to be adde
 
 ***Other notable NPCs***
 
-* **Fssh**
-* **Interviewer(The auctioneer)**
+* **Fssh** The barkeep at Grog n' Dog, she is not participating in the election, thanks for asking.
+* **Interviewer(The auctioneer)** The guy who works at the Grand Theater as a host there. It used to be just an auction house, but now it has been expanded and is used for other activities as well.

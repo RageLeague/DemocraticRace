@@ -26,7 +26,7 @@ local QDEF = QuestDef.Define
     }
     :Hub(function(cxt, who)
         if who and DemocracyUtil.RandomBystanderCondition(who) then
-            local cost = 15 * who:GetRenown()
+            local cost = math.max(30, 15 * who:GetRenown())
             if not who:HasAspect( "bribed" ) then
                 cxt:Opt("OPT_BRIBE")
                     :PostText("OPT_BRIBE_TT")

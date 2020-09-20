@@ -55,7 +55,10 @@ local QDEF = QuestDef.Define{
     end,
     events = 
     {
-        action_clock_advance = function(quest, location)
+        resolve_negotiation = function(quest, minigame)
+            quest:DefFn("DeltaActions", -2)
+        end,
+        resolve_battle = function(quest, battle)
             quest:DefFn("DeltaActions", -2)
         end,
         caravan_move_location = function(quest, location)

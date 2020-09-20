@@ -1,4 +1,11 @@
 local LocUnlock = require "DEMOCRATICRACE:content/get_location_unlock"
+local fun = require "util/fun"
+local negotiation_defs = require "negotiation/negotiation_defs"
+local EVENT = negotiation_defs.EVENT
+
+local battle_defs = require "battle/battle_defs"
+local BATTLE_EVENT = battle_defs.BATTLE_EVENT
+
 local DAY_SCHEDULE = {
     {quest = "RACE_DAY_1", difficulty = 1},
     {quest = "RACE_DAY_2", difficulty = 2},
@@ -15,7 +22,28 @@ AddOpinionEvent("SHARE_IDEOLOGY", {
     delta = OPINION_DELTAS.LIKE,
     txt = "Shares an ideology with you",
 })
-print("try load main function")
+
+------------------------------------------------------------------------------------------------
+
+-- Determines the support level change when an agent's relationship changes.
+-- The general support changes by this amount, while the faction and wealth support changes by double this amount.
+local DELTA_SUPPORT = {
+    [RELATIONSHIP.LOVED] = 8,
+    [RELATIONSHIP.LIKED] = 3,
+    [RELATIONSHIP.NEUTRAL] = 0,
+    [RELATIONSHIP.DISLIKED] = -3,
+    [RELATIONSHIP.HATED] = -8,
+}
+-- Determines the support level change when an agent is killed.
+local DEATH_DELTA = -10
+
+-- Determines the support level change when an agent is killed in an isolated scenario.
+-- Still reduce support, but people won't know for sure it's you.
+-- Still need to work on provoke kill, though.
+local ISOLATED_DEATH_DELTA = -3
+
+-- Determines the support change if you didn't kill someone, but you're an accomplice
+local ACCOMPLICE_KILLING_DELTA = -7
 local QDEF = QuestDef.Define
 {
     title = "The Democratic Race",
@@ -77,7 +105,7 @@ local QDEF = QuestDef.Define
         quest.param.stance_change = {}
         quest.param.stance_change_freebie = {}
 
-        TheGame:GetGameState():GetPlayerAgent().graft_owner:AddGraft(GraftInstance("relation_support_tracker"))
+        -- TheGame:GetGameState():GetPlayerAgent().graft_owner:AddGraft(GraftInstance("relation_support_tracker"))
 
         QuestUtil.StartDayQuests(DAY_SCHEDULE, quest)
 
@@ -96,6 +124,36 @@ local QDEF = QuestDef.Define
     end,
     events = 
     {
+        agent_relationship_changed = function( quest, agent, old_rel, new_rel )
+            local support_delta = DELTA_SUPPORT[new_rel] - DELTA_SUPPORT[old_rel]
+            if support_delta ~= 0 then
+                local ignore = true
+                quest:DefFn("DeltaGeneralSupport", support_delta, ignore)
+                quest:DefFn("DeltaFactionSupport", support_delta, agent, ignore)
+                quest:DefFn("DeltaWealthSupport", support_delta, agent, ignore)
+                TheGame:GetGameState():LogNotification( NOTIFY.DELTA_AGENT_SUPPORT, support_delta, agent ) 
+            end
+            -- if new_rel == RELATIONSHIP.LOVED and old_rel ~= RELATIONSHIP.LOVED then
+            --     TheGame:GetGameState():GetCaravan():DeltaMaxResolve(1)
+            -- end
+        end,
+        resolve_battle = function( quest, battle, primary_enemy, repercussions )
+            for i, fighter in battle:AllFighters() do
+                local agent = fighter.agent
+                if agent:IsSentient() and agent:IsDead() and fighter:GetKiller() and fighter:GetKiller():IsPlayer() then
+                    local support_delta = CheckBits( battle:GetScenario():GetFlags(), BATTLE_FLAGS.ISOLATED ) and ISOLATED_DEATH_DELTA or DEATH_DELTA
+                    local ignore = true
+                    quest:DefFn("DeltaGeneralSupport", support_delta, ignore)
+                    quest:DefFn("DeltaFactionSupport", support_delta, agent, ignore)
+                    quest:DefFn("DeltaWealthSupport", support_delta, agent, ignore)
+                    TheGame:GetGameState():LogNotification( NOTIFY.DELTA_AGENT_SUPPORT, support_delta, agent )
+                end
+            end
+            if not CheckBits( battle:GetScenario():GetFlags(), battle_defs.BATTLE_FLAGS.SELF_DEFENCE ) then
+                -- Being aggressive hurts your reputation
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -10)
+            end
+        end,
         action_clock_advance = function(quest, location)
             quest.param.event_delays = (quest.param.event_delays or 0) + 1
             if math.random() < 0.12 * (quest.param.event_delays - 1) then
