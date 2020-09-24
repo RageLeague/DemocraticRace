@@ -147,20 +147,45 @@ QDEF:AddConvo("go_to_interview")
     :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("backroom") end)
         :Loc{
             DIALOG_INTRO = [[
-                * [p] you arrive at the Grand Theater, and you see that {primary_advisor} is waiting for you.
+                * [p] You arrive at the Grand Theater, and are ushered into a back room. You barely make it into the room before you're ambushed by {primary_advisor}.
                 player:
                     !left
                 primary_advisor:
                     !right
-                    are you ready?
+		    Alright {player}, tonight is Big, so let's run through what you've got really quick.
+		    Have you got you're prepared anwsers?
                 player:
-                    aye aye, captain.
+                    My what?
                 primary_advisor:
-                    i can't heeeear you!
+                    Okay, no anwsers prepared...how about a teleprompter?
                 player:
-                    AYE AYE CAPTAIN!
+                    I have integrity, my dear {primary_advisor}!
                 primary_advisor:
-                    oooooo!
+                    Yeah well integrity isn't going to get you through this in one piece
+		    For Hesh's sake, did you even bring a breathmint?
+		player:
+		    Okay now that's just insulting.
+		primary_advisor:
+		    Well get ready for a lot more of that once you're on stage.
+		    Think about it, kid. You're no longer a passer-by with a big mouth and big opinions.
+		    This ain't little league anymore. This Interview is being broadcasted to all of Havaria.
+		player:
+		    !suprised
+		    Really?
+		primary_advisor:
+		    Yes really! Hesh foresake those who don't stay to the shallows, don't you listen!
+		player:
+		    Well, look. let's focus on our inter-personal relationship AFTER I survive this.
+		primary_advisor:
+		    IF you survive, at this point, but true. Let's me give you the once over about the interview.
+		* You and {primary_advisor} chatter about the interview, with them giving you pointers that make no sense to the task at hand.
+		* Eventually, a worker calls for you, and you steel your nerves.
+		player:
+		    Moment of truth. Any last pointers?
+		primary_advisor:
+		    [P] If all else fails, sucker punch the interviewer and run.
+	        player:
+		    Gee, thanks.
             ]],
         }
         :Fn(function(cxt)
