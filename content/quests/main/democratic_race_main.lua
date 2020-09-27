@@ -14,14 +14,6 @@ local DAY_SCHEDULE = {
     -- {quest = "RACE_DAY_5", difficulty = 5},
 }
 local MAX_DAYS = #DAY_SCHEDULE-- 5
-AddOpinionEvent("DISLIKE_IDEOLOGY", {
-    delta = OPINION_DELTAS.OPINION_DOWN,
-    txt = "Dislikes your ideology",
-})
-AddOpinionEvent("SHARE_IDEOLOGY", {
-    delta = OPINION_DELTAS.LIKE,
-    txt = "Shares an ideology with you",
-})
 
 ------------------------------------------------------------------------------------------------
 

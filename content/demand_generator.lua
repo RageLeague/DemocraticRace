@@ -29,7 +29,32 @@ local DEMANDS = {
         max_stacks = 999,
         remove_ratio = 0.3,
         
-        
+        OnBounty = function( self, card )
+            local demand_list = self.engine.demand_list
+            local demand_data = self.demand_data
+            if demand_list then
+                local money_entry
+                for i, entry in ipairs(demand_list) do
+                    if entry.id == self.id then
+                        money_entry = entry
+                        break
+                    end
+                end
+                if money_entry then
+                    money_entry.stacks = (money_entry.stacks or 0) - self.stacks
+                    if money_entry.stacks <= 0 then
+                        table.arrayremove(demand_list, money_entry)
+                    end
+                end
+            end
+            if demand_data then
+                demand_data.stacks = (demand_data.stacks or 0) - self.stacks
+                if demand_data.stacks <= 0 then
+                    demand_data.resolved = true
+                end
+            end
+            DemocracyUtil.CheckHeavyHanded(self, card, self.engine)
+        end,
         GenerateDemand = function(self, pts, data) -- takes in pts for points allocated to this demand
             local rank = data and data.rank or TheGame:GetGameState():GetCurrentBaseDifficulty()
             local min_pts = 30 + 10 * rank

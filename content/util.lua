@@ -328,6 +328,19 @@ local function CollectIssueImportance(agent)
     return t
 end
 
+local function CheckHeavyHanded(modifier, card, minigame)
+    -- destroying an argument without dropping resolve down to zero can only be done thru heavy handed
+    if modifier.resolve and modifier.resolve > 0 then 
+        if card and card.id then
+            print("uh oh, stinky")
+            minigame.nuke_card = minigame.nuke_card or {}
+            table.insert(minigame.nuke_card, card.id)
+            return true
+        end
+    end
+    return false
+end
+
 local function AddDemandConvo(cxt, demand_list, demand_modifiers)
     local new_demands = deepcopy(demand_list)
     local original_demands = deepcopy(demand_list)
@@ -354,6 +367,7 @@ local function AddDemandConvo(cxt, demand_list, demand_modifiers)
                 if #demand_list <= 0 then
                     if minigame.nuke_card then
                         cxt:Dialog("DIALOG_NEGOTIATE_TERMS_CHEATER_FACE", type(minigame.nuke_card) == "table" and minigame.nuke_card[1] or minigame.nuke_card)
+                        cxt:GetAgent():OpinionEvent(OPINION.USED_HEAVY_HANDED)
                     else
                         cxt:Dialog("DIALOG_NEGOTIATE_TERMS_PERFECT_SUCCESS")
                     end
@@ -362,6 +376,7 @@ local function AddDemandConvo(cxt, demand_list, demand_modifiers)
                 else
                     if minigame.nuke_card then
                         cxt:Dialog("DIALOG_NEGOTIATE_TERMS_CHEATER_FACE", type(minigame.nuke_card) == "table" and minigame.nuke_card[1] or minigame.nuke_card)
+                        cxt:GetAgent():OpinionEvent(OPINION.USED_HEAVY_HANDED)
                     end
                     cxt:Dialog("DIALOG_NEGOTIATE_TERMS_SUCCESS", demand_list)
                 end
@@ -427,6 +442,7 @@ return {
     DemocracyActFilter= DemocracyActFilter,
     PresentRequestQuest = PresentRequestQuest,
     CollectIssueImportance = CollectIssueImportance,
+    CheckHeavyHanded = CheckHeavyHanded,
     AddDemandConvo = AddDemandConvo,
 
     -- Demand generator stuff
