@@ -43,6 +43,9 @@ function IssueLocDef:GetLocPrefix()
     return "POLITICAL_ISSUE." .. string.upper(self.id)
 end
 function IssueLocDef:GetAgentStanceIndex(agent)
+    if agent:IsPlayer() then
+        return DemocracyUtil.TryMainQuestFn("GetStance", self)
+    end
     local stance_score = {}
     local has_vals = false
     for id, data in pairs(self.stances) do
@@ -59,8 +62,23 @@ function IssueLocDef:GetAgentStanceIndex(agent)
         return 0
     end
 end
+function IssueLocDef:GetStance(idx)
+    return self.stances[idx]
+end
 function IssueLocDef:GetAgentStance(agent)
     return self.stances[self:GetAgentStanceIndex(agent)]
+end
+function IssueLocDef:GetImportance(agent)
+    local delta = 0
+    if agent then
+        local abs_val = math.abs( self:GetAgentStanceIndex(agent) )
+        if abs_val == 0 then
+            delta = -2
+        elseif abs_val >= 2 then
+            delta = 3 * (abs_val - 1)
+        end
+    end
+    return math.max(0, (self.importance or 6) + delta) -- some middle point if there's nothing defined
 end
 
 function ConvoOption:UpdatePoliticalStance(issue, newval, strict, autosupport, for_show)
@@ -109,6 +127,7 @@ local val =  {
     SECURITY = {
         name = "Universal Security",
         desc = "Security is a big issue in Havaria. On the one hand, improving security can drastically reduce crime and improve everyone's lives. On the other hand, it can leads to corruption and abuse of power.",
+        importance = 10,
         stances = {
             [-2] = {
                 name = "Defund the Admiralty",
@@ -202,6 +221,7 @@ local val =  {
     INDEPENDENCE = {
         name = "Deltrean-Havarian Annex",
         desc = "The annexation of Havaria into Deltree has stroke controversies across Havaria. On the one hand, a full integration of Havaria to Deltree will likely improve Havaria's prosperity. On the other hand, it is a blatant disregard to Havaria's sovereignty.",
+        importance = 8,
         stances = {
             [-2] = {
                 name = "Total Annexation",
@@ -286,6 +306,7 @@ local val =  {
     TAX_POLICY = {
         name = "Tax Policy",
         desc = "Taxes are huge issues in society. [p] seriously, i'm lazy, you know what tax is right",
+        importance = 9,
         stances = {
             [-2] = {
                 name = "Minimum Taxes",
@@ -380,16 +401,17 @@ local val =  {
     LABOR_LAW = {
         name = "Labor Laws",
         desc = "pro-employer? pro-workers?",
+        importance = 9,
         stances = {
             [-2] = {
                 name = "Laissez Faire",
                 desc = "i can never remember how to spell this.",
                 faction_support = {
                     SPARK_BARONS = 5,
-                    ADMIRALTY = 3,
+                    ADMIRALTY = 1,
                     CULT_OF_HESH = 3,
                     RISE = -5,
-                    FEUD_CITIZEN = -4,
+                    FEUD_CITIZEN = -2,
                     JAKES = -4,
                 },
                 wealth_support = {
@@ -404,10 +426,10 @@ local val =  {
                 desc = "Employers have more rights than workers.",
                 faction_support = {
                     SPARK_BARONS = 3,
-                    ADMIRALTY = 1,
+                    -- ADMIRALTY = 1,
                     CULT_OF_HESH = 2,
                     RISE = -4,
-                    FEUD_CITIZEN = -2,
+                    FEUD_CITIZEN = -1,
                     JAKES = -2,
                 },
                 wealth_support = {
@@ -439,7 +461,7 @@ local val =  {
                     ADMIRALTY = -2,
                     CULT_OF_HESH = -3,
                     RISE = 3,
-                    FEUD_CITIZEN = 2,
+                    FEUD_CITIZEN = 1,
                     JAKES = 1,
                 },
                 wealth_support = {
@@ -457,7 +479,7 @@ local val =  {
                     ADMIRALTY = -3,
                     CULT_OF_HESH = -4,
                     RISE = 5,
-                    FEUD_CITIZEN = 3,
+                    FEUD_CITIZEN = 2,
                     JAKES = -1,
                 },
                 wealth_support = {
@@ -472,6 +494,7 @@ local val =  {
     ARTIFACT_TREATMENT = {
         name = "Artifact Treatment",
         desc = "if you have a better name, help me out here",
+        importance = 6,
         stances = {
             [-2] = {
                 name = "Extensive Research & Use",
@@ -553,6 +576,7 @@ local val =  {
     SUBSTANCE_REGULATION = {
         name = "Substance Regulation",
         desc = "Policies regarding the restriction of certain items.",
+        importance = 8,
         stances = {
             [-2] = {
                 name = "Legalize Everything",
@@ -647,6 +671,7 @@ local val =  {
     WELFARE = {
         name = "Welfare Policy",
         desc = "[p] it's obvious to everyone what that is",
+        importance = 4,
         stances = {
             [-2] = {
                 name = "Welfare Ban",

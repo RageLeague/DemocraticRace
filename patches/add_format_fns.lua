@@ -22,5 +22,30 @@ end
 
 loc.pol_stance = function(stance)
     -- can't really autoconvert, since stances aren't really tracked by id.
-    return stance and stance.GetLocalizedName and stance:GetLocalizedName() or stance
+    return stance and stance.GetLocalizedName and stance:GetLocalizedName() or tostring(stance)
+end
+
+loc.one_demand = function(data)
+    if type(data) == "table" and data.id then
+        local modifier = Content.GetNegotiationModifier(data.id)
+        if modifier then
+            local localized_title = modifier:GetLocalizedTitle()
+            if modifier.title_fn then
+                localized_title = modifier:title_fn(localized_title, data)
+            end
+            return localized_title
+        end
+    end
+    return tostring(data)
+end
+
+loc.demand_list = function(list)
+    local t = {}
+    for i, demand in pairs( list ) do
+        table.insert( t, loc.format( "{1#one_demand}", demand ))
+    end
+    if #t <= 0 then
+        return LOC"MISC.DO_NOTHING"
+    end
+    return loc.format( "{1#listing}", t )
 end

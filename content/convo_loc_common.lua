@@ -9,6 +9,60 @@ Content.AddStringTable( "DEM_CONVO", {
         REQ_FREE_TIME_ACTIONS = "You don't have enough free time actions to choose this action.",
         TT_FREE_TIME_ACTION_COST = "This option requires {1} free time {1*action|actions}.",
 
+        OPT_NEGOTIATE_TERMS = "Negotiate the terms",
+        TT_NEGOTIATE_TERMS = "Negotiate the terms of your deal with {agent}, to hopefully reduce your commitments.",
+        DIALOG_NEGOTIATE_TERMS = [[
+            player:
+                I don't know, you're driving a hard bargain...
+        ]],
+        DIALOG_NEGOTIATE_TERMS_SUCCESS = [[
+            agent:
+                Fine. I'll lower my demands.
+                Now you just need to {1#demand_list}.
+                Take it, or leave it.
+        ]],
+        DIALOG_NEGOTIATE_TERMS_PERFECT_SUCCESS = [[
+            agent:
+                Okay, okay. You made your point.
+                Tell you what, I agree to do what you want. No strings attached.
+        ]],
+        DIALOG_NEGOTIATE_TERMS_NO_REDUCTION = [[
+            player:
+                This is what I'll do, {1#demand_list}. Final offer.
+            agent:
+                Isn't that just the origi-
+                I mean, sure. Deal.
+                Now uphold your end of the bargain.
+        ]],
+        DIALOG_NEGOTIATE_TERMS_CHEATER_FACE = [[
+            agent:
+                !angry_shrug
+                Oh come on! You can't just say "screw it, you aren't getting anything" and expect it to work!
+            player:
+                !handwring
+                Haha, {1#card} goes brrr.
+            agent:
+                !dubious
+                ...
+            player:
+                !happy
+                ...
+            agent:
+                !scared
+                ...
+            player:
+                !cruel
+                ...
+            agent:
+                !sigh
+                Fine you win.
+        ]],
+        DIALOG_NEGOTIATE_TERMS_FAIL = [[
+            agent:
+                No, the original deal stands.
+                Take it, or leave it.
+        ]],
+
         OPT_UNLOCK_NEW_LOCATION = "Unlock new location: {1#location}",
         TT_UNLOCK_NEW_LOCATION = "You can now visit this location during your free time.",
         

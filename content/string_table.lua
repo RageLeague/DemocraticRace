@@ -69,5 +69,8 @@ Content.AddStringTable("DEMOCRACY", {
             LVL_4 = "Upper Class",
         },
     },
-    
+    MISC = 
+    {
+        DO_NOTHING = "do nothing",
+    },
 })

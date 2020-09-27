@@ -185,9 +185,11 @@ end
 
 -- Get wealth based on renown.
 local function GetWealth(renown)
-    if is_instance(renown, Agent) then renown = renown:GetRenown() end
+    if is_instance(renown, Agent) then
+        renown = renown:GetRenown() + (renown:HasTag("wealthy") and 1 or 0)
+    end
     renown = renown or 1
-    return clamp(renown, 1, DemocracyConstants.wealth_levels)
+    return clamp(math.floor(renown), 1, DemocracyConstants.wealth_levels)
 end
 local function GetWealthString(renown)
     return LOC(DemocracyConstants.wealth_string[GetWealth(renown)])
@@ -314,6 +316,64 @@ local function PresentRequestQuest(cxt, quest, accept_fn, decline_fn, objective_
     --     end,
     --     decline_fn or function() end, false)
 end
+
+local function CollectIssueImportance(agent)
+    local t = {}
+    for id, data in pairs(DemocracyConstants.issue_data) do
+        t[id] = data:GetImportance(agent)
+        if t[id] <= 0 then
+            t[id] = nil
+        end
+    end
+    return t
+end
+
+local function AddDemandConvo(cxt, demand_list, demand_modifiers)
+    local new_demands = deepcopy(demand_list)
+    local original_demands = deepcopy(demand_list)
+    cxt:Opt("OPT_NEGOTIATE_TERMS")
+        :PostText("TT_NEGOTIATE_TERMS")
+        :Dialog("DIALOG_NEGOTIATE_TERMS")
+        :DemandNegotiation{
+            demand_modifiers = demand_modifiers,
+            demand_list = new_demands,
+            cooldown = 0xffffff, -- you're not getting another negotiation
+            on_success = function(cxt, minigame)
+                table.clear(demand_list)
+                for i, data in ipairs(new_demands) do
+                    if not data.resolved then
+                        table.insert(demand_list, data)
+                    end
+                end
+                local diff = table_diff(demand_list, original_demands)
+                if diff then
+                    TheGame:GetDebug():CreatePanel(DebugTable(diff))
+                else
+                    print("no change lul")
+                end
+                if #demand_list <= 0 then
+                    if minigame.nuke_card then
+                        cxt:Dialog("DIALOG_NEGOTIATE_TERMS_CHEATER_FACE", type(minigame.nuke_card) == "table" and minigame.nuke_card[1] or minigame.nuke_card)
+                    else
+                        cxt:Dialog("DIALOG_NEGOTIATE_TERMS_PERFECT_SUCCESS")
+                    end
+                elseif not diff then
+                    cxt:Dialog("DIALOG_NEGOTIATE_TERMS_NO_REDUCTION", demand_list)
+                else
+                    if minigame.nuke_card then
+                        cxt:Dialog("DIALOG_NEGOTIATE_TERMS_CHEATER_FACE", type(minigame.nuke_card) == "table" and minigame.nuke_card[1] or minigame.nuke_card)
+                    end
+                    cxt:Dialog("DIALOG_NEGOTIATE_TERMS_SUCCESS", demand_list)
+                end
+            end,
+            on_fail = function(cxt) 
+                cxt:Dialog("DIALOG_NEGOTIATE_TERMS_FAIL")
+            end,
+        }
+end
+
+
+local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 --
 
 function ConvoOption:DeltaSupport(amt, target, ignore_notification)
@@ -366,4 +426,12 @@ return {
     IsDemocracyCampaign = IsDemocracyCampaign,
     DemocracyActFilter= DemocracyActFilter,
     PresentRequestQuest = PresentRequestQuest,
+    CollectIssueImportance = CollectIssueImportance,
+    AddDemandConvo = AddDemandConvo,
+
+    -- Demand generator stuff
+    demand_generator = demand_generator,
+    AddDemandModifier = demand_generator.AddDemandModifier,
+    GenerateDemands = demand_generator.GenerateDemands,
+    ParseDemandList = demand_generator.ParseDemandList,
 }

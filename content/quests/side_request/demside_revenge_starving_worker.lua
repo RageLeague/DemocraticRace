@@ -163,17 +163,43 @@ QDEF:AddConvo("take_your_heart", "foreman")
                 get out of my face!
             * welp, you failed on this front. maybe try some other ways
         ]],
+        OPT_DEMAND = "Ask {agent} to change {agent.hisher} ways",
+        TT_INFO_PROBED = "<#BONUS>Info probed. -25% demand.</>",
+        DIALOG_DEMAND = [[
+        {first_time?
+            player:
+                [p] can you change your ways?
+            agent:
+                why should i do it for free?
+                !thought
+                hmm... i'll tell you what, if you can {demand_list#demand_list}, then i'll change my ways.
+            player:
+                hmm... i'll think about that.
+        }
+        {not first_time?
+            player:
+                [p] so, about that deal...
+            agent:
+                didn't i tell you to {demand_list#demand_list}?
+            player:
+                right...
+        }
+        ]],
+        
         DIALOG_BACK = [[
             player:
                 Never mind.
         ]],
     }
     :Hub(function(cxt)
+        -- local test_table = DemocracyUtil.GenerateDemands(100, nil, 1)
+        -- TheGame:GetDebug():CreatePanel(DebugTable(test_table))
         cxt:Opt("OPT_CONFRONT")
             :SetQuestMark(cxt.quest)
             :Dialog("DIALOG_CONFRONT")
             :RequireFreeTimeAction()
             :LoopingFn(function(cxt)
+                
                 if not cxt.quest.param.probed_info then
                     cxt:Opt("OPT_PROBE")
                         :Dialog("DIALOG_PROBE")
@@ -198,6 +224,25 @@ QDEF:AddConvo("take_your_heart", "foreman")
                             end,
                         }
                 end
+
+                cxt:Opt("OPT_DEMAND")
+                    :LoopingFn(function(cxt)
+                        if cxt:FirstLoop() then
+                            if not cxt.quest.param.demands then
+                                local cost, reasons = CalculatePayment(cxt.quest:GetCastMember("foreman"), cxt.quest.param.probed_info and 180 or 240)
+                                cxt.quest.param.demands = DemocracyUtil.GenerateDemands(cost, cxt.quest:GetCastMember("foreman"))
+                                cxt.quest.param.demand_list = DemocracyUtil.ParseDemandList(cxt.quest.param.demands)
+                            end
+                        end
+                        cxt:Dialog("DIALOG_DEMAND")
+
+                        -- cxt:Opt("OPT_NEGOTIATE_TERMS")
+                        DemocracyUtil.AddDemandConvo(cxt, cxt.quest.param.demand_list, cxt.quest.param.demands)
+
+                        StateGraphUtil.AddBackButton(cxt)
+                            :Dialog("DIALOG_BACK")
+                    end)
+
                 StateGraphUtil.AddBackButton(cxt)
                     :Dialog("DIALOG_BACK")
             end)
