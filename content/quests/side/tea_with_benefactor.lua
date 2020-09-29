@@ -1,5 +1,11 @@
-local main_negotiator
-local main_negotiator_limiter = 0
+-- don't declare variables that ties to the quest outside of quest defs unless they are constant
+-- local main_negotiator
+-- local main_negotiator_limiter = 0
+local BENEFACTOR_DEFS = {
+    WEALTHY_MERCHANT = "PROPOSITION",
+    SPARK_BARON_TASKMASTER = "APPROPRIATOR",
+    PRIEST = "ZEAL",
+}
 
 local LOCATION_DEF =
 {
@@ -27,31 +33,29 @@ end
 local BENEFACTOR_BEHAVIOR = {
     OnInit = function( self, difficulty )
         local modifier
+        self.etiquette = self:AddArgument( "ETIQUETTE" )
         self:SetPattern( self.BasicCycle )
-        if main_negotiator == "SPARK_BARON_TASKMASTER" then modifier = self.negotiator:AddModifier("APPROPRIATOR") end
-        if main_negotiator == "PRIEST" then modifier = self.negotiator:AddModifier("ZEAL") end
-        if main_negotiator == "WEALTHY_MERCHANT" then modifier = self.negotiator:AddModifier("PROPOSITION") end
-        if modifier == not nil then modifier.agents = shallowcopy(self.agents) end
+        -- if main_negotiator == "SPARK_BARON_TASKMASTER" then modifier = self.negotiator:AddModifier("APPROPRIATOR") end
+        -- if main_negotiator == "PRIEST" then modifier = self.negotiator:AddModifier("ZEAL") end
+        -- if main_negotiator == "WEALTHY_MERCHANT" then modifier = self.negotiator:AddModifier("PROPOSITION") end
+        modifier = self.negotiator:AddModifier(BENEFACTOR_DEFS[self.agent:GetContentID()])
+        if modifier ~= nil then modifier.agents = shallowcopy(self.agents) end
     end,
     agents = {},
 
 	-- Will probably get unique core argument (POSITION OF POWER) and possibly argument that spawns every x (4) turns
     BasicCycle = function( self, turns )
-        local etiquette = self:AddArgument( "ETIQUETTE" )
+        -- This will trigger every turn, and we don't want that
+        -- local etiquette = self:AddArgument( "ETIQUETTE" )
 
-        if turns % 3 == 0 and turns % 2 == 0 then
+        -- Also, remove unnecessary checks
+        self:ChooseGrowingNumbers( 1, 1 )
+        if turns % 3 == 0 then
             self:ChooseCard( etiquette )
-            self:ChooseGrowingNumbers( 1, 1 )
+        end
+        if turns % 2 == 0 then
             self:ChooseComposure( 1, 3, 5 )
-        elseif turns % 3 == 0 then
-            self:ChooseCard( etiquette )
-            self:ChooseGrowingNumbers( 1, 1 )
-        elseif turns % 2 == 0 then
-            self:ChooseComposure( 1, 3, 5 )
-			self:ChooseGrowingNumbers( 1, 1 )
-		else
-			self:ChooseGrowingNumbers( 1, 1 )
-		end
+        end
 
 	end,
 }
@@ -121,27 +125,33 @@ local QDEF = QuestDef.Define
     cast_id = "benefactor",
     when = QWHEN.MANUAL,
     no_validation = true,
-    cast_fn = function(quest, t)
-
-        local options = {}
-        table.insert(options, "WEALTHY_MERCHANT")
-        table.insert(options, "SPARK_BARON_TASKMASTER")
-        table.insert(options, "PRIEST")
-    
-        local def = options[math.random(#options)]
-        table.insert( t, quest:CreateSkinnedAgent( def ) )
- 
-        if main_negotiator_limiter == 0 then
-            main_negotiator = def
-            main_negotiator_limiter = 1
-        end
-
+    condition = function(agent, quest)
+        return BENEFACTOR_DEFS[agent:GetContentID()] ~= nil -- might generalize it later
     end,
+    -- don't use cast_fn by default if you want to use existing agents.
+    -- cast_fn = function(quest, t)
+
+    --     local options = {}
+    --     table.insert(options, "WEALTHY_MERCHANT")
+    --     table.insert(options, "SPARK_BARON_TASKMASTER")
+    --     table.insert(options, "PRIEST")
+    
+    --     local def = options[math.random(#options)]
+    --     table.insert( t, quest:CreateSkinnedAgent( def ) )
+ 
+    --     if main_negotiator_limiter == 0 then
+    --         main_negotiator = def
+    --         main_negotiator_limiter = 1
+    --     end
+
+    -- end,
     score_fn = score_fn,
 }
 :AddCastFallback{
     cast_fn = function(quest, t)
-        table.insert( t, quest:CreateSkinnedAgent() )
+        local options = copykeys(BENEFACTOR_DEFS)
+        local def = table.arraypick(options)
+        table.insert( t, quest:CreateSkinnedAgent(def) )
     end,
 }
 :AddOpinionEvents{
