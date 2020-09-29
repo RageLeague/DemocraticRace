@@ -129,15 +129,26 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             primary_advisor:
                 Well yeah! Voting day is in a matter of days, and people are only looking up from their work now.
                 The image you have now is a lot more impactful than it was before.
-            * With {primary_advisor} yelling about your tasks you have for today, you clean yourself up and get ready for another stressful day.
-
+                Hey! Wake up!
+            * You suddenly snap awake, realizing you we're drifting off.
             primary_advisor:
-                [p] also i heard someone tried to assassinate you today.
+                What's got you running on fumes today?
             player:
-                i already got used to it.
-                they won't get me.
+                Well it might have to do with how I was awoken by the gentle touch of a hired assasain.
             primary_advisor:
-                even still, it's probably better to keep a bodyguard around.
+                Hesh, really? How did I not know?
+            player:
+                Well, you we're in your office, setting up this oh-so important interview.
+            primary_advisor:
+                Impossible, I am the advisor. I see ALL.
+                I can get a few contractors to fix up the office, maybe keep the building safer.
+                But you, on your daily jaunts, won't be so lucky.
+                How about you hire a bodyguard? Some'll do it for cheap, especially if you promise them job security and such.
+            player:
+                That actually sounds like a good idea. There's a first for everything.
+            primary_advisor:
+                Yes,Yes, laud me later. Now get in the bathroom, you smell like a puss-matted vroc.
+            * With {primary_advisor} yelling to you about details with the interview, you clean yourself up and get ready for another stressful day.
             ** You can now hire bodyguards!
         ]],
     }
