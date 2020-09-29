@@ -617,6 +617,83 @@ local MODIFIERS =
             -- end
         end,
     },
+    SECURED_INVESTEMENTS = 
+    {
+        name = "Secured Investments",
+        icon = "negotiation/modifiers/frisk.tex",
+        desc = "Gain {1} shills if the negotiation is successful.",
+        desc_fn = function(self, fmt_str)
+            return loc.format( fmt_str, self.stacks)
+        end,
+
+        max_stacks = 100,
+        
+        modifier_type = MODIFIER_TYPE.PERMANENT,
+    },
+    ETIQUETTE = 
+    {
+        name = "Etiquette",
+        icon = "negotiation/modifiers/compromise.tex",
+        desc = "Whenever you play a Hostility card discard a random card.",
+    
+        max_resolve = 6,
+        max_stacks = 1,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        event_handlers =
+        {
+            [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
+                if card:GetNegotiator() == self.engine:GetPlayerNegotiator() then
+                    if minigame:GetTurns() > 0 and card:IsFlagged( CARD_FLAGS.HOSTILE ) then
+                        local card = self.engine:GetHandDeck():PeekRandom()
+                        self.engine:DiscardCard( card )
+                    end
+                end
+            end
+        },
+    },
+    INVESTMENT_OPPORTUNITY  = 
+    {
+        name = "Investment Opportunity",
+        icon = "negotiation/modifiers/frisk.tex",
+        desc = "When destroyed, recieve 10 shills if the negotiation is successful. If you have gotten less than 100 shill spawn {INVESTMENT_OPPORTUNITY}.",
+
+        max_resolve = 5,
+        max_stacks = 1,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        OnBounty = function(self, source)
+            self.negotiator:CreateModifier("CAUTIOUS_SPENDER")
+            self.anti_negotiator:AddModifier("SECURED_INVESTEMENTS", 10)
+            if self.negotiator:GetModifierStacks( "SECURED_INVESTEMENTS" ) < 100 then
+                self.negotiator:CreateModifier("INVESTMENT_OPPORTUNITY")
+            end
+        end,
+    },
+    CAUTIOUS_SPENDER  = 
+    {
+        name = "Cautious Spender",
+        icon = "negotiation/modifiers/obscurity.tex",
+        desc = "At the begging of each turn add 2 resolve to all other friendly arguments.",
+
+        max_resolve = 4,
+        max_stacks = 1,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        event_handlers =
+        {
+            [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
+                if negotiator == self.negotiator then
+                    for i, modifier in self.negotiator:ModifierSlots() do
+                        if modifier:GetResolve() ~= nil and modifier ~= self then
+                            modifier:ModifyResolve( 2, self )
+                            self:NotifyTriggered() 
+                        end
+                    end
+                end
+            end
+        }
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
