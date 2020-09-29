@@ -1,3 +1,6 @@
+local negotiation_defs = require "negotiation/negotiation_defs"
+local EVENT = negotiation_defs.EVENT
+
 local DEMANDS = {
     demand_money = {
         name = "Demand Money",
@@ -28,6 +31,15 @@ local DEMANDS = {
 
         max_stacks = 999,
         remove_ratio = 0.3,
+        event_handlers =
+        {
+
+            [ EVENT.END_PLAYER_TURN ] = function( self, minigame )
+                self.negotiator:DeltaModifier(self, -math.ceil( self.stacks*self.remove_ratio))
+                AUDIO:PlayEvent("event:/sfx/battle/cards/neg/bonus_tick_down")
+            end
+
+        },
         
         OnBounty = function( self, card )
             local demand_list = self.engine.demand_list
@@ -115,6 +127,16 @@ local DEMANDS = {
         modifier_type = MODIFIER_TYPE.BOUNTY,
         common_demand = true,
 
+        event_handlers =
+        {
+
+            [ EVENT.END_PLAYER_TURN ] = function( self, minigame )
+                self.negotiator:DeltaModifier(self, -1)
+                AUDIO:PlayEvent("event:/sfx/battle/cards/neg/bonus_tick_down")
+            end
+
+        },
+
         OnInit = function( self, source )
             self:SetResolve( 10 + 5 * self.engine:GetDifficulty() )
             AUDIO:PlayEvent("event:/sfx/battle/cards/neg/create_argument/bonus")
@@ -125,6 +147,26 @@ local DEMANDS = {
             self:NotifyChanged()
         end,
         max_demand_use = 2,
+        
+        OnBounty = function( self, card )
+            local demand_list = self.engine.demand_list
+            local demand_data = self.demand_data
+            if demand_list then
+                local money_entry
+                for i, entry in ipairs(demand_list) do
+                    if entry.id == self.id and entry.issue_id == demand_data.issue_id then
+                        money_entry = entry
+                        break
+                    end
+                end
+                if money_entry then
+                    table.arrayremove(demand_list, money_entry)
+                    demand_data.resolved = true
+                end
+            end
+            DemocracyUtil.CheckHeavyHanded(self, card, self.engine)
+        end,
+        
         GenerateDemand = function(self, pts, data) -- takes in pts for points allocated to this demand
             local rank = data and data.rank or TheGame:GetGameState():GetCurrentBaseDifficulty()
             local issue_id, stance = data.force_issue, data.force_stance
