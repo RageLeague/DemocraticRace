@@ -180,8 +180,8 @@ QDEF:AddConvo("go_to_teahouse")
                 * [p] You arrive at the teahouse looking for the benefactor.
                 * [p] One person watches you intensly and points to an empty chair.
             ]],
-            OPT_PREACH = " [p] Sit Down",
-            REASON_PREACH = " [p] Secure as much shills as you can!",
+            OPT_PREACH = "Sit Down",
+            REASON_PREACH = "Secure as much shills as you can!",
             
             DIALOG_BENEFACTOR_CONVINCED = [[
                 * [p] You have secured additional financial support.
@@ -207,7 +207,7 @@ QDEF:AddConvo("go_to_teahouse")
             BENEFACTOR_BEHAVIOR.agents = cxt.quest.param.crowd
 
             local postProcessingSuccessFn = function(cxt, minigame)
-                minigame:ModifyMoney( minigame:GetPlayerNegotiator():GetModifierStacks( "SECURED_INVESTEMENTS" ) )
+                cxt.caravan:AddMoney( minigame:GetPlayerNegotiator():GetModifierStacks( "SECURED_INVESTEMENTS" ) )
                 cxt.quest.param.crowd[1]:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("convinced_benefactor"))
 
                 cxt:Dialog("DIALOG_BENEFACTOR_CONVINCED")
