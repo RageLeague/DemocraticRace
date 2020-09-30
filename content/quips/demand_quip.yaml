@@ -1,5 +1,5 @@
-# tag_scores:
-#   accept_demand_instant_stance: 0
+tag_scores:
+  material_demand: 0
 
 lines:
 
@@ -11,10 +11,15 @@ lines:
     Okay, I'll comply.
   - |
     !permit
+    Here's my end of the bargain. I await yours.
+- tags: [meet_demand, material_demand]
+  dialog:
+  - |
+    !permit
     Here.
   - |
     !permit
-    Here's my end of the bargain. I await yours.
+    Take it.
 - tags: [meet_demand, demand_money]
   pre: |
     !give

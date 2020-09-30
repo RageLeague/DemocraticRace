@@ -42,7 +42,11 @@ local DEMANDS = {
 
 
         modifier_type = MODIFIER_TYPE.BOUNTY,
+        -- this indicates that this demand can appear in anyone's demands
         common_demand = true,
+        -- this indicates that this demand is material(something that actually exists) rather than
+        -- abstract(something that is only an idea, like promises or taking stances)
+        material_demand = true,
 
         OnInit = function( self, source )
             self:SetResolve( 1 + math.round(self.stacks / 5) )

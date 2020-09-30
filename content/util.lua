@@ -408,11 +408,12 @@ local function AddDemandConvo(cxt, demand_list, demand_modifiers)
             local opt = cxt:RawOpt(string.capitalize_sentence(loc.format("{1#one_demand}", demand_data)), demand_data.id)
             -- ConvoOption()
             -- cxt.enc:AddOption(opt)
-            opt:Quip(cxt.enc:GetPlayer(), "meet_demand", demand_data.id)
-                :Quip(cxt:GetAgent(), "accept_demand", demand_data.id)
+            
             -- they have seperate secondary tags because i want to make the tagscores different for complying and accepting
 
             local modifier = Content.GetNegotiationModifier(demand_data.id)
+            opt:Quip(cxt.enc:GetPlayer(), "meet_demand", demand_data.id, modifier.material_demand and "material_demand" or "abstract_demand")
+                :Quip(cxt:GetAgent(), "accept_demand", demand_data.id, modifier.material_demand and "material_demand" or "abstract_demand")
             if modifier.GenerateConvoOption then
                 modifier:GenerateConvoOption(cxt, opt, demand_data, demand_modifiers)
             end
