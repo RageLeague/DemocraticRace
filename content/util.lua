@@ -405,11 +405,14 @@ local function AddDemandConvo(cxt, demand_list, demand_modifiers)
         if not demand_data.resolved then
             -- this is done because it bypasses the hard check for convo_common when directly using cxt:Opt
             -- instead of taking an id, it takes the actual, localized string using our handy function
-            local opt = cxt:RawOpt(loc.format("{1#one_demand}", demand_data), demand_data.id)
+            local opt = cxt:RawOpt(string.capitalize_sentence(loc.format("{1#one_demand}", demand_data)), demand_data.id)
             -- ConvoOption()
             -- cxt.enc:AddOption(opt)
+            opt:Quip(cxt.enc:GetPlayer(), "meet_demand", demand_data.id)
+                :Quip(cxt:GetAgent(), "accept_demand", demand_data.id)
+            -- they have seperate secondary tags because i want to make the tagscores different for complying and accepting
 
-            local modifier = Content.GetNegotiationModifier(data.id)
+            local modifier = Content.GetNegotiationModifier(demand_data.id)
             if modifier.GenerateConvoOption then
                 modifier:GenerateConvoOption(cxt, opt, demand_data, demand_modifiers)
             end

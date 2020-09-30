@@ -51,7 +51,7 @@ local BENEFACTOR_BEHAVIOR = {
         -- Also, remove unnecessary checks
         self:ChooseGrowingNumbers( 1, 1 )
         if turns % 3 == 0 then
-            self:ChooseCard( etiquette )
+            self:ChooseCard( self.etiquette )
         end
         if turns % 2 == 0 then
             self:ChooseComposure( 1, 3, 5 )

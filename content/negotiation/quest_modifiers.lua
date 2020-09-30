@@ -1,4 +1,5 @@
 local negotiation_defs = require "negotiation/negotiation_defs"
+local CARD_FLAGS = negotiation_defs.CARD_FLAGS
 local EVENT = negotiation_defs.EVENT
 
 local function CreateNewSelfMod(self)

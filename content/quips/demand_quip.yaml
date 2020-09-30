@@ -1,0 +1,49 @@
+# tag_scores:
+#   accept_demand_instant_stance: 0
+
+lines:
+
+# When meeting an agent's demand
+- tags: [meet_demand]
+  dialog:
+  - |
+    !sigh
+    Okay, I'll comply.
+  - |
+    !permit
+    Here.
+  - |
+    !permit
+    Here's my end of the bargain. I await yours.
+- tags: [meet_demand, demand_money]
+  pre: |
+    !give
+  dialog:
+  - Here's the money, as part of our deal.
+  - Is this enough money?
+- tags: [meet_demand, demand_instant_stance]
+  dialog:
+  - I'm taking your stance.
+  - I'll make a public statement as soon as possible.
+
+- tags: [accept_demand]
+  dialog:
+  - |
+    !happy
+    Great, thanks!
+  - |
+    !agree
+    It's a step in the right direction.
+  - |
+    !take
+    I'll take it.
+- tags: [accept_demand, demand_instant_stance]
+  score: 1
+  dialog:
+  - |
+    !dubious
+    I hope you actually deliver once you get into the office instead of changing your mind midway through.
+  - |
+    !thought
+    I have a feeling that you are already going to do that anyway.
+    Either way, it's fine by me.

@@ -1,20 +1,26 @@
 local negotiation_defs = require "negotiation/negotiation_defs"
 local EVENT = negotiation_defs.EVENT
-Content.AddStringTable("DEMOCRACY_DEMAND", {
-    CONVO_COMMON = {
-        DEMAND_STRING = {
-            DIALOG_ACCEPT_MONEY = [[
-                player:
-                    !give
-                    Here's your money, as part of our deal.
-                agent:
-                    !take
-                    I'll take it.
-            ]],
-            OPT_TAKE_STANCE = "Take the stance <i>{1#pol_stance}</> on <b>{2#pol_issue}</>.",
-        },
-    },
-})
+-- Content.AddStringTable("DEMOCRACY_DEMAND", {
+--     CONVO_COMMON = {
+--         DEMAND_STRING = {
+--             DIALOG_ACCEPT_MONEY = [[
+--                 player:
+--                     !give
+--                     Here's your money, as part of our deal.
+--                 agent:
+--                     !take
+--                     I'll take it.
+--             ]],
+--             DIALOG_TAKE_STANCE = [[
+--                 player:
+--                     Fine, I'll make a public statement agreeing with you.
+--                 agent:
+--                     Every step helps.
+--             ]],
+--             -- OPT_TAKE_STANCE = "Take the stance <i>{1#pol_stance}</> on <b>{2#pol_issue}</>.",
+--         },
+--     },
+-- })
 local DEMANDS = {
     demand_money = {
         name = "Demand Money",
@@ -117,12 +123,13 @@ local DEMANDS = {
             end
         end,
         GenerateConvoOption = function(self, cxt, opt, data, demand_modifiers)
-            opt:DeliverMoney(data.stacks, {no_scale = true})
-                :Dialog("DEMAND_STRING.DIALOG_ACCEPT_MONEY")
+            opt:PreIcon( global_images.giving )
+                -- :Dialog("DEMAND_STRING.DIALOG_ACCEPT_MONEY")
+                :DeliverMoney(data.stacks, {no_scale = true})
                 :Fn(function(cxt)
                     data.resolved = true
                     for i, modifier in ipairs(demand_modifiers) do
-                        if modifier.id = self.id then
+                        if modifier.id == self.id then
                             modifier.resolved = true
                         end
                     end
@@ -245,6 +252,19 @@ local DEMANDS = {
         end,
         ParseDemandList = function(self, data, t)
             table.insert(t, shallowcopy(data))
+        end,
+        GenerateConvoOption = function(self, cxt, opt, data, demand_modifiers)
+            opt:PreIcon( global_images.order )
+                -- :Dialog("DEMAND_STRING.DIALOG_ACCEPT_MONEY")
+                :UpdatePoliticalStance(data.issue_id, data.stance, true, true)
+                :Fn(function(cxt)
+                    data.resolved = true
+                    for i, modifier in ipairs(demand_modifiers) do
+                        if modifier.id == self.id and modifier.issue_id == data.issue_id and modifier.stance == data.stance then
+                            modifier.resolved = true
+                        end
+                    end
+                end)
         end,
     },
 }

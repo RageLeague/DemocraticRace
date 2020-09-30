@@ -17,6 +17,22 @@ local QDEF = QuestDef.Define
     on_start = function(quest)
         quest:Activate("take_your_heart")
     end,
+    on_complete = function(quest)
+        if not (quest.param.sub_optimal or quest.param.poor_performance) then
+            quest:GetProvider():OpinionEvent(OPINION.DID_LOYALTY_QUEST)
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10)
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 1)
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 2)
+        elseif quest.param.sub_optimal then
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5)
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 8, 1)
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 2)
+        elseif quest.param.poor_performance then
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2)
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 1)
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 2)
+        end
+    end,
 }
 :AddLocationCast{
     when = QWHEN.MANUAL,
@@ -92,23 +108,94 @@ local QDEF = QuestDef.Define
     id = "take_your_heart",
     title = "Change {foreman}'s heart",
     desc = "Find {foreman} and convince {foreman.himher} to change {foreman.hisher} behaviour.",
+    on_complete = function(quest)
+        quest:Activate("tell_news")
+    end,
 }
 :AddObjective{
     id = "punish_foreman",
     title = "Punish {foreman}",
     desc = "Find a way to punish {foreman} with concrete consequences.",
+    on_complete = function(quest)
+        quest:Activate("tell_news")
+    end,
 }
 :AddObjective{
     id = "organize_strike",
     title = "Organize a strike",
     desc = "Organize a strike at {foreman}'s workplace.",
+    on_complete = function(quest)
+        quest:Activate("tell_news")
+    end,
 }
 :AddObjective{
     id = "destroy_reputation",
     title = "Destroy {foreman}'s reputation.",
     desc = "Find a way to publicly destroy {foreman}'s reputation.",
+    on_complete = function(quest)
+        quest:Activate("tell_news")
+    end,
 }
-
+:AddObjective{
+    id = "tell_news",
+    title = "Tell {worker} about the news.",
+    desc = "When you have time to find {worker}, tell {worker.himher} about what you did.",
+    on_activate = function(quest)
+        local methods = {"take_your_heart", "punish_foreman", "organize_strike", "destroy_reputation"}
+        for i, id in ipairs(methods) do
+            if quest:IsComplete(id) then
+                quest.param["completed_" .. id] = true
+            else
+                quest:Cancel(id)
+            end
+        end
+    end,
+    mark = function(quest, t, in_location)
+        if DemocracyUtil.IsFreeTimeActive() then
+            table.insert(t, quest:GetCastMember("worker"))
+        end
+    end,
+}
+QDEF:AddConvo("tell_news", "worker")
+    :Loc{
+        OPT_TELL_NEWS = "Tell {agent} about what you did",
+        DIALOG_TELL_NEWS = [[
+            player:
+                Good news! I brought you justice!
+            agent:
+                Really? What did you do?
+            {take_your_heart?
+                player:
+                    I convinced {foreman} to change {foreman.hisher} ways.
+                agent:
+                    But, how?
+                {not (probed_info and rush_quota)?
+                    player:
+                        I just provided {foreman.himher} what {foreman.heshe} wants, and {foreman.heshe} promised to change {foreman.hisher} treatment of workers.
+                    agent:
+                        !angry
+                        You're <i>rewarding</> that despot for what {foreman.heshe}'s done?
+                        ...
+                        !sigh
+                        Still, you made {foreman.himher} change, and I'm grateful for that.
+                }
+                {probed_info and rush_quota?
+                    player:
+                        Turns out {foreman.heshe}'s just trying to meet the quota because the higher ups demands it.
+                        I compensated {forman.himher} so that {foreman.heshe} doesn't need to push all the stress onto the workers.
+                    agent:
+                        I see that {foreman} is merely another victim of this corrupt system.
+                        Thanks for helping us out, {player}. I'm truly grateful.
+                }
+            }
+        ]],
+    }
+    :Hub(function(cxt)
+        cxt:Opt("OPT_TELL_NEWS")
+            :SetQuestMark(cxt.quest)
+            :Dialog("DIALOG_TELL_NEWS")
+            :CompleteQuest()
+    end)
 QDEF:AddConvo("take_your_heart", "foreman")
     :Loc{
         OPT_CONFRONT = "Confront {agent} about the firing of {worker}",
@@ -185,6 +272,22 @@ QDEF:AddConvo("take_your_heart", "foreman")
                 right...
         }
         ]],
+        DIALOG_MET_DEMAND = [[
+            agent:
+                [p] Wow, you actually delivered?
+                Okay, now I'll agree to treat the workers better.
+            {not (probed_info and rush_quota)?
+                You give me what I want, I'll give you what you want.
+            }
+            {probed_info and rush_quota?
+                No need to push my workers too hard now that your payment relieve some of my financial stress.
+            }
+            player:
+                And I assume you're actually going to deliver?
+            agent:
+                Sure.
+            * Now you can tell {worker} about the great news!
+        ]],
         
         DIALOG_BACK = [[
             player:
@@ -229,18 +332,27 @@ QDEF:AddConvo("take_your_heart", "foreman")
                     :LoopingFn(function(cxt)
                         if cxt:FirstLoop() then
                             if not cxt.quest.param.demands then
-                                local cost, reasons = CalculatePayment(cxt.quest:GetCastMember("foreman"), cxt.quest.param.probed_info and 180 or 240)
+                                local rawcost = cxt.quest:GetRank() * 80 + 120
+                                if cxt.quest.param.probed_info then
+                                    rawcost = math.round(rawcost * 0.75)
+                                end
+                                local cost, reasons = CalculatePayment(cxt.quest:GetCastMember("foreman"), rawcost)
                                 cxt.quest.param.demands = DemocracyUtil.GenerateDemands(cost, cxt.quest:GetCastMember("foreman"))
                                 cxt.quest.param.demand_list = DemocracyUtil.ParseDemandList(cxt.quest.param.demands)
                             end
+                            cxt:Dialog("DIALOG_DEMAND")
                         end
-                        cxt:Dialog("DIALOG_DEMAND")
 
                         -- cxt:Opt("OPT_NEGOTIATE_TERMS")
-                        DemocracyUtil.AddDemandConvo(cxt, cxt.quest.param.demand_list, cxt.quest.param.demands)
-
-                        StateGraphUtil.AddBackButton(cxt)
-                            :Dialog("DIALOG_BACK")
+                        local payed_all = DemocracyUtil.AddDemandConvo(cxt, cxt.quest.param.demand_list, cxt.quest.param.demands)
+                        if payed_all then
+                            cxt:Dialog("DIALOG_MET_DEMAND")
+                            cxt.quest:Complete("take_your_heart")
+                            StateGraphUtil.AddEndOption(cxt)
+                        else
+                            StateGraphUtil.AddBackButton(cxt)
+                                :Dialog("DIALOG_BACK")
+                        end
                     end)
 
                 StateGraphUtil.AddBackButton(cxt)
