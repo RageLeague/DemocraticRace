@@ -37,7 +37,7 @@ Here are the mechanics present in this campaign. If you want to make new quests,
 
 * **Wealth Level**: In addition to grouping voter groups by factions, I also decided to group voter groups by wealth. The wealth level of a character determines how much wealth they have(duh), and determines what political stance they will be likely to take.
   * It is determined by a character's "renown", a hidden stat in game that determines a person's social standing.
-  * It is represented with an integer, and has 4 levels: Lower, Lower-Middle, Middle, and Upper Class.
+  * It is represented with an integer, and has 4 levels: Lower, Middle, Upper, and Elite Class.
   * Anyone with a renown above 4 is in the upper class. I might make civilians with the tag "wealthy" a level higher, since that will align with their voting groups more.
   * To query, use `DemocracyUtil.GetWealth(a)`, where `a` is either an Agent or a number representing the renown.
 * **Support**: The big selling point of this mod, although legally I'm not allowed to "sell" this mod.
