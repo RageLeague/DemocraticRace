@@ -10,10 +10,10 @@ return {
         "DEMOCRACY.WEALTH_STRING.LVL_4",
     },
     wealth_icon = {
-        engine.asset.Texture("UI/rarity_basic.tex"),
         engine.asset.Texture("UI/rarity_common.tex"),
         engine.asset.Texture("UI/rarity_uncommon.tex"),
         engine.asset.Texture("UI/rarity_rare.tex"),
+        engine.asset.Texture("UI/rarity_unique.tex"),
     },
     wealth_color = {
         0xa5daaaff,

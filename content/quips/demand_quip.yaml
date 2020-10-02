@@ -12,6 +12,9 @@ lines:
   - |
     !permit
     Here's my end of the bargain. I await yours.
+  - |
+    !permit
+    Is this enough?
 - tags: [meet_demand, material_demand]
   dialog:
   - |
@@ -21,6 +24,7 @@ lines:
     !permit
     Take it.
 - tags: [meet_demand, demand_money]
+  score: 1
   pre: |
     !give
   dialog:

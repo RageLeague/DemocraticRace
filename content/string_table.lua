@@ -42,6 +42,13 @@ Content.AddStringTable("DEMOCRACY", {
                 DETAIL_DECREASE = "Your support among {1#wealth_name_list} are decreased.",
                 DETAIL_BOTH = "Your support among {1#wealth_name_list} are increased, while your support among {2#wealth_name_list} are decreased.",
             },
+            UPDATE_STANCE =
+            {
+                TITLE = "Stance Updated",
+                DETAIL_STRICT = "Your stance regarding {1#pol_issue} is updated to {2#pol_stance}.",
+                DETAIL_LOOSE = "Your stance regarding {1#pol_issue} is loosely updated to {2#pol_stance}.",
+                
+            },
             WEALTH_SUPPORT =
             {
                 TITLE_INCREASE = "Gained {1} Support Among The {2#wealth_name}",
@@ -64,9 +71,9 @@ Content.AddStringTable("DEMOCRACY", {
         WEALTH_STRING =
         {
             LVL_1 = "Lower Class",
-            LVL_2 = "Lower-Middle Class",
-            LVL_3 = "Middle Class",
-            LVL_4 = "Upper Class",
+            LVL_2 = "Middle Class",
+            LVL_3 = "Upper Class",
+            LVL_4 = "Elite Class",
         },
     },
     MISC = 

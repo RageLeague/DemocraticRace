@@ -6,6 +6,12 @@ function IssueStanceLocDef:init(issue_id, stance_intensity, data)
     self.stance_intensity = stance_intensity
     self:SetModID(CURRENT_MOD_ID)
 end
+function IssueStanceLocDef:GetLocalizedTitle()
+    return self:GetLocalizedName()
+end
+function IssueStanceLocDef:GetLocalizedBody()
+    return self:GetLocalizedDesc()
+end
 function IssueStanceLocDef:GetLocPrefix()
     return "POLITICAL_ISSUE." .. string.upper(self.issue_id) .. ".STANCE_" .. self.stance_intensity
 end
@@ -32,6 +38,12 @@ function IssueLocDef:init(id, data)
     end
     IssueLocDef._base.init(self, id, data)
     self:SetModID(CURRENT_MOD_ID)
+end
+function IssueLocDef:GetLocalizedTitle()
+    return self:GetLocalizedName()
+end
+function IssueLocDef:GetLocalizedBody()
+    return self:GetLocalizedDesc()
 end
 function IssueLocDef:HarvestStrings(t)
     IssueLocDef._base.HarvestStrings(self, t)

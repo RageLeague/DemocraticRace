@@ -320,7 +320,7 @@ local QDEF = QuestDef.Define
     end,
     -- Just handle the change in stance and consistency of your opinion.
     -- Does not handle the relationship gained from updating your stance.
-    UpdateStance = function(quest, issue, val, strict)
+    UpdateStance = function(quest, issue, val, strict, autosupport)
         if type(issue) == "table" then
             issue = issue.id
         end
@@ -350,6 +350,19 @@ local QDEF = QuestDef.Define
                 end
                 quest.param.stances[issue] = val
                 quest.param.stance_change_freebie[issue] = not strict
+            end
+        end
+        if autosupport then
+            local multiplier = type(autosupport) == "number" and autosupport or 1
+            local issue_data = DemocracyConstants.issue_data[issue]
+            if issue_data then
+                local stance = issue_data.stances[val]
+                if stance.faction_support then
+                    DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport", stance.faction_support, multiplier)
+                end
+                if stance.wealth_support then
+                    DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport", stance.wealth_support, multiplier)
+                end
             end
         end
         print(loc.format("Updated stance: '{1}': {2}(strict: {3})", issue, val, strict))

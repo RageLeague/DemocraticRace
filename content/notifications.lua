@@ -123,3 +123,10 @@ AddNotification("DELTA_GROUP_WEALTH_SUPPORT", {
         end
     end,
 })
+
+AddNotification("UPDATE_STANCE", {
+    sfx = SoundEvents.notification_relationship_new,
+    img = DemocracyConstants.icons.support,
+    FormatNotification = function( self, notification, issue, stance )
+    end,
+})
