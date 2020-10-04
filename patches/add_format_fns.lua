@@ -15,14 +15,17 @@ loc.pol_issue = function(issue)
         issue = DemocracyConstants.issue_data[issue]
     end
     if issue and issue.GetLocalizedName then
-        return issue:GetLocalizedName()
+        return string.format("<!pol_issue_%s>%s</>", loc.tolower(issue.id), issue:GetLocalizedName()) 
     end
     return tostring(issue)
 end
 
 loc.pol_stance = function(stance)
     -- can't really autoconvert, since stances aren't really tracked by id.
-    return stance and stance.GetLocalizedName and stance:GetLocalizedName() or tostring(stance)
+    if stance and stance.GetLocalizedName then 
+        return string.format("<!pol_stance_%s>%s</>", loc.tolower(stance.id), stance:GetLocalizedName()) 
+    end
+    return tostring(stance)
 end
 
 loc.one_demand = function(data)

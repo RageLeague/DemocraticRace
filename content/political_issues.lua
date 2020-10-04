@@ -10,7 +10,7 @@ function IssueStanceLocDef:GetLocalizedTitle()
     return self:GetLocalizedName()
 end
 function IssueStanceLocDef:GetLocalizedBody()
-    return self:GetLocalizedDesc()
+    return loc.format(LOC"DEMOCRACY.STANCE_FOR_ISSUE", self.issue_id) .. "\n\n" .. self:GetLocalizedDesc()
 end
 function IssueStanceLocDef:GetLocPrefix()
     return "POLITICAL_ISSUE." .. string.upper(self.issue_id) .. ".STANCE_" .. self.stance_intensity
@@ -232,7 +232,7 @@ local val =  {
     },
     INDEPENDENCE = {
         name = "Deltrean-Havarian Annex",
-        desc = "The annexation of Havaria into Deltree has stroke controversies across Havaria. On the one hand, a full integration of Havaria to Deltree will likely improve Havaria's prosperity. On the other hand, it is a blatant disregard to Havaria's sovereignty.",
+        desc = "The annexation of Havaria into Deltree has stroke controversies across Havaria. On the one hand, a full integration of Havaria to Deltree will likely improve Havaria's living conditions, and makes paperworks easier. On the other hand, it is a blatant disregard to Havaria's sovereignty.",
         importance = 8,
         stances = {
             [-2] = {

@@ -142,7 +142,7 @@ local DEMANDS = {
     },
     demand_instant_stance = {
         name = "Demand Stance Taking",
-        title = "take the stance <i>{1#pol_stance}</> on <b>{2#pol_issue}</>",
+        title = "take the stance {1#pol_stance} on {2#pol_issue}",
         title_fn = function(self, fmt_str, data)
             local issue = DemocracyConstants.issue_data[data.issue_id]
             if issue then
@@ -152,7 +152,7 @@ local DEMANDS = {
         end,
 
         desc = "This modifier will remove itself after {1} {1*turn|turns}.\nWhen destroyed by the player, {2} will stop demanding you from taking this stance.",
-        alt_desc = "<#HILITE>(<i>{1#pol_stance}</> on <b>{2#pol_issue}</>)</>",
+        alt_desc = "<#HILITE>({1#pol_stance} on {2#pol_issue})</>",
         desc_fn = function(self, fmt_str)
             local rval = loc.format(fmt_str, self.stacks or 4, Negotiation.Modifier.GetOwnerName(self))
             if self.issue and self.stance then

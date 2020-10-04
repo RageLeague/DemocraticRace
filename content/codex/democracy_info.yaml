@@ -1,0 +1,23 @@
+lower_class:
+    title: The Lower Class
+    trigger: Lower Class|lower class
+    body: |
+      The Lower Class is at the bottom of Havarian hierarchy. They live in poverty, has to worry about their next meal constantly, and have no hope of improving their living conditions. They are often manual laborers or goons for the more powerful entities. Most of the people in Havaria belong in this class. They have no say in high level politics, but due to the sheer number of them, it's important as a politician to keep them happy.
+
+middle_class:
+    title: The Middle Class
+    trigger: Middle Class|middle class
+    body: |
+      The Middle Class is slightly more well off than the Lower Class, though not by much. They don't have to worry about their next meal, but they can easily fall to the Lower Class if they are not careful. They may have some power over the Lower Class, and they may own properties or shops, but they have little say in high level politics. Keeping this group happy can grants you much support among the people.
+
+upper_class:
+    title: The Upper Class
+    trigger: Upper Class|upper class
+    body: |
+      The Upper Class are people who make significant money from profitable (though not necessarily legal) activities. The money a common laborer makes in a month, they can make in a day. They have much influence over Havaria, but they aren't in control of anything major. Keeping them happy will grant you lots of funding and other benefits.
+
+elite_class:
+    title: The Elite Class
+    trigger: Elite Class|elite class
+    body: |
+      The Elite Class not only have lots of assets, but they also have significant power and influence. They are always affiliated with powerful factions, and has a lot of say in politics. Although keeping them happy won't let you win an election, because there's so few of them, having a couple of contacts in this class will surely help you exert your influence.

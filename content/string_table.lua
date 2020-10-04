@@ -75,6 +75,7 @@ Content.AddStringTable("DEMOCRACY", {
             LVL_3 = "Upper Class",
             LVL_4 = "Elite Class",
         },
+        STANCE_FOR_ISSUE = "This is a stance for the issue: {1#pol_issue}.",
     },
     MISC = 
     {
