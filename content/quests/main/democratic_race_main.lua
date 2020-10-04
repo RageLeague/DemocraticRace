@@ -328,6 +328,7 @@ local QDEF = QuestDef.Define
         if quest.param.stances[issue] == nil then
             quest.param.stances[issue] = val
             quest.param.stance_change[issue] = 0
+            TheGame:GetGameState():LogNotification( NOTIFY.UPDATE_STANCE, issue, val, strict )
         else
             local stance_delta = val - quest.param.stances[issue]
             if stance_delta == 0 or (not strict and (quest.param.stances[issue] > 0) == (val > 0) and (quest.param.stances[issue] < 0) == (val < 0)) then
@@ -350,6 +351,7 @@ local QDEF = QuestDef.Define
                 end
                 quest.param.stances[issue] = val
                 quest.param.stance_change_freebie[issue] = not strict
+                TheGame:GetGameState():LogNotification( NOTIFY.UPDATE_STANCE, issue, val, strict )
             end
         end
         if autosupport then
@@ -366,6 +368,7 @@ local QDEF = QuestDef.Define
             end
         end
         print(loc.format("Updated stance: '{1}': {2}(strict: {3})", issue, val, strict))
+        
     end,
     GetStance = function(quest, issue)
         if type(issue) == "table" then

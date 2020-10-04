@@ -127,6 +127,15 @@ AddNotification("DELTA_GROUP_WEALTH_SUPPORT", {
 AddNotification("UPDATE_STANCE", {
     sfx = SoundEvents.notification_relationship_new,
     img = DemocracyConstants.icons.support,
-    FormatNotification = function( self, notification, issue, stance )
+    FormatNotification = function( self, notification, issue, stance, strict )
+        notification.banner_txt = LOC"DEMOCRACY.NOTIFICATION.UPDATE_STANCE.TITLE"
+        if type(issue) == "string" then
+            issue = DemocracyConstants.issue_data[issue]
+        end
+        if type(stance) == "number" and issue then
+            stance = issue.stances[stance]
+        end
+        notification.details = loc.format(LOC("DEMOCRACY.NOTIFICATION.UPDATE_STANCE."
+            .. (strict and "DETAIL_STRICT" or "DETAIL_LOOSE")), issue, stance)
     end,
 })

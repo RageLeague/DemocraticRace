@@ -88,7 +88,7 @@ return {
         platform = "LABOR_LAW",
 
         stances = {
-            LABOR_LAW = 2,
+            LABOR_LAW = 1,
         },
         faction_support = {
             ADMIRALTY = -1,
@@ -118,9 +118,18 @@ return {
         },
         faction_support = {
             -- rewrite this entire thing
+            CULT_OF_HESH = 3,
+            SPARK_BARONS = -3,
+            FEUD_CITIZEN = 1,
+            BOGGERS = 2,
+            JAKES = -1,
+            BILEBROKERS = -2,
         },
         wealth_support = {
-            
+            2,
+            -1,
+            -2,
+            1,
         },
     },
     candidate_jakes = {
