@@ -95,7 +95,7 @@ local MODIFIERS =
             end,
         },
         InitModifiers = function(self)
-            for i = 1, 2 + math.floor(self.engine:GetDifficulty() / 2) do
+            for i = 1, 1 + self.engine:GetDifficulty() do
                 self:TryCreateNewTarget()
             end
         end,
@@ -404,12 +404,12 @@ local MODIFIERS =
     DISTRACTION_ENTERTAINMENT = 
     {
         name = "Distraction: Entertainment",
-        desc = "When destroyed, {1} loses 1 {IMPATIENCE} if able and create a copy of this bounty with {2} more starting resolve.",
+        desc = "{MYRIAD_MODIFIER {2}}\nWhen destroyed, {1} loses 1 {IMPATIENCE} if able.",
         
         modifier_type = MODIFIER_TYPE.BOUNTY,
-        init_max_resolve = 9,
+        init_max_resolve = 8,
 
-        bonus_per_generation = 3,
+        bonus_per_generation = 2,
 
         generation = 0,
 
@@ -430,12 +430,12 @@ local MODIFIERS =
     DISTRACTION_GUILTY_CONSCIENCE = 
     {
         name = "Distraction: Guilty Conscience",
-        desc = "When destroyed, remove a random intent and create a copy of this bounty with {2} more starting resolve.",
+        desc = "{MYRIAD_MODIFIER {2}}\nWhen destroyed, remove a random intent.",
         
         modifier_type = MODIFIER_TYPE.BOUNTY,
-        init_max_resolve = 9,
+        init_max_resolve = 8,
 
-        bonus_per_generation = 3,
+        bonus_per_generation = 2,
 
         generation = 0,
 
@@ -459,12 +459,12 @@ local MODIFIERS =
     DISTRACTION_CONFUSION = 
     {
         name = "Distraction: Confusion",
-        desc = "When destroyed, {1} gain 1 {FLUSTERED} and create a copy of this bounty with {2} more starting resolve.",
+        desc = "{MYRIAD_MODIFIER {2}}\nWhen destroyed, {1} gain 1 {FLUSTERED}.",
         
         modifier_type = MODIFIER_TYPE.BOUNTY,
-        init_max_resolve = 9,
+        init_max_resolve = 8,
 
-        bonus_per_generation = 3,
+        bonus_per_generation = 2,
 
         generation = 0,
 
@@ -764,4 +764,29 @@ local MODIFIERS =
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
+end
+local FEATURES = {
+    MYRIAD_MODIFIER = 
+    {
+        name = "Myriad",
+        desc = "When this bounty is destroyed, create a bounty that is a copy of this bounty with full resolve, except it has an extra starting resolve equal to the number indicated by {MYRIAD_MODIFIER}.",
+        loc_strings = {
+            NO_GAIN = "When this bounty is destroyed, create a bounty that is a copy of this bounty with full resolve.",
+            STACKS = "When this bounty is destroyed, create a bounty that is a copy of this bounty with full resolve, except it has {1} extra starting resolve.",
+        },
+        desc_fn = function(self, fmt_str, stacks)
+            if stacks then
+                if stacks ~= 0 then
+                    return loc.format(self:GetLocalizedString("STACKS"), stacks)
+                else
+                    return self:GetLocalizedString("NO_GAIN")
+                end
+            end
+            return fmt_str
+        end,
+    },
+}
+for id, data in pairs(FEATURES) do
+	local def = NegotiationFeatureDef(id, data)
+	Content.AddNegotiationCardFeature(id, def)
 end
