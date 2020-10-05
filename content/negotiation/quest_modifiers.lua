@@ -170,7 +170,7 @@ local MODIFIERS =
             self:SetResolve(self.max_resolve)
             
             self.min_persuasion = math.floor(difficulty/3)
-            self.max_persuasion = 2 + (difficulty % 3)
+            self.max_persuasion = 1 + (difficulty % 3)
 
             if agent:GetRelationship() > RELATIONSHIP.NEUTRAL then
                 self.max_persuasion = self.max_persuasion - 1

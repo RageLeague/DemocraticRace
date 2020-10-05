@@ -36,11 +36,11 @@ local CROWD_BEHAVIOR = {
 
 		-- Double attack every 2 rounds; Single attack otherwise.
 		if self.difficulty >= 4 and turns % 2 == 0 then
-			self:ChooseNumbers( 3, 2, scaling * 0.6 )
+			self:ChooseNumbers( 3, 2 + math.random(-1,1), scaling * 0.6 )
 		elseif turns % 2 == 0 then
-			self:ChooseNumbers( 2, 1, scaling * 0.8 )
+			self:ChooseNumbers( 2, 1 + math.random(-1,1), scaling * 0.8 )
 		else
-			self:ChooseNumbers( 1, 1, scaling )
+			self:ChooseNumbers( 1, 1 + math.random(-1,1), scaling )
 		end
 		-- if turns % 3 == 0 then
 		-- 	self:ChooseCard(self.bog_boil)
