@@ -170,6 +170,10 @@ local function RandomBystanderCondition(agent)
         and not agent:HasQuestMembership()
 end
 
+local function CanVote(agent)
+    return not agent:IsRetired() and agent:IsSentient()
+end
+
 -- Do the convo for unlocking a location.
 local function DoLocationUnlock(cxt, id)
     if not table.arraycontains(TheGame:GetGameState():GetMainQuest().param.unlocked_locations, id) then
@@ -462,6 +466,7 @@ return {
     SupportScore = SupportScore,
     OppositionScore = OppositionScore,
     RandomBystanderCondition = RandomBystanderCondition,
+    CanVote = CanVote,
     DoLocationUnlock = DoLocationUnlock,
     GetWealth = GetWealth,
     GetWealthString = GetWealthString,

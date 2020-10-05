@@ -100,7 +100,15 @@ function FactionSupportEntryList:init(evergreen_faction, max_width)
         "CULT_OF_HESH", "BANDITS", "JAKES", "RISE"}
     for id, val in pairs(TheGame:GetGameState():GetMainQuest().param.faction_support) do
         if not table.arraycontains(faction_list, id) then
-            table.insert(faction_list, id)
+            local selector = Selector()
+            selector:FromAllAgents()
+            selector:Where(function(agent)
+                return agent:GetFactionID() == id
+            end)
+            selector:Where(DemocracyUtil.CanVote)
+            if selector:Pick() then
+                table.insert(faction_list, id)
+            end
         end
     end
     local widget_list = {}

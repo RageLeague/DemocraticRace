@@ -98,6 +98,13 @@ local function OnLoad( mod )
             require(name)
         end
     end
+    for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:content/characters/", "*.lua", true )) do
+        local name = filepath:match( "(.+)[.]lua$" )
+        -- print(name)
+        if name then
+            require(name)
+        end
+    end
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:content/convos/", "*.lua", true )) do
         local name = filepath:match( "(.+)[.]lua$" )
         -- print(name)

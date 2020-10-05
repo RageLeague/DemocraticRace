@@ -1,0 +1,34 @@
+tag_scores:
+  disliked: 5
+  liked: 5
+  met: 0
+  day: 0
+  night: 0
+  advisor_diplomacy: 0
+  advisor_manipulate: 0
+  advisor: 5
+
+lines:
+- push: [greeting]
+
+- tags: [advisor, advisor_diplomacy]
+  dialog:
+  - How do you do, fellow grifter?
+
+- tags: [advisor, advisor_diplomacy, day]
+  dialog:
+  - What a wack day it is today!
+
+- tags: [advisor, advisor_manipulate, met]
+  dialog:
+  - By the way, do you know that my {agent.gender:wife|husband|partner} is a doctor?
+
+- tags: [advisor, advisor_hostile]
+  dialog:
+  - Make Havaria Great Again!
+  
+- tags: [advisor, met]
+  notags: [liked]
+  # score: 100
+  dialog:
+  - Don't just stand around here! Work on the campaign or something!
