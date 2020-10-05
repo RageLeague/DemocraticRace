@@ -2,6 +2,29 @@ local negotiation_defs = require "negotiation/negotiation_defs"
 local CARD_FLAGS = negotiation_defs.CARD_FLAGS
 local EVENT = negotiation_defs.EVENT
 
+local ALLY_IMAGES = {
+    RISE_AUTOMECH = engine.asset.Texture( "negotiation/modifiers/recruit_rise_cobblebot.tex"),
+    RISE_AUTODOG = engine.asset.Texture( "negotiation/modifiers/recruit_rise_cobbledog.tex"),
+    RISE_RADICAL = engine.asset.Texture( "negotiation/modifiers/recruit_rise_radical.tex"),
+    RISE_REBEL = engine.asset.Texture( "negotiation/modifiers/recruit_rise_rebel.tex"),
+    RISE_PAMPLETEER = engine.asset.Texture( "negotiation/modifiers/recruit_rise_pamphleteer.tex"),
+    SPARK_BARON_AUTOMECH = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_automech.tex"),
+    AUTODOG = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_autodog.tex"),
+    SPARK_BARON_PROFESSIONAL = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_professional.tex"),
+    SPARK_BARON_GOON = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_goon.tex"),
+    SPARK_BARON_TASKMASTER = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_taskmaster.tex"),
+    COMBAT_DRONE = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_drone.tex"),
+    
+    VROC = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_vroc.tex"),
+    ADMIRALTY_CLERK = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_clerk.tex"),
+    ADMIRALTY_GOON = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_goon.tex"),
+    ADMIRALTY_GUARD = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_guard.tex"),
+    ADMIRALTY_PATROL_LEADER = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_patrol_leader.tex"),
+    JAKES_RUNNER = engine.asset.Texture( "negotiation/modifiers/recruit_jake_runner.tex"),
+    WEALTHY_MERCHANT = engine.asset.Texture( "negotiation/modifiers/recruit_civilian_wealthy_merchant.tex"),
+    HEAVY_LABORER = engine.asset.Texture( "negotiation/modifiers/recruit_civilian_heavy_laborer.tex"),
+}
+
 local function CreateNewSelfMod(self)
     local newmod = self.negotiator:CreateModifier(self.id, 1, self)
     if newmod then
@@ -14,18 +37,18 @@ end
 
 local MODIFIERS =
 {
-    IMPATIENCE_WIN =
+    PLAYER_ADVANTAGE =
     {
         name = "Player Advantage",
-        desc = "Win at the beginning of the player's turn if the opponent has {1} or more {IMPATIENCE}.",
+        desc = "The player wins at the beginning of turn {1}.",
         desc_fn = function( self, fmt_str )
-            return loc.format(fmt_str, self.impatience_count)
+            return loc.format(fmt_str, self.stacks or 1)
         end,
         modifier_type = MODIFIER_TYPE.PERMANENT,
-        impatience_count = 1,
+        -- win_on_turn = 7,
         event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
-                if self.anti_negotiator:GetModifierStacks("IMPATIENCE") >= self.impatience_count then
+                if minigame:GetTurns() >= (self.stacks or 1) then
                     minigame:Win()
                 end
                 
@@ -35,10 +58,10 @@ local MODIFIERS =
     PREACH_CROWD =
     {
         name = "Crowd Mentality",
-        desc = "At the beginning of the player's turn, create a new <b>Potential Interest</> argument({1} left).",
+        desc = "At the beginning of the player's turn, create {2} new <b>Potential Interest</> argument({1} left).",
         desc_fn = function(self, fmt_str )
 
-            return loc.format(fmt_str, #self.agents)
+            return loc.format(fmt_str, #self.agents, self.engine and math.floor(self.engine:GetDifficulty() / 3 + 1) or 1)
         end,
         icon = engine.asset.Texture("negotiation/modifiers/heckler.tex"),
         modifier_type = MODIFIER_TYPE.CORE,
@@ -62,7 +85,9 @@ local MODIFIERS =
         event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
                 if minigame.turns > 1 then
-                    self:TryCreateNewTarget()
+                    for i = 1, math.floor(self.engine:GetDifficulty() / 3 + 1) do
+                        self:TryCreateNewTarget()
+                    end
                 end
                 if #self.agents == 0 and self.negotiator:GetModifierInstances( "PREACH_TARGET_INTEREST" ) == 0 then
                     minigame:Win()
@@ -125,14 +150,17 @@ local MODIFIERS =
             
         end,
         icon = engine.asset.Texture("negotiation/modifiers/voice_of_the_people.tex"),
-        target_agent = nil,
+
+        target_enemy = TARGET_ANY_RESOLVE,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
+
         turns_left = 3,
         is_first_turn = true,
     
         SetAgent = function (self, agent)
+            local difficulty = self.engine and self.engine:GetDifficulty() or 1
             self.target_agent = agent
-            self.max_resolve = self.engine:GetDifficulty() * 7 + 8
+            self.max_resolve = difficulty * 7 + 8
             if agent:HasAspect("bribed") then
                 self.max_resolve = self.max_resolve + self.bribe_delta
             end
@@ -140,14 +168,29 @@ local MODIFIERS =
           --  self.min_persuasion = 2 + agent:GetRenown()
             --self.max_persuasion = self.min_persuasion + 4
             self:SetResolve(self.max_resolve)
-    
-            -- if ALLY_IMAGES[agent:GetContentID()] then
-            --     self.icon = ALLY_IMAGES[agent:GetContentID()]
-            --     self.engine:BroadcastEvent( EVENT.UPDATE_MODIFIER_ICON, self)
-            --     self:NotifyTriggered()
-            -- end
+            
+            self.min_persuasion = math.floor(difficulty/3)
+            self.max_persuasion = 2 + (difficulty % 3)
+
+            if agent:GetRelationship() > RELATIONSHIP.NEUTRAL then
+                self.max_persuasion = self.max_persuasion - 1
+            elseif agent:GetRelationship() < RELATIONSHIP.NEUTRAL then
+                self.max_persuasion = self.max_persuasion + 1
+            end
+            
+            if agent:HasAspect("bribed") then
+                self.max_persuasion = self.max_persuasion - 1
+            end
+
+            if ALLY_IMAGES[agent:GetContentID()] then
+                self.icon = ALLY_IMAGES[agent:GetContentID()]
+                self.engine:BroadcastEvent( EVENT.UPDATE_MODIFIER_ICON, self)
+                -- self:NotifyTriggered()
+            end
+            
             self:NotifyChanged()
         end,
+
         OnBounty = function(self, source)
             if source and source ~= self then
                 local modifier = self.anti_negotiator:CreateModifier("PREACH_TARGET_INTERESTED")
@@ -156,6 +199,11 @@ local MODIFIERS =
                 end
             end
         end,
+
+        OnEndTurn = function( self, minigame )
+            self:ApplyPersuasion()
+        end,
+
         event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
                 if not self.is_first_turn then
@@ -182,8 +230,12 @@ local MODIFIERS =
             end
             return loc.format(fmt_str, self.target_agent and self.target_agent:LocTable())
         end,
-        target_agent = nil,
+
+        target_enemy = TARGET_ANY_RESOLVE,
         modifier_type = MODIFIER_TYPE.BOUNTY,
+
+        icon = engine.asset.Texture("negotiation/modifiers/voice_of_the_people.tex"),
+
         SetAgent = function (self, agent)
             self.target_agent = agent
             self.max_resolve = 3
@@ -191,14 +243,28 @@ local MODIFIERS =
             --self.max_persuasion = self.min_persuasion + 4
             self:SetResolve(self.max_resolve)
     
-            -- if ALLY_IMAGES[agent:GetContentID()] then
-            --     self.icon = ALLY_IMAGES[agent:GetContentID()]
-            --     self.engine:BroadcastEvent( EVENT.UPDATE_MODIFIER_ICON, self)
-            --     self:NotifyTriggered()
-            -- end
+            self.min_persuasion = 0
+            self.max_persuasion = 3
+
+            if agent:GetRelationship() > RELATIONSHIP.NEUTRAL then
+                self.max_persuasion = self.max_persuasion + 1
+            elseif agent:GetRelationship() < RELATIONSHIP.NEUTRAL then
+                self.max_persuasion = self.max_persuasion - 1
+            end
+            
+            if agent:HasAspect("bribed") then
+                self.max_persuasion = self.max_persuasion + 1
+            end
+            if ALLY_IMAGES[agent:GetContentID()] then
+                self.icon = ALLY_IMAGES[agent:GetContentID()]
+                self.engine:BroadcastEvent( EVENT.UPDATE_MODIFIER_ICON, self)
+                -- self:NotifyTriggered()
+            end
             self:NotifyChanged()
         end,
-    
+        OnEndTurn = function( self, minigame )
+            self:ApplyPersuasion()
+        end,
     },
     CONNECTED_LINE =
     {

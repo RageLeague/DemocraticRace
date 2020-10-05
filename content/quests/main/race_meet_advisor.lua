@@ -157,10 +157,12 @@ QDEF:AddConvo("go_to_bar")
                     Yeah, that's me. What do you want?
                 advisor_diplomacy:
                     I can offer you my help.
+                    !thumb
                     If you even want to think about winning, you need my Speech 100 skills.
                     So what do you sa-
                 * One of the other patrons shoves {advisor_diplomacy} aside.
                 advisor_hostile:
+                    !right
                     Listen, if you want to win, you have to pick me.
                     'Cause nobody knows how to run a campaign better than me.
                     I can help you win. Win bigly. Win tremendously.
@@ -175,17 +177,25 @@ QDEF:AddConvo("go_to_bar")
                 player:
                     What kind of logic-
                 advisor_hostile:
+                    !right
+                    !angry_accuse
                     Dont't listen to that Parasitic {advisor_manipulate}!
                 advisor_manipulate:
+                    !left
+                    !dubious
                     You came up with a name for me already?
                 advisor_diplomacy:
+                    !right
+                    !sigh
                     Bunch of normies.
                 player:
-                    !right
+                    !left
                     Can any of you explain what's happenening?
                 advisor_hostile:
+                    !right
                     Look, you pick one of us to be your advisor.
                 advisor_manipulate:
+                    !right
                     Factually and logically speaking, I'm the best choice for you.
                 advisor_diplomacy:
                     !right
@@ -382,7 +392,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 cxt:Opt("OPT_SUPPORT")
                     :Dialog("DIALOG_SUPPORT")
                     :Fn(function(cxt)
-                        DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 2)
+                        DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 1)
                         cxt.quest.param.did_opposition = true
                     end)
                     :Dialog("DIALOG_SUPPORT_PST")
@@ -416,7 +426,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 :MakeUnder()
                 :Fn(function(cxt)
                     if not cxt.quest.param.did_opposition then
-                        DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 2)
+                        DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 1)
                         cxt.quest.param.did_opposition = true
                         cxt:Dialog("DIALOG_SKIP_OPPOSITION")
                         

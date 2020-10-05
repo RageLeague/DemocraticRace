@@ -24,14 +24,23 @@ local CROWD_BEHAVIOR = {
     agents = {},
 
 	-- Duplicated from Bandits. Needs revision
-	BasicCycle = function( self, turns )
+    BasicCycle = function( self, turns )
+        local scaling = 1.5
+
+        local adv_scale = GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_RESOLVE_DAMAGE )
+        if adv_scale then
+            scaling = scaling * adv_scale
+        end
+        local VARIANCE = 0.2
+        scaling = scaling * ((math.random() - 0.5) * 2 * VARIANCE + 1)
+
 		-- Double attack every 2 rounds; Single attack otherwise.
 		if self.difficulty >= 4 and turns % 2 == 0 then
-			self:ChooseGrowingNumbers( 3, -1 )
+			self:ChooseNumbers( 3, 2, scaling * 0.6 )
 		elseif turns % 2 == 0 then
-			self:ChooseGrowingNumbers( 2, 0 )
+			self:ChooseNumbers( 2, 1, scaling * 0.8 )
 		else
-			self:ChooseGrowingNumbers( 1, 1 )
+			self:ChooseNumbers( 1, 1, scaling )
 		end
 		-- if turns % 3 == 0 then
 		-- 	self:ChooseCard(self.bog_boil)

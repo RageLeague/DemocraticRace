@@ -2,11 +2,11 @@
 local ADVISOR_IDS = {
     -- Elon Musk personality
     -- or maybe the personification of reddit, haven't decided yet.
-    advisor_diplomacy = "ENDO",
+    advisor_diplomacy = "ADVISOR_DIPLOMACY",
     -- Ben Sharpiro personality
-    advisor_manipulate = "PLOCKA",
+    advisor_manipulate = "ADVISOR_MANIPULATE",
     -- Donald Trump personality
-    advisor_hostile = "RAKE",
+    advisor_hostile = "ADVISOR_HOSTILE",
 }
 -- Defines the home for the advisors
 local ADVISOR_HOME = {
@@ -81,7 +81,7 @@ local function AddPrimaryAdvisor(qdef, mandatory)
         qdef:AddCastFallback{
             cast_fn = function( quest, t )
         
-                local alias = "ENDO"
+                local alias = "ADVISOR_DIPLOMACY"
         
                 local agent = TheGame:GetGameState():GetAgentOrMemento( alias )
                 if agent == nil then

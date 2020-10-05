@@ -394,10 +394,11 @@ QDEF:AddConvo("debate_people")
                     },
 
                     on_start_negotiation = function(minigame)
-                        minigame.player_negotiator:AddModifier("IMPATIENCE_WIN", 1)
+                        minigame.player_negotiator:AddModifier("PLAYER_ADVANTAGE", 7)
                         if cxt.quest.param.debated_people >= 2 then
                             minigame.player_negotiator:AddModifier("FATIGUED")
                         end
+                        minigame.opponent_negotiator:AddModifier("IMPATIENCE", cxt.quest.param.debated_people)
                     end,
                     on_success = function(cxt, minigame) 
                         
