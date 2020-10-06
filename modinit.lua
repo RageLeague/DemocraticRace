@@ -95,6 +95,14 @@ local function OnLoad( mod )
             require(name)
         end
     end
+    for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:content/plax/", "*.lua", true )) do
+        local name = filepath:match( "(.+)[.]lua$" )
+        local id = name:match("([_%w]+)$")
+        -- print(name)
+        if name then
+            Content.AddPlaxData(id, name)
+        end
+    end
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:content/negotiation/", "*.lua", true )) do
         local name = filepath:match( "(.+)[.]lua$" )
         -- print(name)

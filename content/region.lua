@@ -20,7 +20,7 @@ local region = {
         "NEWDELTREE_OUTFITTERS",
         "MURDER_BAY_CHEMIST",
         "GROG_N_DOG",
-        "LIGHTHOUSE",
+        -- "LIGHTHOUSE",
         "MURDERBAY_LUMIN_DOCKS",
         "MURDER_BAY_HARBOUR",
         "SPREE_INN",
@@ -45,17 +45,20 @@ local region = {
         "ZEALOT",
         "PRIEST",
         "LUMINARI",
+        "LUMINITIATE",
         
         "LABORER",
         "HEAVY_LABORER",
+        "OSHNU_WRANGLER",
         "FOREMAN",
         "BARTENDER",
+        "WEALTHY_MERCHANT",
+        "POOR_MERCHANT",
         
         "JAKES_RUNNER",
         "JAKES_SMUGGLER",
         "JAKES_LIFTER",
         
-        "WEALTHY_MERCHANT",
         
         "ADMIRALTY_GOON",
         "ADMIRALTY_GUARD",
