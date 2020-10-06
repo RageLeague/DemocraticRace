@@ -58,6 +58,8 @@ local chars =
 
         renown = 4,
 
+        -- We'll work on a proper negotiation later.
+        -- negotiation_data = Content.GetCharacterDef("BANDIT_CAPTAIN").negotiation_data,
         -- social_boons = table.empty,
     }),
 }

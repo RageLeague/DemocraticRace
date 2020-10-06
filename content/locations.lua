@@ -171,7 +171,7 @@ Content.AddLocationContent{
     faction_id = "NEUTRAL",
 
     work = {
-        host = CreateLabourJob(  DAY_PHASE.NIGHT, "Host", CHARACTER_ROLES.PROPRIETOR, {"PRIEST", "WEALTHY_MERCHANT"} ),
+        host = CreateLabourJob(  PHASE_MASK_ALL, "Host", CHARACTER_ROLES.PROPRIETOR, {"PRIEST", "WEALTHY_MERCHANT"} ),
     },
 
     patron_data = {
