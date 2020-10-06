@@ -43,8 +43,8 @@ local chars =
     }),
     CharacterDef("ADVISOR_HOSTILE",
 	{
-        base_def = "JAKES_SMUGGLER",
-        bio = "Dronumph is very impatient, and prefers solving his problems with fists (or guns, more accurately). It's a good thing that he's legally not allowed to do that first in Democratic Havaria.",
+        base_def = "WEALTHY_MERCHANT",
+        bio = "Dronumph is very impatient, and prefers solving his problems with fists. It's a good thing that he's legally not allowed to do that first in Democratic Havaria.",
         name = "Dronumph",
 
         tags = {"advisor", "advisor_hostile"},

@@ -13,6 +13,10 @@ local function OnLoad( mod )
     rawset(_G, "CURRENT_MOD_ID", mod.id)
     local STARTING_MONEY = 125
 
+    local FORBIDDEN_CONVO = {
+        -- You think you can just provoke anyone and kill them, calling it a day? Of course not.
+        "HATED_CHAT",
+    }
     local ACT_DATA = {
         id = "DEMOCRATIC_RACE",
         name = "The Democratic Race",
@@ -30,6 +34,13 @@ local function OnLoad( mod )
         game_type = GAME_TYPE.CAMPAIGN,
         starting_fn = function(agent) 
             agent:DeltaMoney( STARTING_MONEY )
+        end,
+        convo_filter_fn = function( convo_def, game_state )
+            if table.arraycontains(FORBIDDEN_CONVO, convo_def.id) then
+                return false
+            end
+
+            return true
         end,
 
         score_modifiers = 
