@@ -31,6 +31,10 @@ Here lists all the different things you can work on.
 * Adding arts to card/modifiers. If you want. It would probably be more efficient if everything is done at the end, but if you want to, you can. The only guideline is that the art has to fit the card/modifier, and does not break the game's rating.
 * You can do more complicated things such as writing main stories, adding new locations, adding convos for new/existing locations, or add ways you can "deal" with certain(read "hated") characters without provoke-killing(maybe something like a criminal investigation, or hire assassination services). Make sure you actually know what you're doing, and you let me know beforehand what you're doing.
 
+## Dev Tools
+
+* Press ~ on the main screen, and at the bottom, you can quick start a campaign of Democratic Race.
+
 ## Mechanics
 
 Here are the mechanics present in this campaign. If you want to make new quests, try to incorporate a lot of them.

@@ -6,6 +6,11 @@ local BENEFACTOR_DEFS = {
     SPARK_BARON_TASKMASTER = "APPROPRIATOR",
     PRIEST = "ZEAL",
 }
+-- for balancing reasons
+local SIGNATURE_ARGUMENT = {
+    WEALTHY_MERCHANT = "TRIBUTE",
+    PRIEST = "prayer_of_hesh", -- why this is lower case, i have no idea
+}
 
 local LOCATION_DEF =
 {
@@ -32,14 +37,20 @@ end
 
 local BENEFACTOR_BEHAVIOR = {
     OnInit = function( self, difficulty )
-        local modifier
-        self.etiquette = self:AddArgument( "ETIQUETTE" )
+        -- local modifier
+        self.arguments = self:MakePicker()
+            :AddArgument( "ETIQUETTE", 1 )
+            :AddArgument( "CAUTIOUS_SPENDER", 1 )
+        -- self.etiquette = self:
+        -- self.cautious_spender = self:
+        if SIGNATURE_ARGUMENT[self.agent:GetContentID()] then
+            self.signature = self:AddArgument(SIGNATURE_ARGUMENT[self.agent:GetContentID()])
+        end
+        
         self:SetPattern( self.BasicCycle )
-        -- if main_negotiator == "SPARK_BARON_TASKMASTER" then modifier = self.negotiator:AddModifier("APPROPRIATOR") end
-        -- if main_negotiator == "PRIEST" then modifier = self.negotiator:AddModifier("ZEAL") end
-        -- if main_negotiator == "WEALTHY_MERCHANT" then modifier = self.negotiator:AddModifier("PROPOSITION") end
-        modifier = self.negotiator:AddModifier(BENEFACTOR_DEFS[self.agent:GetContentID()])
-        if modifier ~= nil then modifier.agents = shallowcopy(self.agents) end
+        
+        self.negotiator:AddModifier(BENEFACTOR_DEFS[self.agent:GetContentID()])
+        
     end,
     agents = {},
 
@@ -49,12 +60,22 @@ local BENEFACTOR_BEHAVIOR = {
         -- local etiquette = self:AddArgument( "ETIQUETTE" )
 
         -- Also, remove unnecessary checks
-        self:ChooseGrowingNumbers( 1, 1 )
         if turns % 3 == 0 then
-            self:ChooseCard( self.etiquette )
+            self:ChooseGrowingNumbers(2, -1)
+        else
+            self:ChooseGrowingNumbers(1, 1)
+        end
+
+        if turns % 3 == 1 then
+            self.arguments:ChooseCard()
+        elseif turns % 3 == 2 then
+            if self.signature and math.random(0, self.signature_played or 0) == 0 then
+                self:ChooseCard(self.signature)
+                self.signature_played = (self.signature_played or 0) + 1
+            end
         end
         if turns % 2 == 0 then
-            self:ChooseComposure( 1, 3, 5 )
+            self:ChooseComposure( 1, self.difficulty, self.difficulty + 2 )
         end
 
 	end,
@@ -62,7 +83,7 @@ local BENEFACTOR_BEHAVIOR = {
 local QDEF = QuestDef.Define
 {
     title = "Tea with a benefactor",
-    desc = " [p] An influential citizen has taken interest in your campaign and invited you for a cup of tea. See if you can turn some of that support into cash.",
+    desc = "An influential citizen has taken interest in your campaign and invited you for a cup of tea. See if you can turn some of that support into cash.",
 
     qtype = QTYPE.SIDE,
     act_filter = DemocracyUtil.DemocracyActFilter,
@@ -158,11 +179,11 @@ local QDEF = QuestDef.Define
     convinced_benefactor =  
     {
         delta = OPINION_DELTAS.LIKE,
-        txt = " [p] Confident in your leadership abilities.",
+        txt = "Confident in your leadership abilities.",
     },
     disappointed_benefactor = {
         delta = OPINION_DELTAS.DIMINISH,
-        txt = " [p] Skeptical about your leadership abilities.",
+        txt = "Skeptical about your leadership abilities.",
     },
 }
 DemocracyUtil.AddPrimaryAdvisor(QDEF)
@@ -232,7 +253,9 @@ QDEF:AddConvo("go_to_teahouse")
                     end,
 
                     on_start_negotiation = function(minigame)
-                        minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY")    
+                        minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 5)
+                        minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 10)
+                        minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 20)
                     end,
 
                     on_success = postProcessingSuccessFn,

@@ -26,9 +26,10 @@ local ALLY_IMAGES = {
 }
 
 local function CreateNewSelfMod(self)
-    local newmod = self.negotiator:CreateModifier(self.id, 1, self)
+    local newmod = self.negotiator:CreateModifier(self.id, self.stacks, self)
     if newmod then
         newmod.generation = (self.generation or 0) + 1
+        newmod.init_max_resolve = self.init_max_resolve
         if newmod.OnInit then
             newmod:OnInit()
         end
@@ -404,7 +405,7 @@ local MODIFIERS =
     DISTRACTION_ENTERTAINMENT = 
     {
         name = "Distraction: Entertainment",
-        desc = "{MYRIAD_MODIFIER {2}}\nWhen destroyed, {1} loses 1 {IMPATIENCE} if able.",
+        desc = "{MYRIAD_MODIFIER {2}}.\nWhen destroyed, {1} loses 1 {IMPATIENCE} if able.",
         
         modifier_type = MODIFIER_TYPE.BOUNTY,
         init_max_resolve = 8,
@@ -418,7 +419,8 @@ local MODIFIERS =
                 self.bonus_per_generation)
         end,
         OnInit = function(self)
-            self:SetResolve(self.init_max_resolve + (self.generation or 0) * self.bonus_per_generation)
+            self.init_max_resolve = self.init_max_resolve + self.bonus_per_generation
+            self:SetResolve(self.init_max_resolve)
         end,
         OnBounty = function(self)
             if self.negotiator:GetModifierStacks("IMPATIENCE") > 0 then
@@ -430,7 +432,7 @@ local MODIFIERS =
     DISTRACTION_GUILTY_CONSCIENCE = 
     {
         name = "Distraction: Guilty Conscience",
-        desc = "{MYRIAD_MODIFIER {2}}\nWhen destroyed, remove a random intent.",
+        desc = "{MYRIAD_MODIFIER {2}}.\nWhen destroyed, remove a random intent.",
         
         modifier_type = MODIFIER_TYPE.BOUNTY,
         init_max_resolve = 8,
@@ -444,7 +446,8 @@ local MODIFIERS =
                 self.bonus_per_generation)
         end,
         OnInit = function(self)
-            self:SetResolve(self.init_max_resolve + (self.generation or 0) * self.bonus_per_generation)
+            self.init_max_resolve = self.init_max_resolve + self.bonus_per_generation
+            self:SetResolve(self.init_max_resolve)
         end,
         OnBounty = function(self)
 
@@ -459,7 +462,7 @@ local MODIFIERS =
     DISTRACTION_CONFUSION = 
     {
         name = "Distraction: Confusion",
-        desc = "{MYRIAD_MODIFIER {2}}\nWhen destroyed, {1} gain 1 {FLUSTERED}.",
+        desc = "{MYRIAD_MODIFIER {2}}.\nWhen destroyed, {1} gain 1 {FLUSTERED}.",
         
         modifier_type = MODIFIER_TYPE.BOUNTY,
         init_max_resolve = 8,
@@ -473,7 +476,8 @@ local MODIFIERS =
                 self.bonus_per_generation)
         end,
         OnInit = function(self)
-            self:SetResolve(self.init_max_resolve + (self.generation or 0) * self.bonus_per_generation)
+            self.init_max_resolve = self.init_max_resolve + self.bonus_per_generation
+            self:SetResolve(self.init_max_resolve)
         end,
         OnBounty = function(self)
 
@@ -689,13 +693,54 @@ local MODIFIERS =
         name = "Secured Investments",
         icon = "negotiation/modifiers/frisk.tex",
         desc = "Gain {1} shills if the negotiation is successful.",
+        alt_desc = "Gain shills equal to the number of stacks on this argument if the negotiation is successful.",
         desc_fn = function(self, fmt_str)
-            return loc.format( fmt_str, self.stacks)
+            if self.stacks then
+                return loc.format(fmt_str, self.stacks)
+            else
+                return loc.format((self.def or self):GetLocalizedString("ALT_DESC"))
+            end
         end,
 
-        max_stacks = 100,
+        max_stacks = 999,
         
         modifier_type = MODIFIER_TYPE.PERMANENT,
+    },
+    INVESTMENT_OPPORTUNITY  = 
+    {
+        name = "Investment Opportunity",
+        icon = "negotiation/modifiers/frisk.tex",
+        desc = "{MYRIAD_MODIFIER {2}}\nWhen destroyed, gain {1} {SECURED_INVESTEMENTS}.",
+        alt_desc = "{MYRIAD_MODIFIER {1}}\nWhen destroyed, gain {SECURED_INVESTEMENTS} equal to the number of stacks on this bounty.",
+
+        desc_fn = function(self, fmt_str)
+            if self.stacks then
+                return loc.format(fmt_str, self.stacks or 1, self.bonus_per_generation)
+            else
+                return loc.format((self.def or self):GetLocalizedString("ALT_DESC"), self.bonus_per_generation)
+            end
+        end,
+
+        -- max_resolve = 5,
+        -- max_stacks = 1,
+        bonus_per_generation = 2,
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+
+        OnInit = function(self)
+            if not self.init_max_resolve then
+                self.init_max_resolve = math.ceil(self.stacks / 2.5)
+            else
+                self.init_max_resolve = self.init_max_resolve + self.bonus_per_generation
+            end
+            self:SetResolve(self.init_max_resolve)
+        end,
+
+        OnBounty = function(self, source)
+            -- self.negotiator:CreateModifier("CAUTIOUS_SPENDER")
+            self.anti_negotiator:AddModifier("SECURED_INVESTEMENTS", self.stacks)
+            CreateNewSelfMod(self)
+        end,
     },
     ETIQUETTE = 
     {
@@ -703,9 +748,13 @@ local MODIFIERS =
         icon = "negotiation/modifiers/compromise.tex",
         desc = "Whenever you play a Hostility card discard a random card.",
     
-        max_resolve = 6,
+        max_resolve = 5,
         max_stacks = 1,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        OnInit = function(self)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.HIGH)
+        end,
 
         event_handlers =
         {
@@ -719,41 +768,35 @@ local MODIFIERS =
             end
         },
     },
-    INVESTMENT_OPPORTUNITY  = 
-    {
-        name = "Investment Opportunity",
-        icon = "negotiation/modifiers/frisk.tex",
-        desc = "When destroyed, recieve 10 shills if the negotiation is successful. If you have gotten less than 100 shill spawn {INVESTMENT_OPPORTUNITY}.",
-
-        max_resolve = 5,
-        max_stacks = 1,
-        modifier_type = MODIFIER_TYPE.ARGUMENT,
-
-        OnBounty = function(self, source)
-            self.negotiator:CreateModifier("CAUTIOUS_SPENDER")
-            self.anti_negotiator:AddModifier("SECURED_INVESTEMENTS", 10)
-            if self.negotiator:GetModifierStacks( "SECURED_INVESTEMENTS" ) < 100 then
-                self.negotiator:CreateModifier("INVESTMENT_OPPORTUNITY")
-            end
-        end,
-    },
     CAUTIOUS_SPENDER  = 
     {
         name = "Cautious Spender",
         icon = "negotiation/modifiers/obscurity.tex",
-        desc = "At the begging of each turn add 2 resolve to all other friendly arguments.",
+        desc = "At the begging of each turn, add {1} resolve to all {{2}} bounty.",
+
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.delta_resolve, self.apply_target)
+        end,
 
         max_resolve = 4,
         max_stacks = 1,
+
+        delta_resolve = 2,
+        apply_target = "INVESTMENT_OPPORTUNITY",
+
         modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        OnInit = function(self)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
+        end,
 
         event_handlers =
         {
             [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
                 if negotiator == self.negotiator then
                     for i, modifier in self.negotiator:ModifierSlots() do
-                        if modifier:GetResolve() ~= nil and modifier ~= self then
-                            modifier:ModifyResolve( 2, self )
+                        if modifier.id == self.apply_target then
+                            modifier:ModifyResolve( self.delta_resolve, self )
                             self:NotifyTriggered() 
                         end
                     end
