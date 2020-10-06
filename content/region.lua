@@ -16,6 +16,7 @@ local region = {
     },
 
     locations = {
+        -- Murder bay location
         "MURDERBAY_NOODLE_SHOP", -- loc
         "NEWDELTREE_OUTFITTERS", --
         "MURDER_BAY_CHEMIST", --
@@ -27,13 +28,27 @@ local region = {
         "ADMIRALTY_BARRACKS", --
         -- "MARKET_STALL",
 
+        -- grout bog location
+        "GB_BARON_HQ",
+        "GB_RISE_HQ",
+        "GB_NEUTRAL_BAR",
+        "GB_CAFFY",
+        "GB_AUTOMECH_FACTORY",
+
+        -- pearl location
+        "MOREEF_BAR",
+        "PEARL_FANCY_EATS",
+        "PEARL_PARTY_STORE",
+        "PEARL_OSHNUDROME",
+        "PEARL_PARK",
+        "PEARL_CULT_COMPOUND",
+        "CONTRACT_CHAPEL",
+
+        -- unique location for mod
         "DIPL_PRES_OFFICE",
         "MANI_PRES_OFFICE",
         "HOST_PRES_OFFICE",
-        
         "GRAND_THEATER", --
-        -- "MURDER_BAY_HESH_OUTPOST",
-        -- "MURDER_BAY_RISE_OUTPOST",
     },
 
     population = {

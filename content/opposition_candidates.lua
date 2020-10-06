@@ -109,7 +109,7 @@ return {
     candidate_cult = {
         cast_id = "candidate_cult",
         -- temp character
-        character = "HESH_OUTPOST_PRIEST",
+        character = "VIXMALLI",
 
         platform = "ARTIFACT_TREATMENT",
 
@@ -135,7 +135,7 @@ return {
     candidate_jakes = {
         cast_id = "candidate_jakes",
         -- temp character
-        character = "GAMBLER",
+        character = "ANDWANETTE",
         -- main = "Deregulation",
         -- desc = "Drops many regulation to allow a healthier economy.",
         platform = "SUBSTANCE_REGULATION",

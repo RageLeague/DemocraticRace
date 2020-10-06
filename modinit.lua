@@ -61,7 +61,8 @@ local function OnLoad( mod )
     require "DEMOCRATICRACE:content/string_table"
 
     rawset(_G, "DemocracyConstants", require("DEMOCRATICRACE:content/constants"))
-    rawset(_G, "DemocracyUtil", require("DEMOCRATICRACE:content/util"))
+    require "DEMOCRATICRACE:content/util"
+    -- rawset(_G, "DemocracyUtil", )
 
     -- Patch existing files first
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:patches/", "*.lua", true )) do
