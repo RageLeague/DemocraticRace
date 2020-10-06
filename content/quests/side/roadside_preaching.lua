@@ -5,7 +5,7 @@ local LOCATION_DEF =
     name = "Populous Junction",
     desc = "A junction which many people crosses by. Good place for any sort of political activity.",
     -- icon = engine.asset.Texture("icons/quests/at_the_crossroad.tex"),
-    map_tags = {"slum"},
+    map_tags = {"intersection"},
     plax = "EXT_door_slums1",
     indoors = false,
 }

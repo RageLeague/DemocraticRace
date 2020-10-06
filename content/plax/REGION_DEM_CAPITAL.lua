@@ -185,54 +185,6 @@ return {
           y = 86
         },
         {
-          hidden_in_editor = false,
-          id = 10,
-          name = "PARTICLES",
-          node_type = "PARTICLES",
-          particles = "water_foam rising",
-          plax_flags = 119,
-          rot = -0.43000000715256,
-          scale = 1.0,
-          tint_a = 255,
-          tint_b = 247,
-          tint_g = 255,
-          tint_r = 119,
-          x = -4,
-          y = 237
-        },
-        {
-          hidden_in_editor = false,
-          id = 11,
-          name = "PARTICLES",
-          node_type = "PARTICLES",
-          particles = "water_foam rising",
-          plax_flags = 119,
-          rot = 0.090000003576279,
-          scale = 1.0,
-          tint_a = 255,
-          tint_b = 255,
-          tint_g = 249,
-          tint_r = 103,
-          x = 345,
-          y = 195
-        },
-        {
-          hidden_in_editor = false,
-          id = 12,
-          name = "PARTICLES",
-          node_type = "PARTICLES",
-          particles = "water_foam rising",
-          plax_flags = 119,
-          rot = -0.14000000059605,
-          scale = 1.0,
-          tint_a = 255,
-          tint_b = 254,
-          tint_g = 230,
-          tint_r = 96,
-          x = 285,
-          y = 305
-        },
-        {
           anim = "creature_waves_1",
           anim_phase = 0.0,
           anim_repeat_delay_max = 0.0,
@@ -241,7 +193,7 @@ return {
           animfile = "anim/map_SMITH_water_fx.zip",
           bloom = 0.0,
           hidden_in_editor = false,
-          id = 13,
+          id = 10,
           name = "ANIM",
           node_type = "ANIMATION",
           plax_flags = 119,
@@ -262,7 +214,7 @@ return {
           animfile = "anim/map_SMITH_water_creatures_fx.zip",
           bloom = 0.13199999928474,
           hidden_in_editor = false,
-          id = 14,
+          id = 11,
           name = "ANIM",
           node_type = "ANIMATION",
           plax_flags = 119,
@@ -284,7 +236,7 @@ return {
           animfile = "anim/map_SMITH_water_creatures_fx.zip",
           bloom = 0.20900000631809,
           hidden_in_editor = false,
-          id = 15,
+          id = 12,
           name = "ANIM",
           node_type = "ANIMATION",
           plax_flags = 119,
@@ -305,7 +257,7 @@ return {
           animfile = "anim/map_SMITH_water_creatures_fx.zip",
           bloom = 0.17299999296665,
           hidden_in_editor = false,
-          id = 16,
+          id = 13,
           name = "ANIM",
           node_type = "ANIMATION",
           plax_flags = 119,
@@ -326,7 +278,7 @@ return {
           animfile = "anim/map_SMITH_water_creatures_fx.zip",
           bloom = 0.041000001132488,
           hidden_in_editor = false,
-          id = 17,
+          id = 14,
           name = "ANIM",
           node_type = "ANIMATION",
           plax_flags = 119,
@@ -347,7 +299,7 @@ return {
           animfile = "anim/map_SMITH_water_creatures_fx.zip",
           bloom = 0.11800000071526,
           hidden_in_editor = false,
-          id = 18,
+          id = 15,
           name = "ANIM",
           node_type = "ANIMATION",
           plax_flags = 119,
@@ -368,7 +320,7 @@ return {
           animfile = "anim/map_SMITH_water_creatures_fx.zip",
           bloom = 0.032000001519918,
           hidden_in_editor = false,
-          id = 19,
+          id = 16,
           name = "ANIM",
           node_type = "ANIMATION",
           plax_flags = 119,
@@ -390,7 +342,7 @@ return {
           animfile = "anim/map_SMITH_water_creatures_fx.zip",
           bloom = 0.032000001519918,
           hidden_in_editor = false,
-          id = 20,
+          id = 17,
           name = "ANIM",
           node_type = "ANIMATION",
           plax_flags = 119,
@@ -412,7 +364,7 @@ return {
           bloom = 0.032000001519918,
           flip = true,
           hidden_in_editor = false,
-          id = 21,
+          id = 18,
           name = "ANIM",
           node_type = "ANIMATION",
           plax_flags = 119,
@@ -435,7 +387,7 @@ return {
           bloom = 0.0,
           flip = false,
           hidden_in_editor = false,
-          id = 22,
+          id = 19,
           name = "ANIM",
           node_type = "ANIMATION",
           plax_flags = 119,
@@ -456,7 +408,7 @@ return {
           animfile = "anim/map_SMITH_water_creatures_fx.zip",
           bloom = 0.1410000026226,
           hidden_in_editor = false,
-          id = 23,
+          id = 20,
           name = "ANIM",
           node_type = "ANIMATION",
           plax_flags = 119,
@@ -477,7 +429,7 @@ return {
           animfile = "anim/map_SMITH_water_creatures_fx.zip",
           bloom = 0.17299999296665,
           hidden_in_editor = false,
-          id = 24,
+          id = 21,
           name = "ANIM",
           node_type = "ANIMATION",
           plax_flags = 119,
@@ -498,7 +450,7 @@ return {
           animfile = "anim/map_SMITH_water_creatures_fx.zip",
           bloom = 0.0,
           hidden_in_editor = false,
-          id = 25,
+          id = 22,
           name = "ANIM",
           node_type = "ANIMATION",
           plax_flags = 119,
@@ -520,7 +472,7 @@ return {
           animfile = "anim/map_SMITH_water_creatures_fx.zip",
           bloom = 0.0,
           hidden_in_editor = false,
-          id = 26,
+          id = 23,
           name = "ANIM",
           node_type = "ANIMATION",
           plax_flags = 119,
@@ -535,7 +487,7 @@ return {
         {
           bloom = 1.0,
           hidden_in_editor = true,
-          id = 27,
+          id = 24,
           name = "PARTICLES",
           node_type = "PARTICLES",
           particles = "smith_map_monster_lumin",
@@ -557,7 +509,7 @@ return {
       elements = {
         {
           hidden_in_editor = false,
-          id = 29,
+          id = 26,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_LAND_01.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -569,7 +521,7 @@ return {
           blend_mode = 8,
           bloom = 0.014000000432134,
           hidden_in_editor = false,
-          id = 30,
+          id = 27,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_LAND_01_LIGHTS.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -583,7 +535,7 @@ return {
         },
         {
           hidden_in_editor = false,
-          id = 31,
+          id = 28,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_PLANTS_01.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -594,7 +546,7 @@ return {
         {
           blend_mode = 1,
           hidden_in_editor = false,
-          id = 32,
+          id = 29,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_BUILDINGS_01.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -606,7 +558,7 @@ return {
           blend_mode = 8,
           bloom = 0.045000001788139,
           hidden_in_editor = false,
-          id = 33,
+          id = 30,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_BUILDINGS_01_LIGHTSBLUE.tex",
           night_colour = {
             highlights = {
@@ -661,7 +613,7 @@ return {
           blend_mode = 8,
           bloom = 0.032000001519918,
           hidden_in_editor = false,
-          id = 34,
+          id = 31,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_BUILDINGS_01_LIGHTSGREEEN.tex",
           night_colour = {
             highlights = {
@@ -715,7 +667,7 @@ return {
         {
           blend_mode = 8,
           bloom = 0.064000003039837,
-          id = 35,
+          id = 32,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_BUILDINGS_01_LIGHTSTEAL.tex",
           night_colour = {
             highlights = {
@@ -768,7 +720,7 @@ return {
         },
         {
           hidden_in_editor = false,
-          id = 36,
+          id = 33,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_PLANTS_02.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -778,7 +730,7 @@ return {
         },
         {
           hidden_in_editor = false,
-          id = 37,
+          id = 34,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_PLANTS_03.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -788,7 +740,7 @@ return {
         },
         {
           hidden_in_editor = false,
-          id = 38,
+          id = 35,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_POOL_01.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -798,7 +750,7 @@ return {
         },
         {
           hidden_in_editor = false,
-          id = 39,
+          id = 36,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_BUILDINGS_02.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -810,7 +762,7 @@ return {
           blend_mode = 8,
           bloom = 0.054999999701977,
           hidden_in_editor = false,
-          id = 40,
+          id = 37,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_BUILDINGS_02_LIGHTSGREEEN.tex",
           night_colour = {
             highlights = {
@@ -865,7 +817,7 @@ return {
           blend_mode = 8,
           bloom = 0.17299999296665,
           hidden_in_editor = false,
-          id = 41,
+          id = 38,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_BUILDINGS_02_LIGHTSTEAL.tex",
           night_colour = {
             highlights = {
@@ -918,7 +870,7 @@ return {
         },
         {
           hidden_in_editor = false,
-          id = 42,
+          id = 39,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_PLANTS_04.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -928,7 +880,7 @@ return {
         },
         {
           hidden_in_editor = false,
-          id = 43,
+          id = 40,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_PLANTS_05.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -938,7 +890,7 @@ return {
         },
         {
           hidden_in_editor = false,
-          id = 44,
+          id = 41,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_PLANTS_06.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -949,7 +901,7 @@ return {
         {
           bloom = 0.01799999922514,
           hidden_in_editor = false,
-          id = 45,
+          id = 42,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_BUILDINGS_03.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -961,7 +913,7 @@ return {
           blend_mode = 8,
           bloom = 0.13199999928474,
           hidden_in_editor = false,
-          id = 46,
+          id = 43,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_BUILDINGS_03_LIGHTSBLUE.tex",
           night_colour = {
             highlights = {
@@ -1016,7 +968,7 @@ return {
           blend_mode = 8,
           bloom = 0.29499998688698,
           hidden_in_editor = false,
-          id = 47,
+          id = 44,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_BUILDINGS_03_LIGHTSGREEEN.tex",
           night_colour = {
             highlights = {
@@ -1071,7 +1023,7 @@ return {
           blend_mode = 8,
           bloom = 0.0,
           hidden_in_editor = false,
-          id = 48,
+          id = 45,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_BUILDINGS_03_LIGHTSTEAL.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -1087,7 +1039,7 @@ return {
           blend_mode = 8,
           bloom = 0.5,
           hidden_in_editor = false,
-          id = 49,
+          id = 46,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_BUILDINGS_03_LIGHTSTURQUOISE.tex",
           lock = false,
           night_colour = {
@@ -1143,7 +1095,7 @@ return {
           blend_mode = 8,
           bloom = 0.1410000026226,
           hidden_in_editor = false,
-          id = 50,
+          id = 47,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_BUILDINGS_03_LIGHTSTURQUOISE.tex",
           lock = true,
           night_colour = {
@@ -1197,7 +1149,7 @@ return {
         },
         {
           hidden_in_editor = false,
-          id = 51,
+          id = 48,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_BUILDINGS_04.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -1209,7 +1161,7 @@ return {
           blend_mode = 8,
           bloom = 0.10000000149012,
           hidden_in_editor = false,
-          id = 52,
+          id = 49,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_BUILDINGS_04_LIGHTSBLUE.tex",
           night_colour = {
             highlights = {
@@ -1264,7 +1216,7 @@ return {
           blend_mode = 8,
           bloom = 0.10000000149012,
           hidden_in_editor = false,
-          id = 53,
+          id = 50,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_BUILDINGS_04_LIGHTSGREEEN.tex",
           night_colour = {
             highlights = {
@@ -1319,7 +1271,7 @@ return {
           blend_mode = 8,
           bloom = 0.10000000149012,
           hidden_in_editor = false,
-          id = 54,
+          id = 51,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_BUILDINGS_04_LIGHTSTEAL.tex",
           night_colour = {
             highlights = {
@@ -1373,7 +1325,7 @@ return {
         {
           bloom = 0.0,
           hidden_in_editor = false,
-          id = 55,
+          id = 52,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_A_POOL_02.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -1382,11 +1334,11 @@ return {
           y = 1
         },
         {
-          hidden_in_editor = false,
-          id = 56,
+          hidden_in_editor = true,
+          id = 53,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_MONSTER_01.tex",
           node_type = "IMAGE",
-          plax_flags = 119,
+          plax_flags = 99,
           scale = 0.5,
           x = 23,
           y = 1
@@ -1394,8 +1346,8 @@ return {
         {
           blend_mode = 8,
           bloom = 0.20000000298023,
-          hidden_in_editor = false,
-          id = 57,
+          hidden_in_editor = true,
+          id = 54,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_MONSTER_LIGHTS__01.tex",
           night_colour = {
             highlights = {
@@ -1437,7 +1389,7 @@ return {
           },
           night_colour_ignore_parent = true,
           node_type = "IMAGE",
-          plax_flags = 119,
+          plax_flags = 99,
           scale = 0.5,
           tint_a = 175,
           tint_b = 255,
@@ -1448,7 +1400,7 @@ return {
         },
         {
           hidden_in_editor = false,
-          id = 58,
+          id = 55,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_BOATS_01.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -1460,7 +1412,7 @@ return {
           blend_mode = 8,
           bloom = 0.12300000339746,
           hidden_in_editor = false,
-          id = 59,
+          id = 56,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_BOATS_01_LIGHTS_BLUE.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -1476,7 +1428,7 @@ return {
           blend_mode = 8,
           bloom = 0.086000002920628,
           hidden_in_editor = false,
-          id = 60,
+          id = 57,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_BOATS_01_LIGHTS_GREEN.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -1492,7 +1444,7 @@ return {
           blend_mode = 8,
           bloom = 0.5,
           hidden_in_editor = false,
-          id = 61,
+          id = 58,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_BOATS_01_LIGHTS_TURQUOISE.tex",
           node_type = "IMAGE",
           plax_flags = 119,
@@ -1507,7 +1459,7 @@ return {
         {
           bloom = 1.0,
           hidden_in_editor = false,
-          id = 62,
+          id = 59,
           name = "PARTICLES",
           node_type = "PARTICLES",
           particles = "smith_map_monster_lumin_wide",
@@ -1523,7 +1475,7 @@ return {
         {
           bloom = 1.0,
           hidden_in_editor = false,
-          id = 63,
+          id = 60,
           name = "PARTICLES",
           node_type = "PARTICLES",
           particles = "smith_map_monster_lumin",
@@ -1539,7 +1491,7 @@ return {
         {
           bloom = 1.0,
           hidden_in_editor = false,
-          id = 64,
+          id = 61,
           name = "PARTICLES",
           node_type = "PARTICLES",
           particles = "smith_map_monster_lumin",
@@ -1555,7 +1507,7 @@ return {
         {
           bloom = 1.0,
           hidden_in_editor = false,
-          id = 65,
+          id = 62,
           name = "PARTICLES",
           node_type = "PARTICLES",
           particles = "smith_map_monster_lumin",
@@ -1571,7 +1523,7 @@ return {
         {
           bloom = 1.0,
           hidden_in_editor = false,
-          id = 66,
+          id = 63,
           name = "PARTICLES",
           node_type = "PARTICLES",
           particles = "smith_map_monster_lumin",
@@ -1587,7 +1539,7 @@ return {
         {
           bloom = 1.0,
           hidden_in_editor = false,
-          id = 67,
+          id = 64,
           name = "PARTICLES",
           node_type = "PARTICLES",
           particles = "smith_map_monster_lumin",
@@ -1603,7 +1555,7 @@ return {
         {
           bloom = 1.0,
           hidden_in_editor = false,
-          id = 68,
+          id = 65,
           name = "PARTICLES",
           node_type = "PARTICLES",
           particles = "smith_map_monster_lumin",
@@ -1619,7 +1571,7 @@ return {
         {
           bloom = 1.0,
           hidden_in_editor = false,
-          id = 69,
+          id = 66,
           name = "PARTICLES",
           node_type = "PARTICLES",
           particles = "smith_map_monster_lumin",
@@ -1635,7 +1587,7 @@ return {
         {
           bloom = 1.0,
           hidden_in_editor = false,
-          id = 70,
+          id = 67,
           name = "PARTICLES",
           node_type = "PARTICLES",
           particles = "smith_map_monster_lumin",
@@ -1651,7 +1603,7 @@ return {
         {
           bloom = 1.0,
           hidden_in_editor = false,
-          id = 71,
+          id = 68,
           name = "PARTICLES",
           node_type = "PARTICLES",
           particles = "smith_map_monster_lumin",
@@ -1667,7 +1619,7 @@ return {
         {
           bloom = 1.0,
           hidden_in_editor = false,
-          id = 72,
+          id = 69,
           name = "PARTICLES",
           node_type = "PARTICLES",
           particles = "smith_map_monster_lumin",
@@ -1683,7 +1635,7 @@ return {
         {
           bloom = 1.0,
           hidden_in_editor = false,
-          id = 73,
+          id = 70,
           name = "PARTICLES",
           node_type = "PARTICLES",
           particles = "smith_map_monster_lumin",
@@ -1699,7 +1651,7 @@ return {
         {
           bloom = 1.0,
           hidden_in_editor = false,
-          id = 74,
+          id = 71,
           name = "PARTICLES",
           node_type = "PARTICLES",
           particles = "smith_map_monster_lumin",
@@ -1719,6 +1671,54 @@ return {
     },
     {
       elements = {
+        {
+          hidden_in_editor = false,
+          id = 73,
+          name = "PARTICLES",
+          node_type = "PARTICLES",
+          particles = "water_foam rising",
+          plax_flags = 119,
+          rot = -0.43000000715256,
+          scale = 1.0,
+          tint_a = 255,
+          tint_b = 247,
+          tint_g = 255,
+          tint_r = 119,
+          x = -4,
+          y = 237
+        },
+        {
+          hidden_in_editor = false,
+          id = 74,
+          name = "PARTICLES",
+          node_type = "PARTICLES",
+          particles = "water_foam rising",
+          plax_flags = 119,
+          rot = 0.090000003576279,
+          scale = 1.0,
+          tint_a = 255,
+          tint_b = 255,
+          tint_g = 249,
+          tint_r = 103,
+          x = 345,
+          y = 195
+        },
+        {
+          hidden_in_editor = false,
+          id = 75,
+          name = "PARTICLES",
+          node_type = "PARTICLES",
+          particles = "water_foam rising",
+          plax_flags = 119,
+          rot = -0.14000000059605,
+          scale = 1.0,
+          tint_a = 255,
+          tint_b = 254,
+          tint_g = 230,
+          tint_r = 96,
+          x = 285,
+          y = 305
+        },
         {
           hidden_in_editor = false,
           id = 76,
@@ -3266,17 +3266,6 @@ return {
           enter_x = 0,
           enter_y = 0,
           id = 179,
-          location_name = "SMITH_HOME",
-          location_tags = "",
-          node_type = "LOCATION",
-          plax_flags = 119,
-          x = 210,
-          y = -239
-        },
-        {
-          enter_x = 0,
-          enter_y = 0,
-          id = 180,
           location_name = "PEARL_PARK",
           location_tags = "",
           node_type = "LOCATION",
@@ -3308,24 +3297,20 @@ return {
               node2 = 8
             },
             {
-              node1 = 8,
-              node2 = 9
-            },
-            {
               node1 = 9,
               node2 = 10
             },
             {
-              node1 = 10,
-              node2 = 11
+              node1 = 11,
+              node2 = 12
             },
             {
               node1 = 12,
               node2 = 13
             },
             {
-              node1 = 13,
-              node2 = 14
+              node1 = 14,
+              node2 = 15
             },
             {
               node1 = 15,
@@ -3396,8 +3381,8 @@ return {
               node2 = 32
             },
             {
-              node1 = 32,
-              node2 = 33
+              node1 = 33,
+              node2 = 34
             },
             {
               node1 = 34,
@@ -3412,23 +3397,19 @@ return {
               node2 = 37
             },
             {
-              node1 = 36,
-              node2 = 38
+              node1 = 32,
+              node2 = 37
+            },
+            {
+              node1 = 33,
+              node2 = 37
             },
             {
               node1 = 38,
               node2 = 39
             },
             {
-              node1 = 37,
-              node2 = 40
-            },
-            {
-              node1 = 33,
-              node2 = 40
-            },
-            {
-              node1 = 34,
+              node1 = 39,
               node2 = 40
             },
             {
@@ -3436,7 +3417,7 @@ return {
               node2 = 41
             },
             {
-              node1 = 38,
+              node1 = 41,
               node2 = 42
             },
             {
@@ -3444,7 +3425,7 @@ return {
               node2 = 43
             },
             {
-              node1 = 43,
+              node1 = 42,
               node2 = 44
             },
             {
@@ -3456,11 +3437,11 @@ return {
               node2 = 46
             },
             {
-              node1 = 46,
+              node1 = 16,
               node2 = 47
             },
             {
-              node1 = 46,
+              node1 = 47,
               node2 = 48
             },
             {
@@ -3468,11 +3449,7 @@ return {
               node2 = 49
             },
             {
-              node1 = 49,
-              node2 = 50
-            },
-            {
-              node1 = 17,
+              node1 = 50,
               node2 = 51
             },
             {
@@ -3484,12 +3461,12 @@ return {
               node2 = 53
             },
             {
-              node1 = 9,
-              node2 = 54
+              node1 = 14,
+              node2 = 53
             },
             {
-              node1 = 54,
-              node2 = 55
+              node1 = 1,
+              node2 = 54
             },
             {
               node1 = 55,
@@ -3500,16 +3477,12 @@ return {
               node2 = 57
             },
             {
-              node1 = 14,
-              node2 = 57
-            },
-            {
-              node1 = 15,
-              node2 = 57
-            },
-            {
-              node1 = 1,
+              node1 = 57,
               node2 = 58
+            },
+            {
+              node1 = 58,
+              node2 = 59
             },
             {
               node1 = 59,
@@ -3524,7 +3497,7 @@ return {
               node2 = 62
             },
             {
-              node1 = 62,
+              node1 = 60,
               node2 = 63
             },
             {
@@ -3540,7 +3513,7 @@ return {
               node2 = 66
             },
             {
-              node1 = 64,
+              node1 = 57,
               node2 = 67
             },
             {
@@ -3548,15 +3521,15 @@ return {
               node2 = 68
             },
             {
-              node1 = 68,
+              node1 = 67,
               node2 = 69
             },
             {
-              node1 = 69,
+              node1 = 67,
               node2 = 70
             },
             {
-              node1 = 61,
+              node1 = 70,
               node2 = 71
             },
             {
@@ -3564,11 +3537,15 @@ return {
               node2 = 72
             },
             {
-              node1 = 71,
+              node1 = 72,
               node2 = 73
             },
             {
-              node1 = 71,
+              node1 = 54,
+              node2 = 73
+            },
+            {
+              node1 = 54,
               node2 = 74
             },
             {
@@ -3584,28 +3561,12 @@ return {
               node2 = 77
             },
             {
-              node1 = 58,
-              node2 = 77
-            },
-            {
-              node1 = 58,
-              node2 = 78
-            },
-            {
               node1 = 78,
               node2 = 79
             },
             {
-              node1 = 79,
-              node2 = 80
-            },
-            {
               node1 = 80,
               node2 = 81
-            },
-            {
-              node1 = 81,
-              node2 = 82
             },
             {
               node1 = 82,
@@ -3628,6 +3589,14 @@ return {
               node2 = 87
             },
             {
+              node1 = 86,
+              node2 = 88
+            },
+            {
+              node1 = 88,
+              node2 = 89
+            },
+            {
               node1 = 89,
               node2 = 90
             },
@@ -3636,11 +3605,11 @@ return {
               node2 = 91
             },
             {
-              node1 = 91,
+              node1 = 90,
               node2 = 92
             },
             {
-              node1 = 92,
+              node1 = 85,
               node2 = 93
             },
             {
@@ -3648,7 +3617,7 @@ return {
               node2 = 94
             },
             {
-              node1 = 93,
+              node1 = 94,
               node2 = 95
             },
             {
@@ -3656,19 +3625,23 @@ return {
               node2 = 96
             },
             {
-              node1 = 96,
+              node1 = 81,
+              node2 = 96
+            },
+            {
+              node1 = 82,
+              node2 = 96
+            },
+            {
+              node1 = 93,
               node2 = 97
             },
             {
-              node1 = 97,
-              node2 = 98
-            },
-            {
-              node1 = 97,
+              node1 = 98,
               node2 = 99
             },
             {
-              node1 = 92,
+              node1 = 99,
               node2 = 100
             },
             {
@@ -3684,27 +3657,27 @@ return {
               node2 = 103
             },
             {
-              node1 = 87,
-              node2 = 103
-            },
-            {
-              node1 = 88,
-              node2 = 103
-            },
-            {
-              node1 = 89,
-              node2 = 103
-            },
-            {
-              node1 = 100,
+              node1 = 103,
               node2 = 104
+            },
+            {
+              node1 = 104,
+              node2 = 105
             },
             {
               node1 = 105,
               node2 = 106
             },
             {
-              node1 = 106,
+              node1 = 97,
+              node2 = 106
+            },
+            {
+              node1 = 98,
+              node2 = 106
+            },
+            {
+              node1 = 81,
               node2 = 107
             },
             {
@@ -3720,27 +3693,15 @@ return {
               node2 = 110
             },
             {
-              node1 = 110,
-              node2 = 111
-            },
-            {
               node1 = 111,
               node2 = 112
             },
             {
-              node1 = 112,
+              node1 = 111,
               node2 = 113
             },
             {
-              node1 = 104,
-              node2 = 113
-            },
-            {
-              node1 = 105,
-              node2 = 113
-            },
-            {
-              node1 = 87,
+              node1 = 113,
               node2 = 114
             },
             {
@@ -3752,15 +3713,19 @@ return {
               node2 = 116
             },
             {
-              node1 = 116,
+              node1 = 115,
               node2 = 117
+            },
+            {
+              node1 = 117,
+              node2 = 118
             },
             {
               node1 = 118,
               node2 = 119
             },
             {
-              node1 = 118,
+              node1 = 119,
               node2 = 120
             },
             {
@@ -3768,7 +3733,7 @@ return {
               node2 = 121
             },
             {
-              node1 = 121,
+              node1 = 119,
               node2 = 122
             },
             {
@@ -3776,7 +3741,7 @@ return {
               node2 = 123
             },
             {
-              node1 = 122,
+              node1 = 123,
               node2 = 124
             },
             {
@@ -3788,19 +3753,23 @@ return {
               node2 = 126
             },
             {
-              node1 = 126,
-              node2 = 127
-            },
-            {
               node1 = 127,
               node2 = 128
             },
             {
-              node1 = 126,
+              node1 = 128,
               node2 = 129
             },
             {
               node1 = 129,
+              node2 = 130
+            },
+            {
+              node1 = 126,
+              node2 = 130
+            },
+            {
+              node1 = 127,
               node2 = 130
             },
             {
@@ -3812,12 +3781,16 @@ return {
               node2 = 132
             },
             {
+              node1 = 115,
+              node2 = 133
+            },
+            {
               node1 = 132,
               node2 = 133
             },
             {
-              node1 = 134,
-              node2 = 135
+              node1 = 133,
+              node2 = 134
             },
             {
               node1 = 135,
@@ -3828,32 +3801,16 @@ return {
               node2 = 137
             },
             {
-              node1 = 133,
-              node2 = 137
-            },
-            {
-              node1 = 134,
-              node2 = 137
-            },
-            {
-              node1 = 137,
-              node2 = 138
-            },
-            {
-              node1 = 138,
-              node2 = 139
-            },
-            {
-              node1 = 122,
-              node2 = 140
-            },
-            {
               node1 = 139,
               node2 = 140
             },
             {
               node1 = 140,
               node2 = 141
+            },
+            {
+              node1 = 141,
+              node2 = 142
             },
             {
               node1 = 142,
@@ -3864,7 +3821,23 @@ return {
               node2 = 144
             },
             {
-              node1 = 146,
+              node1 = 144,
+              node2 = 145
+            },
+            {
+              node1 = 145,
+              node2 = 146
+            },
+            {
+              node1 = 138,
+              node2 = 146
+            },
+            {
+              node1 = 139,
+              node2 = 146
+            },
+            {
+              node1 = 145,
               node2 = 147
             },
             {
@@ -3888,20 +3861,12 @@ return {
               node2 = 152
             },
             {
-              node1 = 152,
-              node2 = 153
+              node1 = 111,
+              node2 = 152
             },
             {
-              node1 = 145,
+              node1 = 137,
               node2 = 153
-            },
-            {
-              node1 = 146,
-              node2 = 153
-            },
-            {
-              node1 = 152,
-              node2 = 154
             },
             {
               node1 = 154,
@@ -3912,43 +3877,43 @@ return {
               node2 = 156
             },
             {
-              node1 = 156,
+              node1 = 154,
               node2 = 157
             },
             {
-              node1 = 157,
-              node2 = 158
-            },
-            {
-              node1 = 158,
-              node2 = 159
-            },
-            {
-              node1 = 118,
-              node2 = 159
-            },
-            {
-              node1 = 144,
+              node1 = 159,
               node2 = 160
             },
             {
-              node1 = 161,
-              node2 = 162
+              node1 = 160,
+              node2 = 161
             },
             {
               node1 = 162,
               node2 = 163
             },
             {
-              node1 = 161,
+              node1 = 163,
               node2 = 164
             },
             {
-              node1 = 166,
-              node2 = 167
+              node1 = 164,
+              node2 = 165
+            },
+            {
+              node1 = 159,
+              node2 = 166
             },
             {
               node1 = 167,
+              node2 = 168
+            },
+            {
+              node1 = 158,
+              node2 = 168
+            },
+            {
+              node1 = 159,
               node2 = 168
             },
             {
@@ -3964,23 +3929,31 @@ return {
               node2 = 172
             },
             {
-              node1 = 166,
+              node1 = 172,
               node2 = 173
+            },
+            {
+              node1 = 173,
+              node2 = 174
             },
             {
               node1 = 174,
               node2 = 175
             },
             {
-              node1 = 165,
-              node2 = 175
+              node1 = 175,
+              node2 = 176
             },
             {
-              node1 = 166,
-              node2 = 175
+              node1 = 157,
+              node2 = 176
             },
             {
-              node1 = 176,
+              node1 = 158,
+              node2 = 176
+            },
+            {
+              node1 = 175,
               node2 = 177
             },
             {
@@ -3988,7 +3961,15 @@ return {
               node2 = 178
             },
             {
-              node1 = 178,
+              node1 = 153,
+              node2 = 178
+            },
+            {
+              node1 = 154,
+              node2 = 178
+            },
+            {
+              node1 = 170,
               node2 = 179
             },
             {
@@ -4000,23 +3981,11 @@ return {
               node2 = 181
             },
             {
-              node1 = 181,
-              node2 = 182
-            },
-            {
-              node1 = 182,
+              node1 = 180,
               node2 = 183
             },
             {
-              node1 = 164,
-              node2 = 183
-            },
-            {
-              node1 = 165,
-              node2 = 183
-            },
-            {
-              node1 = 182,
+              node1 = 183,
               node2 = 184
             },
             {
@@ -4024,31 +3993,31 @@ return {
               node2 = 185
             },
             {
-              node1 = 160,
-              node2 = 185
-            },
-            {
-              node1 = 161,
-              node2 = 185
-            },
-            {
-              node1 = 177,
-              node2 = 186
-            },
-            {
               node1 = 186,
               node2 = 187
             },
             {
-              node1 = 187,
+              node1 = 186,
               node2 = 188
             },
             {
-              node1 = 187,
+              node1 = 188,
+              node2 = 189
+            },
+            {
+              node1 = 189,
               node2 = 190
             },
             {
-              node1 = 190,
+              node1 = 185,
+              node2 = 190
+            },
+            {
+              node1 = 186,
+              node2 = 190
+            },
+            {
+              node1 = 189,
               node2 = 191
             },
             {
@@ -4056,11 +4025,23 @@ return {
               node2 = 192
             },
             {
-              node1 = 193,
+              node1 = 192,
+              node2 = 193
+            },
+            {
+              node1 = 55,
+              node2 = 193
+            },
+            {
+              node1 = 73,
+              node2 = 193
+            },
+            {
+              node1 = 187,
               node2 = 194
             },
             {
-              node1 = 193,
+              node1 = 194,
               node2 = 195
             },
             {
@@ -4068,19 +4049,19 @@ return {
               node2 = 196
             },
             {
-              node1 = 196,
+              node1 = 5,
+              node2 = 196
+            },
+            {
+              node1 = 6,
+              node2 = 196
+            },
+            {
+              node1 = 195,
               node2 = 197
             },
             {
-              node1 = 192,
-              node2 = 197
-            },
-            {
-              node1 = 193,
-              node2 = 197
-            },
-            {
-              node1 = 196,
+              node1 = 197,
               node2 = 198
             },
             {
@@ -4092,19 +4073,11 @@ return {
               node2 = 200
             },
             {
-              node1 = 59,
-              node2 = 200
-            },
-            {
-              node1 = 77,
-              node2 = 200
-            },
-            {
-              node1 = 194,
+              node1 = 200,
               node2 = 201
             },
             {
-              node1 = 201,
+              node1 = 200,
               node2 = 202
             },
             {
@@ -4112,15 +4085,7 @@ return {
               node2 = 203
             },
             {
-              node1 = 5,
-              node2 = 203
-            },
-            {
-              node1 = 6,
-              node2 = 203
-            },
-            {
-              node1 = 202,
+              node1 = 203,
               node2 = 204
             },
             {
@@ -4132,7 +4097,11 @@ return {
               node2 = 206
             },
             {
-              node1 = 206,
+              node1 = 10,
+              node2 = 206
+            },
+            {
+              node1 = 204,
               node2 = 207
             },
             {
@@ -4140,7 +4109,7 @@ return {
               node2 = 208
             },
             {
-              node1 = 207,
+              node1 = 208,
               node2 = 209
             },
             {
@@ -4156,19 +4125,19 @@ return {
               node2 = 212
             },
             {
-              node1 = 212,
+              node1 = 6,
+              node2 = 212
+            },
+            {
+              node1 = 7,
+              node2 = 212
+            },
+            {
+              node1 = 19,
               node2 = 213
             },
             {
               node1 = 11,
-              node2 = 213
-            },
-            {
-              node1 = 12,
-              node2 = 213
-            },
-            {
-              node1 = 211,
               node2 = 214
             },
             {
@@ -4180,7 +4149,15 @@ return {
               node2 = 216
             },
             {
-              node1 = 216,
+              node1 = 213,
+              node2 = 216
+            },
+            {
+              node1 = 43,
+              node2 = 216
+            },
+            {
+              node1 = 38,
               node2 = 217
             },
             {
@@ -4192,19 +4169,11 @@ return {
               node2 = 219
             },
             {
-              node1 = 6,
-              node2 = 219
-            },
-            {
-              node1 = 7,
-              node2 = 219
-            },
-            {
-              node1 = 20,
+              node1 = 219,
               node2 = 220
             },
             {
-              node1 = 12,
+              node1 = 220,
               node2 = 221
             },
             {
@@ -4216,19 +4185,19 @@ return {
               node2 = 223
             },
             {
-              node1 = 220,
-              node2 = 223
-            },
-            {
-              node1 = 47,
-              node2 = 223
-            },
-            {
-              node1 = 42,
+              node1 = 223,
               node2 = 224
             },
             {
-              node1 = 224,
+              node1 = 161,
+              node2 = 224
+            },
+            {
+              node1 = 162,
+              node2 = 224
+            },
+            {
+              node1 = 21,
               node2 = 225
             },
             {
@@ -4241,6 +4210,10 @@ return {
             },
             {
               node1 = 227,
+              node2 = 43
+            },
+            {
+              node1 = 43,
               node2 = 228
             },
             {
@@ -4256,19 +4229,19 @@ return {
               node2 = 231
             },
             {
-              node1 = 168,
-              node2 = 231
-            },
-            {
-              node1 = 169,
-              node2 = 231
-            },
-            {
-              node1 = 22,
+              node1 = 231,
               node2 = 232
             },
             {
-              node1 = 232,
+              node1 = 181,
+              node2 = 232
+            },
+            {
+              node1 = 182,
+              node2 = 232
+            },
+            {
+              node1 = 182,
               node2 = 233
             },
             {
@@ -4277,10 +4250,10 @@ return {
             },
             {
               node1 = 234,
-              node2 = 47
+              node2 = 199
             },
             {
-              node1 = 47,
+              node1 = 183,
               node2 = 235
             },
             {
@@ -4292,7 +4265,7 @@ return {
               node2 = 237
             },
             {
-              node1 = 237,
+              node1 = 150,
               node2 = 238
             },
             {
@@ -4300,15 +4273,7 @@ return {
               node2 = 239
             },
             {
-              node1 = 188,
-              node2 = 239
-            },
-            {
-              node1 = 189,
-              node2 = 239
-            },
-            {
-              node1 = 189,
+              node1 = 239,
               node2 = 240
             },
             {
@@ -4317,14 +4282,22 @@ return {
             },
             {
               node1 = 241,
-              node2 = 206
-            },
-            {
-              node1 = 190,
               node2 = 242
             },
             {
-              node1 = 242,
+              node1 = 147,
+              node2 = 242
+            },
+            {
+              node1 = 137,
+              node2 = 242
+            },
+            {
+              node1 = 138,
+              node2 = 242
+            },
+            {
+              node1 = 240,
               node2 = 243
             },
             {
@@ -4336,15 +4309,15 @@ return {
               node2 = 245
             },
             {
-              node1 = 152,
+              node1 = 134,
               node2 = 245
             },
             {
-              node1 = 176,
+              node1 = 135,
               node2 = 245
             },
             {
-              node1 = 157,
+              node1 = 79,
               node2 = 246
             },
             {
@@ -4364,19 +4337,7 @@ return {
               node2 = 250
             },
             {
-              node1 = 154,
-              node2 = 250
-            },
-            {
-              node1 = 144,
-              node2 = 250
-            },
-            {
-              node1 = 145,
-              node2 = 250
-            },
-            {
-              node1 = 248,
+              node1 = 250,
               node2 = 251
             },
             {
@@ -4388,15 +4349,7 @@ return {
               node2 = 253
             },
             {
-              node1 = 141,
-              node2 = 253
-            },
-            {
-              node1 = 142,
-              node2 = 253
-            },
-            {
-              node1 = 84,
+              node1 = 253,
               node2 = 254
             },
             {
@@ -4408,7 +4361,7 @@ return {
               node2 = 256
             },
             {
-              node1 = 256,
+              node1 = 255,
               node2 = 257
             },
             {
@@ -4424,7 +4377,7 @@ return {
               node2 = 260
             },
             {
-              node1 = 260,
+              node1 = 103,
               node2 = 261
             },
             {
@@ -4440,7 +4393,7 @@ return {
               node2 = 264
             },
             {
-              node1 = 263,
+              node1 = 264,
               node2 = 265
             },
             {
@@ -4452,11 +4405,19 @@ return {
               node2 = 267
             },
             {
-              node1 = 267,
-              node2 = 268
+              node1 = 259,
+              node2 = 267
+            },
+            {
+              node1 = 256,
+              node2 = 267
             },
             {
               node1 = 110,
+              node2 = 268
+            },
+            {
+              node1 = 268,
               node2 = 269
             },
             {
@@ -4476,23 +4437,19 @@ return {
               node2 = 273
             },
             {
-              node1 = 273,
+              node1 = 110,
+              node2 = 273
+            },
+            {
+              node1 = 152,
+              node2 = 273
+            },
+            {
+              node1 = 136,
               node2 = 274
             },
             {
-              node1 = 274,
-              node2 = 275
-            },
-            {
-              node1 = 267,
-              node2 = 275
-            },
-            {
-              node1 = 264,
-              node2 = 275
-            },
-            {
-              node1 = 117,
+              node1 = 275,
               node2 = 276
             },
             {
@@ -4508,7 +4465,27 @@ return {
               node2 = 279
             },
             {
-              node1 = 279,
+              node1 = 165,
+              node2 = 279
+            },
+            {
+              node1 = 166,
+              node2 = 279
+            },
+            {
+              node1 = 167,
+              node2 = 279
+            },
+            {
+              node1 = 154,
+              node2 = 280
+            },
+            {
+              node1 = 274,
+              node2 = 280
+            },
+            {
+              node1 = 275,
               node2 = 280
             },
             {
@@ -4516,19 +4493,15 @@ return {
               node2 = 281
             },
             {
-              node1 = 117,
-              node2 = 281
-            },
-            {
-              node1 = 159,
-              node2 = 281
-            },
-            {
-              node1 = 143,
+              node1 = 281,
               node2 = 282
             },
             {
-              node1 = 283,
+              node1 = 282,
+              node2 = 283
+            },
+            {
+              node1 = 201,
               node2 = 284
             },
             {
@@ -4536,7 +4509,15 @@ return {
               node2 = 285
             },
             {
-              node1 = 285,
+              node1 = 11,
+              node2 = 285
+            },
+            {
+              node1 = 206,
+              node2 = 285
+            },
+            {
+              node1 = 148,
               node2 = 286
             },
             {
@@ -4544,27 +4525,19 @@ return {
               node2 = 287
             },
             {
-              node1 = 172,
+              node1 = 237,
               node2 = 287
             },
             {
-              node1 = 173,
+              node1 = 145,
               node2 = 287
             },
             {
-              node1 = 174,
+              node1 = 169,
               node2 = 287
             },
             {
-              node1 = 161,
-              node2 = 288
-            },
-            {
-              node1 = 282,
-              node2 = 288
-            },
-            {
-              node1 = 283,
+              node1 = 286,
               node2 = 288
             },
             {
@@ -4576,12 +4549,84 @@ return {
               node2 = 290
             },
             {
-              node1 = 290,
+              node1 = 66,
               node2 = 291
+            },
+            {
+              node1 = 291,
+              node2 = 292
+            },
+            {
+              node1 = 96,
+              node2 = 292
+            },
+            {
+              node1 = 292,
+              node2 = 293
+            },
+            {
+              node1 = 293,
+              node2 = 294
+            },
+            {
+              node1 = 79,
+              node2 = 294
+            },
+            {
+              node1 = 80,
+              node2 = 294
+            },
+            {
+              node1 = 71,
+              node2 = 295
+            },
+            {
+              node1 = 293,
+              node2 = 295
+            },
+            {
+              node1 = 295,
+              node2 = 296
+            },
+            {
+              node1 = 296,
+              node2 = 297
+            },
+            {
+              node1 = 297,
+              node2 = 298
+            },
+            {
+              node1 = 77,
+              node2 = 298
+            },
+            {
+              node1 = 78,
+              node2 = 298
+            },
+            {
+              node1 = 13,
+              node2 = 299
+            },
+            {
+              node1 = 299,
+              node2 = 300
+            },
+            {
+              node1 = 8,
+              node2 = 300
+            },
+            {
+              node1 = 9,
+              node2 = 300
+            },
+            {
+              node1 = 50,
+              node2 = 300
             }
           },
           hidden_in_editor = false,
-          id = 181,
+          id = 180,
           name = "PATH",
           node_type = "PATH",
           nodes = {
@@ -4627,18 +4672,13 @@ return {
             },
             {
               userdata = {},
-              x = 24.0,
-              y = 332.0
-            },
-            {
-              userdata = {},
               x = 140.0,
-              y = 322.0
+              y = 329.0
             },
             {
               userdata = {},
-              x = 210.0,
-              y = 346.0
+              x = 219.0,
+              y = 351.0
             },
             {
               userdata = {},
@@ -4667,13 +4707,13 @@ return {
             },
             {
               userdata = {},
-              x = 124.0,
-              y = 455.0
+              x = 132.0,
+              y = 465.0
             },
             {
               userdata = {},
-              x = 208.0,
-              y = 431.0
+              x = 214.0,
+              y = 438.0
             },
             {
               userdata = {},
@@ -4772,23 +4812,8 @@ return {
             },
             {
               userdata = {},
-              x = 948.0,
-              y = 530.0
-            },
-            {
-              userdata = {},
-              x = 1002.0,
-              y = 505.0
-            },
-            {
-              userdata = {},
               x = 728.0,
               y = 540.0
-            },
-            {
-              userdata = {},
-              x = 731.0,
-              y = 560.0
             },
             {
               userdata = {},
@@ -4992,11 +5017,6 @@ return {
             },
             {
               userdata = {},
-              x = -49.0,
-              y = -145.0
-            },
-            {
-              userdata = {},
               x = 29.0,
               y = -168.0
             },
@@ -5007,11 +5027,6 @@ return {
             },
             {
               userdata = {},
-              x = 240.0,
-              y = -166.0
-            },
-            {
-              userdata = {},
               x = 269.0,
               y = -164.0
             },
@@ -5019,11 +5034,6 @@ return {
               userdata = {},
               x = 294.0,
               y = -154.0
-            },
-            {
-              userdata = {},
-              x = 278.0,
-              y = -97.0
             },
             {
               userdata = {},
@@ -5557,8 +5567,8 @@ return {
             },
             {
               userdata = {},
-              x = 264.0,
-              y = 81.0
+              x = 260.0,
+              y = 87.0
             },
             {
               userdata = {},
@@ -5647,8 +5657,8 @@ return {
             },
             {
               userdata = {},
-              x = 277.0,
-              y = 360.0
+              x = 276.0,
+              y = 364.0
             },
             {
               userdata = {},
@@ -5804,11 +5814,6 @@ return {
               userdata = {},
               x = 782.0,
               y = 84.0
-            },
-            {
-              userdata = {},
-              x = 839.0,
-              y = 60.0
             },
             {
               userdata = {},
@@ -6039,6 +6044,91 @@ return {
               userdata = {},
               x = 1359.0,
               y = -53.0
+            },
+            {
+              userdata = {},
+              x = 479.0,
+              y = 286.0
+            },
+            {
+              userdata = {},
+              x = 310.0,
+              y = 373.0
+            },
+            {
+              userdata = {},
+              x = 778.0,
+              y = 16.0
+            },
+            {
+              userdata = {},
+              x = 840.0,
+              y = 62.0
+            },
+            {
+              userdata = {},
+              x = 526.0,
+              y = 28.0
+            },
+            {
+              userdata = {},
+              x = 389.0,
+              y = 73.0
+            },
+            {
+              userdata = {},
+              x = 362.0,
+              y = 41.0
+            },
+            {
+              userdata = {},
+              x = 374.0,
+              y = -67.0
+            },
+            {
+              userdata = {},
+              x = 284.0,
+              y = -95.0
+            },
+            {
+              userdata = {},
+              x = 186.0,
+              y = -99.0
+            },
+            {
+              userdata = {},
+              x = 238.0,
+              y = -166.0
+            },
+            {
+              userdata = {},
+              x = 104.0,
+              y = -79.0
+            },
+            {
+              userdata = {},
+              x = 24.0,
+              y = -95.0
+            },
+            {
+              userdata = {},
+              x = 17.0,
+              y = -112.0
+            },
+            {
+              userdata = {},
+              x = -47.0,
+              y = -145.0
+            },
+            {
+              userdata = {},
+              x = 66.0,
+              y = 363.0
+            },
+            {
+              userdata = {},
+              x = 28.0,
+              y = 339.0
             }
           },
           plax_flags = 119,
@@ -6048,29 +6138,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 182,
-          location_name = "TEI_SHRINE",
-          location_tags = "",
-          node_type = "LOCATION",
-          plax_flags = 119,
-          x = 193,
-          y = 403
-        },
-        {
-          enter_x = 0,
-          enter_y = 0,
-          id = 183,
-          location_name = "PEARL_CULT_TRAINING",
-          location_tags = "",
-          node_type = "LOCATION",
-          plax_flags = 119,
-          x = 79,
-          y = -485
-        },
-        {
-          enter_x = 0,
-          enter_y = 0,
-          id = 184,
+          id = 181,
           location_tags = "street",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6080,7 +6148,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 185,
+          id = 182,
           location_tags = "quarters",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6090,7 +6158,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 186,
+          id = 183,
           location_tags = "small_boat",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6100,7 +6168,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 187,
+          id = 184,
           location_tags = "quarters",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6110,7 +6178,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 188,
+          id = 185,
           location_tags = "quarters",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6120,7 +6188,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 189,
+          id = 186,
           location_tags = "small_boat",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6130,7 +6198,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 190,
+          id = 187,
           location_name = "CONTRACT_CHAPEL",
           location_tags = "",
           node_type = "LOCATION",
@@ -6141,7 +6209,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 191,
+          id = 188,
           location_tags = "building",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6151,7 +6219,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 192,
+          id = 189,
           location_tags = "beach",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6161,7 +6229,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 193,
+          id = 190,
           location_tags = "building",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6171,7 +6239,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 194,
+          id = 191,
           location_name = "PEARL_PARTY_STORE",
           location_tags = "",
           node_type = "LOCATION",
@@ -6182,7 +6250,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 195,
+          id = 192,
           location_tags = "building",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6192,7 +6260,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 196,
+          id = 193,
           location_tags = "beach",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6202,7 +6270,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 197,
+          id = 194,
           location_tags = "beach",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6212,7 +6280,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 198,
+          id = 195,
           location_tags = "small_boat",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6222,7 +6290,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 199,
+          id = 196,
           location_tags = "building",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6232,7 +6300,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 200,
+          id = 197,
           location_tags = "port",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6242,7 +6310,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 201,
+          id = 198,
           location_tags = "cliffs",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6252,7 +6320,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 202,
+          id = 199,
           location_tags = "cliffs",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6262,7 +6330,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 203,
+          id = 200,
           location_tags = "port",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6272,18 +6340,18 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 204,
-          location_name = "PEARL_ADMIRALTY_STATION",
+          id = 201,
+          location_name = "ADMIRALTY_BARRACKS",
           location_tags = "",
           node_type = "LOCATION",
           plax_flags = 119,
-          x = -696,
-          y = -227
+          x = -718,
+          y = -250
         },
         {
           enter_x = 0,
           enter_y = 0,
-          id = 205,
+          id = 202,
           location_name = "MOREEF_BAR",
           location_tags = "",
           node_type = "LOCATION",
@@ -6294,7 +6362,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 206,
+          id = 203,
           location_tags = "quarters",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6304,7 +6372,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 207,
+          id = 204,
           location_tags = "street",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6314,7 +6382,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 208,
+          id = 205,
           location_tags = "street",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6324,7 +6392,27 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 209,
+          id = 219,
+          location_tags = "slum",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -683,
+          y = -78
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 220,
+          location_tags = "slum",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -500,
+          y = 61
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 206,
           location_name = "PEARL_OSHNUDROME",
           location_tags = "",
           node_type = "LOCATION",
@@ -6335,13 +6423,198 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 210,
+          id = 207,
           location_name = "PEARL_CULT_COMPOUND",
           location_tags = "",
           node_type = "LOCATION",
           plax_flags = 119,
           x = -519,
           y = -177
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 208,
+          location_name = "MURDERBAY_NOODLE_SHOP",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -493,
+          y = 233
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 209,
+          location_name = "NEWDELTREE_OUTFITTERS",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -408,
+          y = -56
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 210,
+          location_name = "MURDER_BAY_CHEMIST",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -843,
+          y = 277
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 211,
+          location_name = "GROG_N_DOG",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = 234,
+          y = -224
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 212,
+          location_name = "MURDERBAY_LUMIN_DOCKS",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -159,
+          y = 113
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 213,
+          location_name = "MURDER_BAY_HARBOUR",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -119,
+          y = -85
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 214,
+          location_name = "SPREE_INN",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = 47,
+          y = -340
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 215,
+          location_name = "GRAND_THEATER",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = 328,
+          y = -2
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 216,
+          location_name = "DIPL_PRES_OFFICE",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -310,
+          y = 160
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 217,
+          location_name = "MANI_PRES_OFFICE",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -420,
+          y = -136
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 218,
+          location_name = "HOST_PRES_OFFICE",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -220,
+          y = -321
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 221,
+          location_tags = "slum",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -501,
+          y = 115
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 222,
+          location_tags = "slum",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -831,
+          y = 153
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 223,
+          location_name = "",
+          location_tags = "intersection",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -618,
+          y = -203
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 224,
+          location_name = "",
+          location_tags = "intersection",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -687,
+          y = -126
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 225,
+          location_name = "",
+          location_tags = "intersection",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -301,
+          y = -216
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 226,
+          location_name = "",
+          location_tags = "intersection",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -468,
+          y = 285
         }
       },
       name = "PATHS",

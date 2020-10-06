@@ -1,9 +1,9 @@
 require "content/worldregion"
 
 local region = {
-    name = "Murder Bay",
-    plax = "REGION_MURDERBAY1",
-    desc = "This is murder bay after a few years of development.",
+    name = "Pearl-On-Foam",
+    plax = "REGION_DEM_CAPITAL",
+    desc = "The largest city in Havaria, now it is a battleground for political campaigns.",
 
     default_outdoor_location = "MURDER_BAY_ROAD",
 
@@ -16,22 +16,22 @@ local region = {
     },
 
     locations = {
-        "MURDERBAY_NOODLE_SHOP",
-        "NEWDELTREE_OUTFITTERS",
-        "MURDER_BAY_CHEMIST",
-        "GROG_N_DOG",
+        "MURDERBAY_NOODLE_SHOP", -- loc
+        "NEWDELTREE_OUTFITTERS", --
+        "MURDER_BAY_CHEMIST", --
+        "GROG_N_DOG", --
         -- "LIGHTHOUSE",
-        "MURDERBAY_LUMIN_DOCKS",
-        "MURDER_BAY_HARBOUR",
-        "SPREE_INN",
-        "ADMIRALTY_BARRACKS",
-        "MARKET_STALL",
+        "MURDERBAY_LUMIN_DOCKS", --
+        "MURDER_BAY_HARBOUR", --
+        "SPREE_INN", --
+        "ADMIRALTY_BARRACKS", --
+        -- "MARKET_STALL",
 
         "DIPL_PRES_OFFICE",
         "MANI_PRES_OFFICE",
         "HOST_PRES_OFFICE",
         
-        "GRAND_THEATER",
+        "GRAND_THEATER", --
         -- "MURDER_BAY_HESH_OUTPOST",
         -- "MURDER_BAY_RISE_OUTPOST",
     },
