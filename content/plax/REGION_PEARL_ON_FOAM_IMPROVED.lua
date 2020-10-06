@@ -6342,17 +6342,6 @@ return {
           plax_flags = 119,
           x = -519,
           y = -177
-        },
-        {
-          enter_x = 0,
-          enter_y = 0,
-          id = 211,
-          location_name = "PEARL_LUMIN_TANK",
-          location_tags = "",
-          node_type = "LOCATION",
-          plax_flags = 119,
-          x = 545,
-          y = -439
         }
       },
       name = "PATHS",

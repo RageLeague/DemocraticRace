@@ -144,6 +144,9 @@ local function OnLoad( mod )
             end
         end
     end
+
+    print(string.match("C:/Users/adfafaf", "^.+[:]([^/\\].+)$"))
+    print(string.match("DemRace:lalala", "^.+[:]([^/\\].+)$"))
 end
 local function OnPreLoad( mod )
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:localization", "*.po", true )) do
