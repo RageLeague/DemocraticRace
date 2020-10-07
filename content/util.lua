@@ -459,6 +459,17 @@ function DemocracyUtil.IsWorkplace(location)
     return location:GetWorkPosition("foreman") -- all production workplaces has this tag
 end
 
+function DemocracyUtil.PunishTargetCondition(agent)
+    local reasons = {}
+    if agent:GetRelationship() == RELATIONSHIP.HATED then
+        table.insert(reasons, LOC"DEMOCRACY.PUNISH_TARGET_REASON.HATRED")
+    end
+    if AgentUtil.IsCombatTarget(agent) then
+        table.insert(reasons, LOC"DEMOCRACY.PUNISH_TARGET_REASON.QUEST_REQ")
+    end
+    return #reasons > 0, reasons
+end
+
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator

@@ -15,7 +15,13 @@ local function OnLoad( mod )
 
     local FORBIDDEN_CONVO = {
         -- You think you can just provoke anyone and kill them, calling it a day? Of course not.
+        -- Probably also give a provoke, but significantly harder and more restrictive, non-isolated fights,
+        -- and you are still counted as an aggressor.
+        -- On the plus side, you can provoke people with plot armor.
         "HATED_CHAT",
+        -- We write our own drink convo, because free time balancing.
+        -- Also, we might use our demand thing for the "gift" option.
+        "IMPROVE_RELATIONSHIP_CHAT",
     }
     local ACT_DATA = {
         id = "DEMOCRATIC_RACE",

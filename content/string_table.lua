@@ -57,6 +57,11 @@ Content.AddStringTable("DEMOCRACY", {
                 DETAIL_DECREASE = "Your support among the {2#wealth_name} is decreased to {1}.",
             },
         },
+        PUNISH_TARGET_REASON =
+        {
+            HATRED = "you hate this person",
+            QUEST_REQ = "one or more quests require you to punish this person",
+        },
         SUPPORT_ENTRY = 
         {
             FACTION_SUPPORT = "{1#faction}: {2}",

@@ -95,6 +95,20 @@ local QDEF = QuestDef.Define
         -- end
         quest:AssignCastMember("workplace")
     end,
+    events = {
+        agent_retired = function(quest, agent)
+            if agent:IsDead() then
+                quest.param.foreman_dead = true
+                quest.param.sub_optimal = true
+            else
+                quest.param.foreman_retired = true
+            end
+            quest:Complete("punish_foreman")
+            -- if quest:IsActive("punish_foreman") then
+                
+            -- end
+        end,
+    }
 }
 :AddCast{
     cast_id = "worker",
@@ -109,6 +123,7 @@ local QDEF = QuestDef.Define
     title = "Change {foreman}'s heart",
     desc = "Find {foreman} and convince {foreman.himher} to change {foreman.hisher} behaviour.",
     on_complete = function(quest)
+        quest.param.take_your_heart = true
         quest:Activate("tell_news")
     end,
 }
@@ -116,7 +131,9 @@ local QDEF = QuestDef.Define
     id = "punish_foreman",
     title = "Punish {foreman}",
     desc = "Find a way to punish {foreman} with concrete consequences.",
+    combat_targets = {"foreman"},
     on_complete = function(quest)
+        quest.param.punish_foreman = true
         quest:Activate("tell_news")
     end,
 }
@@ -125,6 +142,7 @@ local QDEF = QuestDef.Define
     title = "Organize a strike",
     desc = "Organize a strike at {foreman}'s workplace.",
     on_complete = function(quest)
+        quest.param.organize_strike = true
         quest:Activate("tell_news")
     end,
 }
@@ -133,6 +151,7 @@ local QDEF = QuestDef.Define
     title = "Destroy {foreman}'s reputation.",
     desc = "Find a way to publicly destroy {foreman}'s reputation.",
     on_complete = function(quest)
+        quest.param.destroy_reputation = true
         quest:Activate("tell_news")
     end,
 }
@@ -144,7 +163,7 @@ local QDEF = QuestDef.Define
         local methods = {"take_your_heart", "punish_foreman", "organize_strike", "destroy_reputation"}
         for i, id in ipairs(methods) do
             if quest:IsComplete(id) then
-                quest.param["completed_" .. id] = true
+                -- quest.param["completed_" .. id] = true
             else
                 quest:Cancel(id)
             end
@@ -187,6 +206,44 @@ QDEF:AddConvo("tell_news", "worker")
                         I see that {foreman} is merely another victim of this corrupt system.
                         Thanks for helping us out, {player}. I'm truly grateful.
                 }
+            }
+            {punish_foreman?
+                {foreman_dead?
+                    player:
+                        {foreman}'s dead.
+                        Which I <i>may or may not</> have anything to do with it.
+                    agent:
+                        !sign
+                        I was hoping that this didn't happen.
+                        People are going to ask a lot of questions, and I'm sure if I'll like them.
+                    player:
+                        Well, at least you don't have to worry about {foreman} anymore.
+                    agent:
+                        That's true, at least.
+                }
+                {not foreman_dead and foreman_retired?
+                    player:
+                        !throatcut
+                        I, ah, "retired" {foreman}, if you get what I mean.
+                    agent:
+                        Oh, no. Is {foreman.heshe} dead?
+                    player:
+                        What? No. {foreman.HeShe} simply get discharged.
+                        {foreman.HeShe}'s never going to come back to bother you anymore.
+                    agent:
+                        And why is that different from death?
+                    player:
+                        I mean, you can still feel the lingering effect of {foreman.hisher} bane, but it won't have actual effects on you, because {foreman.heshe} ain't coming back.
+                        You... get what I mean, right?
+                    agent:
+                        !dubious
+                        Sure...?
+                        Thanks, I guess?
+                    player:
+                        !happy
+                        You're welcome.
+                }
+
             }
         ]],
     }
@@ -330,7 +387,7 @@ QDEF:AddConvo("take_your_heart", "foreman")
                         }
                 end
 
-                cxt:Opt("OPT_DEMAND")
+                local opt = cxt:Opt("OPT_DEMAND")
                     :LoopingFn(function(cxt)
                         if cxt:FirstLoop() then
                             if not cxt.quest.param.demands then
@@ -356,6 +413,9 @@ QDEF:AddConvo("take_your_heart", "foreman")
                                 :Dialog("DIALOG_BACK")
                         end
                     end)
+                if cxt.quest.param.probed_info then
+                    opt:PostText("TT_INFO_PROBED")
+                end
 
                 StateGraphUtil.AddBackButton(cxt)
                     :Dialog("DIALOG_BACK")
