@@ -201,12 +201,14 @@ QDEF:AddConvo("take_your_heart", "foreman")
         OPT_CONFRONT = "Confront {agent} about the firing of {worker}",
         DIALOG_CONFRONT = [[
             {first_time?
-                player:
-                    [p] so, i heard you fired {worker}, right?
                 agent:
                     what's it to you?
+                    Oh! Your one of those up n' coming politicians I heard of?
+                    Come to see the system at work?
                 player:
-                    you know, just asking a few things.
+                    Why yes. I'm here to ask you about one of your business decisions.
+                agent:
+                    Ask away. I have nothing to hide.
             }
             {not first_time?
                 player:
@@ -220,19 +222,20 @@ QDEF:AddConvo("take_your_heart", "foreman")
             player:
                 What kind of circumstances leads you to fire {worker}?
             agent:
-                What's it to you?
-            player:
-                You know, just asking...
+                Now that's sensitive information. By corporate law, i'm not allowed to disclose that.
         ]],
         DIALOG_PROBE_SUCCESS = [[
             agent:
                 Fine, I guess I have to tell you.
             {make_example?
-                [p] {worker} is too rebellious! I have to make an example out of {worker.himher} so others don't follow {worker.hisher} lead.
+                I got a lead on that Worker. Turns out {worker.heshe} passes out some of those pamphlets as a side gig.
+                They we're probably churning up a revolution at this very worksite! I had to nip the problem in the bud, otherwise the mob'd have my head!
             }
             {rush_quota?
-                [p] it's not my fault! the higher ups demands progress, so i have to make my workers work harder!
-                i have no other choice!
+                Look, don't tell this to no one, but we we're actually one of the laxer worksites this side of the sea.
+                The Higher Ups looked at my record and didn't like it too much. Told me to step it up, lest I want to work as a janitor in Palketti.
+                So I raised the stakes, and {worker} got upset at that. Started shirking duties for days, instead hanging out with {worker.hisher} buddies.
+                I had to show a little tough love. I hope they'll realize how easy this job was and come back after long enough.
             }
         ]],
         DIALOG_PROBE_NO_INTEL = [[
