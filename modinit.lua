@@ -28,7 +28,7 @@ local function OnLoad( mod )
         colour_text = "0xC3FFBFff",
         colour_background = "0x47FF31ff",
 
-        world_region = "democracy_murder_bay",
+        world_region = "democracy_pearl",
 
         main_quest = "DEMOCRATIC_RACE_MAIN",
         game_type = GAME_TYPE.CAMPAIGN,

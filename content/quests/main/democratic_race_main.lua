@@ -6,6 +6,15 @@ local EVENT = negotiation_defs.EVENT
 local battle_defs = require "battle/battle_defs"
 local BATTLE_EVENT = battle_defs.BATTLE_EVENT
 
+local RISE_DISGUISE_BUILDS = {
+    -- DEFAULT = "LABORER",
+    RISE_REBEL = "LABORER",
+    RISE_REBEL_PROMOTED = "LABORER_PROMOTED",
+    RISE_PAMPHLETEER = "LABORER",
+    RISE_RADICAL = "HEAVY_LABORER",
+
+}
+
 local DAY_SCHEDULE = {
     {quest = "RACE_DAY_1", difficulty = 1},
     {quest = "RACE_DAY_2", difficulty = 2},
@@ -75,21 +84,21 @@ local QDEF = QuestDef.Define
         -- Your support level among wealth levels.(renown levels)
         quest.param.wealth_support = {}
         -- The locations you've unlocked.
-        quest.param.unlocked_locations = --{"MURDERBAY_NOODLE_SHOP"}
-        {
-            "GROG_N_DOG",
-            "ADMIRALTY_BARRACKS",
-            "MURDERBAY_LUMIN_DOCKS",
-            "MURDERBAY_NOODLE_SHOP",
-            "MURDER_BAY_HARBOUR",
-            "LIGHTHOUSE",
-            -- "MARKET_STALL",
-            "GROG_N_DOG",
-            "MURDER_BAY_CHEMIST",
-            "NEWDELTREE_OUTFITTERS",
-            "SPREE_INN",
-            "GRAND_THEATER",
-        }
+        quest.param.unlocked_locations = shallowcopy(Content.GetWorldRegion("democracy_pearl").locations)--{"MURDERBAY_NOODLE_SHOP"}
+        -- {
+        --     "GROG_N_DOG",
+        --     "ADMIRALTY_BARRACKS",
+        --     "MURDERBAY_LUMIN_DOCKS",
+        --     "MURDERBAY_NOODLE_SHOP",
+        --     "MURDER_BAY_HARBOUR",
+        --     "LIGHTHOUSE",
+        --     -- "MARKET_STALL",
+        --     "GROG_N_DOG",
+        --     "MURDER_BAY_CHEMIST",
+        --     "NEWDELTREE_OUTFITTERS",
+        --     "SPREE_INN",
+        --     "GRAND_THEATER",
+        -- }
         
         -- quest.param.free_time_actions = 1
 
@@ -116,6 +125,23 @@ local QDEF = QuestDef.Define
     end,
     events = 
     {
+        agent_location_changed = function(quest, agent, old_loc, new_loc)
+            -- if event == "agent_location_changed" then
+                print("location change triggered")
+                local disguise = RISE_DISGUISE_BUILDS[agent:GetContentID()]
+                if disguise then
+                    print("Has disguise yay!" .. disguise)
+                    if DemocracyUtil.IsWorkplace(new_loc) then
+                        local new_build = Content.GetCharacterDef(disguise).base_builds[agent.gender]
+                        if new_build then
+                            agent:SetBuildOverride(new_build)
+                        end
+                    else
+                        agent:SetBuildOverride()
+                    end
+                end
+            -- end
+        end,
         agent_relationship_changed = function( quest, agent, old_rel, new_rel )
             local support_delta = DELTA_SUPPORT[new_rel] - DELTA_SUPPORT[old_rel]
             if support_delta ~= 0 then

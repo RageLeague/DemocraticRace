@@ -30,7 +30,7 @@ local region = {
 
         -- grout bog location
         "GB_BARON_HQ",
-        "GB_RISE_HQ",
+        "GB_LABOUR_OFFICE",
         "GB_NEUTRAL_BAR",
         "GB_CAFFY",
         "GB_AUTOMECH_FACTORY",
@@ -109,4 +109,4 @@ local region = {
     end,
 }
 
-Content.AddWorldRegion( WorldRegion.Create("democracy_murder_bay", region) )
+Content.AddWorldRegion( WorldRegion.Create("democracy_pearl", region) )

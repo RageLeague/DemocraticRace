@@ -16,6 +16,7 @@ local QDEF = QuestDef.Define
         if agent:GetBrain() and agent:GetBrain():GetWorkPosition() then
             local work_pos = agent:GetBrain():GetWorkPosition()
             if work_pos:IsBoss() and work_pos.id == "foreman" then
+                return true
             end
         end
         return false

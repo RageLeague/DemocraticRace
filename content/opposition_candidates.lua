@@ -2,6 +2,7 @@ return {
     candidate_admiralty = {
         cast_id = "candidate_admiralty",
         character = "MURDER_BAY_ADMIRALTY_CONTACT",
+        workplace = "ADMIRALTY_BARRACKS",
         
         -- main = "Security for all",
         -- desc = "Oolo plans to improve the safety of Havaria by improving the security. Powered by the Admiralty, of course. Popular among middle class who cannot afford private security, not popular among upper class(because of increased tax rate) and lower class.",
@@ -29,6 +30,8 @@ return {
     candidate_spree = {
         cast_id = "candidate_spree",
         character = "MURDER_BAY_BANDIT_CONTACT",
+        workplace = "SPREE_INN",
+
         platform = "INDEPENDENCE",
 
         stances = {
@@ -56,6 +59,8 @@ return {
     candidate_baron = {
         cast_id = "candidate_baron",
         character = "SPARK_CONTACT",
+        workplace = "GB_BARON_HQ",
+
         -- main = "Tax cut",
         -- desc = "Reduce taxes for all. That's it. That's their plan. Fellemo isn't really that bright. Popular among rich people(and some poor people), but unpopular among those who care about equality and those who have plans for utilizing the taxes.",
         platform = "TAX_POLICY",
@@ -83,6 +88,7 @@ return {
     candidate_rise = {
         cast_id = "candidate_rise",
         character = "KALANDRA",
+        workplace = "GB_LABOUR_OFFICE",
         -- main = "Universal Rights",
         -- desc = "Grant rights to every citizen of Havaria, I don't know, read the Declaration of Rights or something. That mostly means slavery is illegal! Popular among the workers, but unpopular among the Cult, Barons, and all those who exploit the labour of the people.",
         platform = "LABOR_LAW",
@@ -108,8 +114,8 @@ return {
     },
     candidate_cult = {
         cast_id = "candidate_cult",
-        -- temp character
         character = "VIXMALLI",
+        workplace = "PEARL_CULT_COMPOUND",
 
         platform = "ARTIFACT_TREATMENT",
 
@@ -136,6 +142,8 @@ return {
         cast_id = "candidate_jakes",
         -- temp character
         character = "ANDWANETTE",
+        workplace = "PEARL_PARTY_STORE",
+
         -- main = "Deregulation",
         -- desc = "Drops many regulation to allow a healthier economy.",
         platform = "SUBSTANCE_REGULATION",

@@ -161,7 +161,7 @@ end
 
 -- The opposite of SupportScore
 function DemocracyUtil.OppositionScore(agent)
-    return -SupportScore(agent)
+    return -DemocracyUtil.SupportScore(agent)
 end
 
 -- Check if an agent is a valid random bystander.
@@ -218,6 +218,30 @@ function DemocracyUtil.AddOppositionCast(qdef)
                 alias = data.character,
                 no_validation = true,
                 on_assign = function(quest, agent)
+                    if agent:GetContentID() == "KALANDRA" then
+                        -- just because lol.
+                        agent:SetBuildOverride("female_foreman_kalandra_build")
+                    end
+                    if data.workplace then
+                        local location = TheGame:GetGameState():GetLocation(data.workplace)
+                        if location then
+                            -- if not location.location_data.work.opposition_candidate then
+                            --     location.location_data.work.opposition_candidate = CreateClosedJob( PHASE_MASK_ALL, "Candidate", CHARACTER_ROLES.CONTACT )
+                            --     location:AddWorkPosition("opposition_candidate")
+                            -- end
+                            local work_position
+                            for id, data in location:WorkPositions() do
+                                if data:GetRole() == CHARACTER_ROLES.CONTACT then
+                                    work_position = id
+                                    break
+                                end
+                            end
+                            if agent:GetBrain():GetWorkPosition() == nil and work_position then
+                                AgentUtil.TakeJob(agent, location, work_position)
+                                -- agent:GetBrain():SetHome(location)
+                            end
+                        end
+                    end
                     AgentUtil.PutAgentInWorld(agent)
                 end,
             }
@@ -429,6 +453,10 @@ function DemocracyUtil.AddDemandConvo(cxt, demand_list, demand_modifiers)
     end
     -- returns whether all demands are resolved.
     return false
+end
+
+function DemocracyUtil.IsWorkplace(location)
+    return location:GetWorkPosition("foreman") -- all production workplaces has this tag
 end
 
 
