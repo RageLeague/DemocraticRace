@@ -202,7 +202,6 @@ QDEF:AddConvo("take_your_heart", "foreman")
         DIALOG_CONFRONT = [[
             {first_time?
                 agent:
-                    what's it to you?
                     Oh! Your one of those up n' coming politicians I heard of?
                     Come to see the system at work?
                 player:
@@ -222,7 +221,7 @@ QDEF:AddConvo("take_your_heart", "foreman")
             player:
                 What kind of circumstances leads you to fire {worker}?
             agent:
-                Now that's sensitive information. By corporate law, i'm not allowed to disclose that.
+                Now that's sensitive information. I don't think I'm allowed to disclose that.
         ]],
         DIALOG_PROBE_SUCCESS = [[
             agent:
