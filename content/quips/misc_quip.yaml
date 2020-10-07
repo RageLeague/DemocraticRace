@@ -160,6 +160,18 @@ lines:
     player:
       !shrug
       Fair enough, thanks for the location.
+- tags: [unlock_location, unlock_tavern]
+  dialog:
+  - |
+    agent:
+      [p] there's a cool bar that i often visit.
+      you should check it out.
+- tags: [unlock_location, unlock_shop]
+  dialog:
+  - |
+    agent:
+      [p] there's a cool shop that i like to visit.
+      check it out!
 
 - tags: [confront_argument]
   dialog:

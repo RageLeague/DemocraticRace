@@ -84,7 +84,8 @@ local QDEF = QuestDef.Define
         -- Your support level among wealth levels.(renown levels)
         quest.param.wealth_support = {}
         -- The locations you've unlocked.
-        quest.param.unlocked_locations = shallowcopy(Content.GetWorldRegion("democracy_pearl").locations)--{"MURDERBAY_NOODLE_SHOP"}
+        quest.param.unlocked_locations = --shallowcopy(Content.GetWorldRegion("democracy_pearl").locations)--{"MURDERBAY_NOODLE_SHOP"}
+        {"MURDERBAY_NOODLE_SHOP", "GROG_N_DOG"}
         -- {
         --     "GROG_N_DOG",
         --     "ADMIRALTY_BARRACKS",

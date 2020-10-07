@@ -140,13 +140,14 @@ local convo = QDEF:AddConvo()
                         
                     end
                     if unlock_location then
-                        if math.random() < 0.5 then
+                        if math.random() < 0.9 then
                             cxt.quest.param.loc_to_unlock = unlock_location
                             cxt:GoTo("STATE_UNLOCK_LOCATION")
                         else
                             doboon(cxt, chosen_boon)
                         end
                     else
+                        print("no more locations to unlock!")
                         doboon(cxt, chosen_boon)
                     end
                     
@@ -167,7 +168,11 @@ convo:State("STATE_UNLOCK_LOCATION")
         -- TT_NEW_LOCATION = "You can now visit this location during your free time.",
     }
     :Fn(function(cxt)
-        cxt:Quip(cxt:GetAgent(), "unlock_location", "unlock_" .. string.lower(cxt.quest.param.loc_to_unlock), cxt.player:GetContentID())
+        local unlock_location = TheGame:GetGameState():GetLocation(cxt.quest.param.loc_to_unlock)
+        local location_tags = unlock_location:FillOutQuipTags()
+        location_tags = table.map(location_tags, function(str) return "unlock_" .. str end)
+        TheGame:GetDebug():CreatePanel(DebugTable(location_tags))
+        cxt:Quip(cxt:GetAgent(), "unlock_location", cxt.player:GetContentID(), table.unpack(location_tags))
         DemocracyUtil.DoLocationUnlock(cxt, cxt.quest.param.loc_to_unlock)
         -- cxt:Opt("OPT_NEW_LOCATION",TheGame:GetGameState():GetLocation(cxt.quest.param.loc_to_unlock))
         --     :Fn(function(cxt)
