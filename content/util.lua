@@ -374,7 +374,7 @@ function DemocracyUtil.CheckHeavyHanded(modifier, card, minigame)
 end
 
 -- returns true if all demands are met. false if not, and also add options to negotiate
-function DemocracyUtil.AddDemandConvo(cxt, demand_list, demand_modifiers)
+function DemocracyUtil.AddDemandConvo(cxt, demand_list, demand_modifiers, block_negotiation)
     local has_unresolved_demand = false
     for i, demand_data in ipairs(demand_list) do
         if not demand_data.resolved then
@@ -385,7 +385,7 @@ function DemocracyUtil.AddDemandConvo(cxt, demand_list, demand_modifiers)
     -- this is done so that for each convo state so that an agent can only be negotiated once. Ever
     -- if you have to do more than one demand convo for a particular state, something's wrong with you.
     local ask_demand_param_id = "ASKED_DEMAND_" .. cxt:GetContentID() .. "_" .. cxt:GetStateID()
-    if not cxt:GetAgent():HasMemory(ask_demand_param_id) then
+    if not cxt:GetAgent():HasMemory(ask_demand_param_id) and not block_negotiation then
         local new_demands = deepcopy(demand_list)
         local original_demands = deepcopy(demand_list)
         cxt:Opt("OPT_NEGOTIATE_TERMS")

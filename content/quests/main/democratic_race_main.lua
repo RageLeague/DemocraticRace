@@ -415,6 +415,13 @@ local QDEF = QuestDef.Define
         end
         return quest.param.stance_change_freebie[issue]
     end,
+
+
+    -- debug functions
+    DebugUnlockAllLocations = function(quest)
+        quest.param.unlocked_locations = shallowcopy(Content.GetWorldRegion("democracy_pearl").locations)
+        print(loc.format("Unlocked all locations ({1} total)", #quest.param.unlocked_locations))
+    end,
 }
 :AddCast{
     cast_id = "random_opposition",

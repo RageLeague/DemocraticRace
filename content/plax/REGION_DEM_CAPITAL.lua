@@ -3270,8 +3270,8 @@ return {
           location_tags = "",
           node_type = "LOCATION",
           plax_flags = 119,
-          x = -800,
-          y = 58
+          x = -826,
+          y = -59
         },
         {
           edges = {
@@ -4657,8 +4657,8 @@ return {
             },
             {
               userdata = {},
-              x = 100.0,
-              y = 203.0
+              x = 117.0,
+              y = 211.0
             },
             {
               userdata = {},
@@ -5607,8 +5607,8 @@ return {
             },
             {
               userdata = {},
-              x = 157.0,
-              y = 161.0
+              x = 166.0,
+              y = 171.0
             },
             {
               userdata = {},
@@ -6152,8 +6152,8 @@ return {
           location_tags = "quarters",
           node_type = "LOCATION",
           plax_flags = 119,
-          x = -567,
-          y = 271
+          x = -497,
+          y = 226
         },
         {
           enter_x = 0,
@@ -6182,8 +6182,8 @@ return {
           location_tags = "quarters",
           node_type = "LOCATION",
           plax_flags = 119,
-          x = -707,
-          y = 134
+          x = -689,
+          y = 151
         },
         {
           enter_x = 0,
@@ -6392,7 +6392,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 219,
+          id = 206,
           location_tags = "slum",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6402,7 +6402,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 220,
+          id = 207,
           location_tags = "slum",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6412,7 +6412,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 206,
+          id = 208,
           location_name = "PEARL_OSHNUDROME",
           location_tags = "",
           node_type = "LOCATION",
@@ -6423,7 +6423,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 207,
+          id = 209,
           location_name = "PEARL_CULT_COMPOUND",
           location_tags = "",
           node_type = "LOCATION",
@@ -6434,29 +6434,29 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 208,
+          id = 210,
           location_name = "MURDERBAY_NOODLE_SHOP",
           location_tags = "",
           node_type = "LOCATION",
           plax_flags = 119,
-          x = -493,
-          y = 233
+          x = -584,
+          y = 270
         },
         {
           enter_x = 0,
           enter_y = 0,
-          id = 209,
+          id = 211,
           location_name = "NEWDELTREE_OUTFITTERS",
           location_tags = "",
           node_type = "LOCATION",
           plax_flags = 119,
-          x = -408,
-          y = -56
+          x = 432,
+          y = -399
         },
         {
           enter_x = 0,
           enter_y = 0,
-          id = 210,
+          id = 212,
           location_name = "MURDER_BAY_CHEMIST",
           location_tags = "",
           node_type = "LOCATION",
@@ -6467,7 +6467,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 211,
+          id = 213,
           location_name = "GROG_N_DOG",
           location_tags = "",
           node_type = "LOCATION",
@@ -6478,7 +6478,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 212,
+          id = 214,
           location_name = "MURDERBAY_LUMIN_DOCKS",
           location_tags = "",
           node_type = "LOCATION",
@@ -6489,7 +6489,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 213,
+          id = 215,
           location_name = "MURDER_BAY_HARBOUR",
           location_tags = "",
           node_type = "LOCATION",
@@ -6500,7 +6500,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 214,
+          id = 216,
           location_name = "SPREE_INN",
           location_tags = "",
           node_type = "LOCATION",
@@ -6511,7 +6511,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 215,
+          id = 217,
           location_name = "GRAND_THEATER",
           location_tags = "",
           node_type = "LOCATION",
@@ -6522,7 +6522,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 216,
+          id = 218,
           location_name = "DIPL_PRES_OFFICE",
           location_tags = "",
           node_type = "LOCATION",
@@ -6533,7 +6533,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 217,
+          id = 219,
           location_name = "MANI_PRES_OFFICE",
           location_tags = "",
           node_type = "LOCATION",
@@ -6544,7 +6544,7 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 218,
+          id = 220,
           location_name = "HOST_PRES_OFFICE",
           location_tags = "",
           node_type = "LOCATION",
@@ -6576,7 +6576,6 @@ return {
           enter_x = 0,
           enter_y = 0,
           id = 223,
-          location_name = "",
           location_tags = "intersection",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6587,7 +6586,6 @@ return {
           enter_x = 0,
           enter_y = 0,
           id = 224,
-          location_name = "",
           location_tags = "intersection",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6598,7 +6596,6 @@ return {
           enter_x = 0,
           enter_y = 0,
           id = 225,
-          location_name = "",
           location_tags = "intersection",
           node_type = "LOCATION",
           plax_flags = 119,
@@ -6609,12 +6606,77 @@ return {
           enter_x = 0,
           enter_y = 0,
           id = 226,
-          location_name = "",
           location_tags = "intersection",
           node_type = "LOCATION",
           plax_flags = 119,
           x = -468,
           y = 285
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 227,
+          location_name = "GB_NEUTRAL_BAR",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -583,
+          y = -8
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 228,
+          location_name = "GB_BARON_HQ",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -355,
+          y = 99
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 229,
+          location_name = "GB_LABOUR_OFFICE",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -531,
+          y = -483
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 230,
+          location_name = "GB_AUTOMECH_FACTORY",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -708,
+          y = 73
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 231,
+          location_name = "GB_CAFFY ",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -459,
+          y = 357
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 232,
+          location_name = "PEARL_FANCY_EATS",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -628,
+          y = -133
         }
       },
       name = "PATHS",

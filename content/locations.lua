@@ -54,10 +54,10 @@ end
 
 Content.AddLocationContent{
     id = "DIPL_PRES_OFFICE",
-    name = "Tesla Co 51th Division",
+    name = "Base of Besla Bo, 51st Biv",
     show_agents = true,
-    plax = "INT_RichHouse_1",
-    desc = "Tends to all your Big Chungus Wholesome 100 needs.",
+    plax = "INT_SB_Res_1",
+    desc = "It's just a room in the Spark Baron Headquarters. The name is made up by the room owner because it sounded hip.",
     icon = engine.asset.Texture("UI/location_grogndog.tex"),
 
     -- faction_id = "JAKES",
@@ -124,10 +124,10 @@ Content.AddLocationContent{
 }
 Content.AddLocationContent{
     id = "HOST_PRES_OFFICE",
-    name = "\"Joker\" Campaign Office",
+    name = "The Crimson Tower",
     show_agents = true,
-    plax = "INT_RichHouse_1",
-    desc = "You know, the trump card. 'cause of Trump. Get it?",
+    plax = "INT_Dem_Hostile_Office",
+    desc = "A lone tower sits on top of a hill. Deliberately chosen by the owner to show off their superiority.",
     icon = engine.asset.Texture("UI/location_grogndog.tex"),
 
     -- faction_id = "JAKES",
@@ -152,7 +152,7 @@ Content.AddLocationContent{
             tags = {"player_room"},
             -- scene_scale = 1.2,
             name = "Office room",
-            plax = "INT_SMITHBAR_BACKROOM",
+            plax = "INT_Neutral_Bar_Backroom",
             desc = "At least it's dry.",
         }
     },

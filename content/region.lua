@@ -29,20 +29,20 @@ local region = {
         -- "MARKET_STALL",
 
         -- grout bog location
-        "GB_BARON_HQ",
-        "GB_LABOUR_OFFICE",
-        "GB_NEUTRAL_BAR",
-        "GB_CAFFY",
+        "GB_BARON_HQ", --
+        "GB_LABOUR_OFFICE", --
+        "GB_NEUTRAL_BAR", --
+        "GB_CAFFY", --
         "GB_AUTOMECH_FACTORY",
 
         -- pearl location
-        "MOREEF_BAR",
-        "PEARL_FANCY_EATS",
-        "PEARL_PARTY_STORE",
-        "PEARL_OSHNUDROME",
-        "PEARL_PARK",
-        "PEARL_CULT_COMPOUND",
-        "CONTRACT_CHAPEL",
+        "MOREEF_BAR", --
+        "PEARL_FANCY_EATS", --
+        "PEARL_PARTY_STORE", --
+        "PEARL_OSHNUDROME", --
+        "PEARL_PARK", --
+        "PEARL_CULT_COMPOUND", --
+        "CONTRACT_CHAPEL", --
 
         -- unique location for mod
         "DIPL_PRES_OFFICE",

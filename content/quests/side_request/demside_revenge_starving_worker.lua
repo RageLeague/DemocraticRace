@@ -226,19 +226,20 @@ QDEF:AddConvo("tell_news", "worker")
                         !throatcut
                         I, ah, "retired" {foreman}, if you get what I mean.
                     agent:
+                        !scared
                         Oh, no. Is {foreman.heshe} dead?
                     player:
                         What? No. {foreman.HeShe} simply get discharged.
                         {foreman.HeShe}'s never going to come back to bother you anymore.
                     agent:
+                        !dubious
                         And why is that different from death?
                     player:
-                        I mean, you can still feel the lingering effect of {foreman.hisher} bane, but it won't have actual effects on you, because {foreman.heshe} ain't coming back.
-                        You... get what I mean, right?
+                        You get to live with the conscience that you never kill {foreman}.
                     agent:
-                        !dubious
-                        Sure...?
-                        Thanks, I guess?
+                        !happy
+                        That makes it way better!
+                        Thanks, {player}!
                     player:
                         !happy
                         You're welcome.
