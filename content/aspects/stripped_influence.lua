@@ -45,8 +45,26 @@ function StrippedInfluence:IsStatusEffect() return false end
 
 function StrippedInfluence:OnTimePass()
     if not self.is_locked and not self.agent:IsRetired() then
-        local delta_stacks = 1--math.random(0, self.stacks)
+        local delta_stacks = math.min(self.stacks, math.random(0, 2))
         self:DeltaStacks(-delta_stacks)
+        if delta_stacks == 0 then
+            self.critical = (self.critical or 1) + 1
+            -- if a person cannot recover for too long(stripped influence failed to decrease too many times)
+            -- they will die, because they cannot pull themselves up together.
+            -- this will be more of a problem if their renown is low or cs is low
+            if self.critical > ((agent:GetRenown() or 1) + agent:GetCombatStrength()) / 2 then
+                local rel = self.agent:GetRelationship()
+                if rel > RELATIONSHIP.NEUTRAL then
+                    TheGame:GetGameState():LogNotification( NOTIFY.FRIEND_KILLED, self.agent ) 
+                elseif rel < RELATIONSHIP.NEUTRAL then
+                    TheGame:GetGameState():LogNotification( NOTIFY.ENEMY_KILLED, self.agent ) 
+                end
+                self.agent:Kill()
+
+            end
+        elseif delta_stacks >= 2 then
+            self.critical = math.max(0, (self.critical or 1) - 1)
+        end
     end
 end
 
@@ -90,26 +108,28 @@ function RelationshipsScreenBoon:init(...)
         :SetGlyphColour( UICOLOURS.PENALTY )
         :Bloom( 0.05 )
     self:Layout()
+
 end
 
 local old_ref_fn = RelationshipsScreenBoon.Refresh
 
 function RelationshipsScreenBoon:Refresh(boon, active, agent)
-    old_ref_fn(self, boon, active, agent)
+    
 
     if boon then
-        if agent:HasAspect("stripped_influence") then
-            self.active_icon:SetShown( false )
-            self.active_label:SetShown( false )
+        if agent and agent:HasAspect("stripped_influence") then
+            old_ref_fn(self, boon, false, agent)
+            -- self.active_icon:SetShown( false )
+            -- self.active_label:SetShown( false )
             self.suppressed_icon:SetShown( active )
             self.suppressed_label:SetShown( active )
-        else
-            self.active_icon:SetShown( active )
-            self.active_label:SetShown( active )
-            self.suppressed_icon:SetShown( false )
-            self.suppressed_label:SetShown( false )
+            return self
         end
     end
+    self.suppressed_icon:SetShown( false )
+    self.suppressed_label:SetShown( false )
+    old_ref_fn(self, boon, active, agent)
+    return self
 end
 
 local old_layout = RelationshipsScreenBoon.Layout
@@ -121,4 +141,5 @@ function RelationshipsScreenBoon:Layout(...)
     if self.suppressed_label then
         self.suppressed_label:LayoutBounds( "right", "center", self.active_label )
     end
+    return self
 end

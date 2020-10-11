@@ -19,7 +19,12 @@ Convo("PROVOKE_DEMOCRACY")
         DIALOG_WIN_NEGOTIATION_FIGHT = [[
             agent:
                 !fight
-                That's it! We're fighting now!
+                You're getting on my nerves, grifter.
+        ]],
+        DIALOG_WIN_NEGOTIATION_FIGHT_PST = [[
+            player:
+                !fight
+                Let's dance, slugsucker!
         ]],
         DIALOG_LOSE_NEGOTIATION = [[
             agent:
@@ -42,6 +47,19 @@ Convo("PROVOKE_DEMOCRACY")
         -- OPT_DEFEND = "Defend yourself!",
         REQ_CAN_NOT_PROVOKE_HIGH_RENOWN = "This person won't fall for your petty attempt at provocation.",
         REQ_CAN_NOT_PROVOKE_THIS_PERSON = "You can't provoke a party member.",
+
+        TT_BACK = "I mean, if you want to back down, sure?",
+        DIALOG_BACK = [[
+            player:
+                Nah, I won't fall for that.
+            agent:
+                !dubious
+                ...
+                !angry
+                What was the point of that, then?
+            * You know what? I was wondering the same thing!
+        ]],
+
     }
 
     :Hub( function(cxt, who)
@@ -71,10 +89,20 @@ Convo("PROVOKE_DEMOCRACY")
                     end,
 
                     on_success = function(cxt, minigame)
+                        -- local loopsound = AUDIO:CreateEventInstance("event:/sfx/ambience/scene/indoor/auction_house_brawl")
+                        -- loopsound:Start()
+                        -- AUDIO:PlayEvent("event:/sfx/ambience/story/auction_luminburst")
+                        local kashio_stinger = "event:/music/pre_kashio_cnv"
+                        cxt.encounter:SetMusicEvent( kashio_stinger )
                         cxt:GetAgent():OpinionEvent(OPINION.TRIED_TO_PROVOKE)
                         cxt:Dialog("DIALOG_WIN_NEGOTIATION_FIGHT")
                         
                         cxt:Opt("OPT_FIGHT")
+                            :Dialog("DIALOG_WIN_NEGOTIATION_FIGHT_PST")
+                            -- :Fn(function()
+                            --     loopsound:Stop()
+                            --     loopsound:Release()
+                            -- end)
                             :Battle{
                                 -- flags = BATTLE_FLAGS.NO_SURRENDER,
                                 on_win = function(cxt) 
@@ -87,6 +115,14 @@ Convo("PROVOKE_DEMOCRACY")
                                 end,
                                 on_runaway = StateGraphUtil.DoRunAway,
                             }
+                        StateGraphUtil.AddBackButton(cxt)
+                            -- :ReqRelationship( RELATIONSHIP.DISLIKED )
+                            :PostText("TT_BACK")
+                            :Dialog("DIALOG_BACK")
+                            -- :Fn(function()
+                            --     loopsound:Stop()
+                            --     loopsound:Release()
+                            -- end)
                     end,
 
                     on_fail = function(cxt)
