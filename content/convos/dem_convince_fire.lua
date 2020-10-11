@@ -175,6 +175,7 @@ Convo("DEM_CONVINCE_FIRE")
                                         agent:GetBrain():GetWorkPosition():Fire()
                                         -- they may or may not find another way to live.
                                         agent:GainAspect("stripped_influence", math.random(2, 4))
+                                        agent:Remember("GOT_FIRED_FROM_JOB", who)
                                         if not IsSlacking(agent) then
                                             agent:GetBrain():MoveToHome()
                                         end

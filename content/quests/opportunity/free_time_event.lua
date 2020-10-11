@@ -86,6 +86,7 @@ local QDEF = QuestDef.Define{
 
     state = QSTATUS.ACTIVE,
     mark = function(quest, t, in_location)
+        print("free time mark evaluated")
         for i, id in ipairs(TheGame:GetGameState():GetMainQuest().param.unlocked_locations) do
             table.insert(t, TheGame:GetGameState():GetLocation(id))
         end

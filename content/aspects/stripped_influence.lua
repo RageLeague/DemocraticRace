@@ -1,4 +1,4 @@
-if rawget(_G, "Aspect") and Aspect.SocialGraftSuppressor then
+if rawget(_G, "Aspect") and Aspect.StrippedInfluence then
     return
 end
 -- in case other mods want this

@@ -13,9 +13,17 @@ local QDEF = QuestDef.Define
         local motivation = {"make_example", "rush_quota"}
         local id = table.arraypick(motivation)
         quest.param[id] = true
+        -- this is a fallback if an opinion isn't assigned already
+        local op_reason = quest:GetCastMember("worker").social_connections:GetRelationshipReason(quest:GetCastMember("foreman"))
+        if not( op_reason and op_reason.id == OPINION.GOT_FIRED.id ) then
+            quest:GetCastMember("worker"):OpinionEvent(OPINION.GOT_FIRED, nil, quest:GetCastMember("foreman"))
+        end
     end,
     on_start = function(quest)
         quest:Activate("take_your_heart")
+        quest:Activate("punish_foreman")
+        quest:Activate("organize_strike")
+        quest:Activate("visit_workplace")
     end,
     on_complete = function(quest)
         if not (quest.param.sub_optimal or quest.param.poor_performance) then
@@ -85,6 +93,7 @@ local QDEF = QuestDef.Define
 :AddCast{
     cast_id = "foreman",
     no_validation = true,
+    unimportant = true,
     cast_fn = function(quest, t)
         table.insert( t, quest:CreateSkinnedAgent( "FOREMAN" ) )
     end,
@@ -108,14 +117,47 @@ local QDEF = QuestDef.Define
                 
             -- end
         end,
+        aspects_changed = function( quest, agent, added, aspect )
+            if added then 
+                -- if is_instance( aspect, Aspect.Intimidated ) then
+                --     quest.param.beat_up = true
+                --     quest:Complete("punish_foreman")
+                -- end
+                if is_instance( aspect, Aspect.StrippedInfluence ) then
+                    quest.param.stripped_influence = true
+                    if agent:HasMemory("GOT_FIRED_FROM_JOB") then
+                        quest.param.fired_from_job = true
+                    end
+                    quest:Complete("punish_foreman")
+                end
+            end
+
+        end
     }
 }
 :AddCast{
     cast_id = "worker",
     no_validation = true,
     provider = true,
+    unimportant = true,
     cast_fn = function(quest, t)
         table.insert( t, quest:CreateSkinnedAgent( "LABORER" ) )
+    end,
+}
+:AddObjective{
+    id = "visit_workplace",
+    title = "Visit the workplace",
+    desc = "{foreman} works at {workplace#location}. If you want to find {foreman.himher}, you should look here.",
+    mark = function(quest, t, in_location)
+        -- print("workplace mark evaluated")
+        -- print(DemocracyUtil.IsFreeTimeActive())
+        if in_location then
+            table.insert(t, quest:GetCastMember("foreman"))
+        end
+        if DemocracyUtil.IsFreeTimeActive() then
+            table.insert(t, quest:GetCastMember("workplace"))
+            -- print("inserted workplace")
+        end
     end,
 }
 :AddObjective{
@@ -136,6 +178,16 @@ local QDEF = QuestDef.Define
         quest.param.punish_foreman = true
         quest:Activate("tell_news")
     end,
+    events = {
+        resolve_battle = function(quest, battle, primary_enemy, repercussions )
+            if battle.result == BATTLE_RESULT.WON then
+                if battle:GetEnemyTeam():GetFighterForAgent(quest:GetCastMember("foreman")) then
+                    quest.param.beat_up_primary = primary_enemy == quest:GetCastMember("foreman")
+                end
+                quest.param.beat_up = true
+            end
+        end,
+    },
 }
 :AddObjective{
     id = "organize_strike",
@@ -147,20 +199,11 @@ local QDEF = QuestDef.Define
     end,
 }
 :AddObjective{
-    id = "destroy_reputation",
-    title = "Destroy {foreman}'s reputation.",
-    desc = "Find a way to publicly destroy {foreman}'s reputation.",
-    on_complete = function(quest)
-        quest.param.destroy_reputation = true
-        quest:Activate("tell_news")
-    end,
-}
-:AddObjective{
     id = "tell_news",
     title = "Tell {worker} about the news.",
     desc = "When you have time to find {worker}, tell {worker.himher} about what you did.",
     on_activate = function(quest)
-        local methods = {"take_your_heart", "punish_foreman", "organize_strike", "destroy_reputation"}
+        local methods = {"take_your_heart", "punish_foreman", "organize_strike", "visit_workplace"}
         for i, id in ipairs(methods) do
             if quest:IsComplete(id) then
                 -- quest.param["completed_" .. id] = true
@@ -170,7 +213,7 @@ local QDEF = QuestDef.Define
         end
     end,
     mark = function(quest, t, in_location)
-        if DemocracyUtil.IsFreeTimeActive() then
+        if in_location or DemocracyUtil.IsFreeTimeActive() then
             table.insert(t, quest:GetCastMember("worker"))
         end
     end,
@@ -244,7 +287,24 @@ QDEF:AddConvo("tell_news", "worker")
                         !happy
                         You're welcome.
                 }
-
+                {not foreman_dead and beat_up?
+                    player:
+                        I beat {foreman.himher} up.
+                    agent:
+                        That seems a bit aggressive. Did you make sure {foreman.heshe} got the message?
+                    player:
+                        Yeah, definitely.
+                    agent:
+                        $scaredFearful
+                        You didn't kill {foreman.himher}, right?
+                    player:
+                        !handwave
+                        Nah.
+                    agent:
+                        Well, in that case, everything worked out fine.
+                        Thank you for what you did for me.
+                        I am truly grateful.
+                }
             }
         ]],
     }
@@ -422,3 +482,74 @@ QDEF:AddConvo("take_your_heart", "foreman")
                     :Dialog("DIALOG_BACK")
             end)
     end)
+QDEF:AddConvo("punish_foreman")
+    :Priority(CONVO_PRIORITY_LOW)
+    :Confront(function(cxt)
+        if cxt.quest.param.beat_up and not cxt.quest:GetCastMember("foreman"):IsDead()
+            and cxt.quest:GetCastMember("foreman"):GetLocation() == cxt.location then
+            
+            return "STATE_BEAT_UP"
+        end
+    end)
+    :State("STATE_BEAT_UP")
+        :Loc{
+            DIALOG_FOLLOWUP = [[
+                {beat_up_primary?
+                    foreman:
+                        !right
+                        !injured
+                    player:
+                        !left
+                        !angry
+                        By the way, {foreman}.
+                }
+                {not beat_up_primary?
+                    player:
+                        !left
+                        !angry
+                        I'm not done yet.
+                        !angry_accuse
+                        {foreman}!
+                    foreman:
+                        !right
+                        !injured
+                        What?
+                    player:
+                }
+                    Maybe start treating your workers better.
+                    You don't want to be the enemy of the people.
+                    !cruel
+                    Consider this a warning.
+                foreman:
+                    I guess {worker} is still mad that I fired {worker.himher}, huh?
+                {make_example?
+                    !angry_accuse
+                    That rebellious rat.
+                    Perhaps firing {worker.himher} isn't enough.
+                player:
+                    !angry
+                    I would be careful of what I'm saying if I were you, {foreman}.
+                    The tables have turned, in case you haven't noticed.
+                }
+                {rush_quota?
+                    !angry_shrug
+                    What am I supposed to do? <i>Not</> giving {worker.himher} extra work?
+                    The higher ups will kill me if I don't report any progress.
+                player:
+                    !crossed
+                    The <i>Rise</> will kill you if you treat the workers badly.
+                    But I'm not the Rise, so I have no intention of killing you.
+                }
+                foreman:
+                    I get your point.
+                    I'll leave you and {worker} alone.
+                    But I won't forget this.
+                    !exit
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt.quest:Complete("punish_foreman")
+            -- just in case. you did get info from the foreman.
+            cxt.quest.param.probed_info = true
+            cxt:Dialog("DIALOG_FOLLOWUP")
+        end)

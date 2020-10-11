@@ -8,6 +8,7 @@ local QDEF = QuestDef.Define
         quest.param.wants_job = math.random() > .5
         quest.param.request_quest, quest.param.traced_q = QuestUtil.SpawnInactiveQuest("DEMSIDE_REVENGE_STARVING_WORKER",
             {cast = {worker = quest:GetCastMember("worker"), foreman = quest:GetCastMember("foreman")}})
+        quest:GetCastMember("worker"):OpinionEvent(OPINION.GOT_FIRED, nil, quest:GetCastMember("foreman"))
     end,
 }
 :AddCast{
