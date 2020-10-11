@@ -1,4 +1,4 @@
-return {
+local t = {
     candidate_admiralty = {
         cast_id = "candidate_admiralty",
         character = "MURDER_BAY_ADMIRALTY_CONTACT",
@@ -168,3 +168,9 @@ return {
         },
     },
 }
+for id, data in pairs(t) do
+    if not data.cast_id then
+        data.cast_id = id
+    end
+end
+return t

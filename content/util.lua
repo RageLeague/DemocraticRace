@@ -1,6 +1,14 @@
 local DemocracyUtil = class("DemocracyUtil")
 
-
+-- if access an invalid val, look for the main quest and return a val if you can
+function DemocracyUtil:__index(k)
+    if TheGame:GetGameState() and TheGame:GetGameState():GetMainQuest() then
+        local quest = TheGame:GetGameState():GetMainQuest():GetQuestDef()
+        if quest and quest[k] and type(quest[k]) == "function" then
+            return quest[k]
+        end
+    end
+end
 
 -- Defines the advisors and their character alias.
 DemocracyUtil.ADVISOR_IDS = {
@@ -175,7 +183,8 @@ function DemocracyUtil.RandomBystanderCondition(agent)
 end
 
 function DemocracyUtil.CanVote(agent)
-    return not agent:IsRetired() and agent:IsSentient()
+    -- non-citizens can't vote
+    return agent and not agent:IsRetired() and agent:IsSentient() and agent:GetFactionID() ~= "RENTORIAN"
 end
 
 -- Do the convo for unlocking a location.
@@ -470,6 +479,19 @@ function DemocracyUtil.PunishTargetCondition(agent)
     return #reasons > 0, reasons
 end
 
+function DemocracyUtil.GetOppositionID(agent)
+    for id, data in pairs(DemocracyConstants.opposition_data) do
+        if data.character and data.character == agent:GetContentID() then
+            return id
+        end
+    end
+    return nil
+end
+function DemocracyUtil.GetOppositionData(agent)
+    local opid = DemocracyUtil.GetOppositionID(agent)
+    if opid then return DemocracyConstants.opposition_data[opid] end
+    return nil
+end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator

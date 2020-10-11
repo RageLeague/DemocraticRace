@@ -58,6 +58,13 @@ function IssueLocDef:GetAgentStanceIndex(agent)
     if agent:IsPlayer() then
         return DemocracyUtil.TryMainQuestFn("GetStance", self)
     end
+    -- oppositions have their unique stances defined
+    local opdata = DemocracyUtil.GetOppositionData(agent)
+    if opdata and opdata.stances and opdata.stances[self.id] then
+        return opdata.stances[self.id]
+    end
+
+
     local stance_score = {}
     local has_vals = false
     for id, data in pairs(self.stances) do
@@ -69,7 +76,22 @@ function IssueLocDef:GetAgentStanceIndex(agent)
         
     end
     if has_vals then
-        return weightedpick(stance_score)
+        -- we want an agent's stance to be consistent throughout a playthough
+        local val = agent:CalculateProperty(self.id, function(agent)
+            local total = 0
+            for id, data in pairs(stance_score) do
+                total = total + data
+            end
+            local chosen_val = math.random() * total
+            for i = -2, 2 do
+                total = total - stance_score[i]
+                if total <= 0 then
+                    return i
+                end
+            end
+            assert(false, "we screwed up with weighted rng")
+        end)
+        return val
     else
         return 0
     end
