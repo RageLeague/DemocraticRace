@@ -51,6 +51,7 @@ local MODIFIERS =
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
                 if minigame:GetTurns() >= (self.stacks or 1) then
                     minigame:Win()
+                    minigame.impasse = true
                 end
                 
             end,

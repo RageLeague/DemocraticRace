@@ -45,7 +45,7 @@ function StrippedInfluence:IsStatusEffect() return false end
 
 function StrippedInfluence:OnTimePass()
     if not self.is_locked and not self.agent:IsRetired() then
-        local delta_stacks = math.random(0, self.stacks)
+        local delta_stacks = 1--math.random(0, self.stacks)
         self:DeltaStacks(-delta_stacks)
     end
 end
@@ -66,6 +66,7 @@ end
 
 function StrippedInfluence:OnGlobalEvent(eventname, ...)
     if eventname == "agent_relationship_changed" then
+        local agent, old_rel, new_rel = ...
         TheGame:GetGameState():GetPlayerAgent().graft_owner:RemoveSocialGraft(agent)
     end
 end

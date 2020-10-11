@@ -402,7 +402,7 @@ QDEF:AddConvo("debate_people")
                     end,
                     on_success = function(cxt, minigame) 
                         
-                        if (minigame.opponent_negotiator:GetModifierStacks("IMPATIENCE") or 0) >= 1 then
+                        if minigame.impasse then
                             if cxt:GetAgent():HasAspect("bribed") then
                                 cxt:Dialog("DIALOG_DEBATE_IMPASSE_BRIBED")
                             else
