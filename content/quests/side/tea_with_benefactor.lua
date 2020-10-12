@@ -12,20 +12,20 @@ local SIGNATURE_ARGUMENT = {
     PRIEST = "prayer_of_hesh", -- why this is lower case, i have no idea
 }
 
-local LOCATION_DEF =
-{
-    id = "TEAHOUSE",
-    name = "Dallie's Teahouse",
-    desc = " [p] A small establishment with delicious tea and high concentration of influencieal individuals.",
-    -- icon = engine.asset.Texture("icons/quests/at_the_crossroad.tex"),
-    map_tags = {"residence"},
-    plax = "INT_RichHouse_1",
-    indoors = true,
-    show_agents= true,
-}
-if not Content.GetLocationContent(LOCATION_DEF.id) then
-    Content.AddLocationContent(LOCATION_DEF)
-end
+-- local LOCATION_DEF =
+-- {
+--     id = "TEAHOUSE",
+--     name = "Dallie's Teahouse",
+--     desc = " [p] A small establishment with delicious tea and high concentration of influencieal individuals.",
+--     -- icon = engine.asset.Texture("icons/quests/at_the_crossroad.tex"),
+--     map_tags = {"residence"},
+--     plax = "INT_RichHouse_1",
+--     indoors = true,
+--     show_agents= true,
+-- }
+-- if not Content.GetLocationContent(LOCATION_DEF.id) then
+--     Content.AddLocationContent(LOCATION_DEF)
+-- end
 
 local score_fn = function(agent, quest)
     local score = DemocracyUtil.OppositionScore(agent)
@@ -80,6 +80,8 @@ local BENEFACTOR_BEHAVIOR = {
 
 	end,
 }
+local FOLLOWUP
+
 local QDEF = QuestDef.Define
 {
     title = "Tea with a benefactor",
@@ -91,7 +93,9 @@ local QDEF = QuestDef.Define
     tags = {"RALLY_JOB"},
     reward_mod = 0,
     extra_reward = false,
-
+    precondition = function(quest)
+        return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and true or false
+    end,
     on_init = function(quest)
         -- quest.param.debated_people = 0
         -- quest.param.crowd = {}
@@ -99,18 +103,13 @@ local QDEF = QuestDef.Define
         -- quest.param.unconvinced_people = {}
     end,
     on_start = function(quest)
-        quest:Activate("go_to_teahouse")
+        quest:Activate("go_to_diner")
     end,
     -- icon = engine.asset.Texture("icons/quests/bounty_hunt.tex"),
 
-    on_destroy = function( quest )
-        if quest:GetCastMember("teahouse") then
-            TheGame:GetGameState():MarkLocationForDeletion(quest:GetCastMember("teahouse"))
-        end
-        for i, agent in ipairs( quest.param.crowd ) do
-            agent:RemoveAspect("bribed")
-        end
-    end,
+    -- on_destroy = function( quest )
+        
+    -- end,
     on_complete = function( quest )
         DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 4 )
     end,
@@ -119,33 +118,37 @@ local QDEF = QuestDef.Define
     end,
 }
 :AddLocationCast{
-    cast_id = "teahouse",
-    when = QWHEN.MANUAL,
-    no_validation = true,
-}
-:AddObjective{
-    id = "go_to_teahouse",
-    title = "Go to {teahouse#location}",
-    desc = "Go to {teahouse#location} to meet the benefactor.",
-    mark = { "teahouse" },
-    state = QSTATUS.ACTIVE,
-    
-    on_activate = function( quest)
-        local location = Location( LOCATION_DEF.id )
-        assert(location)
-        TheGame:GetGameState():AddLocation(location)
-        quest:AssignCastMember("teahouse", location )
+    cast_id = "diner",
+    -- when = QWHEN.MANUAL,
+    -- no_validation = true,
+    condition = function(location, quest)
+        local allowed_locations = {"PEARL_FANCY_EATS"}
+        return table.arraycontains(allowed_locations, location:GetContentID())
     end,
 }
 :AddObjective{
-    id = "secure_funding",
-    title = "Secure Funding",
-    desc = "Persuade the benefactor into financing your campaign."
+    id = "go_to_diner",
+    title = "Go to {diner#location}",
+    desc = "Go to {diner#location} to meet the benefactor.",
+    mark = { "benefactor" },
+    state = QSTATUS.ACTIVE,
+    
+    on_activate = function( quest)
+        -- local location = Location( LOCATION_DEF.id )
+        -- assert(location)
+        -- TheGame:GetGameState():AddLocation(location)
+        -- quest:AssignCastMember("diner", location )
+    end,
 }
+-- :AddObjective{
+--     id = "secure_funding",
+--     title = "Secure Funding",
+--     desc = "Persuade the benefactor into financing your campaign.",
+-- }
 :AddCast{
     cast_id = "benefactor",
-    when = QWHEN.MANUAL,
-    no_validation = true,
+    -- when = QWHEN.MANUAL,
+    -- no_validation = true,
     condition = function(agent, quest)
         return BENEFACTOR_DEFS[agent:GetContentID()] ~= nil -- might generalize it later
     end,
@@ -186,88 +189,120 @@ local QDEF = QuestDef.Define
         txt = "Skeptical about your leadership abilities.",
     },
 }
-DemocracyUtil.AddPrimaryAdvisor(QDEF)
+DemocracyUtil.AddPrimaryAdvisor(QDEF, true) -- make primary advisor mandatory because that's how you get that info
 
-QDEF:AddConvo("go_to_teahouse")
+QDEF:AddConvo("go_to_diner")
     
     :Confront(function(cxt)
-        if cxt.location == cxt.quest:GetCastMember("teahouse") then
+        if cxt.location == cxt.quest:GetCastMember("diner") and not cxt.quest.param.visited_diner then
             return "STATE_INTRO"
         end
     end)
     :State("STATE_INTRO")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] You arrive at the teahouse looking for the benefactor.
-                * [p] One person watches you intensly and points to an empty chair.
+                * You arrive at the diner looking for the benefactor.
+                * One person watches you intensly and points to an empty chair.
             ]],
-            OPT_PREACH = "Sit Down",
-            REASON_PREACH = "Secure as much shills as you can!",
             
-            DIALOG_BENEFACTOR_CONVINCED = [[
-                * [p] You have secured additional financial support.
-            ]],
-            DIALOG_BENEFACTOR_UNCONVINCED = [[
-                * [p] You have successfuly snuffed out any interest that may have been there.
-            ]],
         }
         :Fn(function(cxt)
-            cxt.quest.param.crowd = {}
-            local present_people = 3
-            for i = 1, present_people do
-                cxt.quest:AssignCastMember("benefactor")
-                cxt.quest:GetCastMember("benefactor"):MoveToLocation(cxt.location)
-                table.insert(cxt.quest.param.crowd, cxt.quest:GetCastMember("benefactor"))
-                cxt.quest:UnassignCastMember("benefactor")
-            end
+
             cxt:Dialog("DIALOG_INTRO")
-            cxt.quest:Complete("go_to_teahouse")
-            cxt.quest:Activate("secure_funding")
-            cxt.enc:SetPrimaryCast(cxt.quest.param.crowd[1])
-            cxt:GetAgent().temp_negotiation_behaviour = BENEFACTOR_BEHAVIOR
-            BENEFACTOR_BEHAVIOR.agents = cxt.quest.param.crowd
-
-            local postProcessingSuccessFn = function(cxt, minigame)
-                cxt.caravan:AddMoney( minigame:GetPlayerNegotiator():GetModifierStacks( "SECURED_INVESTEMENTS" ) )
-                cxt.quest.param.crowd[1]:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("convinced_benefactor"))
-
-                cxt:Dialog("DIALOG_BENEFACTOR_CONVINCED")
-                cxt.quest.param.good_performance = true
-                cxt.quest:Complete()
-                ConvoUtil.GiveQuestRewards(cxt)
-            end
-
-            local postProcessingFailFn = function(cxt, minigame)
-                cxt.quest.param.crowd[1]:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("disappointed_benefactor"))
-
-                cxt.quest.param.good_performance = false
-                cxt:Dialog("DIALOG_BENEFACTOR_UNCONVINCED")
-                cxt.quest:Fail()
-                end
-
-            cxt:Opt("OPT_PREACH")
-                :Negotiation{
-                    flags = NEGOTIATION_FLAGS.NO_BYSTANDERS,
-                    reason_fn = function(minigame)
-                        return cxt:GetLocString("REASON_PREACH")
-                    end,
-
-                    on_start_negotiation = function(minigame)
-                        minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 5)
-                        minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 10)
-                        minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 20)
-                    end,
-
-                    on_success = postProcessingSuccessFn,
-                    on_fail = postProcessingFailFn,
-                }
+            cxt.quest.param.visited_diner = true
+            
         end)
+QDEF:AddConvo("go_to_diner", "benefactor")
+    :Loc{
+        OPT_TALK = "Start the meeting",
+        DIALOG_TALK = [[
+            player:
+                [p] Alright, what do you want?
+            agent:
+                I am considering funding your campaign...
+        ]],
 
+        REASON_TALK = "Secure as much shills as you can!",
+            
+        DIALOG_BENEFACTOR_CONVINCED = [[
+            agent:
+                You look promising.
+                I can provide {funds#money} for your campaign.
+            player:
+                Thanks.
+            * [p] You have secured additional financial support.
+        ]],
+        DIALOG_BENEFACTOR_POOR = [[
+            agent:
+                [p] Unfortunately, I am not thoroughly convinced.
+                I can only provide {funds#money} for you.
+            player:
+                I guess this is better than nothing.
+            * You have secured a bit of financial support, though it could be a lot better.
+        ]],
+        DIALOG_BENEFACTOR_UNCONVINCED = [[
+            * [p] You have successfuly snuffed out any interest that may have been there.
+        ]],
+
+        DIALOG_REGULAR_FUNDING = [[
+            agent:
+                [p] Since I like you, I will provide additional funding for you each morning.
+                I'll give you half of what I gave you today every morning, as long as I am happy.
+            player:
+                Okay, thanks.
+        ]],
+    }
+    :Hub(function(cxt)
+        -- cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("benefactor"))
+        cxt:Opt("OPT_TALK")
+            :SetQuestMark(cxt.quest)
+            :Dialog("DIALOG_TALK")
+            :Fn(function(cxt)
+                cxt:GetAgent().temp_negotiation_behaviour = BENEFACTOR_BEHAVIOR
+            end)
+            :Negotiation{
+                flags = NEGOTIATION_FLAGS.NO_BYSTANDERS,
+                reason_fn = function(minigame)
+                    return cxt:GetLocString("REASON_TALK")
+                end,
+
+                on_start_negotiation = function(minigame)
+                    -- just so you get at least something on win instead of nothing.
+                    minigame.player_negotiator:CreateModifier("SECURED_INVESTEMENTS", 5)
+                    minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 5)
+                    minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 10)
+                    minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 20)
+                end,
+
+                on_success = function(cxt, minigame)
+                    cxt.quest.param.funds = minigame:GetPlayerNegotiator():GetModifierStacks( "SECURED_INVESTEMENTS" )
+                    cxt.quest.param.poor_performance = cxt.quest.param.funds < 20 + 10 * cxt.quest:GetRank()
+                    if cxt.quest.param.poor_performance then
+                        cxt:Dialog("DIALOG_BENEFACTOR_POOR")
+                    else
+                        cxt:Dialog("DIALOG_BENEFACTOR_CONVINCED")
+                    end
+                    cxt.enc:GainMoney( cxt.quest.param.funds )
+                    cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("convinced_benefactor"))
+                    cxt.quest:Complete()
+                    ConvoUtil.GiveQuestRewards(cxt)
+                    if not cxt.quest.param.poor_performance and cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL then
+                        cxt:Dialog("DIALOG_REGULAR_FUNDING")
+                        cxt.quest:SpawnFollowQuest(FOLLOWUP.id)
+                    end
+                end,
+                on_fail = function(cxt, minigame)
+                    cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("disappointed_benefactor"))
+                    cxt:Dialog("DIALOG_BENEFACTOR_UNCONVINCED")
+                    cxt.quest:Fail()
+                end,
+            }
+    end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :Loc{
         DIALOG_INTRO = [[
                 * [p] A runner brought you a letter along with an invitation.
-                * [p] It reads: Meet me in Dallie's Teahouse, I can make it worth your time.
+                * [p] It reads: Meet me in {diner#location}, I can make it worth your time.
         ]],
     }
     :State("START")
@@ -298,4 +333,58 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
+        end)
+
+
+
+
+FOLLOWUP = QDEF:AddFollowup()
+
+FOLLOWUP:AddObjective{
+    id = "wait",
+    state = QSTATUS.ACTIVE,
+    events = {
+        do_sleep = function(quest)
+            quest.param.ready = true
+        end,
+        morning_mail = function(quest, cxt)
+            if quest.param.ready then
+                quest.param.ready = false
+                cxt:PlayQuestConvo( quest, "MorningMail" )
+            end
+        end,
+    }
+}
+
+FOLLOWUP.on_init = function(quest)
+    quest.param.regular_funds = math.floor(quest.param.funds / 2)
+    quest:UnassignCastMember("diner")
+end
+
+FOLLOWUP:AddConvo(nil, nil, "MorningMail")
+    :Loc{
+        DIALOG_GOOD = [[
+            * You received a mail in the morning.
+            * It contains {regular_funds#money} and a message:
+            * Here's your funding for the day. Keep up the good work!
+            * Signed, {benefactor}.
+        ]],
+        DIALOG_BAD = [[
+            * You received a mail in the morning.
+            * It contains {regular_funds#money} and a message:
+            * Due to your failing as a politician, I shall now stop funding your campaign.
+            * This is the final money I will send you. After this, you will get nothing.
+            * Signed, {benefactor}.
+        ]]
+    }
+    :State("START")
+        :Fn(function(cxt)
+            if cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL then
+                cxt:Dialog("DIALOG_GOOD")
+                cxt.enc:GainMoney( cxt.quest.param.regular_funds )
+            else
+                cxt:Dialog("DIALOG_BAD")
+                cxt.enc:GainMoney( cxt.quest.param.regular_funds )
+                cxt.quest:Cancel()
+            end
         end)

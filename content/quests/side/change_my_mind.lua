@@ -394,7 +394,7 @@ QDEF:AddConvo("debate_people")
                     },
 
                     on_start_negotiation = function(minigame)
-                        minigame.player_negotiator:AddModifier("PLAYER_ADVANTAGE", 7)
+                        minigame.player_negotiator:AddModifier("PLAYER_ADVANTAGE", math.max(5, 7 - math.floor(cxt.quest:GetRank() / 2)))
                         if cxt.quest.param.debated_people >= 2 then
                             minigame.player_negotiator:AddModifier("FATIGUED")
                         end

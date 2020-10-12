@@ -35,6 +35,26 @@ local function CreateNewSelfMod(self)
         end
     end
 end
+local function CalculateBonusScale(self)
+    if self.bonus_scale and type(self.bonus_scale) == "table" then
+        if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+            return self.bonus_scale[ 
+                math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
+                #self.bonus_scale) 
+            ]
+        else
+            return self.bonus_scale[1]
+        end
+    end
+    return self.bonus_per_generation
+end
+local function MyriadInit(self)
+    self.bonus_per_generation = CalculateBonusScale(self)
+    if self.generation and self.generation > 0 then
+        self.init_max_resolve = self.init_max_resolve + self.bonus_per_generation
+    end
+    self:SetResolve(self.init_max_resolve)
+end
 
 local MODIFIERS =
 {
@@ -274,7 +294,7 @@ local MODIFIERS =
         -- Me wall of text
         desc = "Reach {1} stacks for the help to be sent. <#PENALTY>The opponent will also "..
             "gain 1 {IMPATIENCE} when that happens.</>\n\n"..
-            "The opponent must target this argument before anything else.\n\n"..
+            "Gain 1 stack at the beginning of each turn.\n\n"..
             "<#PENALTY>If this gets destroyed, the opponent gains 1 {IMPATIENCE}, and you need to play "..
             "Call For Help again!</>",
         
@@ -292,23 +312,23 @@ local MODIFIERS =
         max_resolve = 3,
         max_stacks = 10,
 
-        force_target = true,
+        -- force_target = true,
 
         -- OnInit = function(self)
             
         -- end,
 
-        CanPlayCard = function( self, source, engine, target )
-            if source:IsAttack() and target:GetNegotiator() == self.negotiator then
-                if source.modifier_type == MODIFIER_TYPE.INCEPTION or source:GetNegotiator() ~= self.negotiator then
-                    if not target.force_target then
-                        return false, loc.format( "Must target <b>{1}</b>", self:GetName() )
-                    end
-                end
-            end
+        -- CanPlayCard = function( self, source, engine, target )
+        --     if source:IsAttack() and target:GetNegotiator() == self.negotiator then
+        --         if source.modifier_type == MODIFIER_TYPE.INCEPTION or source:GetNegotiator() ~= self.negotiator then
+        --             if not target.force_target then
+        --                 return false, loc.format( "Must target <b>{1}</b>", self:GetName() )
+        --             end
+        --         end
+        --     end
 
-            return true
-        end,
+        --     return true
+        -- end,
 
         CleanUpCard = function(self, card_id)
             local to_expend = {}
@@ -345,7 +365,7 @@ local MODIFIERS =
                 self.engine:DealCard(card, self.engine:GetDiscardDeck())
             end
 
-            self:CleanUpCard("assassin_fight_describe_information")
+            -- self:CleanUpCard("assassin_fight_describe_information")
         end,
         event_handlers =
         {
@@ -355,16 +375,19 @@ local MODIFIERS =
                         self.negotiator:RemoveModifier(self)
                         return
                     end
-                    local has_card = false
-                    for k,v in pairs(self.engine:GetHandDeck().cards) do
-                        if v.id == "assassin_fight_describe_information" then
-                            has_card = true
-                        end
-                    end
-                    if not has_card then
-                        self.engine:InsertCard(Negotiation.Card( "assassin_fight_describe_information", self.engine:GetPlayer() ))
-                    end
+                    -- local has_card = false
+                    -- for k,v in pairs(self.engine:GetHandDeck().cards) do
+                    --     if v.id == "assassin_fight_describe_information" then
+                    --         has_card = true
+                    --     end
+                    -- end
+                    -- if not has_card then
+                    --     self.engine:InsertCard(Negotiation.Card( "assassin_fight_describe_information", self.engine:GetPlayer() ))
+                    -- end
                 end
+            end,
+            [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
+                self.negotiator:AddModifier(self, 1, self)
             end,
             [ EVENT.MODIFIER_CHANGED ] = function( self, modifier, delta, clone )
                 if modifier == self and modifier.stacks >= self.calls_required then
@@ -374,7 +397,7 @@ local MODIFIERS =
                     
                     self.negotiator:RemoveModifier(self)
                     self.anti_negotiator:AddModifier("IMPATIENCE", 1)
-                    self:CleanUpCard("assassin_fight_describe_information")
+                    -- self:CleanUpCard("assassin_fight_describe_information")
                 end
             end,
         },
@@ -409,20 +432,18 @@ local MODIFIERS =
         desc = "{MYRIAD_MODIFIER {2}}.\nWhen destroyed, {1} loses 1 {IMPATIENCE} if able.",
         
         modifier_type = MODIFIER_TYPE.BOUNTY,
-        init_max_resolve = 8,
+        init_max_resolve = 10,
 
         bonus_per_generation = 2,
+        bonus_scale = {2, 3, 4},
 
         generation = 0,
 
         desc_fn = function(self, fmt_str)
             return loc.format( fmt_str, self.negotiator and self.negotiator:GetName() or "the opponent",
-                self.bonus_per_generation)
+                CalculateBonusScale(self))
         end,
-        OnInit = function(self)
-            self.init_max_resolve = self.init_max_resolve + self.bonus_per_generation
-            self:SetResolve(self.init_max_resolve)
-        end,
+        OnInit = MyriadInit,
         OnBounty = function(self)
             if self.negotiator:GetModifierStacks("IMPATIENCE") > 0 then
                 self.negotiator:RemoveModifier("IMPATIENCE", 1)
@@ -433,29 +454,33 @@ local MODIFIERS =
     DISTRACTION_GUILTY_CONSCIENCE = 
     {
         name = "Distraction: Guilty Conscience",
-        desc = "{MYRIAD_MODIFIER {2}}.\nWhen destroyed, remove a random intent.",
+        desc = "{MYRIAD_MODIFIER {2}}.\nWhen destroyed, remove a random, non-{IMPATIENCE} intent and {1} gains 2 {VULNERABILITY}.",
         
         modifier_type = MODIFIER_TYPE.BOUNTY,
-        init_max_resolve = 8,
+        init_max_resolve = 10,
 
         bonus_per_generation = 2,
+        bonus_scale = {2, 3, 4},
 
         generation = 0,
 
         desc_fn = function(self, fmt_str)
             return loc.format( fmt_str, self.negotiator and self.negotiator:GetName() or "the opponent",
-                self.bonus_per_generation)
+                CalculateBonusScale(self))
         end,
-        OnInit = function(self)
-            self.init_max_resolve = self.init_max_resolve + self.bonus_per_generation
-            self:SetResolve(self.init_max_resolve)
-        end,
+        OnInit = MyriadInit,
         OnBounty = function(self)
-
-            local intents = self.negotiator:GetIntents()
+            local intents = {}
+            for i, data in ipairs(self.negotiator:GetIntents()) do
+                if data.id ~= "impatience" then
+                    table.insert(intents, data)
+                end
+            end
+            
             if #intents > 0 then
                 self.negotiator:DismissIntent(intents[math.random(#intents)])
             end
+            self.negotiator:AddModifier("VULNERABILITY", 2)
 
             CreateNewSelfMod(self)
         end,
@@ -463,26 +488,24 @@ local MODIFIERS =
     DISTRACTION_CONFUSION = 
     {
         name = "Distraction: Confusion",
-        desc = "{MYRIAD_MODIFIER {2}}.\nWhen destroyed, {1} gain 1 {FLUSTERED}.",
+        desc = "{MYRIAD_MODIFIER {2}}.\nWhen destroyed, {1} gain 2 {FLUSTERED}.",
         
         modifier_type = MODIFIER_TYPE.BOUNTY,
-        init_max_resolve = 8,
+        init_max_resolve = 10,
 
         bonus_per_generation = 2,
+        bonus_scale = {2, 3, 4},
 
         generation = 0,
 
         desc_fn = function(self, fmt_str)
             return loc.format( fmt_str, self.negotiator and self.negotiator:GetName() or "the opponent",
-                self.bonus_per_generation)
+                CalculateBonusScale(self))
         end,
-        OnInit = function(self)
-            self.init_max_resolve = self.init_max_resolve + self.bonus_per_generation
-            self:SetResolve(self.init_max_resolve)
-        end,
+        OnInit = MyriadInit,
         OnBounty = function(self)
 
-            self.negotiator:AddModifier("FLUSTERED", 1)
+            self.negotiator:AddModifier("FLUSTERED", 2)
 
             CreateNewSelfMod(self)
         end,

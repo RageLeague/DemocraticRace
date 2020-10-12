@@ -29,48 +29,49 @@ local CARDS = {
             end,
         },
     },
-    assassin_fight_describe_information = 
-    {
-        name = "Describe Situation",
-        desc = "Discribe your current situation to the dispacher.\nIncrease the stacks of <b>Connected Line</> by 1.",
-        cost = 1,
-        -- min_persuasion = 1,
-        -- max_persuasion = 3,
-        flags = CARD_FLAGS.DIPLOMACY | CARD_FLAGS.STICKY,
-        rarity = CARD_RARITY.UNIQUE,
-        deck_handlers = ALL_DECKS,
+    -- this is too boring.
+    -- assassin_fight_describe_information = 
+    -- {
+    --     name = "Describe Situation",
+    --     desc = "Discribe your current situation to the dispacher.\nIncrease the stacks of <b>Connected Line</> by 1.",
+    --     cost = 1,
+    --     -- min_persuasion = 1,
+    --     -- max_persuasion = 3,
+    --     flags = CARD_FLAGS.DIPLOMACY | CARD_FLAGS.STICKY,
+    --     rarity = CARD_RARITY.UNIQUE,
+    --     deck_handlers = ALL_DECKS,
 
-        OnPostResolve = function( self, minigame, targets )
-            if self.negotiator:GetModifierStacks( "CONNECTED_LINE" ) > 0 then
-                self.negotiator:AddModifier("CONNECTED_LINE", 1)
-            else
-                minigame:ExpendCard(self)
-            end
-        end,
-        event_handlers =
-        {
-            [ EVENT.CARD_MOVED ] = function( self, card, source_deck, source_idx, target_deck, target_idx )
-                if card == self and target_deck and target_deck:GetDeckType() ~= DECK_TYPE.IN_HAND then
-                    self.show_dealt = true
-                    if self.negotiator:GetModifierStacks( "CONNECTED_LINE" ) > 0 then
-                        local has_card = false
-                        for k,v in pairs(self.engine:GetHandDeck().cards) do
-                            if v.id == self.id and v ~= self then
-                                has_card = true
-                            end
-                        end
-                        if not has_card then
-                            self:TransferCard(self.engine.hand_deck)
-                        else
-                            self:TransferCard(self.engine.trash_deck)
-                        end
-                    else
-                        self:TransferCard(self.engine.trash_deck)
-                    end
-                end
-            end,
-        },
-    },
+    --     OnPostResolve = function( self, minigame, targets )
+    --         if self.negotiator:GetModifierStacks( "CONNECTED_LINE" ) > 0 then
+    --             self.negotiator:AddModifier("CONNECTED_LINE", 1)
+    --         else
+    --             minigame:ExpendCard(self)
+    --         end
+    --     end,
+    --     event_handlers =
+    --     {
+    --         [ EVENT.CARD_MOVED ] = function( self, card, source_deck, source_idx, target_deck, target_idx )
+    --             if card == self and target_deck and target_deck:GetDeckType() ~= DECK_TYPE.IN_HAND then
+    --                 self.show_dealt = true
+    --                 if self.negotiator:GetModifierStacks( "CONNECTED_LINE" ) > 0 then
+    --                     local has_card = false
+    --                     for k,v in pairs(self.engine:GetHandDeck().cards) do
+    --                         if v.id == self.id and v ~= self then
+    --                             has_card = true
+    --                         end
+    --                     end
+    --                     if not has_card then
+    --                         self:TransferCard(self.engine.hand_deck)
+    --                     else
+    --                         self:TransferCard(self.engine.trash_deck)
+    --                     end
+    --                 else
+    --                     self:TransferCard(self.engine.trash_deck)
+    --                 end
+    --             end
+    --         end,
+    --     },
+    -- },
     address_question = 
     {
         name = "Address Question",

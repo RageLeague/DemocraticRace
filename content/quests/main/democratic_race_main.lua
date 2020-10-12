@@ -86,20 +86,6 @@ local QDEF = QuestDef.Define
         -- The locations you've unlocked.
         quest.param.unlocked_locations = --shallowcopy(Content.GetWorldRegion("democracy_pearl").locations)--{"MURDERBAY_NOODLE_SHOP"}
         {"MURDERBAY_NOODLE_SHOP", "GROG_N_DOG"}
-        -- {
-        --     "GROG_N_DOG",
-        --     "ADMIRALTY_BARRACKS",
-        --     "MURDERBAY_LUMIN_DOCKS",
-        --     "MURDERBAY_NOODLE_SHOP",
-        --     "MURDER_BAY_HARBOUR",
-        --     "LIGHTHOUSE",
-        --     -- "MARKET_STALL",
-        --     "GROG_N_DOG",
-        --     "MURDER_BAY_CHEMIST",
-        --     "NEWDELTREE_OUTFITTERS",
-        --     "SPREE_INN",
-        --     "GRAND_THEATER",
-        -- }
         
         -- quest.param.free_time_actions = 1
 

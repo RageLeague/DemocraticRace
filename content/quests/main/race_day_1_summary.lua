@@ -222,7 +222,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
             cxt:Opt("OPT_DISTRACT")
                 :PostText("TT_DISTRACT")
                 :Negotiation{
-                    flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE,
+                    flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE | NEGOTIATION_FLAGS.WORDSMITH, -- this is the boss
                     reason_fn = function(minigame)
                         local help_inst = minigame.player_negotiator:FindModifier("HELP_UNDERWAY")
                         local call_inst = minigame.player_negotiator:FindModifier("CONNECTED_LINE")
