@@ -189,7 +189,7 @@ end
 
 -- Do the convo for unlocking a location.
 function DemocracyUtil.DoLocationUnlock(cxt, id)
-    if not table.arraycontains(TheGame:GetGameState():GetMainQuest().param.unlocked_locations, id) then
+    if id and not table.arraycontains(TheGame:GetGameState():GetMainQuest().param.unlocked_locations, id) then
         cxt:Opt("OPT_UNLOCK_NEW_LOCATION",TheGame:GetGameState():GetLocation(id))
             :PostText("TT_UNLOCK_NEW_LOCATION")
             :Fn(function(cxt)
@@ -513,8 +513,8 @@ function ConvoOption:RequireFreeTimeAction(actions)
     end
     local freetimeevents = TheGame:GetGameState():GetActiveQuestWithContentID( "FREE_TIME_EVENT" )
     -- local q = freetimeevents[1]
-    self:ReqCondition(#freetimeevents > 0, "REQ_FREE_TIME")
-    if freetimeevents and actions then
+    self:ReqCondition(freetimeevents and #freetimeevents > 0, "REQ_FREE_TIME")
+    if freetimeevents and #freetimeevents > 0 and actions then
         local q = freetimeevents[1]
         self:ReqCondition(q.param.free_time_actions >= actions, "REQ_FREE_TIME_ACTIONS")
         self:Fn(function(cxt)

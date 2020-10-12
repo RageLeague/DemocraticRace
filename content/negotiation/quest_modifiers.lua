@@ -392,7 +392,11 @@ local MODIFIERS =
             [ EVENT.MODIFIER_CHANGED ] = function( self, modifier, delta, clone )
                 if modifier == self and modifier.stacks >= self.calls_required then
                     if self.negotiator:GetModifierStacks("HELP_UNDERWAY") <= 0 then
-                        self.negotiator:AddModifier("HELP_UNDERWAY", 1)
+                        local stacks = 12
+                        if self.engine and self.engine.help_turns then 
+                            stacks = self.engine.help_turns 
+                        end
+                        self.negotiator:AddModifier("HELP_UNDERWAY", stacks)
                     end
                     
                     self.negotiator:RemoveModifier(self)
@@ -407,21 +411,23 @@ local MODIFIERS =
         name = "Help Underway!",
         desc = "Distract <b>{1}</> for {2} more turns until the help arrives!",
         desc_fn = function(self, fmt_str)
-            return loc.format( fmt_str, self.anti_negotiator and self.anti_negotiator:GetName() or "the opponent",  self.turns_left)
+            return loc.format( fmt_str, self.anti_negotiator and self.anti_negotiator:GetName() or "the opponent",  self.stacks)
         end,
 
-        max_stacks = 1,
+        max_stacks = 20,
         
         modifier_type = MODIFIER_TYPE.PERMANENT,
 
-        turns_left = rawget(_G, "SURVIVAL_TURNS") or 12,
+        -- turns_left = rawget(_G, "SURVIVAL_TURNS") or 12,
 
         event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
-                self.turns_left = self.turns_left - 1
-                self:NotifyChanged()
-                if self.turns_left <= 0 then
+                
+                if self.stacks <= 1 then
                     minigame:Win()
+                else
+                    self.negotiator:RemoveModifier(self, 1)
+                    self:NotifyChanged()
                 end
             end,
         }

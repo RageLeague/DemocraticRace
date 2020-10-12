@@ -119,7 +119,15 @@ function ConvoOption:UpdatePoliticalStance(issue, newval, strict, autosupport, f
     if type(issue) == "string" then
         issue = DemocracyConstants.issue_data[issue]
     end
-    assert(issue, "issue must be non-nil")
+    if not issue then
+        print("Warning: issue is nil")
+        return self
+    end
+    if not newval then
+        print("Warning: newval is nil")
+        return self
+    end
+    -- assert(issue, "issue must be non-nil")
     local old_stance = DemocracyUtil.TryMainQuestFn("GetStance", issue)
     local new_stance_data = issue.stances[newval]
     if old_stance then

@@ -1,9 +1,9 @@
-local character_map = {
-    [DemocracyConstants.opposition_data.candidate_admiralty.character] = "admiralty",
-    [DemocracyConstants.opposition_data.candidate_rise.character] = "rise",
-    [DemocracyConstants.opposition_data.candidate_baron.character] = "baron",
+-- local character_map = {
+--     [DemocracyConstants.opposition_data.candidate_admiralty.character] = "admiralty",
+--     [DemocracyConstants.opposition_data.candidate_rise.character] = "rise",
+--     [DemocracyConstants.opposition_data.candidate_baron.character] = "baron",
     
-}
+-- }
 local available_opposition = {}
 for i, data in pairs(DemocracyConstants.opposition_data) do
     if data.character then
@@ -57,14 +57,29 @@ local QDEF = QuestDef.Define
     cast_id = "opposition",
     alias = available_opposition,
     on_assign = function(quest, agent)
-        if character_map[agent:GetContentID()] then
-            quest.param[character_map[agent:GetContentID()]] = true
-        else
-            quest.param.missing_id = true
-        end
+        -- if character_map[agent:GetContentID()] then
+        --     quest.param[character_map[agent:GetContentID()]] = true
+        -- else
+        --     quest.param.missing_id = true
+        -- end
         for id, data in pairs(DemocracyConstants.opposition_data) do
             if data.character == agent:GetContentID() then
                 quest.param.opposition_id = id
+                local opposition_data = DemocracyConstants.opposition_data[quest.param.opposition_id]
+                if opposition_data then
+                    quest.param.oppo_issue = opposition_data.platform
+                        -- cxt.quest.param.oppo_stance = cxt.quest.param.oppo_issue.stances[stances]
+                    if quest.param.oppo_issue then
+                        quest.param.stance_index = opposition_data.stances[quest.param.oppo_issue]
+                        if quest.param.oppo_issue and quest.param.stance_index then
+                            quest.param.oppo_stance = quest.param.oppo_issue .. "_" .. quest.param.stance_index
+                        end
+                    end
+
+                    if opposition_data.workplace then
+                        quest.param.oppo_location = opposition_data.workplace
+                    end
+                end
                 break
             end
         end
@@ -91,7 +106,8 @@ QDEF:AddConvo("go_to_bar")
                     I'm also running for president.
                 primary_advisor:
                     !right
-                    Also there are other people who want to run for president.
+                    It's not just {opposition}.
+                    there are other people who want to run for president.
                     you think this is going to be easy? think again.
             ]],
         }
@@ -112,18 +128,7 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 i heard you're running for president, yes?
             agent:
                 that's right.
-            {admiralty?
-                Haravia is overrun with criminals, and it's up to me to stop them.
-            }
-            {baron?
-                The Admiralty squeezes the people dry with taxes, so I need to stop them.
-            }
-            {rise?
-                The workers of Havaria has been oppressed for so long. It's my duty to provide them with better rights.
-            }
-            {missing_id?
-                I have a great plan. It's going to be the greatest plan.
-            }
+                %opposition_intro idea_monologue {opposition_id}
             player:
                 good talk.
             agent:
@@ -150,14 +155,8 @@ QDEF:AddConvo("meet_opposition", "opposition")
             player:
                 But aren't we political opponents, though?
             agent:
-            {baron or spree or jakes?
                 Yeah, you're right.
                 Well, good luck with your campaign, because I'll beat you.
-            }
-            {not (baron or spree or jakes)?
-                While that's true, it's probably better if you form an alliance with another politician.
-                You never know when you need help from an opponent, right?
-            }
         ]],
         OPT_IGNORE = "Remain silent on this issue",
         DIALOG_IGNORE = [[
@@ -178,40 +177,54 @@ QDEF:AddConvo("meet_opposition", "opposition")
         ]],
     }
     :Hub(function(cxt)
+        -- local opposition_data = DemocracyConstants.opposition_data[cxt.quest.param.opposition_id]
+        -- if opposition_data and opposition_data.platform then
+        --     cxt.quest.param.oppo_issue = DemocracyConstants.issue_data[opposition_data.platform]
+        --     if cxt.quest.param.oppo_issue then
+        --         local stances = opposition_data.stances[opposition_data.platform]
+        --         cxt.quest.param.oppo_stance = cxt.quest.param.oppo_issue.stances[stances]
+        --         cxt.quest.param.stance_index = stances
+        --     end
+        -- end
         if not cxt.quest.param.greeted then
             cxt:Opt("OPT_GREET")
+                :Fn(function(cxt)
+                    
+                end)
                 :Dialog("DIALOG_GREET")
                 :Fn(function(cxt)
-                    local opposition_data = DemocracyConstants.opposition_data[cxt.quest.param.opposition_id]
-                    local platform = opposition_data.platform
-                    local platform_stance
-                    if platform then
-                        platform_stance = opposition_data.stances[platform]
-                    end
+                    -- local opposition_data = DemocracyConstants.opposition_data[cxt.quest.param.opposition_id]
+                    -- local platform = opposition_data.platform
+                    -- local platform_stance
+                    -- if platform then
+                    --     platform_stance = opposition_data.stances[platform]
+                    -- end
                     cxt:Opt("OPT_AGREE")
                         :Dialog("DIALOG_AGREE")
+                        :UpdatePoliticalStance(cxt.quest.param.oppo_issue, cxt.quest.param.stance_index)
                         :Fn(function(cxt)
-                            DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport",
-                                opposition_data.faction_support, 1, true)
-                            DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport",
-                                opposition_data.wealth_support, 1, true)
-                            if platform and platform_stance then
-                                DemocracyUtil.TryMainQuestFn("UpdateStance", platform, platform_stance)
-                            end
+                            -- DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport",
+                            --     opposition_data.faction_support, 1)
+                            -- DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport",
+                            --     opposition_data.wealth_support, 1)
+                            -- if platform and platform_stance then
+                            --     DemocracyUtil.TryMainQuestFn("UpdateStance", platform, platform_stance)
+                            -- end
                             cxt.quest.param.greeted = true
                             cxt.quest.param.agreed = true
                             cxt:Dialog("DIALOG_GREET_PST")
                         end)
                     cxt:Opt("OPT_DISAGREE")
                         :Dialog("DIALOG_DISAGREE")
+                        :UpdatePoliticalStance(cxt.quest.param.oppo_issue, -cxt.quest.param.stance_index)
                         :Fn(function(cxt)
-                            DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport",
-                                opposition_data.faction_support, -1)
-                            DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport",
-                                opposition_data.wealth_support, -1)
-                            if platform and platform_stance then
-                                DemocracyUtil.TryMainQuestFn("UpdateStance", platform, -platform_stance)
-                            end
+                            -- DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport",
+                            --     opposition_data.faction_support, -1)
+                            -- DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport",
+                            --     opposition_data.wealth_support, -1)
+                            -- if platform and platform_stance then
+                            --     DemocracyUtil.TryMainQuestFn("UpdateStance", )
+                            -- end
                             cxt.quest.param.greeted = true
                             cxt.quest.param.disagreed = true
                             cxt:Dialog("DIALOG_GREET_PST")
@@ -249,13 +262,21 @@ QDEF:AddConvo("meet_opposition", "opposition")
         "Ask about {agent}'s goal",
         [[
             player:
-                [p] what do you plan to do if you become president?
+                What do you plan to do if you become president?
             agent:
-                things.
-                that helps people.
-                idk.
+                I plan to improving the current state of Havaria by doing the things I promised to do.
+                As I already told you my goal.
+                I strongly believe that {oppo_stance#pol_stance} can improve Havarian lives significantly.
             player:
-                ok...?
+                Are you sure that isn't a ruse to get more power?
+            agent:
+                !placate
+                I assure you, the power is just a mean to an end.
+                Ultimately, the goal is make Havaria better than before.
+            player:
+                Right.
+                !happy
+                Totally.
         ]],
         nil,
 
@@ -263,11 +284,15 @@ QDEF:AddConvo("meet_opposition", "opposition")
         "Ask about {agent}'s plan",
         [[
             player:
-                [p] what's your plan?
+                How do you plan to become elected?
             agent:
-                why should i tell you?
+                I mean, same as everyone else.
             player:
-                fair enough.
+                Can you give a more detailed answer?
+            agent:
+                Why should I? You're my opponent.
+            player:
+                Fair enough.
         ]],
         nil,
 
@@ -275,15 +300,43 @@ QDEF:AddConvo("meet_opposition", "opposition")
         "Ask where to find {agent}",
         [[
             player:
-                [p] if i want to find you, where should i go?
+                If I want to find you, where should I go?
             agent:
-                here.
+            {(agreed or liked) and not disliked?
+                Since we have similar, I guess I'll tell you.
+                You can find me at {oppo_location#location}. That's where my base is.
+                The people there may or may not like you, I can't make any promises.
+                If you want to talk about potential alliance, meet me there.
             player:
-                where?
+                That sounds very reassuring.
+            }
+            {not ((agreed or liked) and not disliked)?
+                !angry_shrug
+                What? So you can send an assassin to my door?
+            player:
+                !placate
+                That's not what I-
             agent:
-                i don't know, i haven't programmed anything yet.
+                {not disliked?
+                    !sigh
+                    It's just a precaution, you see.
+                    I don't know you, you don't know me. Gotta be careful.
+                    It's nothing personal, I assure you.
+                }
+                {disliked?
+                    Better be careful than sorry, you know?
+                    It's nothing personal.
+                    Nah, who am I kidding, it totally is.
+                }
+            }
         ]],
-        function()end,
+        function(cxt)
+            local learnlocation = ((cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL) or cxt.quest.param.agreed)
+                and not (cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL)
+            if learnlocation then
+                DemocracyUtil.DoLocationUnlock(cxt, cxt.quest.param.oppo_location)
+            end
+        end,
     })
 QDEF:AddConvo("meet_opposition", "primary_advisor")
     :Loc{
@@ -421,7 +474,7 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         ]],
         nil,
         nil,
-        "Ask about jakes guy",
+        "Ask about Andwanette",
         [[
             player:
                 [p] what's his deal?

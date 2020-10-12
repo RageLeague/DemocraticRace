@@ -21,6 +21,16 @@ loc.pol_issue = function(issue)
 end
 
 loc.pol_stance = function(stance)
+    if type(stance) == "string" then
+        local st_issue, st_stance = stance:match("([_%w]+)_([%-%d]+)")
+        st_stance = tonumber(st_stance)
+        if st_issue and st_stance then
+            local issue_data = DemocracyConstants.issue_data[loc.toupper(st_issue)]
+            if issue_data and issue_data.stances[st_stance] then
+                stance = issue_data.stances[st_stance]
+            end
+        end
+    end
     -- can't really autoconvert, since stances aren't really tracked by id.
     if stance and stance.GetLocalizedName then 
         return string.format("<!pol_stance_%s>%s</>", loc.tolower(stance.id), stance:GetLocalizedName()) 

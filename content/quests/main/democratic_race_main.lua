@@ -337,6 +337,10 @@ local QDEF = QuestDef.Define
         if type(issue) == "table" then
             issue = issue.id
         end
+        -- local multiplier = type(autosupport) == "number" and autosupport or 1
+        if autosupport == nil then
+            autosupport = true
+        end
         -- multiplier = multiplier or 1
         if quest.param.stances[issue] == nil then
             quest.param.stances[issue] = val
@@ -469,6 +473,7 @@ DemocracyUtil.AddOppositionCast(QDEF)
 
 -- A fail safe. Once you've been to a unlockable location that hasn't been unlocked, you unlock it.
 QDEF:AddConvo()
+    :Priority(CONVO_PRIORITY_HIGHEST)
     :ConfrontState("STATE_UNLOCK", function(cxt)
         local id = cxt.location:GetContentID()
         return id and table.arraycontains(LocUnlock.FACTION_LOCATION_UNLOCK.GRIFTER, id) 

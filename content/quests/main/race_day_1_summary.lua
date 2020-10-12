@@ -227,7 +227,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                         local help_inst = minigame.player_negotiator:FindModifier("HELP_UNDERWAY")
                         local call_inst = minigame.player_negotiator:FindModifier("CONNECTED_LINE")
                         if help_inst then
-                            return loc.format(cxt:GetLocString("GOAL_AWAIT_RESCUE"), help_inst.turns_left )
+                            return loc.format(cxt:GetLocString("GOAL_AWAIT_RESCUE"), help_inst.stacks )
                         elseif call_inst then
                             return loc.format(cxt:GetLocString("GOAL_MAINTAIN_CONNECTION"), call_inst.stacks, call_inst.calls_required )
                         end
@@ -241,6 +241,8 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                         local card = Negotiation.Card( "assassin_fight_call_for_help", minigame.player_negotiator.agent )
                         card.show_dealt = true
                         card:TransferCard(minigame:GetDrawDeck())
+
+                        minigame.help_turns = SURVIVAL_TURNS
                     end,
                     on_success = function(cxt, minigame)
                         cxt:Dialog("DIALOG_HELP_ARRIVE")
@@ -249,9 +251,9 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     end,
                     on_fail = function(cxt, minigame)
                         local help_inst = minigame.player_negotiator:FindModifier("HELP_UNDERWAY")
-                        cxt.quest.param.help_called = help_inst and true or false
+                        cxt.quest.param.help_called = help_inst
                         if help_inst then
-                            cxt.quest.param.help_arrive_time = help_inst.turns_left
+                            cxt.quest.param.help_arrive_time = help_inst.stacks
                         else
                             cxt.quest.param.help_arrive_time = 99
                         end

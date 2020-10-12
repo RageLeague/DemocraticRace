@@ -379,7 +379,7 @@ FOLLOWUP:AddConvo(nil, nil, "MorningMail")
     }
     :State("START")
         :Fn(function(cxt)
-            if cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL then
+            if cxt.quest:GetCastMember("benefactor"):GetRelationship() > RELATIONSHIP.NEUTRAL then
                 cxt:Dialog("DIALOG_GOOD")
                 cxt.enc:GainMoney( cxt.quest.param.regular_funds )
             else
