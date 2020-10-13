@@ -267,8 +267,7 @@ local val =  {
         stances = {
             [-2] = {
                 name = "Total Annexation",
-                desc = "There is no point in distinguish between Havaria and Deltree. The Admiralty more or less controls Havaria anyway, so things won't change much. Plus, annexing Havaria can make trading and
-                administration easier, as well as improving Havarian's living conditions.",
+                desc = "There is no point in distinguish between Havaria and Deltree. The Admiralty more or less controls Havaria anyway, so things won't change much. Plus, annexing Havaria can make trading andadministration easier, as well as improving Havarian's living conditions.",
                 faction_support = {
                     ADMIRALTY = 5,
                     FEUD_CITIZEN = -4,
@@ -619,12 +618,12 @@ local val =  {
     },
     SUBSTANCE_REGULATION = {
         name = "Substance Regulation",
-        desc = "Policies regarding the restriction of certain items.",
+        desc = "Certain substances are more problematic than others, and it is important to figure out what to do with them. On the one hand, the government has the responsibility to protect the citizens from harmful substances. On the other hand, having too much restriction means more money spent on enforcements, and it makes many people unhappy.",
         importance = 8,
         stances = {
             [-2] = {
                 name = "Legalize Everything",
-                desc = "everything, yeah",
+                desc = "There's no point in banning any substances. If a person really wants something, they will get it no matter what. Substance regulation is just a way for those in power to arrest people on false charges. Therefore, all substances should be legalized.",
                 faction_support = {
                     JAKES = 5,
                     ADMIRALTY = -5,
@@ -642,7 +641,7 @@ local val =  {
             },
             [-1] = {
                 name = "Relax Restriction",
-                desc = "save some resources",
+                desc = "While some substances are indeed dangerous, plenty of people have been arrested falsely because they are carrying harmless substances. It's better to let them be. Not only does this lead to less people getting arrested for no reason, it can also make the economy flow by expanding trades.",
                 faction_support = {
                     JAKES = 3,
                     ADMIRALTY = -3,
@@ -660,7 +659,7 @@ local val =  {
             },
             [0] = {
                 name = "Keep Unchanged",
-                desc = "Policy good enough",
+                desc = "The current policy is good enough for now. There is no need to change it.",
                 faction_support = {
                     JAKES = 1,
                     ADMIRALTY = -1,
@@ -675,7 +674,7 @@ local val =  {
             },
             [1] = {
                 name = "Tighten Restriction",
-                desc = "liek relax restriction, but reverse",
+                desc = "Illegal trading of illicit substances has been going on for so long, and it is not going to end unless we do something. We should tighten the restrictions on illicit substances to stop these illegal tradings.",
                 faction_support = {
                     JAKES = -3,
                     ADMIRALTY = 3,
@@ -693,7 +692,7 @@ local val =  {
             },
             [2] = {
                 name = "Heavily Enforced Restriction",
-                desc = "not only are you adding restriction, you're also actually enforcing it.",
+                desc = "There are way too many illegal trading of substances, and it negatively impacts the health and morale of the people. Do deal with such crisis, we need to increase restrictions on them, and ensure that we send people to properly enforce them.",
                 faction_support = {
                     JAKES = -5,
                     ADMIRALTY = 5,

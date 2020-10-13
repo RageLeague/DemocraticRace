@@ -194,11 +194,17 @@ end
 -- Do the convo for unlocking a location.
 function DemocracyUtil.DoLocationUnlock(cxt, id)
     if id and not table.arraycontains(TheGame:GetGameState():GetMainQuest().param.unlocked_locations, id) then
-        cxt:Opt("OPT_UNLOCK_NEW_LOCATION",TheGame:GetGameState():GetLocation(id))
-            :PostText("TT_UNLOCK_NEW_LOCATION")
-            :Fn(function(cxt)
-                table.insert(TheGame:GetGameState():GetMainQuest().param.unlocked_locations, id)
-            end)
+        cxt:RunLoop(function(cxt)
+            cxt:Opt("OPT_UNLOCK_NEW_LOCATION",TheGame:GetGameState():GetLocation(id))
+                :PostText("TT_UNLOCK_NEW_LOCATION")
+                :Fn(function(cxt)
+                    table.insert(TheGame:GetGameState():GetMainQuest().param.unlocked_locations, id)
+                end)
+                :Pop()
+            cxt:Opt("OPT_SKIP_BONUS")
+                :MakeUnder()
+                :Pop()
+        end)
     else
         print("Location already unlocked: "..id)
     end

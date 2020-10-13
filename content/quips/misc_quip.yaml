@@ -63,15 +63,18 @@ lines:
       There's a great place that I often visit.
       I should let you know.
       Just in case, you know, you want to go there during your free time.
+      It's called {loc_to_unlock#location}.
+    player:
+      Great, thanks.
 - tags: [unlock_location, unlock_grog_n_dog]
   dialog:
   - |
     agent:
       Ever enjoy an ice cold cup of plonk with a nice view of the land?
     player:
-      [p] idk, some generic quip or something.
+      Well... maybe?
     agent:
-      Well, i know this little bar where you can find the best view of Murder Bay.
+      Well, i know this little bar where you can find the best view of Havaria.
       Swing by the Grog n' Dog when you get chance.
       They sell amazing drinks, and people from all factions visit there, incase you need some more connections.
       You should definitely go check it out!
@@ -84,7 +87,7 @@ lines:
     player:
       Best view i've ever had was out of a large lumin pipe onto the sea full of flotsam.
     agent:
-      Well, i know this little bar where you can find the best view of Murder Bay.
+      Well, i know this little bar where you can find the best view of Havaria.
       Swing by the Grog n' Dog when you get chance.
       They sell amazing drinks, and people from all factions visit there, incase you need some more connections.
       You should definitely go check it out!
@@ -94,23 +97,24 @@ lines:
       Oh. I was just trying to be helpful.
     player:
       It's okay. I forgot where it was before, but thanks for telling me the location.
-- tags: [unlock_location, unlock_grog_n_dog, smith]
+- tags: [unlock_location, unlock_tavern, smith]
+  notags: [unlock_moreef_bar, unlock_spree_inn]
   dialog:
   - |
     agent:
-     Smith...Smith do i even need to tell you where the bar is?
+      Smith... Smith, do I even need to tell you where the bar is?
     player:
-     [p]Well, no. If anything you'd be saving them the trouble of dealing with me.
-     But since you proposed...
+      Well, no. If anything you'd be saving them the trouble of dealing with me.
+      But since you proposed...
     agent:
-     It's called the Grog n' Dog. They're pretty cheap and everyone from the Law to the Lawless go there
+      It's called {loc_to_unlock#location}. They're pretty cheap and everyone from the Law to the Lawless go there.
     player:
-     Why thank you, my dear friend. I shall escort myself there at once!
+      Why thank you, my dear friend. I shall escort myself there at once!
     agent:
-     Just...just don't run a tab. The bartender's is a no-nonsense type, and she's got sal herself in her back pocket.
+      Just...just don't run a tab. The bartender's is a no-nonsense type, and they have powerful contacts behind them.
     player:
-     If i knew who that was, i'd care. I don't however, and therefore don't mind.
-     No bartender had stood a chance to my improvisation!
+      !happy
+      No bartender had stood a chance to my improvisation!
 - tags: [unlock_location, unlock_spree_inn]
   dialog:
   - |
@@ -164,13 +168,13 @@ lines:
   dialog:
   - |
     agent:
-      [p] there's a cool bar that i often visit.
+      [p] there's a cool bar that i often visit called {loc_to_unlock#location}.
       you should check it out.
 - tags: [unlock_location, unlock_shop]
   dialog:
   - |
     agent:
-      [p] there's a cool shop that i like to visit.
+      [p] there's a cool shop that i like to visit called {loc_to_unlock#location}.
       check it out!
 
 - tags: [confront_argument]

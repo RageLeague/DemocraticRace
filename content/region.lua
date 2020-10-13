@@ -26,7 +26,7 @@ local region = {
         "MURDER_BAY_HARBOUR", --
         "SPREE_INN", --
         "ADMIRALTY_BARRACKS", --
-        -- "MARKET_STALL",
+        "MARKET_STALL",
 
         -- grout bog location
         "GB_BARON_HQ", --

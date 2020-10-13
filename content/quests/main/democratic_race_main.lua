@@ -476,7 +476,7 @@ QDEF:AddConvo()
     :Priority(CONVO_PRIORITY_HIGHEST)
     :ConfrontState("STATE_UNLOCK", function(cxt)
         local id = cxt.location:GetContentID()
-        return id and table.arraycontains(LocUnlock.FACTION_LOCATION_UNLOCK.GRIFTER, id) 
+        return id and table.arraycontains(LocUnlock.ALL_LOCATION_UNLOCKS, id) 
             and not table.arraycontains(cxt.quest.param.unlocked_locations, id)
     end)
     :Loc{
