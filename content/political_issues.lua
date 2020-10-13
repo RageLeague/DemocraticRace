@@ -444,12 +444,12 @@ local val =  {
     },
     LABOR_LAW = {
         name = "Labor Laws",
-        desc = "pro-employer? pro-workers?",
+        desc = "There are a lot of conflicts in workplaces, so it is an important issue to set up laws that regulates them. On the one hand, laws that are pro-employer can ensure that the efficiency of the workplace aren't disrupted by random elements, but it can lead to discontent among the workers.",
         importance = 9,
         stances = {
             [-2] = {
-                name = "Laissez Faire",
-                desc = "i can never remember how to spell this.",
+                name = "State-Enforced Employer Protection",
+                desc = "Employers' rights should be protected at all cost to ensure the efficiency of workplaces. All organized attempt to disrupt the harmony of the workplaces must be eliminated, therefore the state should pass laws that bans trade unions and enforce these laws through the state.",
                 faction_support = {
                     SPARK_BARONS = 5,
                     ADMIRALTY = 1,
@@ -467,7 +467,7 @@ local val =  {
             },
             [-1] = {
                 name = "Pro-Employer",
-                desc = "Employers have more rights than workers.",
+                desc = "While the worker's rights should be respected, their rights cannot interfere with the productivity of the workplace. The government should provide the tools necessary for employers to enforce their rights, such as passing a law allowing employers to bust down strikes.",
                 faction_support = {
                     SPARK_BARONS = 3,
                     -- ADMIRALTY = 1,
@@ -484,8 +484,8 @@ local val =  {
                 },
             },
             [0] = {
-                name = "Balanced",
-                desc = "how do you even define 'balanced' in this situation?",
+                name = "Laissez Faire",
+                desc = "When regarding labor laws, Laissez Faire is the best way to treat it. By that, I mean completely ignore the issue and let the market decide. If the workers want better rights, they can find a better place to work, forcing the employers to improve their working conditions.",
                 faction_support = {
                     SPARK_BARONS = -1,
                     RISE = -1,
@@ -499,7 +499,7 @@ local val =  {
             },
             [1] = {
                 name = "Pro-Worker",
-                desc = "laws protects workers.",
+                desc = "While it is the employers' job to maintain the efficiency of the worksite, they cannot do so while infringing upon the rights of the workers. The government should pass laws that gives workers more rights and powers to fight against poor working conditions.",
                 faction_support = {
                     SPARK_BARONS = -3,
                     ADMIRALTY = -2,
@@ -517,7 +517,7 @@ local val =  {
             },
             [2] = {
                 name = "Socialism",
-                desc = "Seize the means of production.",
+                desc = "The workers are the ones doing the job, so why should the employers profit from it? By cutting out the middle man, the workers can enjoy better working conditions and better wages, as well as working more efficiently. Therefore, the means of production should fall under the hands of the workers.",
                 faction_support = {
                     SPARK_BARONS = -5,
                     ADMIRALTY = -3,
@@ -537,12 +537,12 @@ local val =  {
     },
     ARTIFACT_TREATMENT = {
         name = "Artifact Treatment",
-        desc = "if you have a better name, help me out here",
+        desc = "There are a plenty of artifacts in Havaria, left over from the Vagrant Age. There are dividing opinions on what should we do about them. The Cult thinks that they should be preserved, while the Barons think they should be researched and used.",
         importance = 6,
         stances = {
             [-2] = {
                 name = "Extensive Research & Use",
-                desc = "Research all the artifacts extensively and utilize them to restore the former glory of the Vagrant Age",
+                desc = "The Vagrant Age has left us lots of powerful tools, and it would be a shame if they are not used. That's why we need to extensively research and use all the artifacts we dig up, and we need to dig up more artifacts for us to use.",
                 faction_support = {
                     SPARK_BARONS = 5,
                     BILEBROKERS = 3,
@@ -558,7 +558,7 @@ local val =  {
             },
             [-1] = {
                 name = "Commercial Use",
-                desc = "Sell the artifacts as weapons, idk",
+                desc = "It might be too costly to extensively research all the artifacts, but it would be a waste if the artifacts just sat there. By encouraging commercial use of the artifacts, we encourage people to look for useful artifacts, and it will strengthen the economy.",
                 faction_support = {
                     SPARK_BARONS = 3,
                     BILEBROKERS = 2,
@@ -573,8 +573,8 @@ local val =  {
                 },
             },
             [0] = {
-                name = "Don't care",
-                desc = "Why would I care?",
+                name = "Do Nothing",
+                desc = "The government shouldn't decide what to do with the artifact. It is not their job. The people can figure out what to do on their own.",
                 faction_support = {
                     BILEBROKERS = -1,
                     CULT_OF_HESH = -1,
@@ -585,7 +585,7 @@ local val =  {
             },
             [1] = {
                 name = "Restrict Research & Use",
-                desc = "Research and use of artifacts are regulated.",
+                desc = "The artifacts shouldn't be touched by just anyone. They are dangerous, and we don't want to lose any artifacts because they are important to Havarian history. That's why the research and use of artifacts must be approved first.",
                 faction_support = {
                     SPARK_BARONS = -3,
                     BILEBROKERS = -2,
@@ -601,7 +601,7 @@ local val =  {
             },
             [2] = {
                 name = "Artifact Preservation",
-                desc = "Forbid anyone from using them or researching them. For religious reasons.",
+                desc = "The artifacts are holy, and should not be used by anyone. Ever. They should be preserved and displayed in a museum, not used as weapons or other tools. Any research into the uses of the artifacts should be forbidden.",
                 faction_support = {
                     SPARK_BARONS = -5,
                     BILEBROKERS = -4,
