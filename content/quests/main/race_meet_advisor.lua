@@ -372,7 +372,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                     You can go visit locations you have learned through various means and socialize with your supporters once per day.
                     Sometimes you will learn new locations from them, sometimes they will provide a random benefit for you.
                 {not unlocked_grog?
-                    To show you how unlocking location works, I'll tell you a location you don't know yet.
+                    To show you how it works, I'll tell you a location you don't know yet.
                     A great place to visit is the Grog n' Dog.
                     All kinds of people visit there, so you can make friends from different factions easily there.
                     The owner, Fssh, is very friendly, and doesn't mind who visits her bar.
@@ -401,7 +401,6 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 cxt:Opt("OPT_FUNDING")
                     :Dialog("DIALOG_FUNDING")
                     :Fn(function(cxt)
-                        -- DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 2)
                         cxt.quest.param.did_funding = true
                     end)
                     -- :Dialog("DIALOG_SUPPORT_PST")
@@ -411,16 +410,11 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 cxt:Opt("OPT_FREE_TIME")
                     :Dialog("DIALOG_FREE_TIME")
                     :Fn(function(cxt)
-                        -- DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 2)
                         cxt.quest.param.did_free_time = true
                         if not cxt.quest.param.unlocked_grog then
                             DemocracyUtil.DoLocationUnlock(cxt, "GROG_N_DOG")
-                            -- cxt:Opt("OPT_NEW_LOCATION", TheGame:GetGameState():GetLocation("GROG_N_DOG"))
-                            --     :PostText("TT_NEW_LOCATION")
-                            --     :Fn(function()table.insert(TheGame:GetGameState():GetMainQuest().param.unlocked_locations, "GROG_N_DOG")end)
                         end
                     end)
-                    -- :Dialog("DIALOG_SUPPORT_PST")
             end
             cxt:Opt("OPT_DONE")
                 :MakeUnder()

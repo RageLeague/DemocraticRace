@@ -1,11 +1,15 @@
 local DemocracyUtil = class("DemocracyUtil")
 
+
 -- if access an invalid val, look for the main quest and return a val if you can
-function DemocracyUtil:__index(k)
+getmetatable(DemocracyUtil).__index = function(self, k)
     if TheGame:GetGameState() and TheGame:GetGameState():GetMainQuest() then
         local quest = TheGame:GetGameState():GetMainQuest():GetQuestDef()
+        print(quest)
         if quest and quest[k] and type(quest[k]) == "function" then
-            return quest[k]
+            return function(...)
+                return quest[k](TheGame:GetGameState():GetMainQuest(), ...)
+            end
         end
     end
 end

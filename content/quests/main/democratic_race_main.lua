@@ -85,7 +85,7 @@ local QDEF = QuestDef.Define
         quest.param.wealth_support = {}
         -- The locations you've unlocked.
         quest.param.unlocked_locations = --shallowcopy(Content.GetWorldRegion("democracy_pearl").locations)--{"MURDERBAY_NOODLE_SHOP"}
-        {"MURDERBAY_NOODLE_SHOP", "GROG_N_DOG"}
+        {"MURDERBAY_NOODLE_SHOP"}
         
         -- quest.param.free_time_actions = 1
 

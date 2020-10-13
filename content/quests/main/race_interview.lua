@@ -96,6 +96,9 @@ local QDEF = QuestDef.Define
     cast_id = "backroom",
     no_validation = true,
     on_assign = function(quest, location)
+        print(location)
+        print(quest:GetCastMember("theater"))
+        print(quest:GetCastMember("theater"):GetMapPos())
         location:SetMapPos( quest:GetCastMember("theater"):GetMapPos() )
     end,
     when = QWHEN.MANUAL,
@@ -213,6 +216,8 @@ QDEF:AddConvo("do_interview")
                 * try to survive the interview, i guess?
             ]],
             OPT_DO_INTERVIEW = "Do the interview",
+            SIT_MOD = "Has a lot of questions prepared for you.",
+
             DIALOG_INTERVIEW_SUCCESS = [[
                 agent:
                     [p] once again, thank you for coming.
@@ -282,6 +287,9 @@ QDEF:AddConvo("do_interview")
             end
             cxt:Opt("OPT_DO_INTERVIEW")
                 :Negotiation{
+                    situation_modifier = {
+                        { value = 20, text = cxt:GetLocString("SIT_MOD") }
+                    },
                     on_success = function(cxt, minigame)
                         cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
                         -- TheGame:GetDebug():CreatePanel(DebugTable(INTERVIEWER_BEHAVIOR))

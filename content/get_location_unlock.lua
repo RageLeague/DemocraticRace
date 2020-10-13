@@ -1,5 +1,5 @@
 local FACTION_LOCATION_UNLOCK = {
-    GRIFTER = {"PEARL_FANCY_EATS"}--shallowcopy(Content.GetWorldRegion("democracy_pearl").locations),
+    GRIFTER = shallowcopy(Content.GetWorldRegion("democracy_pearl").locations),
     -- FEUD_CITIZEN = {"GROG_N_DOG", "MURDERBAY_NOODLE_SHOP"}
 }
 local function GetLocationUnlockForAgent(agent)
