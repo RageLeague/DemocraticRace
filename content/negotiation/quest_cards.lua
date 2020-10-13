@@ -124,7 +124,12 @@ local CARDS = {
         desc = "This is a place that describes the answer to a question.",
         desc_fn = function(self, fmt_str)
             if self.issue_data and self.stance then
-                return self.issue_data.stances[self.stance]:GetLocalizedDesc()
+                if CheckBits( self.flags, CARD_FLAGS.HOSTILE ) then
+                    -- there's no need to localize the following because it's only identifiers
+                    return "{CHANGING_STANCE}\n" .. self.issue_data.stances[self.stance]:GetLocalizedDesc()
+                else
+                    return self.issue_data.stances[self.stance]:GetLocalizedDesc()
+                end
             end
             return loc.format(fmt_str)
         end,
@@ -148,10 +153,15 @@ local CARDS = {
         UpdateIssue = function(self, issue_data, stance)
             self.issue_data = issue_data
             self.stance = stance
-            -- self.title = self.issue_data.stances[self.stance].name
-            -- if self.engine then
-                self.engine:BroadcastEvent( EVENT.CARD_CHANGED, self, self:Clone() )
-            -- end
+
+            local old_stance = DemocracyUtil.TryMainQuestFn("GetStance", issue_data )
+
+            if old_stance and self.stance ~= old_stance then
+                ClearBits( self.flags, CARD_FLAGS.DIPLOMACY )
+                SetBits( self.flags, CARD_FLAGS.HOSTILE )
+            end
+
+            self.engine:BroadcastEvent( EVENT.CARD_CHANGED, self, self:Clone() )
         end,
     },
     
@@ -202,4 +212,16 @@ for id, def in pairs( CARDS ) do
         def.series = CARD_SERIES.GENERAL
     end
     Content.AddNegotiationCard( id, def )
+end
+
+local FEATURES = {
+    CHANGING_STANCE = 
+    {
+        name = "Changing Stance",
+        desc = "You have already taken a stance on this issue. Changing it may make people think you're hypocritical, and you might lose support!",
+    },
+}
+for id, data in pairs(FEATURES) do
+	local def = NegotiationFeatureDef(id, data)
+	Content.AddNegotiationCardFeature(id, def)
 end

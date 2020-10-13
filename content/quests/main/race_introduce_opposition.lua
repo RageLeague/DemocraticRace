@@ -20,6 +20,11 @@ local QDEF = QuestDef.Define
         table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.VISITOR})
         table.insert(t, { agent = quest:GetCastMember("opposition"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.VISITOR})
     end,
+    on_complete = function(quest)
+        if quest:GetCastMember("primary_advisor") then
+            quest:GetCastMember("primary_advisor"):GetBrain():SendToWork()
+        end
+    end,
     -- on_start = function(quest)
         
     -- end,

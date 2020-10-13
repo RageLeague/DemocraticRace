@@ -53,6 +53,11 @@ local QDEF = QuestDef.Define
     -- on_start = function(quest)
 
     -- end,
+    -- on_complete = function(quest)
+    --     if quest:GetCastMember("primary_advisor") then
+    --         quest:GetCastMember("primary_advisor"):GetBrain():SendToWork()
+    --     end
+    -- end,
 }
 :AddCast{
     cast_id = "host",
@@ -260,7 +265,7 @@ QDEF:AddConvo("do_interview")
                 cxt.quest.param.num_dislikes = 0
                 for i, data in ipairs(agent_supports) do
                     local current_support = DemocracyUtil.TryMainQuestFn("GetSupportForAgent", data[1])
-                    local support_delta = current_support - data[2] + RELATION_OFFSET[data[1]:GetRelationship()] + math.random(-25, 25)
+                    local support_delta = current_support - data[2] + RELATION_OFFSET[data[1]:GetRelationship()] + math.random(-30, 20)
                     if support_delta > 20 then
                         table.insert(agent_response, {data[1], "likes_interview"})
                         cxt.quest.param.num_likes = cxt.quest.param.num_likes + 1
