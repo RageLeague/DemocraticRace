@@ -8,7 +8,7 @@ getmetatable(DemocracyUtil).__index = function(self, k)
         print(quest)
         if quest and quest[k] and type(quest[k]) == "function" then
             return function(...)
-                return quest[k](TheGame:GetGameState():GetMainQuest(), ...)
+                return DemocracyUtil.TryMainQuestFn(k, ...)
             end
         end
     end
@@ -266,8 +266,8 @@ function DemocracyUtil.TryMainQuestFn(id, ...)
     local arguments = {...}
     local ok, result = xpcall(function(...) return TheGame:GetGameState():GetMainQuest():DefFn(id, ...) end, generic_error, ...)
         -- print(loc.format("Call main quest fn: {1} (params: {2#listing})", id, arguments))
-    print(ok, id, ...)
-    print(result)
+    -- print(ok, id, ...)
+    -- print(result)
     return result
 end
 

@@ -167,7 +167,7 @@ end
 
 local val =  {
     SECURITY = {
-        name = "Universal Security",
+        name = "Security Funding",
         desc = "Security is a big issue in Havaria. On the one hand, improving security can drastically reduce crime and improve everyone's lives. On the other hand, it can leads to corruption and abuse of power.",
         importance = 10,
         stances = {
@@ -267,7 +267,8 @@ local val =  {
         stances = {
             [-2] = {
                 name = "Total Annexation",
-                desc = "Havaria and Deltree become one country, with no special treatment.",
+                desc = "There is no point in distinguish between Havaria and Deltree. The Admiralty more or less controls Havaria anyway, so things won't change much. Plus, annexing Havaria can make trading and
+                administration easier, as well as improving Havarian's living conditions.",
                 faction_support = {
                     ADMIRALTY = 5,
                     FEUD_CITIZEN = -4,
@@ -284,7 +285,7 @@ local val =  {
             },
             [-1] = {
                 name = "Havarian Special Administration",
-                desc = "Havaria is part of Deltree by name, but Havaria has partial autonomy to allow better integration.",
+                desc = "Many locals won't like the annexation of Havaria. However, Havaria is better off if it is part of Deltree. As a compromise, Havaria is part of Deltree by name, but Havaria has partial autonomy to allow better integration.",
                 faction_support = {
                     ADMIRALTY = 3,
                     FEUD_CITIZEN = -2,
@@ -300,8 +301,8 @@ local val =  {
                 },
             },
             [0] = {
-                name = "I don't care",
-                desc = "[p] i just want to grill for hesh sake",
+                name = "Turn A Blind Eye",
+                desc = "The tension between Deltree and Havaria is too high, that no one will benefit if a decision is made immediately. It's probably better to not touch on this issue.",
                 faction_support = {
                     ADMIRALTY = -1,
                     FEUD_CITIZEN = -1,
@@ -312,7 +313,7 @@ local val =  {
             },
             [1] = {
                 name = "Vassal State",
-                desc = "Havaria become a vassal state of Deltree. However, they are still different nations, and Deltree must respect the autonomy of Havaria.",
+                desc = "It is undeniable that Havarian lives will be better under Deltrean protection. However, it is also important to Havarian autonomy that Havaria and Deltree are separate nations. Therefore, Havaria should become a vassal state of Deltree, but Deltree should respect Havaria's sovereignty.",
                 faction_support = {
                     ADMIRALTY = -4,
                     FEUD_CITIZEN = 2,
@@ -328,7 +329,7 @@ local val =  {
             },
             [2] = {
                 name = "Havaria Independence",
-                desc = "Havaria will become completely independent of Deltree, and Deltree should recognize the independence and respect Havaria's autonomy.",
+                desc = "Deltree wants to conquer Havaria, and we won't allow that. Havaria will become completely independent of Deltree, and Deltree should recognize the independence and not interfere with Havarian politics.",
                 faction_support = {
                     ADMIRALTY = -5,
                     FEUD_CITIZEN = 3,
@@ -347,17 +348,17 @@ local val =  {
     },
     TAX_POLICY = {
         name = "Tax Policy",
-        desc = "Taxes are huge issues in society. [p] seriously, i'm lazy, you know what tax is right",
+        desc = "Taxes are huge issues in society. On the one hand, increasing taxes means more funding for important infrastructures that benefits everyone. On the other hand, it adds toll to the people's wealth, and can lead to high corruption.",
         importance = 9,
         stances = {
             [-2] = {
-                name = "Minimum Taxes",
-                desc = "tax kept to min",
+                name = "Abolish Taxes",
+                desc = "Taxes are tools invented by those in power to legally steal people's hard work, therefore all taxes should be abolished. The people can find better uses for the money than giving them up to the coffers of those in power.",
                 faction_support = {
                     SPARK_BARONS = 5,
                     ADMIRALTY = -5,
                     RISE = -2,
-                    CULT_OF_HESH = -3,
+                    CULT_OF_HESH = -4,
                     FEUD_CITIZEN = 1,
                     JAKES = 2,
                 },
@@ -370,7 +371,7 @@ local val =  {
             },
             [-1] = {
                 name = "Reduced Taxes",
-                desc = "low tax",
+                desc = "While it is important that public infrastructure to be funded, at the current state, the taxes are just going to corrupted officials. The taxes has taken a huge toll on the people, therefore it should be reduced.",
                 faction_support = {
                     SPARK_BARONS = 3,
                     ADMIRALTY = -4,
@@ -388,7 +389,7 @@ local val =  {
             },
             [0] = {
                 name = "Keep As It Is",
-                desc = "tax is good for now",
+                desc = "The amount of taxes is balanced at the current state, so it is not necessary to change it.",
                 faction_support = {
                     SPARK_BARONS = 1,
                     ADMIRALTY = -1,
@@ -404,7 +405,7 @@ local val =  {
             },
             [1] = {
                 name = "Increase Taxes",
-                desc = "more taxes",
+                desc = "While lots of people don't like taxes, taxes are important tools to maintain public services and infrastructures, as well as reduce the huge wealth inequality that is rampant in Havaria. Therefore, it should be increased.",
                 faction_support = {
                     SPARK_BARONS = -4,
                     ADMIRALTY = 2,
@@ -422,18 +423,19 @@ local val =  {
             },
             [2] = {
                 name = "Max Taxes",
-                desc = "no one likes that, but you don't know that for sure.",
+                desc = "It is important to keep the ruling people funded so that they can provide their services for the people. The taxes collected are all eventually given back to the people. Therefore, taxes should be increased as high as possible, so that public services are properly funded.",
                 faction_support = {
                     SPARK_BARONS = -6,
-                    ADMIRALTY = 5,
-                    CULT_OF_HESH = 4,
+                    ADMIRALTY = 6,
+                    CULT_OF_HESH = 5,
                     RISE = -1,
-                    FEUD_CITIZEN = -3,
-                    JAKES = -2,
+                    FEUD_CITIZEN = -4,
+                    JAKES = -3,
+                    BANDITS = -3,
                 },
                 wealth_support = {
                     -3,
-                    4,
+                    2,
                     -1,
                     -5,
                 },
