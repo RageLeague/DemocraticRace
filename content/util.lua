@@ -479,14 +479,25 @@ function DemocracyUtil.IsWorkplace(location)
 end
 
 function DemocracyUtil.PunishTargetCondition(agent)
+    if agent:IsRetired() or not agent:IsSentient() then
+        return false
+    end
     local reasons = {}
-    if agent:GetRelationship() == RELATIONSHIP.HATED then
+    if not AgentUtil.HasPlotArmour(agent) and agent:GetRelationship() == RELATIONSHIP.HATED then
         table.insert(reasons, LOC"DEMOCRACY.PUNISH_TARGET_REASON.HATRED")
     end
     if AgentUtil.IsCombatTarget(agent) then
         table.insert(reasons, LOC"DEMOCRACY.PUNISH_TARGET_REASON.QUEST_REQ")
     end
     return #reasons > 0, reasons
+end
+
+function DemocracyUtil.GetAllPunishmentTargets()
+    local selector = Selector()
+    selector:FromAllAgents()
+    selector:Where(DemocracyUtil.PunishTargetCondition)
+
+    return selector.candidates
 end
 
 function DemocracyUtil.GetOppositionID(agent)
