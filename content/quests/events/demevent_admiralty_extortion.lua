@@ -64,20 +64,21 @@ QDEF:AddConvo()
             
             DIALOG_EXTORT_SUCCESS = [[
                 player:
-                    [p] i really can't think of anything witty.
-                    just be convinced, okay?
+                    Look at it this way. A common spree bandit've taken your shills AND beat you to a pulp.
+                    At least the Admiralty is the evil you know, not the evil waiting to ambush you.
+                    They keep the streets safe from thieves so you won't be on edge every time you walk home from work.
                 laborer:
-                    fine.
+                    I-I...Hesh damn it, you're right.
                     !angry_permit
-                    take it.
+                    As soon as I get time, i'm filing a report against this.
                 admiralty:
                     !right
-                    i can't believe you did it peacefully.
+                    Sure you will. Have a nice day.
                     !give
-                    here's your share.
+                    Well, thank you {player}. Suppose you can have a bit of this for keeping it civil.
                 player:
                     !take
-                    thank u.
+                    Thank you {admiralty}. I'll be on my way.
             ]],
             DIALOG_EXTORT_FAIL = [[
                 player:
@@ -98,18 +99,30 @@ QDEF:AddConvo()
             ]],
             DIALOG_DEFEND_SUCCESS = [[
                 player:
-                    [p] this is hurting your reputation
-                    there are many people who wants to decrease funding the admiralty
-                    and if you keep doing that, there's going to be more people supporting them.
+                    Here's how I see it. If you, {admiralty}, continue to extort the poor like this.
+                    Well, some might decide you don't deserve as much funding as you get now.
+                    That's going to be a cut in your wages, once they realize YOU'RE the reason the coffers doth runneth dry.
+                    It's a self fuffilling cycle, and you'll end up extorting a lot more people.
+                    And eventually you'll find the one customer you shouldnt've messed with...
                 admiralty:
                     ...
-                    fine, you win.
-                    stupid democracy. it's better to just solve the problem with fists.
+                    Alright, alright, i get it.
+                    Enough with the prophecy. I promise to stop extorting "the poor", as you high n' mighties call them.
+                player:
+                    pinky promise?
+                admiralty
+                    Hesh off...
+                    Stupid democracy...why can't we just solve things the ol' fashioned way?
                     !exit
                 * maybe he's right? remind me why there's democracy in Griftlands again?
                 laborer:
                     !right
-                    thank you. i won't for get this.
+                    Thanks for that. I didn't have anymore sandwiches to squirrel away my cash in.
+                player:
+                    You're welcome?
+                laborer:
+                    No No, thank YOU. I'll be sure to spread the word that you won't put up with this kind of behaviour.
+                * You ponder what reputation will precede you from this encounter. Probably something good.
             ]],
             DIALOG_DEFEND_FAIL = [[
                 player:
