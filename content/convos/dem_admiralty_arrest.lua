@@ -24,7 +24,7 @@ Convo("DEM_ADMIRALTY_ARREST")
             return
         end
 
-        if who and who:GetFactionID() == "ADMIRALTY" then
+        if who and who:GetFactionID() == "ADMIRALTY" and not AgentUtil.HasPlotArmour(who) then
             local all_targets = DemocracyUtil.GetAllPunishmentTargets()
             local is_at_hq = who:GetLocation() and who:GetLocation():GetContentID() == "ADMIRALTY_BARRACKS"
             cxt:Opt("OPT_INVESTIGATE")
@@ -34,12 +34,14 @@ Convo("DEM_ADMIRALTY_ARREST")
                 :Dialog("DIALOG_INVESTIGATE")
                 :LoopingFn(function(cxt)
                     for i, agent in ipairs(all_targets) do
-                        cxt:Opt("OPT_CHOOSE", agent)
-                            :SetPortrait(agent)
-                            :Fn(function(cxt)
-                                cxt:ReassignCastMember("target", agent)
-                                cxt:GoTo("STATE_SELECT_METHOD")
-                            end)
+                        if agent ~= who then
+                            cxt:Opt("OPT_CHOOSE", agent)
+                                :SetPortrait(agent)
+                                :Fn(function(cxt)
+                                    cxt:ReassignCastMember("target", agent)
+                                    cxt:GoTo("STATE_SELECT_METHOD")
+                                end)
+                        end
                     end
                     StateGraphUtil.AddBackButton(cxt)
                         :Dialog("DIALOG_BACK")

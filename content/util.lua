@@ -519,6 +519,17 @@ function DemocracyUtil.GetOppositionData(agent)
     if opid then return DemocracyConstants.opposition_data[opid] end
     return nil
 end
+function DemocracyUtil.DoSentientPromotion(agent, promotion_def)
+    if type(promotion_def) == "string" then
+        promotion_def = Content.GetCharacterDef(promotion_def)
+    end
+
+    TheGame:GetGameState():GetPlayerAgent().graft_owner:RemoveSocialGraft(agent)
+
+    agent:ReinitializeAgent( promotion_def )
+
+    TheGame:GetGameState():GetPlayerAgent().graft_owner:AddSocialGraft(agent, agent:GetRelationship())
+end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator

@@ -70,7 +70,7 @@ QDEF:AddConvo()
                 laborer:
                     I-I...Hesh damn it, you're right.
                     !angry_permit
-                    As soon as I get time, i'm filing a report against this.
+                    As soon as I get time, I'm filing a report against this.
                 admiralty:
                     !right
                     Sure you will. Have a nice day.
@@ -112,9 +112,9 @@ QDEF:AddConvo()
                     pinky promise?
                 admiralty
                     Hesh off...
-                    Stupid democracy...why can't we just solve things the ol' fashioned way?
+                    Stupid democracy... Why can't we just solve things the ol' fashioned way?
                     !exit
-                * maybe he's right? remind me why there's democracy in Griftlands again?
+                * Maybe he's right? Remind me why there's democracy in Griftlands again?
                 laborer:
                     !right
                     Thanks for that. I didn't have anymore sandwiches to squirrel away my cash in.

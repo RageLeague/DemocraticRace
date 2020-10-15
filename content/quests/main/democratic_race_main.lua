@@ -239,6 +239,9 @@ local QDEF = QuestDef.Define
         if not ignore_notification and amt ~= 0 then
             TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GENERAL_SUPPORT, amt, quest:DefFn("GetGeneralSupport") ) 
         end
+        if amt > 0 then
+            TheGame:AddGameplayStat( "gained_general_support", amt )
+        end
     end,
     DeltaFactionSupport = function(quest, amt, faction, ignore_notification)
         faction = DemocracyUtil.ToFactionID(faction)
@@ -246,12 +249,18 @@ local QDEF = QuestDef.Define
         if not ignore_notification and amt ~= 0 then
             TheGame:GetGameState():LogNotification( NOTIFY.DELTA_FACTION_SUPPORT, amt, quest:DefFn("GetFactionSupport", faction), TheGame:GetGameState():GetFaction(faction) ) 
         end
+        if amt > 0 then
+            TheGame:AddGameplayStat( "gained_faction_support_" .. faction, amt )
+        end
     end,
     DeltaWealthSupport = function(quest, amt, renown, ignore_notification)
         local r = DemocracyUtil.GetWealth(renown)
         quest.param.wealth_support[r] = (quest.param.wealth_support[r] or 0) + amt
         if not ignore_notification and amt ~= 0 then
             TheGame:GetGameState():LogNotification( NOTIFY.DELTA_WEALTH_SUPPORT, amt, quest:DefFn("GetWealthSupport", r), r ) 
+        end
+        if amt > 0 then
+            TheGame:AddGameplayStat( "gained_wealth_support_" .. r, amt )
         end
     end,
     -- DeltaFactionSupportAgent = function(quest, amt, agent, ignore_notification)

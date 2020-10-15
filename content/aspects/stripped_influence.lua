@@ -79,13 +79,16 @@ function StrippedInfluence:OnLoseAspect(agent)
     TheGame:GetEvents():RemoveListener(self)
 end
 function StrippedInfluence:OnAgentReady(agent)
-    TheGame:GetEvents():ListenForEvents( self, "agent_relationship_changed")
+    TheGame:GetEvents():ListenForEvents( self, "graft_added")
 end
 
 function StrippedInfluence:OnGlobalEvent(eventname, ...)
-    if eventname == "agent_relationship_changed" then
-        local agent, old_rel, new_rel = ...
-        TheGame:GetGameState():GetPlayerAgent().graft_owner:RemoveSocialGraft(agent)
+    if eventname == "graft_added" then
+        local graft = ...
+        local agent = graft.userdata.agents and graft.userdata.agents[1]
+        if agent == self.agent then
+            TheGame:GetGameState():GetPlayerAgent().graft_owner:RemoveSocialGraft(agent)
+        end
     end
 end
 

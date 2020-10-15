@@ -104,7 +104,15 @@ local QDEF = QuestDef.Define
     saved_from_arrest = {
         delta = OPINION_DELTAS.MAJOR_GOOD,
         txt = "Saved them from Admiralty arrest",
-    }
+    },
+    helped_arrested_bounty = {
+        delta = OPINION_DELTAS.MAJOR_GOOD,
+        txt = "Helped them capture a notorious criminal",
+    },
+    helped_arrested_bounty_interrupted = {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Lead them to capture a notorious criminal, but you tried to intervene",
+    },
 }
 
 QDEF:AddConvo("action")
@@ -328,6 +336,19 @@ QDEF:AddConvo("action")
         end)
     :State("STATE_PROMOTION")
         :Loc{
+            DIALOG_PROMOTION = [[
+                agent:
+                    This person is quite the notorious criminal.
+                    Now I've captured {target.himher}, I'm going to get promoted.
+                    It's all thanks to your lead, {player}.
+                {interrupted?
+                    Even though you tried to interfere in the end.
+                    I have no idea what you're thinking.
+                }
+                ** {agent} will be promoted to an Admiralty Patrol Leader if {agent.heshe} isn't one already.
+                player:
+                    That's great!
+            ]],
             DIALOG_LEAVE = [[
                 player:
                     !left
@@ -361,6 +382,15 @@ QDEF:AddConvo("action")
         }
         :Fn(function(cxt)
             cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("admiralty"))
+            
+            if cxt.quest.param.high_bounty then
+                cxt:Dialog("DIALOG_PROMOTION")
+                if cxt.quest.param.interrupted then
+                    cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("helped_arrested_bounty_interrupted"))
+                else
+                    cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("helped_arrested_bounty"))
+                end
+            end
 
             cxt:Dialog("DIALOG_LEAVE")
             if not DemocracyUtil.LocationUnlocked("ADMIRALTY_BARRACKS") then
@@ -371,6 +401,13 @@ QDEF:AddConvo("action")
             cxt.quest:GetCastMember("target"):Retire()
             cxt.quest:GetCastMember("admiralty"):MoveToLocation(TheGame:GetGameState():GetLocation("ADMIRALTY_BARRACKS"))
             cxt.quest:Complete()
+            if cxt.quest.param.high_bounty then
+                if cxt.quest:GetCastMember("admiralty"):GetContentID() ~= "ADMIRALTY_PATROL_LEADER" then
+                    DemocracyUtil.DoSentientPromotion(cxt.quest:GetCastMember("admiralty"), "ADMIRALTY_PATROL_LEADER")
+                else
+                    -- do something to patrol leader. Haven't figured out what
+                end
+            end
             StateGraphUtil.AddLeaveLocation(cxt)
         end)
     :State("STATE_SAVE_TARGET")
