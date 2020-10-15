@@ -349,10 +349,12 @@ QDEF:AddConvo("action")
                 I was quite disappointed with what you did back there.
                 Oh well. All's well that Maxwell.
                 I mean, ends well.
-                |
-                See you!
             }
+                See you!
                 !exit
+            {interrupted?
+                That was real weird.
+            }
             * You left {agent} to escort {target}.
             * Hopefully you'll never see {target} again.
             ]]

@@ -24,12 +24,12 @@ elite_class:
 
 the_election:
   title: The Election
-  trigger: Election|election
+  trigger: Election|the election
   body: |
     A solution as part of the truce deal. A ruling president will be democratically elected by the people who will rule over Havaria. Theroretically, the elected leader will please most people, as they represents the interest of all these people.
 
 the_truce_deal:
   title: The Truce Deal
-  trigger: Truce Deal|truce deal
+  trigger: Truce Deal|the truce deal|the truce
   body: |
     An event that happened a few weeks before, where all the major factions decided to stop fighting for power with force, and instead, opted for a more peaceful approach. For some reason. As part of the truce deal, an election will take place a few days from now, where a president shall be decided democratically.
