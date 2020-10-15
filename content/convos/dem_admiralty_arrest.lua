@@ -13,6 +13,11 @@ Convo("DEM_ADMIRALTY_ARREST")
         REQ_CANT_DO = "{agent} isn't at the Admiralty Headquarters and isn't your friend.",
         
         OPT_CHOOSE = "Investigate {1#agent}",
+        
+        DIALOG_BACK = [[
+            player:
+                Never mind.
+        ]],
     }
     :Hub(function(cxt, who)
         if not DemocracyUtil.IsDemocracyCampaign(cxt.act_id) then
@@ -29,13 +34,15 @@ Convo("DEM_ADMIRALTY_ARREST")
                 :Dialog("DIALOG_INVESTIGATE")
                 :LoopingFn(function(cxt)
                     for i, agent in ipairs(all_targets) do
-                        cxt:Opt("OPT_CHOOSE")
+                        cxt:Opt("OPT_CHOOSE", agent)
                             :SetPortrait(agent)
                             :Fn(function(cxt)
                                 cxt:ReassignCastMember("target", agent)
                                 cxt:GoTo("STATE_SELECT_METHOD")
                             end)
                     end
+                    StateGraphUtil.AddBackButton(cxt)
+                        :Dialog("DIALOG_BACK")
                 end)
         end
     end)
@@ -56,10 +63,11 @@ Convo("DEM_ADMIRALTY_ARREST")
                 }
                 {is_rival_faction?
                     Our relationship is getting kinda tense with the {rival_id#faction}. We probably don't want to start a war with them.
+                    It might hinder our investigation.
                 }
                 {is_unlawful?
-                    {target} is part of a criminal faction. They are probably guilty.
-                    Although it might be hard to arrest them because of this tie.
+                    {target} is part of a criminal faction. {target.HeShe} is probably guilty.
+                    Although it might be hard to arrest {target.himher} because of this tie.
                 }
                 {not (is_ad or is_rival_faction or is_unlawful)?
                     Everyone's guilty of something.
@@ -90,21 +98,28 @@ Convo("DEM_ADMIRALTY_ARREST")
                 player:
                     Can you do it?
                 agent:
+                    !placate
                     Look, I'm very busy-
                 player:
+                    !thumb
                     Look, we're friends, right?
                 agent:
+                    !dubious
                     And, so?
                 player:
                     Can you do it for the sake of our friendship?
                 agent:
                     ...
+                    !dubious
                     Is that your rea-
                 player:
+                    !happy
                     Please?
                 agent:
                     ...
+                    !sigh
                     Okay, you win.
+                    !point
                     But you owe me a favor.
                 player:
                     Sure.
@@ -116,6 +131,7 @@ Convo("DEM_ADMIRALTY_ARREST")
                 agent:
                     I don't know. Can I?
                 player:
+                    !point
                     You can. And you should. Considering it an order from {1#agent}.
                 agent:
                 {liked?
@@ -123,6 +139,7 @@ Convo("DEM_ADMIRALTY_ARREST")
                 }
                 {not liked?
                     Guess {1#agent} just hands them out like lolipops, huh?
+                    !facepalm
                     Fine, I'll do it.
                 }
             ]],
@@ -132,11 +149,13 @@ Convo("DEM_ADMIRALTY_ARREST")
                 agent:
                     I don't know. Can I?
                 player:
+                    !permit
                     Remember this {1#graft} you gave me?
                 agent:
                     So?
                 player:
-                    It says: {2}.
+                    !neutral_notepad
+                    It says: {2}
                     You are a nearby member of the Admiralty, correct?
                 agent:
                     Oh.
@@ -145,28 +164,25 @@ Convo("DEM_ADMIRALTY_ARREST")
                 player:
                     You see? You gotta help me.
                 agent:
+                    !thought
                     Wait, the investigation isn't a battle or a negotiation.
                 player:
                     Simple.
                     This modpack allows more uses of {1#graft} other than asking people to help me.
                     This is a way to buff {1#graft} and make it more useful.
                 agent:
+                    !shrug
                     I have no idea what you're talking about, but since we're friends, I'll do it.
                 player:
+                    !happy
                     Thanks.
             ]],
             OPT_NEVER_MIND = "Never Mind",
             DIALOG_NEVER_MIND = [[
                 player:
-                    I've got nothing.
+                    Never mind.
                 agent:
-                {liked?
-                    You must understand, we all have duties.
-                    Right now, I don't have much time for this.
-                    |
-                    ...
-                    Thanks for wasting my time.
-                }
+                    Okay...?
             ]], 
         }
         :Fn(function(cxt)
@@ -222,4 +238,47 @@ Convo("DEM_ADMIRALTY_ARREST")
             end 
 
             cxt:Dialog("DIALOG_SELECT")
+
+            for i, dialog in ipairs(arrest_params.additional_dialogs) do
+                cxt:RawDialog(dialog)
+            end
+
+            local function AddFollowup()
+                local overrides = {
+                    cast = {
+                        admiralty = cxt:GetAgent(),
+                        target = target,
+                    },
+                    parameters = arrest_params,
+                }
+                QuestUtil.SpawnQuest("FOLLOWUP_ADMIRALTY_ARREST", overrides)
+            end
+
+            cxt:Opt("OPT_CALL_IN_FAVOR")
+                :ReqRelationship( RELATIONSHIP.LOVED )
+                :Dialog("DIALOG_CALL_IN_FAVOR")
+                :ReceiveOpinion(OPINION.CALL_IN_FAVOUR)
+                :Fn(AddFollowup)
+            local graft = cxt.player.graft_owner:FindGraft(function(graft)
+                if graft.id == "authorization" then
+                    return not graft:GetDef().OnCooldown( graft )
+                end
+                return false
+            end)
+            if graft then
+                local graft_provider = graft.userdata.agents[1]
+                cxt:Opt("OPT_USE_AUTHORIZATION", graft)
+                    :Fn(function(cxt)
+                        if cxt:GetAgent() == graft_provider then
+                            cxt:Dialog("DIALOG_USE_AUTHORIZATION_SELF", graft, graft:GetDesc())
+                        else
+                            cxt:Dialog("DIALOG_USE_AUTHORIZATION", graft_provider)
+                        end
+                        graft:GetDef().StartCooldown( graft ) 
+                        AddFollowup()
+                    end)
+            end
+            cxt:Opt("OPT_NEVER_MIND")
+                :Dialog("DIALOG_NEVER_MIND")
+                :Pop()
         end)

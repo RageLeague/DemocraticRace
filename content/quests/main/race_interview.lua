@@ -292,7 +292,7 @@ QDEF:AddConvo("do_interview")
             end
             cxt:Opt("OPT_DO_INTERVIEW")
                 :Negotiation{
-                    situation_modifier = {
+                    situation_modifiers = {
                         { value = 20, text = cxt:GetLocString("SIT_MOD") }
                     },
                     on_success = function(cxt, minigame)

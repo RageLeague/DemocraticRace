@@ -79,7 +79,11 @@ QDEF:AddConvo(nil, "primary_advisor")
         cxt:Opt("OPT_CHECK_SUPPORT")
             :Dialog("DIALOG_CHECK_SUPPORT", DemocracyUtil.TryMainQuestFn("GetGeneralSupport"))
             :Fn(function(cxt)
-                TheGame:FE():InsertScreen( DemocracyClass.Screen.SupportScreen() )
+                cxt:Wait()
+                TheGame:FE():InsertScreen( DemocracyClass.Screen.SupportScreen(nil, function(screen)
+                    cxt.enc:ResumeEncounter()
+                end) )
+                cxt.enc:YieldEncounter()
             end)
             
         if not cxt:GetAgent():GetBrain():IsOnDuty() then

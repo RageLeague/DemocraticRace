@@ -228,7 +228,7 @@ local convo = QDEF:AddConvo()
                             cxt.quest.param.loc_to_unlock = PickLocationUnlockForAgent(who, unlock_type)
                             
                             if cxt.quest.param.loc_to_unlock then
-                                if table.arraycontains(TheGame:GetGameState():GetMainQuest().param.unlocked_locations, cxt.quest.param.loc_to_unlock) then
+                                if DemocracyUtil.LocationUnlocked(cxt.quest.param.loc_to_unlock) then
                                     cxt:Dialog("DIALOG_ALREADY_UNLOCKED")
                                 else
                                     cxt:GetAgent():Remember("OFFERED_BOON")

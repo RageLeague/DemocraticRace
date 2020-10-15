@@ -23,8 +23,9 @@ SupportScreen.CONTROL_MAP = {
     {
         control = Controls.Digital.MENU_CANCEL,
         fn = function(self)
-            AUDIO:PlayEvent( "event:/ui/grafts_menu/close" )
-            self:FadeOut()
+            -- AUDIO:PlayEvent( "event:/ui/grafts_menu/close" )
+            -- self:FadeOut()
+            self:OnClickClose()
             return true
         end,
         hint = function(self, left, right)
@@ -34,13 +35,13 @@ SupportScreen.CONTROL_MAP = {
 }
 
 
-function SupportScreen:init( owner, locked )
+function SupportScreen:init( owner, on_end_fn )
     SupportScreen._base.init( self )
 
     self:SetupUnderlay( true )
     self:SetAnchors( "center", "center" )
     
-    self.locked = locked
+    -- self.locked = locked
 
     -- Start assembling our screen
     -- Get the screen size
@@ -128,11 +129,12 @@ function SupportScreen:init( owner, locked )
     self.bottom_left = self:AddChild( Widget() ):SetAnchors( "left", "bottom" )
     self.close_button = self.bottom_left:AddChild( Widget.IconButton( LOC"UI.OVERLAYS.CLOSE", 
         function()
-            AUDIO:PlayEvent( "event:/ui/grafts_menu/close" )
-            self:FadeOut()
+            self:OnClickClose()
         end ) )
     self.close_button:SetIcon( global_images.close )
     self.close_button:LayoutBounds( "left", "above", 60, 60 )
+
+    self.on_end_fn = on_end_fn
     
     self:Refresh()
 end
@@ -144,6 +146,22 @@ function SupportScreen:HandleControlDown(control, device)
     elseif control:Has( Controls.Digital.SCROLL_UP ) then
         self.scroll:ScrollUp()
         return true
+    end
+end
+
+function SupportScreen:OnClickClose()
+    AUDIO:PlayEvent( SoundEvents.card_select_screen_close )
+
+    if self.on_end_fn then
+        self.on_end_fn( self )
+    end
+
+    self:Close()
+end
+
+function SupportScreen:Close()
+    if self:IsOnStack() then
+        self:FadeOut()
     end
 end
 

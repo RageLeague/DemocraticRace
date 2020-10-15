@@ -209,6 +209,12 @@ function DemocracyUtil.DoLocationUnlock(cxt, id)
         print("Location already unlocked: "..id)
     end
 end
+function DemocracyUtil.LocationUnlocked(id)
+    if not TheGame:GetGameState():GetMainQuest().param.unlocked_locations then 
+        return false
+    end
+    return table.arraycontains(TheGame:GetGameState():GetMainQuest().param.unlocked_locations, id)
+end
 
 -- Get wealth based on renown.
 function DemocracyUtil.GetWealth(renown)
