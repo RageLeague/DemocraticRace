@@ -126,11 +126,13 @@ local convo = QDEF:AddConvo()
             OPT_SHOW_CARD = "Show that you already have a {1#card}",
             DIALOG_SHOW_CARD = [[
                 player:
-                    [p] it's okay, friend, i already have one.
+                    You needn´t expend the breath. I´ve already got on of your leaflets
                 agent:
                 {support?
-                    wow. you must be really supportive of the cause.
-                    if Kalandra isn't running, i would've voted for you.
+                    Wow. You're ahead of the curve in all ways.
+                    Y´know, If the people won vote for our candidate, Kalandra
+                    !miscpersuasive
+                    I'll tell them you're the next best pick.
                 }
                 {doubt?
                     hold on, where did you get that?
@@ -284,6 +286,25 @@ local convo = QDEF:AddConvo()
                     [p] i actually do support the Rise.
                 {sal?
                     in fact, my parents are the leader of the Rise movement 10 years ago.
+                }
+                {rook?
+                    You ever heard of the Spy hired to help the Rise back in those bread fields?
+                agent:
+                    Well of course, they´re name was spread around the headquarters in celebration.
+                    Unfortunately, they quickly died afterwards and became fodder for the flead larvae.
+                player:
+                    Hmm. By chance, was their name Falcon?
+                agent:
+                    !TakenAback
+                }
+                {smith?
+                    !happyjoke
+                    I love all of you mischevious types.
+                agent:
+                    You say that like we´re a joke.
+                    Thatś not the reputation you want to have.
+                player:
+                    Oh no, it´s not that.
                 }
                     it's just that, i'm a politician now, and i have to be careful with what i'm saying.
                     back in the Bog, letting people know you support the Rise is basically a death sentence.
