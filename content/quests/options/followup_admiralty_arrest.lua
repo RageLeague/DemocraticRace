@@ -113,11 +113,25 @@ local QDEF = QuestDef.Define
         delta = OPINION_DELTAS.LIKE,
         txt = "Lead them to capture a notorious criminal, but you tried to intervene",
     },
+    abandoned = {
+        delta = OPINION_DELTAS.DISLIKE,
+        txt = "Abandoned them",
+    },
 }
 
 QDEF:AddConvo("action")
     :Confront(function(cxt)
         if cxt.location:HasTag("in_transit") and TheGame:GetGameState():CanSpawnTravelEvent() then
+            local target = cxt.quest:GetCastMember("target")
+            local target_rank = TheGame:GetGameState():GetCurrentBaseDifficulty() - 2 + math.floor(target:GetRenown() / 2)
+            if target_rank > 0 then
+                CreateCombatBackup(target, target.combat_backup or "MERCENARY_BACKUP", target_rank)
+            end
+            local admiralty = cxt.quest:GetCastMember("admiralty")
+            local ad_rank = TheGame:GetGameState():GetCurrentBaseDifficulty() - 3 + math.ceil(admiralty:GetRenown() / 2)
+            if ad_rank > 0 then
+                CreateCombatBackup(admiralty, "ADMIRALTY_PATROL_BACKUP", ad_rank)
+            end
             -- if cxt.quest.param.dominate then
                 return "STATE_DOMINATE"
             -- elseif cxt.quest.param.defeated then
@@ -304,13 +318,14 @@ QDEF:AddConvo("action")
                 cxt.quest:GetCastMember("target"):GainAspect("stripped_influence", 5)
                 cxt:GoTo("STATE_PROMOTION")
             end
+            cxt.quest:GetCastMember("target"):ClearParty()
             cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("target"))
             cxt:Dialog("DIALOG_INTRO")
             cxt:Opt("OPT_TAUNT")
                 :Dialog("DIALOG_TAUNT")
                 :Fn(ArrestFn)
             local sitmod = {
-                { value = 10, text = cxt:GetLocString("SIT_MOD_BASE") }
+                { value = 15, text = cxt:GetLocString("SIT_MOD_BASE") }
             }
             if cxt.quest.param.is_ad then
                 table.insert(sitmod, { value = -10, text = cxt:GetLocString("SIT_MOD_AD") })
@@ -332,6 +347,224 @@ QDEF:AddConvo("action")
                 :Fn(function(cxt)
                     cxt.quest.param.interrupted = true
                     ArrestFn(cxt)
+                end)
+        end)
+    :State("STATE_IMPASSE")
+        :Loc{
+            DIALOG_INTRO = [[
+                * You see {admiralty} and {agent} is about to start a fight.
+                agent:
+                    !right
+                admiralty:
+                    !left
+                    Are you going to come quiet or not?
+                agent:
+                    Fat chance.
+                * Suddenly, they saw you.
+                player:
+                    !left
+                agent:
+                {disliked?
+                    What do <i>you</> want?
+                    |
+                    Grifter! Help me!
+                }
+                admiralty:
+                    !right
+                    Just in time, {player}. Let's finish this.
+            ]],
+
+            OPT_STAND_ASIDE = "Stand aside and watch",
+
+            DIALOG_STAND_ASIDE = [[
+                player:
+                    I'll let you guys figure it out.
+                admiralty:
+                    !right
+                    Wait, where are you going?
+                player:
+                    !exit
+                    !wait
+                admiralty:
+                    !fight
+                    Alright then.
+                agent:
+                    !left
+                    Catch me if you can!
+                * You stood aside, watching those two figure out stuff.
+            ]],
+
+            DIALOG_STAND_ASIDE_WIN = [[
+                * The battle was tough.
+                * Eventually, {admiralty} came out on top.
+                * {admiralty} bounded {agent} before looking at you angrily.
+                player:
+                    !left
+                admiralty:
+                    !right
+                    !angry
+                    Why did you leave me?
+                player:
+                    I don't do combats. Not anymore.
+                admiralty:
+                    You are the one who wanted {agent} gone, and when it's actually happening, you're just going to do nothing?
+                agent:
+                    !right
+                    !surprised
+                    You what?
+                admiralty:
+                    !right
+                    I'm taking {agent} to the station.
+                {high_bounty?
+                    The Admiralty will remember that <i>I</> single-handedly apprehended a notorious criminal, while <i>you</> did nothing.
+                }
+                {liked?
+                    Thanks for the help, <i>friend</>.
+                    |
+                    Goodbye.
+                }
+                    !exit
+                * {admiralty.HeShe} left, leaving you wonder whether you did the right thing.
+            ]],
+
+            DIALOG_STAND_ASIDE_LOSE = [[
+                * The battle was tough.
+                * Eventually, {admiralty} died to the hands of {agent}.
+                agent:
+                    !right
+                {disliked?
+                    Now that I dealt with that {is_ad?traitor|switch}, now I'll deal with you!
+                    * You will have to defend yourself!
+                }
+                {not disliked?
+                    Thanks for nothing, grifter!
+                    !exit
+                    * That was a rather horrible turn of event.
+                }
+            ]],
+
+            DIALOG_DEFEND_WIN = [[
+                {dead?
+                    * The body's piling up today around you. That's not going to be good for your reputation.
+                }
+                {not dead?
+                    agent:
+                        !injured
+                    player:
+                        Are you done now?
+                    agent:
+                        Guess so.
+                    player:
+                        Now get out of here, before I change my mind.
+                    agent:
+                        It was a mistake sparing me.
+                        !exit
+                    * You wonder whether that is true.
+                }
+            ]],
+
+            OPT_DEMORALIZE = "Demoralize {target}",
+
+            SIT_MOD_TARGET = "{target} is not going to give up that easily!",
+
+            DIALOG_DEMORALIZE = [[
+                agent:
+                    !right
+                player:
+                    It's over, {agent}.
+                    You don't stand a chance against us.
+                agent:
+                    I doubt it.
+            ]],
+
+            DIALOG_DEMORALIZE_SUCCESS = [[
+                player:
+                    [p] You might be able to take on {admiralty}, but us both? You won't stand a chance.
+                agent:
+                    Oh no I'm scared.
+                    Okay, you win.
+                    I'll take my chances.
+                admiralty:
+                    !right
+                    Wow, that actually worked.
+            ]],
+
+            DIALOG_DEMORALIZE_FAILURE = [[
+                player:
+                    So? You wanna try me?
+                agent:
+                    !dubious
+                    You don't look so fit.
+                    When was the last time you actually fought, huh?
+                player:
+                    !thought
+                    Well, uhh...
+                agent:
+                    That's what I thought.
+            ]],
+
+            DIALOG_DEMORALIZE_FAILURE_FIGHT = [[
+                agent:
+                    !fight
+                player:
+                    !fight
+                    Fine, let's rumble.
+            ]],
+        }
+        :RunLoopingFn(function(cxt)
+            if cxt:FirstLoop() then
+                cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("target"))
+
+                cxt:Dialog("DIALOG_INTRO")
+            end
+            if not cxt.quest.param.tried_negotiate_target then
+                cxt:BasicNegotiation("DEMORALIZE",{
+                    flags = NEGOTIATION_FLAGS.INTIMIDATION,
+                    target_agent = cxt.quest:GetCastMember("target"),
+                    situation_modifiers = {{ value = 10, text = cxt:GetLocString("SIT_MOD_TARGET") }},
+                    helpers = {"admiralty"},
+                }):OnSuccess()
+                    :Fn(function(cxt)
+                        cxt.quest:GetCastMember("target"):OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
+                        cxt.quest:GetCastMember("target"):GainAspect("stripped_influence", 5)
+                    end)
+                    :GoTo("STATE_PROMOTION")
+                :OnFailure()
+                    :Fn(function(cxt)
+                        cxt.quest.param.tried_negotiate_target = true
+                    end)
+            end
+
+            cxt:Opt("OPT_STAND_ASIDE")
+                :Dialog("DIALOG_STAND_ASIDE")
+                :Fn(function(cxt)
+                    if math.random() < 0.5 then
+                        cxt:Dialog("DIALOG_STAND_ASIDE_WIN")
+                        cxt.quest:GetCastMember("target"):OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
+                        cxt.quest:GetCastMember("target"):GainAspect("stripped_influence", 5)
+                        cxt.quest:GetCastMember("target"):Retire()
+                        cxt.quest:GetCastMember("admiralty"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("abandoned"))
+                        cxt.quest:Complete()
+                        StateGraphUtil.AddLeaveLocation(cxt)
+                    else
+                        cxt:Dialog("DIALOG_STAND_ASIDE_LOSE")
+                        cxt.quest:GetCastMember("admiralty"):Kill()
+                        DemocracyUtil.DeltaAgentSupport(-5, cxt.quest:GetCastMember("admiralty"))
+                        
+                        if cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL then
+                            -- cxt.quest:GetCastMember("target"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("abandoned"))
+                            cxt:Opt("OPT_DEFEND")
+                                :Battle{
+                                    flags = BATTLE_FLAGS.SELF_DEFENCE,
+                                }
+                                :OnWin()
+                                    :Dialog("DIALOG_DEFEND_WIN")
+                                    :Travel()
+                        else
+                            cxt.quest:GetCastMember("target"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("abandoned"))
+                            StateGraphUtil.AddLeaveLocation(cxt)
+                        end
+                    end
                 end)
         end)
     :State("STATE_PROMOTION")

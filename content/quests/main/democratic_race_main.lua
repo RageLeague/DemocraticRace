@@ -44,7 +44,8 @@ local DEATH_DELTA = -10
 local ISOLATED_DEATH_DELTA = -3
 
 -- Determines the support change if you didn't kill someone, but you're an accomplice
-local ACCOMPLICE_KILLING_DELTA = -7
+-- or someone dies from neglegience
+local ACCOMPLICE_KILLING_DELTA = -5
 local QDEF = QuestDef.Define
 {
     title = "The Democratic Race",
@@ -132,11 +133,7 @@ local QDEF = QuestDef.Define
         agent_relationship_changed = function( quest, agent, old_rel, new_rel )
             local support_delta = DELTA_SUPPORT[new_rel] - DELTA_SUPPORT[old_rel]
             if support_delta ~= 0 then
-                local ignore = true
-                quest:DefFn("DeltaGeneralSupport", support_delta, ignore)
-                quest:DefFn("DeltaFactionSupport", support_delta, agent, ignore)
-                quest:DefFn("DeltaWealthSupport", support_delta, agent, ignore)
-                TheGame:GetGameState():LogNotification( NOTIFY.DELTA_AGENT_SUPPORT, support_delta, agent ) 
+                quest:DefFn("DeltaAgentSupport", support_delta, agent)
             end
             -- if new_rel == RELATIONSHIP.LOVED and old_rel ~= RELATIONSHIP.LOVED then
             --     TheGame:GetGameState():GetCaravan():DeltaMaxResolve(1)
@@ -145,13 +142,13 @@ local QDEF = QuestDef.Define
         resolve_battle = function( quest, battle, primary_enemy, repercussions )
             for i, fighter in battle:AllFighters() do
                 local agent = fighter.agent
-                if agent:IsSentient() and agent:IsDead() and fighter:GetKiller() and fighter:GetKiller():IsPlayer() then
-                    local support_delta = CheckBits( battle:GetScenario():GetFlags(), BATTLE_FLAGS.ISOLATED ) and ISOLATED_DEATH_DELTA or DEATH_DELTA
-                    local ignore = true
-                    quest:DefFn("DeltaGeneralSupport", support_delta, ignore)
-                    quest:DefFn("DeltaFactionSupport", support_delta, agent, ignore)
-                    quest:DefFn("DeltaWealthSupport", support_delta, agent, ignore)
-                    TheGame:GetGameState():LogNotification( NOTIFY.DELTA_AGENT_SUPPORT, support_delta, agent )
+                if agent:IsSentient() and agent:IsDead() then
+                    if fighter:GetKiller() and fighter:GetKiller():IsPlayer() then
+                        local support_delta = CheckBits( battle:GetScenario():GetFlags(), BATTLE_FLAGS.ISOLATED ) and ISOLATED_DEATH_DELTA or DEATH_DELTA
+                        quest:DefFn("DeltaAgentSupport", support_delta, agent)
+                    else
+                        quest:DefFn("DeltaAgentSupport", ACCOMPLICE_KILLING_DELTA, agent)
+                    end
                 end
             end
             if not CheckBits( battle:GetScenario():GetFlags(), battle_defs.BATTLE_FLAGS.SELF_DEFENCE ) then
@@ -261,6 +258,15 @@ local QDEF = QuestDef.Define
         end
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_wealth_support_" .. r, amt )
+        end
+    end,
+
+    DeltaAgentSupport = function(quest, amt, agent, ignore_notification)
+        quest:DefFn("DeltaGeneralSupport", amt, true)
+        quest:DefFn("DeltaFactionSupport", amt, agent, true)
+        quest:DefFn("DeltaWealthSupport", amt, agent, true)
+        if not ignore_notification and amt then
+            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_AGENT_SUPPORT, amt, agent ) 
         end
     end,
     -- DeltaFactionSupportAgent = function(quest, amt, agent, ignore_notification)
