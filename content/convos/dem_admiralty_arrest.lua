@@ -1,3 +1,5 @@
+local FOLLOWUP = "FOLLOWUP_ADMIRALTY_ARREST"
+
 Convo("DEM_ADMIRALTY_ARREST")
     :Loc{
         OPT_INVESTIGATE = "Convince {agent} to investigate someone...",
@@ -25,6 +27,13 @@ Convo("DEM_ADMIRALTY_ARREST")
         end
 
         if who and who:GetFactionID() == "ADMIRALTY" and not AgentUtil.HasPlotArmour(who) then
+            for i, quest in ipairs(who:GetActiveQuests()) do
+                print(quest:GetContentID())
+                if quest:GetContentID() == FOLLOWUP and quest:GetCastAgent( "admiralty" ) == who then
+                    return
+                end
+            end
+
             local all_targets = DemocracyUtil.GetAllPunishmentTargets()
             local is_at_hq = who:GetLocation() and who:GetLocation():GetContentID() == "ADMIRALTY_BARRACKS"
             cxt:Opt("OPT_INVESTIGATE")
@@ -253,7 +262,8 @@ Convo("DEM_ADMIRALTY_ARREST")
                     },
                     parameters = arrest_params,
                 }
-                QuestUtil.SpawnQuest("FOLLOWUP_ADMIRALTY_ARREST", overrides)
+                QuestUtil.SpawnQuest(FOLLOWUP, overrides)
+                StateGraphUtil.AddEndOption(cxt)
             end
 
             cxt:Opt("OPT_CALL_IN_FAVOR")

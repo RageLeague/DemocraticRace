@@ -1,0 +1,26 @@
+tag_scores:
+  tavern: 0
+
+lines:
+
+- tags: [investigation_greeting, player]
+  dialog:
+  - How's the investigation?
+  - Is the investigation going okay?
+
+- tags: [investigation_greeting, player, tavern]
+  dialog:
+  - What are you doing in a bar?
+  - Aren't you supposed to be investigating?
+
+- tags: [investigation_greeting, agent]
+  dialog:
+  - The investigation is coming up.
+  - Investigations takes <i>time</>.
+  - I'm still trying to find evidence.
+
+- tags: [investigation_greeting, agent, tavern]
+  dialog:
+  - I like to drink while doing detective works.
+  - You'd be surprised how much information you can get from taverns.
+  - Maybe I can ask one of the patrons here for more info.
