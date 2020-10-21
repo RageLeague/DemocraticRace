@@ -179,6 +179,10 @@ local QDEF = QuestDef.Define
         delta = OPINION_DELTAS.DISLIKE,
         txt = "Abandoned them",
     },
+    saved_them = {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Saved their life, but let a criminal go",
+    },
 }
 
 QDEF:AddConvo("action")
@@ -194,13 +198,13 @@ QDEF:AddConvo("action")
             if ad_rank > 0 then
                 CreateCombatBackup(admiralty, "ADMIRALTY_PATROL_BACKUP", ad_rank)
             end
-            -- if cxt.quest.param.dominate then
-            --     return "STATE_DOMINATE"
-            -- elseif cxt.quest.param.defeated then
-            --     return "STATE_DEFEATED"
-            -- else
+            if cxt.quest.param.dominate then
+                return "STATE_DOMINATE"
+            elseif cxt.quest.param.defeated then
+                return "STATE_DEFEATED"
+            else
                 return "STATE_IMPASSE"
-            -- end
+            end
         end
     end)
     :Loc{
@@ -317,6 +321,46 @@ QDEF:AddConvo("action")
             {target_dead?
                 * Nothing else to do here but leave.
             }
+        ]],
+
+        OPT_DEMORALIZE = "Demoralize {target}",
+
+        SIT_MOD_TARGET = "{1#agent} is not going to give up that easily!",
+
+        DIALOG_DEMORALIZE = [[
+            agent:
+                !right
+            player:
+                It's over, {agent}.
+                You don't stand a chance against us.
+            agent:
+                I doubt it.
+        ]],
+
+        DIALOG_DEMORALIZE_SUCCESS = [[
+            player:
+                You might be able to take on {admiralty}, but us both? You won't stand a chance.
+            agent:
+                Oh no I'm scared.
+                Okay, you win.
+                I'll take my chances.
+            admiralty:
+                !right
+                Wow, that actually worked.
+        ]],
+
+        DIALOG_DEMORALIZE_FAILURE = [[
+            player:
+                So? You wanna try me?
+            agent:
+                !dubious
+                You don't look so fit.
+                When was the last time you actually fought, huh?
+            player:
+                !thought
+                Well, uhh...
+            agent:
+                That's what I thought.
         ]],
     }
     :State("STATE_DOMINATE")
@@ -535,6 +579,7 @@ QDEF:AddConvo("action")
                 opt:GoTo("STATE_PROMOTION")
             end
             cxt.quest:GetCastMember("target"):ClearParty()
+            cxt.quest:GetCastMember("target").health:SetPercent(math.random() * 0.2 + 0.4)
             cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("target"))
             cxt:Dialog("DIALOG_INTRO")
 
@@ -731,46 +776,6 @@ QDEF:AddConvo("action")
                     player:
                         Now what do I do with you?
                 }
-            ]],
-
-            OPT_DEMORALIZE = "Demoralize {target}",
-
-            SIT_MOD_TARGET = "{1#agent} is not going to give up that easily!",
-
-            DIALOG_DEMORALIZE = [[
-                agent:
-                    !right
-                player:
-                    It's over, {agent}.
-                    You don't stand a chance against us.
-                agent:
-                    I doubt it.
-            ]],
-
-            DIALOG_DEMORALIZE_SUCCESS = [[
-                player:
-                    You might be able to take on {admiralty}, but us both? You won't stand a chance.
-                agent:
-                    Oh no I'm scared.
-                    Okay, you win.
-                    I'll take my chances.
-                admiralty:
-                    !right
-                    Wow, that actually worked.
-            ]],
-
-            DIALOG_DEMORALIZE_FAILURE = [[
-                player:
-                    So? You wanna try me?
-                agent:
-                    !dubious
-                    You don't look so fit.
-                    When was the last time you actually fought, huh?
-                player:
-                    !thought
-                    Well, uhh...
-                agent:
-                    That's what I thought.
             ]],
 
             OPT_TARGET_FIGHT = "Attack {1#agent}",
@@ -1027,6 +1032,207 @@ QDEF:AddConvo("action")
                         -- end
                     end
                 end)
+        end)
+    :State("STATE_DEFEATED")
+        :Loc{
+            DIALOG_INTRO = [[
+                * You arrive at the scene.
+                * Seems that {admiralty} isn't doing too good.
+                admiralty:
+                    !left
+                    !injured
+                target:
+                    !right
+                    !angry
+                * They haven't see you yet.
+            ]],
+            OPT_SLIP_AWAY = "Slip away before anyone notices",
+            DIALOG_SLIP_AWAY = [[
+                * You left those two to figure out amongst themselves.
+                admiralty:
+                    !exit
+                * Surely enough, they figured out a solution. And that solution is taking {admiralty}'s head.
+                * There's nothing you can do about it.
+                * At least, that is what you told yourself.
+            ]],
+
+            SIT_MOD_HIGH_MORALE = "{target} just won a battle against {admiralty}",
+            OPT_CONVINCE_SPARE = "Convince {target} to spare {admiralty}",
+
+            DIALOG_CONVINCE_SPARE = [[
+                player:
+                    !left
+                    Can you leave {admiralty} alone?
+                target:
+                    What?
+                    Why should I?
+                    Give me a good reason?
+            ]],
+
+            DIALOG_CONVINCE_SPARE_SUCCESS = [[
+                player:
+                {is_ad?
+                    Look, you're both Admiralty right?
+                    So you know {admiralty.heshe}'s just doing {admiralty.hisher} job, you know?
+                    I'm sure {admiralty.heshe} learned {admiralty.hisher} lesson.
+                    No need to get violent.
+                target:
+                    !sigh
+                    True.
+                }
+                {not is_ad?
+                    You kill {admiralty} now, and you commit a crime that the Admiralty can't ignore.
+                    Best let it slide, eh?
+                    I'm sure {admiralty} will turn a blind eye on whatever you did.
+                target:
+                    !thought
+                    That sounds way more convenient.
+                }
+                admiralty:
+                    !left
+                    !injured
+                target:
+                    You know what, how about a deal.
+                    You leave quiet, and I let you actually leave.
+                admiralty:
+                    I guess I don't have a choice, do I?
+                target:
+                    You can choose to die, if that's what you want.
+                admiralty:
+                    Fine. I'll leave quiet.
+                    !exit
+                * You saved {admiralty}, but you can't deal with {target}.
+                * Maybe this is for the best.
+            ]],
+            DIALOG_CONVINCE_SPARE_FAILURE = [[
+                player:
+                    Would your conscience allow that?
+                target:
+                    That's a terrible reason.
+            ]],
+
+            OPT_LEAVE = "Leave",
+
+            DIALOG_LEAVE = [[
+                player:
+                    Sorry for bothering you. I'll see my self out.
+                target:
+                    You'd better be.
+                admiralty:
+                    !right
+                    Wait, where you're going.
+                player:
+                    Leaving.
+                    I don't want to be caught up in this mess.
+                    !exit
+                * You left. Immediately after, {target} killed {admiralty}.
+                * At least you're still alive... and you haven't attacked anyone...
+                * ...but was it worth it?
+            ]],
+
+            OPT_ATTACK = "Attack {target} to save {admiralty}",
+            DIALOG_ATTACK = [[
+                player:
+                    !fight
+                    Fine, you want to do this the hard way, then.
+            ]],
+            DIALOG_ATTACK_WIN = [[
+                {dead?
+                    admiralty:
+                        !right
+                        {target.HeShe}'s dead, huh?
+                    player:
+                        !shrug
+                        Guess so.
+                    admiralty:
+                        Thanks for saving me.
+                        And taking down a criminal.
+                }
+                {not dead?
+                    target:
+                        !right
+                        !injured
+                    player:
+                    {pleaded?
+                        You should've quit while you're ahead.
+                        Look where you've ended up now.
+                        |
+                        I tried to talk some sense to you, but you wouldn't listen.
+                        I guess you need some bruises to come to your senses, huh?
+                    }
+                    target:
+                        You win.
+                        What do you want from me now.
+                    admiralty:
+                        !left
+                        You come with me, to the station.
+                }
+            ]],
+        }
+        :Fn(function(cxt)
+            local function AttackPhase(cxt)
+                cxt:Opt("OPT_ATTACK")
+                    :Dialog("DIALOG_ATTACK")
+                    :Battle{
+                        enemies = admiralty:GetParty() and admiralty:GetParty():GetMembers() or {admiralty},
+                    }:OnWin()
+                        :Dialog("DIALOG_ATTACK_WIN")
+                        :GoTo("STATE_PROMOTION")
+                if cxt.quest:GetCastMember("target"):GetRelationship() > RELATIONSHIP.HATED then
+                    cxt:Opt("OPT_LEAVE")
+                        :Dialog("DIALOG_LEAVE")
+                        :Fn(function(cxt)
+                            cxt.quest:GetCastMember("admiralty"):Kill()
+                            DemocracyUtil.DeltaAgentSupport(-5, cxt.quest:GetCastMember("admiralty"))
+                        end)
+                        :FailQuest()
+                        :Travel()
+                end
+            end
+            cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("target"))
+            cxt:Dialog("DIALOG_INTRO")
+
+            cxt:Opt("OPT_SLIP_AWAY")
+                :Dialog("DIALOG_SLIP_AWAY")
+                :Fn(function(cxt)
+                    cxt.quest:GetCastMember("admiralty"):Kill()
+                end)
+                :FailQuest()
+                :Travel()
+            cxt:BasicNegotiation("DEMORALIZE",{
+                    flags = NEGOTIATION_FLAGS.INTIMIDATION,
+                    target_agent = target,
+                    situation_modifiers = {{ value = 25, text = cxt:GetLocString("SIT_MOD_HIGH_MORALE") }},
+                    helpers = {"admiralty"},
+                }):OnSuccess()
+                    -- :Fn(function(cxt)
+                    --     target:OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
+                    --     -- target:GainAspect("stripped_influence", 5)
+                    -- end)
+                    :ReceiveOpinion(OPINION.SOLD_OUT_TO_ADMIRALTY, nil, "target")
+                    :GoTo("STATE_PROMOTION")
+                :OnFailure()
+                    :Fn(function(cxt)
+                        AttackPhase(cxt)
+                    end)
+            cxt:BasicNegotiation("CONVINCE_SPARE",{
+                -- flags = NEGOTIATION_FLAGS.INTIMIDATION,
+                target_agent = target,
+                -- situation_modifiers = {{ value = 25, text = cxt:GetLocString("SIT_MOD_HIGH_MORALE") }},
+                helpers = {"admiralty"},
+                }):OnSuccess()
+                    :Fn(function(cxt)
+                        -- target:OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
+                        -- target:GainAspect("stripped_influence", 5)
+                    end)
+                    :ReceiveOpinion("saved_them", nil, "admiralty")
+                    :CompleteQuest()
+                    :Travel()
+                :OnFailure()
+                    :Fn(function(cxt)
+                        cxt.quest.param.pleaded = true
+                        AttackPhase(cxt)
+                    end)
         end)
     :State("STATE_PROMOTION")
         :Loc{
