@@ -531,6 +531,15 @@ function DemocracyUtil.DoSentientPromotion(agent, promotion_def)
     TheGame:GetGameState():GetPlayerAgent().graft_owner:AddSocialGraft(agent, agent:GetRelationship())
 end
 
+function DemocracyUtil.AddUnlockedLocationMarks(t, condition)
+    for i, id in ipairs(TheGame:GetGameState():GetMainQuest().param.unlocked_locations) do
+        local location = TheGame:GetGameState():GetLocation(id)
+        if not condition or condition(location) then
+            table.insert(t, location)
+        end
+    end
+end
+
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator
 

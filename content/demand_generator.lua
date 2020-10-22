@@ -271,6 +271,88 @@ local DEMANDS = {
                 end)
         end,
     },
+    demand_favor = {
+        name = "Demand Favor",
+        title = "call for a favor",
+
+        desc = "This modifier will remove itself after {1} {1*turn|turns}.\nWhen destroyed by the player, {2} will stop demanding you from calling in a favor(reducing your relationship with them).",
+
+        desc_fn = function(self, fmt_str)
+            local rval = loc.format(fmt_str, self.stacks or 4, Negotiation.Modifier.GetOwnerName(self))
+            return rval
+        end,
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+        common_demand = true,
+
+        event_handlers =
+        {
+
+            [ EVENT.END_PLAYER_TURN ] = function( self, minigame )
+                self.negotiator:DeltaModifier(self, -1)
+                AUDIO:PlayEvent("event:/sfx/battle/cards/neg/bonus_tick_down")
+            end
+
+        },
+
+        OnInit = function( self, source )
+            self:SetResolve( 10 + 5 * self.engine:GetDifficulty() )
+            AUDIO:PlayEvent("event:/sfx/battle/cards/neg/create_argument/bonus")
+        end,
+        -- ApplyData = function(self, data)
+        --     self.issue = DemocracyConstants.issue_data[data.issue_id]
+        --     self.stance = self.issue:GetStance(data.stance)
+        --     self:NotifyChanged()
+        -- end,
+        max_demand_use = 1,
+        
+        OnBounty = function( self, card )
+            local demand_list = self.engine.demand_list
+            local demand_data = self.demand_data
+            if demand_list then
+                local money_entry
+                for i, entry in ipairs(demand_list) do
+                    if entry.id == self.id then
+                        money_entry = entry
+                        break
+                    end
+                end
+                if money_entry then
+                    table.arrayremove(demand_list, money_entry)
+                    demand_data.resolved = true
+                end
+            end
+            DemocracyUtil.CheckHeavyHanded(self, card, self.engine)
+        end,
+        
+        GenerateDemand = function(self, pts, data) -- takes in pts for points allocated to this demand
+            if not (data.agent and data.agent:GetRelationship() > RELATIONSHIP.NEUTRAL) then
+                print("Require friendly relationship")
+                return
+            end
+            local cost = 100
+            if pts >= cost then
+                return cost, {id = self.id}
+            end
+        end,
+        ParseDemandList = function(self, data, t)
+            table.insert(t, shallowcopy(data))
+        end,
+        GenerateConvoOption = function(self, cxt, opt, data, demand_modifiers)
+            opt:PreIcon( global_images.order )
+                -- :Dialog("DEMAND_STRING.DIALOG_ACCEPT_MONEY")
+                :ReceiveOpinion(OPINION.CALL_IN_FAVOUR)
+                :Fn(function(cxt)
+                    data.resolved = true
+                    for i, modifier in ipairs(demand_modifiers) do
+                        if modifier.id == self.id then
+                            modifier.resolved = true
+                            return
+                        end
+                    end
+                end)
+        end,
+    },
 }
 local COMMON_DEMANDS = {}
 local function AddDemandModifier(id, data)
@@ -286,7 +368,11 @@ for id, data in pairs(DEMANDS) do
     AddDemandModifier(id, data)
 end
 
-local function GenerateDemands(pts, agent, rank, variance, additional_demands, forced_demands)
+local function GenerateDemands(pts, agent, rank, _params)
+    local variance, additional_demands, forced_demands, blocked_demands = 
+        _params.variance, _params.additional_demands,
+        _params.forced_demands, _params.blocked_demands
+
     local available_demands = table.merge(COMMON_DEMANDS, additional_demands or {})
     local demand_uses = {}
     local demands = {}
@@ -306,6 +392,10 @@ local function GenerateDemands(pts, agent, rank, variance, additional_demands, f
         end
         assert(id, "id required")
         if not table.arraycontains(available_demands, id) then
+            return
+        end
+        if blocked_demands and table.arraycontains(blocked_demands, id) then
+            table.arrayremove(available_demands, id)
             return
         end
         local modifier = Content.GetNegotiationModifier(id)

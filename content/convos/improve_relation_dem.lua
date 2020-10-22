@@ -84,7 +84,9 @@ Convo("IMPROVE_RELATION_DEM")
                     :LoopingFn(function(cxt)
                         if not who:HasMemory("IMPROVE_RELATIONSHIP_DEMANDS") then
                             local LOVED_GIFT_COST = 70 * math.max(2, math.max(cxt:GetAgent():GetRenown(), cxt:GetAgent():GetCombatStrength()))
-                            local demands = DemocracyUtil.GenerateDemands(LOVED_GIFT_COST, who)
+                            local demands = DemocracyUtil.GenerateDemands(LOVED_GIFT_COST, who, nil, {
+                                blocked_demands = {"demand_favor"}
+                            })
                             local demand_list = DemocracyUtil.ParseDemandList(demands)
                             who:Remember("IMPROVE_RELATIONSHIP_DEMANDS", demands)
                             who:Remember("IMPROVE_RELATIONSHIP_DEMAND_LIST", demand_list)

@@ -94,7 +94,7 @@ local QDEF = QuestDef.Define
     reward_mod = 0,
     extra_reward = false,
     precondition = function(quest)
-        return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and true or false
+        return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")
     end,
     on_init = function(quest)
         -- quest.param.debated_people = 0
