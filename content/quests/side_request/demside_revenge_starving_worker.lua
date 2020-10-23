@@ -452,7 +452,7 @@ QDEF:AddConvo("take_your_heart", "foreman")
                     :LoopingFn(function(cxt)
                         if cxt:FirstLoop() then
                             if not cxt.quest.param.demands then
-                                local rawcost = cxt.quest:GetRank() * 80 + 120
+                                local rawcost = TheGame:GetGameState():GetCurrentBaseDifficulty() * 80 + 120
                                 if cxt.quest.param.probed_info then
                                     rawcost = math.round(rawcost * 0.75)
                                 end

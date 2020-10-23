@@ -372,7 +372,9 @@ local function GenerateDemands(pts, agent, rank, _params)
     local variance, additional_demands, forced_demands, blocked_demands = 
         _params.variance, _params.additional_demands,
         _params.forced_demands, _params.blocked_demands
-
+    if _params.auto_scale then
+        pts = CalculatePayment(agent, pts)
+    end
     local available_demands = table.merge(COMMON_DEMANDS, additional_demands or {})
     local demand_uses = {}
     local demands = {}
@@ -444,6 +446,12 @@ local function ParseDemandList(demand_list)
     return l
 end
 
+local function GenerateDemandList(...)
+    local demands = GenerateDemands(...)
+    local demand_list = ParseDemandList(demands)
+    return demands, demand_list
+end
+
 function ConvoOption:DemandNegotiation(data)
     local params = shallowcopy(data)
     local demand_modifiers = data.demand_modifiers
@@ -474,4 +482,5 @@ return {
     AddDemandModifier = AddDemandModifier,
     GenerateDemands = GenerateDemands,
     ParseDemandList = ParseDemandList,
+    GenerateDemandList = GenerateDemandList,
 }
