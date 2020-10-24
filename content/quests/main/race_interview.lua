@@ -251,7 +251,7 @@ QDEF:AddConvo("do_interview")
         :Fn(function(cxt)
             cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("host"))
             cxt:Dialog("DIALOG_INTRO")
-            cxt:GetAgent().temp_negotiation_behaviour = INTERVIEWER_BEHAVIOR
+            cxt:GetAgent():SetTempNegotiationBehaviour(INTERVIEWER_BEHAVIOR)
             local agent_supports = {}
             for i, agent in cxt.quest:GetCastMember("theater"):Agents() do
                 if agent:GetBrain():IsPatronizing() then

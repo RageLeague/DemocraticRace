@@ -258,7 +258,7 @@ QDEF:AddConvo("go_to_diner", "benefactor")
             :SetQuestMark(cxt.quest)
             :Dialog("DIALOG_TALK")
             :Fn(function(cxt)
-                cxt:GetAgent().temp_negotiation_behaviour = BENEFACTOR_BEHAVIOR
+                cxt:GetAgent():SetTempNegotiationBehaviour(BENEFACTOR_BEHAVIOR)
             end)
             :Negotiation{
                 flags = NEGOTIATION_FLAGS.NO_BYSTANDERS,

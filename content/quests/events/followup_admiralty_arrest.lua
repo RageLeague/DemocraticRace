@@ -88,18 +88,18 @@ local QDEF = QuestDef.Define
     events = 
     {
         action_clock_advance = function(quest, location)
-            -- if quest.param.dormant_start_time ~= Now() then
-            --     quest.param.dormant_timer = (quest.param.dormant_timer or 0) - 1
-            --     if quest.param.dormant_timer <= 0 then
+            if quest.param.dormant_start_time ~= Now() then
+                quest.param.dormant_timer = (quest.param.dormant_timer or 0) - 1
+                if quest.param.dormant_timer <= 0 then
                     quest:Complete("wait")
                     -- if math.random(1, 10) <= quest.param.guilt_score then
                         quest:Activate("action")
                     -- else
                     --     quest:Activate("innocent")
                     -- end
-            --     end
+                end
 
-            -- end
+            end
         end,
     },
 
@@ -110,7 +110,7 @@ local QDEF = QuestDef.Define
             quest:Complete("wait")
             quest:Activate("action")
         else
-            quest.param.dormant_timer = quest.param.investigate_difficulty - math.random(0,3)
+            quest.param.dormant_timer = quest.param.investigate_difficulty - math.random(0,5)
             -- if wait_for_next_time then
             quest.param.dormant_start_time = Now()
         end
@@ -120,7 +120,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "action",
     on_activate = function(quest)
-        local score = (quest.param.arrest_difficulty or 5) + math.random(-2,2)
+        local score = (quest.param.arrest_difficulty or 5) + math.random(-3,3)
         if score <= 3 then
             quest.param.dominate = true
         elseif score >= 7 then

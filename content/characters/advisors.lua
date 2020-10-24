@@ -24,7 +24,7 @@ local chars =
 	{
         base_def = "PRIEST_PROMOTED",
         -- bio = "Your first mistake is listening to Benni. Your second mistake is believing in her.",
-        bio = "After a freak lumin accident, Benni grew two extra fingers on each hand and the ability to speak really fact. I mean, <i>really</>, really fast.",
+        bio = "Benni is different from other kra'deshi. No, it isn't because she has five fingers on each hand, but it is because she can convince you otherwise. Probably.",
         name = "Benni",
         title = "Priest",
 

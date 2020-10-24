@@ -170,7 +170,7 @@ QDEF:AddConvo("go_to_junction")
             cxt.quest:Complete("go_to_junction")
             cxt.quest:Activate("preach")
             cxt.enc:SetPrimaryCast(cxt.quest.param.crowd[1])
-            cxt:GetAgent().temp_negotiation_behaviour = CROWD_BEHAVIOR
+            cxt:GetAgent():SetTempNegotiationBehaviour(CROWD_BEHAVIOR)
             CROWD_BEHAVIOR.agents = cxt.quest.param.crowd
 
             local postProcessingFn = function(cxt, minigame)

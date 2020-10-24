@@ -183,12 +183,27 @@ QDEF:AddConvo("commission")
                     You might be tempted to write a lot, but people will be too intimidated by your wall of text.
                     Best to keep it short, but to the point.
             ]],
+
+            OPT_START = "Start writing",
+
+            DIALOG_START = [[
+                player:
+                    I'm ready to start.
+                agent:
+                    Excellent!
+            ]],
         }
-        :RunLoopingFn(function(cxt)
+        :Fn(function(cxt)
+            if not cxt.quest.param.cards then
+                cxt.quest.param.cards = {}
+            end
             cxt:Question("OPT_HINT", "DIALOG_HINT")
             -- yeah havent figured out what to do with it.
-            cxt:Opt("OPT_DONE")
-                :MakeUnder()
+            cxt:Opt("OPT_START")
+                :Dialog("DIALOG_START")
+                :Negotiation{
+                    
+                }
         end)
 
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )

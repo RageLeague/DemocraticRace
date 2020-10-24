@@ -834,6 +834,53 @@ local MODIFIERS =
             end
         }
     },
+
+    POSTER_SIMULATION_ENVIRONMENT = {
+        name = "Simulation Environment",
+        desc = "You are writing a propaganda poster in a simulation environment. This will record cards that you play onto your poster.\n\nYou can end the negotiation at any time if you concede, and you won't suffer any penalties.",
+        alt_desc = "(Recorded Cards: {1#comma_listing})",
+
+        desc_fn = function(self, fmt_str)
+            if self.cards_played and #self.cards_played > 0 then
+                local txt = {}
+                for i, card in ipairs(self.cards_played) do
+                    table.insert(txt, loc.format("{1#card}", card))
+                end
+                return fmt_str .. "\n\n" .. loc.format((self.def or self):GetLocalizedString("ALT_DESC"), txt)
+            end
+            return fmt_str
+        end,
+        modifier_type = MODIFIER_TYPE.PERMANENT,
+        max_stacks = 1,
+        OnInit = function(self)
+            self.cards_played = {}
+        end,
+        CanBeRecorded = function(self, card)
+            -- we don't want unplayable cards to be recorded. and we also don't want opponent cards to be recorded.
+            return self.engine:GetPlayerNegotiator() == card.negotiator and 
+                not CheckBits( card.flags, CARD_FLAGS.UNPLAYABLE ) and
+                not CheckAnyBits( card.flags, CARD_FLAGS.BYSTANDER ) and card.played_from_hand
+        end,
+
+        event_handlers = {
+            [ EVENT.START_RESOLVE ] = function(self, minigame, card)
+                if self:CanBeRecorded(card) and not self.resolve_card then
+                    self.is_allowed = true
+                    -- we only want the card the player directly plays from hand to be recorded.
+                    -- "at sorcery speed", so to speak.
+                    self.resolve_card = card
+                end
+            end,
+            [ EVENT.END_RESOLVE ] = function(self, minigame, card)
+                if self.resolve_card == card then
+                    self.resolve_card = nil
+                    if self.is_allowed then
+                        table.insert(self.cards_played, card.id)
+                    end
+                end
+            end,
+        },
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
