@@ -48,9 +48,12 @@ QDEF:AddConvo()
                     !injured
                 * You see {admiralty} trying to extort {laborer}.
                 admiralty:
-                    Hand over the money and you'll be fine.
+                    It's nothing personal, believe me. Hand over the money or else
                 laborer:
-                    Please.. I need this to feed my family.
+                    Really? How much could I give you that a jake couldn't give?
+                admiralty:
+                    You keep bringing that up whenever we do this song and dance. It's gotten old.
+                    Spill the shills or I spill your guts.
 
             ]],
             
@@ -58,13 +61,13 @@ QDEF:AddConvo()
             DIALOG_EXTORT = [[
                 player:
                     !left
-                    [p] give {admiralty.himher} the money, it's for your own good.
+                    I know that this looks bad on the Admiralty, but you really aren't getting the burnt end in this arrangement.
             ]],
             
             
             DIALOG_EXTORT_SUCCESS = [[
                 player:
-                    Look at it this way. A common spree bandit've taken your shills AND beat you to a pulp.
+                    Look at it this way. A common spree bandit would've taken your shills AND beat you to a pulp.
                     At least the Admiralty is the evil you know, not the evil waiting to ambush you.
                     They keep the streets safe from thieves so you won't be on edge every time you walk home from work.
                 laborer:
@@ -82,11 +85,12 @@ QDEF:AddConvo()
             ]],
             DIALOG_EXTORT_FAIL = [[
                 player:
-                    [p] think of what the Admiralty has done for your safety.
+                    You may think this is all the admiralty is, but I guarantee to you, {admiralty} is the exception, not the rule.
                 laborer:
-                    you joking? that's what you came up with?
-                    you're so out of touch with reality.
-                    politicians like you should stay out of our affairs.
+                    An exception just above the rule, you mean.
+                    Face it, you're the privileged politician who doesn't have to deal with this.
+                    You're probably just saying that to garner support from the Admiralty.
+                    Politicians like you should stay out of our civilian affairs.
             ]],
 
             OPT_DEFEND = "Convince {admiralty} to leave {laborer} alone",
@@ -95,7 +99,7 @@ QDEF:AddConvo()
                     !right
                 player:
                     !left
-                    [p] here's why you shouldn't extort {laborer.himher}.
+                    It's clear you aren't thinking long term about your career. Let me enlighten you for a moment.
             ]],
             DIALOG_DEFEND_SUCCESS = [[
                 player:
@@ -103,13 +107,14 @@ QDEF:AddConvo()
                     Well, some might decide you don't deserve as much funding as you get now.
                     That's going to be a cut in your wages, once they realize YOU'RE the reason the coffers doth runneth dry.
                     It's a self fuffilling cycle, and you'll end up extorting a lot more people.
+                    !throatcut
                     And eventually you'll find the one customer you shouldnt've messed with...
                 admiralty:
                     ...
                     Alright, alright, i get it.
                     Enough with the prophecy. I promise to stop extorting "the poor", as you high n' mighties call them.
                 player:
-                    pinky promise?
+                    Pinky promise?
                 admiralty
                     Hesh off...
                     Stupid democracy... Why can't we just solve things the ol' fashioned way?
@@ -126,11 +131,12 @@ QDEF:AddConvo()
             ]],
             DIALOG_DEFEND_FAIL = [[
                 player:
-                    [p] this isn't your job. your job is to protect people, not extort them.
+                    Aren't your wages enough? Extorting people is a rather quick way to lose your badge.
                 admiralty:
-                    why are you telling me what is and isn't my job?
-                    you're not my boss.
-                    politicians like you should stay out of our affairs.
+                    Well i'll keep it blunt, to save your time.
+                    These people think the Admiralty should be de-funded. That'd mean I don't get payed as much.
+                    By your logic, i'm the smart one because i'm getting headstart on the robbing people process.
+                    Now if you're done butting into our business, I'd like to continue with this transaction.
             ]],
 
             OPT_LEAVE = "Leave before anyone sees you",
