@@ -850,7 +850,7 @@ local MODIFIERS =
             end
             return fmt_str
         end,
-        modifier_type = MODIFIER_TYPE.PERMANENT,
+        modifier_type = MODIFIER_TYPE.CORE,
         max_stacks = 1,
         OnInit = function(self)
             self.cards_played = {}
@@ -880,6 +880,12 @@ local MODIFIERS =
                 end
             end,
         },
+    },
+    SIMULATION_ARGUMENT = {
+        name = "Simulation Argument",
+        desc = "It literally does nothing. It's just there.",
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+        max_resolve = 30,
     },
 }
 for id, def in pairs( MODIFIERS ) do

@@ -16,6 +16,18 @@ local function IsArtist(agent)
     end)
 end
 
+local DRAFT_BEHAVIOUR = {
+	OnInit = function( self, difficulty )
+		-- self.bog_boil = self:AddCard("bog_boil")
+		self:SetPattern( self.BasicCycle )
+        self.negotiator:AddModifier("POSTER_SIMULATION_ENVIRONMENT")
+    end,
+
+    BasicCycle = function( self, turns )
+        -- literally does nothing.
+	end,
+}
+
 local QDEF = QuestDef.Define
 {
     title = "Information Warfare",
@@ -30,9 +42,9 @@ local QDEF = QuestDef.Define
     on_start = function(quest)
         quest:Activate("commission")
     end,
-    precondition = function(quest)
-        return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")
-    end,
+    -- precondition = function(quest)
+    --     return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")
+    -- end,
 }
 :AddObjective{
     id = "commission",
@@ -197,12 +209,27 @@ QDEF:AddConvo("commission")
             if not cxt.quest.param.cards then
                 cxt.quest.param.cards = {}
             end
+            cxt:GetAgent():SetTempNegotiationBehaviour(DRAFT_BEHAVIOUR)
             cxt:Question("OPT_HINT", "DIALOG_HINT")
             -- yeah havent figured out what to do with it.
             cxt:Opt("OPT_START")
                 :Dialog("DIALOG_START")
                 :Negotiation{
-                    
+                    on_start_negotiation = function(minigame)
+                        local negotiation_defs = require "negotiation/negotiation_defs"
+                        local CARD_FLAGS = negotiation_defs.CARD_FLAGS
+
+                        for i, card in minigame:GetDrawDeck():Cards() do
+                            if CheckBits( def.card, CARD_FLAGS.ITEM ) then
+                                card:TransferCard( minigame:GetTrashDeck() )
+                            end
+                        end
+                        for i = 1, 3 do
+                            minigame:GetPlayerNegotiator():CreateModifier( "SIMULATION_ARGUMENT", 1 )
+                            minigame:GetOpponentNegotiator():CreateModifier( "SIMULATION_ARGUMENT", 1 )
+                        end
+                    end,
+                    finish_negotiation_anytime = true,
                 }
         end)
 
