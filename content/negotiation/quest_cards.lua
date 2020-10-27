@@ -206,6 +206,32 @@ local CARDS = {
             end
         end,
     },
+
+    propaganda_poster = 
+    {
+        name = "Propaganda Poster",
+        desc = "{IMPRINT}\nCreate a propaganda poster argument with the cards imprinted on this card.",
+        flavour = "Imprinted Cards:\n{1}",
+        flavour_fn = function( self, fmt_str )
+            if self == nil then
+                return ""
+            else
+                if self.userdata.imprints then
+                    local res = ""
+                    for i, card in ipairs(self.userdata.imprints) do
+                        res = res .. loc.format("{1#card}\n", card)
+                    end
+                    return loc.format(fmt_str, res)
+                end
+                return ""
+            end
+        end,
+        
+        cost = 2,
+        max_charges = 3,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
+        rarity = CARD_RARITY.UNIQUE,
+    }
 }
 for id, def in pairs( CARDS ) do
     if not def.series then
@@ -219,6 +245,11 @@ local FEATURES = {
     {
         name = "Changing Stance",
         desc = "You have already taken a stance on this issue. Changing it may make people think you're hypocritical, and you might lose support!",
+    },
+    IMPRINT =
+    {
+        name = "Imprint",
+        desc = "Some cards are imprinted on this object through special means, and they will affect the behaviour of this object.",
     },
 }
 for id, data in pairs(FEATURES) do

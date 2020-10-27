@@ -853,7 +853,9 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.CORE,
         max_stacks = 1,
         OnInit = function(self)
-            self.cards_played = {}
+            if not self.cards_played then
+                self.cards_played = {}
+            end
         end,
         CanBeRecorded = function(self, card)
             -- we don't want unplayable cards to be recorded. and we also don't want opponent cards to be recorded.
@@ -862,10 +864,16 @@ local MODIFIERS =
                 not CheckAnyBits( card.flags, CARD_FLAGS.BYSTANDER ) and card.played_from_hand
         end,
 
+        CheckAllowRecord = function(self, source)
+            if source and source == self.resolve_card then
+                self.is_allowed = true
+            end
+        end,
+
         event_handlers = {
             [ EVENT.START_RESOLVE ] = function(self, minigame, card)
                 if self:CanBeRecorded(card) and not self.resolve_card then
-                    self.is_allowed = true
+                    self.is_allowed = false
                     -- we only want the card the player directly plays from hand to be recorded.
                     -- "at sorcery speed", so to speak.
                     self.resolve_card = card
@@ -878,6 +886,21 @@ local MODIFIERS =
                         table.insert(self.cards_played, card.id)
                     end
                 end
+            end,
+            [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+                self:CheckAllowRecord(source)
+            end,
+            [ EVENT.DELTA_COMPOSURE ] =  function( self, modifier, new_value, old_value, source, start_of_turn )
+                self:CheckAllowRecord(source)
+            end,
+            [ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
+                self:CheckAllowRecord(source)
+            end,
+            [ EVENT.MODIFIER_CHANGED ] = function( self, modifier, delta, clone, source )
+                self:CheckAllowRecord(source)
+            end,
+            [ EVENT.MODIFIER_REMOVED ] = function ( self, modifier, source )
+                self:CheckAllowRecord(source)
             end,
         },
     },

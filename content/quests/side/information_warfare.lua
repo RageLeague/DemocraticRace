@@ -204,6 +204,26 @@ QDEF:AddConvo("commission")
                 agent:
                     Excellent!
             ]],
+
+            DIALOG_FINISH = [[
+                player:
+                    Done.
+                {artist?
+                agent:
+                    !permit
+                    Okay, so here's the poster.
+                    Do you like it?
+                player:
+                    !take
+                    Let's see...
+                |
+                agent:
+                    Are you happy with your creation?
+                player:
+                    !thought
+                    I don't know. I gotta take a look.
+                }
+            ]],
         }
         :Fn(function(cxt)
             if not cxt.quest.param.cards then
@@ -211,7 +231,16 @@ QDEF:AddConvo("commission")
             end
             cxt:GetAgent():SetTempNegotiationBehaviour(DRAFT_BEHAVIOUR)
             cxt:Question("OPT_HINT", "DIALOG_HINT")
+
+            local recorded_cards = {}
             -- yeah havent figured out what to do with it.
+            local function ProcessFn(cxt, minigame)
+                cxt:Dialog("DIALOG_FINISH")
+                local cards = cxt:GainCards({"propaganda_poster"})
+                DBG(cards)
+                cards[1].userdata.imprints = shallowcopy(recorded_cards)
+                cxt:BasicNegotiation("START") -- for testing purpose.
+            end
             cxt:Opt("OPT_START")
                 :Dialog("DIALOG_START")
                 :Negotiation{
@@ -228,8 +257,11 @@ QDEF:AddConvo("commission")
                             minigame:GetPlayerNegotiator():CreateModifier( "SIMULATION_ARGUMENT", 1 )
                             minigame:GetOpponentNegotiator():CreateModifier( "SIMULATION_ARGUMENT", 1 )
                         end
+                        minigame:GetOpponentNegotiator():FindCoreArgument().cards_played = recorded_cards
                     end,
                     finish_negotiation_anytime = true,
+                    on_success = ProcessFn,
+                    on_fail = ProcessFn,
                 }
         end)
 
