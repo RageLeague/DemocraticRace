@@ -910,6 +910,25 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.ARGUMENT,
         max_resolve = 30,
     },
+    TIME_CONSTRAINT = {
+        name = "Time Is Money",
+        desc = "Every 2 turns in this negotiation, you lose a free time action for the current quest.\n<#PENALTY>The negotiation will end if you ran out of actions for the quest!</>\n({1} actions left on the quest)",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.stacks)
+        end,
+        modifier_type = MODIFIER_TYPE.PERMANENT,
+        -- max_stacks = 1,
+        event_handlers = {
+            [ EVENT.BEGIN_PLAYER_TURN ] = function ( self, minigame )
+                if minigame:GetTurns() % 2 == 0 then
+                    self.negotiator:RemoveModifier(self, 1)
+                end
+                if self.stacks <= 0 then
+                    minigame:Lose()
+                end
+            end,
+        },
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )

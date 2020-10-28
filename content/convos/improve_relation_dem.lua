@@ -103,7 +103,7 @@ Convo("IMPROVE_RELATION_DEM")
                             
                         -- end
 
-                        local payed_all = DemocracyUtil.AddDemandConvo(cxt, demand_list, demands, true)
+                        local payed_all = DemocracyUtil.AddDemandConvo(cxt, demand_list, demands, false)
                         if payed_all then
                             cxt:Dialog("DIALOG_IMPROVE_RELATIONSHIP_PST")
                             who:OpinionEvent(OPINION.DEEPENED_RELATIONSHIP)

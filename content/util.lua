@@ -399,7 +399,7 @@ function DemocracyUtil.CheckHeavyHanded(modifier, card, minigame)
 end
 
 -- returns true if all demands are met. false if not, and also add options to negotiate
-function DemocracyUtil.AddDemandConvo(cxt, demand_list, demand_modifiers, block_negotiation)
+function DemocracyUtil.AddDemandConvo(cxt, demand_list, demand_modifiers, haggle_condition)
     local has_unresolved_demand = false
     for i, demand_data in ipairs(demand_list) do
         if not demand_data.resolved then
@@ -410,53 +410,56 @@ function DemocracyUtil.AddDemandConvo(cxt, demand_list, demand_modifiers, block_
     -- this is done so that for each convo state so that an agent can only be negotiated once. Ever
     -- if you have to do more than one demand convo for a particular state, something's wrong with you.
     local ask_demand_param_id = "ASKED_DEMAND_" .. cxt:GetContentID() .. "_" .. cxt:GetStateID()
-    if not cxt:GetAgent():HasMemory(ask_demand_param_id) and not block_negotiation then
+    if not cxt:GetAgent():HasMemory(ask_demand_param_id) and haggle_condition ~= false then
         local new_demands = deepcopy(demand_list)
         local original_demands = deepcopy(demand_list)
-        cxt:Opt("OPT_NEGOTIATE_TERMS")
+        local opt = cxt:Opt("OPT_NEGOTIATE_TERMS")
             :PostText("TT_NEGOTIATE_TERMS")
             :Dialog("DIALOG_NEGOTIATE_TERMS")
-            :DemandNegotiation{
-                demand_modifiers = demand_modifiers,
-                demand_list = new_demands,
-                cooldown = 0xffffff, -- you're not getting another negotiation
-                on_success = function(cxt, minigame)
-                    table.clear(demand_list)
-                    for i, data in ipairs(new_demands) do
-                        if not data.resolved then
-                            table.insert(demand_list, data)
-                        end
+        if type(haggle_condition) == "function" then
+            haggle_condition(opt)
+        end
+        opt:DemandNegotiation{
+            demand_modifiers = demand_modifiers,
+            demand_list = new_demands,
+            cooldown = 0xffffff, -- you're not getting another negotiation
+            on_success = function(cxt, minigame)
+                table.clear(demand_list)
+                for i, data in ipairs(new_demands) do
+                    if not data.resolved then
+                        table.insert(demand_list, data)
                     end
-                    local diff = table_diff(demand_list, original_demands)
-                    if diff then
-                        TheGame:GetDebug():CreatePanel(DebugTable(diff))
+                end
+                local diff = table_diff(demand_list, original_demands)
+                -- if diff then
+                --     TheGame:GetDebug():CreatePanel(DebugTable(diff))
+                -- else
+                --     print("no change lul")
+                -- end
+                if #demand_list <= 0 then
+                    if minigame.nuke_card then
+                        cxt:Dialog("DIALOG_NEGOTIATE_TERMS_CHEATER_FACE", type(minigame.nuke_card) == "table" and minigame.nuke_card[1] or minigame.nuke_card)
+                        cxt:GetAgent():OpinionEvent(OPINION.USED_HEAVY_HANDED)
                     else
-                        print("no change lul")
+                        cxt:Dialog("DIALOG_NEGOTIATE_TERMS_PERFECT_SUCCESS")
                     end
-                    if #demand_list <= 0 then
-                        if minigame.nuke_card then
-                            cxt:Dialog("DIALOG_NEGOTIATE_TERMS_CHEATER_FACE", type(minigame.nuke_card) == "table" and minigame.nuke_card[1] or minigame.nuke_card)
-                            cxt:GetAgent():OpinionEvent(OPINION.USED_HEAVY_HANDED)
-                        else
-                            cxt:Dialog("DIALOG_NEGOTIATE_TERMS_PERFECT_SUCCESS")
-                        end
-                    elseif not diff then
-                        cxt:Dialog("DIALOG_NEGOTIATE_TERMS_NO_REDUCTION", demand_list)
-                    else
-                        if minigame.nuke_card then
-                            cxt:Dialog("DIALOG_NEGOTIATE_TERMS_CHEATER_FACE", type(minigame.nuke_card) == "table" and minigame.nuke_card[1] or minigame.nuke_card)
-                            cxt:GetAgent():OpinionEvent(OPINION.USED_HEAVY_HANDED)
-                        end
-                        cxt:Dialog("DIALOG_NEGOTIATE_TERMS_SUCCESS", demand_list)
+                elseif not diff then
+                    cxt:Dialog("DIALOG_NEGOTIATE_TERMS_NO_REDUCTION", demand_list)
+                else
+                    if minigame.nuke_card then
+                        cxt:Dialog("DIALOG_NEGOTIATE_TERMS_CHEATER_FACE", type(minigame.nuke_card) == "table" and minigame.nuke_card[1] or minigame.nuke_card)
+                        cxt:GetAgent():OpinionEvent(OPINION.USED_HEAVY_HANDED)
                     end
+                    cxt:Dialog("DIALOG_NEGOTIATE_TERMS_SUCCESS", demand_list)
+                end
 
-                    cxt:GetAgent():Remember(ask_demand_param_id)
-                end,
-                on_fail = function(cxt) 
-                    cxt:Dialog("DIALOG_NEGOTIATE_TERMS_FAIL")
-                    cxt:GetAgent():Remember(ask_demand_param_id)
-                end,
-            }
+                cxt:GetAgent():Remember(ask_demand_param_id)
+            end,
+            on_fail = function(cxt) 
+                cxt:Dialog("DIALOG_NEGOTIATE_TERMS_FAIL")
+                cxt:GetAgent():Remember(ask_demand_param_id)
+            end,
+        }
     end
     for i, demand_data in ipairs(demand_list) do
         if not demand_data.resolved then

@@ -41,7 +41,18 @@ local QDEF = QuestDef.Define
     extra_reward = false,
     on_start = function(quest)
         quest:Activate("commission")
+        quest.param.actions = 8
     end,
+    events = 
+    {
+        caravan_move_location = function(quest, location)
+            if location:HasTag("road") then
+                if quest.param.actions then
+                    quest.param.actions = quest.param.actions - 1
+                end
+            end
+        end,
+    },
     -- precondition = function(quest)
     --     return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")
     -- end,
@@ -63,13 +74,140 @@ local QDEF = QuestDef.Define
 }
 :AddObjective{
     id = "post",
+    mark = function(quest, t, in_location)
+        if in_location then
+            local location = TheGame:GetGameState():GetPlayerAgent():GetLocation()
+            if not (quest.param.posted_location and table.arraycontains(quest.param.posted_location, location:GetContentID())) then
+                if location:GetContent().patron_data then
+                    table.insert(location:GetProprietor())
+                end
+            end
+        else
+            DemocracyUtil.AddUnlockedLocationMarks(t, function(location)
+                return location:GetContent().patron_data and location:GetProprietor() and
+                    not (quest.param.posted_location and table.arraycontains(quest.param.posted_location, location:GetContentID()))
+            end)
+        end
+    end,
+}
+:AddObjective{
+    id = "out_of_time",
 }
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
-
+QDEF:AddConvo()
+    :ConfrontState("STATE_OUT_OF_TIME", function(cxt)
+        if cxt.quest.param.actions and cxt.quest.param.actions <= 0 and not cxt.quest:IsActive("out_of_time") then
+            return true
+        end
+        return false
+    end)
+        :Loc{
+            DIALOG_INTRO = [[
+                * Unfortunately, you ran out of time.
+                * Time to check in with {primary_advisor} and see how you did.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+            if cxt.quest:IsActive("commission") then
+                cxt.quest:Fail("commission")
+            end
+            if cxt.quest:IsActive("post") then
+                cxt.quest:Cancel("post")
+            end
+            cxt.quest:Activate("out_of_time")
+            StateGraphUtil.AddLeaveLocation(cxt)
+        end)
+QDEF:AddConvo("post")
+    :Loc{
+        OPT_ASK = "Convince {agent} to post a poster",
+        DIALOG_ASK = [[
+            player:
+                So, can I post a poster here?
+            agent:
+                I don't know, can you?
+            player:
+                You would think that the same joke would stop become funny after some time, right?
+        ]],
+        DIALOG_ASK_SUCCESS = [[
+            player:
+                I think I can.
+            agent:
+                Sure, why not.
+                Which one are you posting?
+        ]],
+        DIALOG_ASK_FAILURE = [[
+            agent:
+                I don't think you can.
+            player:
+                Dang!
+        ]],
+        OPT_SELECT = "Select {1#card}",
+        DIALOG_SELECT = [[
+            player:
+                !permit
+                How about this one?
+            agent:
+                Sure, I guess.
+        ]],
+        OPT_NO_OPT = "Uhh...",
+        DIALOG_NO_OPT = [[
+            player:
+                So, uhh...
+            agent:
+                What?
+            player:
+                I lost my poster.
+                Somehow.
+            agent:
+                !dubious
+                Seriously?
+                Thanks for wasting my time.
+        ]],
+    }
+    :Hub(function(cxt, who)
+        if who and cxt.location and cxt.location:GetProprietor() == who then
+            local location = cxt.location
+            if location:GetContent().patron_data and not (quest.param.posted_location and table.arraycontains(quest.param.posted_location, location:GetContentID())) then
+                cxt:Opt("OPT_ASK")
+                    :Dialog("DIALOG_ASK")
+                    :Negotiation{
+                        on_success = function(cxt)
+                            cxt:Dialog("DIALOG_ASK_SUCCESS")
+                            local posters = {}
+                            for i, card in ipairs(cxt.player.negotiator.cards.cards) do
+                                if card.id == "propaganda_poster" then
+                                    table.insert(posters, card)
+                                end
+                            end
+                            if #posters == 0 then
+                                cxt:Opt("OPT_NO_OPT")
+                                    :Dialog("DIALOG_NO_OPT")
+                                    :ReceiveOpinion(OPINION.WASTED_TIME)
+                            else
+                                for i, card in ipairs(posters) do
+                                    cxt:Opt("OPT_SELECT", card)
+                                        :Dialog("DIALOG_SELECT")
+                                        :Fn(function(cxt)
+                                            location:Remember("HAS_PROPAGANDA_POSTER", shallowcopy(card.userdata))
+                                            card:ConsumeCharge()
+                                            if card:IsSpent() then
+                                                cxt.player.negotiator:RemoveCard( card )
+                                            end
+                                        end)
+                                end
+                            end
+                        end,
+                        on_fail = function(cxt)
+                            cxt:Dialog("DIALOG_ASK_FAILURE")
+                        end,
+                    }
+            end
+        end
+    end)
 QDEF:AddConvo("commission")
     :Loc{
         OPT_ASK_COMMISSION = "Commission {agent} for a propaganda poster",
-        REQ_ALREADY_ASKED = "You already asked {agent.himher} once today.",
         DIALOG_ASK_COMMISSION = [[
             {not asked?
                 player:
@@ -135,10 +273,17 @@ QDEF:AddConvo("commission")
                 cxt.quest.param.artist_demands = {}
             end
             cxt.enc.scratch.asked = cxt.quest.param.artist_demands[who:GetID()] ~= nil
-            cxt:Opt("OPT_ASK_COMMISSION")
+            local opt = cxt:Opt("OPT_ASK_COMMISSION")
                 :SetQuestMark(cxt.quest)
                 -- :ReqCondition(not who:HasMemoryFromToday("ASKED_FOR_COMMISSION"), "REQ_ALREADY_ASKED")
-                :Fn(function(cxt)
+            if not cxt.enc.scratch.asked then
+                opt:PostText("TT_FREE_TIME_ACTION_COST", 1)
+                    :ReqCondition((cxt.quest.param.actions or 0) >= 1, "REQ_FREE_TIME_ACTIONS")
+                    :Fn(function(cxt)
+                        cxt.quest.param.actions = (cxt.quest.param.actions or 0) - 1
+                    end)
+            end
+            opt:Fn(function(cxt)
                     if not cxt.quest.param.artist_demands[who:GetID()] then
                         local rawcost = 25 * cxt.quest:GetRank() + 25
                         if cxt.enc.scratch.is_artist then
@@ -161,7 +306,13 @@ QDEF:AddConvo("commission")
                 :Dialog("DIALOG_ASK_COMMISSION")
                 :LoopingFn(function(cxt)
                     local dat = cxt.quest.param.artist_demands[who:GetID()]
-                    local payed_all = DemocracyUtil.AddDemandConvo(cxt, dat.demand_list, dat.demands)
+                    local payed_all = DemocracyUtil.AddDemandConvo(cxt, dat.demand_list, dat.demands, function(opt)
+                        opt:PostText("TT_FREE_TIME_ACTION_COST", 2)
+                            :ReqCondition((cxt.quest.param.actions or 0) >= 2, "REQ_FREE_TIME_ACTIONS")
+                            :Fn(function(cxt)
+                                cxt.quest.param.actions = (cxt.quest.param.actions or 0) - 2
+                            end)
+                    end)
 
                     if payed_all then
                         cxt:Dialog("DIALOG_PAYED_COMMISSION")
@@ -193,6 +344,7 @@ QDEF:AddConvo("commission")
                 agent:
                     More or less.
                     You might be tempted to write a lot, but people will be too intimidated by your wall of text.
+                    But writing too few will not tell the readers what you think, and they will be less interested in you.
                     Best to keep it short, but to the point.
             ]],
 
@@ -224,6 +376,26 @@ QDEF:AddConvo("commission")
                     I don't know. I gotta take a look.
                 }
             ]],
+            DIALOG_FINISH_TOO_FEW_CARDS = [[
+                player:
+                    Yeah I got nothing.
+                    I have some ideas here and there, but there's not enough.
+                agent:
+                    A shame.
+                    Anyway, I'm adding some random lines here to make it looks like there's more to the poster.
+                    Probably won't fool anyone, though.
+                    !permit
+                    Take a look.
+                player:
+                    !thought
+                    Hmm...
+            ]],
+
+            DIALOG_FINISH_PST = [[
+                player:
+                    Looks good. Maybe.
+                    But only time will tell whether this is really effective.
+            ]],
         }
         :Fn(function(cxt)
             if not cxt.quest.param.cards then
@@ -235,11 +407,24 @@ QDEF:AddConvo("commission")
             local recorded_cards = {}
             -- yeah havent figured out what to do with it.
             local function ProcessFn(cxt, minigame)
-                cxt:Dialog("DIALOG_FINISH")
+                local stacks = minigame:GetPlayerNegotiator():GetModifierStacks("TIME_CONSTRAINT")
+                cxt.quest.param.actions = stacks
+                if #recorded_cards >= 3 then
+                    cxt:Dialog("DIALOG_FINISH")
+                else
+                    cxt:Dialog("DIALOG_FINISH_TOO_FEW_CARDS")
+                    while #recorded_cards < 3 do
+                        table.insert(recorded_cards, "fast_talk")
+                    end
+                end
                 local cards = cxt:GainCards({"propaganda_poster"})
-                DBG(cards)
+                -- DBG(cards)
                 cards[1].userdata.imprints = shallowcopy(recorded_cards)
-                cxt:BasicNegotiation("START") -- for testing purpose.
+                -- cxt:BasicNegotiation("START") -- for testing purpose.
+                cxt:Dialog("DIALOG_FINISH_PST")
+                cxt.quest:Complete("commission")
+                cxt.quest:Activate("post")
+                StateGraphUtil.AddEndOption(cxt)
             end
             cxt:Opt("OPT_START")
                 :Dialog("DIALOG_START")
@@ -258,6 +443,7 @@ QDEF:AddConvo("commission")
                             minigame:GetOpponentNegotiator():CreateModifier( "SIMULATION_ARGUMENT", 1 )
                         end
                         minigame:GetOpponentNegotiator():FindCoreArgument().cards_played = recorded_cards
+                        minigame:GetPlayerNegotiator():CreateModifier( "TIME_CONSTRAINT", math.max(cxt.quest.param.actions or 1, 1) )
                     end,
                     finish_negotiation_anytime = true,
                     on_success = ProcessFn,
