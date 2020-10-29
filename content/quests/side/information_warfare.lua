@@ -59,6 +59,8 @@ local QDEF = QuestDef.Define
 }
 :AddObjective{
     id = "commission",
+    title = "Create a poster",
+    desc = "Commission someone with artistic talent to create a poster for you. Or just make your own.",
     mark = function(quest, t, in_location)
         if in_location then
             local location = TheGame:GetGameState():GetPlayerAgent():GetLocation()
@@ -74,17 +76,19 @@ local QDEF = QuestDef.Define
 }
 :AddObjective{
     id = "post",
+    title = "Post your propaganda",
+    desc = "Serve your freshly baked propaganda poster at popular locations.",
     mark = function(quest, t, in_location)
         if in_location then
             local location = TheGame:GetGameState():GetPlayerAgent():GetLocation()
             if not (quest.param.posted_location and table.arraycontains(quest.param.posted_location, location:GetContentID())) then
-                if location:GetContent().patron_data then
+                if true then
                     table.insert(location:GetProprietor())
                 end
             end
         else
             DemocracyUtil.AddUnlockedLocationMarks(t, function(location)
-                return location:GetContent().patron_data and location:GetProprietor() and
+                return location:GetProprietor() and
                     not (quest.param.posted_location and table.arraycontains(quest.param.posted_location, location:GetContentID()))
             end)
         end
@@ -92,6 +96,9 @@ local QDEF = QuestDef.Define
 }
 :AddObjective{
     id = "out_of_time",
+    mark = {"primary_advisor"},
+    title = "Report to {primary_advisor}",
+    desc = "You ran out of time. Return to {primary_advisor} on your progress.",
 }
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 QDEF:AddConvo()
@@ -118,6 +125,70 @@ QDEF:AddConvo()
             cxt.quest:Activate("out_of_time")
             StateGraphUtil.AddLeaveLocation(cxt)
         end)
+QDEF:AddConvo("out_of_time", "primary_advisor")
+    :Loc{
+        OPT_TALK_PROGRESS = "Talk about your progress",
+        DIALOG_PRE = [[
+            agent:
+                So? How did you do?
+        ]],
+        DIALOG_NO_POSTER = [[
+            player:
+                [p] So I ran out of time before I can commission a poster.
+            agent:
+                How disappointing.
+        ]],
+        DIALOG_NO_POST = [[
+            player:
+                [p] So I have a poster, but I don't have time to post it.
+            agent:
+                What are we gonna do with a poster?
+                Better than nothing, I guess.
+                You can still shove it into people's face.
+                But it's not going to boost our popularity.
+        ]],
+        DIALOG_BAD = [[
+            player:
+                [p] So I posted our poster, but people don't like it.
+            agent:
+            {artist?
+                {is_artist?
+                    Try writing better messages in your poster next time.
+                    |
+                    Try hiring actual competent artist instead of cutting corners.
+                player:
+                    You know if you don't pocket so much money, I could've totally afforded a better artist.
+                agent:
+                    What nonsense.
+                }
+                |
+                Try actually pay someone instead of drawing a poster on your own next time.
+                You're a grifter. Not an artist.
+            player:
+                I disagree. Why can't a grifter be an artist?
+            agent:
+                Well, you aren't one, judging by the result.
+            }
+                You might need to spend time to take down the posters before you further damage our reputation.
+                Still, you tried. At least I'll give you credit for that.
+        ]],
+        DIALOG_PASSABLE = [[
+            player:
+                [p] I posted our poster. Seems some people like it, but others don't.
+            agent:
+                That's okay. Obviously not everyone buys our propaganda.
+                We don't need everyone to support us. We just need enough people to support us to win the election.
+        ]],
+        DIALOG_GOOD = [[
+            player:
+                [p] I posted our poster. Everyone wants to support us!
+            agent:
+                Excellent news!
+        ]],
+    }
+    :Hub(function(cxt)
+    
+    end)
 QDEF:AddConvo("post")
     :Loc{
         OPT_ASK = "Convince {agent} to post a poster",
@@ -168,7 +239,7 @@ QDEF:AddConvo("post")
     :Hub(function(cxt, who)
         if who and cxt.location and cxt.location:GetProprietor() == who then
             local location = cxt.location
-            if location:GetContent().patron_data and not (quest.param.posted_location and table.arraycontains(quest.param.posted_location, location:GetContentID())) then
+            if not (quest.param.posted_location and table.arraycontains(quest.param.posted_location, location:GetContentID())) then
                 cxt:Opt("OPT_ASK")
                     :Dialog("DIALOG_ASK")
                     :Negotiation{
@@ -194,6 +265,10 @@ QDEF:AddConvo("post")
                                             if card:IsSpent() then
                                                 cxt.player.negotiator:RemoveCard( card )
                                             end
+                                            if not cxt.quest.param.posted_location then
+                                                cxt.quest.param.posted_location = {}
+                                            end
+                                            table.insert(cxt.quest.param.posted_location, location:GetContentID())
                                         end)
                                 end
                             end
@@ -317,6 +392,7 @@ QDEF:AddConvo("commission")
                     if payed_all then
                         cxt:Dialog("DIALOG_PAYED_COMMISSION")
                         cxt.quest.param.artist = who
+                        cxt.quest.param.is_artist = IsArtist(who)
                         cxt:GoTo("STATE_MAKE_POSTER")
                     else
                         StateGraphUtil.AddBackButton(cxt)
