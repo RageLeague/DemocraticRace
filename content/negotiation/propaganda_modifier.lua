@@ -21,6 +21,7 @@ local FEATURES = {
     {
         name = "Inspiring",
         desc = "This argument plays 1 more card at the beginning of each turn.",
+        play_per_turn_mod = 1,
     },
 }
 for id, data in pairs(FEATURES) do
@@ -31,16 +32,28 @@ end
 Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
     name = "Propaganda Poster",
     desc = "{{1}}, {IMPRINT}\nAt the beginning of each turn, play {2} cards from the imprinted cards in order.\nIf it reaches the end of the list and a card is to be played, remove a random card from the imprinted list and restart from the beginning.\nIf this argument tries to play a card, but no card remains on the imprinted list, remove this argument.",
-    alt_desc = "Imprinted cards: {1}",
+    alt_desc = "Imprinted cards:\n{1}",
     desc_fn = function( self, fmt_str, minigame, widget )
         if widget and widget.PostCard then
-            if self.cards_played then
-                for i, card in ipairs( self.cards_played ) do
-                    widget:PostCard( card.id, card, minigame )
-                end
-            end
+            -- if self.cards_played then
+            --     for i, card in ipairs( self.cards_played ) do
+            --         widget:PostCard( card.id, card, minigame )
+            --     end
+            -- end
         end
         local rval = loc.format( fmt_str, self.propaganda_mod, self.play_per_turn )
+        if self.imprints then
+            local res = ""
+            for i, card in ipairs(self.imprints) do
+                if i == self.pointer then
+                    local carddef = Content.GetNegotiationCard( card )
+                    res = res .. loc.format("<#BONUS>{1}</>\n", carddef:GetLocalizedName())
+                else
+                    res = res .. loc.format("{1#card}\n", card)
+                end
+            end
+            rval = rval .. "\n" .. loc.format((self.def or self):GetLocalizedString("ALT_DESC"), res)
+        end
         return rval
     end,
 
@@ -55,6 +68,7 @@ Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
         if not self.imprints or #self.imprints == 0 then
             self.out_of_cards = true
             self.negotiator:RemoveModifier(self)
+            return
         end
         self.pointer = self.pointer or 1
         
@@ -62,20 +76,26 @@ Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
         local card_id = self.imprints[self.pointer]
         if card_id then
             local card = Negotiation.Card(card_id, self.owner )
+            card.show_dealt = false
             card:SetFlags( CARD_FLAGS.CONSUME )
+            -- So this is kinda weird, but we need the card to be registered to a deck.
+            self.engine.trash_deck:InsertCard( card )
             self.engine:PlayCard(card)
-            card:RemoveCard()
+            -- card:RemoveCard()
+            -- self.engine:DealCard( card )
             table.insert(self.cards_played, card)
         end
         
         -- advance tracker
         self.pointer = self.pointer + 1
+        
         if self.pointer > #self.imprints then
             local to_remove = math.random(1, #self.imprints)
             table.remove(self.imprints, to_remove)
             self.pointer = 1
             AUDIO:PlayEvent(SoundEvents.card_discard_reshuffle)
         end
+        self:NotifyChanged()
     end,
     OnBeginTurn = function( self, minigame )
         self.cards_played = {}
@@ -94,6 +114,8 @@ Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
             self.propaganda_mod = propaganda_mod
             if FEATURES[propaganda_mod] and FEATURES[propaganda_mod].event_handlers then
                 self.event_handlers = table.extend(BASE_HANDLERS)(FEATURES[propaganda_mod].event_handlers)
+            else
+                self.event_handlers = BASE_HANDLERS
             end
             self.play_per_turn_mod = FEATURES[propaganda_mod] and FEATURES[propaganda_mod].play_per_turn_mod
         end
@@ -102,6 +124,7 @@ Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
             self.max_resolve = max_resolve
             self.resolve = max_resolve
         end
+        self:NotifyChanged()
     end,
     event_handlers = BASE_HANDLERS,
 } )

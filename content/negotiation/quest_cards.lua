@@ -210,7 +210,11 @@ local CARDS = {
     propaganda_poster = 
     {
         name = "Propaganda Poster",
-        desc = "{IMPRINT}\nCreate a propaganda poster argument with the cards imprinted on this card.",
+        desc = "{IMPRINT}\nCreate a {{1}} {PROPAGANDA_POSTER_MODIFIER} with the cards imprinted on this card.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.prop_mod or "PROP_PO_MEDIOCRE")
+        end,
+        
         flavour = "Imprinted Cards:\n{1}",
         flavour_fn = function( self, fmt_str )
             if self == nil then

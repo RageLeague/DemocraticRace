@@ -17,7 +17,7 @@ function NegotiationPanel:init( minigame, encounter )
             LOC"UI.CARDS_PANEL.FINISH_BTN", 
             LOC"UI.NEGOTIATION_PANEL.FINISH_NEGOTIATION"):SetToolTipClass( Widget.NegotiationTooltip )
     end
-    DBG(minigame.start_params)
+    -- DBG(minigame.start_params)
 end
 function NegotiationPanel:OnClickEndNegotiation()
     local popup = Screen.YesNoPopup(LOC"UI.NEGOTIATION_PANEL.FINISH_CONFIRM_BTN", LOC"UI.NEGOTIATION_PANEL.FINISH_CONFIRM_BTN_TOOLTIP" ):

@@ -929,6 +929,16 @@ local MODIFIERS =
             end,
         },
     },
+    ALTERNATIVE_CORE_ARGUMENT = {
+        hidden = true,
+        event_handlers = {
+            [ EVENT.MODIFIER_REMOVED ] = function ( self, modifier )
+                if modifier and modifier == self.tracked_modifier then
+                    self.engine:Lose()
+                end
+            end,
+        }
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
