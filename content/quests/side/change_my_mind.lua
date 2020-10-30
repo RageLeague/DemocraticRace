@@ -117,11 +117,11 @@ local QDEF = QuestDef.Define
     end,
 }
 :AddOpinionEvents{
-    convinced_political_idea =  
-    {
-        delta = OPINION_DELTAS.LIKE,
-        txt = "Enlightened them with your ideology",
-    },
+    -- convinced_political_idea =  
+    -- {
+    --     delta = OPINION_DELTAS.LIKE,
+    --     txt = "Enlightened them with your ideology",
+    -- },
     reach_impasse = {
         delta = OPINION_DELTAS.DIMINISH,
         txt = "Reached an impasse in a debate against them",
@@ -412,7 +412,7 @@ QDEF:AddConvo("debate_people")
                             end
                         else
                             cxt:Dialog("DIALOG_DEBATE_WIN")
-                            cxt.quest:GetCastMember("debater"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("convinced_political_idea"))
+                            cxt.quest:GetCastMember("debater"):OpinionEvent(OPINION.CONVINCE_SUPPORT)
                         end
 
                         cxt.quest:GetCastMember("debater"):MoveToLimbo()

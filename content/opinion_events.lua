@@ -1,4 +1,12 @@
 local OPINIONS = {
+    CONVINCE_SUPPORT = {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Convinced them to support you",
+    },
+    FAIL_CONVINCE_SUPPORT = {
+        delta = OPINION_DELTAS.DISLIKE,
+        txt = "Fail to convince them to support you",
+    },
     DISLIKE_IDEOLOGY = {
         delta = OPINION_DELTAS.OPINION_DOWN,
         txt = "Dislikes your ideology",

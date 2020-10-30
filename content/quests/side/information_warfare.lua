@@ -187,7 +187,19 @@ QDEF:AddConvo("out_of_time", "primary_advisor")
         ]],
     }
     :Hub(function(cxt)
-    
+        cxt:Opt("OPT_TALK_PROGRESS")
+            :SetQuestMark(cxt.quest)
+            :Dialog("DIALOG_PRE")
+            :Fn(function(cxt)
+                if not cxt.quest:IsComplete("commission") then
+                    cxt:Dialog("DIALOG_NO_POSTER")
+                    cxt.quest:Fail()
+                elseif not (cxt.quest.param.posted_location and #cxt.quest.param.posted_location > 0) then
+                    cxt:Dialog("DIALOG_NO_POST")
+                    cxt.quest:Fail()
+                end
+            end)
+        
     end)
 QDEF:AddConvo("post")
     :Loc{
