@@ -16,6 +16,13 @@ local FEATURES = {
     {
         name = "Messy",
         desc = "This argument takes 1 extra damage from any source.",
+        event_handlers = {
+            [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
+                if target == self then
+                    persuasion:AddPersuasion( 1, 1, self )
+                end
+            end,
+        },
     },
     PROP_PO_INSPIRING =
     {

@@ -919,7 +919,7 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.PERMANENT,
         -- max_stacks = 1,
         event_handlers = {
-            [ EVENT.BEGIN_PLAYER_TURN ] = function ( self, minigame )
+            [ EVENT.END_PLAYER_TURN ] = function ( self, minigame )
                 if minigame:GetTurns() % 2 == 0 then
                     self.negotiator:RemoveModifier(self, 1)
                 end

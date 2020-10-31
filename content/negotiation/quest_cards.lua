@@ -212,7 +212,7 @@ local CARDS = {
         name = "Propaganda Poster",
         desc = "{IMPRINT}\nCreate a {{1}} {PROPAGANDA_POSTER_MODIFIER} with the cards imprinted on this card.",
         desc_fn = function(self, fmt_str)
-            return loc.format(fmt_str, self.prop_mod or "PROP_PO_MEDIOCRE")
+            return loc.format(fmt_str, self.userdata.prop_mod or "PROP_PO_MEDIOCRE")
         end,
         
         flavour = "Imprinted Cards:\n{1}",

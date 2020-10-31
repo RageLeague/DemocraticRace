@@ -15,6 +15,8 @@ local function IsArtist(agent)
         return math.random() < chance_for_artist
     end)
 end
+local POOR_ART = {"PROP_PO_MESSY"}
+local GOOD_ART = {"PROP_PO_INSPIRING"}
 
 local DRAFT_BEHAVIOUR = {
 	OnInit = function( self, difficulty )
@@ -53,6 +55,8 @@ local QDEF = QuestDef.Define
             end
         end,
     },
+    on_complete = function(quest)
+    end,
     -- precondition = function(quest)
     --     return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")
     -- end,
@@ -82,8 +86,8 @@ local QDEF = QuestDef.Define
         if in_location then
             local location = TheGame:GetGameState():GetPlayerAgent():GetLocation()
             if not (quest.param.posted_location and table.arraycontains(quest.param.posted_location, location:GetContentID())) then
-                if true then
-                    table.insert(location:GetProprietor())
+                if location:GetProprietor() then
+                    table.insert(t, location:GetProprietor())
                 end
             end
         else
@@ -92,6 +96,12 @@ local QDEF = QuestDef.Define
                     not (quest.param.posted_location and table.arraycontains(quest.param.posted_location, location:GetContentID()))
             end)
         end
+        -- without this the game will softlock sometimes.
+        table.insert(t, quest:GetCastMember("primary_advisor"))
+    end,
+    on_activate = function(quest)
+        quest.param.liked_people = 0
+        quest.param.disliked_people = 0
     end,
 }
 :AddObjective{
@@ -191,12 +201,25 @@ QDEF:AddConvo("out_of_time", "primary_advisor")
             :SetQuestMark(cxt.quest)
             :Dialog("DIALOG_PRE")
             :Fn(function(cxt)
-                if not cxt.quest:IsComplete("commission") then
-                    cxt:Dialog("DIALOG_NO_POSTER")
+                if not (cxt.quest.param.posted_location and #cxt.quest.param.posted_location > 0) then
+                    if not cxt.quest:IsComplete("commission") then
+                        cxt:Dialog("DIALOG_NO_POSTER")
+                    else
+                        cxt:Dialog("DIALOG_NO_POST")
+                    end
                     cxt.quest:Fail()
-                elseif not (cxt.quest.param.posted_location and #cxt.quest.param.posted_location > 0) then
-                    cxt:Dialog("DIALOG_NO_POST")
-                    cxt.quest:Fail()
+                else
+                    if (cxt.quest.param.liked_people or 0) == 0 or (cxt.quest.param.disliked_people or 0) - (cxt.quest.param.liked_people or 0) >= 2 then
+                        cxt:Dialog("DIALOG_BAD")
+                        cxt.quest.param.poor_performance = true
+                        
+                    elseif (cxt.quest.param.disliked_people or 0) - (cxt.quest.param.liked_people or 0) <= -2 then
+                        cxt:Dialog("DIALOG_GOOD")
+                        -- cxt.quest.param.good_performance = true
+                    else
+                        cxt:Dialog("DIALOG_PASSABLE")
+                    end
+                    cxt.quest:Complete()
                 end
             end)
         
@@ -247,11 +270,39 @@ QDEF:AddConvo("post")
                 Seriously?
                 Thanks for wasting my time.
         ]],
+
+        OPT_END_EARLY = "Finish quest early",
+        DIALOG_END_EARLY = [[
+            player:
+                I'm done.
+            agent:
+                Wait, really?
+                But there's still plenty of time!
+            player:
+                Nothing else I can do.
+            agent:
+                Suit yourself, I guess.
+        ]],
     }
     :Hub(function(cxt, who)
+        if who == cxt:GetCastMember("primary_advisor") then
+            cxt:Opt("OPT_END_EARLY")
+                :SetQuestMark(cxt.quest)
+                :Dialog("DIALOG_END_EARLY")
+                :Fn(function(cxt)
+                    if cxt.quest:IsActive("commission") then
+                        cxt.quest:Fail("commission")
+                    end
+                    if cxt.quest:IsActive("post") then
+                        cxt.quest:Cancel("post")
+                    end
+                    cxt.quest:Activate("out_of_time")
+                end)
+            return
+        end
         if who and cxt.location and cxt.location:GetProprietor() == who then
             local location = cxt.location
-            if not (quest.param.posted_location and table.arraycontains(quest.param.posted_location, location:GetContentID())) then
+            if not (cxt.quest.param.posted_location and table.arraycontains(cxt.quest.param.posted_location, location:GetContentID())) then
                 cxt:Opt("OPT_ASK")
                     :Dialog("DIALOG_ASK")
                     :Negotiation{
@@ -282,6 +333,7 @@ QDEF:AddConvo("post")
                                             end
                                             table.insert(cxt.quest.param.posted_location, location:GetContentID())
                                         end)
+                                        :GoTo("STATE_READ")
                                 end
                             end
                         end,
@@ -291,7 +343,40 @@ QDEF:AddConvo("post")
                     }
             end
         end
+        
     end)
+    :State("STATE_READ")
+        :Loc{
+            DIALOG_NO_READER = [[
+                * Seems like there's no one here that's interested in your poster.
+                * You have to come back later to see. Hopefully.
+            ]],
+            DIALOG_INTRO = [[
+                agent:
+                    Oh look, someone's already reading the poster.
+            ]],
+        }
+        :Fn(function(cxt)
+            local candidates = {}
+            for i, agent in cxt.location:Agents() do
+                if agent:IsSentient() and not agent:IsInPlayerParty() and
+                    not AgentUtil.HasPlotArmour(agent) and agent ~= cxt:GetAgent()
+                    and agent:GetRelationship() == RELATIONSHIP.NEUTRAL then
+
+                    table.insert(candidates, agent)
+                end
+            end
+            if #candidates > 0 then
+                local chosen = table.arraypick(candidates)
+                cxt:ReassignCastMember('target', chosen)
+                cxt:Dialog("DIALOG_INTRO")
+                cxt:End()
+                UIHelpers.DoSpecificConvo(chosen, "PROPAGANDA_POSTER_CONVO", "STATE_READ", nil, nil, cxt.quest )
+            else
+                cxt:Dialog("DIALOG_NO_READER")
+                StateGraphUtil.AddEndOption(cxt)
+            end
+        end)
 QDEF:AddConvo("commission")
     :Loc{
         OPT_ASK_COMMISSION = "Commission {agent} for a propaganda poster",
@@ -508,6 +593,16 @@ QDEF:AddConvo("commission")
                 local cards = cxt:GainCards({"propaganda_poster"})
                 -- DBG(cards)
                 cards[1].userdata.imprints = shallowcopy(recorded_cards)
+                if not cxt.quest.param.artist then
+                    cards[1].userdata.prop_mod = table.arraypick(POOR_ART)
+                elseif cxt.quest.param.is_artist then
+                    cards[1].userdata.prop_mod = table.arraypick(GOOD_ART)
+                    
+                else
+                    if math.random() < 0.5 then
+                        cards[1].userdata.prop_mod = table.arraypick(POOR_ART)
+                    end
+                end
                 -- cxt:BasicNegotiation("START") -- for testing purpose.
                 cxt:Dialog("DIALOG_FINISH_PST")
                 cxt.quest:Complete("commission")
