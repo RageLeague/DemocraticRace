@@ -16,8 +16,8 @@ local RISE_DISGUISE_BUILDS = {
 }
 
 local DAY_SCHEDULE = {
-    {quest = "RACE_DAY_1", difficulty = 1},
-    {quest = "RACE_DAY_2", difficulty = 2},
+    {quest = "RACE_DAY_1", difficulty = 1, support_expectation = {0,10,20}},
+    {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {20,30,40,50}},
     -- {quest = "RACE_DAY_3", difficulty = 3},
     -- {quest = "RACE_DAY_4", difficulty = 4},
     -- {quest = "RACE_DAY_5", difficulty = 5},
@@ -59,7 +59,10 @@ local QDEF = QuestDef.Define
         local total_days = MAX_DAYS
         local completed_days = (quest.param.day or 1)-1
 
-        local percent = completed_days / total_days
+        local sub_day_progress = (quest.param.sub_day_progress or 1) - 1
+        local max_subdays = #(quest:DefFn("GetCurrentExpectationArray"))
+
+        local percent = (completed_days + sub_day_progress / max_subdays) / total_days
         local title = loc.format(LOC "CALENDAR.DAY_FMT", quest.param.day or 1)
         return percent, title, quest.param.day_quest and quest.param.day_quest:GetTitle() or ""
     end,
@@ -163,7 +166,7 @@ local QDEF = QuestDef.Define
                 quest.param.event_delays = 0
             end
         end,
-        quests_changed = function(quest, event_quest) 
+        quests_changed = function(quest, event_quest)
             if event_quest == quest.param.day_quest and quest.param.day_quest:IsComplete() then
                 DemocracyUtil.EndFreeTime()
                 QuestUtil.DoNextDay(DAY_SCHEDULE, quest)
@@ -421,6 +424,16 @@ local QDEF = QuestDef.Define
         return quest.param.stance_change_freebie[issue]
     end,
 
+    SetSubdayProgress = function(quest, progress)
+        quest.param.sub_day_progress = progress
+    end,
+    GetCurrentExpectationArray = function(quest)
+        return DAY_SCHEDULE[math.min(#DAY_SCHEDULE, quest.param.day or 1)].support_expectation
+    end,
+    GetCurrentExpectation = function(quest)
+        local arr = quest:DefFn("GetCurrentExpectationArray")
+        return arr[math.min(#arr, quest.param.sub_day_progress or 1)]
+    end,
 
     -- debug functions
     DebugUnlockAllLocations = function(quest)

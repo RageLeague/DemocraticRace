@@ -7,6 +7,7 @@ local QDEF = QuestDef.Define
 
     on_start = function(quest)
         quest:Activate("starting_out")
+        DemocracyUtil.SetSubdayProgress(1)
         TheGame:GetGameState():GetPlayerAgent():MoveToLocation( quest:GetCastMember("home") )
     end,
 }
@@ -17,6 +18,9 @@ local QDEF = QuestDef.Define
 :AddSubQuest{
     id = "meet_opposition",
     quest_id = "RACE_INTRODUCE_OPPOSITION",
+    on_activate = function(quest)
+        DemocracyUtil.SetSubdayProgress(2)
+    end,
     on_complete = function(quest)
         quest:Activate("get_job")
     end,
@@ -26,6 +30,7 @@ local QDEF = QuestDef.Define
     quest_id = "RACE_INTERVIEW",
     on_activate = function(quest)
         UIHelpers.PassTime(DAY_PHASE.NIGHT)
+        DemocracyUtil.SetSubdayProgress(3)
     end,
     on_complete = function(quest)
         quest:Activate("go_to_sleep")

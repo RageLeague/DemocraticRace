@@ -8,6 +8,7 @@ local QDEF = QuestDef.Define
 
     on_start = function(quest)
         quest:Activate("starting_out")
+        DemocracyUtil.SetSubdayProgress(1)
     end,
 }
 :Loc{
@@ -70,6 +71,9 @@ local QDEF = QuestDef.Define
 :AddSubQuest{
     id = "meet_advisor",
     quest_id = "RACE_MEET_ADVISOR",
+    on_activate = function(quest)
+        DemocracyUtil.SetSubdayProgress(2)
+    end,
     on_complete = function(quest)
         DemocracyUtil.StartFreeTime()
         quest:Activate("get_job")
@@ -80,6 +84,7 @@ local QDEF = QuestDef.Define
     quest_id = "RACE_DAY_1_SUMMARY",
     on_activate = function(quest) 
         UIHelpers.PassTime(DAY_PHASE.NIGHT)
+        DemocracyUtil.SetSubdayProgress(3)
     end,
     on_complete = function(quest)
         quest:Complete()
