@@ -375,21 +375,27 @@ QDEF:AddConvo("take_your_heart", "foreman")
         DIALOG_DEMAND = [[
         {first_time?
             player:
-                [p] can you change your ways?
+                Look, your ways aren't going to last long term.
             agent:
-                why should i do it for free?
-                !thought
-                hmm... i'll tell you what, if you can {demand_list#demand_list}, then i'll change my ways.
+                You know, maybe you're right.
+                Maybe I should be a bit better...
             player:
-                hmm... i'll think about that.
+                Wait really? I thought that'd taken a bit more effort...
+            agent:
+                Hesh's salty embrace, you fell for that?
+                Look, how 'bout this.
+                If you Champion my ideas AND give me some money, i'll clean up my act.
+            player:
+                Okay, and what's the price to do so?
+            agent:
+                {demand_list#demand_list}. Got it?
         }
         {not first_time?
             player:
-                [p] so, about that deal...
+                You sure you can't do it for free?
             agent:
-                didn't i tell you to {demand_list#demand_list}?
-            player:
-                right...
+                No.{demand_list#demand_list}?
+                Non-Negotiable...okay maybe a bit negotiable.
         }
         ]],
         DIALOG_MET_DEMAND = [[
