@@ -62,6 +62,7 @@ local MODIFIERS =
     {
         name = "Player Advantage",
         desc = "The player wins at the beginning of turn {1}.",
+        icon = "DEMOCRATICRACE:assets/modifiers/player_advantage.png",
         desc_fn = function( self, fmt_str )
             return loc.format(fmt_str, self.stacks or 1)
         end,
@@ -85,7 +86,7 @@ local MODIFIERS =
 
             return loc.format(fmt_str, #self.agents, self.engine and math.floor(self.engine:GetDifficulty() / 3 + 1) or 1)
         end,
-        icon = engine.asset.Texture("negotiation/modifiers/heckler.tex"),
+        icon = "negotiation/modifiers/heckler.tex",
         modifier_type = MODIFIER_TYPE.CORE,
         agents = {},
         CreateTarget = function(self, agent)
@@ -307,6 +308,8 @@ local MODIFIERS =
             -- return loc.format( fmt_str, self.ally_agent and self.ally_agent:LocTable(), self.negotiator and self.negotiator.agent:LocTable() )
         end,
 
+        icon = "DEMOCRATICRACE:assets/modifiers/connected_line.png",
+
         calls_required = 5,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
         max_resolve = 3,
@@ -413,6 +416,7 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str)
             return loc.format( fmt_str, self.anti_negotiator and self.anti_negotiator:GetName() or "the opponent",  self.stacks)
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/help_underway.png",
 
         max_stacks = 20,
         
@@ -436,6 +440,7 @@ local MODIFIERS =
     {
         name = "Distraction: Entertainment",
         desc = "{MYRIAD_MODIFIER {2}}.\nWhen destroyed, {1} loses 1 {IMPATIENCE} if able.",
+        icon = "negotiation/modifiers/card_draw.tex",
         
         modifier_type = MODIFIER_TYPE.BOUNTY,
         init_max_resolve = 10,
@@ -461,7 +466,8 @@ local MODIFIERS =
     {
         name = "Distraction: Guilty Conscience",
         desc = "{MYRIAD_MODIFIER {2}}.\nWhen destroyed, remove a random, non-{IMPATIENCE} intent and {1} gains 2 {VULNERABILITY}.",
-        
+        icon = "negotiation/modifiers/scruple.tex",
+
         modifier_type = MODIFIER_TYPE.BOUNTY,
         init_max_resolve = 10,
 
@@ -495,6 +501,7 @@ local MODIFIERS =
     {
         name = "Distraction: Confusion",
         desc = "{MYRIAD_MODIFIER {2}}.\nWhen destroyed, {1} gain 2 {FLUSTERED}.",
+        icon = "negotiation/modifiers/doubt.tex",
         
         modifier_type = MODIFIER_TYPE.BOUNTY,
         init_max_resolve = 10,
@@ -526,6 +533,7 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str)
             return loc.format( fmt_str, self.address_cost)
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/loaded_question.png",
 
         min_persuasion = 2,
         max_persuasion = 2,
@@ -578,6 +586,7 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str)
             return loc.format( fmt_str, self.resolve_gain)
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/pleasant_question.png",
 
         min_persuasion = 2,
         max_persuasion = 2,
@@ -611,6 +620,7 @@ local MODIFIERS =
         name = "Contemporary Question",
         desc = "The interviewer asks about your opinion on <b>{1}</>.\n\n"..
             "When {address_question|addressed}, the player must state their opinion on this matter.",
+        icon = "DEMOCRATICRACE:assets/modifiers/contemporary_question.png",
 
         issue_data = nil,
 
@@ -678,6 +688,8 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str )
             return loc.format(fmt_str, self.composure_multiplier, self.owner:GetName() or LOC "UI.CARDS.OWNER")
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/interviewer.png",
+
         -- icon = engine.asset.Texture("negotiation/modifiers/heckler.tex"),
         modifier_type = MODIFIER_TYPE.CORE,
         composure_multiplier = 1,
@@ -850,6 +862,9 @@ local MODIFIERS =
             end
             return fmt_str
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/simulation_environment.png",
+
+
         modifier_type = MODIFIER_TYPE.CORE,
         max_stacks = 1,
         OnInit = function(self)
@@ -907,6 +922,7 @@ local MODIFIERS =
     SIMULATION_ARGUMENT = {
         name = "Simulation Argument",
         desc = "It literally does nothing. It's just there.",
+        icon = "negotiation/modifiers/bidder.tex",
         modifier_type = MODIFIER_TYPE.ARGUMENT,
         max_resolve = 30,
     },
@@ -916,6 +932,8 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.stacks)
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/time_constraint.png",
+
         modifier_type = MODIFIER_TYPE.PERMANENT,
         -- max_stacks = 1,
         event_handlers = {

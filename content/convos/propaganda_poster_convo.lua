@@ -85,11 +85,11 @@ Convo("PROPAGANDA_POSTER_CONVO")
                     }
             end
         end)
-    :Hub(function(cxt,who)
+    -- :Hub(function(cxt,who)
     
-        cxt:Opt("DEFAULT_NEGOTIATION_REASON", who)
-            -- :Fn(function(cxt)
-            --     cxt:ReassignCastMember('agent', who)
-            -- end)
-            :GoTo("STATE_READ")
-    end)
+    --     cxt:Opt("DEFAULT_NEGOTIATION_REASON", who)
+    --         -- :Fn(function(cxt)
+    --         --     cxt:ReassignCastMember('agent', who)
+    --         -- end)
+    --         :GoTo("STATE_READ")
+    -- end)

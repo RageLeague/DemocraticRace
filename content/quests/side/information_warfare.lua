@@ -43,7 +43,8 @@ local QDEF = QuestDef.Define
     extra_reward = false,
     on_start = function(quest)
         quest:Activate("commission")
-        quest.param.actions = 8
+        quest.param.actions = 10
+        quest:Activate("time_left")
     end,
     events = 
     {
@@ -51,15 +52,21 @@ local QDEF = QuestDef.Define
             if location:HasTag("road") then
                 if quest.param.actions then
                     quest.param.actions = quest.param.actions - 1
+                    quest:NotifyChanged()
                 end
             end
         end,
     },
     on_complete = function(quest)
+        if quest.param.poor_performance then
+            DemocracyUtil.DeltaGeneralSupport(#quest.param.posted_location)
+        else
+            DemocracyUtil.DeltaGeneralSupport(5 * #quest.param.posted_location)
+        end
     end,
-    -- precondition = function(quest)
-    --     return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")
-    -- end,
+    precondition = function(quest)
+        return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")
+    end,
 }
 :AddObjective{
     id = "commission",
@@ -69,13 +76,15 @@ local QDEF = QuestDef.Define
         if in_location then
             local location = TheGame:GetGameState():GetPlayerAgent():GetLocation()
             for i, agent in location:Agents() do
-                if DemocracyUtil.RandomBystanderCondition(agent) then
+                if DemocracyUtil.RandomBystanderCondition(agent) and (not quest.param.artist_demands
+                    or quest.param.artist_demands[agent:GetID()] ~= false) then
                     table.insert(t, agent)
                 end
             end
         else
             DemocracyUtil.AddUnlockedLocationMarks(t)
         end
+        table.insert(t, quest:GetCastMember("primary_advisor"))
     end,
 }
 :AddObjective{
@@ -105,10 +114,19 @@ local QDEF = QuestDef.Define
     end,
 }
 :AddObjective{
+    id = "time_left",
+    title = "Actions left: {actions}",
+}
+:AddObjective{
     id = "out_of_time",
     mark = {"primary_advisor"},
     title = "Report to {primary_advisor}",
     desc = "You ran out of time. Return to {primary_advisor} on your progress.",
+    on_activate = function(quest)
+        if quest:IsActive("time_left") then
+            quest:Cancel("time_left")
+        end
+    end,
 }
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 QDEF:AddConvo()
@@ -392,16 +410,9 @@ QDEF:AddConvo("commission")
                     A lot.
                 }
                 {not disliked?
-                    {not is_artist?
-                        I could certainly try.
-                        Be warned: you probably will not like it.
-                        You still have to pay for it though.
-                    }
-                    {is_artist?
-                        Perhaps.
-                        I can make you an extremely convincing poster.
-                        Provided you can pay, of course.
-                    }
+                    Perhaps.
+                    I can make you an extremely convincing poster.
+                    Provided you can pay, of course.
                 }
                 player:
                     Name your price then.
@@ -413,6 +424,15 @@ QDEF:AddConvo("commission")
                 agent:
                     Have you decided yet?
             }
+        ]],
+        DIALOG_ASK_COMMISSION_NOT_ARTIST = [[
+            player:
+                I'm looking to make a propaganda poster.
+                Can you help me make one?
+            agent:
+                No.
+            player:
+                Understandable, have a nice day.
         ]],
         DIALOG_PAYED_COMMISSION = [[
             agent:
@@ -437,6 +457,8 @@ QDEF:AddConvo("commission")
                 Alright, keep your secrets then.
                 Now, what do you want it to say?
         ]],
+
+        REQ_NOT_ARTIST = "This person won't make a propaganda poster because {agent.heshe} can't.",
     }
     :Hub(function(cxt, who)
         if DemocracyUtil.RandomBystanderCondition(who) then
@@ -447,54 +469,67 @@ QDEF:AddConvo("commission")
             cxt.enc.scratch.asked = cxt.quest.param.artist_demands[who:GetID()] ~= nil
             local opt = cxt:Opt("OPT_ASK_COMMISSION")
                 :SetQuestMark(cxt.quest)
+                :ReqCondition(cxt.quest.param.artist_demands[who:GetID()] ~= false,"REQ_NOT_ARTIST")
                 -- :ReqCondition(not who:HasMemoryFromToday("ASKED_FOR_COMMISSION"), "REQ_ALREADY_ASKED")
             if not cxt.enc.scratch.asked then
                 opt:PostText("TT_FREE_TIME_ACTION_COST", 1)
                     :ReqCondition((cxt.quest.param.actions or 0) >= 1, "REQ_FREE_TIME_ACTIONS")
                     :Fn(function(cxt)
                         cxt.quest.param.actions = (cxt.quest.param.actions or 0) - 1
+                        cxt.quest:NotifyChanged()
                     end)
             end
             opt:Fn(function(cxt)
-                    if not cxt.quest.param.artist_demands[who:GetID()] then
-                        local rawcost = 25 * cxt.quest:GetRank() + 25
+                    if cxt.quest.param.artist_demands[who:GetID()] == nil then
                         if cxt.enc.scratch.is_artist then
-                            rawcost = rawcost * 2
+                            local rawcost = 25 * cxt.quest:GetRank() + 25
+                            if cxt.enc.scratch.is_artist then
+                                rawcost = rawcost * 2
+                            end
+                            
+                            local demands, demand_list = DemocracyUtil.GenerateDemandList(rawcost, who, nil, {
+                                auto_scale = true,
+                            })
+                            cxt.quest.param.artist_demands[who:GetID()] = {
+                                demands = demands,
+                                demand_list = demand_list,
+                            }
+                        else
+                            cxt.quest.param.artist_demands[who:GetID()] = false
                         end
-                        
-                        local demands, demand_list = DemocracyUtil.GenerateDemandList(rawcost, who, nil, {
-                            auto_scale = true,
-                        })
-                        cxt.quest.param.artist_demands[who:GetID()] = {
-                            demands = demands,
-                            demand_list = demand_list,
-                        }
                     end
 
-                    cxt.quest.param.demand_list = cxt.quest.param.artist_demands[who:GetID()].demand_list
+                    
                     -- DBG(cxt.enc.scratch.demand_list)
                     -- cxt.enc.scratch.testlol = true
-                end)
-                :Dialog("DIALOG_ASK_COMMISSION")
-                :LoopingFn(function(cxt)
-                    local dat = cxt.quest.param.artist_demands[who:GetID()]
-                    local payed_all = DemocracyUtil.AddDemandConvo(cxt, dat.demand_list, dat.demands, function(opt)
-                        opt:PostText("TT_FREE_TIME_ACTION_COST", 2)
-                            :ReqCondition((cxt.quest.param.actions or 0) >= 2, "REQ_FREE_TIME_ACTIONS")
-                            :Fn(function(cxt)
-                                cxt.quest.param.actions = (cxt.quest.param.actions or 0) - 2
+                    if cxt.enc.scratch.is_artist then
+                        cxt.quest.param.demand_list = cxt.quest.param.artist_demands[who:GetID()].demand_list
+                        cxt:Dialog("DIALOG_ASK_COMMISSION")
+                        cxt:LoopingFn(function(cxt)
+                            local dat = cxt.quest.param.artist_demands[who:GetID()]
+                            local payed_all = DemocracyUtil.AddDemandConvo(cxt, dat.demand_list, dat.demands, function(opt)
+                                opt:PostText("TT_FREE_TIME_ACTION_COST", 2)
+                                    :ReqCondition((cxt.quest.param.actions or 0) >= 2, "REQ_FREE_TIME_ACTIONS")
+                                    :Fn(function(cxt)
+                                        cxt.quest.param.actions = (cxt.quest.param.actions or 0) - 2
+                                        cxt.quest:NotifyChanged()
+                                    end)
                             end)
-                    end)
-
-                    if payed_all then
-                        cxt:Dialog("DIALOG_PAYED_COMMISSION")
-                        cxt.quest.param.artist = who
-                        cxt.quest.param.is_artist = IsArtist(who)
-                        cxt:GoTo("STATE_MAKE_POSTER")
+        
+                            if payed_all then
+                                cxt:Dialog("DIALOG_PAYED_COMMISSION")
+                                cxt.quest.param.artist = who
+                                cxt.quest.param.is_artist = IsArtist(who)
+                                cxt:GoTo("STATE_MAKE_POSTER")
+                            else
+                                StateGraphUtil.AddBackButton(cxt)
+                            end
+                        end)
                     else
-                        StateGraphUtil.AddBackButton(cxt)
+                        cxt:Dialog("DIALOG_ASK_COMMISSION_NOT_ARTIST")
                     end
                 end)
+                
         elseif who == cxt.quest:GetCastMember("primary_advisor") then
             cxt:Opt("OPT_MAKE")
                 :SetQuestMark(cxt.quest)
@@ -582,6 +617,7 @@ QDEF:AddConvo("commission")
             local function ProcessFn(cxt, minigame)
                 local stacks = minigame:GetPlayerNegotiator():GetModifierStacks("TIME_CONSTRAINT")
                 cxt.quest.param.actions = stacks
+                cxt.quest:NotifyChanged()
                 if #recorded_cards >= 3 then
                     cxt:Dialog("DIALOG_FINISH")
                 else

@@ -111,10 +111,10 @@ local QDEF = QuestDef.Define
         
     -- end,
     on_complete = function( quest )
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 4 )
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5 )
     end,
     on_fail = function(quest)
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2 )
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5 )
     end,
 }
 :AddLocationCast{
