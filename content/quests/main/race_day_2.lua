@@ -41,6 +41,7 @@ local QDEF = QuestDef.Define
     title = "Go to sleep",
     on_activate = function(quest)
         DemocracyUtil.StartFreeTime()
+        DemocracyUtil.SetSubdayProgress(4)
     end,
     on_complete = function(quest)
         quest:Complete()

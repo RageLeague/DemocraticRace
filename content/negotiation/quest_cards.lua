@@ -7,6 +7,8 @@ local CARDS = {
     {
         name = "Call For Help",
         desc = "Attempt to call for help and ask someone to deal with the assassin.",
+        icon = "DEMOCRATICRACE:assets/cards/call_for_help.png",
+
         cost = 1,
         -- min_persuasion = 1,
         -- max_persuasion = 3,
@@ -80,6 +82,7 @@ local CARDS = {
         loc_strings = {
             NOT_A_QUESTION = "Target is not a question",
         },
+        icon = "negotiation/decency.tex",
         cost = 1,
         flags = CARD_FLAGS.DIPLOMACY,
         rarity = CARD_RARITY.UNIQUE,
@@ -143,6 +146,8 @@ local CARDS = {
             end
             return loc.format(fmt_str)
         end,
+
+        icon = "negotiation/decency.tex",
         -- hide_in_cardex = true,
         manual_desc = true,
 
@@ -230,6 +235,7 @@ local CARDS = {
                 return ""
             end
         end,
+        icon = "DEMOCRATICRACE:assets/cards/propaganda_poster.png",
         
         cost = 2,
         max_charges = 3,

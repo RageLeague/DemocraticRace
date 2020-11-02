@@ -64,6 +64,8 @@ Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
         return rval
     end,
 
+    icon = "DEMOCRATICRACE:assets/modifiers/propaganda_poster_modifier.png",
+
     modifier_type = MODIFIER_TYPE.ARGUMENT,
     max_resolve = 7,
     propaganda_mod = "PROP_PO_MEDIOCRE",
