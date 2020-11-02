@@ -29,7 +29,7 @@ local function OnLoad( mod )
         title = "I Love Democracy",
         desc = "Use FACTS and LOGIC to win the democratic race. No combat required!",
         
-        act_image = engine.asset.Texture("DEMOCRATICRACE:assets/campaign_icon.png"),
+        act_image = engine.asset.Texture("DEMOCRATICRACE:assets/icons/campaign_icon.png"),
         colour_frame = "0x66F15Dff",
         colour_text = "0xC3FFBFff",
         colour_background = "0x47FF31ff",

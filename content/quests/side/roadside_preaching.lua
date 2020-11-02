@@ -51,6 +51,7 @@ local QDEF = QuestDef.Define
 {
     title = "Roadside Preaching",
     desc = "Preach on the roadside. You might convince people to join your ideology!",
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/roadside_preaching.png"),
 
     qtype = QTYPE.SIDE,
     act_filter = DemocracyUtil.DemocracyActFilter,

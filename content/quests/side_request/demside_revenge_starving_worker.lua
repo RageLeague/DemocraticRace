@@ -198,6 +198,16 @@ local QDEF = QuestDef.Define
         quest:Activate("tell_news")
     end,
 }
+-- adding this as an objective means that the strike will cancel if the quest is completed, which makes little sense.
+-- but adding another quest would be too much work.
+:AddObjective{
+    id = "await_strike",
+    title = "Await the strike",
+    desc = "The strike happens {1#relative_time}. Be prepared.",
+    desc_fn = function(quest, str) 
+        return loc.format(str, (quest.param.strike_time or 0) - Now())
+    end,
+}
 :AddObjective{
     id = "tell_news",
     title = "Tell {worker} about the news.",
@@ -217,6 +227,13 @@ local QDEF = QuestDef.Define
             table.insert(t, quest:GetCastMember("worker"))
         end
     end,
+}
+:AddOpinionEvents{
+    
+    helped_get_better_rights = {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Helped them get better rights",
+    },
 }
 QDEF:AddConvo("tell_news", "worker")
     :Loc{
@@ -305,6 +322,15 @@ QDEF:AddConvo("tell_news", "worker")
                         Thank you for what you did for me.
                         I am truly grateful.
                 }
+            }
+            {organized_strike?
+            player:
+                I organized a strike.
+                With so many people striking, {foreman} has no choice but to accept our demands.
+            agent:
+                Really?
+                That's great!
+                Thanks for your help, {player}. I'm truly grateful.
             }
         ]],
     }
@@ -552,4 +578,244 @@ QDEF:AddConvo("punish_foreman")
             -- just in case. you did get info from the foreman.
             cxt.quest.param.probed_info = true
             cxt:Dialog("DIALOG_FOLLOWUP")
+        end)
+QDEF:AddConvo("organize_strike")
+    :Loc{
+        OPT_STRIKE = "Ask {agent} to strike for {worker}",
+        DIALOG_STRIKE = [[
+            player:
+                {foreman} treats {foreman.hisher} workers badly.
+                Wanna strike?
+            agent:
+                Why should I care?
+        ]],
+        DIALOG_STRIKE_SUCCESS = [[
+            player:
+                Don't you care about your rights?
+            agent:
+                I do, actually.
+                So, when are we striking?
+            player:
+            {not strike_time?
+                Uh...
+                Haven't decided yet.
+                Let me think...
+            }
+        ]],
+        DIALOG_STRIKE_FAILURE = [[
+            player:
+                It's the right thing to do.
+            agent:
+                It's the wrong thing to do if I lose my job and can't feed my family.
+                Sorry, {player}. Not everyone cares about your self-righteousness.
+        ]],
+        OPT_SET_TIME = "Schedule the strike {1#relative_time}",
+        DIALOG_SET_TIME = [[
+            player:
+                The strike happens {1#relative_time}.
+            agent:
+                Sounds good.
+        ]],
+    }
+    :Hub(function(cxt, who)
+        if who and who:GetRenown() <= 1 and not (cxt.quest.param.strike_people and table.arraycontains(cxt.quest.param.strike_people, who))
+            and (who:GetFactionID() == "FEUD_CITIZEN" or who:GetFactionID() == "RISE") and
+            not who == cxt:GetCastMember("worker") then
+            cxt:BasicNegotiation("STRIKE", {
+
+            }):OnSuccess()
+                :Fn(function(cxt)
+                    local function pst(cxt)
+                        local delta = cxt.quest.param.strike_time - Now()
+                        cxt:Dialog("DIALOG_SET_TIME", delta)
+                        if not cxt.quest.param.strike_people then
+                            cxt.quest.param.strike_people = {}
+                        end
+                        table.insert(cxt.quest.param.strike_people, who)
+                        StateGraphUtil.AddEndOption(cxt)
+                    end
+                    if cxt.quest.param.strike_time then
+                        pst(cxt)
+                    else
+                        -- local phase = TheGame:GetGameState() and TheGame:GetGameState():GetDayPhase() or DAY_PHASE.NIGHT
+                        local start_time = 2 * math.floor(Now()/2) + 2
+                        local end_time = TheGame:GetGameState():GetMainQuest():GetQuestDef().max_day
+                        if end_time then
+                            end_time = math.min(end_time * 2 - 1, start_time + 6)
+                        else
+                            -- just in case in endless, we still have something.
+                            end_time = start_time + 6
+                        end
+
+                        for t = start_time, end_time, 2 do
+                            cxt:Opt("OPT_SET_TIME", t - Now())
+                                :Fn(function(cxt)
+                                    cxt.quest.param.strike_time = t
+                                    cxt.quest.Activate("await_strike")
+                                end)
+                                :Fn(pst)
+                        end
+                    end
+                end)
+        end
+    end)
+QDEF:AddConvo("await_strike")
+    :TravelConfront("STATE_STRIKE", function(cxt)
+        return TheGame:GetGameState():CanSpawnTravelEvent() and Now() >= (cxt.quest.param.strike_time or 0) 
+    end)
+        :Loc{
+            DIALOG_NO_STRIKER = [[
+                * It is supposed to be the time of the strike.
+                * But no one's here.
+                * Clearly that was a failure.
+            ]],
+            DIALOG_ONE_STRIKER = [[
+                * You met {agent}, who's supposed to be one of the people that is striking.
+                player:
+                    !left
+                agent:
+                    !right
+                    !angry
+                    I'm so mad!
+                    You said there's going to be a strike, but I didn't realize I'm the only person.
+                    Naturally, I got fired.
+                player:
+                    !placate
+                    I can explain-
+                agent:
+                    Don't care.
+                    I'm now angry.
+            ]],
+            DIALOG_LOW_STRIKERS = [[
+                * You arrived at the place where people are supposed to strike.
+                * Instead of a protest, you see a few angry workers.
+                player:
+                    !left
+                agent:
+                    !right
+                    !angry
+                    I'm so mad!
+                    You said there's going to be a strike, but clearly there's not nearly enough people for that to work.
+                    Naturally, we got fired.
+                player:
+                    !placate
+                    I can explain-
+                agent:
+                    Don't care.
+                    I'm now angry.
+            ]],
+            DIALOG_PROTEST = [[
+                * You arrive at the location of the strike.
+                foreman:
+                    !right
+            ]],
+            DIALOG_PROTEST_SUCCESS = [[
+                foreman:
+                    !placate
+                    Okay, you made your point.
+                    I'll comply with what you said.
+                    Can you please go back to work now?
+                agent:
+                    !left
+                    Are you actually complying?
+                foreman:
+                    Well, yes.
+                    Clearly I shouldn't mess with the working class.
+                agent:
+                    That's right.
+                foreman:
+                    !exit
+                * {foreman} leaves.
+            ]],
+            DIALOG_PROTEST_SUCCESS_PST = [[
+                player:
+                    !left
+                agent:
+                    !right
+                    Thanks for the help.
+                    We couldn't have done it without you.
+            ]],
+            DIALOG_BUST = [[
+                foreman:
+                    Alright, that's enough.
+                    Go back to work.
+                    Or else.
+                * Oh no! The protest is in trouble!
+            ]],
+        }
+        :Quips{
+            {
+                tags = "protest_chant",
+                "Better working conditions!",
+                "More worker rights!",
+                "End worker exploitations!",
+            },
+        }
+        :Fn(function(cxt)
+            cxt.quest:Complete("await_strike")
+            if not cxt.quest.param.strike_people then
+                cxt.quest.param.strike_people = {}
+            end
+            local available_people = {}
+            local strike_score = 0
+            for i, agent in ipairs(cxt.quest.param.strike_people) do
+                if not agent:IsRetired() then
+                    -- check if not retired because lots can happen in between.
+                    table.insert(available_people, agent)
+                    local agent_workplace = agent:GetBrain():GetWorkplace()
+                    local foreman_workplace = cxt:GetCastMember("foreman"):GetBrain() and cxt:GetCastMember("foreman"):GetBrain():GetWorkplace()
+                    if agent_workplace and agent_workplace == foreman_workplace then
+                        strike_score = strike_score + 2
+                    else
+                        strike_score = strike_score + 1
+                    end
+                end
+            end
+            if strike_score == 0 then
+                cxt:Dialog("DIALOG_NO_STRIKER")
+                cxt.quest:Fail("organize_strike")
+                StateGraphUtil.AddLeaveLocation(cxt)
+            else
+                local function fireall()
+                    for i,agent in ipairs(available_people) do
+                        if agent:GetBrain():GetWorkPosition() then
+                            agent:GetBrain():GetWorkPosition():Fire()
+                        end
+                        agent:OpinionEvent(OPINION.GOT_FIRED)
+                        local fire_stacks = math.random(0, 4)
+                        if fire_stacks > 0 then
+                            agent:GainAspect("stripped_influence", fire_stacks)
+                        end
+                    end
+                end
+                local function successfn()
+                    cxt:Dialog("DIALOG_PROTEST_SUCCESS_PST")
+                    for i, agent in ipairs(available_people) do
+                        agent:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("helped_get_better_rights"))
+                    end
+                    cxt.quest:Complete("organize_strike")
+                    StateGraphUtil.AddLeaveLocation(cxt)
+                end
+                cxt:TalkTo(available_people[1])
+                if #available_people == 1 then
+                    cxt:Dialog("DIALOG_ONE_STRIKER")
+                    cxt.quest:Fail("organize_strike")
+                    fireall()
+                    StateGraphUtil.AddLeaveLocation(cxt)
+                elseif strike_score >= math.random(3,5) then
+                    cxt:Dialog("DIALOG_PROTEST")
+                    for i, agent in ipairs(available_people) do
+                        cxt.enc:PresentAgent( agent, SIDE.LEFT )
+                        cxt:Quip(agent, "protest_chant")
+                    end
+                    cxt:Dialog("DIALOG_PROTEST_SUCCESS")
+                    
+                    successfn()
+                else
+                    cxt:Dialog("DIALOG_LOW_STRIKERS")
+                    cxt.quest:Fail("organize_strike")
+                    fireall()
+                    StateGraphUtil.AddLeaveLocation(cxt)
+                end
+            end
         end)

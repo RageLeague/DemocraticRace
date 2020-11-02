@@ -34,7 +34,8 @@ local QDEF = QuestDef.Define
 {
     title = "Information Warfare",
     desc = "Commission someone for a propaganda poster and post it at popular locations to boost your campaign's popularity.",
-
+    icon = engine.asset.Texture("icons/quests/bounty_hunt.tex"),
+    
     qtype = QTYPE.SIDE,
     act_filter = DemocracyUtil.DemocracyActFilter,
     focus = QUEST_FOCUS.NEGOTIATION,

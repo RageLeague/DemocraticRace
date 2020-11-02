@@ -86,6 +86,7 @@ local QDEF = QuestDef.Define
 {
     title = "Tea with a benefactor",
     desc = "An influential citizen has taken interest in your campaign and invited you for a cup of tea. See if you can turn some of that support into cash.",
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/tea_with_benefactor.png"),
 
     qtype = QTYPE.SIDE,
     act_filter = DemocracyUtil.DemocracyActFilter,
