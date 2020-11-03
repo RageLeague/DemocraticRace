@@ -241,6 +241,10 @@ local CARDS = {
         max_charges = 3,
         flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
         rarity = CARD_RARITY.UNIQUE,
+        OnPostResolve = function( self, minigame, targets )
+            local propaganda_mod = self.negotiator:CreateModifier("PROPAGANDA_POSTER_MODIFIER", 1)
+            propaganda_mod:SetData(self.userdata.imprints, self.userdata.prop_mod)
+        end,
     }
 }
 for id, def in pairs( CARDS ) do

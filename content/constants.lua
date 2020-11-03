@@ -1,6 +1,7 @@
 return {
     icons = {
-        support = engine.asset.Texture("DEMOCRATICRACE:assets/icons/support_transparent.png"),
+        support = engine.asset.Texture("DEMOCRATICRACE:assets/icons/ic_support.png"),
+        support_transparent = engine.asset.Texture("DEMOCRATICRACE:assets/icons/support_transparent.png"),
     },
     wealth_levels = 4,
     wealth_string = {

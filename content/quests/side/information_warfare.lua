@@ -35,7 +35,7 @@ local QDEF = QuestDef.Define
     title = "Information Warfare",
     desc = "Commission someone for a propaganda poster and post it at popular locations to boost your campaign's popularity.",
     icon = engine.asset.Texture("icons/quests/bounty_hunt.tex"),
-    
+
     qtype = QTYPE.SIDE,
     act_filter = DemocracyUtil.DemocracyActFilter,
     focus = QUEST_FOCUS.NEGOTIATION,
@@ -506,7 +506,7 @@ QDEF:AddConvo("commission")
                     if cxt.enc.scratch.is_artist then
                         cxt.quest.param.demand_list = cxt.quest.param.artist_demands[who:GetID()].demand_list
                         cxt:Dialog("DIALOG_ASK_COMMISSION")
-                        cxt:LoopingFn(function(cxt)
+                        cxt:RunLoop(function(cxt)
                             local dat = cxt.quest.param.artist_demands[who:GetID()]
                             local payed_all = DemocracyUtil.AddDemandConvo(cxt, dat.demand_list, dat.demands, function(opt)
                                 opt:PostText("TT_FREE_TIME_ACTION_COST", 2)

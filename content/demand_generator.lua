@@ -244,7 +244,7 @@ local DEMANDS = {
 
             local delta = player_stance and math.abs(player_stance - stance)
 
-            local cost = 20 * (rank - 1) + DemocracyConstants.issue_data[issue_id]:GetImportance(data.agent) * 8
+            local cost = 20 * (rank - 1) + DemocracyConstants.issue_data[issue_id]:GetImportance(data.agent) * 5
             if delta then
                 cost = cost + 15 * (delta - 1)
             end
@@ -369,6 +369,9 @@ for id, data in pairs(DEMANDS) do
 end
 
 local function GenerateDemands(pts, agent, rank, _params)
+    if not _params then
+        _params = {}
+    end
     local variance, additional_demands, forced_demands, blocked_demands = 
         _params.variance, _params.additional_demands,
         _params.forced_demands, _params.blocked_demands

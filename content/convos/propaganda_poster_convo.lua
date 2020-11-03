@@ -49,7 +49,7 @@ Convo("PROPAGANDA_POSTER_CONVO")
                         -- target_agent = cxt:GetCastMember("agent"),
                         on_start_negotiation = function(minigame)
                             propaganda_mod = minigame:GetPlayerNegotiator():CreateModifier("PROPAGANDA_POSTER_MODIFIER", 1)
-                            propaganda_mod.play_per_turn = 3
+                            -- propaganda_mod.play_per_turn = 3
                             propaganda_mod:SetData(propaganda_data.imprints, propaganda_data.prop_mod, 15)
 
                             minigame:GetPlayerNegotiator():FindCoreArgument():SetShieldStatus(true, cxt:GetLocString("SHIELD_DESC"))

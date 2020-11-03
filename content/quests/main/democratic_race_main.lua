@@ -52,6 +52,7 @@ local QDEF = QuestDef.Define
     -- icon = engine.asset.Texture("icons/quests/sal_story_act1_huntingkashio.tex"),
     qtype = QTYPE.STORY,
     desc = "Become the president as you run a democratic campaign.",
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/main_icon.png"),
 
     max_day = MAX_DAYS,
     get_narrative_progress = function(quest)

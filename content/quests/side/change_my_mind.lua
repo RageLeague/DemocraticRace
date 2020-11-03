@@ -56,13 +56,13 @@ local QDEF = QuestDef.Define
         end
     end,
     on_complete = function( quest )
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 2 * quest.param.debated_people + #quest.param.crowd)
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 3 * quest.param.debated_people + #quest.param.crowd)
         if quest.param.poor_performance then
             DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5)
         end
     end,
     on_fail = function( quest )
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -3 * quest.param.debated_people - 2 * #quest.param.crowd)
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -3 * quest.param.debated_people - #quest.param.crowd)
         -- if quest.param.poor_performance then
         --     DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5)
         -- end
@@ -390,14 +390,14 @@ QDEF:AddConvo("debate_people")
                     
                     situation_modifiers =
                     {
-                        { value = 10, text = cxt:GetLocString("SIT_MOD") }
+                        { value = 5 * math.ceil(cxt.quest:GetRank()/2), text = cxt:GetLocString("SIT_MOD") }
                     },
 
                     on_start_negotiation = function(minigame)
-                        minigame.player_negotiator:AddModifier("PLAYER_ADVANTAGE", math.max(5, 7 - math.floor(cxt.quest:GetRank() / 2)))
-                        if cxt.quest.param.debated_people >= 2 then
-                            minigame.player_negotiator:AddModifier("FATIGUED")
-                        end
+                        minigame.player_negotiator:AddModifier("PLAYER_ADVANTAGE", math.max(4, 6 - math.floor(cxt.quest:GetRank() / 2)))
+                        -- if cxt.quest.param.debated_people >= 2 then
+                        --     minigame.player_negotiator:AddModifier("FATIGUED")
+                        -- end
                         minigame.opponent_negotiator:AddModifier("IMPATIENCE", cxt.quest.param.debated_people)
                     end,
                     on_success = function(cxt, minigame) 

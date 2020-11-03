@@ -61,7 +61,7 @@ local MODIFIERS =
     PLAYER_ADVANTAGE =
     {
         name = "Player Advantage",
-        desc = "The player wins at the beginning of turn {1}.",
+        desc = "The player wins after the opponent's turn {1}.",
         icon = "DEMOCRATICRACE:assets/modifiers/player_advantage.png",
         desc_fn = function( self, fmt_str )
             return loc.format(fmt_str, self.stacks or 1)
@@ -70,7 +70,7 @@ local MODIFIERS =
         -- win_on_turn = 7,
         event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
-                if minigame:GetTurns() >= (self.stacks or 1) then
+                if minigame:GetTurns() > (self.stacks or 1) then
                     minigame:Win()
                     minigame.impasse = true
                 end
