@@ -39,7 +39,7 @@ local DEMANDS = {
                 return loc.format(self.def and self.def:GetLocalizedString( "ALT_DESC" ) or self:GetLocalizedString( "ALT_DESC" ), owner, self.remove_ratio)
             end
         end,
-
+        icon = "DEMOCRATICRACE:assets/modifiers/demand_money.png",
 
         modifier_type = MODIFIER_TYPE.BOUNTY,
         -- this indicates that this demand can appear in anyone's demands
@@ -161,6 +161,8 @@ local DEMANDS = {
             return rval
         end,
 
+        icon = "DEMOCRATICRACE:assets/modifiers/contemporary_question.png",
+
         modifier_type = MODIFIER_TYPE.BOUNTY,
         common_demand = true,
 
@@ -281,6 +283,7 @@ local DEMANDS = {
             local rval = loc.format(fmt_str, self.stacks or 4, Negotiation.Modifier.GetOwnerName(self))
             return rval
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/demand_favor.png",
 
         modifier_type = MODIFIER_TYPE.BOUNTY,
         common_demand = true,

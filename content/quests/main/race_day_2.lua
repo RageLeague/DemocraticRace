@@ -28,6 +28,7 @@ local QDEF = QuestDef.Define
 :AddSubQuest{
     id = "do_interview",
     quest_id = "RACE_INTERVIEW",
+    mark = {"primary_advisor"},
     on_activate = function(quest)
         UIHelpers.PassTime(DAY_PHASE.NIGHT)
         DemocracyUtil.SetSubdayProgress(3)
@@ -228,6 +229,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                 -- local grog = cxt.location
                 -- cxt.encounter:DoLocationTransition( cxt.quest:GetCastMember("player_room") )
                 -- grog:SetPlax()
+                DemocracyUtil.DoAlphaMessage()
                 ConvoUtil.DoSleep(cxt, "DIALOG_WAKE")
                 
                 cxt.quest:Complete()

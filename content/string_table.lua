@@ -80,6 +80,12 @@ Content.AddStringTable("DEMOCRACY", {
             LVL_3 = "Upper Class",
             LVL_4 = "Elite Class",
         },
+        WIP_SCREEN = 
+        {
+            TITLE = "End of Demo",
+            BODY = "Congratulations! You have now finished what the mod has to offer as of right now. Please leave a feedback at the steam workshop page, on GitHub, or on Klei's forum, so I can improve this mod.",
+            BUTTON = "I win!",
+        },
         STANCE_FOR_ISSUE = "This is a stance for the issue: {1#pol_issue}.",
         
     },

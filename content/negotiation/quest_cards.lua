@@ -162,11 +162,11 @@ local CARDS = {
             local old_stance = DemocracyUtil.TryMainQuestFn("GetStance", issue_data )
 
             if old_stance and self.stance ~= old_stance then
-                ClearBits( self.flags, CARD_FLAGS.DIPLOMACY )
-                SetBits( self.flags, CARD_FLAGS.HOSTILE )
+                self.flags = ClearBits( self.flags, CARD_FLAGS.DIPLOMACY )
+                self.flags = SetBits( self.flags, CARD_FLAGS.HOSTILE )
             end
 
-            self.engine:BroadcastEvent( EVENT.CARD_CHANGED, self, self:Clone() )
+            self:NotifyChanged()
         end,
     },
     

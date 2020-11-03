@@ -542,6 +542,22 @@ function DemocracyUtil.AddUnlockedLocationMarks(t, condition)
         end
     end
 end
+function DemocracyUtil.DoAlphaMessage()
+    if TheGame:GetLocalSettings().ROBOTICS then
+        engine.inst:Quit()
+        return
+    end
+
+    local player = TheGame:GetGameState() and TheGame:GetGameState():GetPlayerAgent()
+    -- local rook = player and player:GetContentID() == "ROOK"
+    
+    local img = engine.asset.Texture( "large/smith_end_screen.tex" )
+    local popup = Screen.WIPpopup(
+        LOC"DEMOCRACY.WIP_SCREEN.TITLE", 
+        LOC"DEMOCRACY.WIP_SCREEN.BODY", 
+        LOC"DEMOCRACY.WIP_SCREEN.BUTTON", img, function() TheGame:Win( GAMEOVER.ALPHA_VICTORY ) end )
+    TheGame:FE():PushScreen(popup)
+end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator
