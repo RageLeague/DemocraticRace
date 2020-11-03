@@ -9,14 +9,14 @@ local HECKLER_ID = {
     JAKES_RUNNER = {"UNLAWFUL_BAD_OPINION", "BROKER_BAD_OPINION"},
     RISE_REBEL = {"LABORER_BAD_OPINION", "UNLAWFUL_BAD_OPINION"},
     LUMINARI = {"WORSHIPPER_BAD_OPINION", "BROKER_BAD_OPINION"},
-    BOG_BURR_BOSS = {"CRYPTIC_BAD_OPINION"},
+    -- BOG_BURR_BOSS = {"CRYPTIC_BAD_OPINION"},
 }
 local insult_card = "insult"
 
 local QDEF = QuestDef.Define
 {
-    title = "Political Debate at Bar",
-    desc = "Debate the person with the wrong opinion.",
+    title = "Drunk Politics",
+    desc = "Your first taste of political debate is at {noodle_shop}, where people have many divisive opinions.",
     icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/bar_debate.png"),
 
     qtype = QTYPE.STORY,
