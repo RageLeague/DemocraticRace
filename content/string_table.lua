@@ -1,32 +1,51 @@
 Content.AddStringTable("DEMOCRACY", {
     DEMOCRACY =
     {
+        DELTA_SUPPORT_REASON =
+        {
+            DEFAULT_UP = "favorable action",
+            DEFAULT_DOWN = "unfavorable action",
+            
+            COMPLETED_QUEST = "quest completed",
+            FAILED_QUEST = "quest failed",
+            POOR_QUEST = "poor quest result",
+
+            RELATIONSHIP_UP = "improved relationship",
+            RELATIONSHIP_DOWN = "bad relationship",
+
+            ATTACK = "unprovoked attack",
+            MURDER = "murder",
+            SUSPICION = "suspicion of murder",
+            ACCOMPLICE = "accomplice to murder",
+            NEGLIGENCE = "negligence",
+
+            CONSISTENT_STANCE = "consistent stance",
+            INCONSISTENT_STANCE = "hypocrisy",
+        },
         NOTIFICATION = 
         {
             AGENT_SUPPORT =
             {
                 TITLE_INCREASE = "Gained {1} Support From {2#agent}",
                 TITLE_DECREASE = "Lost {1} Support From {2#agent}",
-                DETAIL_INCREASE = "General support increased by {1}.(To {2})\n"..
-                    "Support from {3#faction} and among {4#wealth_name} are increased.\n"..
-                    "Check your advisor for more info.",
-                DETAIL_DECREASE = "General support decreased by {1}.(To {2})\n"..
-                    "Support from {3#faction} and among {4#wealth_name} are decreased.\n"..
-                    "Check your advisor for more info.",
+                DETAIL_INCREASE = "General support, support from {3#faction} and among {4#wealth_name} " ..
+                    "are increased by {1} due to {2}.",
+                DETAIL_DECREASE = "General support, support from {3#faction} and among {4#wealth_name} " ..
+                    "are decreased by {1} due to {2}.",
             },
             FACTION_SUPPORT =
             {
                 TITLE_INCREASE = "Gained {1} Support From {2#faction}",
                 TITLE_DECREASE = "Lost {1} Support From {2#faction}",
-                DETAIL_INCREASE = "Your support from {2#faction} is increased to {1}.",
-                DETAIL_DECREASE = "Your support from {2#faction} is decreased to {1}.",
+                DETAIL_INCREASE = "Your support from {2#faction} is increased to {1} due to {3}.",
+                DETAIL_DECREASE = "Your support from {2#faction} is decreased to {1} due to {3}.",
             },
             GENERAL_SUPPORT =
             {
                 TITLE_INCREASE = "Gained {1} Support",
                 TITLE_DECREASE = "Lost {1} Support",
-                DETAIL_INCREASE = "Your support is increased to {1}.",
-                DETAIL_DECREASE = "Your support is decreased to {1}.",
+                DETAIL_INCREASE = "Your support is increased to {1} due to {2}.",
+                DETAIL_DECREASE = "Your support is decreased to {1} due to {2}.",
             },
             GROUP_FACTION_SUPPORT = 
             {
@@ -53,8 +72,8 @@ Content.AddStringTable("DEMOCRACY", {
             {
                 TITLE_INCREASE = "Gained {1} Support Among The {2#wealth_name}",
                 TITLE_DECREASE = "Lost {1} Support Among The {2#wealth_name}",
-                DETAIL_INCREASE = "Your support among the {2#wealth_name} is increased to {1}.",
-                DETAIL_DECREASE = "Your support among the {2#wealth_name} is decreased to {1}.",
+                DETAIL_INCREASE = "Your support among the {2#wealth_name} is increased to {1} due to {3}.",
+                DETAIL_DECREASE = "Your support among the {2#wealth_name} is decreased to {1} due to {3}.",
             },
         },
         PUNISH_TARGET_REASON =

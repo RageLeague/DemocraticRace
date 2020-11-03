@@ -298,7 +298,7 @@ QDEF:AddConvo("do_interview")
                     on_success = function(cxt, minigame)
                         cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
                         -- TheGame:GetDebug():CreatePanel(DebugTable(INTERVIEWER_BEHAVIOR))
-                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", (INTERVIEWER_BEHAVIOR.params.questions_answered or 0) * 2)
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", (INTERVIEWER_BEHAVIOR.params.questions_answered or 0))
                         -- Big calculations that happens.
                         ResolvePostInterview()
                         cxt.quest:Complete("do_interview")
@@ -307,7 +307,7 @@ QDEF:AddConvo("do_interview")
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_INTERVIEW_FAIL")
-                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -20)
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -10)
                         ResolvePostInterview()
                         DemocracyUtil.AddAutofail(cxt, false)
                     end,

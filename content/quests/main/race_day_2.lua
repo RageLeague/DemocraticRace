@@ -2,6 +2,7 @@ local QDEF = QuestDef.Define
 {
     title = "Campaign Time",
     desc = "Continue to campaign and gain support among the people.",
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/day_2.png"),
 
     qtype = QTYPE.STORY,
 

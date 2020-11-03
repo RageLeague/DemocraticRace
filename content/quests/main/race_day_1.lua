@@ -3,6 +3,7 @@ local QDEF = QuestDef.Define
 {
     title = "Establish Authority",
     desc = "Let people know you're running for president, and gain some support among the people.",
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/day_1.png"),
 
     qtype = QTYPE.STORY,
 

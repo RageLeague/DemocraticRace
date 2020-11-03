@@ -56,13 +56,13 @@ local QDEF = QuestDef.Define
         end
     end,
     on_complete = function( quest )
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 3 * quest.param.debated_people + #quest.param.crowd)
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 3 * quest.param.debated_people + #quest.param.crowd, "COMPLETED_QUEST")
         if quest.param.poor_performance then
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5)
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5, "POOR_QUEST")
         end
     end,
     on_fail = function( quest )
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -3 * quest.param.debated_people - #quest.param.crowd)
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -3 * quest.param.debated_people - #quest.param.crowd, "FAILED_QUEST")
         -- if quest.param.poor_performance then
         --     DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5)
         -- end
@@ -436,11 +436,11 @@ QDEF:AddConvo("debate_people")
                             cxt:Dialog("DIALOG_DEBATE_LOST_BRIBED")
                             if cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL then
                                 cxt.quest:GetCastMember("debater"):OpinionEvent(OPINION.BETRAYED)
-                                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -8)
+                                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -6)
                                 cxt:Opt("OPT_ACCEPT_FAILURE")
                                     :FailQuest()
                             else
-                                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -6)
+                                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -4)
                             end
                         else
                             cxt:Dialog("DIALOG_DEBATE_LOST")

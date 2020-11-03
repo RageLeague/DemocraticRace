@@ -1,26 +1,34 @@
-
+local function GetReason(txt)
+    return LOC("DEMOCRACY.DELTA_SUPPORT_REASON." .. txt)
+end
 
 AddNotification("DELTA_GENERAL_SUPPORT",{
     sfx = SoundEvents.notification_relationship_new,
     img = DemocracyConstants.icons.support,
-    FormatNotification = function( self, notification, delta, current )
+    FormatNotification = function( self, notification, delta, current, reason )
+        if not reason then
+            reason = delta >= 0 and "DEFAULT_UP" or "DEFAULT_DOWN"
+        end
         current = current or DemocracyUtil.TryMainQuestFn("GetGeneralSupport")
         local addendum = delta >= 0 and "INCREASE" or "DECREASE"
 
         notification.banner_txt = loc.format(LOC("DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.TITLE_"..addendum), math.abs(delta))
-        notification.details = loc.format(LOC("DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.DETAIL_"..addendum), current)
+        notification.details = loc.format(LOC("DEMOCRACY.NOTIFICATION.GENERAL_SUPPORT.DETAIL_"..addendum), current, GetReason(reason))
 
     end,
 })
 AddNotification("DELTA_FACTION_SUPPORT",{
     sfx = SoundEvents.notification_relationship_new,
     -- img = DemocracyConstants.icons.support,
-    FormatNotification = function( self, notification, delta, current, faction )
+    FormatNotification = function( self, notification, delta, current, faction, reason )
+        if not reason then
+            reason = delta >= 0 and "DEFAULT_UP" or "DEFAULT_DOWN"
+        end
         local addendum = delta >= 0 and "INCREASE" or "DECREASE"
         current = current or DemocracyUtil.TryMainQuestFn("GetFactionSupport", faction)
         
         notification.banner_txt = loc.format(LOC("DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.TITLE_"..addendum), math.abs(delta), faction)
-        notification.details = loc.format(LOC("DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.DETAIL_"..addendum), current, faction)
+        notification.details = loc.format(LOC("DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.DETAIL_"..addendum), current, faction, GetReason(reason))
         
         notification.img = faction:GetIcon()
     end,
@@ -28,11 +36,14 @@ AddNotification("DELTA_FACTION_SUPPORT",{
 AddNotification("DELTA_WEALTH_SUPPORT",{
     sfx = SoundEvents.notification_relationship_new,
     -- img = DemocracyConstants.icons.support,
-    FormatNotification = function( self, notification, delta, current, wealth )
+    FormatNotification = function( self, notification, delta, current, wealth, reason )
+        if not reason then
+            reason = delta >= 0 and "DEFAULT_UP" or "DEFAULT_DOWN"
+        end
         local addendum = delta >= 0 and "INCREASE" or "DECREASE"
         current = current or DemocracyUtil.TryMainQuestFn("GetWealthSupport", wealth)
         notification.banner_txt = loc.format(LOC("DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.TITLE_"..addendum), math.abs(delta), wealth )
-        notification.details = loc.format(LOC("DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.DETAIL_"..addendum), current, wealth)
+        notification.details = loc.format(LOC("DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.DETAIL_"..addendum), current, wealth, GetReason(reason))
         
         notification.img = DemocracyUtil.GetWealthIcon(wealth)
     end,
@@ -40,13 +51,13 @@ AddNotification("DELTA_WEALTH_SUPPORT",{
 AddNotification("DELTA_AGENT_SUPPORT",{
     sfx = SoundEvents.notification_relationship_new,
     -- img = DemocracyConstants.icons.support,
-    FormatNotification = function( self, notification, delta, agent )
+    FormatNotification = function( self, notification, delta, agent, reason )
         local mainquest = TheGame:GetGameState():GetMainQuest()
         local addendum = delta >= 0 and "INCREASE" or "DECREASE"
 
         notification.banner_txt = loc.format(LOC("DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.TITLE_"..addendum), math.abs(delta), agent)
         notification.details = loc.format(LOC("DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.DETAIL_"..addendum), math.abs(delta),
-            mainquest:DefFn("GetGeneralSupport"), agent:GetFaction(), agent)
+            GetReason(reason), agent:GetFaction(), agent)
         
         notification.img = agent
     end,

@@ -80,10 +80,10 @@ local QDEF = QuestDef.Define
         end
     end,
     on_complete = function( quest )
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 6 * #quest.param.convinced_people)
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 4 * #quest.param.convinced_people, "COMPLETED_QUEST")
     end,
     on_fail = function(quest)
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2 * #quest.param.crowd)
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2 * #quest.param.crowd, "FAILED_QUEST")
     end,
 }
 :AddLocationCast{

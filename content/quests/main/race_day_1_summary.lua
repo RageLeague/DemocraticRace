@@ -8,6 +8,7 @@ local QDEF = QuestDef.Define
 {
     title = "Final Steps",
     desc = "Review the progress you've made today with {primary_advisor}, and go to sleep.",
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/summary.png"),
 
     qtype = QTYPE.STORY,
 }

@@ -11,6 +11,7 @@ local QDEF = QuestDef.Define
 {
     title = "A Good Advice",
     desc = "Get an advisor.",
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/meet_advisor.png"),
 
     qtype = QTYPE.STORY,
 

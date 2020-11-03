@@ -14,6 +14,7 @@ local QDEF = QuestDef.Define
 {
     title = "Opinions and Oppositions",
     desc = "Discuss the oppositions with your advisor",
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/meet_opposition.png"),
 
     qtype = QTYPE.STORY,
     collect_agent_locations = function(quest, t)

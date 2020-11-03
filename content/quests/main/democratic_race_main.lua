@@ -40,8 +40,7 @@ local DEATH_DELTA = -10
 
 -- Determines the support level change when an agent is killed in an isolated scenario.
 -- Still reduce support, but people won't know for sure it's you.
--- Still need to work on provoke kill, though.
-local ISOLATED_DEATH_DELTA = -3
+local ISOLATED_DEATH_DELTA = -2
 
 -- Determines the support change if you didn't kill someone, but you're an accomplice
 -- or someone dies from neglegience
@@ -137,7 +136,7 @@ local QDEF = QuestDef.Define
         agent_relationship_changed = function( quest, agent, old_rel, new_rel )
             local support_delta = DELTA_SUPPORT[new_rel] - DELTA_SUPPORT[old_rel]
             if support_delta ~= 0 then
-                quest:DefFn("DeltaAgentSupport", support_delta, agent)
+                quest:DefFn("DeltaAgentSupport", support_delta, agent, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
             end
             -- if new_rel == RELATIONSHIP.LOVED and old_rel ~= RELATIONSHIP.LOVED then
             --     TheGame:GetGameState():GetCaravan():DeltaMaxResolve(1)
@@ -147,17 +146,22 @@ local QDEF = QuestDef.Define
             for i, fighter in battle:AllFighters() do
                 local agent = fighter.agent
                 if agent:IsSentient() and agent:IsDead() then
-                    if fighter:GetKiller() and fighter:GetKiller():IsPlayer() then
-                        local support_delta = CheckBits( battle:GetScenario():GetFlags(), BATTLE_FLAGS.ISOLATED ) and ISOLATED_DEATH_DELTA or DEATH_DELTA
-                        quest:DefFn("DeltaAgentSupport", support_delta, agent)
+                    if CheckBits( battle:GetScenario():GetFlags(), BATTLE_FLAGS.ISOLATED ) then
+                        quest:DefFn("DeltaAgentSupport", ISOLATED_DEATH_DELTA, agent, "SUSPICION")
+                    elseif fighter:GetKiller() and fighter:GetKiller():IsPlayer() then
+                        quest:DefFn("DeltaAgentSupport", DEATH_DELTA, agent, "MURDER")
                     else
-                        quest:DefFn("DeltaAgentSupport", ACCOMPLICE_KILLING_DELTA, agent)
+                        if fighter:GetTeamID() == TEAM.BLUE then
+                            quest:DefFn("DeltaAgentSupport", ACCOMPLICE_KILLING_DELTA, agent, "NEGLIGENCE")
+                        else
+                            quest:DefFn("DeltaAgentSupport", ACCOMPLICE_KILLING_DELTA, agent, "ACCOMPLICE")
+                        end
                     end
                 end
             end
             if not CheckBits( battle:GetScenario():GetFlags(), battle_defs.BATTLE_FLAGS.SELF_DEFENCE ) then
                 -- Being aggressive hurts your reputation
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -10)
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -10, "ATTACK")
             end
         end,
         action_clock_advance = function(quest, location)
@@ -225,52 +229,64 @@ local QDEF = QuestDef.Define
             StateGraphUtil.AddEndOption(cxt)
         end)
     end,
-    DeltaSupport = function(quest, amt, target, ignore_notification)
+    DeltaSupport = function(quest, amt, target, notification)
         local type, t = DemocracyUtil.DetermineSupportTarget(target)
         if type == "FACTION" then
-            quest:DefFn("DeltaFactionSupport", amt, t, ignore_notification)
+            quest:DefFn("DeltaFactionSupport", amt, t, notification)
         elseif type == "WEALTH" then
-            quest:DefFn("DeltaWealthSupport", amt, t, ignore_notification)
+            quest:DefFn("DeltaWealthSupport", amt, t, notification)
         else
-            quest:DefFn("DeltaGeneralSupport", amt, ignore_notification)
+            quest:DefFn("DeltaGeneralSupport", amt, notification)
         end
     end,
-    DeltaGeneralSupport = function(quest, amt, ignore_notification)
+    DeltaGeneralSupport = function(quest, amt, notification)
         quest.param.support_level = (quest.param.support_level or 0) + amt
-        if not ignore_notification and amt ~= 0 then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GENERAL_SUPPORT, amt, quest:DefFn("GetGeneralSupport") ) 
+        if notification == nil then
+            notification = true
+        end
+        if notification and amt ~= 0 then
+            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GENERAL_SUPPORT, amt, quest:DefFn("GetGeneralSupport"), notification ) 
         end
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_general_support", amt )
         end
     end,
-    DeltaFactionSupport = function(quest, amt, faction, ignore_notification)
+    DeltaFactionSupport = function(quest, amt, faction, notification)
         faction = DemocracyUtil.ToFactionID(faction)
         quest.param.faction_support[faction] = (quest.param.faction_support[faction] or 0) + amt
-        if not ignore_notification and amt ~= 0 then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_FACTION_SUPPORT, amt, quest:DefFn("GetFactionSupport", faction), TheGame:GetGameState():GetFaction(faction) ) 
+        if notification == nil then
+            notification = true
+        end
+        if notification and amt ~= 0 then
+            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_FACTION_SUPPORT, amt, quest:DefFn("GetFactionSupport", faction), TheGame:GetGameState():GetFaction(faction), notification ) 
         end
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_faction_support_" .. faction, amt )
         end
     end,
-    DeltaWealthSupport = function(quest, amt, renown, ignore_notification)
+    DeltaWealthSupport = function(quest, amt, renown, notification)
         local r = DemocracyUtil.GetWealth(renown)
         quest.param.wealth_support[r] = (quest.param.wealth_support[r] or 0) + amt
-        if not ignore_notification and amt ~= 0 then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_WEALTH_SUPPORT, amt, quest:DefFn("GetWealthSupport", r), r ) 
+        if notification == nil then
+            notification = true
+        end
+        if notification and amt ~= 0 then
+            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_WEALTH_SUPPORT, amt, quest:DefFn("GetWealthSupport", r), r, notification ) 
         end
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_wealth_support_" .. r, amt )
         end
     end,
 
-    DeltaAgentSupport = function(quest, amt, agent, ignore_notification)
-        quest:DefFn("DeltaGeneralSupport", amt, true)
-        quest:DefFn("DeltaFactionSupport", amt, agent, true)
-        quest:DefFn("DeltaWealthSupport", amt, agent, true)
-        if not ignore_notification and amt then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_AGENT_SUPPORT, amt, agent ) 
+    DeltaAgentSupport = function(quest, amt, agent, notification)
+        quest:DefFn("DeltaGeneralSupport", amt, false)
+        quest:DefFn("DeltaFactionSupport", amt, agent, false)
+        quest:DefFn("DeltaWealthSupport", amt, agent, false)
+        if notification == nil then
+            notification = true
+        end
+        if notification and amt then
+            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_AGENT_SUPPORT, amt, agent, notification ) 
         end
     end,
     -- DeltaFactionSupportAgent = function(quest, amt, agent, ignore_notification)
@@ -279,26 +295,32 @@ local QDEF = QuestDef.Define
     -- DeltaWealthSupportAgent = function(quest, amt, agent, ignore_notification)
     --     quest:DefFn("DeltaWealthSupport", amt, agent:GetRenown() or 1, ignore_notification)
     -- end,
-    DeltaGroupFactionSupport = function(quest, group_delta, multiplier, ignore_notification)
+    DeltaGroupFactionSupport = function(quest, group_delta, multiplier, notification)
         multiplier = multiplier or 1
+        if notification == nil then
+            notification = true
+        end
         local actual_group = {}
         for id, val in pairs(group_delta or {}) do
             actual_group[id] = math.round(val * multiplier)
             quest:DefFn("DeltaFactionSupport", actual_group[id], id, true)
         end
-        if not ignore_notification then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GROUP_FACTION_SUPPORT, actual_group)
+        if notification then
+            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GROUP_FACTION_SUPPORT, actual_group, notification)
         end
     end,
-    DeltaGroupWealthSupport = function(quest, group_delta, multiplier, ignore_notification)
+    DeltaGroupWealthSupport = function(quest, group_delta, multiplier, notification)
         multiplier = multiplier or 1
+        if notification == nil then
+            notification = true
+        end
         local actual_group = {}
         for id, val in pairs(group_delta or {}) do
             actual_group[id] = math.round(val * multiplier)
             quest:DefFn("DeltaWealthSupport", math.round(val * multiplier), id, true)
         end
-        if not ignore_notification then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GROUP_WEALTH_SUPPORT, actual_group)
+        if notification then
+            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GROUP_WEALTH_SUPPORT, actual_group, notification)
         end
     end,
     -- Getters
@@ -369,7 +391,7 @@ local QDEF = QuestDef.Define
             local stance_delta = val - quest.param.stances[issue]
             if stance_delta == 0 or (not strict and (quest.param.stances[issue] > 0) == (val > 0) and (quest.param.stances[issue] < 0) == (val < 0)) then
                 -- A little bonus for being consistent with your ideology.
-                quest:DefFn("DeltaGeneralSupport", 2)
+                quest:DefFn("DeltaGeneralSupport", 2, "CONSISTENT_STANCE")
                 quest.param.stance_change[issue] = math.max(0, quest.param.stance_change[issue] - 1)
                 quest.param.stance_change_freebie[issue] = false
             else
@@ -377,13 +399,13 @@ local QDEF = QuestDef.Define
                     and (quest.param.stances[issue] > 0) == (val > 0) 
                     and (quest.param.stances[issue] < 0) == (val < 0) then
 
-                    quest:DefFn("DeltaGeneralSupport", 2)
+                    quest:DefFn("DeltaGeneralSupport", 2, "CONSISTENT_STANCE")
                     quest.param.stance_change[issue] = math.max(0, quest.param.stance_change[issue] - 1)
                     -- quest.param.stances[issue] = val
                 else
                     -- Penalty for being inconsistent.
                     quest.param.stance_change[issue] = quest.param.stance_change[issue] + math.abs(stance_delta)
-                    quest:DefFn("DeltaGeneralSupport", -math.max(0, quest.param.stance_change[issue] - 1))
+                    quest:DefFn("DeltaGeneralSupport", -math.max(0, quest.param.stance_change[issue] - 1), "INCONSISTENT_STANCE")
                 end
                 quest.param.stances[issue] = val
                 quest.param.stance_change_freebie[issue] = not strict

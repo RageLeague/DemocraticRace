@@ -994,7 +994,7 @@ QDEF:AddConvo("action")
                     else
                         cxt:Dialog("DIALOG_STAND_ASIDE_LOSE")
                         cxt.quest:GetCastMember("admiralty"):Kill()
-                        DemocracyUtil.DeltaAgentSupport(-5, cxt.quest:GetCastMember("admiralty"))
+                        DemocracyUtil.DeltaAgentSupport(-5, cxt.quest:GetCastMember("admiralty"), "NEGLIGENCE")
                         
                         -- if  then
                             -- cxt.quest:GetCastMember("target"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("abandoned"))
@@ -1183,7 +1183,7 @@ QDEF:AddConvo("action")
                         :Dialog("DIALOG_LEAVE")
                         :Fn(function(cxt)
                             cxt.quest:GetCastMember("admiralty"):Kill()
-                            DemocracyUtil.DeltaAgentSupport(-5, cxt.quest:GetCastMember("admiralty"))
+                            DemocracyUtil.DeltaAgentSupport(-5, cxt.quest:GetCastMember("admiralty"), "NEGLIGENCE")
                         end)
                         :FailQuest()
                         :Travel()

@@ -350,8 +350,8 @@ QDEF:AddConvo()
                                     if cxt.GetAgent():IsDead() then money_multiplier = money_multiplier * 0.75 end
                                     cxt.enc:GainMoney(math.round( cxt.quest.param.extort_amt * money_multiplier ))
 
-                                    DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5)
-                                    DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", -10, 1)
+                                    DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -3)
+                                    DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", -5, 1)
                                     cxt.quest:GetCastMember("admiralty"):OpinionEvent(OPINION.APPROVE)
 
                                     StateGraphUtil.AddLeaveLocation(cxt)
@@ -394,7 +394,7 @@ QDEF:AddConvo()
                                     cxt:Dialog("DIALOG_FINISH_DEFEND")
 
                                     -- DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -12)
-                                    DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", -15, "ADMIRALTY")
+                                    DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", -8, "ADMIRALTY")
                                     cxt.quest:GetCastMember("laborer"):OpinionEvent(OPINION.HELPED)
 
                                     StateGraphUtil.AddLeaveLocation(cxt)

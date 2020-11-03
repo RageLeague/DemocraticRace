@@ -17,6 +17,7 @@ local QDEF = QuestDef.Define
 {
     title = "Political Debate at Bar",
     desc = "Debate the person with the wrong opinion.",
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/bar_debate.png"),
 
     qtype = QTYPE.STORY,
     collect_agent_locations = function(quest, t)
