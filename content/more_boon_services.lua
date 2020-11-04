@@ -1,4 +1,4 @@
-BOON_SERVICES.SOCIALIZE_NO_LOVE == 
+BOON_SERVICES.SOCIALIZE_NO_LOVE =
 {
     on_init = function(quest)
         quest.param.restoration = 10

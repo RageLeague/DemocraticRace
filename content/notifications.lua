@@ -6,7 +6,7 @@ AddNotification("DELTA_GENERAL_SUPPORT",{
     sfx = SoundEvents.notification_relationship_new,
     img = DemocracyConstants.icons.support,
     FormatNotification = function( self, notification, delta, current, reason )
-        if not reason then
+        if type(reason) ~= "string" then
             reason = delta >= 0 and "DEFAULT_UP" or "DEFAULT_DOWN"
         end
         current = current or DemocracyUtil.TryMainQuestFn("GetGeneralSupport")
@@ -21,7 +21,7 @@ AddNotification("DELTA_FACTION_SUPPORT",{
     sfx = SoundEvents.notification_relationship_new,
     -- img = DemocracyConstants.icons.support,
     FormatNotification = function( self, notification, delta, current, faction, reason )
-        if not reason then
+        if type(reason) ~= "string" then
             reason = delta >= 0 and "DEFAULT_UP" or "DEFAULT_DOWN"
         end
         local addendum = delta >= 0 and "INCREASE" or "DECREASE"
@@ -37,7 +37,7 @@ AddNotification("DELTA_WEALTH_SUPPORT",{
     sfx = SoundEvents.notification_relationship_new,
     -- img = DemocracyConstants.icons.support,
     FormatNotification = function( self, notification, delta, current, wealth, reason )
-        if not reason then
+        if type(reason) ~= "string" then
             reason = delta >= 0 and "DEFAULT_UP" or "DEFAULT_DOWN"
         end
         local addendum = delta >= 0 and "INCREASE" or "DECREASE"
@@ -52,6 +52,10 @@ AddNotification("DELTA_AGENT_SUPPORT",{
     sfx = SoundEvents.notification_relationship_new,
     -- img = DemocracyConstants.icons.support,
     FormatNotification = function( self, notification, delta, agent, reason )
+        if type(reason) ~= "string" then
+            reason = delta >= 0 and "DEFAULT_UP" or "DEFAULT_DOWN"
+        end
+        
         local mainquest = TheGame:GetGameState():GetMainQuest()
         local addendum = delta >= 0 and "INCREASE" or "DECREASE"
 

@@ -184,7 +184,7 @@ local convo = QDEF:AddConvo()
                     cxt:Dialog("DIALOG_SOCIALIZE")
                     local chosen_boon = PickBoonForAgent(who) or "SOCIALIZE"
                     
-                    if chosen_boon == "SOCIALIZE" AgentUtil.HasPlotArmour(cxt:GetAgent()) then
+                    if chosen_boon == "SOCIALIZE" and AgentUtil.HasPlotArmour(cxt:GetAgent()) then
                         -- we want to be able to socialize with plot armor characters, but we don't want them
                         -- to love us if we socialize.
                         chosen_boon = "SOCIALIZE_NO_LOVE"

@@ -566,14 +566,16 @@ local MODIFIERS =
     -- Kinda have to do it this way, since removed modifier no longer listens to events that happened because of the removal of self.
     LOADED_QUESTION_DEATH_TRIGGER = 
     {
-        name = "Loaded Question(Death Trigger)",
+        -- name = "Loaded Question(Death Trigger)",
         hidden = true,
         event_handlers = 
         {
             [ EVENT.SPLASH_RESOLVE ] = function( self, modifier, overflow, params )
                 if self.tracked_mod and self.tracked_mod == modifier then
+                    print("overflow damage:" .. overflow .. ", deal resolve damage")
                     DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", overflow)
                 end
+                print("triggered lul")
                 self.negotiator:RemoveModifier(self)
             end
         },
