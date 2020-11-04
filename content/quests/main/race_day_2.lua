@@ -35,6 +35,13 @@ local QDEF = QuestDef.Define
         DemocracyUtil.SetSubdayProgress(3)
     end,
     on_complete = function(quest)
+        quest:Activate("do_summary")
+    end,
+}
+:AddSubQuest{
+    id = "do_summary",
+    quest_id = "RACE_DAY_END_SUMMARY",
+    on_complete = function(quest)
         quest:Activate("go_to_sleep")
     end,
 }
@@ -211,11 +218,14 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
     :Loc{
         DIALOG_GO_TO_SLEEP = [[
             player:
-                [p] you win. i'm going to sleep.
+                Okay, I did all I can do.
+                I'll go to bed.
             agent:
-                i'm glad you understand
-                !exit
+                I promise there won't be another assassin.
             player:
+                Yeah that would be too repetitive.
+            agent:
+                Well then, good night.
                 !exit
         ]],
         DIALOG_WAKE = [[
@@ -248,12 +258,10 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
         :Loc{
             DIALOG_INTRO = [[
                 agent:
-                    [p] aren't you tired? go to sleep?
+                    A long day, isn't it?
+                    Wanna go to bed soon?
                 player:
-                    who are you, morgana?
-                * just imagine {agent} is switched to the cat from persona 5.
-                agent:
-                    yes
+                    Not yet.
             ]],
         }
         :Fn(function(cxt)

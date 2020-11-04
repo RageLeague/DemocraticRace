@@ -82,11 +82,20 @@ local QDEF = QuestDef.Define
 }
 :AddSubQuest{
     id = "do_summary",
-    quest_id = "RACE_DAY_1_SUMMARY",
+    quest_id = "RACE_DAY_END_SUMMARY",
     on_activate = function(quest) 
         UIHelpers.PassTime(DAY_PHASE.NIGHT)
         DemocracyUtil.SetSubdayProgress(3)
     end,
+    on_complete = function(quest)
+        quest:Activate("sleep")
+    end,
+}
+:AddSubQuest{
+    id = "sleep",
+    quest_id = "RACE_DAY_1_SLEEP",
+    title = "Go to sleep",
+    desc = "It's been a long day. You should go to bed.",
     on_complete = function(quest)
         quest:Complete()
     end,

@@ -6,9 +6,9 @@ local SURVIVAL_TURNS = 12
 
 local QDEF = QuestDef.Define
 {
-    title = "Final Steps",
-    desc = "Review the progress you've made today with {primary_advisor}, and go to sleep.",
-    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/summary.png"),
+    -- title = "Final Steps",
+    -- desc = "Review the progress you've made today with {primary_advisor}, and go to sleep.",
+    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/summary.png"),
 
     qtype = QTYPE.STORY,
 }
@@ -40,70 +40,71 @@ local QDEF = QuestDef.Define
 
 :AddDefCast( "responder", "ADMIRALTY_PATROL_LEADER" )
 
-:AddObjective{
-    id = "meet_advisor",
-    title = "Meet up with {primary_advisor}",
-    desc = "Review the progress you've made today with {primary_advisor}, and plan for your next move.",
-    mark = {"primary_advisor"},
-    state = QSTATUS.ACTIVE,
-}
+-- :AddObjective{
+--     id = "meet_advisor",
+--     title = "Meet up with {primary_advisor}",
+--     desc = "Review the progress you've made today with {primary_advisor}, and plan for your next move.",
+--     mark = {"primary_advisor"},
+--     state = QSTATUS.ACTIVE,
+-- }
 :AddObjective{
     id = "go_to_sleep",
     title = "Go to sleep",
     desc = "Aren't you tired? Go to sleep.",
     mark = {"primary_advisor"},
+    state = QSTATUS.ACTIVE,
 }
 DemocracyUtil.AddHomeCasts(QDEF)
-QDEF:AddConvo("meet_advisor", "primary_advisor")
-    :AttractState("STATE_TALK")
-        :Loc{
-            DIALOG_INTRO = [[
-                player:
-                    !left
-                agent:
-                    !right
-                    [p] nice work today
-                player:
-                    thx
-                agent:
-                    !give
-                    here's your pay.
-                    do your free time or whatever.
-            ]],
-            DIALOG_INTRO_LOW_SUPPORT = [[
-                player:
-                    !left
-                agent:
-                    !right
-                    [p] i have low expectations for you, but i was still surprised about how bad you did.
-                    i'm done with you.
-                player:
-                    oh come on!
-            ]],
-            DIALOG_INTRO_PST = [[
-                agent:
-                    go to bed when you're ready.
-            ]]
-        }
-        :Fn(function(cxt)
-            if DemocracyUtil.TryMainQuestFn("GetGeneralSupport") >= 10 then
-                cxt:Dialog("DIALOG_INTRO")
+-- QDEF:AddConvo("meet_advisor", "primary_advisor")
+--     :AttractState("STATE_TALK")
+--         :Loc{
+--             DIALOG_INTRO = [[
+--                 player:
+--                     !left
+--                 agent:
+--                     !right
+--                     [p] nice work today
+--                 player:
+--                     thx
+--                 agent:
+--                     !give
+--                     here's your pay.
+--                     do your free time or whatever.
+--             ]],
+--             DIALOG_INTRO_LOW_SUPPORT = [[
+--                 player:
+--                     !left
+--                 agent:
+--                     !right
+--                     [p] i have low expectations for you, but i was still surprised about how bad you did.
+--                     i'm done with you.
+--                 player:
+--                     oh come on!
+--             ]],
+--             DIALOG_INTRO_PST = [[
+--                 agent:
+--                     go to bed when you're ready.
+--             ]]
+--         }
+--         :Fn(function(cxt)
+--             if DemocracyUtil.TryMainQuestFn("GetGeneralSupport") >= 10 then
+--                 cxt:Dialog("DIALOG_INTRO")
 
-                local money = DemocracyUtil.TryMainQuestFn("CalculateFunding")
-                cxt.enc:GainMoney(money)
-                cxt:Dialog("DIALOG_INTRO_PST")
-                cxt.quest:Complete("meet_advisor")
-                cxt.quest:Activate("go_to_sleep")
-                DemocracyUtil.StartFreeTime()
-            else
-                cxt:Dialog("DIALOG_INTRO_LOW_SUPPORT")
-                DemocracyUtil.AddAutofail(cxt, function(cxt)
-                    cxt.quest:Complete("meet_advisor")
-                    cxt.quest:Activate("go_to_sleep")
-                    DemocracyUtil.StartFreeTime()
-                end)
-            end
-        end)
+--                 local money = DemocracyUtil.TryMainQuestFn("CalculateFunding")
+--                 cxt.enc:GainMoney(money)
+--                 cxt:Dialog("DIALOG_INTRO_PST")
+--                 cxt.quest:Complete("meet_advisor")
+--                 cxt.quest:Activate("go_to_sleep")
+--                 DemocracyUtil.StartFreeTime()
+--             else
+--                 cxt:Dialog("DIALOG_INTRO_LOW_SUPPORT")
+--                 DemocracyUtil.AddAutofail(cxt, function(cxt)
+--                     cxt.quest:Complete("meet_advisor")
+--                     cxt.quest:Activate("go_to_sleep")
+--                     DemocracyUtil.StartFreeTime()
+--                 end)
+--             end
+--         end)
 QDEF:AddConvo("go_to_sleep", "primary_advisor")
     :Loc{
         OPT_GO_TO_SLEEP = "Go to sleep",

@@ -1,0 +1,105 @@
+tag_scores:
+  advisor_diplomacy: 0
+  advisor_manipulate: 0
+  advisor_hostile: 0
+  disliked: 0
+  day_1: 5
+
+lines:
+
+- tags: [summary_banter]
+  dialog:
+  - |
+    agent:
+      Feeling okay so far?
+    player:
+      !thought
+      More or less.
+    agent:
+      How I feel depends on how you do today.
+  - |
+    player:
+      Time goes so fast.
+      I don't think I finished what I want to do.
+    agent:
+      I hope you at least did what is necessary for us to win.
+  - |
+    player:
+      !sigh
+      I'm so tired from all the work I did today.
+    agent:
+      Hopefully that the work doesn't go to waste.
+  - |
+    player:
+      Have you thought about why we're doing this?
+      Working hard to gain support, only to lose them to our opponents, and we have to continue this cycle over and over again.
+      Our support could be astronomically high, yet still it might not even be enough to win.
+      What is the point?
+    agent:
+      ...
+      !crossed
+      Have you done what I asked?
+    player:
+      I mean, yes.
+  - |
+    player:
+      I hope we win.
+    agent:
+      So do I.
+      And everyone else.
+      But will we win? That is the big question.
+- tags: [summary_banter, disliked]
+  dialog:
+  - |
+    agent:
+      How do you feel?
+    player:
+      Good, maybe?
+    agent:
+      I sure hope so.
+      !dubious
+      But judging from how badly you did yesterday, I'd take that with a grain of salt.
+  - |
+    agent:
+      I hope you can do better than yesterday?
+    player:
+      !agree
+      I hope so too.
+    agent:
+      !shrug
+      I guess that's something we have in common between us.
+- tags: [summary_banter, advisor_manipulate]
+  dialog:
+  - |
+    agent:
+      Are you putting that FACTS and LOGIC to good use?
+    player:
+      !shrug
+      Probably?
+      Some people don't seem to buy it, though.
+    agent:
+      !handwave
+      Nonsense. You can't dispute FACTS and LOGIC. It goes against common sense.
+
+- tags: [summary_banter, day_1]
+  dialog:
+  - |
+    agent:
+      How do you feel for your first day of politics?
+    player:
+      I'm a bit overwhelmed, but otherwise I'm okay.
+    agent:
+      That sounds good.
+  - |
+    agent:
+      Do you like this lifestyle?
+    player:
+      !thought
+      It's a bit refreshing.
+      Not having to put my life in danger every day is a huge plus.
+      Although I don't know how I feel being in the spotlight of everything.
+    agent:
+      !handwave
+      You'll get used to it.
+    player:
+      Perhaps.
