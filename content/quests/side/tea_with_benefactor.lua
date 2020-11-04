@@ -106,11 +106,11 @@ local QDEF = QuestDef.Define
     on_start = function(quest)
         quest:Activate("go_to_diner")
     end,
-    -- icon = engine.asset.Texture("icons/quests/bounty_hunt.tex"),
-
-    -- on_destroy = function( quest )
-        
-    -- end,
+    collect_agent_locations = function(quest, t)
+        -- if quest:IsActive("contact_informant") or quest:IsActive("extract_informant") then
+        table.insert (t, { agent = quest:GetCastMember("benefactor"), location = quest:GetCastMember('diner'), role = CHARACTER_ROLES.PATRON } )
+        -- end
+    end,
     on_complete = function( quest )
         DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST" )
     end,

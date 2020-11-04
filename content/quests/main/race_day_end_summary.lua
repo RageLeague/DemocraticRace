@@ -150,7 +150,7 @@ QDEF:AddConvo("summary", "primary_advisor")
             local delta = support_level - expectation
             
             local RANGE = 7
-            local support_rank = clamp( math.round((RANGE * #RANKS / 2 - delta) / RANGE) ,1, #RANKS)
+            local rank = clamp( math.round((RANGE * #RANKS / 2 - delta) / RANGE) ,1, #RANKS)
             
             cxt.enc.scratch.loved = cxt:GetAgent():GetRelationship() == RELATIONSHIP.LOVED
             cxt:Quip(
@@ -158,7 +158,7 @@ QDEF:AddConvo("summary", "primary_advisor")
                 "summary_banter",
                 cxt.player:GetContentID(),
                 "day_" .. (TheGame:GetGameState():GetActProgress() or 0),
-                cxt.enc.scratch.loved and "loved",
+                cxt.enc.scratch.loved and "loved"
             )
             cxt:Dialog("DIALOG_INTRO")
             -- for rank, data in pairs(RANKS) do
@@ -261,5 +261,7 @@ QDEF:AddConvo("summary", "primary_advisor")
             local money = DemocracyUtil.TryMainQuestFn("CalculateFunding")
             cxt.enc:GainMoney(money)
             cxt:Dialog("DIALOG_PAY_PST")
+            cxt.quest:Complete()
+            -- DemocracyUtil.StartFreeTime()
             StateGraphUtil.AddEndOption(cxt)
         end)

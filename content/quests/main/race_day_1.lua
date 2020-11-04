@@ -96,6 +96,9 @@ local QDEF = QuestDef.Define
     quest_id = "RACE_DAY_1_SLEEP",
     title = "Go to sleep",
     desc = "It's been a long day. You should go to bed.",
+    on_activate = function(quest)
+        DemocracyUtil.StartFreeTime()
+    end,
     on_complete = function(quest)
         quest:Complete()
     end,

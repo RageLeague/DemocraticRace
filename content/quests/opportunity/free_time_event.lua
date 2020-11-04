@@ -183,8 +183,13 @@ local convo = QDEF:AddConvo()
                     cxt:GetAgent():Remember("OFFERED_BOON")
                     cxt:Dialog("DIALOG_SOCIALIZE")
                     local chosen_boon = PickBoonForAgent(who) or "SOCIALIZE"
-                    -- local unlock_location = PickLocationUnlockForAgent(who)
-                    -- local doboon = function(cxt, boon)
+                    
+                    if chosen_boon == "SOCIALIZE" AgentUtil.HasPlotArmour(cxt:GetAgent()) then
+                        -- we want to be able to socialize with plot armor characters, but we don't want them
+                        -- to love us if we socialize.
+                        chosen_boon = "SOCIALIZE_NO_LOVE"
+                    end
+
                     if cxt.quest:GetCastMember("friend") then
                         cxt.quest:UnassignCastMember("friend")
                     end
@@ -236,7 +241,7 @@ local convo = QDEF:AddConvo()
                                     local unlock_location = TheGame:GetGameState():GetLocation(cxt.quest.param.loc_to_unlock)
                                     local location_tags = unlock_location:FillOutQuipTags()
                                     location_tags = table.map(location_tags, function(str) return "unlock_" .. str end)
-                                    TheGame:GetDebug():CreatePanel(DebugTable(location_tags))
+                                    -- TheGame:GetDebug():CreatePanel(DebugTable(location_tags))
 
                                     cxt.quest.param.prop = unlock_location:GetProprietor()
 

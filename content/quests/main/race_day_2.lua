@@ -41,6 +41,9 @@ local QDEF = QuestDef.Define
 :AddSubQuest{
     id = "do_summary",
     quest_id = "RACE_DAY_END_SUMMARY",
+    on_activate = function(quest)
+        DemocracyUtil.SetSubdayProgress(4)
+    end,
     on_complete = function(quest)
         quest:Activate("go_to_sleep")
     end,
@@ -50,7 +53,6 @@ local QDEF = QuestDef.Define
     title = "Go to sleep",
     on_activate = function(quest)
         DemocracyUtil.StartFreeTime()
-        DemocracyUtil.SetSubdayProgress(4)
     end,
     on_complete = function(quest)
         quest:Complete()

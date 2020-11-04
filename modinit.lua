@@ -88,6 +88,8 @@ local function OnLoad( mod )
     require "DEMOCRATICRACE:content/expand_existing_quest_filters"
     require "DEMOCRATICRACE:content/opinion_events"
     require "DEMOCRATICRACE:content/grifts"
+    require "DEMOCRATICRACE:content/more_boon_services"
+    
 
     for id, data in pairs(GetAllPlayerBackgrounds()) do
         local act_data = shallowcopy(ACT_DATA)

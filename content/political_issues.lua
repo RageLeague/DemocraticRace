@@ -713,24 +713,24 @@ local val =  {
     -- small issues
     WELFARE = {
         name = "Welfare Policy",
-        desc = "[p] it's obvious to everyone what that is",
+        desc = "A way to address the widespread poverty in Havaria is through welfare. It can help those in need by giving them breathing rooms, so they can recover from poverty. However, critics argue that it encourages laziness, and puts a toll on the taxpayers.",
         importance = 4,
         stances = {
             [-2] = {
                 name = "Welfare Ban",
-                desc = "pull yourself up by your bootstrap.",
+                desc = "Welfare will only encourage laziness, and will be exploited by those who don't work. Therefore, all forms of welfare should be illegal, to encourage those who are in poverty to actually work their way out.",
             },
             [-1] = {
                 name = "No Welfare",
-                desc = "just no",
+                desc = "While we should help those in need, it is not the place of the state to do so. It will cost too much taxpayer money. If someone wants to help the poor, let them do that, but the state will do nothing.",
             },
             [0] = {
                 name = "Token Effort",
-                desc = "pretend you are the good guy",
+                desc = "To show the generosity of the state, we should implement basic welfare programs. However, we shouldn't put too much money in it, because it is not necessary.",
             },
             [1] = {
                 name = "Social Safety Net",
-                desc = "In case you lost your job.",
+                desc = "It is very devastating if someone loses a job in Havaria. As such, we should implement a program that helps those who lose their jobs, to help them recover.",
             },
             [2] = {
                 name = "Universal Basic Income",

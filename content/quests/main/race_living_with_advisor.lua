@@ -77,6 +77,7 @@ QDEF:AddConvo(nil, "primary_advisor")
     }
     :Hub(function(cxt)
         cxt:Opt("OPT_CHECK_SUPPORT")
+            :PreIcon(DemocracyConstants.icons.support_transparent)
             :Dialog("DIALOG_CHECK_SUPPORT", DemocracyUtil.TryMainQuestFn("GetGeneralSupport"))
             :Fn(function(cxt)
                 cxt:Wait()
