@@ -1,4 +1,4 @@
-
+local OPPO_COUNT = 1
 local ADVISOR_ID = {
     "advisor_diplomacy", "advisor_hostile", "advisor_manipulate"
 }
@@ -87,6 +87,7 @@ local function GetAdvisorFn(advisor_id)
         cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember(advisor_id))
         cxt:Dialog("DIALOG_INTRO")
         cxt:Opt("OPT_PICK")
+            :PreIcon(global_images.accept)
             :Dialog("DIALOG_PICK")
             :Fn(function(cxt)
                 cxt.quest.param.chosen_advisor = advisor_id
@@ -116,6 +117,7 @@ local function GetAdvisorFn(advisor_id)
                 cxt.quest:Activate("discuss_plan")
             end)
         cxt:Opt("OPT_LATER")
+            :PreIcon(global_images.reject)
             :Dialog("DIALOG_LATER")
             :DoneConvo()
     end
@@ -297,8 +299,15 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                     Yes, actually.
                     I think I was a politician in a past life.
                 agent:
+                    !dubious
                     Uh huh, very funny.
-                    Anyway, if you have any questions, you can still ask me.
+                player:
+                    No, seriously, I did this a few time before already.
+                agent:
+                    !placate
+                    Okay, geez! I got your point.
+                    So you know the drill, right?
+                    Random people disliking you, unlocking the grog. Let's just get this over with.
             ]],
             DIALOG_NO = [[
                 player:
@@ -313,7 +322,11 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
             cxt:Opt("OPT_YES")
                 :ReqCondition(TheGame:GetGameProfile():HasUnlock("DONE_POLITICS_BEFORE"), "REQ_PLAYED_ONCE")
                 :Dialog("DIALOG_YES")
-                :GoTo("STATE_QUESTIONS")
+                :Fn(function(cxt)
+                    DemocracyUtil.TryMainQuestFn("DoRandomOpposition", OPPO_COUNT)
+                    DemocracyUtil.DoLocationUnlock(cxt, "GROG_N_DOG")
+                end)
+                :GoTo("STATE_COMPLETE_DIALOG")
             cxt:Opt("OPT_NO")
                 :Dialog("DIALOG_NO")
                 :GoTo("STATE_QUESTIONS")
@@ -393,7 +406,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 cxt:Opt("OPT_SUPPORT")
                     :Dialog("DIALOG_SUPPORT")
                     :Fn(function(cxt)
-                        DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 1)
+                        DemocracyUtil.TryMainQuestFn("DoRandomOpposition", OPPO_COUNT)
                         cxt.quest.param.did_opposition = true
                     end)
                     :Dialog("DIALOG_SUPPORT_PST")
@@ -421,7 +434,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 :MakeUnder()
                 :Fn(function(cxt)
                     if not cxt.quest.param.did_opposition then
-                        DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 1)
+                        DemocracyUtil.TryMainQuestFn("DoRandomOpposition", OPPO_COUNT)
                         cxt.quest.param.did_opposition = true
                         cxt:Dialog("DIALOG_SKIP_OPPOSITION")
                         

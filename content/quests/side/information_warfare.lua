@@ -59,11 +59,11 @@ local QDEF = QuestDef.Define
         end,
     },
     on_complete = function(quest)
-        if quest.param.poor_performance then
-            DemocracyUtil.DeltaGeneralSupport(2 * #quest.param.posted_location, "POOR_QUEST")
-        else
+        -- if quest.param.poor_performance then
+        --     DemocracyUtil.DeltaGeneralSupport(2 * #quest.param.posted_location, "POOR_QUEST")
+        -- else
             DemocracyUtil.DeltaGeneralSupport(4 * #quest.param.posted_location, "COMPLETED_QUEST")
-        end
+        -- end
     end,
     precondition = function(quest)
         return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")
@@ -176,6 +176,18 @@ QDEF:AddConvo("out_of_time", "primary_advisor")
                 You can still shove it into people's face.
                 But it's not going to boost our popularity.
         ]],
+        DIALOG_NO_READER = [[
+            player:
+                [p] So I posted our poster, but no one has a chance to look at it yet.
+            agent:
+                That's going to be a bit of a problem.
+                Perhaps you should find better places to post those posters.
+            player:
+                !crossed
+                If you have better places, you should've told me!
+            agent:
+                Anyway, at least you technically did what I told you to do, so that's something.
+        ]],
         DIALOG_BAD = [[
             player:
                 [p] So I posted our poster, but people don't like it.
@@ -212,6 +224,7 @@ QDEF:AddConvo("out_of_time", "primary_advisor")
             player:
                 [p] I posted our poster. Everyone wants to support us!
             agent:
+                !happy
                 Excellent news!
         ]],
     }
@@ -228,7 +241,10 @@ QDEF:AddConvo("out_of_time", "primary_advisor")
                     end
                     cxt.quest:Fail()
                 else
-                    if (cxt.quest.param.liked_people or 0) == 0 or (cxt.quest.param.disliked_people or 0) - (cxt.quest.param.liked_people or 0) >= 2 then
+                    if (cxt.quest.param.liked_people or 0) + (cxt.quest.param.disliked_people or 0) == 0 then
+                        cxt:Dialog("DIALOG_NO_READER")
+                        cxt.quest.param.poor_performance = true
+                    elseif (cxt.quest.param.liked_people or 0) == 0 or (cxt.quest.param.disliked_people or 0) - (cxt.quest.param.liked_people or 0) >= 2 then
                         cxt:Dialog("DIALOG_BAD")
                         cxt.quest.param.poor_performance = true
                         

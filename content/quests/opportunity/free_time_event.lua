@@ -173,6 +173,7 @@ local convo = QDEF:AddConvo()
             local action_cost = 3
             -- print("lo yes!")
             cxt:Opt("OPT_SOCIALIZE", who)
+                :PreIcon(global_images.like)
                 :PostText("TT_SOCIALIZE")
                 :IsHubOption( true )
                 -- :ReqCondition(cxt.quest.param.free_time_actions >= action_cost, "REQ_MUST_HAVE_FREE_TIME")

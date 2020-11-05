@@ -76,7 +76,9 @@ local QDEF = QuestDef.Define
             or quest:GetLocalizedStr( "GET_JOB_ALONE" )
     end,
     on_activate = function(quest)
-        DemocracyUtil.StartFreeTime()
+        if quest.param.job_history and #quest.param.job_history > 1 then
+            DemocracyUtil.StartFreeTime()
+        end
     end,
     on_complete = function(quest) 
         quest:Activate("do_job")
@@ -171,7 +173,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
     }
     :Fn(function(cxt)
         cxt:Dialog("DIALOG_INTRO")
-        DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 3)
+        DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 2)
         cxt:Dialog("DIALOG_INTRO_PST")
         QuestUtil.SpawnQuest("CAMPAIGN_BODYGUARD")
         cxt.quest:Complete("starting_out")

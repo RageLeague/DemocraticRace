@@ -37,6 +37,7 @@ Convo("DEM_ADMIRALTY_ARREST")
             local all_targets = DemocracyUtil.GetAllPunishmentTargets()
             local is_at_hq = who:GetLocation() and who:GetLocation():GetContentID() == "ADMIRALTY_BARRACKS"
             cxt:Opt("OPT_INVESTIGATE")
+                :PreIcon(global_images.order)
                 :PostText("TT_INVESTIGATE")
                 :ReqCondition(#all_targets > 0, "REQ_NO_TARGETS")
                 :ReqCondition(is_at_hq or who:GetRelationship() > RELATIONSHIP.NEUTRAL, "REQ_CANT_DO")

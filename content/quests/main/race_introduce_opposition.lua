@@ -97,29 +97,31 @@ QDEF:AddConvo("go_to_bar")
     :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("noodle_shop") end)
         :Loc{
             DIALOG_INTRO = [[
-                * you arrive at the noodle shop.
+                * You arrive at the noodle shop.
                 player:
                     !left
                 primary_advisor:
                     !right
-                    looks like you have company.
+                    Looks like you have company.
                 opposition:
                     !right
-                    'sup, {player}.
+                    Hello there. I heard that you're running for president.
                 player:
-                    Hi.
+                    Yeah, you got it. That's me.
                 opposition:
-                    I'm also running for president.
+                    It just so happens that I'm also running for president.
                 primary_advisor:
                     !right
                     It's not just {opposition}.
-                    there are other people who want to run for president.
-                    you think this is going to be easy? think again.
+                    There are many other candidates who are running for president.
+                    And they have been doing a lot of work to gain their support.
+                    You think this is going to be easy? Think again.
             ]],
         }
         :Fn(function(cxt)
             cxt.quest:Complete("go_to_bar")
             cxt:Dialog("DIALOG_INTRO")
+            DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 3)
         end)
 QDEF:AddConvo("meet_opposition", "opposition")
     :Loc{

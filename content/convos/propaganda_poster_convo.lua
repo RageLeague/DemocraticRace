@@ -19,6 +19,7 @@ Convo("PROPAGANDA_POSTER_CONVO")
         if who and DemocracyUtil.IsDemocracyCampaign(cxt.act_id) then
             if cxt.location:HasMemory("HAS_PROPAGANDA_POSTER") and who == cxt.location:GetProprietor() then
                 cxt:Opt("OPT_TAKE_DOWN")
+                    :PreIcon(global_images.removenegotiation)
                     :Dialog("DIALOG_TAKE_DOWN")
                     :Fn(function(cxt)
                         cxt.location:Forget("HAS_PROPAGANDA_POSTER")

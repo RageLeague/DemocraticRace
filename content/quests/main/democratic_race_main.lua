@@ -116,6 +116,11 @@ local QDEF = QuestDef.Define
     end,
     events = 
     {
+        GAME_OVER = function( self, gamestate, result )
+            if result == GAMEOVER.VICTORY then
+                TheGame:GetGameProfile():AcquireUnlock("DONE_POLITICS_BEFORE")
+            end
+        end,
         agent_location_changed = function(quest, agent, old_loc, new_loc)
             -- if event == "agent_location_changed" then
                 print("location change triggered")
