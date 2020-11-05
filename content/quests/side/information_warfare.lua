@@ -267,7 +267,7 @@ QDEF:AddConvo("post")
             player:
                 Dang!
         ]],
-        OPT_SELECT = "Select {1#card}",
+        OPT_SELECT = "Select a poster...",
         DIALOG_SELECT = [[
             player:
                 !permit
@@ -302,6 +302,9 @@ QDEF:AddConvo("post")
             agent:
                 Suit yourself, I guess.
         ]],
+
+        SELECT_TITLE = "Select a poster",
+        SELECT_DESC = "Choose a poster to post on this location, consuming 1 use on it.",
     }
     :Hub(function(cxt, who)
         if who == cxt:GetCastMember("primary_advisor") then
@@ -324,6 +327,11 @@ QDEF:AddConvo("post")
             if not (cxt.quest.param.posted_location and table.arraycontains(cxt.quest.param.posted_location, location:GetContentID())) then
                 cxt:Opt("OPT_ASK")
                     :Dialog("DIALOG_ASK")
+                    :ReqCondition((cxt.quest.param.actions or 0) >= 1, "REQ_FREE_TIME_ACTIONS")
+                    :Fn(function(cxt)
+                        cxt.quest.param.actions = (cxt.quest.param.actions or 0) - 1
+                        cxt.quest:NotifyChanged()
+                    end)
                     :Negotiation{
                         on_success = function(cxt)
                             cxt:Dialog("DIALOG_ASK_SUCCESS")
@@ -338,22 +346,64 @@ QDEF:AddConvo("post")
                                     :Dialog("DIALOG_NO_OPT")
                                     :ReceiveOpinion(OPINION.WASTED_TIME)
                             else
-                                for i, card in ipairs(posters) do
-                                    cxt:Opt("OPT_SELECT", card)
-                                        :Dialog("DIALOG_SELECT")
+                                cxt:RunLoop(function(cxt)
+                                -- local cards = agent.negotiator:GetCards()
+                                    cxt:Opt("OPT_SELECT")
                                         :Fn(function(cxt)
-                                            location:Remember("HAS_PROPAGANDA_POSTER", shallowcopy(card.userdata))
-                                            card:ConsumeCharge()
-                                            if card:IsSpent() then
-                                                cxt.player.negotiator:RemoveCard( card )
+                                            cxt:Wait()
+                                            DemocracyUtil.InsertSelectCardScreen(
+                                                posters,
+                                                cxt:GetLocString("SELECT_TITLE"), 
+                                                cxt:GetLocString("SELECT_DESC"), 
+                                                nil,
+                                                function(card)
+                                                    cxt.enc:ResumeEncounter( card )
+                                                end
+                                            )
+                                            -- local function OnSelectCard(screen, widget, card)
+                                            --     screen:ShowRemoval(widget)
+                                            --     cxt.enc:ResumeEncounter( card )
+                                            -- end
+                                            
+                                            -- local screen = Screen.DeckScreen( posters, OnSelectCard, Widget.NegotiationCard )
+                                            -- screen:SetMusicEvent( TheGame:LookupPlayerMusic( "deck_music" ))
+                                            -- screen:SetTitles( LOC"UI.SHOW_DECK_SCREEN.NEGOTIATION_DECK_UPPERCASE", LOC"UI.CARDS.REMOVE_NEGOTIATION_CARD" )
+                                            -- TheGame:FE():InsertScreen( screen )
+                                            local card = cxt.enc:YieldEncounter()
+                                            if card then
+                                                cxt:Dialog("DIALOG_SELECT")
+
+                                                location:Remember("HAS_PROPAGANDA_POSTER", shallowcopy(card.userdata))
+                                                card:ConsumeCharge()
+                                                if card:IsSpent() then
+                                                    cxt.player.negotiator:RemoveCard( card )
+                                                end
+                                                if not cxt.quest.param.posted_location then
+                                                    cxt.quest.param.posted_location = {}
+                                                end
+                                                table.insert(cxt.quest.param.posted_location, location:GetContentID())
+
+                                                cxt:GoTo("STATE_READ")
                                             end
-                                            if not cxt.quest.param.posted_location then
-                                                cxt.quest.param.posted_location = {}
-                                            end
-                                            table.insert(cxt.quest.param.posted_location, location:GetContentID())
                                         end)
-                                        :GoTo("STATE_READ")
-                                end
+                                end)
+
+                                -- for i, card in ipairs(posters) do
+                                --     cxt:Opt("OPT_SELECT", card)
+                                --         :Dialog("DIALOG_SELECT")
+                                --         :Fn(function(cxt)
+                                --             location:Remember("HAS_PROPAGANDA_POSTER", shallowcopy(card.userdata))
+                                --             card:ConsumeCharge()
+                                --             if card:IsSpent() then
+                                --                 cxt.player.negotiator:RemoveCard( card )
+                                --             end
+                                --             if not cxt.quest.param.posted_location then
+                                --                 cxt.quest.param.posted_location = {}
+                                --             end
+                                --             table.insert(cxt.quest.param.posted_location, location:GetContentID())
+                                --         end)
+                                --         :GoTo("STATE_READ")
+                                -- end
                             end
                         end,
                         on_fail = function(cxt)
@@ -386,15 +436,23 @@ QDEF:AddConvo("post")
                 end
             end
             if #candidates > 0 then
-                local chosen = table.arraypick(candidates)
-                cxt:ReassignCastMember('target', chosen)
-                cxt:Dialog("DIALOG_INTRO")
-                cxt:End()
-                UIHelpers.DoSpecificConvo(chosen, "PROPAGANDA_POSTER_CONVO", "STATE_READ", nil, nil, cxt.quest )
-            else
-                cxt:Dialog("DIALOG_NO_READER")
-                StateGraphUtil.AddEndOption(cxt)
+                cxt.quest.param.readers = {}
+                for i, agent in ipairs(candidates) do
+                    if math.random() < 0.33 then
+                        table.insert(cxt.quest.param.readers, agent)
+                    end
+                    if #cxt.quest.param.readers > 0 then
+                        cxt:Dialog("DIALOG_INTRO")
+                        cxt:End()
+                        UIHelpers.DoSpecificConvo(nil, "PROPAGANDA_POSTER_CONVO", "STATE_READ", nil, nil, cxt.quest )
+                        return
+                    end
+                end
+                
             end
+            cxt.location:Remember("DID_PROPAGANDA_TODAY")
+            cxt:Dialog("DIALOG_NO_READER")
+            StateGraphUtil.AddEndOption(cxt)
         end)
 QDEF:AddConvo("commission")
     :Loc{
@@ -649,6 +707,7 @@ QDEF:AddConvo("commission")
             cxt:Opt("OPT_START")
                 :Dialog("DIALOG_START")
                 :Negotiation{
+                    flags = NEGOTIATION_FLAGS.NO_BYSTANDERS,
                     on_start_negotiation = function(minigame)
                         local negotiation_defs = require "negotiation/negotiation_defs"
                         local CARD_FLAGS = negotiation_defs.CARD_FLAGS

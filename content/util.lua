@@ -558,6 +558,31 @@ function DemocracyUtil.DoAlphaMessage()
         LOC"DEMOCRACY.WIP_SCREEN.BUTTON", img, function() TheGame:Win( GAMEOVER.ALPHA_VICTORY ) end )
     TheGame:FE():PushScreen(popup)
 end
+function DemocracyUtil.InsertSelectCardScreen(cards, title, desc, class, on_select)
+    local card_selected
+    local function OnSelectCard(screen, widget, card)
+        if card then
+            screen:ShowRemoval(widget)
+            AUDIO:PlayEvent("event:/ui/select_cards/remove_card")
+            card_selected = card
+            -- on_select(card)
+            -- cxt.enc:ResumeEncounter( card )
+        else
+            -- on_select()
+        end
+    end
+    local function OnEndFn(screen)
+        if on_select then
+            on_select(card_selected)
+        end
+    end
+    
+    local screen = Screen.DeckScreen( cards, OnSelectCard, class or Widget.NegotiationCard, OnEndFn )
+    screen:SetMusicEvent( TheGame:LookupPlayerMusic( "deck_music" ))
+    screen:SetTitles( title, desc )
+    TheGame:FE():InsertScreen( screen )
+    return screen
+end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator

@@ -57,9 +57,9 @@ local QDEF = QuestDef.Define
     end,
     on_complete = function( quest )
         DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 3 * quest.param.debated_people + #quest.param.crowd, "COMPLETED_QUEST")
-        if quest.param.poor_performance then
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5, "POOR_QUEST")
-        end
+        -- if quest.param.poor_performance then
+        --     DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5, "POOR_QUEST")
+        -- end
     end,
     on_fail = function( quest )
         DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -3 * quest.param.debated_people - #quest.param.crowd, "FAILED_QUEST")
@@ -395,9 +395,9 @@ QDEF:AddConvo("debate_people")
 
                     on_start_negotiation = function(minigame)
                         minigame.player_negotiator:AddModifier("PLAYER_ADVANTAGE", math.max(4, 6 - math.floor(cxt.quest:GetRank() / 2)))
-                        -- if cxt.quest.param.debated_people >= 2 then
-                        --     minigame.player_negotiator:AddModifier("FATIGUED")
-                        -- end
+                        if cxt.quest.param.debated_people >= 2 then
+                            minigame.player_negotiator:AddModifier("FATIGUED")
+                        end
                         minigame.opponent_negotiator:AddModifier("IMPATIENCE", cxt.quest.param.debated_people)
                     end,
                     on_success = function(cxt, minigame) 
@@ -436,11 +436,11 @@ QDEF:AddConvo("debate_people")
                             cxt:Dialog("DIALOG_DEBATE_LOST_BRIBED")
                             if cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL then
                                 cxt.quest:GetCastMember("debater"):OpinionEvent(OPINION.BETRAYED)
-                                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -6)
+                                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5)
                                 cxt:Opt("OPT_ACCEPT_FAILURE")
                                     :FailQuest()
                             else
-                                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -4)
+                                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -3)
                             end
                         else
                             cxt:Dialog("DIALOG_DEBATE_LOST")
@@ -523,6 +523,15 @@ QDEF:AddConvo("debate_people")
             DIALOG_RESIST_ARREST_SUCCESS = [[
                 * Good job. You might still be free, but your reputation will suffer.
             ]],
+            DIALOG_RESIST_ARREST_RUNAWAY = [[
+                left:
+                    !exit
+                right:
+                    !exit
+                * You ran away from the scene.
+                * It might seem cowardly, but you did what you came here to do.
+                * And that's good enough for you.
+            ]],
         }
         :Fn(function(cxt)
             cxt.enc.scratch.opfor = CreateCombatParty("ADMIRALTY_PATROL", cxt.quest:GetRank() + 1, cxt.location)
@@ -564,7 +573,14 @@ QDEF:AddConvo("debate_people")
                                     ConvoUtil.GiveQuestRewards(cxt)
                                     StateGraphUtil.AddLeaveLocation(cxt)
                                 end,
-                                on_run = ConvoOption.DEFAULT_RUNAWAY_NO_FAIL,
+                                on_runaway = function(cxt, battle)
+                                    cxt:Dialog("DIALOG_RESIST_ARREST_RUNAWAY")
+                                    cxt.quest.param.poor_performance = true
+                                    cxt.quest:Complete()
+                                    -- you get no quest reward for such hasty exit.
+                                    -- don't ask how it works.
+                                    StateGraphUtil.DoRunAwayEffects( cxt, battle, true )
+                                end,
                             }
                     end,
                 }

@@ -171,6 +171,11 @@ QDEF:AddConvo("summary", "primary_advisor")
             --         break
             --     end
             -- end
+            cxt:Wait()
+            TheGame:FE():InsertScreen( DemocracyClass.Screen.SupportScreen(nil, function(screen)
+                cxt.enc:ResumeEncounter()
+            end) )
+            cxt.enc:YieldEncounter()
             cxt:Dialog("DIALOG_" .. RANKS[rank])
             if cxt.quest.param.parent_quest then
                 local parent_quest = cxt.quest.param.parent_quest
@@ -180,9 +185,9 @@ QDEF:AddConvo("summary", "primary_advisor")
                     cxt.quest.param.bad_interview = parent_quest.param.bad_interview
                     cxt:Dialog(rank <= 3 and "DIALOG_POST_INTERVIEW_GOOD_SUPPORT" or "DIALOG_POST_INTERVIEW_BAD_SUPPORT")
                     if cxt.quest.param.good_interview then
-                        rank = max(1, rank - 1)
+                        rank = math.max(1, rank - 1)
                     elseif cxt.quest.param.bad_interview then
-                        rank = min(#RANKS, rank + 1)
+                        rank = math.min(#RANKS, rank + 1)
                     end
                 end
             end

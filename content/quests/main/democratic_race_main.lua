@@ -303,7 +303,7 @@ local QDEF = QuestDef.Define
         local actual_group = {}
         for id, val in pairs(group_delta or {}) do
             actual_group[id] = math.round(val * multiplier)
-            quest:DefFn("DeltaFactionSupport", actual_group[id], id, true)
+            quest:DefFn("DeltaFactionSupport", actual_group[id], id, false)
         end
         if notification then
             TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GROUP_FACTION_SUPPORT, actual_group, notification)
@@ -317,7 +317,7 @@ local QDEF = QuestDef.Define
         local actual_group = {}
         for id, val in pairs(group_delta or {}) do
             actual_group[id] = math.round(val * multiplier)
-            quest:DefFn("DeltaWealthSupport", math.round(val * multiplier), id, true)
+            quest:DefFn("DeltaWealthSupport", math.round(val * multiplier), id, false)
         end
         if notification then
             TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GROUP_WEALTH_SUPPORT, actual_group, notification)
