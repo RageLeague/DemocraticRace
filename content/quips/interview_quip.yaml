@@ -1,29 +1,39 @@
 lines:
 
 - tags: [post_interview, likes_interview]
+  pre: |
+    !happy
   dialog:
   - |
-    [p] i was inspired by your performance
+    !clap
+    Wow, what a stunning interview!
+  - You are clearly the {player.gender|man|woman|person} for the job!
+  - That was great! I really like your style!
 
 - tags: [post_interview, likes_interview, disliked]
   dialog:
   - |
-    [p] i dislike what you're doing at first, but after hearing your awesome performance, i am reconsidering my position.
-
+    You know, I previously thought you aren't fit for the job.
+    But from that interview, it is clear that you know what you're doing.
 
 - tags: [post_interview, dislikes_interview]
   dialog:
   - |
-    [p] wow, you suck.
+    !sigh
+    That was rather disappointing.
   - |
-    [p] try harder next time.
+    Seems like you're just one of those politician wannabes.
+  - |
+    !sigh
+    You know, I want to find a reason to like you, but I just can't find any.
 
 - tags: [post_interview, dislikes_interview, disliked]
   dialog:
   - |
-    [p] my expectations for you was low, but that was something else.
+    !facepalm
+    My expectations for you was low, but that was something else.
     
 - tags: [post_interview, dislikes_interview, liked]
   dialog:
   - |
-    [p] to be honest, i liked you before. but now, i'm not so sure.
+    I really want to like you, but after that, I'm not so sure.

@@ -12,14 +12,14 @@ lines:
   pre: |
     !right
   dialog:
-  - |
-    [p] understandable, however my offer still stands
+  - Understandable. However, my offer still stands.
 - tags: [reject_advisor, advisor_diplomacy, bad_relation]
   pre: |
     !right
+    !sigh
   dialog:
-  - |
-    [p] what a shame. we could've done so much together
+  - Bro, that was cringe. You're going to lose followers.
+  - That was not a Wholesome 100 moment.
 
 # Manipulate
 - tags: [reject_advisor, advisor_manipulate, good_relation]
@@ -27,27 +27,31 @@ lines:
     !right
   dialog:
   - |
-    [p] you might not agree now, but you will come back to me one day
+    So your logic have lead you to a different conclusion.
+    However, when you finally thought it all out, you will come back to me.
 - tags: [reject_advisor, advisor_manipulate, bad_relation]
   pre: |
     !right
   dialog:
-  - |
-    [p] i hope you don't regret your decision one day
+  - A shame that someone as bright as you lacks basic logic.
 
 # Hostile
 - tags: [reject_advisor, advisor_hostile, good_relation]
   pre: |
     !right
   dialog:
-  - |
-    [p] well, at least i gave it the college try.
+  - Hmm... Normally that would work.
+  - Soon you'll realize that who you choose is not as good as me.
 - tags: [reject_advisor, advisor_hostile, bad_relation]
   pre: |
     !right
   dialog:
   - |
-    [p] Fine! I didn't need you anyways.
+    !angry_accuse
+    You're fired.
+  - |
+    I hope you're happy now, 'cause you're going to jail.
+    * Pretty sure that's not how that works.
 
 ##########################
 # These dialog are triggered when you unlock a new location during a hangout with friend.
@@ -168,14 +172,17 @@ lines:
   dialog:
   - |
     agent:
-      [p] there's a cool bar that i often visit called {loc_to_unlock#location}.
-      you should check it out.
+      I often drink at a place called {loc_to_unlock#location}.
+      It's nothing too special, but you get to visit many interesting people there.
+      We should drink at there some time.
+    * You're pretty sure you're not allowed to drink with someone who you already liked, but you don't want to bring it up to ruin your relationship.
 - tags: [unlock_location, unlock_shop]
   dialog:
   - |
     agent:
-      [p] there's a cool shop that i like to visit called {loc_to_unlock#location}.
-      check it out!
+      There's a cool shop that I like to visit called {loc_to_unlock#location}.
+      They sell a lot of useful items. You definite want to stock up on some.
+      You should definitely check it out when you have time.
 
 - tags: [confront_argument]
   dialog:

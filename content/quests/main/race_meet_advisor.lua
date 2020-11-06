@@ -81,11 +81,21 @@ local QDEF = QuestDef.Define
 }
 DemocracyUtil.AddAdvisors(QDEF)
 
+local COMMON_LOC = {
+    OPT_QUESTION = "Ask about {agent}'s angle",
+    OPT_PICK = "Choose {agent} as your main advisor.",
+    OPT_LATER = "Later",
+
+    DIALOG_PICK_PST = [[
+        * Other advisors left, and you're left with {agent}.
+    ]],
+}
 
 local function GetAdvisorFn(advisor_id)
     return function(cxt)
         cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember(advisor_id))
         cxt:Dialog("DIALOG_INTRO")
+        cxt:Question("OPT_QUESTION", "DIALOG_QUESTION")
         cxt:Opt("OPT_PICK")
             :PreIcon(global_images.accept)
             :Dialog("DIALOG_PICK")
@@ -212,67 +222,130 @@ QDEF:AddConvo("go_to_bar")
         end)
 QDEF:AddConvo("choose_advisor", "advisor_diplomacy")
     :AttractState("STATE_TALK")
+        :Loc(COMMON_LOC)
         :Loc{
             DIALOG_INTRO = [[
                 agent:
-                    [p] choose me plz
+                    Hello, {player}.
+                    Ready to make a decision yet?
             ]],
-            OPT_PICK = "Choose {agent} as your main advisor.",
+            DIALOG_QUESTION = [[
+                player:
+                    Why should I pick you and not anyone else?
+                agent:
+                    !handwave
+                    Look, I'm a people's person.
+                    With my Charisma 100, I can convince anyone of anything.
+                    !nod
+                    And if you choose me, I can show you the wae.
+                * You're not sure why {agent.heshe} says "way" this way.
+                player:
+                    !dubious
+                    That doesn't sound very convincing.
+                agent:
+                    I don't think you understand.
+                    !cruel
+                    You <i>will</> be convinced.
+                player:
+                    !placate
+                    Okay, calm down.
+                    I get your point.
+                *** {agent} will provide more diplomatic cards in {agent.hisher} card shop, is what {agent.heshe}'s saying.
+            ]],
             DIALOG_PICK = [[
+                player:
+                    I guess you can be my advisor.
                 agent:
-                    [p] wow thanks.
+                    Sweet!
+                    That is a wholesome 100 moment.
             ]],
-            DIALOG_PICK_PST = [[
-                * Other advisors left, and you're left with {agent}.
-            ]],
-            OPT_LATER = "Later",
             DIALOG_LATER = [[
+                player:
+                    Not yet.
                 agent:
-                    [p] take your time
+                    Oh well. Take your time.
             ]],
         }
         :Fn(GetAdvisorFn("advisor_diplomacy"))
 QDEF:AddConvo("choose_advisor", "advisor_hostile")
     :AttractState("STATE_TALK")
+        :Loc(COMMON_LOC)
         :Loc{
             DIALOG_INTRO = [[
                 agent:
-                    [p] the other's suck. choose me
+                    Nobody knows debating better than me.
+                    So you better pick me, quick. I'm very impatient.
             ]],
-            OPT_PICK = "Choose {agent} as your main advisor.",
+            DIALOG_QUESTION = [[
+                player:
+                    Why should I pick you and not anyone else?
+                agent:
+                    I already told you.
+                    !thumb
+                    Nobody knows debating better than me, so I'm your best option.
+                    My secret? Talking over the opposition.
+                player:
+                    That's not-
+                agent:
+                    You're wrong.
+                    It works a hundred percent of the time.
+                    As long as you don't give the opponent the chance to speak, they can't refute what you're saying.
+                    And you win by default.
+                *** {agent} will provide more hostile cards in {agent.hisher} card shop, is what {agent.heshe}'s saying.
+            ]],
+            
             DIALOG_PICK = [[
+                player:
+                    I guess I'll pick you.
                 agent:
-                    [p] wow thanks.
+                    Glad you made the correct choice.
             ]],
-            DIALOG_PICK_PST = [[
-                * Other advisors left, and you're left with {agent}.
-            ]],
-            OPT_LATER = "Later",
             DIALOG_LATER = [[
+                player:
+                    Let me think.
                 agent:
-                    [p] not like i want to help you anyway, baka
+                    Do you not want to win?
             ]],
         }
         :Fn(GetAdvisorFn("advisor_hostile"))
 QDEF:AddConvo("choose_advisor", "advisor_manipulate")
     :AttractState("STATE_TALK")
+        :Loc(COMMON_LOC)
         :Loc{
             DIALOG_INTRO = [[
                 agent:
-                    [p] i know you want to pick me
+                    Have you made up your mind?
+                    If you are logical, there is only one person to choose from.
             ]],
-            OPT_PICK = "Choose {agent} as your main advisor.",
+            DIALOG_QUESTION = [[
+                player:
+                    Why should I pick you and not anyone else?
+                agent:
+                    Because factually speaking, I'm your best choice.
+                    The reason for that is logical:
+                    If you have facts and logic on your side, you will always win.
+                    Since I am so good at logic and facts, I'm your best choice.
+                player:
+                    What if facts and logic isn't on my side? Will you still help me?
+                agent:
+                    That thought is quite illogical.
+                    Facts and logic is subjective, yet it appears objective.
+                    I can teach you how to make facts and logic be on your side, even though it does not appear to be.
+                *** {agent} will provide more manipulative cards in {agent.hisher} card shop, is what {agent.heshe}'s saying.
+            ]],
+
             DIALOG_PICK = [[
+                player:
+                    I'll choose you.
                 agent:
-                    [p] wow thanks.
+                    Glad you can think logically.
             ]],
-            DIALOG_PICK_PST = [[
-                * Other advisors left, and you're left with {agent}.
-            ]],
-            OPT_LATER = "Later",
+
             DIALOG_LATER = [[
+                player:
+                    Don't hassle me.
                 agent:
-                    [p] you will come back no matter what.
+                    Not everyone can understand logic instantly. Take your time to figure out the logical course of action.
             ]],
         }
         :Fn(GetAdvisorFn("advisor_manipulate"))
