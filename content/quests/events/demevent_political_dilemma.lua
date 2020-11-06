@@ -6,9 +6,7 @@ local QDEF = QuestDef.Define
     precondition = function(quest)
         local issues = DemocracyConstants.issue_data
         quest.param.issue = table.arraypick(copyvalues(issues))
-        quest.param.issue_name = quest.param.issue:GetLocalizedName()
-        quest.param.pos_stance_txt = quest.param.issue.stances[2]:GetLocalizedDesc()
-        quest.param.neg_stance_txt = quest.param.issue.stances[-2]:GetLocalizedDesc()
+        
         return true
     end,
     on_init = function(quest)
@@ -19,7 +17,7 @@ local QDEF = QuestDef.Define
     cast_id = "extremist_pos",
     -- when = QWHEN.MANUAL,
     condition = function(agent, quest)
-        return quest.param.issue:GetAgentStanceIndex(agent) >= 2
+        return quest.param.issue:GetAgentStanceIndex(agent) >= 2, loc.format("Req stance 2(has {1})", quest.param.issue:GetAgentStanceIndex(agent))
     end,
 }
 -- too lazy to add fallbacks.
@@ -27,7 +25,7 @@ local QDEF = QuestDef.Define
     cast_id = "extremist_neg",
     -- when = QWHEN.MANUAL,
     condition = function(agent, quest)
-        return quest.param.issue:GetAgentStanceIndex(agent) <= -2
+        return quest.param.issue:GetAgentStanceIndex(agent) <= -2, loc.format("Req stance -2(has {1})", quest.param.issue:GetAgentStanceIndex(agent))
     end,
 }
 
@@ -41,11 +39,11 @@ QDEF:AddConvo()
                 extremist_pos:
                     !left
                     !angry_accuse
-                    {pos_stance_txt#angrify}
+                    Havaria needs {pos_stance}! It's the only way!
                 extremist_neg:
                     !angry_accuse
                     %confront_argument
-                    {neg_stance_txt#angrify}
+                    What we need clearly is {neg_stance}!
                 * as their debate gets heated, they sees you.
                 player:
                     !left
@@ -95,6 +93,9 @@ QDEF:AddConvo()
         }
         :Fn(function(cxt)
             cxt.quest:Complete()
+            cxt.quest.param.issue_name = cxt.quest.param.issue:GetLocalizedName()
+            cxt.quest.param.pos_stance = cxt.quest.param.issue.stances[2]:GetLocalizedName()
+            cxt.quest.param.neg_stance = cxt.quest.param.issue.stances[-2]:GetLocalizedName()
             cxt:Dialog("DIALOG_INTRO")
 
             cxt:Opt("OPT_SIDE_WITH", cxt.quest:GetCastMember("extremist_pos"))

@@ -69,12 +69,17 @@ function IssueLocDef:GetAgentStanceIndex(agent)
     local has_vals = false
     for id, data in pairs(self.stances) do
         stance_score[id] = math.max (0, data:GetAgentSupport(agent))
-        if math.abs(id) >= 2 and stance_score[id] < 5 then stance_score[id] = 0 end
-        if math.abs(id) == 1 and stance_score[id] < 2 then stance_score[id] = 0 end
+        if math.abs(id) >= 2 then
+            stance_score[id] = math.max(0, stance_score[id] - 3)
+        end
+        if math.abs(id) == 1 then
+            stance_score[id] = math.floor(stance_score[id] / 2)
+        end
 
         if stance_score[id] > 0 then has_vals = true end
         
     end
+    -- print(loc.format("Score for {1#agent}: {2},{3},{4},{5},{6}", agent, stance_score[-2], stance_score[-1], stance_score[0], stance_score[1], stance_score[2] ))
     if has_vals then
         -- we want an agent's stance to be consistent throughout a playthough
         local val = agent:CalculateProperty(self.id, function(agent)
@@ -83,9 +88,11 @@ function IssueLocDef:GetAgentStanceIndex(agent)
                 total = total + data
             end
             local chosen_val = math.random() * total
+            -- print("Chosen val lul: " .. chosen_val)
             for i = -2, 2 do
-                total = total - stance_score[i]
-                if total <= 0 then
+                chosen_val = chosen_val - stance_score[i]
+                -- print("After round " .. i .. ":" .. chosen_val)
+                if chosen_val <= 0 then
                     return i
                 end
             end
@@ -692,7 +699,7 @@ local val =  {
             },
             [2] = {
                 name = "Heavily Enforced Restriction",
-                desc = "There are way too many illegal trading of substances, and it negatively impacts the health and morale of the people. Do deal with such crisis, we need to increase restrictions on them, and ensure that we send people to properly enforce them.",
+                desc = "There are way too many illegal trading of substances, and it negatively impacts the health and morale of the people. To deal with such crisis, we need to increase restrictions on them, and ensure that we send people to properly enforce them.",
                 faction_support = {
                     JAKES = -5,
                     ADMIRALTY = 5,

@@ -188,7 +188,9 @@ end
 
 function DemocracyUtil.CanVote(agent)
     -- non-citizens can't vote
-    return agent and not agent:IsRetired() and agent:IsSentient() and agent:GetFactionID() ~= "RENTORIAN"
+    -- for casting purposes, player can't vote.
+    return agent and not agent:IsPlayer() and not agent:IsRetired() 
+        and agent:IsSentient() and agent:GetFactionID() ~= "RENTORIAN"
 end
 
 -- Do the convo for unlocking a location.
@@ -585,6 +587,54 @@ function DemocracyUtil.InsertSelectCardScreen(cards, title, desc, class, on_sele
     screen:SetTitles( title, desc )
     TheGame:FE():InsertScreen( screen )
     return screen
+end
+function DemocracyUtil.DebugSurveyVoterStances(issue_id, params)
+    local issue = issue_id
+    if type(issue) == "string" then
+        issue = DemocracyConstants.issue_data[issue_id]
+    end
+    if not params then
+        params = {}
+    end
+    assert(issue, "nil issue: " .. tostring(issue_id))
+    local survey_result = {
+        issue = issue,
+        [-2] = {},
+        [-1] = {},
+        [0] = {},
+        [1] = {},
+        [2] = {},
+        nonvoter = {},
+        count = 0,
+        params = params,
+    }
+    for i, agent in TheGame:GetGameState():Agents() do
+        local cond = true
+        if params.faction and agent:GetFactionID() ~= params.faction then
+            cond = false
+        end
+        if params.renown and agent:GetRenown() ~= params.renown then
+            cond = false
+        end
+        if params.content_id and agent:GetContentID() ~= params.content_id then
+            cond = false
+        end
+        if cond then
+            if DemocracyUtil.CanVote(agent) then
+                local stance = issue:GetAgentStanceIndex(agent)
+                assert( stance, "invalid stance for " .. tostring(agent))
+                if not survey_result[stance] then
+                    survey_result[stance] = {}
+                end
+                table.insert(survey_result[stance], agent)
+            else
+                table.insert(survey_result.nonvoter, agent)
+            end
+            survey_result.count = survey_result.count + 1
+        end
+    end
+    DBG(survey_result)
+    return survey_result
 end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"

@@ -53,6 +53,7 @@ local QDEF = QuestDef.Define
 {
     title = "Interview",
     desc = "Do the interview and gain support.",
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/interview.png"),
 
     qtype = QTYPE.STORY,
     collect_agent_locations = function(quest, t)

@@ -402,7 +402,7 @@ local QDEF = QuestDef.Define
             local stance_delta = val - quest.param.stances[issue]
             if stance_delta == 0 or (not strict and (quest.param.stances[issue] > 0) == (val > 0) and (quest.param.stances[issue] < 0) == (val < 0)) then
                 -- A little bonus for being consistent with your ideology.
-                quest:DefFn("DeltaGeneralSupport", 2, "CONSISTENT_STANCE")
+                quest:DefFn("DeltaGeneralSupport", 1, "CONSISTENT_STANCE")
                 quest.param.stance_change[issue] = math.max(0, quest.param.stance_change[issue] - 1)
                 quest.param.stance_change_freebie[issue] = false
             else
@@ -410,13 +410,13 @@ local QDEF = QuestDef.Define
                     and (quest.param.stances[issue] > 0) == (val > 0) 
                     and (quest.param.stances[issue] < 0) == (val < 0) then
 
-                    quest:DefFn("DeltaGeneralSupport", 2, "CONSISTENT_STANCE")
+                    quest:DefFn("DeltaGeneralSupport", 1, "CONSISTENT_STANCE")
                     quest.param.stance_change[issue] = math.max(0, quest.param.stance_change[issue] - 1)
                     -- quest.param.stances[issue] = val
                 else
                     -- Penalty for being inconsistent.
                     quest.param.stance_change[issue] = quest.param.stance_change[issue] + math.abs(stance_delta)
-                    quest:DefFn("DeltaGeneralSupport", -math.max(0, quest.param.stance_change[issue] - 1), "INCONSISTENT_STANCE")
+                    quest:DefFn("DeltaGeneralSupport", -math.max(0, quest.param.stance_change[issue]), "INCONSISTENT_STANCE")
                 end
                 quest.param.stances[issue] = val
                 quest.param.stance_change_freebie[issue] = not strict
