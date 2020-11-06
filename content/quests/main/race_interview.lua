@@ -1,16 +1,18 @@
 local INTERVIEWER_BEHAVIOR = {
     OnInit = function( self, difficulty )
-		-- self.bog_boil = self:AddCard("bog_boil")
+        -- self.bog_boil = self:AddCard("bog_boil")
+        local relationship_delta = self.agent and (self.agent:GetRelationship() - RELATIONSHIP.NEUTRAL) or 0
 		self:SetPattern( self.BasicCycle )
         local modifier = self.negotiator:AddModifier("INTERVIEWER")
         -- modifier.agents = shallowcopy(self.agents)
         -- modifier:InitModifiers()
         self.cont_question_card = self:AddCard("contemporary_question_card")
         self.modifier_picker = self:MakePicker()
-            :AddArgument("LOADED_QUESTION", 2)
-            :AddArgument("PLEASANT_QUESTION", 1)
+            :AddArgument("LOADED_QUESTION", 2 + math.max(0, -relationship_delta))
+            :AddArgument("PLEASANT_QUESTION", 2 + math.max(0, relationship_delta))
+            :AddArgument("GENERIC_QUESTION", 4)
             -- :AddCard(self.cont_question_card, 1)
-        self.questions_answered = 0 -- jus to make sure
+        -- self.questions_answered = 0 -- jus to make sure
     end,
     available_issues = copyvalues(DemocracyConstants.issue_data),
     params = {},
@@ -23,9 +25,17 @@ local INTERVIEWER_BEHAVIOR = {
 		else
 			self:ChooseGrowingNumbers( 1, 1 )
         end
-        self.modifier_picker:ChooseCards(1)
+        -- if turns == 1 then
+        --     self:ChooseGrowingNumbers( 1, 2 )
+        -- end
         if turns % 3 == 1 then
             self:ChooseCard(self.cont_question_card)
+            self.modifier_picker:ChooseCards(1)
+        -- elseif turns % 3 == 2 then
+        --     self.modifier_picker:ChooseCards(2)
+        else
+            -- self:ChooseGrowingNumbers( 1, 1 )
+            self.modifier_picker:ChooseCards(2)
         end
 	end,
 }
@@ -314,7 +324,7 @@ QDEF:AddConvo("do_interview")
                     on_success = function(cxt, minigame)
                         cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
                         -- TheGame:GetDebug():CreatePanel(DebugTable(INTERVIEWER_BEHAVIOR))
-                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 2 * (INTERVIEWER_BEHAVIOR.params.questions_answered or 0))
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", (INTERVIEWER_BEHAVIOR.params.questions_answered or 0), "COMPLETED_QUEST")
                         -- Big calculations that happens.
                         ResolvePostInterview()
                         cxt.quest:Complete()
