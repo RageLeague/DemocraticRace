@@ -555,7 +555,10 @@ function DemocracyUtil.DoAlphaMessage()
     local popup = Screen.WIPpopup(
         LOC"DEMOCRACY.WIP_SCREEN.TITLE", 
         LOC"DEMOCRACY.WIP_SCREEN.BODY", 
-        LOC"DEMOCRACY.WIP_SCREEN.BUTTON", img, function() TheGame:Win( GAMEOVER.ALPHA_VICTORY ) end )
+        LOC"DEMOCRACY.WIP_SCREEN.BUTTON", img, function()
+            TheGame:Win( GAMEOVER.ALPHA_VICTORY )
+            TheGame:AddGameplayStat( "democracy_day_2", 1 )
+        end )
     TheGame:FE():PushScreen(popup)
 end
 function DemocracyUtil.InsertSelectCardScreen(cards, title, desc, class, on_select)

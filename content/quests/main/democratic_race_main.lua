@@ -16,8 +16,8 @@ local RISE_DISGUISE_BUILDS = {
 }
 
 local DAY_SCHEDULE = {
-    {quest = "RACE_DAY_1", difficulty = 1, support_expectation = {0,10,20}},
-    {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {20,30,40,50}},
+    {quest = "RACE_DAY_1", difficulty = 1, support_expectation = {0,10,25}},
+    {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {25,40,50,60}},
     -- {quest = "RACE_DAY_3", difficulty = 3},
     -- {quest = "RACE_DAY_4", difficulty = 4},
     -- {quest = "RACE_DAY_5", difficulty = 5},
@@ -177,8 +177,14 @@ local QDEF = QuestDef.Define
             end
         end,
         quests_changed = function(quest, event_quest)
+            if event_quest:GetQuestDef():HasTag( "REQUEST_JOB" ) and event_quest:IsComplete() then
+                TheGame:AddGameplayStat( "completed_request_quest", 1 )
+            end
             if event_quest == quest.param.day_quest and quest.param.day_quest:IsComplete() then
                 DemocracyUtil.EndFreeTime()
+                if quest.param.day then
+                    TheGame:AddGameplayStat( "democracy_day_" .. quest.param.day, 1 )
+                end
                 QuestUtil.DoNextDay(DAY_SCHEDULE, quest)
             end
         end,

@@ -105,6 +105,11 @@ local QDEF = QuestDef.Define{
 }
 
 local convo = QDEF:AddConvo()
+    -- :Confront(function(cxt)
+    --     if cxt.quest.param.free_time_actions <= 0 then
+    --         cxt.quest:Complete()
+    --     end
+    -- end)
     :Loc{
         OPT_SOCIALIZE = "Socialize with {1#agent}",
         TT_SOCIALIZE = "Socializing with a friend requires you to spend free time, but will grant the player random benefits or unlock a new location.",
@@ -193,7 +198,11 @@ local convo = QDEF:AddConvo()
 
                     if cxt.quest:GetCastMember("friend") then
                         cxt.quest:UnassignCastMember("friend")
+                        -- for some reason unassign will not actually unassign if quests are completed
+                        -- so we added this.
+                        cxt.quest.cast.friend = nil
                     end
+                    -- DBG(cxt.quest:GetCastMember("friend"))
                     cxt.quest:AssignCastMember("friend", who)
                     
                     local service = BOON_SERVICES[chosen_boon]

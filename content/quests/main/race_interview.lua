@@ -9,7 +9,7 @@ local INTERVIEWER_BEHAVIOR = {
         self.modifier_picker = self:MakePicker()
             :AddArgument("LOADED_QUESTION", 2)
             :AddArgument("PLEASANT_QUESTION", 1)
-            :AddCard(self.cont_question_card, 1)
+            -- :AddCard(self.cont_question_card, 1)
         self.questions_answered = 0 -- jus to make sure
     end,
     available_issues = copyvalues(DemocracyConstants.issue_data),
@@ -23,7 +23,10 @@ local INTERVIEWER_BEHAVIOR = {
 		else
 			self:ChooseGrowingNumbers( 1, 1 )
         end
-        self.modifier_picker:ChooseCards(turns == 1 and 2 or 1)
+        self.modifier_picker:ChooseCards(1)
+        if turns % 3 == 1 then
+            self:ChooseCard(self.cont_question_card)
+        end
 	end,
 }
 
@@ -293,7 +296,7 @@ QDEF:AddConvo("do_interview")
                         if cxt.quest.param.parent_quest then
                             cxt.quest.param.parent_quest.param.good_interview = true
                         end
-                    elseif cxt.quest.param.num_likes - cxt.quest.param.num_dislikes <= 2 then
+                    elseif cxt.quest.param.num_likes - cxt.quest.param.num_dislikes <= -2 then
                         cxt:Dialog("DIALOG_INTERVIEW_AFTER_BAD")
                         cxt.quest.param.bad_interview = true
                         if cxt.quest.param.parent_quest then
@@ -304,6 +307,7 @@ QDEF:AddConvo("do_interview")
             end
             cxt:Opt("OPT_DO_INTERVIEW")
                 :Negotiation{
+                    flags = NEGOTIATION_FLAGS.WORDSMITH,
                     situation_modifiers = {
                         { value = 20, text = cxt:GetLocString("SIT_MOD") }
                     },

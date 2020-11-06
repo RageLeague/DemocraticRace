@@ -4,7 +4,7 @@ local ARTISTS = {
     PRIEST = 0.5,
     SPARK_BARON_TASKMASTER = 0.25,
     ADMIRALTY_CLERK = 0.4,
-    SPREE_CAPTAIN = 0.15,
+    -- SPREE_CAPTAIN = 0.15,
     WEALTHY_MERCHANT = 0.25,
     POOR_MERCHANT = 0.35,
     JAKES_SMUGGLER = 0.2,
@@ -14,6 +14,9 @@ local function IsArtist(agent)
         local chance_for_artist = ARTISTS[agent:GetContentID()] or 0.1
         return math.random() < chance_for_artist
     end)
+end
+local function IsPotentiallyArtist(agent)
+    return ARTISTS[agent:GetContentID()]
 end
 local POOR_ART = {"PROP_PO_MESSY"}
 local GOOD_ART = {"PROP_PO_INSPIRING"}
@@ -486,8 +489,20 @@ QDEF:AddConvo("commission")
                 }
                 {not disliked?
                     Perhaps.
-                    I can make you an extremely convincing poster.
-                    Provided you can pay, of course.
+                    {is_artist?
+                        I can make you an extremely convincing poster.
+                        Provided you can pay, of course.
+                    }
+                    {not is_artist?
+                        I can draw you <i>something</>.
+                        It's not going to be amazing, but it would be better than whatever you come up with.
+                    player:
+                        !crossed
+                        Now that's just rude.
+                    agent:
+                        I apologize if I offended you.
+                        You still need to pay, though.
+                    }
                 }
                 player:
                     Name your price then.
@@ -555,55 +570,55 @@ QDEF:AddConvo("commission")
                     end)
             end
             opt:Fn(function(cxt)
-                    if cxt.quest.param.artist_demands[who:GetID()] == nil then
+                if cxt.quest.param.artist_demands[who:GetID()] == nil then
+                    if IsPotentiallyArtist(who) then
+                        local rawcost = 25 * cxt.quest:GetRank() + 25
                         if cxt.enc.scratch.is_artist then
-                            local rawcost = 25 * cxt.quest:GetRank() + 25
-                            if cxt.enc.scratch.is_artist then
-                                rawcost = rawcost * 2
-                            end
-                            
-                            local demands, demand_list = DemocracyUtil.GenerateDemandList(rawcost, who, nil, {
-                                auto_scale = true,
-                            })
-                            cxt.quest.param.artist_demands[who:GetID()] = {
-                                demands = demands,
-                                demand_list = demand_list,
-                            }
-                        else
-                            cxt.quest.param.artist_demands[who:GetID()] = false
+                            rawcost = rawcost * 2
                         end
-                    end
-
-                    
-                    -- DBG(cxt.enc.scratch.demand_list)
-                    -- cxt.enc.scratch.testlol = true
-                    if cxt.enc.scratch.is_artist then
-                        cxt.quest.param.demand_list = cxt.quest.param.artist_demands[who:GetID()].demand_list
-                        cxt:Dialog("DIALOG_ASK_COMMISSION")
-                        cxt:RunLoop(function(cxt)
-                            local dat = cxt.quest.param.artist_demands[who:GetID()]
-                            local payed_all = DemocracyUtil.AddDemandConvo(cxt, dat.demand_list, dat.demands, function(opt)
-                                opt:PostText("TT_FREE_TIME_ACTION_COST", 2)
-                                    :ReqCondition((cxt.quest.param.actions or 0) >= 2, "REQ_FREE_TIME_ACTIONS")
-                                    :Fn(function(cxt)
-                                        cxt.quest.param.actions = (cxt.quest.param.actions or 0) - 2
-                                        cxt.quest:NotifyChanged()
-                                    end)
-                            end)
-        
-                            if payed_all then
-                                cxt:Dialog("DIALOG_PAYED_COMMISSION")
-                                cxt.quest.param.artist = who
-                                cxt.quest.param.is_artist = IsArtist(who)
-                                cxt:GoTo("STATE_MAKE_POSTER")
-                            else
-                                StateGraphUtil.AddBackButton(cxt)
-                            end
-                        end)
+                        
+                        local demands, demand_list = DemocracyUtil.GenerateDemandList(rawcost, who, nil, {
+                            auto_scale = true,
+                        })
+                        cxt.quest.param.artist_demands[who:GetID()] = {
+                            demands = demands,
+                            demand_list = demand_list,
+                        }
                     else
-                        cxt:Dialog("DIALOG_ASK_COMMISSION_NOT_ARTIST")
+                        cxt.quest.param.artist_demands[who:GetID()] = false
                     end
-                end)
+                end
+
+                
+                -- DBG(cxt.enc.scratch.demand_list)
+                -- cxt.enc.scratch.testlol = true
+                if IsPotentiallyArtist(who) then
+                    cxt.quest.param.demand_list = cxt.quest.param.artist_demands[who:GetID()].demand_list
+                    cxt:Dialog("DIALOG_ASK_COMMISSION")
+                    cxt:RunLoop(function(cxt)
+                        local dat = cxt.quest.param.artist_demands[who:GetID()]
+                        local payed_all = DemocracyUtil.AddDemandConvo(cxt, dat.demand_list, dat.demands, function(opt)
+                            opt:PostText("TT_FREE_TIME_ACTION_COST", 2)
+                                :ReqCondition((cxt.quest.param.actions or 0) >= 2, "REQ_FREE_TIME_ACTIONS")
+                                :Fn(function(cxt)
+                                    cxt.quest.param.actions = (cxt.quest.param.actions or 0) - 2
+                                    cxt.quest:NotifyChanged()
+                                end)
+                        end)
+    
+                        if payed_all then
+                            cxt:Dialog("DIALOG_PAYED_COMMISSION")
+                            cxt.quest.param.artist = who
+                            cxt.quest.param.is_artist = IsArtist(who)
+                            cxt:GoTo("STATE_MAKE_POSTER")
+                        else
+                            StateGraphUtil.AddBackButton(cxt)
+                        end
+                    end)
+                else
+                    cxt:Dialog("DIALOG_ASK_COMMISSION_NOT_ARTIST")
+                end
+            end)
                 
         elseif who == cxt.quest:GetCastMember("primary_advisor") then
             cxt:Opt("OPT_MAKE")
@@ -705,13 +720,18 @@ QDEF:AddConvo("commission")
                 -- DBG(cards)
                 cards[1].userdata.imprints = shallowcopy(recorded_cards)
                 if not cxt.quest.param.artist then
-                    cards[1].userdata.prop_mod = table.arraypick(POOR_ART)
+                    if math.random() < 0.7 then
+                        cards[1].userdata.prop_mod = table.arraypick(POOR_ART)
+                    end
                 elseif cxt.quest.param.is_artist then
                     cards[1].userdata.prop_mod = table.arraypick(GOOD_ART)
                     
                 else
-                    if math.random() < 0.5 then
+                    local val = math.random()
+                    if val < 0.3 then
                         cards[1].userdata.prop_mod = table.arraypick(POOR_ART)
+                    elseif val > 0.8 then
+                        cards[1].userdata.prop_mod = table.arraypick(GOOD_ART)
                     end
                 end
                 -- cxt:BasicNegotiation("START") -- for testing purpose.

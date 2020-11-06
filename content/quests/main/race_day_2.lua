@@ -23,6 +23,7 @@ local QDEF = QuestDef.Define
         DemocracyUtil.SetSubdayProgress(2)
     end,
     on_complete = function(quest)
+        DemocracyUtil.StartFreeTime()
         quest:Activate("get_job")
     end,
 }
@@ -75,11 +76,11 @@ local QDEF = QuestDef.Define
             and quest:GetLocalizedStr( "GET_JOB_ADVISOR" )
             or quest:GetLocalizedStr( "GET_JOB_ALONE" )
     end,
-    on_activate = function(quest)
-        if quest.param.job_history and #quest.param.job_history > 1 then
-            DemocracyUtil.StartFreeTime()
-        end
-    end,
+    -- on_activate = function(quest)
+    --     if quest.param.job_history and #quest.param.job_history > 1 then
+    --         DemocracyUtil.StartFreeTime()
+    --     end
+    -- end,
     on_complete = function(quest) 
         quest:Activate("do_job")
     end,

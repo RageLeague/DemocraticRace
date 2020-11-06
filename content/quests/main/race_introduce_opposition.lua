@@ -356,6 +356,8 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 good
                 remember, there's still an interview coming up.
                 you need to prepare for it.
+                Go back to my office when you're ready to start working.
+                
         ]],
     }
     :AttractState("STATE_ATTRACT", function(cxt) return not cxt.quest.param.talked_to_advisor end)
@@ -402,8 +404,10 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             -- :Dialog("DIALOG_QUESTION")
             :GoTo("STATE_QUESTIONS")
         cxt:Opt("OPT_DONE_QUEST")
+            :SetQuestMark( cxt.quest )
             :Dialog("DIALOG_DONE_QUEST")
             :CompleteQuest()
+            :DoneConvo()
     end)
     :AskAboutHubConditions("STATE_QUESTIONS", 
     {
