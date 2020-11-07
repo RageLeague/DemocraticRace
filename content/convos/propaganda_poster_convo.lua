@@ -112,7 +112,9 @@ Convo("PROPAGANDA_POSTER_CONVO")
                                 --     card:TransferCard( minigame:GetTrashDeck() )
                                 --     print("Trashed card")
                                 -- end
-                                table.clear(minigame.start_params.cards)
+                                -- table.clear(minigame.start_params.cards)
+                                minigame:GetPlayerNegotiator():CreateModifier("NO_PLAY_FROM_HAND", 1)
+                                
                             end,
                             on_success = function(cxt, minigame)
                                 cxt:Dialog("DIALOG_WIN")

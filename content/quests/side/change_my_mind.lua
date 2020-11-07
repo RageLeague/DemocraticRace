@@ -56,13 +56,13 @@ local QDEF = QuestDef.Define
         end
     end,
     on_complete = function( quest )
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 3 * quest.param.debated_people + #quest.param.crowd, "COMPLETED_QUEST")
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 2 * quest.param.debated_people + #quest.param.crowd, "COMPLETED_QUEST")
         -- if quest.param.poor_performance then
         --     DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5, "POOR_QUEST")
         -- end
     end,
     on_fail = function( quest )
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -3 * quest.param.debated_people - #quest.param.crowd, "FAILED_QUEST")
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2 * quest.param.debated_people - #quest.param.crowd, "FAILED_QUEST")
         -- if quest.param.poor_performance then
         --     DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5)
         -- end

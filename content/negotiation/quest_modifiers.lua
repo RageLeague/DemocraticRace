@@ -1041,6 +1041,20 @@ local MODIFIERS =
             end,
         }
     },
+    NO_PLAY_FROM_HAND = {
+        loc_strings = {
+            CANT_PLAY = "Can't play cards from hand",
+        },
+        hidden = true,
+        CanPlayCard = function( self, source, engine, target )
+            -- Only verify forced targets if you are not targetting yourself
+            if self.engine and self.engine:GetHandDeck():HasCard(source) then
+                return false, (self.def or self):GetLocalizedString("CANT_PLAY")
+            end
+
+            return true
+        end,
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )

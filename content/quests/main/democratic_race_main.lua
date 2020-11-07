@@ -107,6 +107,7 @@ local QDEF = QuestDef.Define
             quest:DefFn("DeltaGeneralSupport", (quest.param.init_support_level or 0) * (quest.param.start_on_day - 1))
         end
         QuestUtil.SpawnQuest("CAMPAIGN_SHILLING")
+        QuestUtil.SpawnQuest("CAMPAIGN_RANDOM_COIN_FIND")
         QuestUtil.DoNextDay(DAY_SCHEDULE, quest, quest.param.start_on_day )
         
         DoAutoSave()
