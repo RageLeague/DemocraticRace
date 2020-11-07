@@ -60,7 +60,7 @@ local QDEF = QuestDef.Define{
     events = 
     {
         resolve_negotiation = function(quest, minigame)
-            quest:DefFn("DeltaActions", -2)
+            quest:DefFn("DeltaActions", -1)
         end,
         resolve_battle = function(quest, battle)
             quest:DefFn("DeltaActions", -2)

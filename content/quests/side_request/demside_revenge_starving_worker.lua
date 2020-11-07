@@ -9,6 +9,7 @@ local QDEF = QuestDef.Define
     focus = QUEST_FOCUS.NEGOTIATION,
     tags = {"REQUEST_JOB"},
     reward_mod = 0,
+    can_flush = false,
     on_init = function(quest)
         local motivation = {"make_example", "rush_quota"}
         local id = table.arraypick(motivation)
