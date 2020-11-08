@@ -165,10 +165,11 @@ Convo("PROPAGANDA_POSTER_CONVO")
                     if math.random() < 0.33 then
                         table.insert(cxt.enc.scratch.readers, agent)
                     end
-                    if #cxt.enc.scratch.readers > 0 then
-                        cxt:Dialog("DIALOG_INTRO", cxt.location, #cxt.enc.scratch.readers)
-                        cxt:GoTo("STATE_READ")
-                    end
+                    
+                end
+                if #cxt.enc.scratch.readers > 0 then
+                    cxt:Dialog("DIALOG_INTRO", cxt.location, #cxt.enc.scratch.readers)
+                    cxt:GoTo("STATE_READ")
                 end
             end
         end)

@@ -28,14 +28,22 @@ local INTERVIEWER_BEHAVIOR = {
         -- if turns == 1 then
         --     self:ChooseGrowingNumbers( 1, 2 )
         -- end
+        local question_count = 0
+        for i, data in self.negotiator:Modifiers() do
+            if data.AddressQuestion then
+                question_count = question_count + 1
+            end
+        end
         if turns % 3 == 1 then
             self:ChooseCard(self.cont_question_card)
-            self.modifier_picker:ChooseCards(1)
+            if question_count < 4 then
+                self.modifier_picker:ChooseCards(1)
+            end
         -- elseif turns % 3 == 2 then
         --     self.modifier_picker:ChooseCards(2)
         else
             -- self:ChooseGrowingNumbers( 1, 1 )
-            self.modifier_picker:ChooseCards(2)
+            self.modifier_picker:ChooseCards(question_count < 4 and 2 or 1)
         end
 	end,
 }

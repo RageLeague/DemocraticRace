@@ -127,7 +127,7 @@ local MODIFIERS =
     {
         name = "Potential Interest",
         desc = "<b>{1.fullname}</> might be interested in listening to you if you can convince {1.himher}. "..
-            "Destroy this argument to make {1.himher} join your side.\n\n"..
+            "Destroy this argument to make {1.himher} join your side.\n"..
             "<#PENALTY>After {2} turns, this argument removes itself, as <b>{1.name}</> loses interest in you.</>",
         loc_strings = {
             BONUS_LOVED = "<#BONUS><b>{1.name} loves you.</> {3} max resolve.</>",
@@ -175,6 +175,7 @@ local MODIFIERS =
         icon = engine.asset.Texture("negotiation/modifiers/voice_of_the_people.tex"),
 
         target_enemy = TARGET_ANY_RESOLVE,
+        composure_gain = 2,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
         turns_left = 3,
@@ -224,7 +225,9 @@ local MODIFIERS =
         end,
 
         OnEndTurn = function( self, minigame )
-            self:ApplyPersuasion()
+            if self.target_enemy then
+                self:ApplyPersuasion()
+            end
         end,
 
         event_handlers = {
@@ -235,6 +238,10 @@ local MODIFIERS =
                         self.negotiator:RemoveModifier(self)
                     end
                     self:NotifyChanged()
+                end
+                self.target_enemy = math.random() < 0.5 and TARGET_ANY_RESOLVE or nil
+                if not self.target_enemy then
+                    self:DeltaComposure(self.composure_gain, self)
                 end
             end,
             [ EVENT.END_TURN ] = function( self, minigame, negotiator )
@@ -261,10 +268,10 @@ local MODIFIERS =
 
         SetAgent = function (self, agent)
             self.target_agent = agent
-            self.max_resolve = 3
+            self.max_resolve = 4
           --  self.min_persuasion = 2 + agent:GetRenown()
             --self.max_persuasion = self.min_persuasion + 4
-            self:SetResolve(self.max_resolve)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
     
             self.min_persuasion = 0
             self.max_persuasion = 3
@@ -797,7 +804,7 @@ local MODIFIERS =
         event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
                 local card = Negotiation.Card( "address_question", minigame:GetPlayer() )
-                -- card.show_dealt = true
+                card.show_dealt = false
                 minigame:DealCards( {card}, minigame:GetHandDeck() )
             end,
             [ EVENT.MODIFIER_REMOVED ] = function( self, modifier )
@@ -879,7 +886,7 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
         OnInit = function(self)
-            self:SetResolve(self.max_resolve, MODIFIER_SCALING.HIGH)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
         end,
 
         event_handlers =
@@ -904,7 +911,7 @@ local MODIFIERS =
             return loc.format(fmt_str, self.delta_resolve, self.apply_target)
         end,
 
-        max_resolve = 4,
+        max_resolve = 3,
         max_stacks = 1,
 
         delta_resolve = 2,

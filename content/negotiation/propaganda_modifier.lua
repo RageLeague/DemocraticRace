@@ -89,14 +89,15 @@ Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
             card.special_prepared = true
             card:SetFlags( CARD_FLAGS.CONSUME )
 
+            -- So this is kinda weird, but we need the card to be registered to a deck.
+            self.engine.trash_deck:InsertCard( card )
             -- for some reason check prepared is on widget update. so we're doing it this way lul.
             if card.PreReq then
                 card:PreReq(self.engine)
             end
 
             print(card:IsPrepared())
-            -- So this is kinda weird, but we need the card to be registered to a deck.
-            self.engine.trash_deck:InsertCard( card )
+
             self.engine:PlayCard(card)
             -- card:RemoveCard()
             -- self.engine:DealCard( card )

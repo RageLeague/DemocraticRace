@@ -5,6 +5,40 @@ Content.AddStringTable( "DEM_CONVO", {
         OPT_DEBUG_BYPASS_HARD_CHECK = "[Debug] Bypass hard check",
         TT_DEBUG_BYPASS_HARD_CHECK = "This will bypass a hard check in the game for debug purpose. Choosing this makes this run illegitimate.",
 
+        DIALOG_CHOOSE_FREE_TIME = [[
+            player:
+                I think instead of rallying, I'll just do whatever I want.
+            agent:
+            {disliked?
+                I wouldn't do that if I were you, considering how low our support was.
+            }
+            {not disliked and not liked?
+                I don't know if that's a good idea. We need those support.
+            }
+            {liked?
+                I won't stop you or anything, but we really need the support.
+            }
+        ]],
+        OPT_INSIST_FREE_TIME = "Insist on choosing free time",
+        DIALOG_INSIST_FREE_TIME = [[
+            player:
+                I'm doing it.
+            agent:
+                As you wish.
+        ]],
+        OPT_NEVER_MIND = "Never mind",
+        DIALOG_NEVER_MIND_FREE_TIME = [[
+            player:
+                You may have a point.
+            agent:
+            {advisor_manipulate?
+                Glad that you can see logic.
+            }
+            {not advisor_manipulate?
+                Very well.
+            }
+        ]],
+
         REQ_FREE_TIME = "You don't have free time to choose this action.",
         REQ_FREE_TIME_ACTIONS = "You don't have enough free time actions to choose this action.",
         TT_FREE_TIME_ACTION_COST = "This option requires {1} free time {1*action|actions}.",

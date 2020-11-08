@@ -142,6 +142,7 @@ function DemocracyUtil.StartFreeTime(actions)
     if quest and actions then
         quest.param.free_time_actions = actions
     end
+    return quest
 end
 function DemocracyUtil.EndFreeTime()
     -- TheGame:GetGameState():ClearOpportunities()

@@ -190,7 +190,7 @@ local QDEF = QuestDef.Define
             end
         end,
     },
-    SpawnPoolJob = function(quest, pool_name, spawn_as_inactive)
+    SpawnPoolJob = function(quest, pool_name, spawn_as_inactive, spawn_as_challenge)
         local event_id = pool_name
         local attempt_quest_ids = {}
         for k, questdef in pairs( Content.GetAllQuests() ) do
@@ -207,7 +207,7 @@ local QDEF = QuestDef.Define
         table.stable_sort(attempt_quest_ids, function(a,b) return quest_scores[a] < quest_scores[b] end)
         local new_quest
         for _, quest_id in ipairs(attempt_quest_ids) do
-            local overrides = {qrank = TheGame:GetGameState():GetCurrentBaseDifficulty()}
+            local overrides = {qrank = TheGame:GetGameState():GetCurrentBaseDifficulty() + (spawn_as_challenge and 1 or 0)}
             
             if spawn_as_inactive then
                 new_quest = QuestUtil.SpawnInactiveQuest( quest_id, overrides) 
@@ -225,13 +225,18 @@ local QDEF = QuestDef.Define
     end,
     -- Offer jobs at certain point of the story.
     -- probably should always call this.
-    OfferJobs = function(quest, cxt, job_num, pool_name)
+    OfferJobs = function(quest, cxt, job_num, pool_name, allow_challenge, can_skip)
         local jobs = {}
-        for k = 1, job_num do
-            local new_job = quest:DefFn("SpawnPoolJob", pool_name, true)
-            if new_job then
-                table.insert(jobs, new_job)
+        if cxt.enc.scratch.job_pool then
+            jobs = cxt.enc.scratch.job_pool
+        else
+            for k = 1, job_num do
+                local new_job = quest:DefFn("SpawnPoolJob", pool_name, true, k == 1 and allow_challenge)
+                if new_job then
+                    table.insert(jobs, new_job)
+                end
             end
+            cxt.enc.scratch.job_pool = jobs
         end
         QuestUtil.PresentJobChoice(cxt, jobs, true, function(cxt, jobs_presented, job_picked) 
             cxt.quest.param.current_job = job_picked
@@ -240,6 +245,23 @@ local QDEF = QuestDef.Define
             --cxt:PlayQuestConvo(cxt.quest.param.job, QUEST_CONVO_HOOK.INTRO)
             StateGraphUtil.AddEndOption(cxt)
         end)
+        if can_skip then
+            cxt:Opt("OPT_SKIP")
+                :Dialog("DIALOG_CHOOSE_FREE_TIME")
+                :Fn(function(cxt)
+                    cxt:Opt("OPT_INSIST_FREE_TIME")
+                        :Dialog("DIALOG_INSIST_FREE_TIME")
+                        :Fn(function(cxt)
+                            cxt.quest.param.current_job = DemocracyUtil.StartFreeTime(16)
+                            cxt.quest:Complete("get_job")
+                            -- cxt.quest:Activate("do_job")
+                            --cxt:PlayQuestConvo(cxt.quest.param.job, QUEST_CONVO_HOOK.INTRO)
+                            StateGraphUtil.AddEndOption(cxt)
+                        end)
+                    cxt:Opt("OPT_NEVER_MIND")
+                        :Dialog("DIALOG_NEVER_MIND_FREE_TIME")
+                end)
+        end
     end,
     DeltaSupport = function(quest, amt, target, notification)
         local type, t = DemocracyUtil.DetermineSupportTarget(target)
