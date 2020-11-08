@@ -17,7 +17,7 @@ local RISE_DISGUISE_BUILDS = {
 
 local DAY_SCHEDULE = {
     {quest = "RACE_DAY_1", difficulty = 1, support_expectation = {0,10,25}},
-    {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {25,40,50,60}},
+    {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {25,40,55,70}},
     -- {quest = "RACE_DAY_3", difficulty = 3},
     -- {quest = "RACE_DAY_4", difficulty = 4},
     -- {quest = "RACE_DAY_5", difficulty = 5},
@@ -97,7 +97,7 @@ local QDEF = QuestDef.Define
         quest.param.stance_change = {}
         quest.param.stance_change_freebie = {}
 
-        quest.param.allow_skip_side = true
+        -- quest.param.allow_skip_side = true
 
         -- TheGame:GetGameState():GetPlayerAgent().graft_owner:AddGraft(GraftInstance("relation_support_tracker"))
 

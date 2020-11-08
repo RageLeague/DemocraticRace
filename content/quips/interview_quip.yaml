@@ -7,7 +7,7 @@ lines:
   - |
     !clap
     Wow, what a stunning interview!
-  - You are clearly the {player.gender|man|woman|person} for the job!
+  - You are clearly the {player.gender:man|woman|person} for the job!
   - That was great! I really like your style!
 
 - tags: [post_interview, likes_interview, disliked]

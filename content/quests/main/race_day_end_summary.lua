@@ -41,8 +41,8 @@ QDEF:AddConvo("summary", "primary_advisor")
             ]],
             DIALOG_A = [[
                 agent:
-                    Look at this! We have so much support!
-                    I'm not saying that we definitely will win the election, but we most likely will.
+                    Our support level is looking good!
+                    As long as we keep this up, we will surely win the election.
                 {liked?
                     Keep up the good work!
                 }
@@ -53,7 +53,7 @@ QDEF:AddConvo("summary", "primary_advisor")
             DIALOG_B = [[
                 agent:
                     Our support level is okay.
-                    We're probably winning, but one mistake could be a huge setback.
+                    We should win if we don't make any mistakes, but one mistake could be a huge setback.
                 {liked?
                     I expected more from you, {player}.
                 }
@@ -106,6 +106,18 @@ QDEF:AddConvo("summary", "primary_advisor")
                     That was really disappointing, {player}.
                     Clearly I have made a mistake in choosing you as a candidate.
                 }
+            ]],
+
+            DIALOG_UNLOCK_SKIP = [[
+                agent:
+                    I feel condifent about your ability to lead.
+                    If you think your time is better spent elsewhere, you could forgo a rally.
+                player:
+                    Really?
+                agent:
+                    It's an option.
+                    Personally, I wouldn't recommend it, but if you have lots to do, and not enough time, you have this option.
+                    As long as we have enough support, it shouldn't be any problem.
             ]],
 
             DIALOG_POST_INTERVIEW_GOOD_SUPPORT = [[

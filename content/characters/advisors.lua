@@ -16,7 +16,7 @@ local chars =
         hair_colour = 0xB55239FF,
         skin_colour = 0xF0B8A0FF,
 
-        renown = 4,
+        -- renown = 4,
 
         -- social_boons = table.empty,
     }),
@@ -37,7 +37,7 @@ local chars =
 
         skin_colour = 0xBEC867FF,
 
-        renown = 4,
+        -- renown = 4,
 
         -- social_boons = table.empty,
     }),
@@ -56,7 +56,7 @@ local chars =
 
         skin_colour = 0xB8A792FF,
 
-        renown = 4,
+        -- renown = 4,
 
         -- We'll work on a proper negotiation later.
         -- negotiation_data = Content.GetCharacterDef("BANDIT_CAPTAIN").negotiation_data,

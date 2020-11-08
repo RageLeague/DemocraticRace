@@ -176,8 +176,8 @@ QDEF:AddConvo("meet_opposition", "opposition")
         ]],
         DIALOG_GREET_PST = [[
             agent:
-                [p] anyway, nice to meet you.
-                if you have some questions, just ask.
+                Anyway, nice to meet you.
+                If you have some questions, just ask.
         ]],
         DIALOG_QUESTION = [[
             player:
@@ -385,7 +385,7 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                     agent:
                         great. now you know how other's think, you need to use that to your advantage.
                     }
-                    {not (agreed or diagreed)?
+                    {not (agreed or disagreed)?
                     agent:
                         you don't sound so sure.
                         oh well.

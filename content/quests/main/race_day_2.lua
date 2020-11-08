@@ -34,6 +34,8 @@ local QDEF = QuestDef.Define
     on_activate = function(quest)
         UIHelpers.PassTime(DAY_PHASE.NIGHT)
         DemocracyUtil.SetSubdayProgress(3)
+        -- gives you enough time to go to a bar and drink
+        DemocracyUtil.StartFreeTime(0.5)
     end,
     on_complete = function(quest)
         quest:Activate("do_summary")
