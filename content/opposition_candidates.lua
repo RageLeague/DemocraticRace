@@ -114,7 +114,7 @@ local t = {
     },
     candidate_cult = {
         cast_id = "candidate_cult",
-        character = "VIXMALLI",
+        character = "BISHOP_OF_FOAM",
         workplace = "PEARL_CULT_COMPOUND",
 
         platform = "ARTIFACT_TREATMENT",

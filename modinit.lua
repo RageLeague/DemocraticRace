@@ -82,6 +82,7 @@ local function OnLoad( mod )
     require "DEMOCRATICRACE:content/load_quips"
     require "DEMOCRATICRACE:content/shop_defs"
     require "DEMOCRATICRACE:content/locations"
+    require "DEMOCRATICRACE:content/workpositions"
     require "DEMOCRATICRACE:content/notifications"
     require "DEMOCRATICRACE:content/convo_loc_common"
     require "DEMOCRATICRACE:content/region"

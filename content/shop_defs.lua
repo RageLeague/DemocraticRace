@@ -25,8 +25,9 @@ local function GenerateCardShop(card_type)
                 function(cd)
                     for k,v in pairs(cards) do
                         if v.id == cd.id then
-                            return false end
+                            return false
                         end
+                    end
                     return true
                 end
             ):Pick(remaining_num) )
@@ -41,3 +42,8 @@ end
 CARD_SHOP_DEFS.RACE_DIPLOMACY_CARD_SHOP = GenerateCardShop(CARD_FLAGS.DIPLOMACY)
 CARD_SHOP_DEFS.RACE_MANIPULATE_CARD_SHOP = GenerateCardShop(CARD_FLAGS.MANIPULATE)
 CARD_SHOP_DEFS.RACE_HOSTILE_CARD_SHOP = GenerateCardShop(CARD_FLAGS.HOSTILE)
+
+CARD_SHOP_DEFS.RISE_PROPAGANDA_SHOP = function(stock)
+    -- there's not nearly enough items to make this shop work
+    AddShopItems(stock, 2, {"rise_manifesto", "rise_manifesto"})
+end
