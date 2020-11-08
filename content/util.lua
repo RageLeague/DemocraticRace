@@ -345,6 +345,9 @@ function DemocracyUtil.ToFactionID(a)
     return a
 end
 function DemocracyUtil.IsDemocracyCampaign(act_id)
+    if not act_id then
+        act_id = TheGame:GetGameState():GetCurrentActID()
+    end
     return string.find(act_id, "DEMOCRATIC_RACE")
 end
 function DemocracyUtil.DemocracyActFilter(self, act_id)

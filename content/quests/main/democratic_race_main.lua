@@ -15,6 +15,34 @@ local RISE_DISGUISE_BUILDS = {
 
 }
 
+local SPAWN_NAMED_CHAR = {
+    FSSH = {workplace = "GROG_N_DOG", workpos = "bartender"},
+    HESH_AUCTIONEER = {workplace = "GRAND_THEATER", workpos = "host"},
+    HEBBEL = {workplace = "GB_NEUTRAL_BAR", workpos = "bartender"},
+    SWEET_MOREEF = {workplace = "MOREEF_BAR", workpos = "bartender"},
+    -- ENDO = {workplace = "MARKET_STALL", workpos = "negotiation_shop"},
+    -- RAKE = {workplace = "MARKET_STALL", workpos = "battle_shop"},
+    -- PLOCKA = {workplace = "MARKET_STALL", workpos = "graft_shop"},
+    -- BEASTMASTER = {workplace = "MARKET_STALL", workpos = "beastmaster_shop"},
+    
+}
+local function InitNamedChars()
+    for id, data in pairs(SPAWN_NAMED_CHAR) do
+
+        
+        local agent = TheGame:GetGameState():GetAgentOrMemento( id )
+        if not agent then
+            print("Initializing: " .. id)
+            agent = TheGame:GetGameState():AddSkinnedAgent(id)
+        end
+        local location = TheGame:GetGameState():GetLocation(data.workplace)
+        if agent:GetBrain():GetWorkPosition() == nil and location then
+            AgentUtil.TakeJob(agent, location, data.workpos)
+            -- agent:GetBrain():SetHome(location)
+        end
+    end
+end
+
 local DAY_SCHEDULE = {
     {quest = "RACE_DAY_1", difficulty = 1, support_expectation = {0,10,25}},
     {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {25,40,55,70}},
@@ -70,7 +98,7 @@ local QDEF = QuestDef.Define
 
         TheGame:GetGameState():SetMainQuest(quest)
         -- TheGame:GetGameState():SetRollbackThresh(1)
-
+        InitNamedChars()
         TheGame:GetGameState():GetCaravan():MoveToLocation(TheGame:GetGameState():GetLocation("MURDERBAY_NOODLE_SHOP"))
         
         -- TheGame:GetGameState():AddLocation(Location("DIPL_PRES_OFFICE"))
@@ -110,6 +138,8 @@ local QDEF = QuestDef.Define
         end
         QuestUtil.SpawnQuest("CAMPAIGN_SHILLING")
         QuestUtil.SpawnQuest("CAMPAIGN_RANDOM_COIN_FIND")
+
+        QuestUtil.SpawnQuest("SAL_STORY_MERCHANTS")
         QuestUtil.DoNextDay(DAY_SCHEDULE, quest, quest.param.start_on_day )
         
         DoAutoSave()
@@ -529,31 +559,31 @@ local QDEF = QuestDef.Define
         end
     end,
 }
-:AddCastByAlias{
-    -- Let fssh be the bartender of grog n dog
-    cast_id = "fssh",
-    alias = "FSSH",
-    on_assign = function(quest, agent)
-        local location = TheGame:GetGameState():GetLocation("GROG_N_DOG")
-        if agent:GetBrain():GetWorkPosition() == nil and location then
-            AgentUtil.TakeJob(agent, location, "bartender")
-            -- agent:GetBrain():SetHome(location)
-        end
-    end,
-}
-:AddCastByAlias{
-    cast_id = "host",
-    alias = "HESH_AUCTIONEER",
-    on_assign = function(quest, agent)
-        local location = TheGame:GetGameState():GetLocation("GRAND_THEATER")
-        if agent:GetBrain():GetWorkPosition() == nil and location then
-            AgentUtil.TakeJob(agent, location, "host")
-            -- agent:GetBrain():SetHome(location)
-        end
-        quest:UnassignCastMember("host")
-    end,
-    optional = true,
-}
+-- :AddCastByAlias{
+--     -- Let fssh be the bartender of grog n dog
+--     cast_id = "fssh",
+--     alias = "FSSH",
+--     on_assign = function(quest, agent)
+--         local location = TheGame:GetGameState():GetLocation("GROG_N_DOG")
+--         if agent:GetBrain():GetWorkPosition() == nil and location then
+--             AgentUtil.TakeJob(agent, location, "bartender")
+--             -- agent:GetBrain():SetHome(location)
+--         end
+--     end,
+-- }
+-- :AddCastByAlias{
+--     cast_id = "host",
+--     alias = "HESH_AUCTIONEER",
+--     on_assign = function(quest, agent)
+--         local location = TheGame:GetGameState():GetLocation("GRAND_THEATER")
+--         if agent:GetBrain():GetWorkPosition() == nil and location then
+--             AgentUtil.TakeJob(agent, location, "host")
+--             -- agent:GetBrain():SetHome(location)
+--         end
+--         quest:UnassignCastMember("host")
+--     end,
+--     optional = true,
+-- }
 -- Have to do this to make plot_armour_fn work.
 :AddObjective{
     id = "start",

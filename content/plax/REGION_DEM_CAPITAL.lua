@@ -6677,6 +6677,17 @@ return {
           plax_flags = 119,
           x = -628,
           y = -133
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 233,
+          location_name = "MARKET_STALL",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = 651,
+          y = 222
         }
       },
       name = "PATHS",

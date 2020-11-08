@@ -182,4 +182,13 @@ Content.AddLocationContent{
             [DAY_PHASE.NIGHT] = 7,
         },
     },
+
+    sublocations = {
+        backroom = {
+            name = "Grand Theater Back Room",
+            plax = "INT_Auction_Backroom_1",
+            map_tags = {"city"},
+            indoors = true,
+        },
+    }
 }

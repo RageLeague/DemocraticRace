@@ -120,7 +120,7 @@ local QDEF = QuestDef.Define
         table.insert(t, TheGame:GetGameState():GetLocation("GRAND_THEATER"))
     end,
     on_assign = function(quest, location)
-        quest:SpawnTempLocation("BACKROOM", "backroom")
+        -- quest:SpawnTempLocation("BACKROOM", "backroom")
         quest:AssignCastMember("host")
     end,
     no_validation = true,
@@ -128,13 +128,17 @@ local QDEF = QuestDef.Define
 :AddLocationCast{
     cast_id = "backroom",
     no_validation = true,
-    on_assign = function(quest, location)
-        print(location)
-        print(quest:GetCastMember("theater"))
-        print(quest:GetCastMember("theater"):GetMapPos())
-        location:SetMapPos( quest:GetCastMember("theater"):GetMapPos() )
+    cast_fn = function(quest, t)
+        table.insert(t, TheGame:GetGameState():GetLocation("GRAND_THEATER.backroom"))
     end,
-    when = QWHEN.MANUAL,
+    -- on_assign = function(quest, location)
+
+    --     -- print(location)
+    --     -- print(quest:GetCastMember("theater"))
+    --     -- print(quest:GetCastMember("theater"):GetMapPos())
+    --     -- location:SetMapPos( quest:GetCastMember("theater"):GetMapPos() )
+    -- end,
+    -- when = QWHEN.MANUAL,
 }
 :AddObjective{
     id = "go_to_interview",
@@ -158,12 +162,7 @@ local QDEF = QuestDef.Define
 -- }
 
 :AddLocationDefs{
-    BACKROOM = {
-        name = "Grand Theater Back Room",
-        plax = "INT_Auction_Backroom_1",
-        map_tags = {"city"},
-        indoors = true,
-    },
+    
 }
 
 :AddOpinionEvents{
