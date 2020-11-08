@@ -99,6 +99,9 @@ local QDEF = QuestDef.Define
     },
     on_activate = function(quest)
         DemocracyUtil.EndFreeTime()
+        if quest.param.current_job == "FREE_TIME" then
+            quest.param.current_job = DemocracyUtil.StartFreeTime(1.5)
+        end
     end,
     on_complete = function(quest) 
         quest.param.job_history = quest.param.job_history or {}
@@ -197,9 +200,9 @@ QDEF:AddConvo("get_job")
             ]],
         
     }
-    :Fn(function(cxt)
+    :RunLoopingFn(function(cxt)
         cxt:Dialog("DIALOG_INTRO")
-        DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 2, "RALLY_JOB")
+        DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB")
     end)
 QDEF:AddConvo("get_job", "primary_advisor")
     :Loc{
@@ -215,8 +218,8 @@ QDEF:AddConvo("get_job", "primary_advisor")
         cxt:Opt("OPT_GET_JOB")
             :SetQuestMark( cxt.quest )
             :Dialog("DIALOG_GET_JOB")
-            :Fn(function(cxt)
-                DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 2, "RALLY_JOB")
+            :LoopingFn(function(cxt)
+                DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB", true)
             end)
     end)
 QDEF:AddConvo("go_to_sleep", "primary_advisor")

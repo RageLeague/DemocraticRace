@@ -391,9 +391,10 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-
+            local profile = TheGame:GetGameProfile()
             cxt:Opt("OPT_YES")
-                :ReqCondition(TheGame:GetGameProfile():HasUnlock("DONE_POLITICS_BEFORE"), "REQ_PLAYED_ONCE")
+                :ReqCondition(profile:HasUnlock("DONE_POLITICS_OPPOSITION") and profile:HasUnlock("DONE_POLITICS_FUNDING")
+                    and profile:HasUnlock("DONE_POLITICS_FREE_TIME"), "REQ_PLAYED_ONCE")
                 :Dialog("DIALOG_YES")
                 :Fn(function(cxt)
                     DemocracyUtil.TryMainQuestFn("DoRandomOpposition", OPPO_COUNT)
@@ -481,6 +482,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                     :Fn(function(cxt)
                         DemocracyUtil.TryMainQuestFn("DoRandomOpposition", OPPO_COUNT)
                         cxt.quest.param.did_opposition = true
+                        TheGame:GetGameProfile():AcquireUnlock("DONE_POLITICS_OPPOSITION")
                     end)
                     :Dialog("DIALOG_SUPPORT_PST")
             end
@@ -489,6 +491,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                     :Dialog("DIALOG_FUNDING")
                     :Fn(function(cxt)
                         cxt.quest.param.did_funding = true
+                        TheGame:GetGameProfile():AcquireUnlock("DONE_POLITICS_FUNDING")
                     end)
                     -- :Dialog("DIALOG_SUPPORT_PST")
             end
@@ -501,6 +504,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                         if not cxt.quest.param.unlocked_grog then
                             DemocracyUtil.DoLocationUnlock(cxt, "GROG_N_DOG")
                         end
+                        TheGame:GetGameProfile():AcquireUnlock("DONE_POLITICS_FREE_TIME")
                     end)
             end
             cxt:Opt("OPT_DONE")

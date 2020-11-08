@@ -135,12 +135,15 @@ function DemocracyUtil.AddPrimaryAdvisor(qdef, mandatory)
         }
     end
 end
-
+function DemocracyUtil.GetBaseFreeTimeActions()
+    return 8 -- might later be affected by other factors.
+end
 -- Start the free time event. spawn the opportunity and change the actions
 function DemocracyUtil.StartFreeTime(actions)
     local quest = QuestUtil.SpawnQuest("FREE_TIME_EVENT")
     if quest and actions then
-        quest.param.free_time_actions = actions
+        quest.param.free_time_actions = math.round(actions * DemocracyUtil.GetBaseFreeTimeActions())
+        quest:NotifyChanged()
     end
     return quest
 end
@@ -636,6 +639,50 @@ function DemocracyUtil.DebugSurveyVoterStances(issue_id, params)
     end
     DBG(survey_result)
     return survey_result
+end
+
+function DemocracyUtil.PresentJobChoice(cxt, quest_options, additional_opt, on_picked_fn)
+    for k,v in ipairs(quest_options) do
+        v:SetHideInOverlay(true)
+    end
+
+    if #quest_options > 0 then 
+        cxt:RunLoopingFn( function(cxt)
+            for k,job in ipairs(quest_options) do
+                
+                cxt:QuestOpt( job )
+                    :ShowQuestAsInactive()
+                    :Fn(function(cxt) 
+                        StateGraphUtil.PresentQuestOffer(cxt, job, nil, 
+                            function() 
+
+                                for k,v in pairs(quest_options) do
+                                    if v ~= job then
+                                        v:Cancel()
+                                    end
+                                end
+                                cxt:PlayQuestConvo(job, QUEST_CONVO_HOOK.ACCEPTED)
+                                cxt:Pop()
+                                job:SetHideInOverlay(false)
+                                if on_picked_fn then
+                                    on_picked_fn(cxt, quest_options, job)
+                                end
+                            end,
+                            function()
+                                if not cxt:PlayQuestConvo(job, QUEST_CONVO_HOOK.DECLINED) then
+                                    cxt:Quip( cxt:GetAgent(), "job_decline")
+                                end
+                            end,
+                            #quest_options == 1)
+                    end)
+            end
+
+            if additional_opt then
+                -- StateGraphUtil.AddBackButton(cxt)
+                additional_opt(cxt)
+            end
+        end )
+    end
 end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"

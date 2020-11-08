@@ -45,13 +45,16 @@ local QDEF = QuestDef.Define
     events = 
     {
         quests_changed = function(quest, event_quest)
-            if quest.param.current_job == event_quest and not event_quest:IsActive() then
+            if quest.param.current_job == event_quest and event_quest:IsDone() then
                 quest:Complete("do_job")
             end
         end
     },
     on_activate = function(quest)
         DemocracyUtil.EndFreeTime()
+        if quest.param.current_job == "FREE_TIME" then
+            quest.param.current_job = DemocracyUtil.StartFreeTime(1.5)
+        end
     end,
     on_complete = function(quest) 
         quest.param.job_history = quest.param.job_history or {}
@@ -128,9 +131,9 @@ QDEF:AddConvo("get_job")
             ]],
         
     }
-    :Fn(function(cxt)
+    :RunLoopingFn(function(cxt)
         cxt:Dialog("DIALOG_INTRO")
-        DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 2, "RALLY_JOB")
+        DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB")
     end)
 QDEF:AddConvo("get_job", "primary_advisor")
     :Loc{
@@ -146,7 +149,7 @@ QDEF:AddConvo("get_job", "primary_advisor")
         cxt:Opt("OPT_GET_JOB")
             :SetQuestMark( cxt.quest )
             :Dialog("DIALOG_GET_JOB")
-            :Fn(function(cxt)
-                DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 2, "RALLY_JOB")
+            :LoopingFn(function(cxt)
+                DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB", true)
             end)
     end)

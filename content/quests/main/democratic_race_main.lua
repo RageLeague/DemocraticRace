@@ -97,6 +97,8 @@ local QDEF = QuestDef.Define
         quest.param.stance_change = {}
         quest.param.stance_change_freebie = {}
 
+        quest.param.allow_skip_side = true
+
         -- TheGame:GetGameState():GetPlayerAgent().graft_owner:AddGraft(GraftInstance("relation_support_tracker"))
 
         QuestUtil.StartDayQuests(DAY_SCHEDULE, quest)
@@ -117,11 +119,12 @@ local QDEF = QuestDef.Define
     end,
     events = 
     {
-        GAME_OVER = function( self, gamestate, result )
-            if result == GAMEOVER.VICTORY then
-                TheGame:GetGameProfile():AcquireUnlock("DONE_POLITICS_BEFORE")
-            end
-        end,
+        -- GAME_OVER = function( self, gamestate, result )
+        --     if result == GAMEOVER.VICTORY then
+        --         TheGame:GetGameProfile():AcquireUnlock("DONE_POLITICS_BEFORE")
+        --         print("YAY we did it!")
+        --     end
+        -- end,
         agent_location_changed = function(quest, agent, old_loc, new_loc)
             -- if event == "agent_location_changed" then
                 print("location change triggered")
@@ -238,30 +241,35 @@ local QDEF = QuestDef.Define
             end
             cxt.enc.scratch.job_pool = jobs
         end
-        QuestUtil.PresentJobChoice(cxt, jobs, true, function(cxt, jobs_presented, job_picked) 
+        DemocracyUtil.PresentJobChoice(cxt, jobs, function(cxt)
+            if can_skip == true or (quest.param.allow_skip_side and can_skip ~= false) then
+                cxt:Opt("OPT_SKIP_RALLY")
+                    :MakeUnder()
+                    :Dialog("DIALOG_CHOOSE_FREE_TIME")
+                    :Fn(function(cxt)
+                        cxt:Opt("OPT_INSIST_FREE_TIME")
+                            :PreIcon(global_images.accept)
+                            :Dialog("DIALOG_INSIST_FREE_TIME")
+                            :Fn(function(cxt)
+                                cxt.quest.param.current_job = "FREE_TIME"
+                                cxt.quest:Complete("get_job")
+                                -- cxt.quest:Activate("do_job")
+                                --cxt:PlayQuestConvo(cxt.quest.param.job, QUEST_CONVO_HOOK.INTRO)
+                                StateGraphUtil.AddEndOption(cxt)
+                            end)
+                        cxt:Opt("OPT_NEVER_MIND")
+                            :PreIcon(global_images.reject)
+                            :Dialog("DIALOG_NEVER_MIND_FREE_TIME")
+                    end)
+            end
+        end, function(cxt, jobs_presented, job_picked) 
             cxt.quest.param.current_job = job_picked
             cxt.quest:Complete("get_job")
             -- cxt.quest:Activate("do_job")
             --cxt:PlayQuestConvo(cxt.quest.param.job, QUEST_CONVO_HOOK.INTRO)
             StateGraphUtil.AddEndOption(cxt)
         end)
-        if can_skip then
-            cxt:Opt("OPT_SKIP")
-                :Dialog("DIALOG_CHOOSE_FREE_TIME")
-                :Fn(function(cxt)
-                    cxt:Opt("OPT_INSIST_FREE_TIME")
-                        :Dialog("DIALOG_INSIST_FREE_TIME")
-                        :Fn(function(cxt)
-                            cxt.quest.param.current_job = DemocracyUtil.StartFreeTime(16)
-                            cxt.quest:Complete("get_job")
-                            -- cxt.quest:Activate("do_job")
-                            --cxt:PlayQuestConvo(cxt.quest.param.job, QUEST_CONVO_HOOK.INTRO)
-                            StateGraphUtil.AddEndOption(cxt)
-                        end)
-                    cxt:Opt("OPT_NEVER_MIND")
-                        :Dialog("DIALOG_NEVER_MIND_FREE_TIME")
-                end)
-        end
+        
     end,
     DeltaSupport = function(quest, amt, target, notification)
         local type, t = DemocracyUtil.DetermineSupportTarget(target)

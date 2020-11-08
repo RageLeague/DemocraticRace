@@ -55,7 +55,7 @@ local QDEF = QuestDef.Define{
     qtype = QTYPE.STORY,--QTYPE.OPPORTUNITY,
     act_filter = DemocracyUtil.DemocracyActFilter,
     on_init = function(quest)
-        quest.param.free_time_actions = 8
+        quest.param.free_time_actions = DemocracyUtil.GetBaseFreeTimeActions()
     end,
     events = 
     {

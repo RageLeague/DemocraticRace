@@ -5,6 +5,7 @@ Content.AddStringTable( "DEM_CONVO", {
         OPT_DEBUG_BYPASS_HARD_CHECK = "[Debug] Bypass hard check",
         TT_DEBUG_BYPASS_HARD_CHECK = "This will bypass a hard check in the game for debug purpose. Choosing this makes this run illegitimate.",
 
+        OPT_SKIP_RALLY = "Skip Rally",
         DIALOG_CHOOSE_FREE_TIME = [[
             player:
                 I think instead of rallying, I'll just do whatever I want.

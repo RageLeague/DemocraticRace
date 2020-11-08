@@ -47,7 +47,7 @@ local QDEF = QuestDef.Define
     extra_reward = false,
     on_start = function(quest)
         quest:Activate("commission")
-        quest.param.actions = 10
+        quest.param.actions = math.round(DemocracyUtil.GetBaseFreeTimeActions() * 1.5)
         quest:Activate("time_left")
     end,
     events = 
