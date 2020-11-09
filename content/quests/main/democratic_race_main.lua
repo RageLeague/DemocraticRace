@@ -161,7 +161,7 @@ local QDEF = QuestDef.Define
                 local disguise = RISE_DISGUISE_BUILDS[agent:GetContentID()]
                 if disguise then
                     print("Has disguise yay!" .. disguise)
-                    if DemocracyUtil.IsWorkplace(new_loc) then
+                    if DemocracyUtil.IsWorkplace(new_loc) or new_loc:GetContentID() == "GB_LABOUR_OFFICE" then
                         local new_build = Content.GetCharacterDef(disguise).base_builds[agent.gender]
                         if new_build then
                             agent:SetBuildOverride(new_build)

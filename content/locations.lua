@@ -192,3 +192,4 @@ Content.AddLocationContent{
         },
     }
 }
+Content.GetLocationContent("PEARL_PARK").entry_scenario = "DEMOCRACY_PARK_ENTRY"

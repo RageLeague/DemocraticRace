@@ -259,6 +259,7 @@ QDEF:AddConvo("out_of_time", "primary_advisor")
                     end
                     cxt.quest:Complete()
                 end
+                StateGraphUtil.AddEndOption(cxt)
             end)
         
     end)
