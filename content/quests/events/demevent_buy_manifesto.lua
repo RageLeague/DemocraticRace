@@ -36,7 +36,7 @@ local convo = QDEF:AddConvo()
                 agent:
                     !right
                     !interest
-                    [p] you're a politicians, right? what do you think of the rise?
+                    [p] You're a politicians, right? what do you think of the rise?
 
             ]],
 
@@ -62,9 +62,9 @@ local convo = QDEF:AddConvo()
                     Or a baking technique, perhaps?
                 agent:
                     !crossed
-                    [p] Don't play dumb. You're a politician, you should know your target groups.
+                    Don't play dumb. You're a politician, you should know your voter groups.
                     !sigh
-                    If you have to know who we are, I guess I'll tell you.
+                    If you really don't know who we are, I guess I'll tell you.
                     You heard of the insurrection in the Bread Fields? Where the laborers striked against the Admiralty occupation?
                 player:
                     Yes, that does sound familiar.
@@ -126,21 +126,21 @@ local convo = QDEF:AddConvo()
             OPT_SHOW_CARD = "Show that you already have a {1#card}",
             DIALOG_SHOW_CARD = [[
                 player:
-                    [p] it's okay, friend, i already have one.
+                    [p] It's okay, friend, i already have one.
                 agent:
                 {support?
-                    wow. you must be really supportive of the cause.
-                    if Kalandra isn't running, i would've voted for you.
+                    Wow. you must be really supportive of the cause.
+                    If Kalandra isn't running, i would've voted for you.
                 }
                 {doubt?
-                    hold on, where did you get that?
-                    those aren't really readily available in shops.
-                    so how? don't tell me...
+                    Hold on, where did you get that?
+                    Those aren't really readily available in shops.
+                    So how? don't tell me...
                 }
                 {not support and not doubt?
-                    hold on, you said you don't know who the Rise are.
-                    so why did you tell me that when you clearly have our manifesto?
-                    unless...?
+                    Hold on, you said you don't know who the Rise are.
+                    So why did you tell me that when you clearly have our manifesto?
+                    Unless...?
                 }
             ]],
             OPT_BUY_IT = "Buy {1#card}",
@@ -155,11 +155,11 @@ local convo = QDEF:AddConvo()
                 }
                 {doubt?
                     player:
-                        [p] i have doubts, but let's see this literature.
-                        hopefully i can learn about your goals better.
+                        [p] I have doubts, but let's see this literature.
+                        Hopefully i can learn about your goals better.
                     agent:
-                        i don't know if that's a good thing or not.
-                        but anyway, thanks.
+                        I don't know if that's a good thing or not.
+                        But anyway, thanks.
                         !exit
                 }
                 * {agent} continues down the road, leaving you to your reading.
@@ -266,11 +266,11 @@ local convo = QDEF:AddConvo()
             OPT_BRUSH_OFF = "Brush off {agent}'s concern",
             DIALOG_BRUSH_OFF = [[
                 player:
-                    [p] don't worry about it.
+                    [p] Don't worry about it.
                 agent:
-                    the fact that you just said that makes me even more concerned!
-                    in fact, i believe that you robbed one of our pamphleteers, or even killed them, to get your hands on this!
-                    you just made enemies with the rise!
+                    The fact that you just said that makes me even more concerned!
+                    In fact, I believe that you robbed one of our pamphleteers, or even killed them, to get your hands on this!
+                    You just made enemies with the rise!
             ]],
 
             OPT_EXCUSE = "Stay on {agent}'s good side",
@@ -281,40 +281,43 @@ local convo = QDEF:AddConvo()
             ]],
             DIALOG_EXCUSE_SUCCESS = [[
                 player:
-                    [p] i actually do support the Rise.
+                    I actually do support the Rise.
                 {sal?
                     in fact, my parents are the leader of the Rise movement 10 years ago.
                 }
-                    it's just that, i'm a politician now, and i have to be careful with what i'm saying.
-                    back in the Bog, letting people know you support the Rise is basically a death sentence.
+                    It's just that, i'm a politician now, and i have to be careful with what i'm saying.
+                    Back in the Bog, letting people know you support the Rise is basically a death sentence.
                 agent:
-                    yeah, i have to agree with that.
-                    but you don't have to worry about it now.
-                    the time is different, we're trying to have an election.
-                    directly killing a politician who support the Rise movement will look bad on whoever was doing it.
+                    Yeah, i have to agree with that.
+                    But you don't have to worry about it now.
+                    The time is different, we're trying to resolve everything peacefully.
+                    Directly killing a politician who support the Rise movement will look bad on whoever was doing it.
                 player:
-                    even still, you never know, right.
+                    Even still, you never know, right.
                 agent:
-                    true.
-                    anyway, see you around.
+                    True.
+                    Anyway, see you around.
                     !exit
                 * Do you truly believe what you're saying? Doesn't matter, because {agent} believed it.
             ]],
             DIALOG_EXCUSE_FAIL = [[
                 player:
-                    [p] you see, i was testing you before, because i'm afraid you're an Admiralty spy or something.
+                    You see, I was testing you before, because I'm afraid you're an Admiralty spy or something.
                 agent:
-                    are you stupid? everyone knows you're not legally allowed to switch clothes once you join a faction.
-                    so how could i be an Admiralty spy?
+                    !dubious
+                    Are you stupid? Everyone knows that the Admiralty must wear their uniform at all times, and are not allowed to change them.
+                    So how could I be an Admiralty spy?
                 {rook?
                 player:
-                    wait, didn't i dress up as a Spree for the trailer?
-                * {agent} is not listening to you.
+                    But that doesn't make any sense!
+                    I mean, I-
+                * You remembered that you're supposed to keep your identity a secret, and not reveal it just because you want to win an argument.
+                * You stopped your sentense midway through.
                 }
                 agent:
-                    you can't pull the wool over my eyes.
-                    you killed a pampleteer to get that, didn't you?
-                    you just made enemies with the rise!
+                    You can't pull the wool over my eyes.
+                    You killed a pampleteer to get that, didn't you?
+                    You just made enemies with the rise!
             ]],
         }
         :Fn(function(cxt)
@@ -386,7 +389,7 @@ local convo = QDEF:AddConvo()
                         cxt:Dialog("DIALOG_ATTACK_WIN")
                         -- if not cxt:GetAgent():IsDead() then
                         -- DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -10)
-                        DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", -10, "RISE")
+                        -- DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", -10, "RISE")
                         
                         -- end
                         StateGraphUtil.AddLeaveLocation(cxt)

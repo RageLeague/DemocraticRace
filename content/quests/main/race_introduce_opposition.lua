@@ -415,12 +415,31 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         "Ask about opposition",
         [[
             player:
-                [p] beeeeeeeep
+                What does it mean for me now that there are these oppositions?
             agent:
-                boop
-                now laugh.
+                It means that they will also running for president, pulling votes that would otherwise be yours to them.
+                Since everyone can only vote one person at a time, more oppositions means less votes for you.
             player:
-                !chuckle
+                What should I do to combat this?
+            agent:
+                You need to eliminate the oppositions.
+            player:
+                You want me to kill them?
+            agent:
+                !placate
+                What? Of course not.
+            {not advisor_manipulate?
+                As the campaign goes on, some people will naturally drop out because they don't have enough support.
+                If you can ally with them, their voters will vote for you if their primary candidate drops out.
+            }
+            {advisor_manipulate?
+                Logically speaking, if someone don't have enough support, they have no chance at winning.
+                And let's say, hypothetically, that you have similar ideology with said candidate.
+                Then, logically, their voters will vote for the next best candidate that is most likely to win.
+                It's called strategic voting.
+            }
+            player:
+                That sounds like a much better plan.
         ]],
         nil,
         

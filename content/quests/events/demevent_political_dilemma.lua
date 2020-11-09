@@ -33,7 +33,8 @@ QDEF:AddConvo()
     :ConfrontState("STATE_CONFRONT")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] you saw two people arguing about {issue_name}
+                * You saw two people arguing about {issue_name}.
+                * They both seems very passionate about the topic.
                 extremist_neg:
                     !right
                 extremist_pos:
@@ -44,15 +45,16 @@ QDEF:AddConvo()
                     !angry_accuse
                     %confront_argument
                     What we need clearly is {neg_stance}!
-                * as their debate gets heated, they sees you.
+                * As their debate gets heated, they sees you.
                 player:
                     !left
                 extremist_pos:
                     !right
-                    oi you!
+                    You there, grifter!
                 extremist_neg:
                     !right
-                    settle this!
+                    We're trying to figure out whose ideology is the best.
+                    Settle this!
             ]],
             OPT_SIDE_WITH = "Side with {1#agent}",
             DIALOG_SIDED = [[
@@ -60,35 +62,46 @@ QDEF:AddConvo()
                     !right
                 player:
                     !left
-                    i have to say, i must agree with {agent} here.
+                    I have to say, I must agree with {agent} here.
                 other:
-                    !angry
-                    what?!
+                    !surprised
+                    What? You would rather side with {agent} than me?
+                    That's just so wrong!
                 agent:
                     !left
-                    nananananana, hahahahahaha.
+                    You're the one who's in the wrong here.
+                    See? The grifter also thinks that my idea is correct.
                 other:
-                    i'll remember this.
+                    !angry_accuse
+                    I won't forget this!
+                    !exit
+                * {other.HeShe} leaves.
                 player:
                     !left
                 agent:
                     !right
-                    so will i.
-                    thanks, {player}!
-                * you made some friends, but that means taking sides. hopefully your friendship lasts.
+                    Thanks for backing me up back there.
+                    See you!
+                    !exit
+                * {agent} also left, leaving you alone to ponder whether you made the right decision or not.
             ]],
             OPT_CHOOSE_NO_ONE = "Choose no one",
             DIALOG_CHOOSE_NO_ONE = [[
                 player:
-                    screw you both, i ain't taking sides!
+                    You know what, I don't think it is my place to settle this.
+                    Why don't you two just pretend that I was never here?
                 extremist_neg:
                     !right
-                    wtf?
+                    !surprised
+                    What?
                 extremist_pos:
-                    !right
-                    fine! have it your way then.
-                * you might made some enemies, but at least you stayed neutral.
-                * right?
+                    !left
+                    !hips
+                    $happyCocky
+                    Was hoping for the grifter will back you up? Well too bad! {player.HeShe} isn't.
+                extremist_neg:
+                    Of course not!
+                * You left those two be. Better to stay neutral than getting involved, right?
             ]],
         }
         :Fn(function(cxt)
@@ -120,7 +133,7 @@ QDEF:AddConvo()
                 :Travel()
             cxt:Opt("OPT_CHOOSE_NO_ONE")
                 :Dialog("DIALOG_CHOOSE_NO_ONE")
-                :ReceiveOpinion(OPINION.DISAPPROVE_MINOR, nil, cxt.quest:GetCastMember("extremist_pos"))
-                :ReceiveOpinion(OPINION.DISAPPROVE_MINOR, nil, cxt.quest:GetCastMember("extremist_neg"))
+                -- :ReceiveOpinion(OPINION.DISAPPROVE_MINOR, nil, cxt.quest:GetCastMember("extremist_pos"))
+                -- :ReceiveOpinion(OPINION.DISAPPROVE_MINOR, nil, cxt.quest:GetCastMember("extremist_neg"))
                 :Travel()
         end)

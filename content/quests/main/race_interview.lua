@@ -187,7 +187,7 @@ QDEF:AddConvo("go_to_interview")
                     !left
                 primary_advisor:
                     !right
-                    Alright {player}, tonight is Big, so let's run through what you've got really quick.
+                    Alright {player}, tonight is big, so let's run through what you've got really quick.
                     Have you got you're prepared anwsers?
                 player:
                     My what?
@@ -196,31 +196,29 @@ QDEF:AddConvo("go_to_interview")
                 player:
                     I have integrity, my dear {primary_advisor}!
                 primary_advisor:
-                    Yeah well integrity isn't going to get you through this in one piece
+                    Yeah well integrity isn't going to get you through this in one piece.
                     For Hesh's sake, did you even bring a breathmint?
                 player:
+                    !crossed
                     Okay now that's just insulting.
                 primary_advisor:
                     Well get ready for a lot more of that once you're on stage.
                     Think about it, kid. You're no longer a passer-by with a big mouth and big opinions.
-                    This ain't little league anymore. This Interview is being broadcasted to all of Havaria.
+                    This ain't little league anymore. This interview is being broadcasted to all of Havaria.
                 player:
                     !suprised
                     Really?
                 primary_advisor:
-                    Yes really! Hesh foresake those who don't stay to the shallows, don't you listen!
+                    Yes really! I can't believe you didn't realize the importance of such interview.
                 player:
-                    Well, look. let's focus on our inter-personal relationship AFTER I survive this.
+                    !placate
+                    Let's focus on our inter-personal relationship AFTER I survive this.
                 primary_advisor:
                     IF you survive, at this point, but true. Let's me give you the once over about the interview.
                 * You and {primary_advisor} chatter about the interview, with them giving you pointers that make no sense to the task at hand.
                 * Eventually, a worker calls for you, and you steel your nerves.
                 player:
-                    Moment of truth. Any last pointers?
-                primary_advisor:
-                    [P] If all else fails, sucker punch the interviewer and run.
-                    player:
-                    Gee, thanks.
+                    Moment of truth. Let's see how I do.
             ]],
         }
         :Fn(function(cxt)
@@ -237,15 +235,33 @@ QDEF:AddConvo("do_interview")
     :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("theater") end)
         :Loc{
             DIALOG_INTRO = [[
-                * [p] when you enter the room, you see a bunch of people
-                * Looks liek lots of people wants to watch your interview.
+                * [p] When you enter the room, you see a bunch of people in the theater.
+                * Looks like lots of people wants to watch your interview.
+                * Some are your supporters who wants to see you succeed, while others wants to see you fail miserably.
                 agent:
                     !right
-                    let's welcome our special guest tonight, {player}!
+                    Let's welcome our special guest tonight, {player}!
                 player:
                     !left
-                * everyone clapped.
-                * try to survive the interview, i guess?
+                * As everyone clapped, you enter the stage and sit at your side.
+                agent:
+                    {player} here is an up and coming politician wanting to participating in the election.
+                {liked?
+                    Although {player.heshe} have just started, {player.heshe} has gained quite some followers, and might even be more popular than seasoned politicians like Oolo and Fellemo.
+                }
+                {disliked?
+                    As such, {player.hisher} leadership skills are questionable at best.
+                }
+                {not liked and not disliked?
+                    Many people wondered whether {player.heshe} will be able to compete with other seasoned politicians.
+                }
+                    Which is why today, we're having an exclusive interview with {player}.
+                * Another round of applause.
+                player:
+                    Thank you for inviting me, {agent}.
+                agent:
+                    I have a few questions for you...
+                * Try to survive the interview, I guess?
             ]],
             OPT_DO_INTERVIEW = "Do the interview",
             SIT_MOD = "Has a lot of questions prepared for you.",
@@ -273,7 +289,14 @@ QDEF:AddConvo("do_interview")
             DIALOG_INTERVIEW_AFTER_BAD = [[
                 * That's not good. People don't like your interview!
             ]],
-            OPT_ACCEPT_LOSS = "Accept your failure",
+            DIALOG_FAIL = [[
+                {good_interview?
+                    * Despite the fact, the damage has already been done.
+                }
+                * From the meltdown back on the state, your reputation drops significantly.
+                * With that, this is the end of your political campaign.
+                * There is no way for you to recover from that failure.
+            ]],
         }
         :Fn(function(cxt)
             cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("host"))
@@ -342,9 +365,10 @@ QDEF:AddConvo("do_interview")
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_INTERVIEW_FAIL")
-                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -10)
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -20)
                         ResolvePostInterview()
                         -- you can't recover from a failed interview. it's instant lose.
+                        cxt:Dialog("DIALOG_FAIL")
                         DemocracyUtil.AddAutofail(cxt, false)
                     end,
                 }

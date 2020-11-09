@@ -33,3 +33,9 @@ the_truce_deal:
   trigger: Truce Deal|the truce deal|the truce
   body: |
     An event that happened a few weeks before, where all the major factions decided to stop fighting for power with force, and instead, opted for a more peaceful approach. For some reason. As part of the truce deal, an election will take place a few days from now, where a president shall be decided democratically.
+
+first_past_the_post:
+  title: First Past The Post
+  trigger: First Past The Post|first-past-the-post|first past the post
+  body: |
+    An election system where each voter has one vote to choose their favorite candidate, and the system currently for the election in Havaria.
