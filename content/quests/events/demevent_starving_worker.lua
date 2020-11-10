@@ -116,15 +116,27 @@ QDEF:AddConvo()
                     Now I can't find any work.
                 *** This is different from the event in Rook's story, trust me.
             ]],
+            OPT_ASK_ABOUT_RISE = "Ask why the Rise won't help.",
+            DIALOG_ASK_ABOUT_RISE = [[
+                player:
+                    I thought the Rise's whole shtick was about helping you workers?
+                    Where are they in your dire time of need?
+                agent:
+                    Ha! They're just proving me right.
+                    Those pseudo-intellectual sludge suckers are looking out for themselves.
+                    No one in Havaria is ever that generous.
+            ]]
             OPT_ASK_ABOUT_FOREMAN = "Ask about the foreman",
             DIALOG_ASK_ABOUT_FOREMAN = [[
                 player:
                     What kind of character is your foreman like?
                 agent:
-                    [p] bad.
+                    Oh {foreman.heshe} is just the worst!
+                    If i had my way, i'd be at the labor offices and running {foreman.himher} out of a job.
                 player:
-                    thanx, that's very helpful.
-                    can you at least give me a name?
+                    So this foreman is unfair and made you hate them.
+                    To be honest, that sounds like almost every foreman.
+                    How about you give a name? I might know 'em.
                 agent:
                     {foreman}.
             ]],
