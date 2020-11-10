@@ -40,11 +40,11 @@ QDEF:AddConvo()
                 extremist_pos:
                     !left
                     !angry_accuse
-                    Havaria needs {pos_stance}! It's the only way!
+                    Havaria needs {1#pol_stance}! It's the only way!
                 extremist_neg:
                     !angry_accuse
                     %confront_argument
-                    What we need clearly is {neg_stance}!
+                    What we need clearly is {2#pol_stance}!
                 * As their debate gets heated, they sees you.
                 player:
                     !left
@@ -107,9 +107,9 @@ QDEF:AddConvo()
         :Fn(function(cxt)
             cxt.quest:Complete()
             cxt.quest.param.issue_name = cxt.quest.param.issue:GetLocalizedName()
-            cxt.quest.param.pos_stance = cxt.quest.param.issue.stances[2]:GetLocalizedName()
-            cxt.quest.param.neg_stance = cxt.quest.param.issue.stances[-2]:GetLocalizedName()
-            cxt:Dialog("DIALOG_INTRO")
+            -- cxt.quest.param.pos_stance = :GetLocalizedName()
+            -- cxt.quest.param.neg_stance = :GetLocalizedName()
+            cxt:Dialog("DIALOG_INTRO", cxt.quest.param.issue.stances[2], cxt.quest.param.issue.stances[-2])
 
             cxt:Opt("OPT_SIDE_WITH", cxt.quest:GetCastMember("extremist_pos"))
                 :Fn(function(cxt)

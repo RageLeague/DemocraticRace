@@ -145,14 +145,16 @@ QDEF:AddConvo("go_to_junction")
     :State("STATE_INTRO")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] you arrived at the junction and start preaching
+                * You arrived at the junction and start preaching.
+                * Lots of people come and go.
+                * Now, it's time to let them know what you stand for.
             ]],
             OPT_PREACH = "Preach!",
             REASON_PREACH = "Convince as many people as you can to join your side!",
             
             DIALOG_CONVINCED_PEOPLE = [[
                 * You have enlightened {1} {1*person|people} with your ideology.
-                * {1:Not great, but that's something.|An acceptable amount.|Well done!}
+                * {1:Not great, but that's something.|That's a good start.|Well done!}
             ]],
             DIALOG_UNCONVINCED_PEOPLE = [[
                 * After a long time, you haven't convinced even a single person with your ideology.
@@ -254,7 +256,20 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
         DIALOG_INTRO = [[
             player:
                 !left
-                [p] maybe i should preach
+                Maybe I should preach at popular locations.
+            {not has_primary_advisor?
+                Hopefully I can convince some apathetic people to join my cause.
+                I don't really know how effective that will be, though.
+            }
+            {has_primary_advisor?
+            agent:
+                You think this can bring people to your side?
+            player:
+                Perhaps.
+            agent:
+                You need to attract these people's attention before they get annoyed.
+                Are you sure you can manage that?
+            }
         ]],
     }
     :State("START")
@@ -266,7 +281,15 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
         DIALOG_INTRO = [[
             player:
                 !left
-                [p] cool cool
+                Might be worth a shot.
+            {not has_primary_advisor?
+                I'll find a location, where I can preach.
+            }
+            {has_primary_advisor?
+            agent:
+                Good.
+                Now, there is a junction where many people visits. You should go there and start preaching.
+            }
         ]],
     }
     :State("START")
@@ -279,7 +302,8 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
         DIALOG_INTRO = [[
             player:
                 !left
-                [p] nah
+                Seems way too stressful.
+                Besides, lots of people hate preachers.
         ]],
     }
     :State("START")

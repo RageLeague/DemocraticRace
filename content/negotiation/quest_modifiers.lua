@@ -866,7 +866,7 @@ local MODIFIERS =
             else
                 self.init_max_resolve = self.init_max_resolve + self.bonus_per_generation
             end
-            self:SetResolve(self.init_max_resolve)
+            self:SetResolve(self.init_max_resolve, MODIFIER_SCALING.LOW)
         end,
 
         OnBounty = function(self, source)

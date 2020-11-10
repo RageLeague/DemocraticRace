@@ -436,7 +436,7 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 Logically speaking, if someone don't have enough support, they have no chance at winning.
                 And let's say, hypothetically, that you have similar ideology with said candidate.
                 Then, logically, their voters will vote for the next best candidate that is most likely to win.
-                It's called strategic voting.
+                It's called Strategic Voting.
             }
             player:
                 That sounds like a much better plan.
@@ -456,61 +456,142 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
     :AskAboutHubConditions("STATE_OPPOSITION_QUESTIONS",
     {
         nil,
-        "Ask about Oolo",
+        "Ask about the Admiralty candidate",
         [[
             player:
-                [p] what's her deal?
+                I'm assuming the Admiralty is surely running?
             agent:
-                Security for all.
-                lalala.
+                Of course.
+                Their candidate is Oolo Ollowano, an officer from Murder Bay.
+            player:
+                Why is she running for president?
+            agent:
+                !handwave
+                You know how the Admiralty is.
+                They want to maintain control in Havaria.
+                As such, they are running on the platform of <!pol_stance_security_2>Universal Security</>, where every person has access to Admiralty protection.
+                It will be popular among Civilians and the Admiralty, of course. But it will be very unpopular with people who dislike them or their rivals.
         ]],
         nil,
         nil,
-        "Ask about Nadan",
+        "Ask about the Spree candidate",
+        [[
+            player:
+                Do people really want a Spree to become the president?
+            agent:
+                The entire point of the Truce Deal is to allow anyone to run, regardless of their background.
+                Anyway, Nadan Undar, the leader, is their candidate.
+            player:
+                What is he running on?
+            agent:
+                He's running on <!pol_stance_independence_2>Havarian Independence</>.
+                The Spree likes it because they can be more lawless, but it is popular among other voting groups as well.
+                People are fed up with Deltree's reach, especially towards the Admiralty for controlling their lives.
+                Although the more prestegious people would rather have Havaria be totally annexed.
+        ]],
+        nil,
+        nil,
+        "Ask about the Spark Baron candidate",
+        [[
+            player:
+                Someone in the Spark Barons has got to be running.
+            agent:
+                Of course.
+                Their candidate is Lellyn Fellemo, a retired Admiralty solider, who now is a regional officer managing Grout Bog.
+                Although I'm not sure how competent he really is.
+                Seems like he's in just because his lieutenant really wants the Spark Barons to play a part in this.
+            player:
+                Uh huh.
+            {spark_barons?
+                Then why didn't you run, seeing as no one competent in the Spark Barons is running?
+            agent:
+                !crossed
+                ...
+                I have my reasons.
+            }
+            player:
+                What's Fellemo's angle, then?
+            agent:
+                He wants to <!pol_stance_tax_policy_-2>aboilsh taxes</>.
+                Of course, many people would want that, especially the Spark Barons.
+                They don't want their hard-earned money to go to leeches that is the state.
+                But it would mean that the state can't get fundings this way.
+            player:
+                How does he plan to make Havaria function if he abolish taxes?
+            agent:
+                No clue.
+                State industries, maybe?
+                You should ask him about it.
+        ]],
+        nil,
+        nil,
+        "Ask about the Rise candidate",
+        [[
+            player:
+                Is there anyone representing the Rise?
+            agent:
+                Of course. Prindo Kalandra is the one representing them.
+                In fact, she seems very supportive of the election.
+                Perhaps it's her idea in the first place.
+            player:
+                Sounds good.
+                And I'm assuming the Rise runs on a <!pol_stance_labor_law_1>pro-worker</> platform?
+            agent:
+                !spit
+                Pretty much.
+                It would be very popular among the workers, no doubt.
+                But to anyone else? Nah.
+            player:
+                Sounds like you don't like that.
+            agent:
+                Of course not.
+            {advisor_diplomacy?
+                That is cringe.
+                |
+                That's bad for business.
+            }
+                Imagine if workers can just slack off, and no one can lay a finger on them.
+                But, of course, I don't care what you believe as long as you can win.
+        ]],
+        nil,
+        nil,
+        "Ask about the Cult candidate",
+        -- haven't figure out whether to use vixmali or the bishop
         [[
             player:
                 [p] what's his deal?
             agent:
-                independence.
-                lalala.
+            {not cult_of_hesh?
+                You know the cult. Wanting to <!pol_stance_artifact_treatment_2>preserve artifacts</> and what not.
+            }
+            {cult_of_hesh?
+                To <!pol_stance_artifact_treatment_2>preserve artifacts</>, obviously.
+            }
+                It's going to be popular among the Cult, as well as people who care about Havarian heritage.
+                But people who wants to use and sell those artifacts will not like it.
         ]],
         nil,
         nil,
-        "Ask about Fellemo",
+        "Ask about the Jakes candidate",
         [[
             player:
-                [p] what's his deal?
+                I'm assuming the Jakes has someone that represents them?
             agent:
-                low tax.
-                lalala.
-        ]],
-        nil,
-        nil,
-        "Ask about Kalandra",
-        [[
+                Actually, no.
+                The Jakes lacks a formal hierarchy, so there's not really any figurehead that represents them.
+            * Seriously, there's like zero named Jakes character that would be interested in politics.
+            * I tried, okay?
+                However, Andwanette, a local celebrity, is running.
+                Her stances are probably support by the Jakes.
             player:
-                [p] what's her deal?
+                Speaking of her stances, what are those.
             agent:
-                unions.
-                lalala.
-        ]],
-        nil,
-        nil,
-        "Ask about Vixmali",
-        [[
+                She plans to <!pol_stance_substance_regulation_-2>remove lots of existing regulations</>.
+                !shrug
+                I guess people don't want to get arrested for carry contraband.
             player:
-                [p] what's his deal?
-            agent:
-                idk
-        ]],
-        nil,
-        nil,
-        "Ask about Andwanette",
-        [[
-            player:
-                [p] what's his deal?
-            agent:
-                legalize everything
+                Fair enough.
+                Though I imagine the people in authority won't like it.
         ]],
         function()end,
     })

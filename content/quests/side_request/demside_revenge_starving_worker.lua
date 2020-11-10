@@ -356,9 +356,9 @@ QDEF:AddConvo("take_your_heart", "foreman")
             }
             {not first_time?
                 player:
-                    [p] so about {worker}...
+                    So about {worker}...
                 agent:
-                    what do you want?
+                    What do you want?
             }
         ]],
         OPT_PROBE = "Probe information",

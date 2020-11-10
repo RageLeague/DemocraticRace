@@ -39,3 +39,9 @@ first_past_the_post:
   trigger: First Past The Post|first-past-the-post|first past the post
   body: |
     An election system where each voter has one vote to choose their favorite candidate, and the system currently for the election in Havaria.
+
+strategic_voting:
+  title: Strategic Voting
+  trigger: Strategic Voting|strategic voting
+  body: |
+    Because in a First Past The Post system, each voter has one vote, it is pointless to vote for a candidate that you know is not going to win. As such, a person can vote strategically, and choose the person that is the most likely to win instead of the person that most align with their ideology, to achieve a better outcome.

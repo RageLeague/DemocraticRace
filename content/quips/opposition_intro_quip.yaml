@@ -36,8 +36,8 @@ lines:
 - tags: [opposition_intro, idea_monologue, candidate_cult]
   dialog:
   - |
-    [p] some cultish way of saying we should preserve artifacts.
-    i have no idea how to write that
+    It is Hesh's will that the artifacts remain unused.
+    Therefore, we should keep them that way.
 
 - tags: [opposition_intro, idea_monologue, candidate_jakes]
   dialog:

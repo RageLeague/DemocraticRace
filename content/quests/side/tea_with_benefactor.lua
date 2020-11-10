@@ -218,9 +218,10 @@ QDEF:AddConvo("go_to_diner", "benefactor")
         OPT_TALK = "Start the meeting",
         DIALOG_TALK = [[
             player:
-                [p] Alright, what do you want?
+                Alright, what do you want?
             agent:
-                I am considering funding your campaign...
+                I am considering funding your campaign.
+                But first, prove it to me that you're worth my time.
         ]],
 
         REASON_TALK = "Secure as much shills as you can!",
@@ -231,18 +232,21 @@ QDEF:AddConvo("go_to_diner", "benefactor")
                 I can provide {funds#money} for your campaign.
             player:
                 Thanks.
-            * [p] You have secured additional financial support.
+            * You have secured additional financial support.
         ]],
         DIALOG_BENEFACTOR_POOR = [[
             agent:
-                [p] Unfortunately, I am not thoroughly convinced.
+                Unfortunately, I am not thoroughly convinced.
                 I can only provide {funds#money} for you.
             player:
                 I guess this is better than nothing.
             * You have secured a bit of financial support, though it could be a lot better.
         ]],
         DIALOG_BENEFACTOR_UNCONVINCED = [[
-            * [p] You have successfuly snuffed out any interest that may have been there.
+            agent:
+                I spent a lot of time with you, but I am not convinced.
+                You seems way too greedy, and any money spent on you will be a waste.
+            * You have successfuly snuffed out any interest that may have been there.
         ]],
 
         DIALOG_REGULAR_FUNDING = [[
@@ -302,8 +306,15 @@ QDEF:AddConvo("go_to_diner", "benefactor")
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :Loc{
         DIALOG_INTRO = [[
-                * [p] A runner brought you a letter along with an invitation.
-                * [p] It reads: Meet me in {diner#location}, I can make it worth your time.
+            agent:
+                I have received an invitation from someone named {benefactor}.
+            player:
+                An invitation to what?
+            agent:
+                !notepad
+                It reads: Meet me in {diner#location}, I can make it worth your time.
+                Doesn't say anything else.
+                Maybe they want to fund your campaign?
         ]],
     }
     :State("START")
@@ -314,8 +325,10 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :Loc{
         DIALOG_INTRO = [[
             player:
-                !left
-                [p] Well, it's worth a shot.
+                Well, it's worth a shot.
+            agent:
+                Sounds good.
+                Now, don't keep our host waiting!
         ]],
     }
     :State("START")
@@ -327,8 +340,9 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{
         DIALOG_INTRO = [[
             player:
-                !left
-                [p] This is clearly a scam.
+                I don't know. Seems way too sketchy for me.
+            agent:
+                Fair enough.
         ]],
     }
     :State("START")
