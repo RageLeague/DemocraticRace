@@ -128,7 +128,7 @@ QDEF:AddConvo()
                     Ha! They're just proving me right.
                     Those pseudo-intellectual sludge suckers are looking out for themselves.
                     No one in Havaria is ever that generous.
-            ]]
+            ]],
             OPT_ASK_ABOUT_FOREMAN = "Ask about the foreman",
             DIALOG_ASK_ABOUT_FOREMAN = [[
                 player:
