@@ -202,36 +202,48 @@ QDEF:AddConvo("go_to_diner", "benefactor")
     :Loc{
         OPT_TALK = "Start the meeting",
         DIALOG_TALK = [[
+            * {agent} flags down a waiter and puts in 2 orders for tea as you sit down.
             player:
-                Alright, what do you want?
+                I don't mind free drinks, but I'm going to wager that isn't why we're here today.
             agent:
-                I am considering funding your campaign.
-                But first, prove it to me that you're worth my time.
+                Afraid not. I hear that you're running for president.
+		        And I didn't amass my wealth by ignoring opportunites.
+	    	    Lets get down to brass tacks. Tell me why my shills of indiscriminate origin should go to you.
+	        * The drinks arrive.
         ]],
 
         REASON_TALK = "Secure as much shills as you can!",
             
         DIALOG_BENEFACTOR_CONVINCED = [[
+            * {agent} pauses for a moment, taking one last taste of {agent.hisher} tea.
             agent:
-                You look promising.
-                I can provide {funds#money} for your campaign.
+                We are in business, {player}.
+                None of the other candidtates have shown as much promise for my bank account as you have.
             player:
-                Thanks.
-            * You have secured additional financial support.
+                Hey, Biggest shill gets the shills, am I right?
+            agent:
+                Right you are.
+                !give
+                Here's {funds#money}.
+            * [p] You have secured additional financial support.
         ]],
         DIALOG_BENEFACTOR_POOR = [[
             agent:
-                Unfortunately, I am not thoroughly convinced.
-                I can only provide {funds#money} for you.
+                You show promise...but atop that promise is much bluster.
+		        I can't give you Havaria, but i'm willing to give you {funds#money}.
             player:
                 I guess this is better than nothing.
             * You have secured a bit of financial support, though it could be a lot better.
         ]],
         DIALOG_BENEFACTOR_UNCONVINCED = [[
+            player:
+                300 shills down, then 400 shills every day after.
+                I go no lower.
             agent:
-                I spent a lot of time with you, but I am not convinced.
-                You seems way too greedy, and any money spent on you will be a waste.
-            * You have successfuly snuffed out any interest that may have been there.
+                That's really greedy of you, and frankly, I don't like that.
+                Your opposition is willing to lobby laws for much, much less.
+                Good day, dear {player}.
+	      * {agent} downs the rest of the cup and shoos you away.
         ]],
 
         DIALOG_REGULAR_FUNDING = [[
@@ -291,15 +303,32 @@ QDEF:AddConvo("go_to_diner", "benefactor")
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :Loc{
         DIALOG_INTRO = [[
+            {has_primary_advisor?
             agent:
                 I have received an invitation from someone named {benefactor}.
             player:
                 An invitation to what?
             agent:
                 !notepad
-                It reads: Meet me in {diner#location}, I can make it worth your time.
+                It's hard to read, but it says:
+            }
+            {not has_primary_advisor?
+            * A Jake runs up to you, handing you a well made envelope before doubling back.
+            player:
+                A message, huh?
+            * Inside is a letter, written in such a thick cursive it gives you a dull headache.
+            player:
+                Let's see...
+            }
+                "{player}, I have a vested interest in your political career."
+                "Please arrive at the {diner#location}, so we may discuss further."
                 Doesn't say anything else.
+            {has_primary_advisor?
                 Maybe they want to fund your campaign?
+            }
+            {not has_primary_advisor?
+                Maybe they want to fund my campaign?
+            }
         ]],
     }
     :State("START")
@@ -310,10 +339,17 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :Loc{
         DIALOG_INTRO = [[
             player:
+                !thought
                 Well, it's worth a shot.
+                !happy
+                Best case scenario, free drinks.
+                Can't see anything wrong with that.
+            {has_primary_advisor?
             agent:
-                Sounds good.
-                Now, don't keep our host waiting!
+                !facepalm
+                I can't believe that free drinks is only what you care about.
+                Anyway, don't keep our host waiting!
+            }
         ]],
     }
     :State("START")
@@ -326,6 +362,8 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
         DIALOG_INTRO = [[
             player:
                 I don't know. Seems way too sketchy for me.
+                No one writes like this and expects to be believed.
+		        This is probably a scam. Next time let them come to me.
             agent:
                 Fair enough.
         ]],
