@@ -12,21 +12,6 @@ local SIGNATURE_ARGUMENT = {
     PRIEST = "prayer_of_hesh", -- why this is lower case, i have no idea
 }
 
--- local LOCATION_DEF =
--- {
---     id = "TEAHOUSE",
---     name = "Dallie's Teahouse",
---     desc = " [p] A small establishment with delicious tea and high concentration of influencieal individuals.",
---     -- icon = engine.asset.Texture("icons/quests/at_the_crossroad.tex"),
---     map_tags = {"residence"},
---     plax = "INT_RichHouse_1",
---     indoors = true,
---     show_agents= true,
--- }
--- if not Content.GetLocationContent(LOCATION_DEF.id) then
---     Content.AddLocationContent(LOCATION_DEF)
--- end
-
 local score_fn = function(agent, quest)
     local score = DemocracyUtil.OppositionScore(agent)
     if agent:HasAspect( "bribed" ) then

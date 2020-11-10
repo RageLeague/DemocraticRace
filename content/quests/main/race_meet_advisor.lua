@@ -545,6 +545,16 @@ QDEF:AddConvo("visit_office")
                 primary_advisor:
                     !right
                     We're here.
+                player:
+                    It looks like an okay place.
+                primary_advisor:
+                    !thought
+                    I guess you don't have a place to sleep, huh?
+                    Well, you can use the office backroom as a bedroom.
+                player:
+                    !happy
+                    Thanks. That's very generous of you.
+                primary_advisor:
                     There's still some time before we need to continue our campaign, so feel free to do whatever you want.
                     Once you're ready for the afternoon, talk to me about the next step.
             ]],

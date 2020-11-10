@@ -109,12 +109,27 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
     :Loc{
         OPT_GO_TO_SLEEP = "Go to sleep",
         DIALOG_GO_TO_SLEEP = [[
-            agent:
-                [p] there's totally not a boss today.
             player:
-                why would there be bosses? we don't fight in this campaign.
+                I'm ready to go to bed.
             agent:
-                yeah, right.
+                Well, if that's the case, it's time for me to leave. Good night.
+            player:
+                That's it?
+                I was hoping for a little more.
+            agent:
+                Little more of what?
+            player:
+                I don't know.
+                Bosses, or some other challenges?
+            agent:
+                !dubious
+                ...
+            player:
+                No?
+                !handwave
+                Just- Forget I said anything.
+            agent:
+                Good night.
                 !exit
             player:
                 !exit

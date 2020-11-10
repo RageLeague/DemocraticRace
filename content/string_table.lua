@@ -101,7 +101,7 @@ Content.AddStringTable("DEMOCRACY", {
         },
         WIP_SCREEN = 
         {
-            TITLE = "End of Demo",
+            TITLE = "End of Alpha",
             BODY = "Congratulations! You have now finished what the mod has to offer as of right now. Please leave a feedback at the steam workshop page, on GitHub, or on Klei's forum, so I can improve this mod.",
             BUTTON = "I win!",
         },

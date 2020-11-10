@@ -72,10 +72,10 @@ local GRIFTS = {
     GriftDef{ 
         id = "democracy_day_2",
         -- next_id = "complete_request_quest_2",
-        name = "Survive Day 2 In The Democratic Race(End of Demo)",
+        name = "Survive Day 2 In The Democratic Race(End of Alpha)",
         perk_points = 1,
         progress = function( self, stats )
-            return stats:GetStat( "democracy_day_2" ), 1
+            return stats:GetStat( "democracy_day_2" ) + 1, 2
         end
     },
 }
