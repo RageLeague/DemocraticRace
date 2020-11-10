@@ -372,12 +372,12 @@ QDEF:AddConvo("take_your_heart", "foreman")
             agent:
                 Fine, I guess I have to tell you.
             {make_example?
-                I got a lead on that Worker. Turns out {worker.heshe} passes out some of those pamphlets as a side gig.
+                I got a lead on that worker. Turns out {worker.heshe} passes out some of those pamphlets as a side gig.
                 They we're probably churning up a revolution at this very worksite! I had to nip the problem in the bud, otherwise the mob'd have my head!
             }
             {rush_quota?
                 Look, don't tell this to no one, but we we're actually one of the laxer worksites this side of the sea.
-                The Higher Ups looked at my record and didn't like it too much. Told me to step it up, lest I want to work as a janitor in Palketti.
+                The higher ups looked at my record and didn't like it too much. Told me to step it up, lest I want to work as a janitor in Palketti.
                 So I raised the stakes, and {worker} got upset at that. Started shirking duties for days, instead hanging out with {worker.hisher} buddies.
                 I had to show a little tough love. I hope they'll realize how easy this job was and come back after long enough.
             }
@@ -402,21 +402,27 @@ QDEF:AddConvo("take_your_heart", "foreman")
         DIALOG_DEMAND = [[
         {first_time?
             player:
-                [p] can you change your ways?
+                Look, your ways aren't going to last long term.
             agent:
-                why should i do it for free?
-                !thought
-                hmm... i'll tell you what, if you can {demand_list#demand_list}, then i'll change my ways.
+                You know, maybe you're right.
+                Maybe I should be a bit better...
             player:
-                hmm... i'll think about that.
+                Wait really? I thought that'd taken a bit more effort...
+            agent:
+                Hesh's salty embrace, you fell for that?
+                Look, how 'bout this.
+                If you champion my ideas AND give me some money, I'll clean up my act.
+            player:
+                Okay, and what's the price to do so?
+            agent:
+                You need {demand_list#demand_list}. Got it?
         }
         {not first_time?
             player:
-                [p] so, about that deal...
+                You sure you can't do it for free?
             agent:
-                didn't i tell you to {demand_list#demand_list}?
-            player:
-                right...
+                No. {demand_list#demand_list}?
+                Non-negotiable... until you negotiate.
         }
         ]],
         DIALOG_MET_DEMAND = [[
