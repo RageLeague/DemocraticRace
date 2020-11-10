@@ -116,6 +116,9 @@ QDEF:AddConvo()
                     Now I can't find any work.
                 *** This is different from the event in Rook's story, trust me.
             ]],
+            -- I don't know if we will use this. In the future, maybe one of the ways to deal with someone who hate you
+            -- or a quest target would be using the Rise's tribunal or something, and this might not make sense.
+            -- Keeping this in just in case.
             OPT_ASK_ABOUT_RISE = "Ask why the Rise won't help.",
             DIALOG_ASK_ABOUT_RISE = [[
                 player:
@@ -132,7 +135,7 @@ QDEF:AddConvo()
                     What kind of character is your foreman like?
                 agent:
                     Oh {foreman.heshe} is just the worst!
-                    If i had my way, i'd be at the labor offices and running {foreman.himher} out of a job.
+                    If I had my way, I'd be at the labor offices and running {foreman.himher} out of a job.
                 player:
                     So this foreman is unfair and made you hate them.
                     To be honest, that sounds like almost every foreman.
