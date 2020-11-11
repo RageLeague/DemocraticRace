@@ -135,7 +135,8 @@ local QDEF = QuestDef.Define
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 QDEF:AddConvo()
     :ConfrontState("STATE_OUT_OF_TIME", function(cxt)
-        if cxt.quest.param.actions and cxt.quest.param.actions <= 0 and not cxt.quest:IsActive("out_of_time") then
+        if cxt.quest.param.actions and cxt.quest.param.actions <= 0 and not cxt.quest:IsActive("out_of_time")
+            and not cxt.location:HasTag("in_transit") then
             return true
         end
         return false

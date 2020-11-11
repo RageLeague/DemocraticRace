@@ -129,7 +129,7 @@ local QDEF = QuestDef.Define
         txt = "Enlightened them with your ideology.",
     },
     annoyed_by_preach = {
-        delta = OPINION_DELTAS.DIMINISH,
+        delta = OPINION_DELTAS.OPINION_DOWN,
         txt = "Annoyed by your preaching.",
     },
 }
@@ -209,7 +209,7 @@ QDEF:AddConvo("go_to_junction")
                 end
                 for i, agent in ipairs(cxt.quest.param.unconvinced_people) do
                     -- cxt:Dialog("DIALOG_UNCONVINCED_PEOPLE", agent)
-                    if math.random() < 0.3 then
+                    if agent:GetRelationship() <= RELATIONSHIP.NEUTRAL and math.random() < 0.3 then
                         agent:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("annoyed_by_preach"))
                     end
                 end

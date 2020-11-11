@@ -123,12 +123,12 @@ local QDEF = QuestDef.Define
     --     txt = "Enlightened them with your ideology",
     -- },
     reach_impasse = {
-        delta = OPINION_DELTAS.DIMINISH,
+        delta = OPINION_DELTAS.OPINION_DOWN,
         txt = "Reached an impasse in a debate against them",
     },
     lost_debate = 
     {
-        delta = OPINION_DELTAS.DISLIKE,
+        delta = OPINION_DELTAS.BAD,
         txt = "Lost a debate against them",
     },
 }
@@ -445,7 +445,12 @@ QDEF:AddConvo("debate_people")
                             end
                         else
                             cxt:Dialog("DIALOG_DEBATE_LOST")
-                            cxt.quest:GetCastMember("debater"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("lost_debate"))
+                            -- Some might take it cooler than others.
+                            -- And also otherwise it will be too punishing if you fail.
+                            -- However, a disliked person CAN hate you.
+                            if math.random() < 0.5 then
+                                cxt.quest:GetCastMember("debater"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("lost_debate"))
+                            end
                             cxt:Opt("OPT_ACCEPT_FAILURE")
                                 :FailQuest()
                         end
