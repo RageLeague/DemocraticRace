@@ -1,37 +1,73 @@
-# DEMOCRATIC_RACE
+# The Democratic Race
 
-The Pioneer campaign mod for the (currently) Early Access game Griftlands, Democratic Race(working title) is a mod for Griftlands that adds a negotiation based campaign mode to the game, in contrast to the direct combat. Your goal in this campaign is to campaign and gain support among the people so you can be voted in as president. This story is heavily negotiation focused, and combat is only necessary if you failed certain negotiations.
+A pioneer campaign mod for the (currently) Early Access game Griftlands, Democratic Race(working title) is a mod for Griftlands that adds a negotiation based campaign mode to the game for ALL characters*, in contrast to the direct combat. Your goal in this campaign is to campaign and gain support among the people so you can be voted in as president. This story is heavily negotiation focused, and combat is only necessary if you failed certain negotiations.
 
-## New mechanics
+This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
-* A detailed Support mechanic. It determines many factors of the campaign, like your funding gained each day, the likelyhood someone will support you, and so on. It changes dynamically based on the change in relationship, as well as certain side quests or events. There are three support categories: General, Factional, and Wealth.
-  * General support is the basic support stat. It can be increased by completing sidequests, making people like you, and behaving in a certain way in scenarios. You need to maintain a high support level to pass hard checks.
-  * Factional support determines your support among a faction. A member liking you will increase your support among that faction, and a member disliking you will decrease your support. Running on certain campaign platforms will also influence the faction support.
-  * Wealth support is similar to factional support, but is applied to wealth levels(character renown) instead of the faction. It behaves similarly to factional support, but it also determines the funding you get. Support among high wealth level will yield you more funding than support among low wealth level.
-* A free time mechanic. During certain points of the story, you are granted free time. During this time, you can travel to known places and utilize them, as well as socializing with your supporters to gain a random gift, or a lead to new locations to repeat the process.
-* Do whatever you can to win, the end justifies the means. That means you can drink with non-supporters to make them like you, or pay random people to shill for you.
-  * Note: right now you can still provoke kill people, but it is subjected to change. Additionally, killing people won't give you support back, and you will, unsuprisingly, lose even more support among that faction.
-* New "advisor" mechanic. Each advisor provides a different style of negotiation for you to buy. For example, the Diplomacy advisor guarantees to stock up 1 common Diplomacy card and 1 uncommon or above Diplomacy card. Specialize your negotiation.
-* New side quests that you should not only complete, but complete well, as they will significantly determine your support level and your relationship among the people.
-* More negotiations, many has their own gimmick.
+\*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-## Planned Mechanics
+Version: 0.1.0(Alpha)
 
-* Once regular provoke-kills are disabled, there will be new ways to "deal" with the oppositions.
-* Random events that spawns on the road.
-* A support screen that displays information about support levels.
-* Alliance with opposition candidates. The voting system is first past the post, so of course that's going to happen.
+Author: RageLeague
 
-## Story structure(temporary)
+Special thanks to:
 
-1. Day 1: Start your campaign, select an advisor, and learn the basics of campaigning. (Done)
-2. Day 2: Continue campaign, meet the opposition, do an interview.
-3. Day 3: Continue campaign, do the first presidential debate.
-4. Day 4: Some candidates drop out, potential alliance, final stretch for support.
-5. Day 5: Votes are in, and the ending is determined.
+* JuniorElder(For helping with side quests)
+* WumpusThe19th(For helping with dialogs)
 
-## Todo
+Supported Languages: English (Right now Simplified/Traditional Chinese is not supported because this is only an Alpha, and lots are bound to change, but it probably will be supported eventually)
 
-* Finish day 2 quest.
-* Add new sidequests.
-* Finish support screen.
+## New Contents
+
+* **Brand new negotiations!** Many negotiations in this campaign are not as straightforward as reducing the opponent's core resolve to 0, and have more strategies to them. In addition, some negotiations have non-binary results. It is possible to win every negotiation but still lose the game!
+* **A detailed Support mechanic!** Gain as much support as possible, as it determines many factors in this campaign, from the funding you get each day to how likely someone will vote for you. Gain support from various means, by completing quests, befriending people, and making popular decisions.
+* **Know your voter base!** Each person in Griftlands has some allegiance with certain factions, and has different wealth levels. This determines what this person cares about politically. Do you hope to win by getting support from the Admiralty, or will you win by appealing to the lower class? Your choice.
+* **Take your stances!** Havaria has many problems, and different people have different opinions on certain subjects. Will you increase funding for the Admiralty to win them over, or support better worker rights? Be careful, if you change your stances too much, you will be seen as hypocritical!
+* **Pick your advisor!** You get to choose from 3 unique advisors, each specializes in one area of negotiation, and whose resemblence to any entity in real life, living or dead, is totally coincidental! They will help you with your campaign, but make sure to keep them happy, or they will stop supporting you!
+* **Spend your time wisely!** You will get free time during certain points in the story, during which you can do whatever you want. Will you spend those time socializing with your supporters, or will you learn the location of the market to buy good grafts?
+* **Visit an updated Pearl-on-Foam!** The new campaign takes place in the modified version of Pearl-on-Foam, which contains iconic locations throughout Havaria. Meet familiar people, and visit familiar places. Some places even have added functionalities!
+* **Outsmart your enemies!** Directly engaging in combat is bad for your reputation, and so is killing people(duh)! However, there are a new variety of ways to deal with them. Put them out of their jobs, arrest them, or hire someone to hunt them down. The choice is yours.
+* Brand new side quests, events, and more!
+
+## Alpha Notice
+
+At the current stage, the mod is far from finished. You can play 2 days out of 5 right now, and many mechanics are planned to be added. Some of these mechanics are:
+
+* Alliance with other candidates. In a First Past The Post system, it is better to ally with other candidates and get the votes you need to win.
+* More side quests and events.
+* More things to do at each locations, and more ways to "deal" with your enemies.
+
+I release this alpha to get feedbacks about this mod before the full release. Some of the valid feedbacks are:
+
+* Suggestions for future contents.
+* Bug reports.
+* Feedback on balance, communications of mechanics, etc.
+* Dialog suggestions.
+
+Of course, other forms of feedbacks are welcome.
+
+You can leave feedbacks either on the Steam workshop page, Klei's forum(DM or post on a certain forum topic in the Mods discussion), or on GitHub(https://github.com/RageLeague/DemocraticRace).
+
+## How to install?
+
+### Directly fron GitHub
+
+With the official mod update, you can read about how to set up mods at https://forums.kleientertainment.com/forums/topic/116914-early-mod-support/.
+
+1. Find `[user]/AppData/Roaming/Klei/Griftlands/` folder on your computer, or `[user]/AppData/Roaming/Klei/Griftlands_testing/` if you're on experimental. Find the folder with all the autogenerated files, log.txt, and `saves` directory. If you are on Steam, open the folder that starts with `steam-`. If you are on Epic, open the folder that contains only hexadecimal code.
+2. Create a new folder called `mods` if you haven't already.
+3. Clone this repository into that folder.
+4. The `modinit.lua` file should be under `.../mods/[insert_repo_name_here]`.
+5. Volia! Now the mod should work.
+
+Note: The GitHub version will be constantly updated to keep up with new changes. As such, it will be less stable, but will have the latest content. You can also submit pull requests if you want, if you know coding and knows how to fix certain issues or write dialogs.
+
+### Steam workshop
+
+With the new official workshop support, you can directly install mods from steam workshop. You can read about it at https://forums.kleientertainment.com/forums/topic/121426-steam-workshop-beta/ and https://forums.kleientertainment.com/forums/topic/121488-example-mods/.
+
+1. Subscribe this item.
+2. Enable it in-game.
+3. Volia!
+
+Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues. As such, it will be more stable.
