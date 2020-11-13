@@ -6,7 +6,7 @@ local QDEF = QuestDef.Define{
     focus = QUEST_FOCUS.NEGOTIATION,
     tags = {"RALLY_JOB"},
     on_start = function(quest)
-    quest:Activate("dole_out_three")
+        quest:Activate("dole_out_three")
     end,
 }
 
