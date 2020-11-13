@@ -54,6 +54,13 @@ local UNLOCK_LOCATIONS = {
         "GRAND_THEATER", --
     }
 }
+local DEFAULT_ICON_FALLBACKS = {
+    [UNLOCK_TYPE.BAR] = "UI/location_grogndog.tex",
+    [UNLOCK_TYPE.OFFICE] = "UI/location_feuddomicilenice.tex",
+    [UNLOCK_TYPE.SHOP] = "UI/location_newdeltreeoutfitters.tex",
+    [UNLOCK_TYPE.WORK] = "UI/location_lumindocks.tex",
+    [UNLOCK_TYPE.ENTERTAINMENT] = "UI/location_murderbaycity.tex",
+}
 local FANCY_LOCATIONS = {
     "MOREEF_BAR", --
     "PEARL_FANCY_EATS",
@@ -73,6 +80,18 @@ local RELATIONSHIP_SCORES = {
     [RELATIONSHIP.LIKED] = 2,
     [RELATIONSHIP.LOVED] = 3,
 }
+local locicon = Location.GetIcon
+function Location:GetIcon()
+    if not self.location_data.icon then
+        for id, data in pairs(UNLOCK_LOCATIONS) do
+            if table.arraycontains(data, self:GetContentID()) then
+                return engine.asset.Texture(DEFAULT_ICON_FALLBACKS[id])
+            end
+        end
+        engine.asset.Texture("UI/location_surprise.tex")
+    end
+    return locicon(self)
+end
 local function GetLocationUnlockScore(location, agent, location_type)
     if type(location) == "string" then
         location = TheGame:GetGameState():GetLocation(location)

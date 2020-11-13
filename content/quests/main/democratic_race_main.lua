@@ -234,7 +234,10 @@ local QDEF = QuestDef.Define
 
         local quest_scores = {}
         for k,v in ipairs(attempt_quest_ids) do
-            quest_scores[v] = QuestUtil.CalcQuestSpawnScore(event_id, math.floor(#attempt_quest_ids/2), v)    
+            quest_scores[v] = QuestUtil.CalcQuestSpawnScore(event_id, math.floor(#attempt_quest_ids/2), v) + math.random(1,5)
+            if TheGame:GetGameState():GetQuestActivatedCount(v) > 0 then
+                quest_scores[v] = quest_scores[v] - 7
+            end
         end
         table.shuffle(attempt_quest_ids) --to mix up the case where there are a lot of ties
         table.stable_sort(attempt_quest_ids, function(a,b) return quest_scores[a] < quest_scores[b] end)
