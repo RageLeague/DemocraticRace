@@ -688,6 +688,20 @@ function DemocracyUtil.PresentJobChoice(cxt, quest_options, additional_opt, on_p
     end
 end
 
+function DemocracyUtil.PopulateTheater(quest, location, num_patrons, cast_id)
+    num_patrons = num_patrons or 8
+    cast_id = cast_id or "audience"
+
+    LocationUtil.SendPatronsAway( location )
+    for i = 1, num_patrons do
+        if quest:GetCastMember(cast_id) then
+            quest:UnassignCastMember(cast_id)
+        end
+        quest:AssignCastMember(cast_id)
+        quest:GetCastMember(cast_id):GetBrain():SendToPatronize(location)
+    end
+end
+
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator
 

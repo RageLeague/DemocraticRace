@@ -54,7 +54,7 @@ QDEF:AddConvo()
                 admiralty:
                     You keep bringing that up whenever we do this song and dance. It's gotten old.
                     Spill the shills or I spill your guts.
-
+                * Oh look, a conflict! Will you intervene?
             ]],
             
             OPT_EXTORT = "Convince {laborer} to give money to {admiralty}",

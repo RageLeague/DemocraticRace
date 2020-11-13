@@ -511,6 +511,11 @@ QDEF:AddConvo("commission")
                 agent:
                     Okay.
                     If you can {demand_list#demand_list}, I will make a poster for you.
+                {is_artist?
+                    *** This person is a good artist. You can hire {agent.himher}, but it will cost a lot.
+                    |
+                    *** This person is not a good artist, but you can still hire {agent.himher} at a reduced rate.
+                }
             }
             {asked?
                 agent:
@@ -525,6 +530,7 @@ QDEF:AddConvo("commission")
                 No.
             player:
                 Understandable, have a nice day.
+            *** This person is not an artist.
         ]],
         DIALOG_PAYED_COMMISSION = [[
             agent:
@@ -646,6 +652,8 @@ QDEF:AddConvo("commission")
                     You might be tempted to write a lot, but people will be too intimidated by your wall of text.
                     But writing too few will not tell the readers what you think, and they will be less interested in you.
                     Best to keep it short, but to the point.
+                *** Basically you're doing a special negotiation that records the cards you play.
+                *** When convincing someone with a poster, you will have no control over the cards you've already played.
             ]],
 
             OPT_START = "Start writing",
@@ -689,6 +697,7 @@ QDEF:AddConvo("commission")
                 player:
                     !thought
                     Hmm...
+                *** You played too few cards, so some garbage are added automatically.
             ]],
 
             DIALOG_FINISH_PST = [[

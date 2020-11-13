@@ -407,7 +407,12 @@ QDEF:AddConvo("debate_people")
                                 cxt:Dialog("DIALOG_DEBATE_IMPASSE_BRIBED")
                             else
                                 cxt:Dialog("DIALOG_DEBATE_IMPASSE")
-                                cxt.quest:GetCastMember("debater"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("reach_impasse"))
+                                -- Some might take it cooler than others.
+                                -- And also otherwise it will be too punishing if you reach an impasse.
+                                -- However, a disliked person CAN hate you.
+                                if math.random() < 0.5 then
+                                    cxt.quest:GetCastMember("debater"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("reach_impasse"))
+                                end
                                 -- ConvoUtil.DoResolveDelta(cxt, -5)
                             end
                         else
@@ -445,12 +450,9 @@ QDEF:AddConvo("debate_people")
                             end
                         else
                             cxt:Dialog("DIALOG_DEBATE_LOST")
-                            -- Some might take it cooler than others.
-                            -- And also otherwise it will be too punishing if you fail.
-                            -- However, a disliked person CAN hate you.
-                            if math.random() < 0.5 then
-                                cxt.quest:GetCastMember("debater"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("lost_debate"))
-                            end
+                            -- if math.random() < 0.5 then
+                            cxt.quest:GetCastMember("debater"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("lost_debate"))
+                            -- end
                             cxt:Opt("OPT_ACCEPT_FAILURE")
                                 :FailQuest()
                         end

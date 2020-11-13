@@ -36,8 +36,9 @@ local convo = QDEF:AddConvo()
                 agent:
                     !right
                     !interest
-                    [p] You're a politicians, right? what do you think of the rise?
-
+                    You're a politicians, right?
+                    Running for the upcoming election, maybe?
+                    What do you think of the rise?
             ]],
 
 

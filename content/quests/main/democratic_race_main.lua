@@ -541,7 +541,15 @@ local QDEF = QuestDef.Define
     when = QWHEN.MANUAL,
     score_fn = DemocracyUtil.OppositionScore,
     condition = function(agent, quest)
+        if agent:GetRelationship() == RELATIONSHIP.DISLIKED then
+            return math.random() < 0.1 -- sometimes we allow disliked people to hate you.
+        end
         return agent:GetRelationship() < RELATIONSHIP.LOVED and agent:GetRelationship() > RELATIONSHIP.DISLIKED
+    end,
+}
+:AddCastFallback{
+    cast_fn = function(quest, t)
+        table.insert( t, quest:CreateSkinnedAgent() )
     end,
 }
 :AddCast{
