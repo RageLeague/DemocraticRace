@@ -81,21 +81,12 @@ local QDEF = QuestDef.Define
     },
     gave_big =  
     {
-        delta = 
-        {
-            relationship_delta = 
-            {
-                [RELATIONSHIP.LIKED] = RELATIONSHIP.LOVED,
-                [RELATIONSHIP.NEUTRAL] = RELATIONSHIP.LOVED,
-                [RELATIONSHIP.DISLIKED] = RELATIONSHIP.NEUTRAL,
-                [RELATIONSHIP.HATED] = RELATIONSHIP.NEUTRAL,
-            },
-        },
+        delta = OPINION_DELTAS.MAJOR_GOOD,
         txt = "Gave a lot of money when they asked for help",
     },
     gave_nothing =  
     {
-        delta = OPINION_DELTAS.DISLIKE,
+        delta = OPINION_DELTAS.TO_DISLIKED,
         txt = "Gave nothing when they asked for help",
     },
 }
@@ -146,22 +137,23 @@ QDEF:AddConvo()
             OPT_OFFER_HELP = "Offer to deal with the foreman",
             DIALOG_OFFER_HELP = [[
                 player:
-                    [p] as a politician, i can't just stand by and see the people suffer.
-                    i'll help you.
+                    [p] As a politician, I can't just stand by and see the people suffer.
+                    I'll help you.
                 agent:
-                    really?
-                    if you can help me, i owe you big time.
+                    Really?
+                    If you can help me, I owe you big time.
                 player:
-                    what can i do to help?
+                    !thought
+                    So what can I do to help?
                 agent:
-                    make sure {foreman} treat the workers right.
-                    or punish {foreman.himher} for {foreman.hisher} wrongdoing, whichever is easier for you.
-                    but please, try not to kill {foreman}. it will cause way too much trouble.
+                    Make sure {foreman} treat the workers right.
+                    Or punish {foreman.himher} for {foreman.hisher} wrongdoing, whichever is easier for you.
+                    But please, try not to kill {foreman}. People might think I'm the killer, considering I have a motive.
                 player:
-                    ok, i'll see what i can do.
+                    Okay, I'll see what I can do.
                 agent:
-                    still, that doesn't solve the immediate problem.
-                    i need money, right now.
+                    Still, that doesn't solve the immediate problem.
+                    I need money, right now.
             ]],
 
             OPT_GIVE_A_LITTLE = "Give {agent} some spare change",
@@ -176,11 +168,14 @@ QDEF:AddConvo()
             OPT_GIVE_A_LOT = "Give {agent} a lot",
             DIALOG_GIVE_A_LOT = [[
                 player:
-                    [p] a shame what happened to you.
-                    as a politician, i vow to make sure no one has to starve just because their boss fired them.
-                    here, eat well.
+                    It is a shame what happened to you.
+                    !thumb
+                    As a politician, I vow to make sure no one has to starve for something that is not their fault.
+                    !give
+                    Here, eat well.
                 agent:
                     $happyAmazed
+                    !take
                     Wow, really? You're alright, you know that?
                     If you ever need anything, just ask!
             ]],

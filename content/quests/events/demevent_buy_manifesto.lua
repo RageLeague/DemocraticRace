@@ -127,7 +127,7 @@ local convo = QDEF:AddConvo()
             OPT_SHOW_CARD = "Show that you already have a {1#card}",
             DIALOG_SHOW_CARD = [[
                 player:
-                    [p] It's okay, friend, i already have one.
+                    It's okay, friend, i already have one.
                 agent:
                 {support?
                     Wow. you must be really supportive of the cause.
@@ -151,16 +151,20 @@ local convo = QDEF:AddConvo()
                         !agree
                         Very well. Let's see this literature.
                     agent:
+                        !permit
                         Hopefully this answers any questions you might have.
                         !exit
                 }
                 {doubt?
                     player:
-                        [p] I have doubts, but let's see this literature.
-                        Hopefully i can learn about your goals better.
+                        !permit
+                        I might have doubts, but let's see this literature.
+                        Hopefully I can learn about your goals better.
                     agent:
+                        !dubious
                         I don't know if that's a good thing or not.
-                        But anyway, thanks.
+                        !take
+                        But anyway, that works for me.
                         !exit
                 }
                 * {agent} continues down the road, leaving you to your reading.
