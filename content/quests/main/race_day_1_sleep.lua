@@ -6,9 +6,9 @@ local SURVIVAL_TURNS = 12
 
 local QDEF = QuestDef.Define
 {
-    -- title = "Final Steps",
-    -- desc = "Review the progress you've made today with {primary_advisor}, and go to sleep.",
-    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/summary.png"),
+    title = "Final Steps",
+    desc = "Review the progress you've made today with {primary_advisor}, and go to sleep.",
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/summary.png"),
 
     qtype = QTYPE.STORY,
 }
@@ -50,7 +50,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "go_to_sleep",
     title = "Go to sleep",
-    desc = "Aren't you tired? Go to sleep.",
+    desc = "When you've done all you need to do, it's time to go to sleep.",
     mark = {"primary_advisor"},
     state = QSTATUS.ACTIVE,
 }

@@ -263,7 +263,7 @@ QDEF:AddConvo("tell_news", "worker")
                 {probed_info and rush_quota?
                     player:
                         Turns out {foreman.heshe}'s just trying to meet the quota because the higher ups demands it.
-                        I compensated {forman.himher} so that {foreman.heshe} doesn't need to push all the stress onto the workers.
+                        I compensated {foreman.himher} so that {foreman.heshe} doesn't need to push all the stress onto the workers.
                     agent:
                         I see that {foreman} is merely another victim of this corrupt system.
                         Thanks for helping us out, {player}. I'm truly grateful.

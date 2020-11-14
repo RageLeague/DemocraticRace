@@ -137,12 +137,12 @@ local MODIFIERS =
             BONUS_BRIBED = "<#BONUS><b>{1.name} is bribed.</> {2} max resolve.</>",
         },
         delta_max_resolve = {
-            [RELATIONSHIP.LOVED] = -12,
-            [RELATIONSHIP.LIKED] = -6,
-            [RELATIONSHIP.DISLIKED] = 6,
-            [RELATIONSHIP.HATED] = 12,
+            [RELATIONSHIP.LOVED] = -10,
+            [RELATIONSHIP.LIKED] = -5,
+            [RELATIONSHIP.DISLIKED] = 5,
+            [RELATIONSHIP.HATED] = 10,
         },
-        bribe_delta = -6,
+        bribe_delta = -5,
         key_maps = {
             [RELATIONSHIP.LOVED] = "BONUS_LOVED",
             [RELATIONSHIP.LIKED] = "BONUS_LIKED",
@@ -184,14 +184,14 @@ local MODIFIERS =
         SetAgent = function (self, agent)
             local difficulty = self.engine and self.engine:GetDifficulty() or 1
             self.target_agent = agent
-            self.max_resolve = difficulty * 7 + 8
+            self.max_resolve = difficulty * 6 + 6
             if agent:HasAspect("bribed") then
                 self.max_resolve = self.max_resolve + self.bribe_delta
             end
             self.max_resolve = math.max(1, self.max_resolve + (self.delta_max_resolve[agent:GetRelationship()] or 0))
           --  self.min_persuasion = 2 + agent:GetRenown()
             --self.max_persuasion = self.min_persuasion + 4
-            self:SetResolve(self.max_resolve)
+            self:SetResolve(math.max(self.max_resolve, 1))
             
             self.min_persuasion = math.floor(difficulty/3)
             self.max_persuasion = 1 + (difficulty % 3)

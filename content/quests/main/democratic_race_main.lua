@@ -140,6 +140,11 @@ local QDEF = QuestDef.Define
         QuestUtil.SpawnQuest("CAMPAIGN_RANDOM_COIN_FIND")
 
         QuestUtil.SpawnQuest("SAL_STORY_MERCHANTS")
+        -- populate all locations.
+        -- otherwise there's a lot of bartenders attending the first change my mind quest for some dumb reason.
+        for i, location in TheGame:GetGameState():AllLocations() do
+            LocationUtil.PopulateLocation( location )
+        end
         QuestUtil.DoNextDay(DAY_SCHEDULE, quest, quest.param.start_on_day )
         
         DoAutoSave()
