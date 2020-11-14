@@ -575,6 +575,7 @@ QDEF:AddConvo("debate_people")
                             :Dialog("DIALOG_RESIST_ARREST")
                             :Battle{
                                 on_win = function(cxt)
+                                    cxt.player:Remember("ASSAULTED_ADMIRALTY", cxt:GetAgent())
                                     cxt:Dialog("DIALOG_RESIST_ARREST_SUCCESS")
                                     cxt.quest.param.poor_performance = true
                                     cxt.quest:Complete()
@@ -582,6 +583,7 @@ QDEF:AddConvo("debate_people")
                                     StateGraphUtil.AddLeaveLocation(cxt)
                                 end,
                                 on_runaway = function(cxt, battle)
+                                    cxt.player:Remember("ASSAULTED_ADMIRALTY", cxt:GetAgent())
                                     cxt:Dialog("DIALOG_RESIST_ARREST_RUNAWAY")
                                     cxt.quest.param.poor_performance = true
                                     cxt.quest:Complete()

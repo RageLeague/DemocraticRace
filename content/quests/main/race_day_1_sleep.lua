@@ -11,6 +11,20 @@ local QDEF = QuestDef.Define
     icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/summary.png"),
 
     qtype = QTYPE.STORY,
+
+    events = {
+        resolve_negotiation = function( quest, minigame, repercussions )
+            if repercussions and CheckBits( minigame:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH ) then
+                -- DBG(repercussions)
+                repercussions.loot.is_boss_fight = true
+            end
+        end,
+        do_sleep = function( quest, player, sleep_data )
+            if quest.param.dead_body then
+                sleep_data.resolve_gain = math.round(sleep_data.resolve_gain * 0.5)
+            end
+        end,
+    }
 }
 :AddCast{
     cast_id = "primary_advisor",
@@ -144,14 +158,39 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
     :State("STATE_ASSASSINATION")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] you're about to go to sleep and you found an assassin.
+                * You are about to go to sleep when you sense something is wrong.
                 player:
                     !left
+                * Your grifter instinct tells you that someone is hiding in this room, probably wants to assassinate you.
+                player:
+                    !angry_accuse
+                    Who's there?
                 agent:
                     !right
-                    'sup, dog?
+                    !surprised
+                    How did you see me? I was so well hidden.
                 player:
-                    ah hesh.
+                    I didn't. But thanks for letting me know you're here.
+                agent:
+                    Oh.
+                    !fight
+                    Well, no matter. Time to die.
+                player:
+                    !fight
+                    Here I thought there wouldn't be any boss fights today.
+                * Just as you prepare your weapon, something just occured to you.
+                player:
+                    !scared
+                * You have fought very few, if any, battle since you decide to run for president.
+                * Your skills are getting rusty. There is no way you would win a straight fight against a day 2 boss on Sal's campaign.
+                * Looks like you have to find another way.
+                player:
+                    !point
+                    Look behind you!
+                agent:
+                    !cagey
+                    Wait, what?
+                * You need to call for help and distract {agent} until help arrives!
             ]],
             OPT_DISTRACT = "Distract {agent}",
             TT_DISTRACT = "Distract {agent} until you can call for help.\n"..
@@ -162,60 +201,188 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
             GOAL_AWAIT_RESCUE = "(3/3) Await rescue (In {1} {1*turn|turns})",
 
             DIALOG_HELP_ARRIVE = [[
-                * [p] the help arrives.
+                agent:
+                    !dubious
+                    You know you're just delaying the inevitable, right?
+                    !throatcut
+                    Time for you to go to sleep, forever!
+                player:
+                    !hips
+                    $happyCocky
+                    On the contrary, I think it's time for you to surrender.
+                agent:
+                    Oh yeah? Why should I?
+                player:
+                    Because, you see.
+                    You're under arrest.
+                * As if on cue, the Admiralty responder enters your room.
                 responder:
                     !left
-                    what's going on?
+                    !fight
+                    What's going on?
                 agent:
+                    !surprised
+                    Oh, Hesh.
+                    !reach_weapon
+                    Time to bounce!
                     !exit
-                * seeing the admiralty, {agent} fled the scene.
+                * {agent} fled the scene. How typical.
+                * {agent.HeShe} dropped something while scrambling to get away.
                 responder:
-                    oh no you dont!
+                    !fight
+                    Oh no you don't!
                     !exit
-                * {responder} runs after {agent}
+                * {responder} runs after {agent}.
+                * Finally, after a long day, you're all by yourself, safe from assassinations.
+                * Except this cool graft that {agent} dropped!
+                player:
+                    !left
+                    Sweet!
             ]],
+            DIALOG_HELP_ARRIVE_FIGHT = [[
+                player:
+                    !fight
+                agent:
+                    !fight
+                    You are quite resilient, for a politician with little combat experience.
+                    Frankly, I don't think that's gonna save you.
+                player:
+                    !hips
+                    $happyCocky
+                    Jokes on you, that's enough for me to survive and you to be arrested.
+                * As if on cue, the Admiralty responder enters your room.
+                responder:
+                    !left
+                    !fight
+                    What's going on?
+                agent:
+                    !surprised
+                    Oh, Hesh.
+                    !reach_weapon
+                    Time to bounce!
+                    !exit
+                * {agent} fled the scene. How typical.
+                * {agent.HeShe} dropped something while scrambling to get away.
+                responder:
+                    !fight
+                    Oh no you don't!
+                    !exit
+                * {responder} runs after {agent}.
+                * Finally, after a long day, you're all by yourself, safe from assassinations.
+                * Except this cool graft that {agent} dropped!
+                player:
+                    !left
+                    Sweet!
+            ]],
+
             DIALOG_FIGHT_PHRASE = [[
                 agent:
-                    [p] that's enough. i'm tired with you
-                    let's finish this
+                    That's enough. I'm tired with you.
+                    !throatcut
+                    Time for you to go to sleep, forever!
+                player:
+                    !fight
                 {help_called?
-                    * you hope that you will survive long enough for help to arrive
+                    * You hope that you will survive long enough for help to arrive.
                 }
                 {not help_called?
-                    * you didn't have time to call for help! oh no!
+                    * You didn't have time to call for help! Guess you have to settle things the old fashioned way.
                 }
             ]],
 
             DIALOG_PST_FIGHT_SURRENDER = [[
                 agent:
+                    !injured
+                player:
+                    !fight
+                    Had enough?
+                agent:
+                    Okay, I have to admit. I severely underestimated you.
+                    You somehow can pull it off, despite being significantly underprepared.
+                player:
+                    So you know that I'm running for president.
+                    Tell me, who sent you.
+                agent:
+                    I'll tell you, if you can catch me!
                     !exit
-                * [p] {agent} ran away before you can finish {agent.himher} off.
+                * {agent} ran away. Now why didn't you secure {agent.himher} so that this doesn't happen?
                 player:
                     !left
-                    hesh damn it!
+                    Hesh damn it!
                 {help_called?
-                    * it is not long before the responders arrive.
+                    * It is not long before the responders arrive.
                     responder:
                         !right
-                        what's going on?
+                        What's going on?
                     player:
-                        an assassin tried to kill me, but {agent.heshe} got away.
+                        An assassin tried to kill me, but {agent.heshe} got away.
                     responder:
-                        understandable, have a nice day.
+                        !facepalm
+                        I hate it when that happens.
+                        Of course someone will try to assassinate a candidate.
+                        Why would my job be any easier?
+                    player:
+                        Uh... Aren't you going to chase after {agent.himher}?
+                    responder:
+                        Oh, yes. Of course.
+                        !exit
                 }
-            ]],
-            DIALOG_PST_FIGHT_DEAD = [[
-                * [p] {agent} lies dead.
-                * {responder} arrive, seeing a dead body.
+                * Finally, after a long day, you're all by yourself, safe from assassinations.
+                * Except this cool graft that {agent} dropped!
                 player:
                     !left
-                responder:
-                    !right
-                    what's going on?
-                player:
-                    self defense
-                responder:
-                    understandable, have a nice day.
+                    Sweet!
+            ]],
+            DIALOG_PST_FIGHT_DEAD = [[
+                * {agent} lies dead.
+                {help_called?
+                    * {responder} arrives a few minutes layer, and sees a dead body.
+                    player:
+                        !left
+                    responder:
+                        !right
+                        What happened here?
+                        !angry
+                        What did you do?
+                    * I have to say, the way the scene is set up, it does look like you killed {agent}.
+                        {not responder_liked?
+                            player:
+                                This person tries to assassinate me, so I took {agent.himher} out.
+                            responder:
+                                What are you doing late at night in an office?
+                                And it isn't even your office! It belongs to {primary_advisor}!
+                                I'm taking you to the station for questioning.
+                        }
+                        {responder_liked?
+                            player:
+                                This person tries to assassinate me, so I took {agent.himher} out.
+                                It's self defense.
+                            responder:
+                                !thought
+                                Now normally I won't believe in you, considering this scene looks very incriminating.
+                                !permit
+                                But you look like a trustable character, and this guy here... doesn't.
+                                So I'm just going to take your word for it.
+                            player:
+                                !surprised
+                                Really?
+                            responder:
+                                Don't be so surprised.
+                                I'm getting rid of this body.
+                            player:
+                                !point
+                                Wait, before you go, can I have that graft?
+                            responder:
+                                !shrug
+                                I mean, sure?
+                                Anyway, see you later!
+                                !exit
+                        }
+                }
+                {not help_called?
+                    * There is no one nearby. Now you're stuck with a dead body for the rest of the night.
+                    * Hey, at least you got a graft from {agent}'s dead body, so that counts for something.
+                }
             ]],
             OPT_DEFEND_SELF = "Defend yourself!"
         }
@@ -268,7 +435,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     end,
                     on_fail = function(cxt, minigame)
                         local help_inst = minigame.player_negotiator:FindModifier("HELP_UNDERWAY")
-                        cxt.quest.param.help_called = help_inst
+                        cxt.quest.param.help_called = help_inst and true
                         if help_inst then
                             cxt.quest.param.help_arrive_time = help_inst.stacks
                         else
@@ -288,11 +455,19 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                                 cxt.quest.param.help_arrive_time = survival_turns and (survival_turns - minigame.turns + 1 ) or 99
                                 cxt.quest.param.help_arrived = cxt.quest.param.help_arrive_time <= 0
                                 cxt.quest.param.assassin_dead = cxt:GetAgent():IsDead()
-
+                                cxt.quest.param.responder_liked = cxt:GetCastMember("responder"):GetRelationship() > RELATIONSHIP.NEUTRAL
                                 if cxt.quest.param.assassin_dead then
                                     cxt:Dialog("DIALOG_PST_FIGHT_DEAD")
+                                    if cxt.quest.param.help_called then
+                                        if not cxt.quest.param.responder_liked then
+                                            cxt:GoTo("STATE_ARREST")
+                                            return
+                                        end
+                                    else
+                                        cxt.quest.param.dead_body = true
+                                    end
                                 elseif cxt.quest.param.help_arrived then
-                                    cxt:Dialog("DIALOG_HELP_ARRIVE")
+                                    cxt:Dialog("DIALOG_HELP_ARRIVE_FIGHT")
                                 else
                                     cxt:Dialog("DIALOG_PST_FIGHT_SURRENDER")
                                 end
@@ -300,6 +475,10 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                                     cxt.quest:GetCastMember("assassin"):MoveToLimbo()
                                 end
                                 cxt.quest:GetCastMember("responder"):MoveToLimbo()
+                                if cxt.quest.param.help_called then
+                                    cxt.player:Remember("SAVED_BY_ADMIRALTY", cxt.quest:GetCastMember("responder"))
+                                end
+                                ConvoUtil.GiveBossRewards(cxt)
                                 cxt:GoTo("STATE_RESUME_SLEEP")
                             end,
                         }
@@ -311,6 +490,113 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                             :Battle(battle_def)
                     end,
                 }
+        end)
+    :State("STATE_ARREST")
+        :Loc{
+            OPT_EXPLAIN = "Explain the situation",
+            DIALOG_EXPLAIN = [[
+                player:
+                    I swear, it isn't what it looks like.
+                agent:
+                    That's what they all say.
+                    !clap
+                    Go on. Let's here it! What makes you innocent?
+            ]],
+            DIALOG_EXPLAIN_SUCCESS = [[
+                player:
+                    I'm new to this town, see?
+                    {primary_advisor} agreed to let me stay here for the night.
+                    You can immediately check with {primary_advisor} to see if I'm telling the truth.
+                agent:
+                    Okay, then.
+                * {agent} calls {primary_advisor}.
+                agent:
+                    This is {agent} of the Admiralty.
+                    I have a suspicious individual here. {player.HeShe} claims that you allowed {player.himher} to stay in your office for the night.
+                    Is that true?
+                    ...
+                    Is that so?
+                    Well then.
+                    Sorry to bother you.
+                * {agent} hangs up.
+                agent:
+                    In that case, I guess you're telling the truth.
+                    I'm disposing this body. Have a good night.
+                    !exit
+                * Phew! That could've been way worse.
+            ]],
+            DIALOG_EXPLAIN_FAILURE = [[
+                * The more you try to explain yourself, the more you seem guilty.
+                * It's almost as if your tongue is tied.
+                agent:
+                    That's it, I've heard enough.
+                    You can talk more when you're in the station.
+            ]],
+            OPT_RESIST_ARREST = "Resist arrest",
+            DIALOG_RESIST_ARREST = [[
+                player:
+                    !fight
+                    You're not taking me in alive!
+            ]],
+            DIALOG_RESIST_ARREST_WIN = [[
+                {dead?
+                    * Another body added to the collection.
+                    * You're having a corpse party tonight!
+                }
+                {not dead?
+                agent:
+                    !injured
+                player:
+                    !angry
+                    I'm not coming.
+                    Final offer.
+                agent:
+                    You have plenty of energy left for someone who fought of a supposed assassin.
+                    Fine. I'll leave.
+                    Just you know, assaulting an officer on duty is a crime.
+                player:
+                    Don't know, don't care.
+                agent:
+                    !exit
+                }
+                * This aggression will surely not go unnoticed.
+            ]],
+            OPT_ACCEPT_ARREST = "Accept arrest",
+            DIALOG_ACCEPT_ARREST = [[
+                player:
+                    Fine, I'm coming.
+                    It's going to be clear that I'm innocent, anyway.
+                agent:
+                    Yeah, sure.
+            ]],
+        }
+        :RunLoopingFn(function(cxt)
+            if cxt:FirstLoop() then
+                cxt:TalkTo(cxt:GetCastMember("responder"))
+                cxt.player:Remember("ACCUSED_BY_ADMIRALTY", cxt.quest:GetCastMember("responder"))
+            end
+
+            cxt:BasicNegotiation("EXPLAIN")
+                :OnSuccess()
+                :Fn(function(cxt)
+                    cxt.quest:GetCastMember("responder"):MoveToLimbo()
+                    ConvoUtil.GiveBossRewards(cxt)
+                end)
+                :GoTo("STATE_RESUME_SLEEP")
+            
+            cxt:Opt("OPT_RESIST_ARREST")
+                :Dialog("DIALOG_RESIST_ARREST")
+                :Battle{}
+                :OnWin()
+                    :Dialog("DIALOG_RESIST_ARREST_WIN")
+                    :Fn(function(cxt)
+                        cxt.quest.param.dead_body = true
+                        cxt.player:Remember("ASSAULTED_ADMIRALTY", cxt.quest:GetCastMember("responder"))
+                        ConvoUtil.GiveBossRewards(cxt)
+                    end)
+                    :GoTo("STATE_RESUME_SLEEP")
+            cxt:Opt("OPT_ACCEPT_ARREST")
+                :Dialog("DIALOG_ACCEPT_ARREST")
         end)
     :State("STATE_RESUME_SLEEP")
         :Loc{
@@ -324,10 +610,16 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
             ]],
         }
         :Fn(function(cxt)
+            if cxt.quest.param.dead_body then
+                cxt.location:Remember("HAS_DEAD_BODY",
+                    {cxt:GetCastMember("assassin"):IsDead() and cxt:GetCastMember("assassin") or nil, 
+                    cxt:GetCastMember("responder"):IsDead() and cxt:GetCastMember("responder") or nil})
+            end
+
             cxt:Dialog("DIALOG_SLEEP_INTRO")
             cxt:Opt("OPT_SLEEP")
                 :PreIcon(global_images.sleep)
-                :Fn(function(cxt) 
+                :Fn(function(cxt)
                     -- local grog = cxt.location
                     -- cxt.encounter:DoLocationTransition( cxt.quest:GetCastMember("player_room") )
                     -- grog:SetPlax()

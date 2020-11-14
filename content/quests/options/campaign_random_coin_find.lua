@@ -93,7 +93,7 @@ QDEF:AddConvo()
                 return CARD_RARITY_ORDINALS[a:GetRarity()] > CARD_RARITY_ORDINALS[b:GetRarity()]
             end)
             cxt:Dialog("DIALOG_INTRO", #cxt.quest.param.candidate_coins)
-            DBG(cxt.quest.param.candidate_coins)
+            -- DBG(cxt.quest.param.candidate_coins)
             for i = 1, math.min(#cxt.quest.param.candidate_coins, 5) do
                 local coin = cxt.quest.param.candidate_coins[i]
                 cxt:Opt("OPT_REPLACE", current_coin, coin)

@@ -57,11 +57,11 @@ local MAX_DAYS = #DAY_SCHEDULE-- 5
 -- Determines the support level change when an agent's relationship changes.
 -- The general support changes by this amount, while the faction and wealth support changes by double this amount.
 local DELTA_SUPPORT = {
-    [RELATIONSHIP.LOVED] = 8,
+    [RELATIONSHIP.LOVED] = 6,
     [RELATIONSHIP.LIKED] = 3,
     [RELATIONSHIP.NEUTRAL] = 0,
     [RELATIONSHIP.DISLIKED] = -3,
-    [RELATIONSHIP.HATED] = -8,
+    [RELATIONSHIP.HATED] = -6,
 }
 -- Determines the support level change when an agent is killed.
 local DEATH_DELTA = -10
@@ -178,6 +178,7 @@ local QDEF = QuestDef.Define
             -- end
         end,
         agent_relationship_changed = function( quest, agent, old_rel, new_rel )
+
             local support_delta = DELTA_SUPPORT[new_rel] - DELTA_SUPPORT[old_rel]
             if support_delta ~= 0 then
                 quest:DefFn("DeltaAgentSupport", support_delta, agent, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
@@ -186,6 +187,11 @@ local QDEF = QuestDef.Define
             --     TheGame:GetGameState():GetCaravan():DeltaMaxResolve(1)
             -- end
         end,
+        card_added = function( quest, card )
+            if card.murder_card then
+                quest:DefFn("DeltaGeneralSupport", DEATH_DELTA, "MURDER")
+            end
+        end,
         resolve_battle = function( quest, battle, primary_enemy, repercussions )
             for i, fighter in battle:AllFighters() do
                 local agent = fighter.agent
@@ -193,7 +199,8 @@ local QDEF = QuestDef.Define
                     if CheckBits( battle:GetScenario():GetFlags(), BATTLE_FLAGS.ISOLATED ) then
                         quest:DefFn("DeltaAgentSupport", ISOLATED_DEATH_DELTA, agent, "SUSPICION")
                     elseif fighter:GetKiller() and fighter:GetKiller():IsPlayer() then
-                        quest:DefFn("DeltaAgentSupport", DEATH_DELTA, agent, "MURDER")
+                        -- killing already comes with a heavy drawback of someone hating you, thus reducing support significantly.
+                        -- quest:DefFn("DeltaAgentSupport", DEATH_DELTA, agent, "MURDER")
                     else
                         if fighter:GetTeamID() == TEAM.BLUE then
                             quest:DefFn("DeltaAgentSupport", ACCOMPLICE_KILLING_DELTA, agent, "NEGLIGENCE")
