@@ -13,6 +13,88 @@ local HECKLER_ID = {
 }
 local insult_card = "insult"
 
+local BONUSES = {
+    function(cxt, idx)
+        return cxt:Opt( "OFFER_BATTLE_UPGRADE" ):PreIcon( global_images.upgradecombat )
+            -- :Quip( cxt:GetAgent(), "chum_bonus", "battle" )
+            :Fn( function( cxt )
+                cxt:Wait()
+
+                AgentUtil.UpgradeBattleCard( function( card )
+                    cxt.enc:ResumeEncounter( card )
+                end )
+                
+                local card = cxt.enc:YieldEncounter()
+                if card then
+                    -- cxt:Pop()
+                    cxt.enc.scratch.chum_got[idx] = true
+                end
+            end )
+    end,
+    function(cxt, idx)
+        return cxt:Opt( "OFFER_COMPRESSION_GEAR" )
+            :PreIcon( global_images.health )
+            :PostText( "OFFER_UPGRADE_HEALTH", 8 )
+            :PostText( "OFFER_UPGRADE_RESOLVE", 2 )
+            -- :Quip( cxt:GetAgent(), "chum_bonus", "compression_gear" )
+            :Fn( function( cxt )
+                cxt.caravan:UpgradeHealth( 8 )
+                cxt.caravan:UpgradeResolve( 2 )
+                cxt.enc.scratch.chum_got[idx] = true
+            end )
+    end,
+    function(cxt, idx)
+        return cxt:Opt( "OFFER_BATTLE_DRAFT", 2 )
+            :PreIcon( global_images.buycombat )
+            -- :Quip( cxt:GetAgent(), "chum_bonus", "battle" )
+            :Fn( function( cxt )
+                cxt:Wait()
+
+                for i = 1, 2 do
+                    local draft_popup = Screen.DraftChoicePopup()
+                    local function OnDone()
+                        cxt.encounter:ResumeEncounter()
+                    end
+                    local cards = RewardUtil.GetBattleCards( 1, 3, cxt.player )
+                    draft_popup:DraftCards( cxt.player, Battle.Card, cards, OnDone )
+                    TheGame:FE():InsertScreen( draft_popup )
+
+                    cxt.enc:YieldEncounter()
+                end
+                cxt.enc.scratch.chum_got[idx] = true
+            end )
+    end,
+    function(cxt, idx)
+        local function IsGrenade( def )
+            return CheckBits(def.item_tags or 0, ITEM_TAGS.GRENADE)
+        end
+
+        local cards = {}
+        for i = 1, 2 do
+            local def = BattleCardCollection.AllLocalItems( IsGrenade ):Pick(1)[1]
+            if def then
+                table.insert( cards, def.id )
+            end
+        end
+
+        return cxt:Opt( "OFFER_BOOM_BOX", cards )
+            :PreIcon( global_images.giving )
+            -- :Quip( cxt:GetAgent(), "chum_bonus", "boom_box" )
+            :GainCards(cards)
+            :Fn(function(cxt)
+                cxt.enc.scratch.chum_got[idx] = true
+            end)
+    end,
+    function(cxt, idx)
+        cxt:Opt( "OFFER_TRIAGE_KIT", "healing_vapors" )
+            :PreIcon( global_images.giving )
+            -- :Quip( cxt:GetAgent(), "chum_bonus", "triage_kit" )
+            :GainCards{"healing_vapors", "healing_vapors"}
+            :Fn(function(cxt)
+                cxt.enc.scratch.chum_got[idx] = true
+            end)
+    end,
+}
 local QDEF = QuestDef.Define
 {
     title = "Drunk Politics",
@@ -114,8 +196,16 @@ QDEF:AddConvo("win_argument")
                 
             ]],
 
+            DIALOG_INTRO_BG = [[
+                * You arrive at the first shop you see in the Pearl.
+                player:
+                    !left
+                * The past few days on the road has been rough, but it was all worth it in the end.
+                * You've got some shills under your name, and maybe you've learned a few moves or two.
+            ]],
+
             DIALOG_INTRO = [[
-                * It's a good day today. You've earned enough shills to enjoy a bowl of noodles in the morning at the Slurping Snail.
+                * Hopefully you can find some work here, and maybe even find a place to live in.
                 * Just as you start to get comfortable, you hear a rather loud patron causing a commotion at the bar.
                 agent:
                     !right
@@ -181,6 +271,25 @@ QDEF:AddConvo("win_argument")
         }
         :Fn(function(cxt)
             if cxt:FirstLoop() then
+                cxt:Dialog("DIALOG_INTRO_BG")
+                cxt.enc.scratch.chum_got = {}
+                local chum_options = table.multipick(BONUSES, 3)
+                cxt:RunLoop(function(cxt)
+                    local has_chum = false
+                    for i, fn in ipairs(chum_options) do
+                        if not cxt.enc.scratch.chum_got[i] then
+                            fn(cxt, i)
+                            has_chum = true
+                        end
+                    end
+                    if has_chum then
+                        cxt:Opt("OPT_SKIP_BONUS")
+                            :MakeUnder()
+                            :Pop()
+                    else
+                        cxt:Pop()
+                    end
+                end)
                 cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("heckler"))
                 local primaryCastID = cxt.enc:GetPrimaryCast().id
                 cxt:Dialog("DIALOG_INTRO")
