@@ -111,6 +111,7 @@ local QDEF = QuestDef.Define{
         txt = "Let them tag along.",
     },
 }
+DemocracyUtil.AddPrimaryAdvisor(QDEF)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :Loc{
         DIALOG_INTRO = [[
@@ -185,15 +186,14 @@ QDEF:AddConvo("feed_pan", "pan")
             cxt:Dialog("DIALOG_PAN_HANDLE")
             cxt:Opt("OPT_GIVE")
                 :DeliverMoney(PAN_AMOUNT)
-                :ReceiveOpinion("paid")
+                :GetAgent():OpinionEvent(OPINION.PAID)
                 :Dialog("DIALOG_GIVE")
                 :CompleteQuest("feed_pan")
-                :Travel()
+                
             cxt:Opt("OPT_NO_MONEY")
                 :Dialog("DIALOG_NO_MONEY")
                 :CompleteQuest("feed_pan")
-                :Travel()
-            StateGraphUtil.AddLeaveLocation(cxt)
+                
         end)
 QDEF:AddConvo("feed_ungrate","ungrateful")
     :ConfrontState("STATE_CONF")
@@ -205,19 +205,19 @@ QDEF:AddConvo("feed_ungrate","ungrateful")
                     [p] yeah no i'm way too tired for this.
                     blah blah blah screw you.
             ]],
-            OPT_CALM = "Try to calm them down",
-            DIALOG_CALM = [[
+            OPT_CONVINCE = "Try to calm them down",
+            DIALOG_CONVINCE = [[
                 player:
                     Have you considered not doing that, hm?
             ]], 
-            DIALOG_CALM_SUCCESS = [[
+            DIALOG_CONVINCE_SUCCESS = [[
                 player:
                     LaserDisk.
                 agent:
                     I'm sold.
                     Have a great day.
             ]],
-            DIALOG_CALM_FAIL = [[
+            DIALOG_CONVINCE_FAIL = [[
                 agent:
                     Your deck could be better.
                     Allow me to remind you of this failure for the rest of the run.
@@ -232,15 +232,21 @@ QDEF:AddConvo("feed_ungrate","ungrateful")
         }
         :Fn(function(cxt) 
             cxt:Dialog("DIALOG_UNGRATE")
-            cxt:BasicNegotiation("CALM")
-                :OnSuccess()
-                    :CompleteQuest("feed_ungrate")
-                    :DoneConvo()
-                :OnFail()
-                    :ReceiveOpinion("peeved")
-                    :DoneConvo()
-            StateGraphUtil.AddLeaveLocation(cxt)
-        end)
+			cxt:Opt("OPT_CONVINCE")
+			:Dialog("DIALOG_CONVINCE")
+            :Negotiation{
+                on_success = function(cxt)
+					cxt:Dialog("DIALOG_CONVINCE_SUCCESS")
+                    cxt.quest:Complete("feed_ungrate")
+                    StateGraphUtil.AddLeaveLocation(cxt)
+				end,
+                on_fail = function(cxt)
+					cxt:Dialog("DIALOG_CONVINCE_FAIL")
+                    cxt:ReceiveOpinion("peeved")
+					StateGraphUtil.AddLeaveLocation(cxt)
+				end
+				}
+			end)
 QDEF:AddConvo("feed_grateful","grateful")
     :ConfrontState("STATE_CONF")
         :Loc{
@@ -275,8 +281,36 @@ QDEF:AddConvo("feed_grateful","grateful")
             cxt:Opt("OPT_BRING_ALONG")
                 :RecruitMember( PARTY_MEMBER_TYPE.HIRED )
                 :Dialog("DIALOG_BRING_ALONG")
+				:ReceiveOpinion("gratitude")
+				:CompleteQuest("feed_grateful")
                 :Travel()
             cxt:Opt("OPT_DONT")
                 :Dialog("DIALOG_DONT_BRING")
+			    :CompleteQuest("feed_grateful")
                 :Travel()
         end)
+QDEF:AddConvo("go_to_advisor", "primary_advisor")
+		:Loc{
+			OPT_GET_PAID = "Show the empty bag to {primary_advisor}.",
+			DIALOG_GET_PAID = [[
+				player:
+					[p]'ey
+				agent:
+					'ey
+					You done?
+				player:
+					Yup.
+				agent:
+					cool beans. lukewarm beans.
+					I could go for some hot beans right around now.
+			]]
+		}
+		    :Hub(function(cxt)
+            cxt:Opt("OPT_GET_PAID")
+                :Dialog("DIALOG_GET_PAID")
+                :Fn(function() 
+                    ConvoUtil.GiveQuestRewards(cxt)
+                    cxt.quest:Complete()
+                end)
+                :DoneConvo()
+    end)
