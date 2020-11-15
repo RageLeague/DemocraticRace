@@ -99,7 +99,7 @@ local QDEF = QuestDef.Define{
         txt = "Changed political opinion for them.",
     },
     paid = {
-        delta = OPINION_DELTAS.LOVE,
+        delta = OPINION_DELTAS.MAJOR_GOOD,
         txt = "Gave them money and bread.",
     },
     peeved = {
@@ -107,7 +107,7 @@ local QDEF = QuestDef.Define{
         txt = "Called a populist.",
     },
     gratitude = {
-        delta = OPINION_DELTAS.LOVE,
+        delta = OPINION_DELTAS.MAJOR_GOOD,
         txt = "Let them tag along.",
     },
 }
@@ -186,7 +186,7 @@ QDEF:AddConvo("feed_pan", "pan")
             cxt:Dialog("DIALOG_PAN_HANDLE")
             cxt:Opt("OPT_GIVE")
                 :DeliverMoney(PAN_AMOUNT)
-                :GetAgent():OpinionEvent(OPINION.PAID)
+                :ReceiveOpinion("paid")
                 :Dialog("DIALOG_GIVE")
                 :CompleteQuest("feed_pan")
                 
@@ -246,6 +246,11 @@ QDEF:AddConvo("feed_ungrate","ungrateful")
 					StateGraphUtil.AddLeaveLocation(cxt)
 				end
 				}
+			cxt:Opt("OPT_IGNORE")
+			:Dialog("DIALOG_IGNORE")
+			:ReceiveOpinion("peeved")
+			:CompleteQuest("feed_ungrate")
+			
 			end)
 QDEF:AddConvo("feed_grateful","grateful")
     :ConfrontState("STATE_CONF")
@@ -305,12 +310,13 @@ QDEF:AddConvo("go_to_advisor", "primary_advisor")
 					I could go for some hot beans right around now.
 			]]
 		}
-		    :Hub(function(cxt)
-            cxt:Opt("OPT_GET_PAID")
-                :Dialog("DIALOG_GET_PAID")
-                :Fn(function() 
-                    ConvoUtil.GiveQuestRewards(cxt)
-                    cxt.quest:Complete()
-                end)
-                :DoneConvo()
+--This final part is where the issue lies.
+:Hub(function(cxt) 
+        cxt:Opt("OPT_GET_PAID")
+            :SetQuestMark()
+            :Dialog("DIALOG_GET_PAID")
+            :CompleteQuest()
+            :Fn(function() 
+                ConvoUtil.GiveQuestRewards(cxt)
+            end)
     end)
