@@ -212,7 +212,7 @@ local QDEF = QuestDef.Define
             end
             if not CheckBits( battle:GetScenario():GetFlags(), battle_defs.BATTLE_FLAGS.SELF_DEFENCE ) then
                 -- Being aggressive hurts your reputation
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -10, "ATTACK")
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5, "ATTACK")
             end
         end,
         action_clock_advance = function(quest, location)

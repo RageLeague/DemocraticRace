@@ -448,7 +448,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                             -- survival_turns = cxt.quest.param.help_arrive_time + 3,
                             on_start_battle = function(battle)
                                 local fighter = battle:GetFighterForAgent(cxt:GetAgent())
-                                fighter.can_surrender = false
+                                -- fighter.can_surrender = false
                             end,
                             on_win = function(cxt, minigame)
                                 local survival_turns = minigame.scenario:GetSurvivalTurns()

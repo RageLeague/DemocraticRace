@@ -95,21 +95,23 @@ local BONUSES = {
             end)
     end,
     function(cxt, idx)
-        return cxt:Opt("OFFER_TRINKET_GRAFT")
+        local owner = TheGame:GetGameState():GetPlayerAgent()
+        local collection = GraftCollection.Rewardable(owner):Rarity(CARD_RARITY.COMMON)
+            :Filter(function(graft_def) return graft_def.type == GRAFT_TYPE.COMBAT end)
+        local grafts = collection:Generate(1)
+
+        return cxt:Opt("OFFER_TRINKET_GRAFT", grafts[1])
             :PreIcon(global_images.graft)
             :Fn(function(cxt)
-                local owner = TheGame:GetGameState():GetPlayerAgent()
-                local collection = GraftCollection.Rewardable(owner):Rarity(CARD_RARITY.COMMON)
-                    :Filter(function(graft_def) return graft_def.type == GRAFT_TYPE.COMBAT end)
-                local grafts = collection:Generate(TheGame:GetGameState():GetGraftDraftDetails().count)
+                ConvoUtil.GiveGraft(cxt, grafts[1])
 
-                local popup = Screen.PickGraftScreen(grafts, false, function(...) cxt.enc:ResumeEncounter(...) end)
-                TheGame:FE():InsertScreen( popup )
-                local chosen_graft = cxt.enc:YieldEncounter()
-                if chosen_graft then
-                    cxt:Dialog("DIALOG_PLAYER_INSTALL_GRAFT", chosen_graft)
-                    return chosen_graft
-                end
+                -- local popup = Screen.PickGraftScreen(grafts, false, function(...) cxt.enc:ResumeEncounter(...) end)
+                -- TheGame:FE():InsertScreen( popup )
+                -- local chosen_graft = cxt.enc:YieldEncounter()
+                -- if chosen_graft then
+                --     cxt:Dialog("DIALOG_PLAYER_INSTALL_GRAFT", chosen_graft)
+                --     return chosen_graft
+                -- end
                 cxt.enc.scratch.chum_got[idx] = true
             end)
     end,
