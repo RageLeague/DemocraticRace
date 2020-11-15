@@ -34,12 +34,12 @@ local BONUSES = {
     function(cxt, idx)
         return cxt:Opt( "OFFER_COMPRESSION_GEAR" )
             :PreIcon( global_images.health )
-            :PostText( "OFFER_UPGRADE_HEALTH", 8 )
-            :PostText( "OFFER_UPGRADE_RESOLVE", 2 )
+            :PostText( "OFFER_UPGRADE_HEALTH", 10 )
+            -- :PostText( "OFFER_UPGRADE_RESOLVE", 2 )
             -- :Quip( cxt:GetAgent(), "chum_bonus", "compression_gear" )
             :Fn( function( cxt )
-                cxt.caravan:UpgradeHealth( 8 )
-                cxt.caravan:UpgradeResolve( 2 )
+                cxt.caravan:UpgradeHealth( 10 )
+                -- cxt.caravan:UpgradeResolve( 2 )
                 cxt.enc.scratch.chum_got[idx] = true
             end )
     end,
@@ -86,11 +86,30 @@ local BONUSES = {
             end)
     end,
     function(cxt, idx)
-        cxt:Opt( "OFFER_TRIAGE_KIT", "healing_vapors" )
+        return cxt:Opt( "OFFER_TRIAGE_KIT", "healing_vapors" )
             :PreIcon( global_images.giving )
             -- :Quip( cxt:GetAgent(), "chum_bonus", "triage_kit" )
             :GainCards{"healing_vapors", "healing_vapors"}
             :Fn(function(cxt)
+                cxt.enc.scratch.chum_got[idx] = true
+            end)
+    end,
+    function(cxt, idx)
+        return cxt:Opt("OFFER_TRINKET_GRAFT")
+            :PreIcon(global_images.graft)
+            :Fn(function(cxt)
+                local owner = TheGame:GetGameState():GetPlayerAgent()
+                local collection = GraftCollection.Rewardable(owner):Rarity(CARD_RARITY.COMMON)
+                    :Filter(function(graft_def) return graft_def.type == GRAFT_TYPE.COMBAT end)
+                local grafts = collection:Generate(TheGame:GetGameState():GetGraftDraftDetails().count)
+
+                local popup = Screen.PickGraftScreen(grafts, false, function(...) cxt.enc:ResumeEncounter(...) end)
+                TheGame:FE():InsertScreen( popup )
+                local chosen_graft = cxt.enc:YieldEncounter()
+                if chosen_graft then
+                    cxt:Dialog("DIALOG_PLAYER_INSTALL_GRAFT", chosen_graft)
+                    return chosen_graft
+                end
                 cxt.enc.scratch.chum_got[idx] = true
             end)
     end,
