@@ -34,9 +34,13 @@ local QDEF = QuestDef.Define{
             quest:Cancel("feed_pan")
         end
     end,
-    on_complete = function(quest)
-        quest:CompleteQuest()
-    end,
+    -- I removed this because it is redundant, and it might cause some issues.
+    -- on_complete = function(quest)
+    --     -- This is kinda redundant, so I added an active check.
+    --     if quest:IsActive() then
+    --         quest:Complete()
+    --     end
+    -- end,
 }
 :AddObjective{
     id = "dole_out_three",
@@ -83,7 +87,7 @@ local QDEF = QuestDef.Define{
 }
 :AddObjective{
     id = "feed_politic",
-    mark = { "politic" },
+    mark = { "political" },
     title = "Feed some people",
     desc = "Find someone and give them some bread",
 }
@@ -111,7 +115,9 @@ local QDEF = QuestDef.Define{
         txt = "Let them tag along.",
     },
 }
-DemocracyUtil.AddPrimaryAdvisor(QDEF)
+-- Added true to make primary advisor mandatory.
+-- Otherwise the game will softlock.
+DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :Loc{
         DIALOG_INTRO = [[
@@ -316,7 +322,8 @@ QDEF:AddConvo("go_to_advisor", "primary_advisor")
             :SetQuestMark()
             :Dialog("DIALOG_GET_PAID")
             :CompleteQuest()
-            :Fn(function() 
-                ConvoUtil.GiveQuestRewards(cxt)
-            end)
+            -- This is kinda redundant, because completequest will cover the reward as well.
+            -- :Fn(function() 
+            --     ConvoUtil.GiveQuestRewards(cxt)
+            -- end)
     end)
