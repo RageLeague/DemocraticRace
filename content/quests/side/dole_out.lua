@@ -14,6 +14,7 @@ local QDEF = QuestDef.Define{
 :AddDefCastSpawn("pan", "POOR_MERCHANT")
 :AddDefCastSpawn("grateful", "LABORER")
 :AddDefCastSpawn("ungrateful", "RISE_REBEL")
+--:AddDefCastSpawn("government", "GOON") need to know the ID, so this'll be commented out until then.
 :AddObjective{
     id = "go_to_advisor",
     title = "Wait for the votes to roll in",
@@ -114,6 +115,14 @@ local QDEF = QuestDef.Define{
         delta = OPINION_DELTAS.MAJOR_GOOD,
         txt = "Let them tag along.",
     },
+    political_prowess = {
+	delta = OPINION_DELTAS.MAJOR_GOOD,
+	txt = "Agreed with them on all the big issues.",
+    },
+    political_angry = {
+	delta = OPINION_DELTAS.MAJOR_BAD,
+	txt = "Let them call you a strawman.",
+    },
 }
 -- Added true to make primary advisor mandatory.
 -- Otherwise the game will softlock.
@@ -201,6 +210,73 @@ QDEF:AddConvo("feed_pan", "pan")
                 :CompleteQuest("feed_pan")
                 
         end)
+QDEF:AddConvo("feed_politic", "political")
+    :ConfrontState("STATE_CONF")
+        :Loc{
+	    DIALOG_POLITICAL = [[
+		* [p] You do your usual thing
+		* The patron wants you to change stances for them and they'll like you as a result.
+		* First is some Welfare stance changing
+		]],
+	    OPT_AGREE = "Agree to their ideas.",
+	    DIALOG_AGREE = [[
+		* They like you, but arent fully convinced of your benevolence.
+		* They ask for a second stance, to share in their extreme views.
+		]],
+	    OPT_AGREE_2 = "Agree to their second stance.",
+	    DIALOG_AGREE_2 = [[
+		* You agree with their second issue.
+		* They absolutely love you. You don't know if anyone else will.
+	    ]],
+	    OPT_DISAGREE = "Respectfully disagree with their opinions.",
+	    DIALOG_DISAGREE = [[
+		* They question why you're giving out bread like this if you clearly HATE welfare in ALL FORMS.
+		* In other words, they strawman you. Tell them how wrong they are.
+	    ]],
+	    OPT_CALM_DOWN = "Tell them how wrong they are.",
+	    DIALOG_CALM_DOWN = [[
+		* You tell them as such.
+		]],
+	    DIALOG_CALM_DOWN_SUCCESS = [[
+		* You calm them down.
+		]],
+	    DIALOG_CALM_DOWN_FAIL = [[
+		* You unsuccessfully convince them.
+		]],
+	    OPT_IGNORE = "Ignore their complaints, part 1.",
+	    DIALOG_IGNORE = [[
+		* You question why so many Dialog IDS are just previous IDs, except with a _2.
+		* You steel yourself to rectify that when you actually try to code this in.
+		]],
+	    OPT_DISAGREE_2 = "Tell them you don't agree with the second stance.",
+	    DIALOG_DISAGREE_2 = [[
+		* They strawman you again, on this new stance that you didn't take.
+		* You do the same thing, although maybe this one is easier because you've established a small bit of rapport.
+		]],
+	    OPT_CALM_DOWN_2 = "Elaborate on how wrong they are.",
+	    DIALOG_CALM_DOWN_2 = [[
+		* You start telling them exactly how wrong they are, to put it bluntly.
+		]],
+	    DIALOG_CALM_DOWN_2_SUCCESS = [[
+		* You successfully defuse their arguments.
+		]],
+	    DIALOG_CALM_DOWN_2_FAIL = [[
+		* You unsuccessfully defuse their arguments. If anything you gave them more ammo.
+		]],
+	    OPT_IGNORE = "Ignore their complaints.",
+	    DIALOG_IGNORE = [[
+		* You ignore their verbal bashing.
+		* You don't know if they have any influence, because what influence they do have is now against you.
+	    ]],
+		--:Fn(function(cxt)
+			--cxt:Dialog("DIALOG_POLITICAL")
+			--cxt:Opt("OPT_AGREE")
+			--:UpdatePoliticalStance("WELFARE", 2, false, true)
+			--:Dialog("DIALOG_AGREE")
+			--cxt:Opt("OPT_DISAGREE")
+			--:Dialog("DIALOG_DiSAGREE")
+			
+			
 QDEF:AddConvo("feed_ungrate","ungrateful")
     :ConfrontState("STATE_CONF")
         :Loc{
@@ -300,6 +376,7 @@ QDEF:AddConvo("feed_grateful","grateful")
 			    :CompleteQuest("feed_grateful")
                 :Travel()
         end)
+QDEF:AddConvo("go_to_advisor", 
 QDEF:AddConvo("go_to_advisor", "primary_advisor")
 		:Loc{
 			OPT_GET_PAID = "Show the empty bag to {primary_advisor}.",
