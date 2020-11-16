@@ -701,6 +701,8 @@ function DemocracyUtil.PopulateTheater(quest, location, num_patrons, cast_id)
         quest:GetCastMember(cast_id):GetBrain():SendToPatronize(location)
     end
 end
+function DemocracyUtil.DoEnding()
+end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator
@@ -709,6 +711,10 @@ for id, data in pairs(demand_generator) do
     DemocracyUtil[id] = data
 end
 --
+local endings = require "DEMOCRATICRACE:content/endings"
+for id, data in pairs(endings) do
+    DemocracyUtil[id] = data
+end
 
 function ConvoOption:DeltaSupport(amt, target, ignore_notification)
     self:Fn(function()

@@ -597,6 +597,12 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     :GoTo("STATE_RESUME_SLEEP")
             cxt:Opt("OPT_ACCEPT_ARREST")
                 :Dialog("DIALOG_ACCEPT_ARREST")
+                :Fn(function(cxt)
+                    local flags = {
+                        suspicion_of_murder = true,
+                    }
+                    DemocracyUtil.DoEnding(cxt, "arrested", flags)
+                end)
         end)
     :State("STATE_RESUME_SLEEP")
         :Loc{
