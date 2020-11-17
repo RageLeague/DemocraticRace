@@ -33,7 +33,7 @@ BOON_SERVICES.SOCIALIZE_NO_LOVE =
         DIALOG_SOCIALIZE = [[
             * {agent} chats with you a while.
         ]],
-        REQ_NOT_TIRED = "You already have full Resolve",
+        -- REQ_NOT_TIRED = "You already have full Resolve",
     },
     icon =  engine.asset.Texture( "icons/quests/oppo_friend_socialize.tex"),
     fn = function(cxt)

@@ -188,6 +188,21 @@ QDEF:AddConvo("debate_people")
                 "I never thought of that way.",
             },
             {
+                tags = "good_impasse",
+                [[
+                    You did raise some good points.
+                    Sadly, those points are not good enough.
+                ]],
+                [[
+                    agent:
+                        That was quite a debate.
+                    player:
+                        Does that mean you're convinced?
+                    agent:
+                        Well, no. That just means I had a lot of fun.
+                ]],
+            },
+            {
                 tags = "impasse",
                 "You are really dense.",
                 "What a waste of time.",
@@ -237,6 +252,19 @@ QDEF:AddConvo("debate_people")
                     Glad you can see the light, my friend.
                 agent:
                     !exit
+            ]],
+            DIALOG_DEBATE_IMPASSE_GOOD = [[
+                * You debated for a long time, and soon {agent} ran out of interest.
+                agent:
+                    %impasse_good
+                player:
+                    !shrug
+                    Whatever. A win's a win.
+                    No hard feelings, right?
+                agent:
+                    Sure.
+                    !exit
+                * You didn't fully convince {agent}, but you still won. And {agent} wasn't annoyed.
             ]],
             DIALOG_DEBATE_IMPASSE = [[
                 * You debated for a long time, and soon {agent} ran out of interest.
@@ -401,19 +429,20 @@ QDEF:AddConvo("debate_people")
                         minigame.opponent_negotiator:AddModifier("IMPATIENCE", cxt.quest.param.debated_people)
                     end,
                     on_success = function(cxt, minigame) 
-                        
-                        if minigame.impasse then
+                        local core = minigame:GetOpponentNegotiator():FindCoreArgument()
+                        local resolve_left = core and core:GetResolve()
+                        if minigame.impasse and resolve_left then
                             if cxt:GetAgent():HasAspect("bribed") then
                                 cxt:Dialog("DIALOG_DEBATE_IMPASSE_BRIBED")
+                            elseif resolve_left <= 10 then
+                                -- instead of random, we now have a scale.
+                                -- if opponent resolve is 10 or less when impasse, they will enjoy the debate.
+                                -- otherwise, you suck, and deserve a dislike
+                                -- might adjust the value later
+                                cxt:Dialog("DIALOG_DEBATE_IMPASSE_GOOD")
                             else
                                 cxt:Dialog("DIALOG_DEBATE_IMPASSE")
-                                -- Some might take it cooler than others.
-                                -- And also otherwise it will be too punishing if you reach an impasse.
-                                -- However, a disliked person CAN hate you.
-                                if math.random() < 0.5 then
-                                    cxt.quest:GetCastMember("debater"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("reach_impasse"))
-                                end
-                                -- ConvoUtil.DoResolveDelta(cxt, -5)
+                                cxt.quest:GetCastMember("debater"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("reach_impasse"))
                             end
                         else
                             cxt:Dialog("DIALOG_DEBATE_WIN")

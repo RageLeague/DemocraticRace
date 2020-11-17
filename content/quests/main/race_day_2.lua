@@ -130,7 +130,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
     :Loc{
         DIALOG_INTRO = [[
             {not dead_body?
-                * [p] As you wake up, you look to see {primary_advisor} staring you down while you slept and shaking your arm.
+                * As you wake up, you look to see {primary_advisor} staring you down while you slept and shaking your arm.
                 * Naturally, you make the most dignified sound you could think of.
                 player:
                     Gah! Could you not let me get some shuteye?

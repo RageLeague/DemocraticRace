@@ -63,10 +63,11 @@ Convo("PROPAGANDA_POSTER_CONVO")
             ]],
             DIALOG_IGNORE = [[
                 agent:
-                    Just another propaganda poster.
-                    Hardly worth reading.
+                    It was an interesting read, but not enough to convince me.
+                    Maybe try harder next time. I might actually be convinced!
                     !exit
-                * I mean... {agent.HeShe}'s not wrong.
+                * That sounds very passive aggressive for no good reason.
+                * Still, it let some people know what you stand for, so at least that's good.
             ]],
             SHIELD_DESC = "Your core resolve can't be attacked. However, if your propaganda poster is destroyed, you lose the negotiation.",
         }
@@ -125,8 +126,13 @@ Convo("PROPAGANDA_POSTER_CONVO")
                                 -- StateGraphUtil.AddEndOption(cxt)
                             end,
                             on_fail = function(cxt,minigame)
-                                if propaganda_mod.out_of_cards then
+                                local core = minigame:GetOpponentNegotiator():FindCoreArgument()
+                                local resolve_left = core and core:GetResolve()
+                                if not resolve_left or resolve_left <= 10 then
                                     cxt:Dialog("DIALOG_IGNORE")
+                                    if cxt.quest and cxt.quest.param.ignored_people then
+                                        cxt.quest.param.ignored_people = cxt.quest.param.ignored_people + 1
+                                    end
                                 else
                                     cxt:Dialog("DIALOG_LOSE")
                                     cxt:GetAgent():OpinionEvent(OPINION.FAIL_CONVINCE_SUPPORT)

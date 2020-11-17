@@ -110,11 +110,13 @@ local QDEF = QuestDef.Define
             end)
         end
         -- without this the game will softlock sometimes.
+        -- now you can forgo free time and hand in quest early.
         table.insert(t, quest:GetCastMember("primary_advisor"))
     end,
     on_activate = function(quest)
         quest.param.liked_people = 0
         quest.param.disliked_people = 0
+        quest.param.ignored_people = 0
     end,
 }
 :AddObjective{
