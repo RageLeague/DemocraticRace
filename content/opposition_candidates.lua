@@ -114,7 +114,8 @@ local t = {
     },
     candidate_cult = {
         cast_id = "candidate_cult",
-        character = "BISHOP_OF_FOAM",
+        -- we confirmed that the bishop is just vix's right hand man. so the only real candidate really is vix.
+        character = "VIXMALLI",
         workplace = "PEARL_CULT_COMPOUND",
 
         platform = "ARTIFACT_TREATMENT",
