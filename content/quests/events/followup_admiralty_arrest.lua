@@ -88,18 +88,21 @@ local QDEF = QuestDef.Define
     events = 
     {
         action_clock_advance = function(quest, location)
-            if quest.param.dormant_start_time ~= Now() then
-                quest.param.dormant_timer = (quest.param.dormant_timer or 0) - 1
-                if quest.param.dormant_timer <= 0 then
-                    quest:Complete("wait")
-                    -- if math.random(1, 10) <= quest.param.guilt_score then
-                        quest:Activate("action")
-                    -- else
-                    --     quest:Activate("innocent")
-                    -- end
-                end
-
+            -- if quest.param.dormant_start_time ~= Now() then
+            quest.param.dormant_timer = (quest.param.dormant_timer or 0) - 1
+            if math.random() < 0.3 then
+                quest.param.dormant_timer = quest.param.dormant_timer + 1
             end
+            if quest.param.dormant_timer <= 0 then
+                quest:Complete("wait")
+                -- if math.random(1, 10) <= quest.param.guilt_score then
+                    quest:Activate("action")
+                -- else
+                --     quest:Activate("innocent")
+                -- end
+            end
+
+            -- end
         end,
     },
 

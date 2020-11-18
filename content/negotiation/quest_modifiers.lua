@@ -271,7 +271,7 @@ local MODIFIERS =
             self.max_resolve = 4
           --  self.min_persuasion = 2 + agent:GetRenown()
             --self.max_persuasion = self.min_persuasion + 4
-            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.LOW)
     
             self.min_persuasion = 0
             self.max_persuasion = 3
@@ -453,7 +453,7 @@ local MODIFIERS =
         init_max_resolve = 10,
 
         bonus_per_generation = 2,
-        bonus_scale = {2, 3, 4},
+        bonus_scale = {2, 2, 3, 4},
 
         generation = 0,
 
@@ -479,7 +479,7 @@ local MODIFIERS =
         init_max_resolve = 10,
 
         bonus_per_generation = 2,
-        bonus_scale = {2, 3, 4},
+        bonus_scale = {2, 2, 3, 4},
 
         generation = 0,
 
@@ -514,7 +514,7 @@ local MODIFIERS =
         init_max_resolve = 10,
 
         bonus_per_generation = 2,
-        bonus_scale = {2, 3, 4},
+        bonus_scale = {2, 2, 3, 4},
 
         generation = 0,
 
@@ -553,7 +553,7 @@ local MODIFIERS =
         max_persuasion = 2,
 
         address_cost = 3,
-        address_cost_scale = {3,4,5},
+        address_cost_scale = {2, 3, 4, 5},
 
         multiplier_strings = {
             [0.5] = "HALF",
@@ -561,7 +561,7 @@ local MODIFIERS =
             [1] = "WHOLE",
         },
         multiplier = 0.5,
-        multiplier_scale = {0.5, 0.75, 1},
+        multiplier_scale = {0.3, 0.5, 0.75, 1},
 
         target_enemy = TARGET_ANY_RESOLVE,
 
@@ -622,7 +622,7 @@ local MODIFIERS =
         min_persuasion = 2,
         max_persuasion = 2,
 
-        damage_scale = {2,2,3},
+        damage_scale = {1, 2, 2, 3},
 
         target_enemy = TARGET_ANY_RESOLVE,
 
@@ -662,7 +662,7 @@ local MODIFIERS =
         max_persuasion = 2,
 
         resolve_gain = 2,
-        resolve_scale = {4,3,2},
+        resolve_scale = {5, 4, 3, 2},
 
         target_enemy = TARGET_ANY_RESOLVE,
 
@@ -711,7 +711,7 @@ local MODIFIERS =
             return loc.format( fmt_str, self.issue_data and self.issue_data:GetLocalizedName() or self.def:GetLocalizedString("ISSUE_DEFAULT"))
         end,
         OnInit = function( self )
-            self:SetResolve( 9, MODIFIER_SCALING.MED )
+            self:SetResolve( 6 + 2 * (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1), MODIFIER_SCALING.MED )
         end,
         min_persuasion = 3,
         max_persuasion = 3,
@@ -774,6 +774,14 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.CORE,
 
         composure_targets = 2,
+
+        target_scale = {1, 2, 3, 4},
+
+        OnInit = function( self )
+            self.composure_targets = self.target_scale[math.min(
+                #self.target_scale, 
+                GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1)]
+        end,
         
         OnEndTurn = function(self)
             local question_count = 0

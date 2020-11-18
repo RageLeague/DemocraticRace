@@ -237,7 +237,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         local dead_bodies = cxt:GetCastMember("player_room"):HasMemory("HAS_DEAD_BODY")
         
         cxt.enc.scratch.dead_body = dead_bodies and true
-        cxt:Dialog("DIALOG_INTRO", #dead_bodies)
+        cxt:Dialog("DIALOG_INTRO", dead_bodies and #dead_bodies)
         DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 2)
         cxt:Dialog("DIALOG_INTRO_PST")
         QuestUtil.SpawnQuest("CAMPAIGN_BODYGUARD")

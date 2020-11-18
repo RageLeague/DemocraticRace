@@ -431,6 +431,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     on_success = function(cxt, minigame)
                         cxt:Dialog("DIALOG_HELP_ARRIVE")
                         cxt.quest:GetCastMember("assassin"):MoveToLimbo()
+                        ConvoUtil.GiveBossRewards(cxt)
                         cxt:GoTo("STATE_RESUME_SLEEP")
                     end,
                     on_fail = function(cxt, minigame)

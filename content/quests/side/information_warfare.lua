@@ -199,7 +199,7 @@ QDEF:AddConvo("out_of_time", "primary_advisor")
             player:
                 [p] So I posted our poster, but people don't like it.
             agent:
-            {artist?
+            {has_artist?
                 {is_artist?
                     Try writing better messages in your poster next time.
                     |
@@ -462,7 +462,7 @@ QDEF:AddConvo("post")
             if #candidates > 0 then
                 cxt.quest.param.readers = {}
                 for i, agent in ipairs(candidates) do
-                    if math.random() < 0.33 then
+                    if math.random() < 0.4 then
                         table.insert(cxt.quest.param.readers, agent)
                     end
                     if #cxt.quest.param.readers > 0 then
@@ -620,6 +620,7 @@ QDEF:AddConvo("commission")
                         if payed_all then
                             cxt:Dialog("DIALOG_PAYED_COMMISSION")
                             cxt.quest.param.artist = who
+                            cxt.quest.param.has_artist = true
                             cxt.quest.param.is_artist = IsArtist(who)
                             cxt:GoTo("STATE_MAKE_POSTER")
                         else
