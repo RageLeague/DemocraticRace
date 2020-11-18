@@ -69,12 +69,16 @@ local BONUSES = {
             return CheckBits(def.item_tags or 0, ITEM_TAGS.GRENADE)
         end
 
-        local cards = {}
-        for i = 1, 2 do
-            local def = BattleCardCollection.AllLocalItems( IsGrenade ):Pick(1)[1]
-            if def then
-                table.insert( cards, def.id )
+        local cards = cxt.enc.scratch.boom_box_cards
+        if not cards then
+            cards = {}
+            for i = 1, 2 do
+                local def = BattleCardCollection.AllLocalItems( IsGrenade ):Pick(1)[1]
+                if def then
+                    table.insert( cards, def.id )
+                end
             end
+            cxt.enc.scratch.boom_box_cards = cards
         end
 
         return cxt:Opt( "OFFER_BOOM_BOX", cards )
@@ -95,10 +99,14 @@ local BONUSES = {
             end)
     end,
     function(cxt, idx)
-        local owner = TheGame:GetGameState():GetPlayerAgent()
-        local collection = GraftCollection.Rewardable(owner):Rarity(CARD_RARITY.COMMON)
-            :Filter(function(graft_def) return graft_def.type == GRAFT_TYPE.COMBAT end)
-        local grafts = collection:Generate(1)
+        local grafts = cxt.enc.scratch.grafts_offer
+        if not grafts then
+            local owner = TheGame:GetGameState():GetPlayerAgent()
+            local collection = GraftCollection.Rewardable(owner):Rarity(CARD_RARITY.COMMON)
+                :Filter(function(graft_def) return graft_def.type == GRAFT_TYPE.COMBAT end)
+            grafts = collection:Generate(1)
+            cxt.enc.scratch.grafts_offer = grafts
+        end
 
         return cxt:Opt("OFFER_TRINKET_GRAFT", grafts[1])
             :PreIcon(global_images.graft)

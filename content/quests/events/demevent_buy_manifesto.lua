@@ -37,7 +37,7 @@ local convo = QDEF:AddConvo()
                     !right
                     !interest
                     You're a politicians, right?
-                    Running for the upcoming election, maybe?
+                    Running for the election, maybe?
                     What do you think of the rise?
             ]],
 

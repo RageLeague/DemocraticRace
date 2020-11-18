@@ -256,7 +256,7 @@ QDEF:AddConvo("debate_people")
             DIALOG_DEBATE_IMPASSE_GOOD = [[
                 * You debated for a long time, and soon {agent} ran out of interest.
                 agent:
-                    %impasse_good
+                    %good_impasse
                 player:
                     !shrug
                     Whatever. A win's a win.

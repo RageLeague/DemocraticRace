@@ -35,7 +35,8 @@ local function DoEnding(cxt, ending, flags)
     end
     assert(type(slides) == "string", "Invalid ending slides")
     cxt.enc:ShowSlides(slides, flags, function()
-        TheGame:AddGameplayStat("democracy_get_ending_" .. ending, 1)
+        
+        -- TheGame:AddGameplayStat("democracy_get_ending_" .. ending, 1)
         if is_win then
             TheGame:Win()
         else

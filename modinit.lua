@@ -85,6 +85,7 @@ local function OnLoad( mod )
     end
     -- require "DEMOCRATICRACE:content/wealth_level"
     require "DEMOCRATICRACE:content/load_quips"
+    require "DEMOCRATICRACE:content/load_codex"
     require "DEMOCRATICRACE:content/shop_defs"
     require "DEMOCRATICRACE:content/locations"
     require "DEMOCRATICRACE:content/workpositions"
