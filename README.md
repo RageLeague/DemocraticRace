@@ -15,6 +15,8 @@ Special thanks to:
 * JuniorElder(For helping with side quests)
 * WumpusThe19th(For helping with dialogs)
 
+This mod is based on this post that is now archived: https://forums.kleientertainment.com/forums/topic/120281-democracy-mode/.
+
 Supported Languages: English (Right now Simplified/Traditional Chinese is not supported because this is only an Alpha, and lots are bound to change, but it probably will be supported eventually)
 
 ## New Contents
