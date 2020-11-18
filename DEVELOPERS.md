@@ -7,6 +7,7 @@ By: RageLeague
 ## Golden rules
 
 * Don't directly commit to master. Only **I** am allowed to do that. Fork a branch and submit a pull request, so I know what changed from your edit.
+* Submit pull requests to the dev branch instead of the master branch. The master branch is going to be the more stable version of the mod, and we only want stable changes to be pushed. We don't want any user's game to start crashing because we added a faulty feature or something like that. Any pull request directly pushed to the master branch will be rejected unless I did it.
 * Try to affect the base game or other mods as little as possible.
   * Use IDs that has low chance of colliding with other IDs, same for defining global variables.
   * Try not to change existing cards/grafts/functions, and if you have to, do it in a way that won't affect gameplay for the base game/other mods.
