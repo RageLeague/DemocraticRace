@@ -198,7 +198,7 @@ local function OnPreLoad( mod )
 end
 -- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {
-    version = "0.1.0",
+    version = "0.1.1",
     alias = "DEMOCRATICRACE",
     
     OnLoad = OnLoad,

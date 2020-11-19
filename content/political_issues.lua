@@ -554,8 +554,10 @@ local val =  {
                 faction_support = {
                     SPARK_BARONS = 5,
                     BILEBROKERS = 3,
+                    JAKES = 2,
                     CULT_OF_HESH = -5,
                     BOGGERS = -4,
+                    FEUD_CITIZEN = -2,
                 },
                 wealth_support = {
                     -5,
@@ -569,9 +571,10 @@ local val =  {
                 desc = "It might be too costly to extensively research all the artifacts, but it would be a waste if the artifacts just sat there. By encouraging commercial use of the artifacts, we encourage people to look for useful artifacts, and it will strengthen the economy.",
                 faction_support = {
                     SPARK_BARONS = 3,
-                    BILEBROKERS = 2,
+                    BILEBROKERS = 1,
                     CULT_OF_HESH = -4,
                     BOGGERS = -2,
+                    JAKES = 3,
                 },
                 wealth_support = {
                     -3,
@@ -586,6 +589,7 @@ local val =  {
                 faction_support = {
                     BILEBROKERS = -1,
                     CULT_OF_HESH = -1,
+                    JAKES = 1,
                 },
                 wealth_support = {
                     -1,
@@ -598,7 +602,8 @@ local val =  {
                     SPARK_BARONS = -3,
                     BILEBROKERS = -2,
                     CULT_OF_HESH = 3,
-                    BOGGERS = 1,
+                    BOGGERS = 2,
+                    JAKES = -2,
                 },
                 wealth_support = {
                     2,
@@ -615,6 +620,8 @@ local val =  {
                     BILEBROKERS = -4,
                     CULT_OF_HESH = 5,
                     BOGGERS = 3,
+                    JAKES = -3,
+                    FEUD_CITIZEN = 2,
                 },
                 wealth_support = {
                     3,

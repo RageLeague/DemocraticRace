@@ -89,6 +89,7 @@ local MODIFIERS =
         icon = "negotiation/modifiers/heckler.tex",
         modifier_type = MODIFIER_TYPE.CORE,
         agents = {},
+        ignored_agents = {},
         CreateTarget = function(self, agent)
             local modifier = self.negotiator:CreateModifier("PREACH_TARGET_INTEREST")
             modifier:SetAgent(agent)
@@ -118,6 +119,7 @@ local MODIFIERS =
             end,
         },
         InitModifiers = function(self)
+            self.ignored_agents = {}
             for i = 1, 1 + self.engine:GetDifficulty() do
                 self:TryCreateNewTarget()
             end
@@ -126,9 +128,10 @@ local MODIFIERS =
     PREACH_TARGET_INTEREST = 
     {
         name = "Potential Interest",
-        desc = "<b>{1.fullname}</> might be interested in listening to you if you can convince {1.himher}. "..
-            "Destroy this argument to make {1.himher} join your side.\n"..
-            "<#PENALTY>After {2} turns, this argument removes itself, as <b>{1.name}</> loses interest in you.</>",
+        desc = "Each turn, this argument attacks an opponent argument or gain resolve.\n\n" ..
+            "Destroy this argument to convince <b>{1.fullname}</> to join your side.\n\n"..
+            "After {2} {2*turn|turns}, this argument removes itself. <#PENALTY>When this happens, if "..
+            "this argument has more than {4} resolve, {1.name} will become annoyed and dislike you.</>",
         loc_strings = {
             BONUS_LOVED = "<#BONUS><b>{1.name} loves you.</> {3} max resolve.</>",
             BONUS_LIKED = "<#BONUS><b>{1.name} likes you.</> {3} max resolve.</>",
@@ -166,25 +169,28 @@ local MODIFIERS =
             resultstring = resultstring .. "\n\n" .. fmt_str
             print(resultstring)
             return loc.format(resultstring, self.target_agent and self.target_agent:LocTable(), 
-                self.turns_left, self.delta_max_resolve[self.target_agent:GetRelationship()])
+                self.stacks, self.delta_max_resolve[self.target_agent:GetRelationship()], self.annoyed_threshold or 12)
             -- else 
-            --     return loc.format(fmt_str, self.target_agent and self.target_agent:LocTable(), self.turns_left)
+            --     return loc.format(fmt_str, self.target_agent and self.target_agent:LocTable(), self.stacks)
             -- end
             
         end,
+        no_damage_tt = true,
         icon = engine.asset.Texture("negotiation/modifiers/voice_of_the_people.tex"),
 
         target_enemy = TARGET_ANY_RESOLVE,
         composure_gain = 2,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
-        turns_left = 3,
+        -- turns_left = 3,
         is_first_turn = true,
     
         SetAgent = function (self, agent)
             local difficulty = self.engine and self.engine:GetDifficulty() or 1
             self.target_agent = agent
             self.max_resolve = difficulty * 6 + 6
+            self.annoyed_threshold = self.max_resolve - (difficulty) * 4
+            self.annoyed_threshold = math.max(1, self.annoyed_threshold)
             if agent:HasAspect("bribed") then
                 self.max_resolve = self.max_resolve + self.bribe_delta
             end
@@ -192,6 +198,8 @@ local MODIFIERS =
           --  self.min_persuasion = 2 + agent:GetRenown()
             --self.max_persuasion = self.min_persuasion + 4
             self:SetResolve(math.max(self.max_resolve, 1))
+
+            self.annoyed_threshold = math.min(self.max_resolve, math.floor((self.max_resolve + self.annoyed_threshold) / 2))
             
             self.min_persuasion = math.floor(difficulty/3)
             self.max_persuasion = 1 + (difficulty % 3)
@@ -211,6 +219,7 @@ local MODIFIERS =
                 self.engine:BroadcastEvent( EVENT.UPDATE_MODIFIER_ICON, self)
                 -- self:NotifyTriggered()
             end
+            self.stacks = 3
             
             self:NotifyChanged()
         end,
@@ -233,15 +242,24 @@ local MODIFIERS =
         event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
                 if not self.is_first_turn then
-                    self.turns_left = self.turns_left - 1
-                    if self.turns_left <= 0 then
-                        self.negotiator:RemoveModifier(self)
+                    self.negotiator:RemoveModifier(self, 1)
+                    -- self.turns_left = self.turns_left - 1
+                    if self.stacks <= 0 then
+                        local core = self.negotiator:FindCoreArgument()
+                        if core and core.ignored_agents then
+                            if self.resolve > self.annoyed_threshold then
+                                table.insert(core.ignored_agents, self.target_agent)
+                            end
+                        end
+                        -- self.negotiator:RemoveModifier(self)
                     end
-                    self:NotifyChanged()
+                    -- self:NotifyChanged()
                 end
-                self.target_enemy = math.random() < 0.5 and TARGET_ANY_RESOLVE or nil
-                if not self.target_enemy then
-                    self:DeltaComposure(self.composure_gain, self)
+                if self.stacks > 0 then
+                    self.target_enemy = math.random() < 0.5 and TARGET_ANY_RESOLVE or nil
+                    if not self.target_enemy then
+                        self:DeltaComposure(self.composure_gain, self)
+                    end
                 end
             end,
             [ EVENT.END_TURN ] = function( self, minigame, negotiator )
@@ -274,7 +292,7 @@ local MODIFIERS =
             self:SetResolve(self.max_resolve, MODIFIER_SCALING.LOW)
     
             self.min_persuasion = 0
-            self.max_persuasion = 3
+            self.max_persuasion = 2
 
             if agent:GetRelationship() > RELATIONSHIP.NEUTRAL then
                 self.max_persuasion = self.max_persuasion + 1

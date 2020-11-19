@@ -1,0 +1,75 @@
+[h1]The Democratic Race[/h1]
+
+A pioneer campaign mod for the (currently) Early Access game Griftlands, the Democratic Race is a mod for Griftlands that adds a negotiation based campaign mode to the game for ALL characters*, in contrast to the direct combat. Your goal in this campaign is to campaign and gain support among the people so you can be voted in as president. This story is heavily negotiation focused, and combat is only necessary if you failed certain negotiations.
+
+This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
+
+\*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
+
+Version: 0.1.0(Alpha)
+
+Author: RageLeague
+
+Special thanks to:
+
+* JuniorElder(For helping with side quests)
+* WumpusThe19th(For helping with dialogs)
+
+This mod is based on this post that is now archived: https://forums.kleientertainment.com/forums/topic/120281-democracy-mode/.
+
+Supported Languages: English (Right now Simplified/Traditional Chinese is not supported because this is only an Alpha, and lots are bound to change, but it probably will be supported eventually)
+
+[h2]New Contents[/h2]
+
+* [b]Brand new negotiations![/b] Many negotiations in this campaign are not as straightforward as reducing the opponent's core resolve to 0, and have more strategies to them. In addition, some negotiations have non-binary results. It is possible to win every negotiation but still lose the game!
+* [b]A detailed Support mechanic![/b] Gain as much support as possible, as it determines many factors in this campaign, from the funding you get each day to how likely someone will vote for you. Gain support from various means, by completing quests, befriending people, and making popular decisions.
+* [b]Know your voter base![/b] Each person in Griftlands has some allegiance with certain factions, and has different wealth levels. This determines what this person cares about politically. Do you hope to win by getting support from the Admiralty, or will you win by appealing to the lower class? Your choice.
+* [b]Take your stances![/b] Havaria has many problems, and different people have different opinions on certain subjects. Will you increase funding for the Admiralty to win them over, or support better worker rights? Be careful, if you change your stances too much, you will be seen as hypocritical!
+* [b]Pick your advisor![/b] You get to choose from 3 unique advisors, each specializes in one area of negotiation, and whose resemblence to any entity in real life, living or dead, is totally coincidental! They will help you with your campaign, but make sure to keep them happy, or they will stop supporting you!
+* [b]Spend your time wisely![/b] You will get free time during certain points in the story, during which you can do whatever you want. Will you spend those time socializing with your supporters, or will you learn the location of the market to buy good grafts?
+* [b]Visit an updated Pearl-on-Foam![/b] The new campaign takes place in the modified version of Pearl-on-Foam, which contains iconic locations throughout Havaria. Meet familiar people, and visit familiar places. Some places even have added functionalities!
+* [b]Outsmart your enemies![/b] Directly engaging in combat is bad for your reputation, and so is killing people(duh)! However, there are a new variety of ways to deal with them. Put them out of their jobs, arrest them, or hire someone to hunt them down. The choice is yours.
+* Brand new side quests, events, and more!
+
+[h2]Alpha Notice[/h2]
+
+At the current stage, the mod is far from finished. You can play 2 days out of 5 right now, and many mechanics are planned to be added. Some of these mechanics are:
+
+* Alliance with other candidates. In a First Past The Post system, it is better to ally with other candidates and get the votes you need to win.
+* More side quests and events.
+* More things to do at each locations, and more ways to "deal" with your enemies.
+
+I release this alpha to get feedbacks about this mod before the full release. Some of the valid feedbacks are:
+
+* Suggestions for future contents.
+* Bug reports.
+* Feedback on balance, communications of mechanics, etc.
+* Dialog suggestions.
+
+Of course, other forms of feedbacks are welcome.
+
+You can leave feedbacks either on the Steam workshop page(https://steamcommunity.com/sharedfiles/filedetails/?id=2291214111), Klei's forum(DM or post on a certain forum topic in the Mods discussion), or on GitHub(https://github.com/RageLeague/DemocraticRace).
+
+[h2]How to install?[/h2]
+
+[h3]Directly fron GitHub[/h3]
+
+With the official mod update, you can read about how to set up mods at https://forums.kleientertainment.com/forums/topic/116914-early-mod-support/.
+
+1. Find "[user]/AppData/Roaming/Klei/Griftlands/" folder on your computer, or "[user]/AppData/Roaming/Klei/Griftlands_testing/" if you're on experimental. Find the folder with all the autogenerated files, log.txt, and "saves" directory. If you are on Steam, open the folder that starts with "steam-". If you are on Epic, open the folder that contains only hexadecimal code.
+2. Create a new folder called "mods" if you haven't already.
+3. Clone this repository into that folder.
+4. The "modinit.lua" file should be under ".../mods/[insert_repo_name_here]".
+5. Volia! Now the mod should work.
+
+Note: The GitHub version will be constantly updated to keep up with new changes. As such, it will be less stable, but will have the latest content. You can also submit pull requests if you want, if you know coding and knows how to fix certain issues or write dialogs.
+
+[h3]Steam workshop[/h3]
+
+With the new official workshop support, you can directly install mods from steam workshop. You can read about it at https://forums.kleientertainment.com/forums/topic/121426-steam-workshop-beta/ and https://forums.kleientertainment.com/forums/topic/121488-example-mods/.
+
+1. Subscribe this item.
+2. Enable it in-game.
+3. Volia!
+
+Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues. As such, it will be more stable.
