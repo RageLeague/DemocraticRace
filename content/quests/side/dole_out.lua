@@ -14,7 +14,7 @@ local QDEF = QuestDef.Define{
 :AddDefCastSpawn("pan", "POOR_MERCHANT")
 :AddDefCastSpawn("grateful", "LABORER")
 :AddDefCastSpawn("ungrateful", "RISE_REBEL")
---:AddDefCastSpawn("government", "GOON") need to know the ID, so this'll be commented out until then.
+:AddDefCastSpawn("government", "ADMIRALTY_GOON")
 :AddObjective{
     id = "go_to_advisor",
     title = "Wait for the votes to roll in",
@@ -243,7 +243,7 @@ QDEF:AddConvo("feed_politic", "political")
 			:GoTo("STATE_DISAGREE")
 		end)
 :State("STATE_AGREE")
-	Loc{
+	:Loc{
 	    OPT_AGREE_2 = "Agree to their second stance.",
 	    DIALOG_AGREE_2 = [[
 		* You agree with their second issue.
@@ -256,15 +256,18 @@ QDEF:AddConvo("feed_politic", "political")
 		]],
 	}
 	    :Fn(function(cxt)
-			cxt:Opt("OPT_AGREE")
+			cxt:Opt("OPT_AGREE_2")
 			:UpdatePoliticalStance("SECURITY", 2, false, true)--random stance. might change once I get a minute to look.
-			:Dialog("DIALOG_AGREE")
-			:CompleteQuest("feed_political")
+			:Dialog("DIALOG_AGREE_2")
+			:CompleteQuest("feed_politic")
 			StateGraphUtil.AddLeaveLocation(cxt)
+			cxt:Opt("OPT_DISAGREE_2")
+			:Dialog("DIALOG_DISAGREE_2")
+			:GoTo("STATE_DISAGREE_2")
 		end)
 
 :State("STATE_DISAGREE")
-	Loc{
+	:Loc{
 	    OPT_CALM_DOWN = "Tell them how wrong they are.",
 	    DIALOG_CALM_DOWN = [[
 		* You tell them as such.
@@ -281,29 +284,30 @@ QDEF:AddConvo("feed_politic", "political")
 		* You steel yourself to rectify that when you actually try to code this in.
 		]],
 	   }
-	:Fn(Function(cxt)
-		cxt:Opt("OPT_CALM_DOWN")
-		:Dialog("DIALOG_CALM_DOWN")
-		:Negotiation{
-			on_success = function(cxt)
-				cxt:Dialog("DIALOG_CALM_DOWN_SUCCESS")
-				:CompleteQuest("feed_political")
-				StateGraphUtil.AddLeaveLocation(cxt)
+	:Fn(function(cxt) 
+			cxt:Opt("OPT_CALM_DOWN")
+			:Dialog("DIALOG_CALM_DOWN")
+            :Negotiation{
+                on_success = function(cxt)
+		cxt:Dialog("DIALOG_CALM_DOWN_SUCCESS")
+                    cxt.quest:Complete("feed_politic")
+                    StateGraphUtil.AddLeaveLocation(cxt)
 				end,
-			on_fail = function(cxt)
-				cxt:Dialog("DIALOG_CALM_DOWN_FAIL")
-				cxt:RecieveOpinion("political_angry")
-				:CompleteQuest("feed_political")
-				StateGraphUtil.AddLeaveLocation(cxt)
+                on_fail = function(cxt)
+		cxt:Dialog("DIALOG_CALM_DOWN_FAIL")
+                    cxt:ReceiveOpinion("peeved")
+		cxt.quest:Complete("feed_politic")
+		StateGraphUtil.AddLeaveLocation(cxt)
 				end
-			}
-		cxt:Opt("OPT_IGNORE")
-		:Dialog("DIALOG_IGNORE")
-		:RecieveOpinion("political_angry")
-		:CompleteQuest("feed_political")
-		end
+				}
+			cxt:Opt("OPT_IGNORE")
+			:Dialog("DIALOG_IGNORE")
+			:ReceiveOpinion("peeved")
+			:CompleteQuest("feed_politic")
+			
+			end)
 :State("STATE_DISAGREE_2")
-	Loc{
+	:Loc{
 	OPT_CALM_DOWN_2 = "Elaborate on how wrong they are.",
 	    DIALOG_CALM_DOWN_2 = [[
 		* You start telling them exactly how wrong they are, to put it bluntly.
@@ -314,12 +318,34 @@ QDEF:AddConvo("feed_politic", "political")
 	    DIALOG_CALM_DOWN_2_FAIL = [[
 		* You unsuccessfully defuse their arguments. If anything you gave them more ammo.
 		]],
-	    OPT_IGNORE = "Ignore their complaints.",
-	    DIALOG_IGNORE = [[
+	    OPT_IGNORE_2 = "Ignore their complaints.",
+	    DIALOG_IGNORE_2 = [[
 		* You ignore their verbal bashing.
 		* You don't know if they have any influence, because what influence they do have is now against you.
 		]],
 	   }
+	   	:Fn(function(cxt) 
+			cxt:Opt("OPT_CALM_DOWN_2")
+			:Dialog("DIALOG_CALM_DOWN_2")
+            :Negotiation{
+                on_success = function(cxt)
+		cxt:Dialog("DIALOG_CALM_DOWN_2_SUCCESS")
+                    cxt.quest:Complete("feed_politic")
+                    StateGraphUtil.AddLeaveLocation(cxt)
+				end,
+                on_fail = function(cxt)
+		cxt:Dialog("DIALOG_CALM_DOWN_2_FAIL")
+                    cxt:ReceiveOpinion("peeved")
+		cxt.quest:Complete("feed_politic")
+		StateGraphUtil.AddLeaveLocation(cxt)
+				end
+				}
+			cxt:Opt("OPT_IGNORE_2")
+			:Dialog("DIALOG_IGNORE_2")
+			:ReceiveOpinion("peeved")
+			:CompleteQuest("feed_politic")
+			
+			end)
 QDEF:AddConvo("feed_ungrate","ungrateful")
     :ConfrontState("STATE_CONF")
         :Loc{
@@ -419,6 +445,16 @@ QDEF:AddConvo("feed_grateful","grateful")
 			    :CompleteQuest("feed_grateful")
                 :Travel()
         end)
+--QDEF:AddConvo("return_to_moreef")
+    --:ConfrontState("CONF", function(cxt) return not cxt.quest.param.has_had_post_confront and cxt.location:HasTag("in_transit") end) 
+        --:Loc{
+--}
+        --:Fn(function(cxt)
+
+            --local patrol = CreateCombatParty("ADMIRALTY_PATROL", math.min(cxt.quest:GetRank(), 1), cxt.location)
+            --cxt.quest.param.has_had_post_confront = true
+            --cxt:TalkTo(patrol[1])
+            --cxt:Dialog("DIALOG_INTRO")
 QDEF:AddConvo("go_to_advisor", 
 QDEF:AddConvo("go_to_advisor", "primary_advisor")
 		:Loc{
