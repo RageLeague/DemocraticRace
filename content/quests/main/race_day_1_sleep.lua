@@ -194,11 +194,11 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
             ]],
             OPT_DISTRACT = "Distract {agent}",
             TT_DISTRACT = "Distract {agent} until you can call for help.\n"..
-                "After calling for help, survive long enough for the responders to arrive.",
+                "After calling for help, keep {agent.himher} occupied through negotiation or combat until help arrives!",
 
             GOAL_CALL_HELP = "(1/3) Call for help",
             GOAL_MAINTAIN_CONNECTION = "(2/3) Describe your current situation to the dispacher ({1}/{2})",
-            GOAL_AWAIT_RESCUE = "(3/3) Await rescue (In {1} {1*turn|turns})",
+            GOAL_AWAIT_RESCUE = "(3/3) Await rescue (Negotiate for {1} {1*turn|turns} or battle for {2} {2*turn|turns})",
 
             DIALOG_HELP_ARRIVE = [[
                 agent:
@@ -411,7 +411,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                         local help_inst = minigame.player_negotiator:FindModifier("HELP_UNDERWAY")
                         local call_inst = minigame.player_negotiator:FindModifier("CONNECTED_LINE")
                         if help_inst then
-                            return loc.format(cxt:GetLocString("GOAL_AWAIT_RESCUE"), help_inst.stacks )
+                            return loc.format(cxt:GetLocString("GOAL_AWAIT_RESCUE"), help_inst.stacks, help_inst.stacks * 2 )
                         elseif call_inst then
                             return loc.format(cxt:GetLocString("GOAL_MAINTAIN_CONNECTION"), call_inst.stacks, call_inst.calls_required )
                         end

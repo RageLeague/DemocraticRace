@@ -1,12 +1,12 @@
 # The Democratic Race
 
-A pioneer campaign mod for the (currently) Early Access game Griftlands, Democratic Race(working title) is a mod for Griftlands that adds a negotiation based campaign mode to the game for ALL characters*, in contrast to the direct combat. Your goal in this campaign is to campaign and gain support among the people so you can be voted in as president. This story is heavily negotiation focused, and combat is only necessary if you failed certain negotiations.
+A pioneer campaign mod for the (currently) Early Access game Griftlands, the Democratic Race is a mod for Griftlands that adds a negotiation based campaign mode to the game for ALL characters*, in contrast to the direct combat. Your goal in this campaign is to campaign and gain support among the people so you can be voted in as president. This story is heavily negotiation focused, and combat is only necessary if you failed certain negotiations.
 
 This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.1.0(Alpha)
+Version: 0.1.1(Alpha)
 
 Author: RageLeague
 
@@ -48,7 +48,7 @@ I release this alpha to get feedbacks about this mod before the full release. So
 
 Of course, other forms of feedbacks are welcome.
 
-You can leave feedbacks either on the Steam workshop page, Klei's forum(DM or post on a certain forum topic in the Mods discussion), or on GitHub(https://github.com/RageLeague/DemocraticRace).
+You can leave feedbacks either on the Steam workshop page (https://steamcommunity.com/sharedfiles/filedetails/?id=2291214111), Klei's forum(DM or post on a certain forum topic in the Mods discussion), or on GitHub (https://github.com/RageLeague/DemocraticRace).
 
 ## How to install?
 
@@ -73,3 +73,10 @@ With the new official workshop support, you can directly install mods from steam
 3. Volia!
 
 Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues. As such, it will be more stable.
+
+## Changelog
+
+### 0.1.1(Day 1 hotfix lol)
+
+* Rework Preach quest.
+* Make end of day 1 negotiation clearer about what you can do.
