@@ -14,7 +14,7 @@ local QDEF = QuestDef.Define{
 :AddDefCastSpawn("pan", "POOR_MERCHANT")
 :AddDefCastSpawn("grateful", "LABORER")
 :AddDefCastSpawn("ungrateful", "RISE_REBEL")
-:AddDefCastSpawn("government", "ADMIRALTY_GOON")
+--:AddDefCastSpawn("government", "ADMIRALTY_GOON") May not need this
 :AddObjective{
     id = "go_to_advisor",
     title = "Wait for the votes to roll in",
@@ -115,7 +115,7 @@ local QDEF = QuestDef.Define{
         delta = OPINION_DELTAS.MAJOR_GOOD,
         txt = "Let them tag along.",
     },
-    political_prowess = {
+    political_waffle = {
 	delta = OPINION_DELTAS.MAJOR_GOOD,
 	txt = "Agreed with them on all the big issues.",
     },
@@ -131,8 +131,23 @@ DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :Loc{
         DIALOG_INTRO = [[
-            *[p] Temp dialogue, although i do have a basic structure thought up already.
-            *{primary_advisor} gives you a bag of dole loaves and tells you to pass them out.
+            *{primary_advisor} heaves a large bag onto the table.
+	agent:
+		This. Is a bag.
+	player:
+		Dear hesh.
+	agent:
+		There's more.
+	player:
+		No...
+	agent:
+		It's filled with dole loaves. Despite them being the poor man's food, I had to sneak some out of the distribution offices.
+	player:
+		So why'd you bring it? I'd assume we're not eating any of it.
+	agent:
+		No we're not. You're going to distribute these loaves of bread around the Foam.
+		With any luck, the word'll be spread that you're a benevolent politician.
+		
         ]],
     }
     :State("START")
@@ -144,7 +159,9 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
         DIALOG_INTRO = [[
             player:
                 !left
-                [p] Tuba sander.
+                Well you make a sound case.
+		If nothing else we can eat 'em later
+	    * You pick up the bag. The smell alone rushes you to the door.
         ]],
     }
     :State("START")
@@ -156,7 +173,11 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
         DIALOG_INTRO = [[
             player:
                 !left
-                [p] a load of hooey.
+                Won't this make me seem a communist?
+	    agent:
+		Half the workers are in support of communism. This'd be a slam dunk for PR.
+	    player:
+		Lets just keep our options open. What else do you have?
         ]],
     }
     :State("START")
@@ -216,26 +237,40 @@ QDEF:AddConvo("feed_politic", "political")
     :ConfrontState("STATE_CONF")
         :Loc{
 	    DIALOG_POLITICAL = [[
-		* [p] You do your usual thing
-		* The patron wants you to change stances for them and they'll like you as a result.
-		* First is some Welfare stance changing
+		* You find {political} staring at a poster for the Rise.
+	    player:
+		This oughta be easy support.
+		Hello {political}. Care for some Dole Bread?
+	    agent:
+		Sure. Say, this is rather helpful to the cause
+		Are you in support of a UBI? So this kind of thing doesn't have to happen anymore?
 		]],
 	    OPT_AGREE = "Agree to their ideas.",
 	    DIALOG_AGREE = [[
-		* They like you, but arent fully convinced of your benevolence.
-		* They ask for a second stance, to share in their extreme views.
+		player:
+		Viva la Rise, am I right?
+		agent:
+		Right you are!
+		It's been so long since I met a like-minded politician since Kalandra.
+		And what about those taxes? They bleed the common man dry and keep on draining.
+		You agree, right?
 		]],
 
 	    OPT_DISAGREE = "Respectfully disagree with their opinions.",
 	    DIALOG_DISAGREE = [[
-		* They question why you're giving out bread like this if you clearly HATE welfare in ALL FORMS.
-		* In other words, they strawman you. Tell them how wrong they are.
+		player:
+		I don't believe my opinion on the topic is of import to this conversation.
+		agent:
+		What are you saying?
+		Do you mean you HATE welfare in all forms?
+		Is that what you mean?
 	    ]],
 	}
 		:Fn(function(cxt)
 			cxt:Dialog("DIALOG_POLITICAL")
 			cxt:Opt("OPT_AGREE")
 			:UpdatePoliticalStance("WELFARE", 2, false, true)
+			:RecieveOpinion("politic")
 			:Dialog("DIALOG_AGREE")
 			:GoTo("STATE_AGREE")
 			cxt:Opt("OPT_DISAGREE")
@@ -251,13 +286,17 @@ QDEF:AddConvo("feed_politic", "political")
 	    ]],
 	    OPT_DISAGREE_2 = "Tell them you don't agree with the second stance.",
 	    DIALOG_DISAGREE_2 = [[
-		* They strawman you again, on this new stance that you didn't take.
-		* You do the same thing, although maybe this one is easier because you've established a small bit of rapport.
+		player:
+		Now, now. Let's not get ahead of ourselves.
+		agent:
+		Why? Why are you deflecting this issue?
+		Is it because you HATE labor laws? Do you WANT people to be treated like bog muck?
 		]],
 	}
 	    :Fn(function(cxt)
 			cxt:Opt("OPT_AGREE_2")
-			:UpdatePoliticalStance("SECURITY", 2, false, true)--random stance. might change once I get a minute to look.
+			:UpdatePoliticalStance("LABOR_LAW", 2, false, true)--random stance. might change once I get a minute to look.
+			:RecieveOpinion("political_waffle")
 			:Dialog("DIALOG_AGREE_2")
 			:CompleteQuest("feed_politic")
 			StateGraphUtil.AddLeaveLocation(cxt)
@@ -270,18 +309,40 @@ QDEF:AddConvo("feed_politic", "political")
 	:Loc{
 	    OPT_CALM_DOWN = "Tell them how wrong they are.",
 	    DIALOG_CALM_DOWN = [[
-		* You tell them as such.
+		player:
+		Now that isn't what I meant by it and you know it.
 		]],
 	    DIALOG_CALM_DOWN_SUCCESS = [[
-		* You calm them down.
+		player:
+		Do my actions not demonstrate my beliefs?
+		I risked my neck by nabbing bags of these for the people of Havaria.
+		agent:
+		I geuss that's true.
+		Pardon, I'm not great at taking rejection for my ideas.
+		player:
+		Well, follow the debates. People'll talk all day long about different ideas.
+		agent:
+		Can't. I got to get to my next shift.
+		player:	
+		Well good luck for you, and enjoy the bread
 		]],
 	    DIALOG_CALM_DOWN_FAIL = [[
-		* You unsuccessfully convince them.
+		agent:
+		Oh, I get it.
+		You're just trying to butter up the Rise so we'd lay down our arms.
+		You're working with the Barons, aren't you?
+		player:
+		No, No, you've got it all-
+		agent:
+		Get out of my face, you filthy capitalist. You'll profit no longer from this mere worker.
 		]],
 	    OPT_IGNORE = "Ignore their complaints, part 1.",
 	    DIALOG_IGNORE = [[
-		* You question why so many Dialog IDS are just previous IDs, except with a _2.
-		* You steel yourself to rectify that when you actually try to code this in.
+		* You put on the best poker face you can manage.
+		* It doesn't help.
+		Agent:
+		What? Not going to defend yourself?
+		Try to excuse yourself from hearing the truth?
 		]],
 	   }
 	:Fn(function(cxt) 
@@ -295,14 +356,14 @@ QDEF:AddConvo("feed_politic", "political")
 				end,
                 on_fail = function(cxt)
 		cxt:Dialog("DIALOG_CALM_DOWN_FAIL")
-                    cxt:ReceiveOpinion("peeved")
+                    cxt:ReceiveOpinion("political_angry")
 		cxt.quest:Complete("feed_politic")
 		StateGraphUtil.AddLeaveLocation(cxt)
 				end
 				}
 			cxt:Opt("OPT_IGNORE")
 			:Dialog("DIALOG_IGNORE")
-			:ReceiveOpinion("peeved")
+			:ReceiveOpinion("political_angry")
 			:CompleteQuest("feed_politic")
 			
 			end)
@@ -335,14 +396,14 @@ QDEF:AddConvo("feed_politic", "political")
 				end,
                 on_fail = function(cxt)
 		cxt:Dialog("DIALOG_CALM_DOWN_2_FAIL")
-                    cxt:ReceiveOpinion("peeved")
+                    cxt:ReceiveOpinion("political_angry")
 		cxt.quest:Complete("feed_politic")
 		StateGraphUtil.AddLeaveLocation(cxt)
 				end
 				}
 			cxt:Opt("OPT_IGNORE_2")
 			:Dialog("DIALOG_IGNORE_2")
-			:ReceiveOpinion("peeved")
+			:ReceiveOpinion("political_angry")
 			:CompleteQuest("feed_politic")
 			
 			end)
@@ -445,9 +506,15 @@ QDEF:AddConvo("feed_grateful","grateful")
 			    :CompleteQuest("feed_grateful")
                 :Travel()
         end)
---QDEF:AddConvo("return_to_moreef")
+--QDEF:AddConvo("go_to_advisor")
     --:ConfrontState("CONF", function(cxt) return not cxt.quest.param.has_had_post_confront and cxt.location:HasTag("in_transit") end) 
         --:Loc{
+			--DIALOG_GOVERNMENT = [[
+			--* [p] You're walking home when you're confronted by an admiralty patrol
+			--* You have to possibly defend yourself at the cost of seeming violent
+			--* You also, likely, just neogitate with them and make them go away.
+			--* Finally, you could just throw money at the problem and hope the scary people go away.
+			--]],
 --}
         --:Fn(function(cxt)
 
@@ -455,7 +522,6 @@ QDEF:AddConvo("feed_grateful","grateful")
             --cxt.quest.param.has_had_post_confront = true
             --cxt:TalkTo(patrol[1])
             --cxt:Dialog("DIALOG_INTRO")
-QDEF:AddConvo("go_to_advisor", 
 QDEF:AddConvo("go_to_advisor", "primary_advisor")
 		:Loc{
 			OPT_GET_PAID = "Show the empty bag to {primary_advisor}.",
