@@ -30,6 +30,18 @@ local FEATURES = {
         desc = "This argument plays 1 more card at the beginning of each turn.",
         play_per_turn_mod = 1,
     },
+    PROP_PO_THOUGHT_PROVOKING =
+    {
+        name = "Thought-Provoking",
+        desc = "When a manipulate card is played by this argument, {INCEPT} {DOUBT 1}",
+        event_handlers = {
+            [ EVENT.POST_RESOLVE ] = function(self, minigame, card)
+                if CheckBits(card.flags, CARD_FLAGS.MANIPULATE) and card.play_source == self then
+                    self.anti_negotiator:DeltaModifier( "DOUBT", 1, self )
+                end
+            end,
+        },
+    }
 }
 for id, data in pairs(FEATURES) do
 	local def = NegotiationFeatureDef(id, data)
@@ -87,6 +99,7 @@ Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
             local card = Negotiation.Card(card_id, self.owner )
             card.show_dealt = false
             card.special_prepared = true
+            card.play_source = self
             card:SetFlags( CARD_FLAGS.CONSUME )
 
             -- So this is kinda weird, but we need the card to be registered to a deck.
