@@ -24,6 +24,18 @@ local FEATURES = {
             end,
         },
     },
+    PROP_PO_SUPERFICIAL =
+    {
+        name = "Superficial",
+        desc = "Cards played by this argument has 1 less max damage.",
+        event_handlers = {
+            [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
+                if is_instance( source, Negotiation.Card ) and source.play_source == self then
+                    persuasion:AddPersuasion(0, -1, self)
+                end
+            end,
+        },
+    },
     PROP_PO_INSPIRING =
     {
         name = "Inspiring",
@@ -33,7 +45,7 @@ local FEATURES = {
     PROP_PO_THOUGHT_PROVOKING =
     {
         name = "Thought-Provoking",
-        desc = "When a manipulate card is played by this argument, {INCEPT} {DOUBT 1}",
+        desc = "When a manipulate card is played by this argument, {INCEPT} {DOUBT 1}.",
         event_handlers = {
             [ EVENT.POST_RESOLVE ] = function(self, minigame, card)
                 if CheckBits(card.flags, CARD_FLAGS.MANIPULATE) and card.play_source == self then

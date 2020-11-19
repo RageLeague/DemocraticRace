@@ -18,7 +18,7 @@ end
 local function IsPotentiallyArtist(agent)
     return ARTISTS[agent:GetContentID()]
 end
-local POOR_ART = {"PROP_PO_MESSY"}
+local POOR_ART = {"PROP_PO_MESSY", "PROP_PO_SUPERFICIAL"}
 local GOOD_ART = {"PROP_PO_INSPIRING", "PROP_PO_THOUGHT_PROVOKING"}
 
 local DRAFT_BEHAVIOUR = {
