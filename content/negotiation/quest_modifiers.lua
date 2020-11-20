@@ -60,8 +60,8 @@ local MODIFIERS =
 {
     PLAYER_ADVANTAGE =
     {
-        name = "Player Advantage",
-        desc = "The player wins after the opponent's turn {1}.",
+        name = "Limited Time",
+        desc = "The player wins after the opponent's turn {1}, but will yield worse result than winning a negotiation normally.",
         icon = "DEMOCRATICRACE:assets/modifiers/player_advantage.png",
         desc_fn = function( self, fmt_str )
             return loc.format(fmt_str, self.stacks or 1)
