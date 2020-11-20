@@ -237,7 +237,7 @@ local CARDS = {
         end,
         icon = "DEMOCRATICRACE:assets/cards/propaganda_poster.png",
         
-        cost = 2,
+        cost = 3,
         max_charges = 3,
         flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
         rarity = CARD_RARITY.UNIQUE,
