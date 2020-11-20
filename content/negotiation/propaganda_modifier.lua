@@ -45,9 +45,13 @@ local FEATURES = {
     PROP_PO_THOUGHT_PROVOKING =
     {
         name = "Thought-Provoking",
-        desc = "When a manipulate card is played by this argument, {INCEPT} {DOUBT 1}.",
+        desc = "When a manipulate card is played by this argument, {INCEPT} 1 Doubt, because Klei forgots to nil check.",
+        -- desc = "When a manipulate card is played by this argument, {INCEPT} 1 {DOUBT}.",
         event_handlers = {
             [ EVENT.POST_RESOLVE ] = function(self, minigame, card)
+                print("Compare source...")
+                print(card.play_source)
+                print(self)
                 if CheckBits(card.flags, CARD_FLAGS.MANIPULATE) and card.play_source == self then
                     self.anti_negotiator:DeltaModifier( "DOUBT", 1, self )
                 end
@@ -121,7 +125,7 @@ Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
                 card:PreReq(self.engine)
             end
 
-            print(card:IsPrepared())
+            -- print(card:IsPrepared())
 
             self.engine:PlayCard(card)
             -- card:RemoveCard()
@@ -161,6 +165,11 @@ Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
                 self.event_handlers = BASE_HANDLERS
             end
             self.play_per_turn_mod = FEATURES[propaganda_mod] and FEATURES[propaganda_mod].play_per_turn_mod
+
+            for id, fn in pairs(self.event_handlers) do
+                local priority = self.event_priorities and self.event_priorities[ id ]
+                self.engine:ListenForEvent(id, self, self.OnNegotiationEvent, priority )
+            end
         end
 
         if max_resolve then
