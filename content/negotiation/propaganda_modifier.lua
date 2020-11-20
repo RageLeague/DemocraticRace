@@ -171,3 +171,241 @@ Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
     end,
     event_handlers = BASE_HANDLERS,
 } )
+
+local POOR_ART = {"PROP_PO_MESSY", "PROP_PO_SUPERFICIAL"}
+local GOOD_ART = {"PROP_PO_INSPIRING", "PROP_PO_THOUGHT_PROVOKING"}
+
+local DEFENSIVE_CARDS = {
+    "deflection",
+    "deflection",
+    "deflection",
+    "deflection",
+    "deflection",
+    "bewilder",
+    "bewilder",
+    "bewilder",
+    "bewilder",
+    "bewilder",
+    "keep_cool",
+    "back_pedal",
+    "improvise_bait",
+    "improvise_bait",
+    "improvise_bait",
+    "calm",
+    "prattle",
+    "improvise_gruff",
+    "improvise_gruff",
+    "improvise_gruff",
+    "improvise_withdrawn",
+    "improvise_withdrawn",
+    "improvise_withdrawn",
+    "improvise_wide_composure",
+    "improvise_wide_composure",
+    "improvise_wide_composure",
+    "hard_facts",
+    "entrapment",
+    "even_footing",
+    "fall_guy",
+    "fall_guy",
+    "fixate",
+    "scapegoat",
+    "amnesty",
+}
+local GENERAL_CARD = {
+    "improvise_vulnerability",
+    "seeds_of_doubt",
+    "improvise_vulnerability",
+    "seeds_of_doubt",
+    
+    "drain_resolve",
+    "instigate",
+    "insistence",
+    "goon",
+    "boiler",
+    "hot_air",
+    
+}
+local GENERAL_GOOD_CARD = {
+    "heated",
+    "good_impression",
+    "exploit_weakness",
+    "slick",
+    "escalate",
+    "level_playing_field",
+}
+local SYNERGY_CARDS = {
+    -- diplomacy synergy
+    {
+        basics = {
+            "fast_talk",
+        },
+        basics_synergy = {
+            
+            "improvise_diplomacy",
+            "inspiration",
+        },
+        basics_good = {
+            "flatter",
+            "compliment",
+        },
+        drafts = {
+            
+            "final_favor",
+            "praise",
+            "decency",
+            "setup",
+            "plead",
+            "intrigue",
+            "intrigue",
+            "magnetic_charm",
+            "aplomb",
+            "swift_rebuttal",
+            "subtlety",
+            "build_rapport",
+            "build_rapport",
+            "airtight",
+            "rapid_fire",
+            "appeal_to_reason",
+        },
+    },
+    -- hostile synergy
+    {
+        basics = {
+            "threaten",
+            "bully",
+            
+        },
+        basics_synergy = {
+            "improvise_hostile",
+            "mean",
+        },
+        basics_good = {
+            "obtuse",
+        },
+        drafts = {
+            "menacing_air",
+            "oppress",
+            "oppress",
+            "tantrum",
+            "rant",
+            "brute",
+            "veiled_anger",
+            "browbeat",
+            "domineer",
+            "low_blow",
+            "bellow",
+            "heavy_handed",
+            "overbear",
+            "tyrannize",
+            "bluster",
+            "barrage",
+            "degrade",
+            "chase",
+            "crass",
+            "crass",
+            "crass",
+            "double_entendre",
+            "domain",
+        },
+        
+    },
+    -- renown synergy?
+    {
+        basics = {
+            "brag",
+            "name_drop",
+        },
+        drafts = {
+            "standing",
+            "stool_pigeon",
+            "immunity",
+            "contacts",
+            "contacts",
+            "influencer",
+            "influencer",
+            "networker",
+            "high_places",
+            "executive",
+            "who",
+            "associates",
+            "associates",
+            "networked",
+            "rescind",
+            "dominion",
+            "save_face",
+            "incredulous",
+            "consolidate",
+        },
+    },
+}
+local function GetCardOrUpgrades(card_id, chance_for_upgrades)
+    
+    if chance_for_upgrades and math.random() < chance_for_upgrades then
+        local carddef = Content.GetNegotiationCard(card_id)
+        if carddef.upgrade_ids and #carddef.upgrade_ids then
+            return table.arraypick(carddef.upgrade_ids)
+        end
+    end
+    return card_id
+end
+local function GenerateRandomPosterContent()
+    local count = math.random(6, 12)
+    local defense_idx = math.random(2, 4)
+    local main_synergy = table.arraypick(SYNERGY_CARDS)
+    local upgrade_chance = 0.5
+    local contents = {}
+    for i = 1, count do
+        local synergy = math.random() < 0.75 and main_synergy or table.arraypick(SYNERGY_CARDS)
+        if i == defense_idx then
+            table.insert(contents, GetCardOrUpgrades(table.arraypick(DEFENSIVE_CARDS), upgrade_chance))
+            defense_idx = defense_idx + math.random(2, 4)
+        elseif math.random() < 0.7 then
+            if synergy.basics and math.random() < 0.5 then
+                if synergy.basics_synergy and math.random() < 0.3 then
+                    if synergy.basics_good and math.random() < upgrade_chance then
+                        table.insert(contents, GetCardOrUpgrades(table.arraypick(synergy.basics_good), upgrade_chance))
+                    else
+                        table.insert(contents, GetCardOrUpgrades(table.arraypick(synergy.basics_synergy), upgrade_chance))
+                    end
+                else
+                    table.insert(contents, GetCardOrUpgrades(table.arraypick(synergy.basics), upgrade_chance))
+                end
+            else
+                table.insert(contents, GetCardOrUpgrades(table.arraypick(synergy.drafts), upgrade_chance))
+            end
+        else
+            if math.random() < upgrade_chance then
+                table.insert(contents, GetCardOrUpgrades(table.arraypick(GENERAL_GOOD_CARD), upgrade_chance))
+            else
+                table.insert(contents, GetCardOrUpgrades(table.arraypick(GENERAL_CARD), upgrade_chance))
+            end
+        end
+    end
+
+    return contents
+end
+function DemocracyUtil.GeneratePropagandaPoster(poster_card, poster_mod)
+    if type(poster_mod) == "table" then
+        poster_mod = table.arraypick(poster_mod)
+    elseif poster_mod == true then
+        -- If true, pick a random from good art
+        poster_mod = table.arraypick(GOOD_ART)
+    elseif poster_mod == false then
+        -- If false, pick a random from poor art
+        poster_mod = table.arraypick(POOR_ART)
+    else
+        -- If nil, use mediocre
+        poster_mod = "PROP_PO_MEDIOCRE"
+    end
+    if not poster_card then
+        poster_card = GenerateRandomPosterContent()
+    end
+    assert(type(poster_mod) == "string", "Invalid type for poster_mod")
+
+    local card = Negotiation.Card( "propaganda_poster", TheGame:GetGameState():GetPlayerAgent(), {
+        imprints = poster_card,
+        prop_mod = poster_mod,
+    } )
+
+    return card
+end
