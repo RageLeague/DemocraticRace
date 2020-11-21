@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.1.1(Alpha)
+Version: 0.1.2(Alpha)
 
 Author: RageLeague
 
@@ -75,6 +75,14 @@ With the new official workshop support, you can directly install mods from steam
 Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues. As such, it will be more stable.
 
 ## Changelog
+
+### 0.1.2
+
+* Rebalance the propagandanda side quest so that more cards are played each turn. Hopefully we can see the player win, and maybe they can keep winning for a few days until needing to take them down.
+* Added two new modifiers to propaganda posters: Superficial and Thought-Provoking.
+* Clarify wordings of various modifiers.
+* Fixed bug where propaganda poster modifiers aren't actually working.
+* Fixed strike organizing dialogs.
 
 ### 0.1.1(Day 1 hotfix lol)
 

@@ -60,8 +60,8 @@ local MODIFIERS =
 {
     PLAYER_ADVANTAGE =
     {
-        name = "Player Advantage",
-        desc = "The player wins after the opponent's turn {1}.",
+        name = "Limited Time",
+        desc = "The player wins after the opponent's turn {1}, but will yield worse result than winning a negotiation normally.",
         icon = "DEMOCRATICRACE:assets/modifiers/player_advantage.png",
         desc_fn = function( self, fmt_str )
             return loc.format(fmt_str, self.stacks or 1)
@@ -437,7 +437,9 @@ local MODIFIERS =
     HELP_UNDERWAY = 
     {
         name = "Help Underway!",
-        desc = "Distract <b>{1}</> for {2} more turns until the help arrives!",
+        desc = "Distract <b>{1}</> for {2} more turns until the help arrives!\n" ..
+            "If you lose the negotiation while help is underway, you can still keep {1} occupied " ..
+            "through battle, and survive the assassination!",
         desc_fn = function(self, fmt_str)
             return loc.format( fmt_str, self.anti_negotiator and self.anti_negotiator:GetName() or "the opponent",  self.stacks)
         end,

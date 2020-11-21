@@ -1,13 +1,15 @@
 local ARTISTS = {
-    RISE_PAMPHLETEER = 0.6,
-    FOREMAN = 0.25,
+    RISE_PAMPHLETEER = 0.65,
+    FOREMAN = 0.35,
     PRIEST = 0.5,
-    SPARK_BARON_TASKMASTER = 0.25,
-    ADMIRALTY_CLERK = 0.4,
+    PRIEST_PROMOTED = 0.65,
+    SPARK_BARON_TASKMASTER = 0.35,
+    ADMIRALTY_CLERK = 0.5,
     -- SPREE_CAPTAIN = 0.15,
-    WEALTHY_MERCHANT = 0.25,
-    POOR_MERCHANT = 0.35,
-    JAKES_SMUGGLER = 0.2,
+    WEALTHY_MERCHANT = 0.35,
+    WEALTHY_MERCHANT_PROMOTED = 0.55,
+    POOR_MERCHANT = 0.5,
+    JAKES_SMUGGLER = 0.3,
 }
 local function IsArtist(agent)
     return agent:CalculateProperty("IS_ARTIST", function(agent)
@@ -18,8 +20,8 @@ end
 local function IsPotentiallyArtist(agent)
     return ARTISTS[agent:GetContentID()]
 end
-local POOR_ART = {"PROP_PO_MESSY"}
-local GOOD_ART = {"PROP_PO_INSPIRING"}
+local POOR_ART = {"PROP_PO_MESSY", "PROP_PO_SUPERFICIAL"}
+local GOOD_ART = {"PROP_PO_INSPIRING", "PROP_PO_THOUGHT_PROVOKING"}
 
 local DRAFT_BEHAVIOUR = {
 	OnInit = function( self, difficulty )
