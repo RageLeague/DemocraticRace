@@ -235,18 +235,28 @@ local QDEF = QuestDef.Define
             end
         end,
     },
-    SpawnPoolJob = function(quest, pool_name, spawn_as_inactive, spawn_as_challenge)
+    SpawnPoolJob = function(quest, pool_name, excluded_ids, spawn_as_inactive, spawn_as_challenge)
         local event_id = pool_name
         local attempt_quest_ids = {}
+        local all_quest_ids = {}
+        excluded_ids = excluded_ids or {}
         for k, questdef in pairs( Content.GetAllQuests() ) do
-            if --[[questdef.act_filter == "SMITH" and]] questdef:HasTag(pool_name) then
-                table.insert(attempt_quest_ids, questdef.id)
+            if questdef:HasTag(pool_name) and questdef.id ~= quest.param.recent_side_id then
+                if not table.arraycontains(excluded_ids, questdef.id) then
+                    table.insert(attempt_quest_ids, questdef.id)
+                end
+                table.insert(all_quest_ids, questdef.id)
             end
         end
+        -- DBG(attempt_quest_ids)
+        -- if #attempt_quest_ids == 0 then
+        --     attempt_quest_ids = all_quest_ids
+        -- end
+        -- assert(#attempt_quest_ids > 0, "No quests available")
 
         local quest_scores = {}
-        for k,v in ipairs(attempt_quest_ids) do
-            quest_scores[v] = QuestUtil.CalcQuestSpawnScore(event_id, math.floor(#attempt_quest_ids/2), v) + math.random(1,5)
+        for k,v in ipairs(all_quest_ids) do
+            quest_scores[v] = QuestUtil.CalcQuestSpawnScore(event_id, math.floor(#all_quest_ids/2), v) + math.random(1,5)
             if TheGame:GetGameState():GetQuestActivatedCount(v) > 0 then
                 quest_scores[v] = quest_scores[v] - 7
             end
@@ -269,18 +279,39 @@ local QDEF = QuestDef.Define
             end
         end
 
+        if not new_quest then
+            table.shuffle(all_quest_ids)
+            table.stable_sort(all_quest_ids, function(a,b) return quest_scores[a] < quest_scores[b] end)
+            for _, quest_id in ipairs(all_quest_ids) do
+                local overrides = {qrank = TheGame:GetGameState():GetCurrentBaseDifficulty() + (spawn_as_challenge and 1 or 0)}
+                
+                if spawn_as_inactive then
+                    new_quest = QuestUtil.SpawnInactiveQuest( quest_id, overrides) 
+                else
+                    new_quest = QuestUtil.SpawnQuest( quest_id, overrides) 
+                end
+            
+                if new_quest then
+                    TheGame:GetGameProfile():RecordIncident(event_id, new_quest:GetContentID())
+                    return new_quest
+                end
+            end
+        end
+
         return new_quest
     end,
     -- Offer jobs at certain point of the story.
     -- probably should always call this.
     OfferJobs = function(quest, cxt, job_num, pool_name, allow_challenge, can_skip)
         local jobs = {}
+        local used_ids = {}
         if cxt.enc.scratch.job_pool then
             jobs = cxt.enc.scratch.job_pool
         else
             for k = 1, job_num do
-                local new_job = quest:DefFn("SpawnPoolJob", pool_name, true, k == 1 and allow_challenge)
+                local new_job = quest:DefFn("SpawnPoolJob", pool_name, used_ids, true, k == 1 and allow_challenge)
                 if new_job then
+                    table.insert(used_ids, new_job:GetContentID())
                     table.insert(jobs, new_job)
                 end
             end
@@ -309,6 +340,7 @@ local QDEF = QuestDef.Define
             end
         end, function(cxt, jobs_presented, job_picked) 
             cxt.quest.param.current_job = job_picked
+            quest.param.recent_side_id = job_picked:GetContentID()
             cxt.quest:Complete("get_job")
             -- cxt.quest:Activate("do_job")
             --cxt:PlayQuestConvo(cxt.quest.param.job, QUEST_CONVO_HOOK.INTRO)
