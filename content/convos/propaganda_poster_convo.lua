@@ -99,6 +99,7 @@ Convo("PROPAGANDA_POSTER_CONVO")
                     end
                     cxt:Opt("OPT_WATCH")
                         :Negotiation{
+                            cooldown = 0,
                             -- target_agent = cxt:GetCastMember("agent"),
                             on_start_negotiation = function(minigame)
                                 propaganda_mod = minigame:GetPlayerNegotiator():CreateModifier("PROPAGANDA_POSTER_MODIFIER", 1)

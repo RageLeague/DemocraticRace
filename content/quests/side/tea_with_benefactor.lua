@@ -263,6 +263,7 @@ QDEF:AddConvo("go_to_diner", "benefactor")
                 cxt:GetAgent():SetTempNegotiationBehaviour(BENEFACTOR_BEHAVIOR)
             end)
             :Negotiation{
+                cooldown = 0,
                 -- flags = NEGOTIATION_FLAGS.NO_BYSTANDERS,
                 reason_fn = function(minigame)
                     return cxt:GetLocString("REASON_TALK")

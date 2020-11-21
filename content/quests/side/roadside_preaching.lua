@@ -245,6 +245,7 @@ QDEF:AddConvo("go_to_junction")
                     on_success = postProcessingFn,
                     on_fail = postProcessingFn,
                     finish_negotiation_anytime = true,
+                    cooldown = 0,
                 }
             -- cxt.quest.param.debated_people = 0
             -- cxt.quest.param.crowd = {}
