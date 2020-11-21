@@ -310,7 +310,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                 -- local grog = cxt.location
                 -- cxt.encounter:DoLocationTransition( cxt.quest:GetCastMember("player_room") )
                 -- grog:SetPlax()
-                DemocracyUtil.DoAlphaMessage()
+                -- DemocracyUtil.DoAlphaMessage()
                 ConvoUtil.DoSleep(cxt, "DIALOG_WAKE")
                 
                 cxt.quest:Complete()

@@ -152,6 +152,10 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         DIALOG_INTRO_PST = [[
             player:
                 I can see your point.
+            agent:
+                Also, do you know there's a debate coming?
+                It's a good way to ally with other candidates. And a good way to gain support.
+                In other words, it's very important.
         ]],
     }
     :Fn(function(cxt)

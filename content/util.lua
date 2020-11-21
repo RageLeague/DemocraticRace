@@ -225,7 +225,7 @@ end
 -- Get wealth based on renown.
 function DemocracyUtil.GetWealth(renown)
     if is_instance(renown, Agent) then
-        renown = renown:GetRenown() + (renown:HasTag("wealthy") and 1 or 0)
+        renown = renown:GetRenown() -- + (renown:HasTag("wealthy") and 1 or 0)
     end
     renown = renown or 1
     return clamp(math.floor(renown), 1, DemocracyConstants.wealth_levels)
@@ -756,6 +756,20 @@ function DemocracyUtil.GiveBossRewards(cxt)
                 end)
         end
     end)
+end
+
+function DemocracyUtil.GetVoterIntentionIndex(data)
+    local faction, wealth
+    if data.agent then
+        faction = data.agent:GetFactionID()
+        wealth = DemocracyUtil.GetWealth(agent)
+    end
+    if data.faction then
+        faction = type(data.faction) == "string" and data.faction or data.faction.id
+    end
+    if data.wealth then
+        wealth = DemocracyUtil.GetWealth(data.wealth)
+    end
 end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
