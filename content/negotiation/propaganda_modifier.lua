@@ -144,7 +144,7 @@ Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
         end
         self:NotifyChanged()
     end,
-    OnBeginTurn = function( self, minigame )
+    OnEndTurn = function( self, minigame )
         self.cards_played = {}
         for i = 1, self:GetPlayPerTurn() do
             if not self.turn_unapplied then -- might run into issues if this is not in.

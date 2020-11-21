@@ -78,10 +78,11 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 
 [h3]0.1.2[/h3]
 
-* Rebalance the propagandanda side quest so that more cards are played each turn. Hopefully we can see the player win, and maybe they can keep winning for a few days.
+* Rebalance the propagandanda side quest so that more cards are played each turn. Hopefully we can see the player win, and maybe they can keep winning for a few days until needing to take them down.
 * Added two new modifiers to propaganda posters: Superficial and Thought-Provoking.
-* Reworded player advantage to indicate it's not so good for you if you win by delaying enough time.
+* Clarify wordings of various modifiers.
 * Fixed bug where propaganda poster modifiers aren't actually working.
+* Fixed strike organizing dialogs.
 
 [h3]0.1.1(Day 1 hotfix lol)[/h3]
 

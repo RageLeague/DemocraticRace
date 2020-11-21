@@ -205,9 +205,9 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "await_strike",
     title = "Await the strike",
-    desc = "The strike happens {1#relative_time}. Be prepared.",
+    desc = "The strike happens {1#relative_time}. {2#agent_list} will be there. Be prepared.",
     desc_fn = function(quest, str) 
-        return loc.format(str, (quest.param.strike_time or 0) - Now())
+        return loc.format(str, (quest.param.strike_time or 0) - Now(), quest.param.strike_people or {})
     end,
 }
 :AddObjective{
@@ -605,7 +605,9 @@ QDEF:AddConvo("organize_strike")
                 So, when are we striking?
             player:
             {not strike_time?
+                !forgetful
                 Uh...
+                !bashful
                 Haven't decided yet.
                 Let me think...
             }
@@ -626,11 +628,29 @@ QDEF:AddConvo("organize_strike")
         ]],
     }
     :Hub(function(cxt, who)
-        if who and who:GetRenown() <= 1 and not (cxt.quest.param.strike_people and table.arraycontains(cxt.quest.param.strike_people, who))
-            and (who:GetFactionID() == "FEUD_CITIZEN" or who:GetFactionID() == "RISE") and
-            not who == cxt:GetCastMember("worker") then
+        -- if who then
+        --     print("Talking to:", who)
+        --     print("Renown:", who:GetRenown())
+        --     print("Is Striking:", (cxt.quest.param.strike_people and table.arraycontains(cxt.quest.param.strike_people, who)))
+        --     print("Faction ID:", who:GetFactionID(), (who:GetFactionID() == "FEUD_CITIZEN" or who:GetFactionID() == "RISE"))
+        --     print("Is cast:", who == cxt:GetCastMember("worker"))
+        -- end
+        -- print(who and who:GetRenown() <= 1 and not (cxt.quest.param.strike_people and table.arraycontains(cxt.quest.param.strike_people, who)))
+        -- print(who and who:GetRenown() <= 1 and not (cxt.quest.param.strike_people and table.arraycontains(cxt.quest.param.strike_people, who))
+        -- and (who:GetFactionID() == "FEUD_CITIZEN" or who:GetFactionID() == "RISE"))
+        if who and not AgentUtil.HasPlotArmour(who) and not (cxt.quest.param.strike_people and table.arraycontains(cxt.quest.param.strike_people, who))
+            and ((who:GetFactionID() == "FEUD_CITIZEN" and who:GetRenown() <= 1) or who:GetFactionID() == "RISE") and
+            who ~= cxt:GetCastMember("worker") then
+                -- print("Satisfy all conditions")
+            local helpers = {}
+            for i, striker in ipairs(cxt.quest.param.strike_people or {}) do
+                if cxt.location == striker:GetLocation() then
+                    table.insert(helpers, striker)
+                end
+            end
             cxt:BasicNegotiation("STRIKE", {
-
+                helpers = helpers,
+                hinders = {cxt.location == cxt:GetCastMember("foreman"):GetLocation() and cxt:GetCastMember("foreman")},
             }):OnSuccess()
                 :Fn(function(cxt)
                     local function pst(cxt)
@@ -659,7 +679,7 @@ QDEF:AddConvo("organize_strike")
                             cxt:Opt("OPT_SET_TIME", t - Now())
                                 :Fn(function(cxt)
                                     cxt.quest.param.strike_time = t
-                                    cxt.quest.Activate("await_strike")
+                                    cxt.quest:Activate("await_strike")
                                 end)
                                 :Fn(pst)
                         end
