@@ -76,6 +76,13 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 
 ## Changelog
 
+### 0.1.3
+
+* Fix bug where choosing ignore in a political dilemma causes game to crash.
+* (Hopefully) fix bug where game crash after first round of preaching.(I think it's because the max range is smaller than the min range? I'm not sure what caused it.)
+* (Hopefully) guarantee a negotiation card when offering an item as a boon.
+* Revert the change made to the number of cards played by propaganda each turn.
+
 ### 0.1.2
 
 * Rebalance the propagandanda side quest so that more cards are played each turn. Hopefully we can see the player win, and maybe they can keep winning for a few days until needing to take them down.

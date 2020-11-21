@@ -704,7 +704,58 @@ function DemocracyUtil.PopulateTheater(quest, location, num_patrons, cast_id)
         quest:GetCastMember(cast_id):GetBrain():SendToPatronize(location)
     end
 end
-function DemocracyUtil.DoEnding()
+
+function DemocracyUtil.GetBossGrafts(num_boss, num_total, owner)
+    local used_graft_ids = {}
+    local grafts = {}
+    owner = owner or TheGame:GetGameState():GetPlayerAgent()
+    
+    for k = 1, num_total do
+        
+        local collection
+        if k <= num_boss then
+            local rarity = CARD_RARITY.BOSS
+            collection = GraftCollection.BossGrafts(owner, function(graft_def)
+                return table.arrayfind(used_graft_ids, graft_def.id) == nil
+            end):Rarity(rarity):Filter(function(graft_def)
+                return graft_def.type ~= GRAFT_TYPE.COMBAT
+            end)
+        else
+            local prob = GRAFT_DROP_RARITY[4]
+            local rarity = weighted_arraypick(prob)
+            collection = GraftCollection.Rewardable(owner, function(graft_def)
+                return table.arrayfind(used_graft_ids, graft_def.id) == nil
+            end):Rarity(rarity)
+        end
+        local graft = collection:Generate(1)[1]
+        
+        if graft then
+            table.insert(grafts, graft)
+            table.insert(used_graft_ids, graft.id)
+        end
+    end
+    table.shuffle(grafts)
+    return grafts
+end
+function DemocracyUtil.GiveBossRewards(cxt)
+    cxt:Run(function() 
+        cxt.enc:WaitOnLine()
+
+        local grafts = DemocracyUtil.GetBossGrafts(2, TheGame:GetGameState():GetGraftDraftDetails().count)
+        if #grafts > 0 then
+            cxt:Opt("OPT_GET_GRAFT")
+                :PreIcon( global_images.receiving )
+                :Fn(function() 
+                    local popup = Screen.PickGraftScreen(grafts, false, function(...) cxt.enc:ResumeEncounter(...) end)
+                    TheGame:FE():InsertScreen( popup )
+                    local chosen_graft = cxt.enc:YieldEncounter()
+                    if chosen_graft then
+                        cxt:Dialog("DIALOG_PLAYER_INSTALL_GRAFT", chosen_graft)
+                        return chosen_graft
+                    end
+                end)
+        end
+    end)
 end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
@@ -721,7 +772,7 @@ end
 
 function ConvoOption:DeltaSupport(amt, target, ignore_notification)
     self:Fn(function()
-        TryMainQuestFn("DeltaSupport", amt, target, ignore_notification)
+        DemocracyUtil.TryMainQuestFn("DeltaSupport", amt, target, ignore_notification)
     end)
     return self
 end

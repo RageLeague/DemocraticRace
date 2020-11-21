@@ -431,7 +431,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     on_success = function(cxt, minigame)
                         cxt:Dialog("DIALOG_HELP_ARRIVE")
                         cxt.quest:GetCastMember("assassin"):MoveToLimbo()
-                        ConvoUtil.GiveBossRewards(cxt)
+                        DemocracyUtil.GiveBossRewards(cxt)
                         cxt:GoTo("STATE_RESUME_SLEEP")
                     end,
                     on_fail = function(cxt, minigame)
@@ -479,7 +479,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                                 if cxt.quest.param.help_called then
                                     cxt.player:Remember("SAVED_BY_ADMIRALTY", cxt.quest:GetCastMember("responder"))
                                 end
-                                ConvoUtil.GiveBossRewards(cxt)
+                                DemocracyUtil.GiveBossRewards(cxt)
                                 cxt:GoTo("STATE_RESUME_SLEEP")
                             end,
                         }
@@ -581,7 +581,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                 :OnSuccess()
                 :Fn(function(cxt)
                     cxt.quest:GetCastMember("responder"):MoveToLimbo()
-                    ConvoUtil.GiveBossRewards(cxt)
+                    DemocracyUtil.GiveBossRewards(cxt)
                 end)
                 :GoTo("STATE_RESUME_SLEEP")
             
@@ -593,7 +593,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     :Fn(function(cxt)
                         cxt.quest.param.dead_body = true
                         cxt.player:Remember("ASSAULTED_ADMIRALTY", cxt.quest:GetCastMember("responder"))
-                        ConvoUtil.GiveBossRewards(cxt)
+                        DemocracyUtil.GiveBossRewards(cxt)
                     end)
                     :GoTo("STATE_RESUME_SLEEP")
             cxt:Opt("OPT_ACCEPT_ARREST")

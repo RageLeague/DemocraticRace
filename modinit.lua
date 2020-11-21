@@ -208,4 +208,9 @@ return {
     title = "The Democratic Race",
     description = "The Pioneer campaign mod for the (currently) Early Access game Griftlands, Democratic Race is a mod for Griftlands that adds a negotiation based campaign mode to the game, in contrast to the direct combat.",
     previewImagePath = "preview.png",
+
+    load_after = {
+        -- both modify graft rewards, but CCC overrides the change.
+        "CrossCharacterCampaign",
+    },
 }

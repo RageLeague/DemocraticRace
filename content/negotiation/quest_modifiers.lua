@@ -140,12 +140,12 @@ local MODIFIERS =
             BONUS_BRIBED = "<#BONUS><b>{1.name} is bribed.</> {2} max resolve.</>",
         },
         delta_max_resolve = {
-            [RELATIONSHIP.LOVED] = -10,
-            [RELATIONSHIP.LIKED] = -5,
-            [RELATIONSHIP.DISLIKED] = 5,
-            [RELATIONSHIP.HATED] = 10,
+            [RELATIONSHIP.LOVED] = -8,
+            [RELATIONSHIP.LIKED] = -4,
+            [RELATIONSHIP.DISLIKED] = 4,
+            [RELATIONSHIP.HATED] = 8,
         },
-        bribe_delta = -5,
+        bribe_delta = -4,
         key_maps = {
             [RELATIONSHIP.LOVED] = "BONUS_LOVED",
             [RELATIONSHIP.LIKED] = "BONUS_LIKED",
@@ -188,7 +188,7 @@ local MODIFIERS =
         SetAgent = function (self, agent)
             local difficulty = self.engine and self.engine:GetDifficulty() or 1
             self.target_agent = agent
-            self.max_resolve = difficulty * 6 + 6
+            self.max_resolve = difficulty * 5 + 7
             self.annoyed_threshold = self.max_resolve - (difficulty) * 4
             self.annoyed_threshold = math.max(1, self.annoyed_threshold)
             if agent:HasAspect("bribed") then
@@ -213,6 +213,9 @@ local MODIFIERS =
             if agent:HasAspect("bribed") then
                 self.max_persuasion = self.max_persuasion - 1
             end
+
+            -- ensures max_persuasion is greater than min_persuasion
+            self.max_persuasion = math.max(self.min_persuasion, self.max_persuasion)
 
             if ALLY_IMAGES[agent:GetContentID()] then
                 self.icon = ALLY_IMAGES[agent:GetContentID()]
