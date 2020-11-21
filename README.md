@@ -76,6 +76,13 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 
 ## Changelog
 
+### 0.1.4(Misc balance adjustments)
+
+* Filter out combat grafts as rewards and combat cards as gifts.
+* Disable cooldowns for negotiations so you won't soft lock.
+* Guarantees that every quest offered are different(if there are more available side quests than the number offered).
+* Relationship change of the primary advisor no longer causes support change.
+
 ### 0.1.3
 
 * Fix bug where choosing ignore in a political dilemma causes game to crash.

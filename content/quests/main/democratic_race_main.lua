@@ -178,7 +178,9 @@ local QDEF = QuestDef.Define
             -- end
         end,
         agent_relationship_changed = function( quest, agent, old_rel, new_rel )
-
+            if agent == quest:GetCastMember("primary_advisor") then
+                return
+            end
             local support_delta = DELTA_SUPPORT[new_rel] - DELTA_SUPPORT[old_rel]
             if support_delta ~= 0 then
                 quest:DefFn("DeltaAgentSupport", support_delta, agent, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
