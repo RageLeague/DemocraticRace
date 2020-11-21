@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.1.2(Alpha)
+Version: 0.1.3(Alpha)
 
 Author: RageLeague
 
@@ -75,6 +75,15 @@ With the new official workshop support, you can directly install mods from steam
 Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues. As such, it will be more stable.
 
 [h2]Changelog[/h2]
+
+[h3]0.1.3[/h3]
+
+* Fix bug where choosing ignore in a political dilemma causes game to crash.
+* (Hopefully) fix bug where game crash after first round of preaching.(I think it's because the max range is smaller than the min range? I'm not sure what caused it.)
+* (Hopefully) guarantee a negotiation card when offering an item as a boon.
+* Revert the change made to the number of cards played by propaganda each turn.
+* Filter out battle cards from gifts and graft pools.
+* Tweaked the preach quest a bit. Let me know if the balance is better now.
 
 [h3]0.1.2[/h3]
 

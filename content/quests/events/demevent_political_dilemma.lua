@@ -6,8 +6,8 @@ local QDEF = QuestDef.Define
     precondition = function(quest)
         local issues = DemocracyConstants.issue_data
         quest.param.issue = table.arraypick(copyvalues(issues))
-        
-        return true
+        assert_warning(is_instance(quest.param.issue, DemocracyClass.IssueLocDef), "Invalid class for quest.param.issue")
+        return is_instance(quest.param.issue, DemocracyClass.IssueLocDef), "Invalid class for quest.param.issue"
     end,
     on_init = function(quest)
 
