@@ -286,6 +286,9 @@ function DemocracyUtil.TryMainQuestFn(id, ...)
         -- print(loc.format("Call main quest fn: {1} (params: {2#listing})", id, arguments))
     -- print(ok, id, ...)
     -- print(result)
+    if not ok then
+        print(result)
+    end
     return result
 end
 
