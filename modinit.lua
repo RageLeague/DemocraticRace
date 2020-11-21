@@ -198,7 +198,7 @@ local function OnPreLoad( mod )
 end
 -- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {
-    version = "0.1.2",
+    version = "0.1.3",
     alias = "DEMOCRATICRACE",
     
     OnLoad = OnLoad,
@@ -208,4 +208,9 @@ return {
     title = "The Democratic Race",
     description = "The Pioneer campaign mod for the (currently) Early Access game Griftlands, Democratic Race is a mod for Griftlands that adds a negotiation based campaign mode to the game, in contrast to the direct combat.",
     previewImagePath = "preview.png",
+
+    load_after = {
+        -- both modify graft rewards, but CCC overrides the change.
+        "CrossCharacterCampaign",
+    },
 }

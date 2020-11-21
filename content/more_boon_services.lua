@@ -57,3 +57,22 @@ BOON_SERVICES.SOCIALIZE_NO_LOVE =
             :DoneConvo()
     end
 }
+
+local old_give_init = BOON_SERVICES.GIVE_ITEM.on_init
+
+BOON_SERVICES.GIVE_ITEM.on_init = function(quest, ...)
+    if DemocracyUtil.IsDemocracyCampaign() then
+        local count = 0
+        while not (quest.param.item and Content.GetNegotiationCard( quest.param.item )) do
+            if count > 50 then
+                quest.param.item = "liquid_courage"
+                assert_warning(false, "Failed to get a negotiation item card. Default to liquid_courage")
+                break
+            end
+            old_give_init(quest, ...)
+            count = count + 1
+        end
+    else
+        return old_give_init(quest, ...)
+    end
+end
