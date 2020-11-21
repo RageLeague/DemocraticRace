@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.1.2(Alpha)
+Version: 0.1.3(Alpha)
 
 Author: RageLeague
 
@@ -82,6 +82,8 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * (Hopefully) fix bug where game crash after first round of preaching.(I think it's because the max range is smaller than the min range? I'm not sure what caused it.)
 * (Hopefully) guarantee a negotiation card when offering an item as a boon.
 * Revert the change made to the number of cards played by propaganda each turn.
+* Filter out battle cards from gifts and graft pools.
+* Tweaked the preach quest a bit. Let me know if the balance is better now.
 
 ### 0.1.2
 
