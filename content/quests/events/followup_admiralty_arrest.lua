@@ -838,7 +838,7 @@ QDEF:AddConvo("action")
                 target:
                     Seriously?
                 player:
-                    Serioiusly.
+                    Seriously.
                 target:
                     You made a huge mistake, letting me go.
                     !exit
@@ -1539,12 +1539,79 @@ QDEF:AddConvo("escort")
             DIALOG_INTRO = [[
                 player:
                     !left
-                    Wait, this isn't {station#location}.
-                    Oh well.
+                {not ad_dead?
+                    admiralty:
+                        !right
+                        Wait, this isn't {station#location}.
+                        Do you have anything better to do?
+                    {not target_dead?
+                        If so, I can take it from here.
+                    }
+                    {target_dead?
+                        If so, I'll leave.
+                    }
+                }
+                {ad_dead?
+                    target:
+                        !right
+                        !injured
+                        What is this? This isn't {station#location}.
+                        What do you want from me?
+                }
+            ]],
+            OPT_LEAVE_AD = "Leave {admiralty}",
+            DIALOG_LEAVE_AD = [[
+                player:
+                    Yeah, I'm really busy.
+                {target_dead?
+                    You can leave now. Do your Admiralty stuff or whatever.
+                    |
+                    You can take it from here. Take {target} to the station.
+                }
+                admiralty:
+                    Alright then.
+                    !exit
+            ]],
+            OPT_LET_TARGET_GO = "Let {target} go",
+            DIALOG_LET_GO = [[
+                player:
+                    I'm not the Admiralty, so I really have no place to arrest you.
+                agent:
+                    Seriously?
+                    After all that, and you're just lettimg me go?
+                player:
+                    Well, yeah.
+                agent:
+                    You are a weird one, {player}.
+                    But just because you let me go, doesn't mean I'll forgive you.
+                    You caused me way too much trouble that I otherwise don't have.
+                    !exit
+                * You wonder if you made the right decision.
             ]],
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
+            if cxt:GetCastMember("admiralty"):IsDead() then
+                cxt:Opt("OPT_LET_TARGET_GO")
+                    :Dialog("DIALOG_LET_GO")
+                    :CompleteQuest()
+                    :DoneConvo()
+            else
+                cxt:Opt("OPT_LEAVE_AD")
+                    :Dialog("DIALOG_LEAVE_AD")
+                    :Fn(function(cxt)
+                        local target = cxt.quest:GetCastMember("target")
+                        if not target:IsDead() then
+                            target:GainAspect("stripped_influence", 5)
+                            target:OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
+                            target:Retire()
+                        end
+                        cxt.quest:GetCastMember("admiralty"):MoveToLocation(cxt.quest:GetCastMember("station"))
+                        DoPromoteAdmiralty(cxt)
+                        cxt.quest:Complete()
+                        StateGraphUtil.AddEndOption(cxt)
+                    end)
+            end
             StateGraphUtil.AddLeaveLocation(cxt)
         end)
     :State("STATE_ARRIVE")
