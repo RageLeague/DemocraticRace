@@ -136,10 +136,30 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "innocent",
 }
+:Loc{
+    DESC_AD_AND_TARGET = "Follow {admiralty} and bring {target} to {station#location}",
+    DESC_AD = "Follow {admiralty} to {station#location}",
+    DESC_TARGET = "Bring {target} to {station#location}"
+}
 :AddObjective{
     id = "escort",
     title = "Go to the station",
     desc = "Go to {station}",
+    desc_fn = function(quest, fmt_str)
+        if quest.param.ad_dead then
+            if not quest.param.target_dead then
+                return quest:GetLocalizedStr( "DESC_TARGET" )
+            end
+        else
+            if quest.param.target_dead then
+                return quest:GetLocalizedStr( "DESC_AD" )
+            else
+                return quest:GetLocalizedStr( "DESC_AD_AND_TARGET" )
+            end
+        end
+        return fmt_str
+    end,
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/followup_admiralty_arrest.png"),
     on_activate = function(quest)
         quest:SetHideInOverlay(false)
         if quest:GetCastMember("admiralty"):IsAlive() then
@@ -1181,6 +1201,7 @@ QDEF:AddConvo("action")
                     :Battle{
                         enemies = target:GetParty() and target:GetParty():GetMembers() or {target},
                     }:OnWin()
+                        :Fn(function(cxt) cxt.quest.param.target_dead = target:IsDead() end)
                         :Dialog("DIALOG_ATTACK_WIN")
                         :GoTo("STATE_PROMOTION")
                 if cxt.quest:GetCastMember("target"):GetRelationship() > RELATIONSHIP.HATED then
