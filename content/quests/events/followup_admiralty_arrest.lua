@@ -1173,11 +1173,13 @@ QDEF:AddConvo("action")
             ]],
         }
         :Fn(function(cxt)
+            local target = cxt.quest:GetCastMember("target")
+            local admiralty = cxt.quest:GetCastMember("admiralty")
             local function AttackPhase(cxt)
                 cxt:Opt("OPT_ATTACK")
                     :Dialog("DIALOG_ATTACK")
                     :Battle{
-                        enemies = admiralty:GetParty() and admiralty:GetParty():GetMembers() or {admiralty},
+                        enemies = target:GetParty() and target:GetParty():GetMembers() or {target},
                     }:OnWin()
                         :Dialog("DIALOG_ATTACK_WIN")
                         :GoTo("STATE_PROMOTION")
@@ -1401,7 +1403,7 @@ QDEF:AddConvo("action")
             DIALOG_BRUSH_OFF = [[
                 player:
                     !handwave
-                    Don't worry about it.
+                    [p] Don't worry about it.
                 agent:
                     Now worrying is all I care about.
                     !angry_accuse
@@ -1423,7 +1425,7 @@ QDEF:AddConvo("action")
             DIALOG_EXCUSE_SUCCESS = [[
                 agent:
                     You talked a lot, and I think I heard enough.
-                    It's probably a blame tactics, anyway.
+                    {admiralty} was probably just finding someone to blame.
                 player:
                     Sure, let's go with that.
                 agent:
@@ -1555,7 +1557,7 @@ QDEF:AddConvo("escort")
                 {ad_dead?
                     {not target_dead?
                         agent:
-                            Who's this?
+                            [p]Who's this?
                         player:
                             A criminal. {admiralty} and I captured {target.himher} together.
                         agent:
@@ -1570,29 +1572,31 @@ QDEF:AddConvo("escort")
                 {not ad_dead?
                     {target_dead?
                         agent:
-                            What's going on?
+                            [p] What's going on?
                         admiralty:
                             !left
                             We killed {target}.
                         agent:
                             Oh nice!
                         {high_bounty?
-                            {admiralty}, you're hearby promoted.
+                            [p] {admiralty}, you're hearby promoted.
                         admiralty:
+                            !left
                             Sweet!
                         }
                     }
                     {not target_dead?
                         agent:
-                            Who's this?
+                            [p] Who's this?
                         player:
                             A criminal that {admiralty} and I captured.
                         agent:
                             Well done!
                         {high_bounty?
-                            We've had our eyes on {target} for a while now. I'm glad you can bring {target.himher} in alive.
+                            [p] We've had our eyes on {target} for a while now. I'm glad you can bring {target.himher} in alive.
                             {admiralty}, you're hearby promoted.
                         admiralty:
+                            !left
                             Sweet!
                         }
                         agent:
