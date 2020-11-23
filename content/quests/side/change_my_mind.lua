@@ -592,6 +592,7 @@ QDEF:AddConvo("debate_people")
             cxt:Opt("OPT_CONVINCE")
                 :Dialog("DIALOG_CONVINCE")
                 :Negotiation{
+                    cooldown = 0,
                     on_success = function(cxt)
                         cxt:Dialog("DIALOG_CONVINCE_WIN")
                         cxt.quest:Complete()

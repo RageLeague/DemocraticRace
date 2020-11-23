@@ -136,10 +136,30 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "innocent",
 }
+:Loc{
+    DESC_AD_AND_TARGET = "Follow {admiralty} and bring {target} to {station#location}",
+    DESC_AD = "Follow {admiralty} to {station#location}",
+    DESC_TARGET = "Bring {target} to {station#location}"
+}
 :AddObjective{
     id = "escort",
     title = "Go to the station",
     desc = "Go to {station}",
+    desc_fn = function(quest, fmt_str)
+        if quest.param.ad_dead then
+            if not quest.param.target_dead then
+                return quest:GetLocalizedStr( "DESC_TARGET" )
+            end
+        else
+            if quest.param.target_dead then
+                return quest:GetLocalizedStr( "DESC_AD" )
+            else
+                return quest:GetLocalizedStr( "DESC_AD_AND_TARGET" )
+            end
+        end
+        return fmt_str
+    end,
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/followup_admiralty_arrest.png"),
     on_activate = function(quest)
         quest:SetHideInOverlay(false)
         if quest:GetCastMember("admiralty"):IsAlive() then
@@ -838,7 +858,7 @@ QDEF:AddConvo("action")
                 target:
                     Seriously?
                 player:
-                    Serioiusly.
+                    Seriously.
                 target:
                     You made a huge mistake, letting me go.
                     !exit
@@ -1173,12 +1193,15 @@ QDEF:AddConvo("action")
             ]],
         }
         :Fn(function(cxt)
+            local target = cxt.quest:GetCastMember("target")
+            local admiralty = cxt.quest:GetCastMember("admiralty")
             local function AttackPhase(cxt)
                 cxt:Opt("OPT_ATTACK")
                     :Dialog("DIALOG_ATTACK")
                     :Battle{
-                        enemies = admiralty:GetParty() and admiralty:GetParty():GetMembers() or {admiralty},
+                        enemies = target:GetParty() and target:GetParty():GetMembers() or {target},
                     }:OnWin()
+                        :Fn(function(cxt) cxt.quest.param.target_dead = target:IsDead() end)
                         :Dialog("DIALOG_ATTACK_WIN")
                         :GoTo("STATE_PROMOTION")
                 if cxt.quest:GetCastMember("target"):GetRelationship() > RELATIONSHIP.HATED then
@@ -1401,7 +1424,7 @@ QDEF:AddConvo("action")
             DIALOG_BRUSH_OFF = [[
                 player:
                     !handwave
-                    Don't worry about it.
+                    [p] Don't worry about it.
                 agent:
                     Now worrying is all I care about.
                     !angry_accuse
@@ -1423,7 +1446,7 @@ QDEF:AddConvo("action")
             DIALOG_EXCUSE_SUCCESS = [[
                 agent:
                     You talked a lot, and I think I heard enough.
-                    It's probably a blame tactics, anyway.
+                    {admiralty} was probably just finding someone to blame.
                 player:
                     Sure, let's go with that.
                 agent:
@@ -1537,12 +1560,79 @@ QDEF:AddConvo("escort")
             DIALOG_INTRO = [[
                 player:
                     !left
-                    Wait, this isn't {station#location}.
-                    Oh well.
+                {not ad_dead?
+                    admiralty:
+                        !right
+                        Wait, this isn't {station#location}.
+                        Do you have anything better to do?
+                    {not target_dead?
+                        If so, I can take it from here.
+                    }
+                    {target_dead?
+                        If so, I'll leave.
+                    }
+                }
+                {ad_dead?
+                    target:
+                        !right
+                        !injured
+                        What is this? This isn't {station#location}.
+                        What do you want from me?
+                }
+            ]],
+            OPT_LEAVE_AD = "Leave {admiralty}",
+            DIALOG_LEAVE_AD = [[
+                player:
+                    Yeah, I'm really busy.
+                {target_dead?
+                    You can leave now. Do your Admiralty stuff or whatever.
+                    |
+                    You can take it from here. Take {target} to the station.
+                }
+                admiralty:
+                    Alright then.
+                    !exit
+            ]],
+            OPT_LET_TARGET_GO = "Let {target} go",
+            DIALOG_LET_GO = [[
+                player:
+                    I'm not the Admiralty, so I really have no place to arrest you.
+                agent:
+                    Seriously?
+                    After all that, and you're just lettimg me go?
+                player:
+                    Well, yeah.
+                agent:
+                    You are a weird one, {player}.
+                    But just because you let me go, doesn't mean I'll forgive you.
+                    You caused me way too much trouble that I otherwise don't have.
+                    !exit
+                * You wonder if you made the right decision.
             ]],
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
+            if cxt:GetCastMember("admiralty"):IsDead() then
+                cxt:Opt("OPT_LET_TARGET_GO")
+                    :Dialog("DIALOG_LET_GO")
+                    :CompleteQuest()
+                    :DoneConvo()
+            else
+                cxt:Opt("OPT_LEAVE_AD")
+                    :Dialog("DIALOG_LEAVE_AD")
+                    :Fn(function(cxt)
+                        local target = cxt.quest:GetCastMember("target")
+                        if not target:IsDead() then
+                            target:GainAspect("stripped_influence", 5)
+                            target:OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
+                            target:Retire()
+                        end
+                        cxt.quest:GetCastMember("admiralty"):MoveToLocation(cxt.quest:GetCastMember("station"))
+                        DoPromoteAdmiralty(cxt)
+                        cxt.quest:Complete()
+                        StateGraphUtil.AddEndOption(cxt)
+                    end)
+            end
             StateGraphUtil.AddLeaveLocation(cxt)
         end)
     :State("STATE_ARRIVE")
@@ -1555,7 +1645,7 @@ QDEF:AddConvo("escort")
                 {ad_dead?
                     {not target_dead?
                         agent:
-                            Who's this?
+                            [p]Who's this?
                         player:
                             A criminal. {admiralty} and I captured {target.himher} together.
                         agent:
@@ -1570,29 +1660,31 @@ QDEF:AddConvo("escort")
                 {not ad_dead?
                     {target_dead?
                         agent:
-                            What's going on?
+                            [p] What's going on?
                         admiralty:
                             !left
                             We killed {target}.
                         agent:
                             Oh nice!
                         {high_bounty?
-                            {admiralty}, you're hearby promoted.
+                            [p] {admiralty}, you're hearby promoted.
                         admiralty:
+                            !left
                             Sweet!
                         }
                     }
                     {not target_dead?
                         agent:
-                            Who's this?
+                            [p] Who's this?
                         player:
                             A criminal that {admiralty} and I captured.
                         agent:
                             Well done!
                         {high_bounty?
-                            We've had our eyes on {target} for a while now. I'm glad you can bring {target.himher} in alive.
+                            [p] We've had our eyes on {target} for a while now. I'm glad you can bring {target.himher} in alive.
                             {admiralty}, you're hearby promoted.
                         admiralty:
+                            !left
                             Sweet!
                         }
                         agent:
