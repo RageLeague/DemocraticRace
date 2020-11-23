@@ -57,11 +57,11 @@ local MAX_DAYS = #DAY_SCHEDULE-- 5
 -- Determines the support level change when an agent's relationship changes.
 -- The general support changes by this amount, while the faction and wealth support changes by double this amount.
 local DELTA_SUPPORT = {
-    [RELATIONSHIP.LOVED] = 8,
+    [RELATIONSHIP.LOVED] = 6,
     [RELATIONSHIP.LIKED] = 3,
     [RELATIONSHIP.NEUTRAL] = 0,
     [RELATIONSHIP.DISLIKED] = -3,
-    [RELATIONSHIP.HATED] = -8,
+    [RELATIONSHIP.HATED] = -6,
 }
 -- Determines the support level change when an agent is killed.
 local DEATH_DELTA = -10
@@ -140,6 +140,11 @@ local QDEF = QuestDef.Define
         QuestUtil.SpawnQuest("CAMPAIGN_RANDOM_COIN_FIND")
 
         QuestUtil.SpawnQuest("SAL_STORY_MERCHANTS")
+        -- populate all locations.
+        -- otherwise there's a lot of bartenders attending the first change my mind quest for some dumb reason.
+        for i, location in TheGame:GetGameState():AllLocations() do
+            LocationUtil.PopulateLocation( location )
+        end
         QuestUtil.DoNextDay(DAY_SCHEDULE, quest, quest.param.start_on_day )
         
         DoAutoSave()
@@ -173,6 +178,9 @@ local QDEF = QuestDef.Define
             -- end
         end,
         agent_relationship_changed = function( quest, agent, old_rel, new_rel )
+            if agent == quest:GetCastMember("primary_advisor") then
+                return
+            end
             local support_delta = DELTA_SUPPORT[new_rel] - DELTA_SUPPORT[old_rel]
             if support_delta ~= 0 then
                 quest:DefFn("DeltaAgentSupport", support_delta, agent, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
@@ -181,6 +189,11 @@ local QDEF = QuestDef.Define
             --     TheGame:GetGameState():GetCaravan():DeltaMaxResolve(1)
             -- end
         end,
+        card_added = function( quest, card )
+            if card.murder_card then
+                quest:DefFn("DeltaGeneralSupport", DEATH_DELTA, "MURDER")
+            end
+        end,
         resolve_battle = function( quest, battle, primary_enemy, repercussions )
             for i, fighter in battle:AllFighters() do
                 local agent = fighter.agent
@@ -188,7 +201,8 @@ local QDEF = QuestDef.Define
                     if CheckBits( battle:GetScenario():GetFlags(), BATTLE_FLAGS.ISOLATED ) then
                         quest:DefFn("DeltaAgentSupport", ISOLATED_DEATH_DELTA, agent, "SUSPICION")
                     elseif fighter:GetKiller() and fighter:GetKiller():IsPlayer() then
-                        quest:DefFn("DeltaAgentSupport", DEATH_DELTA, agent, "MURDER")
+                        -- killing already comes with a heavy drawback of someone hating you, thus reducing support significantly.
+                        -- quest:DefFn("DeltaAgentSupport", DEATH_DELTA, agent, "MURDER")
                     else
                         if fighter:GetTeamID() == TEAM.BLUE then
                             quest:DefFn("DeltaAgentSupport", ACCOMPLICE_KILLING_DELTA, agent, "NEGLIGENCE")
@@ -200,7 +214,7 @@ local QDEF = QuestDef.Define
             end
             if not CheckBits( battle:GetScenario():GetFlags(), battle_defs.BATTLE_FLAGS.SELF_DEFENCE ) then
                 -- Being aggressive hurts your reputation
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -10, "ATTACK")
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5, "ATTACK")
             end
         end,
         action_clock_advance = function(quest, location)
@@ -223,18 +237,31 @@ local QDEF = QuestDef.Define
             end
         end,
     },
-    SpawnPoolJob = function(quest, pool_name, spawn_as_inactive, spawn_as_challenge)
+    SpawnPoolJob = function(quest, pool_name, excluded_ids, spawn_as_inactive, spawn_as_challenge)
         local event_id = pool_name
         local attempt_quest_ids = {}
+        local all_quest_ids = {}
+        excluded_ids = excluded_ids or {}
         for k, questdef in pairs( Content.GetAllQuests() ) do
-            if --[[questdef.act_filter == "SMITH" and]] questdef:HasTag(pool_name) then
-                table.insert(attempt_quest_ids, questdef.id)
+            if questdef:HasTag(pool_name) and questdef.id ~= quest.param.recent_side_id then
+                if not table.arraycontains(excluded_ids, questdef.id) then
+                    table.insert(attempt_quest_ids, questdef.id)
+                end
+                table.insert(all_quest_ids, questdef.id)
             end
         end
+        -- DBG(attempt_quest_ids)
+        -- if #attempt_quest_ids == 0 then
+        --     attempt_quest_ids = all_quest_ids
+        -- end
+        -- assert(#attempt_quest_ids > 0, "No quests available")
 
         local quest_scores = {}
-        for k,v in ipairs(attempt_quest_ids) do
-            quest_scores[v] = QuestUtil.CalcQuestSpawnScore(event_id, math.floor(#attempt_quest_ids/2), v)    
+        for k,v in ipairs(all_quest_ids) do
+            quest_scores[v] = QuestUtil.CalcQuestSpawnScore(event_id, math.floor(#all_quest_ids/2), v) + math.random(1,5)
+            if TheGame:GetGameState():GetQuestActivatedCount(v) > 0 then
+                quest_scores[v] = quest_scores[v] - 7
+            end
         end
         table.shuffle(attempt_quest_ids) --to mix up the case where there are a lot of ties
         table.stable_sort(attempt_quest_ids, function(a,b) return quest_scores[a] < quest_scores[b] end)
@@ -254,18 +281,39 @@ local QDEF = QuestDef.Define
             end
         end
 
+        if not new_quest then
+            table.shuffle(all_quest_ids)
+            table.stable_sort(all_quest_ids, function(a,b) return quest_scores[a] < quest_scores[b] end)
+            for _, quest_id in ipairs(all_quest_ids) do
+                local overrides = {qrank = TheGame:GetGameState():GetCurrentBaseDifficulty() + (spawn_as_challenge and 1 or 0)}
+                
+                if spawn_as_inactive then
+                    new_quest = QuestUtil.SpawnInactiveQuest( quest_id, overrides) 
+                else
+                    new_quest = QuestUtil.SpawnQuest( quest_id, overrides) 
+                end
+            
+                if new_quest then
+                    TheGame:GetGameProfile():RecordIncident(event_id, new_quest:GetContentID())
+                    return new_quest
+                end
+            end
+        end
+
         return new_quest
     end,
     -- Offer jobs at certain point of the story.
     -- probably should always call this.
     OfferJobs = function(quest, cxt, job_num, pool_name, allow_challenge, can_skip)
         local jobs = {}
+        local used_ids = {}
         if cxt.enc.scratch.job_pool then
             jobs = cxt.enc.scratch.job_pool
         else
             for k = 1, job_num do
-                local new_job = quest:DefFn("SpawnPoolJob", pool_name, true, k == 1 and allow_challenge)
+                local new_job = quest:DefFn("SpawnPoolJob", pool_name, used_ids, true, k == 1 and allow_challenge)
                 if new_job then
+                    table.insert(used_ids, new_job:GetContentID())
                     table.insert(jobs, new_job)
                 end
             end
@@ -294,6 +342,7 @@ local QDEF = QuestDef.Define
             end
         end, function(cxt, jobs_presented, job_picked) 
             cxt.quest.param.current_job = job_picked
+            quest.param.recent_side_id = job_picked:GetContentID()
             cxt.quest:Complete("get_job")
             -- cxt.quest:Activate("do_job")
             --cxt:PlayQuestConvo(cxt.quest.param.job, QUEST_CONVO_HOOK.INTRO)
@@ -541,7 +590,15 @@ local QDEF = QuestDef.Define
     when = QWHEN.MANUAL,
     score_fn = DemocracyUtil.OppositionScore,
     condition = function(agent, quest)
+        if agent:GetRelationship() == RELATIONSHIP.DISLIKED then
+            return math.random() < 0.1 -- sometimes we allow disliked people to hate you.
+        end
         return agent:GetRelationship() < RELATIONSHIP.LOVED and agent:GetRelationship() > RELATIONSHIP.DISLIKED
+    end,
+}
+:AddCastFallback{
+    cast_fn = function(quest, t)
+        table.insert( t, quest:CreateSkinnedAgent() )
     end,
 }
 :AddCast{

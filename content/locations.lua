@@ -58,7 +58,7 @@ Content.AddLocationContent{
     show_agents = true,
     plax = "INT_SB_Res_1",
     desc = "It's just a room in the Spark Baron Headquarters. The name is made up by the room owner because it sounded hip.",
-    icon = engine.asset.Texture("UI/location_grogndog.tex"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/locations/location_bb51b.png"),
 
     -- faction_id = "JAKES",
     exterior_loc = "BUILDING_EXTERIOR",
@@ -93,7 +93,7 @@ Content.AddLocationContent{
     show_agents = true,
     plax = "INT_RichHouse_1",
     desc = "The last bastion of critical thinking in Havaria. At least, that's what the owner claims.",
-    icon = engine.asset.Texture("UI/location_grogndog.tex"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/locations/location_cph.png"),
 
     -- faction_id = "JAKES",
     exterior_loc = "BUILDING_EXTERIOR",
@@ -128,7 +128,7 @@ Content.AddLocationContent{
     show_agents = true,
     plax = "INT_Dem_Hostile_Office",
     desc = "A lone tower sits on top of a hill. Deliberately chosen by the owner to show off their superiority.",
-    icon = engine.asset.Texture("UI/location_grogndog.tex"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/locations/location_ct.png"),
 
     -- faction_id = "JAKES",
     exterior_loc = "BUILDING_EXTERIOR",
@@ -163,7 +163,7 @@ Content.AddLocationContent{
     show_agents = true,
     plax = "INT_AuctionHouse_01",
     desc = "A place where significant events are held frequently.",
-    icon = engine.asset.Texture("UI/location_grogndog.tex"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/locations/location_grand_theater.png"),
 
     map_tags = {"city"},
     indoors = true,

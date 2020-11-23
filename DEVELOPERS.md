@@ -7,6 +7,7 @@ By: RageLeague
 ## Golden rules
 
 * Don't directly commit to master. Only **I** am allowed to do that. Fork a branch and submit a pull request, so I know what changed from your edit.
+* Submit pull requests to the dev branch instead of the master branch. The master branch is going to be the more stable version of the mod, and we only want stable changes to be pushed. We don't want any user's game to start crashing because we added a faulty feature or something like that. Any pull request directly pushed to the master branch will be rejected unless I did it.
 * Try to affect the base game or other mods as little as possible.
   * Use IDs that has low chance of colliding with other IDs, same for defining global variables.
   * Try not to change existing cards/grafts/functions, and if you have to, do it in a way that won't affect gameplay for the base game/other mods.
@@ -24,7 +25,7 @@ By: RageLeague
 
 Here lists all the different things you can work on.
 
-* Rally jobs. Rally jobs are jobs you get periodically. Each rally job applies to all ideology, and is a way to gain support or funding. See `change_my_mind.lua` for an example of a rally job. I haven't figured out the balance yet, but each rally job should hopefully give you 10~20 general support stats, as well as 2 people who likes you(on average). Some people may also dislike you on rally jobs if you did not so well.
+* Rally jobs. Rally jobs are jobs you get periodically. Each rally job applies to all ideology, and is a way to gain support or funding. See `change_my_mind.lua` for an example of a rally job. I haven't figured out the balance yet, but each rally job should hopefully give you 10 general support stats(on day 1), as well as net 1~2 people who likes you(on average). Some people may also dislike you on rally jobs if you did not so well.
 * Random events. These events randomly shows up when you travel. Because of the structure of this campaign, it is probably best if these random events tie to the fact that you're a politician, and affects the support level in various groups in some ways. If you want to start, you can copy the code from existing events and start there. Generally, random events in this campaign should focus on negotiation, with combat heavily discouraged(such as only showing up if you fail a negotiation).
 * Replacing placeholder dialogs. A lot of the dialogs right now are placeholder. These dialogs can be identified by a "[p]" at the start, and/or has improper spelling of words or grammar. Be sure that if you want to replace dialogs, they fit the lore or the characterization of important characters. You can add extra fluff to the dialogs if you know how to set up conditionals, but if you don't know how, you can always ask me and I might be able to answer.
 * Tweaking stances and support for oppositions. A lot of issue, stances and opposition support have placeholder description and/or support deltas. Feel free to tweak them, just follow some general guidelines. Every stance you take has a sum of support less than 0(although not by much), because just like in real life, every time you take a stance, people hate you than they like you. The number of factions/wealth levels that has a positive/negative support for each stances should be roughly equal, unless it's the neutral stance.
@@ -87,26 +88,31 @@ It's important that anyone who works on dialogs, quests or stories should know t
 
 ### The Grand Scheme of Things
 
-* There hasn't been a reason they decide to have democracy. All you need to know is that the election is on day 5 of the campaign and a lot of people will vote.
+* The factions decide to resolve who to rule over Havaria through an election instead of fighting. For some reason. Maybe Kalandra have something to do with it, maybe not.
+* The election is on day 5 of the campaign and a lot of people will vote.
 * Some people might not like the idea of voting and would rather solve problems with fists, but majority aren't this way.
 * There are many polarized issues in Havaria. See political_issues.lua for more details. Your job as a politician is to campaign on some of these issues so you can gain support.
+* The Admiralty's job is supposed to keep the election safe, but we know how it's going to be in practice.
 * Each faction in Havaria may or may not be just pretending to agree to the election, and once the election resolve, if the result is not in their favour, they may or may not show their true colors.(Why is there both British and American spelling of words? Good question, probably because English is not my first language.)
 
 ### Characters
 
 ***Advisors***
 
-All three advisors are arrogant, self-centered, and uses bad debate tactics that only works if said debate is political, which is the case in this campaign. Each represents a negotiation card type, and they will be more likely to sell you a card of that type if you choose them as your advisor. When you write their dialog, keep their personality in mind. Although they uses character defs from the game, they should have no connections to them other than what they sell. I plan to add custom defs for these characters in the future.
+All three advisors are arrogant, self-centered, and uses bad debate tactics that only works if said debate is political, which is the case in this campaign. Each represents a negotiation card type, and they will be more likely to sell you a card of that type if you choose them as your advisor. When you write their dialog, keep their personality in mind.
 
-* **Diplomacy Advisor(Endo TBD)**: Inspired by Elon Musk and Reddit, their character is about being "relatable". The "fellow kids" type, who may or may not likes old and/or bad memes. Their way of debating is by being relatable, and appeal to emotions, but once you crossed them, they will harass you and/or guilt trip you. A good way to write their dialog is to write it normally, and force a meme here and there, sprinkled across. If you want capture the Reddit personality, use languages such as "wholesome 100", "downvote", "r/whoosh", and make it so that they are looking down on whomever they are talking to. Their personality is an afterthought, after I determined the next two advisors'.
+The advisors' loyalty are highly questionable, unless you do something for them that makes them love you. I haven't put any of those yet, but keep this in mind. Can affect the ending you get.
+
+* **Diplomacy Advisor(Aellon 'The Based')**: Inspired by Elon Musk and Reddit, their character is about being "relatable". The "fellow kids" type, who may or may not likes old and/or bad memes. Their way of debating is by being relatable, and appeal to emotions, but once you crossed them, they will harass you and/or guilt trip you. A good way to write their dialog is to write it normally, and force a meme here and there, sprinkled across. If you want capture the Reddit personality, use languages such as "wholesome 100", "downvote", "r/whoosh", and make it so that they are looking down on whomever they are talking to. Their personality is an afterthought, after I determined the next two advisors'.
   * Catchphrases:
     * "Wholesome 100"
     * "That's cringe. That's going to be a downvote for me."
-* **Manipulate Advisor(Plocka TBD)**: Inspired by Ben Sharpiro, their character is about sounding smart by using big words, using straw man arguments, and nitpick minor details. He often say things like "hypothetically", or "um, actually". A good way to write their dialog is by finding the argument part, build a false premise with "hypothetically" and a conclusion that they want you to believe, connect them with non-sequiturs, nitpick on minor details, and sprinkle some "FACTS and LOGIC" here and there. If you want to mention their wife is a doctor, you can, but try not to add too much unnecessary words.
+    * "How do you do, fellow ...?"
+* **Manipulate Advisor(Benni)**: Inspired by Ben Sharpiro, their character is about sounding smart by using big words, using straw man arguments, and nitpick minor details. He often say things like "hypothetically", or "um, actually". A good way to write their dialog is by finding the argument part, build a false premise with "hypothetically" and a conclusion that they want you to believe, connect them with non-sequiturs, nitpick on minor details, and sprinkle some "FACTS and LOGIC" here and there. If you want to mention their wife is a doctor, you can, but try not to add too much unnecessary words.
   * Catchphrases:
     * "... owns ... with FACTS and LOGIC."
     * "Hypothetically speaking..."
-* **Hostile Advisor(Rake TBD)**: Inspired by Donald Trump, their character is about shutting down the opposition and show how good they are at everything. They often resort to boasting, name calling, and bragging, and is even more hostile than other advisors. A good way to write their dialogs is to add "huge", "tremendous", "bigly", and other words like that. They also often call their oppositions names they made up on the spot, often with alliteration, and shifting blames on them. They also often stop their train of thought midway through the sentence, and go on a tangent.
+* **Hostile Advisor(Dronumph)**: Inspired by Donald Trump, their character is about shutting down the opposition and show how good they are at everything. They often resort to boasting, name calling, and bragging, and is even more hostile than other advisors. A good way to write their dialogs is to add "huge", "tremendous", "bigly", and other words like that. They also often call their oppositions names they made up on the spot, often with alliteration, and shifting blames on them. They also often stop their train of thought midway through the sentence, and go on a tangent.
   * Catchphrases:
     * "Nobody knows ... better than me."
     * "Big success, tremendous success."
@@ -119,8 +125,8 @@ Oppositions are other candidates that are also participating in this election. T
 * **Spree Candidate(Nadan)**
 * **Spark Baron Candidate(Fellemo)**
 * **Rise Candidate(Kalandra)**
-* **Cult Candidate(Vixmalli/Tei?)**
-* **Jakes Candidate(I have no idea)**
+* **Cult Candidate(Vixmalli or the new bishop)**
+* **Jakes Candidate(Right now it's Andwanette until we get Jakes uniques that cares about politics)**
 
 Potential meme candidates:
 
@@ -133,3 +139,4 @@ They may or may not be added. It might be too much work. If they were to be adde
 
 * **Fssh** The barkeep at Grog n' Dog, she is not participating in the election, thanks for asking.
 * **Interviewer(The auctioneer)** The guy who works at the Grand Theater as a host there. It used to be just an auction house, but now it has been expanded and is used for other activities as well.
+* Shopkeeps at market place, including Rake, Endo, Plocka and Phloruk.

@@ -98,6 +98,8 @@ Content.AddStringTable( "DEM_CONVO", {
                 Take it, or leave it.
         ]],
 
+        OFFER_TRINKET_GRAFT = "<b>Souvenir Trinket</>: Install {1#graft}",
+
         OPT_UNLOCK_NEW_LOCATION = "Unlock new location: {1#location}",
         TT_UNLOCK_NEW_LOCATION = "You can now visit this location during your free time.",
         

@@ -38,6 +38,11 @@ local function OnLoad( mod )
 
         main_quest = "DEMOCRATIC_RACE_MAIN",
         game_type = GAME_TYPE.CAMPAIGN,
+
+        slides = {
+            "democracy_intro_slides",
+        },
+
         starting_fn = function(agent) 
             agent:DeltaMoney( STARTING_MONEY )
         end,
@@ -80,6 +85,7 @@ local function OnLoad( mod )
     end
     -- require "DEMOCRATICRACE:content/wealth_level"
     require "DEMOCRATICRACE:content/load_quips"
+    require "DEMOCRATICRACE:content/load_codex"
     require "DEMOCRATICRACE:content/shop_defs"
     require "DEMOCRATICRACE:content/locations"
     require "DEMOCRATICRACE:content/workpositions"
@@ -91,6 +97,18 @@ local function OnLoad( mod )
     require "DEMOCRATICRACE:content/grifts"
     require "DEMOCRATICRACE:content/more_boon_services"
     
+    -- we load slides before we load act data. who knows what would happen if we didn't?
+    for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:content/slides/", "*.lua", true )) do
+        local name = filepath:match( "(.+)[.]lua$" )
+        -- print(name)
+        local id = name:match("([_%w]+)$")
+        if name then
+            local slides_data = require(name)
+            if slides_data then
+                Content.AddSlideShow("democracy_" .. id, slides_data)
+            end
+        end
+    end
 
     for id, data in pairs(GetAllPlayerBackgrounds()) do
         local act_data = shallowcopy(ACT_DATA)
@@ -164,8 +182,8 @@ local function OnLoad( mod )
         end
     end
 
-    print(string.match("C:/Users/adfafaf", "^.+[:]([^/\\].+)$"))
-    print(string.match("DemRace:lalala", "^.+[:]([^/\\].+)$"))
+    -- print(string.match("C:/Users/adfafaf", "^.+[:]([^/\\].+)$"))
+    -- print(string.match("DemRace:lalala", "^.+[:]([^/\\].+)$"))
 end
 local function OnPreLoad( mod )
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:localization", "*.po", true )) do
@@ -178,15 +196,21 @@ local function OnPreLoad( mod )
         end
     end
 end
-print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
+-- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {
-    version = "0.1.0",
+    version = "0.1.3",
     alias = "DEMOCRATICRACE",
     
     OnLoad = OnLoad,
     OnPreLoad = OnPreLoad,
     OnNewGame = OnNewGame,
 
-    title = "Democratic Race(Working title)",
-    description = "The Pioneer campaign mod for the (currently) Early Access game Griftlands, Democratic Race(working title) is a mod for Griftlands that adds a negotiation based campaign mode to the game, in contrast to the direct combat. Your goal in this campaign is to campaign and gain support among the people so you can be voted in as president. This story is heavily negotiation focused, and combat is only necessary if you failed certain negotiations.",
+    title = "The Democratic Race",
+    description = "The Pioneer campaign mod for the (currently) Early Access game Griftlands, Democratic Race is a mod for Griftlands that adds a negotiation based campaign mode to the game, in contrast to the direct combat.",
+    previewImagePath = "preview.png",
+
+    load_after = {
+        -- both modify graft rewards, but CCC overrides the change.
+        "CrossCharacterCampaign",
+    },
 }

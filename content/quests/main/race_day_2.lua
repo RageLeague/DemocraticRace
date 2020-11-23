@@ -129,24 +129,66 @@ QDEF:AddConvo("starting_out", "primary_advisor")
     :ConfrontState("STATE_CONFRONT")
     :Loc{
         DIALOG_INTRO = [[
-            * [p] As you wake up, you look to see {primary_advisor} staring you down while you slept and shaking your arm.
-            * Naturally, you make the most dignified sound you could think of.
-            player:
-                Gah! Could you not let me get some shuteye?
-            primary_advisor:
-                Their ain't no shuteye for the wicked, and neither to their advisors.
-                I spent all night setting up an interview for you to get some more publicity with the masses.
-                The least you can do is pretend you're pulling your weight!
-            player:
-                okay, okay. When's the interview scheduled?
-            primary_advisor:
-                Later tonight.
-            player:
-                So why'd you wake me up this early?
-            primary_advisor:
-                Because the voters don't want to see you sleeping on the job.
-                No politician had gotten far by lazing about their home.
-                The opposition was working hard through the night, and some of the voters have already turned on us.
+            {not dead_body?
+                * As you wake up, you look to see {primary_advisor} staring you down while you slept and shaking your arm.
+                * Naturally, you make the most dignified sound you could think of.
+                player:
+                    Gah! Could you not let me get some shuteye?
+                primary_advisor:
+                    Their ain't no shuteye for the wicked, and neither to their advisors.
+                    I spent all night setting up an interview for you to get some more publicity with the masses.
+                    The least you can do is pretend you're pulling your weight!
+                player:
+                    okay, okay. When's the interview scheduled?
+                primary_advisor:
+                    Later tonight.
+                player:
+                    So why'd you wake me up this early?
+                primary_advisor:
+                    Because the voters don't want to see you sleeping on the job.
+                    No politician had gotten far by lazing about their home.
+                    The opposition was working hard through the night, and some of the voters have already turned on us.
+            }
+            {dead_body?
+                primary_advisor:
+                    !angry
+                * As you wake up, you see {primary_advisor} staring at you, angrily.
+                primary_advisor:
+                    I've been gone for one night, and there's already {1:a dead body|not one, but TWO dead bodies|a bunch of dead bodies} lying in your room.
+                    Care to explain?
+                player:
+                    I'm sorry. I was <i>trying</> to not get murdered by an assassin.
+                    It is legitimate self defense.
+                primary_advisor:
+                {1:
+                    People might not think that way.
+                    Why else would a dead body in your room?
+                    There's an interview coming up, and you're just here throwing your reputation away.
+                player:
+                    !surprised
+                    Wait, there's an interview coming? When is that?
+                primary_advisor:
+                    Tonight.
+                    While you're trying to make yourself look bad, your opponents are already hard at work turning some voters against us.
+                    |
+                    That doesn't explain the <i>other</> dead body in Admiralty uniform.
+                player:
+                    !bashful
+                    Oh yeah, I might have... resisted arrest a little.
+                primary_advisor:
+                    What the Hesh, {player}?
+                    An interview is coming up, and you're just murdering people left and right!
+                    How is anyone going to vote you now?
+                player:
+                    !handwave
+                    I'm sure it'll be fine. Not many people like the Admiralty anyway.
+                    But what is this interview you've mentioned?
+                primary_advisor:
+                    It is scheduled tonight to interview you on your political opinion.
+                    It's meant to help you gain support!
+                    Considering your opposition is working hard to turn voters against us.
+                }
+            }
         ]],
         DIALOG_INTRO_PST = [[
             player:
@@ -161,27 +203,45 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             player:
                 Well it might have to do with how I was awoken by the gentle touch of a hired assasain.
             primary_advisor:
+            {not dead_body?
                 Hesh, really? How did I not know?
             player:
-                Well, you we're in your office, setting up this oh-so important interview.
+                Well, you were in your office, setting up this oh-so important interview.
             primary_advisor:
                 Impossible, I am the advisor. I see ALL.
+            }
+            {dead_body?
+                Yeah, that's kind of a problem, huh?
+                Still, can't believe you managed to survive and kill someone with much better training than you.
+                {1:
+                    |
+                    And still have the energy to kill a patrol leader right after that.
+                }
+            player:
+                !happy
+                That's a compliment, right?
+            primary_advisor:
+            }
                 I can get a few contractors to fix up the office, maybe keep the building safer.
                 But you, on your daily jaunts, won't be so lucky.
                 How about you hire a bodyguard? Some'll do it for cheap, especially if you promise them job security and such.
             player:
                 That actually sounds like a good idea. There's a first for everything.
             primary_advisor:
-                Yes,Yes, laud me later. Now get in the bathroom, you smell like a puss-matted vroc.
+                Yes, yes, laud me later. Now get in the bathroom, you smell like a puss-matted vroc.
             * With {primary_advisor} yelling to you about details with the interview, you clean yourself up and get ready for another stressful day.
             ** You can now hire bodyguards!
         ]],
     }
     :Fn(function(cxt)
-        cxt:Dialog("DIALOG_INTRO")
+        local dead_bodies = cxt:GetCastMember("player_room"):HasMemory("HAS_DEAD_BODY")
+        
+        cxt.enc.scratch.dead_body = dead_bodies and true
+        cxt:Dialog("DIALOG_INTRO", dead_bodies and #dead_bodies)
         DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 2)
         cxt:Dialog("DIALOG_INTRO_PST")
         QuestUtil.SpawnQuest("CAMPAIGN_BODYGUARD")
+        cxt:GetCastMember("player_room"):Forget("HAS_DEAD_BODY")
         cxt.quest:Complete("starting_out")
     end)
 

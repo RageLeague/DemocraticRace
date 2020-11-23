@@ -24,7 +24,7 @@ function NegotiationPanel:OnClickEndNegotiation()
     SetFn( function( result )
         if result == Screen.YesNoPopup.YES then
             AUDIO:PlayEvent(SoundEvents.negotiation_concede)
-            self.minigame:Lose()
+            self.minigame:Win()
             self.end_turn = true
             -- table.insert( self.minigame.force_take_cards, "unconvincing" )
         end

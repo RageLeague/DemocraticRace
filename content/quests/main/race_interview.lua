@@ -114,6 +114,34 @@ local QDEF = QuestDef.Define
         end
     end,
 }
+:AddCast{
+    cast_id = "audience",
+    when = QWHEN.MANUAL,
+    condition = function(agent, quest)
+        return not table.arraycontains(quest.param.audience or {}, agent)
+    end,
+    score_fn = function(agent, quest)
+        if agent:HasAspect( "bribed" ) then
+            return 100
+        end
+        local sc = agent:GetRenown() * 2
+        if agent:GetRelationship() ~= RELATIONSHIP.NEUTRAL then
+            sc = sc + 5
+        end
+        return math.random(sc, 20)
+    end,
+    on_assign = function(quest, agent)
+        if not quest.param.audience then
+            quest.param.audience = {}
+        end
+        table.insert(quest.param.audience, agent)
+    end,
+}
+:AddCastFallback{
+    cast_fn = function(quest, t)
+        table.insert( t, quest:CreateSkinnedAgent() )
+    end,
+}
 :AddLocationCast{
     cast_id = "theater",
     cast_fn = function(quest, t)
@@ -161,9 +189,9 @@ local QDEF = QuestDef.Define
 --     mark = {"primary_advisor"},
 -- }
 
-:AddLocationDefs{
+-- :AddLocationDefs{
     
-}
+-- }
 
 :AddOpinionEvents{
     likes_interview = {
@@ -182,7 +210,7 @@ QDEF:AddConvo("go_to_interview")
     :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("backroom") end)
         :Loc{
             DIALOG_INTRO = [[
-                * [p] You arrive at the Grand Theater, and are ushered into a back room. You barely make it into the room before you're ambushed by {primary_advisor}.
+                * You arrive at the Grand Theater, and are ushered into a back room. You barely make it into the room before you're ambushed by {primary_advisor}.
                 player:
                     !left
                 primary_advisor:
@@ -222,6 +250,7 @@ QDEF:AddConvo("go_to_interview")
             ]],
         }
         :Fn(function(cxt)
+            DemocracyUtil.PopulateTheater(cxt.quest, cxt.quest:GetCastMember("theater"), 8)
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Complete("go_to_interview")
             cxt.quest:Activate("do_interview")
@@ -299,6 +328,7 @@ QDEF:AddConvo("do_interview")
             ]],
         }
         :Fn(function(cxt)
+            
             cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("host"))
             cxt:Dialog("DIALOG_INTRO")
             cxt:GetAgent():SetTempNegotiationBehaviour(INTERVIEWER_BEHAVIOR)

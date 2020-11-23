@@ -22,6 +22,7 @@ local CROWD_BEHAVIOR = {
         modifier:InitModifiers()
     end,
     agents = {},
+    -- ignored_agents = {},
 
 	-- Duplicated from Bandits. Needs revision
     BasicCycle = function( self, turns )
@@ -178,30 +179,31 @@ QDEF:AddConvo("go_to_junction")
             cxt:GetAgent():SetTempNegotiationBehaviour(CROWD_BEHAVIOR)
 
             local postProcessingFn = function(cxt, minigame)
+                local core = minigame:GetOpponentNegotiator():FindCoreArgument()
                 cxt.quest.param.convinced_people = {}
-                cxt.quest.param.unconvinced_people = {}
+                cxt.quest.param.unconvinced_people = core and core.ignored_agents or {}
 
-                local undestroyedPeople = {}
+                -- local undestroyedPeople = {}
                 
                 for i, modifier in minigame:GetPlayerNegotiator():Modifiers() do
                     if modifier.id == "PREACH_TARGET_INTERESTED" and modifier.target_agent then
                         table.insert( cxt.quest.param.convinced_people, modifier.target_agent )
                     end
                 end
-                for i, modifier in minigame:GetOpponentNegotiator():Modifiers() do
-                    if modifier.id == "PREACH_TARGET_INTEREST" and modifier.target_agent then
-                        table.insert( undestroyedPeople, modifier.target_agent )
-                    end
-                end
-                for i, agent in ipairs(minigame:GetOpponentNegotiator():FindCoreArgument().agents) do
-                    table.insert( undestroyedPeople, agent )
-                end
+                -- for i, modifier in minigame:GetOpponentNegotiator():Modifiers() do
+                --     if modifier.id == "PREACH_TARGET_INTEREST" and modifier.target_agent then
+                --         table.insert( undestroyedPeople, modifier.target_agent )
+                --     end
+                -- end
+                -- for i, agent in ipairs(minigame:GetOpponentNegotiator():FindCoreArgument().agents) do
+                --     table.insert( undestroyedPeople, agent )
+                -- end
                 
-                for i, agent in ipairs(cxt.quest.param.crowd) do
-                    if not agent:HasAspect("bribed") and not table.arraycontains(cxt.quest.param.convinced_people, agent) and not table.arraycontains(undestroyedPeople, agent) then
-                        table.insert(cxt.quest.param.unconvinced_people, agent)
-                    end
-                end
+                -- for i, agent in ipairs(cxt.quest.param.crowd) do
+                --     if not agent:HasAspect("bribed") and not table.arraycontains(cxt.quest.param.convinced_people, agent) and not table.arraycontains(undestroyedPeople, agent) then
+                --         table.insert(cxt.quest.param.unconvinced_people, agent)
+                --     end
+                -- end
 
                 for i, agent in ipairs(cxt.quest.param.convinced_people) do
                     -- cxt:Dialog("DIALOG_CONVINCED_PEOPLE", agent)
@@ -209,9 +211,9 @@ QDEF:AddConvo("go_to_junction")
                 end
                 for i, agent in ipairs(cxt.quest.param.unconvinced_people) do
                     -- cxt:Dialog("DIALOG_UNCONVINCED_PEOPLE", agent)
-                    if agent:GetRelationship() <= RELATIONSHIP.NEUTRAL and math.random() < 0.3 then
+                    -- if agent:GetRelationship() <= RELATIONSHIP.NEUTRAL and math.random() < 0.3 then
                         agent:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("annoyed_by_preach"))
-                    end
+                    -- end
                 end
                 if #cxt.quest.param.convinced_people > 0 then
                     cxt:Dialog("DIALOG_CONVINCED_PEOPLE", #cxt.quest.param.convinced_people)
@@ -243,6 +245,7 @@ QDEF:AddConvo("go_to_junction")
                     on_success = postProcessingFn,
                     on_fail = postProcessingFn,
                     finish_negotiation_anytime = true,
+                    cooldown = 0,
                 }
             -- cxt.quest.param.debated_people = 0
             -- cxt.quest.param.crowd = {}

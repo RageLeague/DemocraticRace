@@ -1,13 +1,15 @@
 local ARTISTS = {
-    RISE_PAMPHLETEER = 0.6,
-    FOREMAN = 0.25,
+    RISE_PAMPHLETEER = 0.65,
+    FOREMAN = 0.35,
     PRIEST = 0.5,
-    SPARK_BARON_TASKMASTER = 0.25,
-    ADMIRALTY_CLERK = 0.4,
+    PRIEST_PROMOTED = 0.65,
+    SPARK_BARON_TASKMASTER = 0.35,
+    ADMIRALTY_CLERK = 0.5,
     -- SPREE_CAPTAIN = 0.15,
-    WEALTHY_MERCHANT = 0.25,
-    POOR_MERCHANT = 0.35,
-    JAKES_SMUGGLER = 0.2,
+    WEALTHY_MERCHANT = 0.35,
+    WEALTHY_MERCHANT_PROMOTED = 0.55,
+    POOR_MERCHANT = 0.5,
+    JAKES_SMUGGLER = 0.3,
 }
 local function IsArtist(agent)
     return agent:CalculateProperty("IS_ARTIST", function(agent)
@@ -18,8 +20,8 @@ end
 local function IsPotentiallyArtist(agent)
     return ARTISTS[agent:GetContentID()]
 end
-local POOR_ART = {"PROP_PO_MESSY"}
-local GOOD_ART = {"PROP_PO_INSPIRING"}
+local POOR_ART = {"PROP_PO_MESSY", "PROP_PO_SUPERFICIAL"}
+local GOOD_ART = {"PROP_PO_INSPIRING", "PROP_PO_THOUGHT_PROVOKING"}
 
 local DRAFT_BEHAVIOUR = {
 	OnInit = function( self, difficulty )
@@ -65,7 +67,8 @@ local QDEF = QuestDef.Define
         -- if quest.param.poor_performance then
         --     DemocracyUtil.DeltaGeneralSupport(2 * #quest.param.posted_location, "POOR_QUEST")
         -- else
-            DemocracyUtil.DeltaGeneralSupport(4 * #quest.param.posted_location, "COMPLETED_QUEST")
+        local score = 3 * #quest.param.posted_location + 2 * quest.param.liked_people + quest.param.ignored_people
+        DemocracyUtil.DeltaGeneralSupport(score, "COMPLETED_QUEST")
         -- end
     end,
     precondition = function(quest)
@@ -110,11 +113,13 @@ local QDEF = QuestDef.Define
             end)
         end
         -- without this the game will softlock sometimes.
+        -- now you can forgo free time and hand in quest early.
         table.insert(t, quest:GetCastMember("primary_advisor"))
     end,
     on_activate = function(quest)
         quest.param.liked_people = 0
         quest.param.disliked_people = 0
+        quest.param.ignored_people = 0
     end,
 }
 :AddObjective{
@@ -196,7 +201,7 @@ QDEF:AddConvo("out_of_time", "primary_advisor")
             player:
                 [p] So I posted our poster, but people don't like it.
             agent:
-            {artist?
+            {has_artist?
                 {is_artist?
                     Try writing better messages in your poster next time.
                     |
@@ -459,7 +464,7 @@ QDEF:AddConvo("post")
             if #candidates > 0 then
                 cxt.quest.param.readers = {}
                 for i, agent in ipairs(candidates) do
-                    if math.random() < 0.33 then
+                    if math.random() < 0.4 then
                         table.insert(cxt.quest.param.readers, agent)
                     end
                     if #cxt.quest.param.readers > 0 then
@@ -511,6 +516,11 @@ QDEF:AddConvo("commission")
                 agent:
                     Okay.
                     If you can {demand_list#demand_list}, I will make a poster for you.
+                {is_artist?
+                    *** This person is a good artist. You can hire {agent.himher}, but it will cost a lot.
+                    |
+                    *** This person is not a good artist, but you can still hire {agent.himher} at a reduced rate.
+                }
             }
             {asked?
                 agent:
@@ -525,6 +535,7 @@ QDEF:AddConvo("commission")
                 No.
             player:
                 Understandable, have a nice day.
+            *** This person is not an artist.
         ]],
         DIALOG_PAYED_COMMISSION = [[
             agent:
@@ -611,6 +622,7 @@ QDEF:AddConvo("commission")
                         if payed_all then
                             cxt:Dialog("DIALOG_PAYED_COMMISSION")
                             cxt.quest.param.artist = who
+                            cxt.quest.param.has_artist = true
                             cxt.quest.param.is_artist = IsArtist(who)
                             cxt:GoTo("STATE_MAKE_POSTER")
                         else
@@ -646,6 +658,8 @@ QDEF:AddConvo("commission")
                     You might be tempted to write a lot, but people will be too intimidated by your wall of text.
                     But writing too few will not tell the readers what you think, and they will be less interested in you.
                     Best to keep it short, but to the point.
+                *** Basically you're doing a special negotiation that records the cards you play.
+                *** When convincing someone with a poster, you will have no control over the cards you've already played.
             ]],
 
             OPT_START = "Start writing",
@@ -689,6 +703,7 @@ QDEF:AddConvo("commission")
                 player:
                     !thought
                     Hmm...
+                *** You played too few cards, so some garbage are added automatically.
             ]],
 
             DIALOG_FINISH_PST = [[

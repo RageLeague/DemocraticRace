@@ -1,12 +1,12 @@
 # The Democratic Race
 
-A pioneer campaign mod for the (currently) Early Access game Griftlands, Democratic Race(working title) is a mod for Griftlands that adds a negotiation based campaign mode to the game for ALL characters*, in contrast to the direct combat. Your goal in this campaign is to campaign and gain support among the people so you can be voted in as president. This story is heavily negotiation focused, and combat is only necessary if you failed certain negotiations.
+A pioneer campaign mod for the (currently) Early Access game Griftlands, the Democratic Race is a mod for Griftlands that adds a negotiation based campaign mode to the game for ALL characters*, in contrast to the direct combat. Your goal in this campaign is to campaign and gain support among the people so you can be voted in as president. This story is heavily negotiation focused, and combat is only necessary if you failed certain negotiations.
 
 This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.1.0(Alpha)
+Version: 0.1.3(Alpha)
 
 Author: RageLeague
 
@@ -14,6 +14,8 @@ Special thanks to:
 
 * JuniorElder(For helping with side quests)
 * WumpusThe19th(For helping with dialogs)
+
+This mod is based on this post that is now archived: https://forums.kleientertainment.com/forums/topic/120281-democracy-mode/.
 
 Supported Languages: English (Right now Simplified/Traditional Chinese is not supported because this is only an Alpha, and lots are bound to change, but it probably will be supported eventually)
 
@@ -46,7 +48,7 @@ I release this alpha to get feedbacks about this mod before the full release. So
 
 Of course, other forms of feedbacks are welcome.
 
-You can leave feedbacks either on the Steam workshop page, Klei's forum(DM or post on a certain forum topic in the Mods discussion), or on GitHub(https://github.com/RageLeague/DemocraticRace).
+You can leave feedbacks either on the Steam workshop page (https://steamcommunity.com/sharedfiles/filedetails/?id=2291214111), Klei's forum(DM or post on a certain forum topic in the Mods discussion), or on GitHub (https://github.com/RageLeague/DemocraticRace).
 
 ## How to install?
 
@@ -71,3 +73,35 @@ With the new official workshop support, you can directly install mods from steam
 3. Volia!
 
 Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues. As such, it will be more stable.
+
+## Changelog
+
+### 0.1.4(Misc balance adjustments)
+
+* Filter out combat grafts as rewards and combat cards as gifts.
+* Disable cooldowns for negotiations so you won't soft lock.
+* Guarantees that every quest offered are different(if there are more available side quests than the number offered).
+* Relationship change of the primary advisor no longer causes support change.
+* Fix crash when you arrive at an arrest scene with the admiralty defeated. Also added an option to let you abort the escort mission.
+
+### 0.1.3
+
+* Fix bug where choosing ignore in a political dilemma causes game to crash.
+* (Hopefully) fix bug where game crash after first round of preaching.(I think it's because the max range is smaller than the min range? I'm not sure what caused it.)
+* (Hopefully) guarantee a negotiation card when offering an item as a boon.
+* Revert the change made to the number of cards played by propaganda each turn.
+* Filter out battle cards from gifts and graft pools.
+* Tweaked the preach quest a bit. Let me know if the balance is better now.
+
+### 0.1.2
+
+* Rebalance the propagandanda side quest so that more cards are played each turn. Hopefully we can see the player win, and maybe they can keep winning for a few days until needing to take them down.
+* Added two new modifiers to propaganda posters: Superficial and Thought-Provoking.
+* Clarify wordings of various modifiers.
+* Fixed bug where propaganda poster modifiers aren't actually working.
+* Fixed strike organizing dialogs.
+
+### 0.1.1(Day 1 hotfix lol)
+
+* Rework Preach quest.
+* Make end of day 1 negotiation clearer about what you can do.
