@@ -6,9 +6,17 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.1.3(Alpha)
+Version: 0.1.4(Alpha)
 
 Author: RageLeague
+
+Load order:
+
+* Loads After: Cross Character Campaign (https://steamcommunity.com/sharedfiles/filedetails/?id=2219176890)
+* Loads After: Shel's Adventure (https://steamcommunity.com/sharedfiles/filedetails/?id=2217590179) or Shel's Adventure Expansion (https://steamcommunity.com/sharedfiles/filedetails/?id=2245060394)
+* Loads After: Rise of Kashio (https://steamcommunity.com/sharedfiles/filedetails/?id=2266976421)
+
+(The load order is specified for certain other mods because these modify the game's code, or add new characters to the game.)
 
 Special thanks to:
 
@@ -48,7 +56,7 @@ I release this alpha to get feedbacks about this mod before the full release. So
 
 Of course, other forms of feedbacks are welcome.
 
-You can leave feedbacks either on the Steam workshop page (https://steamcommunity.com/sharedfiles/filedetails/?id=2291214111), Klei's forum(DM or post on a certain forum topic in the Mods discussion), or on GitHub (https://github.com/RageLeague/DemocraticRace).
+You can leave feedbacks either on the Steam workshop page (https://steamcommunity.com/sharedfiles/filedetails/?id=2291214111), Klei's forum (DM me or https://forums.kleientertainment.com/forums/topic/123481-the-democratic-racealpha-available/), or on GitHub (https://github.com/RageLeague/DemocraticRace).
 
 ## How to install?
 
@@ -72,7 +80,7 @@ With the new official workshop support, you can directly install mods from steam
 2. Enable it in-game.
 3. Volia!
 
-Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues. As such, it will be more stable.
+Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues, or a major feature update. As such, it will be more stable.
 
 ## Changelog
 
@@ -83,6 +91,7 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Guarantees that every quest offered are different(if there are more available side quests than the number offered).
 * Relationship change of the primary advisor no longer causes support change.
 * Fix crash when you arrive at an arrest scene with the admiralty defeated. Also added an option to let you abort the escort mission.
+* Now loads after Cross Character Campaign (https://steamcommunity.com/sharedfiles/filedetails/?id=2219176890), as it modifies the graft reward code which allows Rook's coin graft to be rewarded as regular grafts.
 
 ### 0.1.3
 
