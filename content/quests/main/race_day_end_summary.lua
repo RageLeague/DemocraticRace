@@ -206,6 +206,10 @@ QDEF:AddConvo("summary", "primary_advisor")
             if not cxt.enc.scratch.loved then
                 cxt:GetAgent():OpinionEvent(OPINION["SUPPORT_EXPECTATION_" .. RANKS[rank]])
             end
+            if cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL then
+                cxt:Dialog("DIALOG_UNLOCK_SKIP")
+                TheGame:GetGameState():GetMainQuest().param.allow_skip_side = true
+            end
             if cxt:GetAgent():GetRelationship() == RELATIONSHIP.HATED then
                 cxt:GoTo("STATE_FAILURE")
             else

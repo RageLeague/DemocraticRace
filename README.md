@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.1.4(Alpha)
+Version: 0.1.5(Alpha)
 
 Author: RageLeague
 
@@ -22,6 +22,7 @@ Special thanks to:
 
 * JuniorElder(For helping with side quests)
 * WumpusThe19th(For helping with dialogs)
+* Minespatch(For helping with drawing some slides)
 
 This mod is based on this post that is now archived: https://forums.kleientertainment.com/forums/topic/120281-democracy-mode/.
 
@@ -83,6 +84,13 @@ With the new official workshop support, you can directly install mods from steam
 Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues, or a major feature update. As such, it will be more stable.
 
 ## Changelog
+
+### 0.1.5
+
+* [HOTFIX] Fixed the situation where no battle grafts are generated as bonus at the start of the run.
+* Actually implement forgo rally option.
+* Clarify what you need to do in an interview in the negotiation reason.
+* Added cool slides by Minespatch.
 
 ### 0.1.4(Misc balance adjustments)
 
