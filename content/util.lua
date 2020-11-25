@@ -793,6 +793,30 @@ function DemocracyUtil.GetVoterIntentionIndex(data)
     return voter_index
 end
 
+function DemocracyUtil.GetEndorsement(index)
+    -- I know this looks like yanderedev's code, but I'm lazy today.
+    -- Also this runs at O(1) time, so it doesn't really matter that much.
+    -- And this reuses the relationship array. It's kinda redundant having another enum with the same elements
+    -- representing similar things.
+    if index >= 50 then
+        return RELATIONSHIP.LOVED
+    elseif index >= 20 then
+        return RELATIONSHIP.LIKED
+    elseif index > -20 then
+        return RELATIONSHIP.NEUTRAL
+    elseif index > -50 then
+        return RELATIONSHIP.DISLIKED
+    else
+        return RELATIONSHIP.HATED
+    end
+end
+function DemocracyUtil.GetFactionEndorsement(faction)
+    return DemocracyUtil.GetEndorsement(DemocracyUtil.GetVoterIntentionIndex{faction = faction})
+end
+function DemocracyUtil.GetWealthEndorsement(wealth)
+    return DemocracyUtil.GetEndorsement(DemocracyUtil.GetVoterIntentionIndex{wealth = wealth})
+end
+
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator
 
