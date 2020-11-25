@@ -89,10 +89,60 @@ QDEF:AddConvo()
         :Fn(function(cxt)
             if cxt:FirstLoop() then
                 cxt.quest:Complete()
+                cxt.enc.scratch.opfor = CreateCombatParty("ADMIRALTY_PATROL", cxt.quest:GetRank() + 1, cxt.location, true)
+                cxt:TalkTo(cxt.enc.scratch.opfor[1])
                 cxt:Dialog("DIALOG_INTRO")
             end
             local pay_cost = 50 + 25 * cxt.quest:GetRank()
             cxt:Opt("OPT_PAY")
                 :DeliverMoney(pay_cost)
                 :Travel()
+            if not cxt.quest.param.tried_convince then
+                cxt:Opt("OPT_CONVINCE")
+                    :ReqRelationship( RELATIONSHIP.NEUTRAL )
+                    :Dialog("DIALOG_CONVINCE")
+                    :Negotiation{
+                        cooldown = 0,
+                    }
+                        :OnSuccess()
+                            :Dialog("DIALOG_CONVINCE_SUCCESS")
+                            :Travel()
+                        :OnFailure()
+                            :Dialog("DIALOG_CONVINCE_FAILURE")
+                            :Fn(function(cxt) cxt.quest.param.tried_convince = true end)
+            end
+            if not cxt.quest.param.tried_intimidate then
+                if #cxt.enc.scratch.opfor == 1 then
+                    cxt:Opt("OPT_INTIMIDATE")
+                        :Dialog("DIALOG_INTIMIDATE")
+                        :Negotiation{
+                            cooldown = 0,
+                            flags = NEGOTIATION_FLAGS.INTIMIDATION,
+                        }
+                            :OnSuccess()
+                                :Dialog("DIALOG_INTIMIDATE_SUCCESS_SOLO")
+                                :Travel()
+                            :OnFailure()
+                                :Dialog("DIALOG_INTIMIDATE_FAILURE")
+                                :Fn(function(cxt) cxt.quest.param.tried_intimidate = true end)
+                else
+                    local allies = {}
+                    for i, ally in ipairs(cxt.enc.scratch.opfor) do
+                        if i ~= 1 then
+                            table.insert(allies, ally)
+                        end
+                    end
+                    cxt:Opt("OPT_INTIMIDATE")
+                        :Dialog("DIALOG_INTIMIDATE")
+                        :Negotiation{
+                            cooldown = 0,
+                            flags = NEGOTIATION_FLAGS.INTIMIDATION | NEGOTIATION_FLAGS.ALLY_SCARE,
+                            fight_allies = allies,
+                            on_success = function(cxt, minigame)
+                            end,
+                            on_fail = function(cxt,minigame)
+                            end,
+                        }
+                end
+            end
         end)
