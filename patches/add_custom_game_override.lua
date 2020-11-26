@@ -1,4 +1,4 @@
-local patch_id = "ADD_CARD_NAME_FN"
+local patch_id = "ADD_CUSTOM_GAME_OVERRIDE"
 if not rawget(_G, patch_id) then
     rawset(_G, patch_id, true)
     print("Loaded patch:"..patch_id)
