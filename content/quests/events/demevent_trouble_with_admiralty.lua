@@ -139,6 +139,24 @@ QDEF:AddConvo()
                             flags = NEGOTIATION_FLAGS.INTIMIDATION | NEGOTIATION_FLAGS.ALLY_SCARE,
                             fight_allies = allies,
                             on_success = function(cxt, minigame)
+                                local keep_allies = {}
+                                for i, modifier in minigame:GetOpponentNegotiator():Modifiers() do
+                                    if modifier.id == "FIGHT_ALLY_SCARE" and modifier.ally_agent then
+                                        table.insert( keep_allies, modifier.ally_agent )
+                                    end
+                                end
+
+                                for k,v in pairs(allies) do
+                                    if not table.arrayfind(keep_allies, v) then
+                                        v:MoveToLimbo()
+                                    end
+                                end
+                                -- print("Party members you have: ", TheGame:GetGameState():GetCaravan():GetPartyCount())
+                                -- if #keep_allies <= TheGame:GetGameState():GetCaravan():GetPartyCount() then
+                                --     cxt:Dialog("DIALOG_INTIMIDATE_SUCCESS")
+                                -- else
+
+                                -- end
                             end,
                             on_fail = function(cxt,minigame)
                             end,
