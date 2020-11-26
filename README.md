@@ -85,6 +85,11 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 
 ## Changelog
 
+### 0.1.6
+
+* Adjusted size of the slides a bit.
+* Fix problem where the day progress grift erroneously display that day 1 is completed.
+
 ### 0.1.5
 
 * [HOTFIX] Fixed the situation where no battle grafts are generated as bonus at the start of the run.
