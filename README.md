@@ -93,6 +93,8 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Fix bug where "loose stances" aren't properly working.
 * Added a marker when you go to sleep on day 2.
 * Give the quest reward when you complete the propaganda quest.
+* Added more variance to random oppositions so that you won't get too many consecutive haters from a faction.
+* Gives an upfront reward for quests on day 1.
 
 ### 0.1.5
 
