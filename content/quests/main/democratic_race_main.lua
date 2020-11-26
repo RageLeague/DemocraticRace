@@ -507,6 +507,7 @@ local QDEF = QuestDef.Define
         if quest.param.stances[issue] == nil then
             quest.param.stances[issue] = val
             quest.param.stance_change[issue] = 0
+            quest.param.stance_change_freebie[issue] = not strict
             TheGame:GetGameState():LogNotification( NOTIFY.UPDATE_STANCE, issue, val, strict )
         else
             local stance_delta = val - quest.param.stances[issue]

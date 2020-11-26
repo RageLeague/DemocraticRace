@@ -90,6 +90,9 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Adjusted size of the slides a bit.
 * Fix problem where the day progress grift erroneously display that day 1 is completed.
 * Added a tab on the negotiation preview indicating that some negotiations can finish at any time without penalties.
+* Fix bug where "loose stances" aren't properly working.
+* Added a marker when you go to sleep on day 2.
+* Give the quest reward when you complete the propaganda quest.
 
 ### 0.1.5
 

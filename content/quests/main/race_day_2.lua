@@ -54,6 +54,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "go_to_sleep",
     title = "Go to sleep",
+    mark = {"primary_advisor"},
     on_activate = function(quest)
         DemocracyUtil.StartFreeTime()
     end,
