@@ -276,6 +276,9 @@ local QDEF = QuestDef.Define
             end
         
             if new_quest then
+                if quest.param.day == 1 then
+                    new_quest.upfront_reward = true
+                end
                 TheGame:GetGameProfile():RecordIncident(event_id, new_quest:GetContentID())
                 return new_quest
             end
@@ -294,6 +297,9 @@ local QDEF = QuestDef.Define
                 end
             
                 if new_quest then
+                    if quest.param.day == 1 then
+                        new_quest.upfront_reward = true
+                    end
                     TheGame:GetGameProfile():RecordIncident(event_id, new_quest:GetContentID())
                     return new_quest
                 end
