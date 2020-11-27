@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.1.5(Alpha)
+Version: 0.1.6(Alpha)
 
 Author: RageLeague
 
@@ -95,6 +95,7 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Give the quest reward when you complete the propaganda quest.
 * Added more variance to random oppositions so that you won't get too many consecutive haters from a faction.
 * Gives an upfront reward for quests on day 1.
+* Rebalance the preach quest.
 
 ### 0.1.5
 
