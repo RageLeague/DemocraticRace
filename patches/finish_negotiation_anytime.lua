@@ -39,7 +39,28 @@ function Negotiation.MiniGame.ParamsFromParty( caravan, agent, params, enc )
     return res
 end
 
+local old_preview_fn = Widget.NegotiationPreviewPanel.init
+local DETAILS_TILE_W = 340
+function Widget.NegotiationPreviewPanel:init(card_type, ...)
+    old_preview_fn(self, card_type, ...)
+    self.finish_anytime = self.handicaps:AddChild( Widget.PreviewDetailsTile( DETAILS_TILE_W, engine.asset.Texture("ui/ic_handicaps_no_surrender.tex"), UICOLOURS.SUBTITLE, LOC"CONVO_OPTION.FINISH_NEGOTIATION_TITLE", LOC"CONVO_OPTION.FINISH_NEGOTIATION_DESC" ) )
+end
+
+local old_refresh_fn = Widget.NegotiationPreviewPanel.Refresh
+function Widget.NegotiationPreviewPanel:Refresh(scenario, ...)
+    if self.card_type == QCARD_TYPE.NEGOTIATION then
+        self.finish_anytime:SetShown(scenario.finish_negotiation_anytime)
+    else
+        self.finish_anytime:SetShown(false)
+    end
+    return old_refresh_fn(self, scenario, ...)
+end
+
 Content.AddStringTable(patch_id .. "_STRINGS", {
+    CONVO_OPTION = {
+        FINISH_NEGOTIATION_TITLE = "Finish Anytime",
+        FINISH_NEGOTIATION_DESC = "You can finish this negotiation at any time without penalties",
+    },
     UI = {
         CARDS_PANEL = {
             FINISH_BTN = "Finish",

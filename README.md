@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.1.5(Alpha)
+Version: 0.1.6(Alpha)
 
 Author: RageLeague
 
@@ -30,7 +30,7 @@ Supported Languages: English (Right now Simplified/Traditional Chinese is not su
 
 ## New Contents
 
-* **Brand new negotiations!** Many negotiations in this campaign are not as straightforward as reducing the opponent's core resolve to 0, and have more strategies to them. In addition, some negotiations have non-binary results. It is possible to win every negotiation but still lose the game!
+* **Brand new negotiations!** Many negotiations in this campaign are not as straightforward as reducing the opponent's core resolve to 0, and have more strategies to them. In addition, some negotiations have non-binary results. It is possible to win every negotiation but still lose the game, because of your terrible choices!
 * **A detailed Support mechanic!** Gain as much support as possible, as it determines many factors in this campaign, from the funding you get each day to how likely someone will vote for you. Gain support from various means, by completing quests, befriending people, and making popular decisions.
 * **Know your voter base!** Each person in Griftlands has some allegiance with certain factions, and has different wealth levels. This determines what this person cares about politically. Do you hope to win by getting support from the Admiralty, or will you win by appealing to the lower class? Your choice.
 * **Take your stances!** Havaria has many problems, and different people have different opinions on certain subjects. Will you increase funding for the Admiralty to win them over, or support better worker rights? Be careful, if you change your stances too much, you will be seen as hypocritical!
@@ -84,6 +84,18 @@ With the new official workshop support, you can directly install mods from steam
 Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues, or a major feature update. As such, it will be more stable.
 
 ## Changelog
+
+### 0.1.6
+
+* Adjusted size of the slides a bit.
+* Fix problem where the day progress grift erroneously display that day 1 is completed.
+* Added a tab on the negotiation preview indicating that some negotiations can finish at any time without penalties.
+* Fix bug where "loose stances" aren't properly working.
+* Added a marker when you go to sleep on day 2.
+* Give the quest reward when you complete the propaganda quest.
+* Added more variance to random oppositions so that you won't get too many consecutive haters from a faction.
+* Gives an upfront reward for quests on day 1.
+* Rebalance the preach quest.
 
 ### 0.1.5
 

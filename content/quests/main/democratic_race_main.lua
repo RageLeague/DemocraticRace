@@ -276,6 +276,9 @@ local QDEF = QuestDef.Define
             end
         
             if new_quest then
+                if quest.param.day == 1 then
+                    new_quest.upfront_reward = true
+                end
                 TheGame:GetGameProfile():RecordIncident(event_id, new_quest:GetContentID())
                 return new_quest
             end
@@ -294,6 +297,9 @@ local QDEF = QuestDef.Define
                 end
             
                 if new_quest then
+                    if quest.param.day == 1 then
+                        new_quest.upfront_reward = true
+                    end
                     TheGame:GetGameProfile():RecordIncident(event_id, new_quest:GetContentID())
                     return new_quest
                 end
@@ -507,6 +513,7 @@ local QDEF = QuestDef.Define
         if quest.param.stances[issue] == nil then
             quest.param.stances[issue] = val
             quest.param.stance_change[issue] = 0
+            quest.param.stance_change_freebie[issue] = not strict
             TheGame:GetGameState():LogNotification( NOTIFY.UPDATE_STANCE, issue, val, strict )
         else
             local stance_delta = val - quest.param.stances[issue]
