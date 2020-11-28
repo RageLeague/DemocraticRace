@@ -193,3 +193,4 @@ Content.AddLocationContent{
     }
 }
 Content.GetLocationContent("PEARL_PARK").entry_scenario = "DEMOCRACY_PARK_ENTRY"
+Content.GetLocationContent("GB_NEUTRAL_BAR").faction_id = "NEUTRAL"
