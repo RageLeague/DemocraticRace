@@ -138,9 +138,11 @@ QDEF:AddConvo("make_decision", "potential_ally")
 
             cxt:Opt("OPT_ACCEPT")
                 :PreIcon(global_images.accept)
+                :Dialog("DIALOG_ACCEPT")
 
             cxt:Opt("OPT_DECLINE")
                 :PreIcon(global_images.reject)
+                :Dialog("DIALOG_DECLINE")
 
             cxt:Opt(str_id or "OPT_DONE")
                 -- :SetSFX( SoundEvents.leave_conversation )
