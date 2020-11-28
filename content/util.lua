@@ -785,10 +785,10 @@ function DemocracyUtil.GetVoterIntentionIndex(data)
     local voter_index = math.min(15, DemocracyUtil.TryMainQuestFn("GetGeneralSupport") - DemocracyUtil.TryMainQuestFn("GetCurrentExpectation"))
 
     if faction then
-        voter_index = voter_index + TheGame:GetGameState():GetMainQuest().param.faction_support[faction]
+        voter_index = voter_index + (TheGame:GetGameState():GetMainQuest().param.faction_support[faction] or 0)
     end
     if wealth then
-        voter_index = voter_index + TheGame:GetGameState():GetMainQuest().param.wealth_support[wealth]
+        voter_index = voter_index + (TheGame:GetGameState():GetMainQuest().param.wealth_support[wealth] or 0)
     end
     return voter_index
 end
@@ -815,6 +815,16 @@ function DemocracyUtil.GetFactionEndorsement(faction)
 end
 function DemocracyUtil.GetWealthEndorsement(wealth)
     return DemocracyUtil.GetEndorsement(DemocracyUtil.GetVoterIntentionIndex{wealth = wealth})
+end
+function DemocracyUtil.CalculatePartyStrength(members)
+    if is_instance(members, Party) then
+        members = members:GetMembers()
+    end
+    local score = 0
+    for i, agent in ipairs(members) do
+        score = score + agent:GetCombatStrength()
+    end
+    return score
 end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"

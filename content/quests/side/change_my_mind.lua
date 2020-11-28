@@ -569,9 +569,16 @@ QDEF:AddConvo("debate_people")
                 * It might seem cowardly, but you did what you came here to do.
                 * And that's good enough for you.
             ]],
+            OPT_ACCEPT = "Come to the station with {agent}",
+            DIALOG_ACCEPT = [[
+                player:
+                    Fine, I'll come.
+                agent:
+                    Yeah, that's right.
+            ]],
         }
         :Fn(function(cxt)
-            cxt.enc.scratch.opfor = CreateCombatParty("ADMIRALTY_PATROL", cxt.quest:GetRank() + 1, cxt.location)
+            cxt.enc.scratch.opfor = CreateCombatParty("ADMIRALTY_PATROL", cxt.quest:GetRank() + 1, cxt.location, true)
             cxt.enc:SetPrimaryCast(cxt.enc.scratch.opfor[1])
 
             cxt:Dialog("DIALOG_CONFRONT")
@@ -622,6 +629,14 @@ QDEF:AddConvo("debate_people")
                                     StateGraphUtil.DoRunAwayEffects( cxt, battle, true )
                                 end,
                             }
+                        cxt:Opt("OPT_ACCEPT")
+                            :Dialog("DIALOG_ACCEPT")
+                            :Fn(function(cxt)
+                                local flags = {
+                                    disrupting_peace = true,
+                                }
+                                DemocracyUtil.DoEnding(cxt, "arrested", flags)
+                            end)
                     end,
                 }
         end)
