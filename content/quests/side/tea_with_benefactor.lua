@@ -97,7 +97,7 @@ local QDEF = QuestDef.Define
         -- end
     end,
     on_complete = function( quest )
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST" )
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", quest.param.funds and math.max(math.round(quest.param.funds / 10), 5) or 5, "COMPLETED_QUEST" )
     end,
     on_fail = function(quest)
         DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5, "FAILED_QUEST" )

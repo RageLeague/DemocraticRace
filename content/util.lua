@@ -172,7 +172,7 @@ local SUPPORT_DELTA = {
 -- likely to be casted.
 function DemocracyUtil.SupportScore(agent)
     return DemocracyUtil.TryMainQuestFn("GetSupportForAgent", agent)
-        + SUPPORT_DELTA[agent:GetRelationship()] + (math.random() * 30) -15
+        + SUPPORT_DELTA[agent:GetRelationship()] + math.random(-50, 50)
 end
 
 -- The opposite of SupportScore

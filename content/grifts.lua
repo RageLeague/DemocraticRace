@@ -1,3 +1,12 @@
+local function MultiStat(vals, stats)
+    local res = 0
+    for i, id in ipairs(vals) do
+        if stats:GetStat(id) and stats:GetStat(id) > 0 then
+            res = res + 1
+        end
+    end
+    return res
+end
 local GRIFTS = {
     GriftDef{ 
         id = "gained_general_support_1",
@@ -66,7 +75,7 @@ local GRIFTS = {
         name = "Survive Day 1 In The Democratic Race",
         perk_points = 1,
         progress = function( self, stats )
-            return stats:GetStat( "democracy_day_1" ), 1
+            return MultiStat({"democracy_day_1"}, stats), 1
         end
     },
     GriftDef{ 
@@ -75,7 +84,7 @@ local GRIFTS = {
         name = "Survive Day 2 In The Democratic Race(End of Alpha)",
         perk_points = 1,
         progress = function( self, stats )
-            return stats:GetStat( "democracy_day_2" ) + 1, 2
+            return MultiStat({"democracy_day_1", "democracy_day_2"}, stats), 2
         end
     },
 }

@@ -12,7 +12,8 @@ local INTERVIEWER_BEHAVIOR = {
             :AddArgument("PLEASANT_QUESTION", 2 + math.max(0, relationship_delta))
             :AddArgument("GENERIC_QUESTION", 4)
             -- :AddCard(self.cont_question_card, 1)
-        -- self.questions_answered = 0 -- jus to make sure
+        if not self.params then self.params = {} end
+        self.params.questions_answered = 0
     end,
     available_issues = copyvalues(DemocracyConstants.issue_data),
     params = {},
@@ -294,6 +295,7 @@ QDEF:AddConvo("do_interview")
             ]],
             OPT_DO_INTERVIEW = "Do the interview",
             SIT_MOD = "Has a lot of questions prepared for you.",
+            NEGOTIATION_REASON = "Survive the interview while answering as many questions as you can!({1} {1*question|questions} answered)",
 
             DIALOG_INTERVIEW_SUCCESS = [[
                 agent:
@@ -382,6 +384,10 @@ QDEF:AddConvo("do_interview")
                     situation_modifiers = {
                         { value = 20, text = cxt:GetLocString("SIT_MOD") }
                     },
+                    reason_fn = function(minigame)
+
+                        return loc.format(cxt:GetLocString("NEGOTIATION_REASON"), INTERVIEWER_BEHAVIOR.params.questions_answered or 0 )
+                    end,
                     on_success = function(cxt, minigame)
                         cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
                         -- TheGame:GetDebug():CreatePanel(DebugTable(INTERVIEWER_BEHAVIOR))

@@ -102,9 +102,17 @@ local BONUSES = {
         local grafts = cxt.enc.scratch.grafts_offer
         if not grafts then
             local owner = TheGame:GetGameState():GetPlayerAgent()
-            local collection = GraftCollection.Rewardable(owner):Rarity(CARD_RARITY.COMMON)
-                :Filter(function(graft_def) return graft_def.type == GRAFT_TYPE.COMBAT end)
+            -- We kinda need to rewrite the graft generation logic, cause, you know,
+            -- we override the collection rewardables so that combat grafts aren't rewarded.
+            local collection = GraftCollection():NotUnique():NotLocked():NotBoss():NotUpgraded()
+                :Rarity(CARD_RARITY.COMMON)
+                :Filter( function(graft_def) return graft_def.type == GRAFT_TYPE.COMBAT end )
+                :NotInstalled(owner)
+                :NotRestricted(owner)
             grafts = collection:Generate(1)
+            if #grafts == 0 then
+                return false
+            end
             cxt.enc.scratch.grafts_offer = grafts
         end
 
@@ -302,13 +310,28 @@ QDEF:AddConvo("win_argument")
             if cxt:FirstLoop() then
                 cxt:Dialog("DIALOG_INTRO_BG")
                 cxt.enc.scratch.chum_got = {}
-                local chum_options = table.multipick(BONUSES, 3)
+                local ALLOWED_BONUS = shallowcopy(BONUSES)
+                local chum_options = table.multipick(ALLOWED_BONUS, 3)
                 cxt:RunLoop(function(cxt)
                     local has_chum = false
                     for i, fn in ipairs(chum_options) do
                         if not cxt.enc.scratch.chum_got[i] then
-                            fn(cxt, i)
-                            has_chum = true
+                            local result = fn(cxt, i)
+                            -- Just in case if we have invalid chum bonuses.
+                            local success = true
+                            while not result and #ALLOWED_BONUS > 0 do
+                                table.arrayremove(ALLOWED_BONUS, chum_options[i])
+                                if #ALLOWED_BONUS == 0 then
+                                    success = false
+                                    break
+                                end
+                                local replacement = table.arraypick(ALLOWED_BONUS)
+                                if not table.arraycontains(chum_options, replacement) then
+                                    chum_options[i] = replacement
+                                    result = replacement(cxt, i)
+                                end
+                            end
+                            has_chum = has_chum or success
                         end
                     end
                     if has_chum then

@@ -264,6 +264,7 @@ QDEF:AddConvo("out_of_time", "primary_advisor")
                         cxt:Dialog("DIALOG_PASSABLE")
                     end
                     cxt.quest:Complete()
+                    ConvoUtil.GiveQuestRewards(cxt)
                 end
                 StateGraphUtil.AddEndOption(cxt)
             end)

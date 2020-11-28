@@ -6,14 +6,23 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.1.3(Alpha)
+Version: 0.1.6(Alpha)
 
 Author: RageLeague
+
+Load order:
+
+* Loads After: Cross Character Campaign (https://steamcommunity.com/sharedfiles/filedetails/?id=2219176890)
+* Loads After: Shel's Adventure (https://steamcommunity.com/sharedfiles/filedetails/?id=2217590179) or Shel's Adventure Expansion (https://steamcommunity.com/sharedfiles/filedetails/?id=2245060394)
+* Loads After: Rise of Kashio (https://steamcommunity.com/sharedfiles/filedetails/?id=2266976421)
+
+(The load order is specified for certain other mods because these modify the game's code, or add new characters to the game.)
 
 Special thanks to:
 
 * JuniorElder(For helping with side quests)
 * WumpusThe19th(For helping with dialogs)
+* Minespatch(For helping with drawing some slides)
 
 This mod is based on this post that is now archived: https://forums.kleientertainment.com/forums/topic/120281-democracy-mode/.
 
@@ -21,7 +30,7 @@ Supported Languages: English (Right now Simplified/Traditional Chinese is not su
 
 [h2]New Contents[/h2]
 
-* [b]Brand new negotiations![/b] Many negotiations in this campaign are not as straightforward as reducing the opponent's core resolve to 0, and have more strategies to them. In addition, some negotiations have non-binary results. It is possible to win every negotiation but still lose the game!
+* [b]Brand new negotiations![/b] Many negotiations in this campaign are not as straightforward as reducing the opponent's core resolve to 0, and have more strategies to them. In addition, some negotiations have non-binary results. It is possible to win every negotiation but still lose the game, because of your terrible choices!
 * [b]A detailed Support mechanic![/b] Gain as much support as possible, as it determines many factors in this campaign, from the funding you get each day to how likely someone will vote for you. Gain support from various means, by completing quests, befriending people, and making popular decisions.
 * [b]Know your voter base![/b] Each person in Griftlands has some allegiance with certain factions, and has different wealth levels. This determines what this person cares about politically. Do you hope to win by getting support from the Admiralty, or will you win by appealing to the lower class? Your choice.
 * [b]Take your stances![/b] Havaria has many problems, and different people have different opinions on certain subjects. Will you increase funding for the Admiralty to win them over, or support better worker rights? Be careful, if you change your stances too much, you will be seen as hypocritical!
@@ -48,7 +57,7 @@ I release this alpha to get feedbacks about this mod before the full release. So
 
 Of course, other forms of feedbacks are welcome.
 
-You can leave feedbacks either on the Steam workshop page (https://steamcommunity.com/sharedfiles/filedetails/?id=2291214111), Klei's forum(DM or post on a certain forum topic in the Mods discussion), or on GitHub (https://github.com/RageLeague/DemocraticRace).
+You can leave feedbacks either on the Steam workshop page (https://steamcommunity.com/sharedfiles/filedetails/?id=2291214111), Klei's forum (DM me or https://forums.kleientertainment.com/forums/topic/123481-the-democratic-racealpha-available/), or on GitHub (https://github.com/RageLeague/DemocraticRace).
 
 [h2]How to install?[/h2]
 
@@ -72,9 +81,37 @@ With the new official workshop support, you can directly install mods from steam
 2. Enable it in-game.
 3. Volia!
 
-Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues. As such, it will be more stable.
+Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues, or a major feature update. As such, it will be more stable.
 
 [h2]Changelog[/h2]
+
+[h3]0.1.6[/h3]
+
+* Adjusted size of the slides a bit.
+* Fix problem where the day progress grift erroneously display that day 1 is completed.
+* Added a tab on the negotiation preview indicating that some negotiations can finish at any time without penalties.
+* Fix bug where "loose stances" aren't properly working.
+* Added a marker when you go to sleep on day 2.
+* Give the quest reward when you complete the propaganda quest.
+* Added more variance to random oppositions so that you won't get too many consecutive haters from a faction.
+* Gives an upfront reward for quests on day 1.
+* Rebalance the preach quest.
+
+[h3]0.1.5[/h3]
+
+* [HOTFIX] Fixed the situation where no battle grafts are generated as bonus at the start of the run.
+* Actually implement forgo rally option.
+* Clarify what you need to do in an interview in the negotiation reason.
+* Added cool slides by Minespatch.
+
+[h3]0.1.4(Misc balance adjustments)[/h3]
+
+* Filter out combat grafts as rewards and combat cards as gifts.
+* Disable cooldowns for negotiations so you won't soft lock.
+* Guarantees that every quest offered are different(if there are more available side quests than the number offered).
+* Relationship change of the primary advisor no longer causes support change.
+* Fix crash when you arrive at an arrest scene with the admiralty defeated. Also added an option to let you abort the escort mission.
+* Now loads after Cross Character Campaign (https://steamcommunity.com/sharedfiles/filedetails/?id=2219176890), as it modifies the graft reward code which allows Rook's coin graft to be rewarded as regular grafts.
 
 [h3]0.1.3[/h3]
 

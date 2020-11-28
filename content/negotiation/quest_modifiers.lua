@@ -81,10 +81,10 @@ local MODIFIERS =
     PREACH_CROWD =
     {
         name = "Crowd Mentality",
-        desc = "At the beginning of the player's turn, create {2} new <b>Potential Interest</> argument({1} left).",
+        desc = "At the beginning of the player's turn, create a new <b>Potential Interest</> argument({1} left).",
         desc_fn = function(self, fmt_str )
 
-            return loc.format(fmt_str, #self.agents, self.engine and math.floor(self.engine:GetDifficulty() / 3 + 1) or 1)
+            return loc.format(fmt_str, #self.agents)
         end,
         icon = "negotiation/modifiers/heckler.tex",
         modifier_type = MODIFIER_TYPE.CORE,
@@ -109,9 +109,9 @@ local MODIFIERS =
         event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
                 if minigame.turns > 1 then
-                    for i = 1, math.floor(self.engine:GetDifficulty() / 3 + 1) do
+                    -- for i = 1, math.floor(self.engine:GetDifficulty() / 3 + 1) do
                         self:TryCreateNewTarget()
-                    end
+                    -- end
                 end
                 if #self.agents == 0 and self.negotiator:GetModifierInstances( "PREACH_TARGET_INTEREST" ) == 0 then
                     minigame:Win()
@@ -120,7 +120,7 @@ local MODIFIERS =
         },
         InitModifiers = function(self)
             self.ignored_agents = {}
-            for i = 1, 1 + self.engine:GetDifficulty() do
+            for i = 1, 2 + math.floor(self.engine:GetDifficulty() / 2) do
                 self:TryCreateNewTarget()
             end
         end,
@@ -201,8 +201,8 @@ local MODIFIERS =
 
             self.annoyed_threshold = math.min(self.max_resolve, math.floor((self.max_resolve + self.annoyed_threshold) / 2))
             
-            self.min_persuasion = math.floor(difficulty/3)
-            self.max_persuasion = 1 + (difficulty % 3)
+            self.min_persuasion = math.floor((difficulty - 1) / 2)
+            self.max_persuasion = 2 + math.floor(difficulty / 2)
 
             if agent:GetRelationship() > RELATIONSHIP.NEUTRAL then
                 self.max_persuasion = self.max_persuasion - 1

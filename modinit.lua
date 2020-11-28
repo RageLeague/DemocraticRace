@@ -198,7 +198,7 @@ local function OnPreLoad( mod )
 end
 -- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {
-    version = "0.1.3",
+    version = "0.1.6",
     alias = "DEMOCRATICRACE",
     
     OnLoad = OnLoad,
@@ -210,7 +210,18 @@ return {
     previewImagePath = "preview.png",
 
     load_after = {
-        -- both modify graft rewards, but CCC overrides the change.
+        -----------------------------------------
+        -- Functional changes
+        -----------------------------------------
+        -- Cross character campaign. both modify graft rewards, but CCC overrides the change.
         "CrossCharacterCampaign",
+        
+        -----------------------------------------
+        -- New characters
+        -----------------------------------------
+        -- For shel's adventure and expanded version
+        "LOSTPASSAGE",
+        -- For rise of kashio
+        "RISE", -- ffs, can you use a more unique alias?
     },
 }
