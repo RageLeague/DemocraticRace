@@ -96,6 +96,37 @@ QDEF:AddConvo("go_to_bar")
             cxt.quest:Complete("go_to_bar")
             cxt:Dialog("DIALOG_INTRO")
         end)
+QDEF:AddConvo("make_decision", "potential_ally")
+    :AttractState("STATE_ATTRACT")
+        :Loc{
+            DIALOG_INTRO = [[
+                agent:
+                    [p] Have you decided?
+            ]],
+            OPT_ACCEPT = "Accept",
+            OPT_DECLINE = "Decline",
+            DIALOG_THINK = [[
+                player:
+                    I haven't decided yet.
+                agent:
+                    Don't take too long!
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+
+            cxt:Opt("OPT_ACCEPT")
+                :PreIcon(global_images.accept)
+
+            cxt:Opt("OPT_DECLINE")
+                :PreIcon(global_images.reject)
+
+            cxt:Opt(str_id or "OPT_DONE")
+                -- :SetSFX( SoundEvents.leave_conversation )
+                :Dialog("DIALOG_THINK")
+                :Fn(function(cxt) cxt:End() end)
+                :MakeUnder()
+        end)
 QDEF:AddConvo("make_decision", "primary_advisor")
     :Loc{
         DIALOG_ASK = [[
@@ -105,7 +136,9 @@ QDEF:AddConvo("make_decision", "primary_advisor")
     }
     :Hub(function(cxt)
         cxt:Opt("OPT_ASK_ABOUT")
+            :SetQuestMark(cxt.quest)
             :Dialog("DIALOG_ASK")
+            :GoTo("STATE_QUESTIONS")
     end)
     :AskAboutHubConditions("STATE_QUESTIONS", 
     {
@@ -123,6 +156,7 @@ QDEF:AddConvo("make_decision", "primary_advisor")
                 There's a catch, though.
                 If you deviate too much from their ideology, they might end their alliance with you.
                 So... Don't do that.
+                Also, enemies of your ally will not form an alliance with you, so choose your ally carefully.
         ]],
         nil,
         nil,
@@ -195,6 +229,8 @@ QDEF:AddConvo("make_decision", "primary_advisor")
                     [p] Have you decided?
                 player:
                     I'm still thinking...
+                agent:
+                    Take your time. It's not an easy decision.
             ]],
         }
         :Fn(function(cxt)
