@@ -104,7 +104,28 @@ QDEF:AddConvo("make_decision", "potential_ally")
                     [p] Have you decided?
             ]],
             OPT_ACCEPT = "Accept",
+
+            DIALOG_ACCEPT = [[
+                player:
+                    [p] You know what, I agree.
+                    If we can work together, we will surely win!
+                agent:
+                    Excellent! That's the kind of stuff I like to hear!
+            ]],
             OPT_DECLINE = "Decline",
+
+            DIALOG_DECLINE = [[
+                player:
+                    [p] While that is a great offer, I have to decline, unfortunately.
+                    Sorry if I offended you, but I want to keep my options open.
+                agent:
+                    I see.
+                    It is a real shame.
+                    I thought we share something together.
+                player:
+                    Don't try to hit on me. I'm not interested in you romantically.
+                * ...Or are you?
+            ]],
             DIALOG_THINK = [[
                 player:
                     I haven't decided yet.
