@@ -826,6 +826,9 @@ function DemocracyUtil.CalculatePartyStrength(members)
     end
     return score
 end
+function DemocracyUtil.GetAlliancePotential(candidate_id)
+
+end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator
