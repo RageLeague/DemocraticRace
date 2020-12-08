@@ -107,5 +107,7 @@ QDEF:AddConvo()
                         :DoneConvo()
                 end
                 StateGraphUtil.AddEndOption(cxt)
+            else
+                cxt:End()
             end
         end)
