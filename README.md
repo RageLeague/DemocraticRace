@@ -85,6 +85,13 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 
 ## Changelog
 
+### 0.1.7
+
+* Watching someone reading propaganda posters no longer costs free time actions.
+* You can no longer play cards from hand when watching someone reading propaganda posters. Evoke and passive effects of cards still trigger though, and it is intended.
+* After learning an existing location, asking for a new location costs 1 action instead.
+* Removing impatience also causes damage to be reduced on this turn.
+
 ### 0.1.6
 
 * Adjusted size of the slides a bit.

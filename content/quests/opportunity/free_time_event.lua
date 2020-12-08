@@ -60,6 +60,11 @@ local QDEF = QuestDef.Define{
     events = 
     {
         resolve_negotiation = function(quest, minigame)
+            for i, modifier in minigame:GetPlayerNegotiator():Modifiers() do
+                if modifier.id == "NO_PLAY_FROM_HAND" then
+                    return
+                end
+            end
             quest:DefFn("DeltaActions", -1)
         end,
         resolve_battle = function(quest, battle)
@@ -120,7 +125,7 @@ local convo = QDEF:AddConvo()
         ]],
 
         OPT_ASK_ABOUT_LOCATION = "Ask for a place to visit...",
-
+        TT_REDUCED_ACTION_COST = "<#BONUS>This option has reduced action cost because you asked for an invalid location today.</>",
         OPT_BAR = "Ask for a restaurant or bar",
         DIALOG_BAR = [[
             player:
@@ -234,10 +239,13 @@ local convo = QDEF:AddConvo()
                             return
                         end
                         local opt = cxt:Opt("OPT_"..opt_id)
-                            :RequireFreeTimeAction(2)
+                            :RequireFreeTimeAction(who:HasMemoryFromToday("WASTED_LOCATION_UNLOCK") and 1 or 2)
                             :Dialog("DIALOG_"..opt_id)
                         if preicon then
                             opt:PreIcon(preicon)
+                        end
+                        if who:HasMemoryFromToday("WASTED_LOCATION_UNLOCK") then
+                            opt:PostText("TT_REDUCED_ACTION_COST")
                         end
                         opt:Fn(function(cxt)
                             who:Remember("ASKED_OPT_" .. opt_id)
@@ -246,6 +254,7 @@ local convo = QDEF:AddConvo()
                             if cxt.quest.param.loc_to_unlock then
                                 if DemocracyUtil.LocationUnlocked(cxt.quest.param.loc_to_unlock) then
                                     cxt:Dialog("DIALOG_ALREADY_UNLOCKED")
+                                    cxt:GetAgent():Remember("WASTED_LOCATION_UNLOCK")
                                 else
                                     cxt:GetAgent():Remember("OFFERED_BOON")
                                     local unlock_location = TheGame:GetGameState():GetLocation(cxt.quest.param.loc_to_unlock)
@@ -265,6 +274,7 @@ local convo = QDEF:AddConvo()
                                 end
                             else
                                 cxt:Dialog("DIALOG_NO_MORE_LEFT")
+                                cxt:GetAgent():Remember("WASTED_LOCATION_UNLOCK")
                             end
                         end)
                     end
