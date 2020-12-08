@@ -91,6 +91,7 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * You can no longer play cards from hand when watching someone reading propaganda posters. Evoke and passive effects of cards still trigger though, and it is intended.
 * After learning an existing location, asking for a new location costs 1 action instead.
 * Removing impatience also causes damage to be reduced on this turn.
+* Sometimes a non-artist will tell you who is a potential artist.
 
 ### 0.1.6
 

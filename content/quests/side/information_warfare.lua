@@ -120,6 +120,9 @@ local QDEF = QuestDef.Define
         quest.param.liked_people = 0
         quest.param.disliked_people = 0
         quest.param.ignored_people = 0
+        if quest:IsActive("find_artist") then
+            quest:Cancel("find_artist")
+        end
     end,
 }
 :AddObjective{
@@ -132,9 +135,47 @@ local QDEF = QuestDef.Define
     title = "Report to {primary_advisor}",
     desc = "You ran out of time. Return to {primary_advisor} on your progress.",
     on_activate = function(quest)
+        if quest:IsActive("find_artist") then
+            quest:Cancel("find_artist")
+        end
         if quest:IsActive("time_left") then
             quest:Cancel("time_left")
         end
+    end,
+}
+:AddObjective{
+    id = "find_artist",
+    title = "(Optional) Find {known_artist}",
+    desc = "{known_artist} is known to be an artist. Perhaps you should find {known_artist.himher}.",
+    mark = {"known_artist"},
+}
+:AddCast{
+    cast_id = "known_artist",
+    when = QWHEN.MANUAL,
+    no_validation = true,
+    optional = true,
+    condition = function(agent, quest)
+        if not IsPotentiallyArtist(agent) then
+            return false, "Can't be artist"
+        end
+        if not DemocracyUtil.RandomBystanderCondition(agent) then
+            return false, "Not a random bystander"
+        end
+        if quest.param.artist_faction then
+            return agent:GetFactionID() == quest.param.artist_faction, "Invalid faction"
+        end
+        return true
+    end,
+    score_fn = function(agent, quest)
+        if IsArtist(agent) then
+            return math.random(3,5)
+        end
+        return math.random(1,5)
+    end,
+    on_assign = function(quest)
+        -- if not quest:IsDone("commission") then
+        --     quest:Activate("find_artist")
+        -- end
     end,
 }
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
@@ -538,6 +579,26 @@ QDEF:AddConvo("commission")
                 Understandable, have a nice day.
             *** This person is not an artist.
         ]],
+        DIALOG_ASK_COMMISSION_KNOWS_ARTIST = [[
+            player:
+                I'm looking to make a propaganda poster.
+                Can you help me make one?
+            agent:
+                No.
+                But potentially I know someone who can.
+                {known_artist.HisHer} name is {known_artist}.
+            {target_good_artist?
+                {known_artist.HeShe} knows how to draw a convincing poster.
+                Might cost a lot to commission {known_artist.himher}, though.
+                Depends on how good you want your poster to be, I guess.
+                |
+                {known_artist.HeShe}'s not exactly the best artist, but {known_artist.heshe} gets the job done.
+                Plus, {known_artist.hisher} prices are <i>relatively</> cheap.
+            }
+            player:
+                Thanks for the info.
+            *** This person is not an artist, but {agent.heshe} knows that {known_artist} is.
+        ]],
         DIALOG_PAYED_COMMISSION = [[
             agent:
                 Okay. You hold up your end of the bargain, I'll hold up mine.
@@ -565,7 +626,7 @@ QDEF:AddConvo("commission")
         REQ_NOT_ARTIST = "This person won't make a propaganda poster because {agent.heshe} can't.",
     }
     :Hub(function(cxt, who)
-        if DemocracyUtil.RandomBystanderCondition(who) then
+        if who and (DemocracyUtil.RandomBystanderCondition(who) or who == cxt:GetCastMember("known_artist")) then
             cxt.enc.scratch.is_artist = IsArtist(who)
             if not cxt.quest.param.artist_demands then
                 cxt.quest.param.artist_demands = {}
@@ -631,7 +692,24 @@ QDEF:AddConvo("commission")
                         end
                     end)
                 else
-                    cxt:Dialog("DIALOG_ASK_COMMISSION_NOT_ARTIST")
+                    if cxt:GetAgent():GetRelationship() >= RELATIONSHIP.NEUTRAL and 
+                        not cxt:GetCastMember("known_artist") and math.random() < 0.5 then
+                    
+                        cxt.quest.param.artist_faction = cxt:GetAgent():GetFactionID()
+                        cxt.quest:AssignCastMember("known_artist")
+                        local known_artist = cxt:GetCastMember("known_artist")
+                        if known_artist then
+                            cxt.enc.scratch.target_good_artist = IsArtist(known_artist)
+                            cxt:Dialog("DIALOG_ASK_COMMISSION_KNOWS_ARTIST")
+                            if not cxt.quest:IsDone("commission") then
+                                cxt.quest:Activate("find_artist")
+                            end
+                        else
+                            cxt:Dialog("DIALOG_ASK_COMMISSION_NOT_ARTIST")
+                        end
+                    else
+                        cxt:Dialog("DIALOG_ASK_COMMISSION_NOT_ARTIST")
+                    end
                 end
             end)
                 
