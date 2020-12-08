@@ -192,7 +192,7 @@ QDEF:AddConvo("go_to_bar")
                 advisor_hostile:
                     !right
                     !angry_accuse
-                    Dont't listen to that Parasitic {advisor_manipulate}!
+                    Don't listen to that Boasting {advisor_manipulate}!
                 advisor_manipulate:
                     !left
                     !dubious
@@ -250,7 +250,7 @@ QDEF:AddConvo("choose_advisor", "advisor_diplomacy")
                     !placate
                     Okay, calm down.
                     I get your point.
-                *** {agent} will provide more diplomatic cards in {agent.hisher} card shop, is what {agent.heshe}'s saying.
+                ** {agent} will provide more diplomatic cards in {agent.hisher} card shop, is what {agent.heshe}'s saying.
             ]],
             DIALOG_PICK = [[
                 player:
@@ -291,7 +291,7 @@ QDEF:AddConvo("choose_advisor", "advisor_hostile")
                     It works a hundred percent of the time.
                     As long as you don't give the opponent the chance to speak, they can't refute what you're saying.
                     And you win by default.
-                *** {agent} will provide more hostile cards in {agent.hisher} card shop, is what {agent.heshe}'s saying.
+                ** {agent} will provide more hostile cards in {agent.hisher} card shop, is what {agent.heshe}'s saying.
             ]],
             
             DIALOG_PICK = [[
@@ -331,7 +331,7 @@ QDEF:AddConvo("choose_advisor", "advisor_manipulate")
                     That thought is quite illogical.
                     Facts and logic is subjective, yet it appears objective.
                     I can teach you how to make facts and logic be on your side, even though it does not appear to be.
-                *** {agent} will provide more manipulative cards in {agent.hisher} card shop, is what {agent.heshe}'s saying.
+                ** {agent} will provide more manipulative cards in {agent.hisher} card shop, is what {agent.heshe}'s saying.
             ]],
 
             DIALOG_PICK = [[
@@ -417,7 +417,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
             DIALOG_SUPPORT = [[
                 agent:
                     The first step of running a campaign is to realize that being a polititian is a hard job.
-                    There are different ways of apporaching problems in the society, and people have different opinions on these approaches.
+                    There are different ways of approaching problems in the society, and people have different opinions on these approaches.
                     Natually, some people will dislike you simply because of your ideology.
                 * As if on cue, you see a notification showing people disliking you.
             ]],
@@ -427,7 +427,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 agent:
                     It may seem arbitrary, but you have to deal with these people.
                     You need gain support level to increase the popularity among the people.
-                    Remember, people who like you or love you will always vote for you, and people who dislike or hate you will always vote against you.
+                    Remember, people who like you or love you will most likely vote for you, and people who dislike or hate you will most likely vote against you.
                     But the support level affects your popularity among swing voters.
                     At the same time, you should make people like you more, since they will help your with negotiation and solidifies their votes for you.
             ]],
@@ -546,6 +546,7 @@ QDEF:AddConvo("visit_office")
                     !right
                     We're here.
                 player:
+                    !left
                     It looks like an okay place.
                 primary_advisor:
                     !thought
