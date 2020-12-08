@@ -54,10 +54,10 @@ end
 
 Content.AddLocationContent{
     id = "DIPL_PRES_OFFICE",
-    name = "Base of Besla Bo, 51st Biv",
+    name = "X-Æ A-12",
     show_agents = true,
     plax = "INT_SB_Res_1",
-    desc = "It's just a room in the Spark Baron Headquarters. The name is made up by the room owner because it sounded hip.",
+    desc = "It's just a random room in the Spark Baron Headquarters. The name is made up by the room owner because it sounded hip. Don't know why Greek letters have such appeal. Maybe it's because because Greece does not exist on this planet.",
     icon = engine.asset.Texture("DEMOCRATICRACE:assets/locations/location_bb51b.png"),
 
     -- faction_id = "JAKES",

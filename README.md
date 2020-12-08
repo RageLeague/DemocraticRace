@@ -92,6 +92,7 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * After learning an existing location, asking for a new location costs 1 action instead.
 * Removing impatience also causes damage to be reduced on this turn.
 * Sometimes a non-artist will tell you who is a potential artist.
+* Update the office name of Aellon "the Based". Still a total coincidence that it resembles any person, living or dead, right?
 
 ### 0.1.6
 

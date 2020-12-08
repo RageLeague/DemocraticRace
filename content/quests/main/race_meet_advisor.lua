@@ -546,6 +546,7 @@ QDEF:AddConvo("visit_office")
                     !right
                     We're here.
                 player:
+                    !left
                     It looks like an okay place.
                 primary_advisor:
                     !thought
