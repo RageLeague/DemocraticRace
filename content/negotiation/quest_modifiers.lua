@@ -1084,8 +1084,8 @@ local MODIFIERS =
             CANT_PLAY = "Can't play cards from hand",
         },
         hidden = true,
-        CanPlayCard = function( self, source, engine, target )
-            -- Only verify forced targets if you are not targetting yourself
+        CanPlayCardModifier = function( self, source, engine, target )
+            
             if self.engine and self.engine:GetHandDeck():HasCard(source) then
                 return false, (self.def or self):GetLocalizedString("CANT_PLAY")
             end
