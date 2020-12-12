@@ -189,5 +189,8 @@ for id, data in pairs(t) do
     if not data.cast_id then
         data.cast_id = id
     end
+    if not data.main_supporter then
+        data.main_supporter = Content.GetCharacterDef(data.character).faction_id
+    end
 end
 return t

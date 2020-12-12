@@ -827,7 +827,34 @@ function DemocracyUtil.CalculatePartyStrength(members)
     return score
 end
 function DemocracyUtil.GetAlliancePotential(candidate_id)
-
+    local oppositions =  DemocracyConstants.opposition_data
+    local candidate_data = oppositions[candidate_id]
+    assert(candidate_data, "Invalid candidate_id")
+    local score = DemocracyUtil.GetFactionEndorsement(candidate_data.main_supporter)
+    for id, data in pairs(oppositions) do
+        if id ~= candidate_id then
+            local candidate = TheGame:GetGameState():GetAgent(data.character)
+            if candidate then
+                local rel_with_player = candidate:GetRelationship()
+                local faction_rel = TheGame:GetGameState():GetFactions():GetFactionRelationship( 
+                    data.main_supporter, candidate_data.main_supporter )
+                -- Positive when friend with friend, enemy of enemy
+                -- Negative when enemy of friend, enemy of enemy
+                local fof = (rel_with_player - RELATIONSHIP.NEUTRAL) * (faction_rel - RELATIONSHIP.NEUTRAL)
+                if fof <= -2 then
+                    -- This happens when you are liked with hated, loved with disliked,
+                    -- disliked of loved(never happens unless somehow a faction has more than 1 candidates)
+                    -- or hated of liked
+                    return nil, "Alliance or opponent of bad candidate"
+                elseif fof == -1 then
+                    score = score - 25
+                else
+                    score = score + 10 * fof 
+                end
+            end
+        end
+    end
+    return score
 end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
