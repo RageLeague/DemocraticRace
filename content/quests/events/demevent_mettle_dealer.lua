@@ -32,6 +32,11 @@ local QDEF = QuestDef.Define
     cast_id = "dealer",
     alias = "DODGY_SCAVENGER",
     no_validation = true,
+    events = {
+        agent_retired = function(quest, agent)
+            quest:Complete()
+        end,
+    },
 }
 :AddLocationCast{
     cast_id = "station",
@@ -58,6 +63,13 @@ local QDEF = QuestDef.Define
     end,
     mark = {"station"},
     
+}
+:AddOpinionEvents{
+    
+    arrested_mettle_dealer = {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Help them arrest a notorious mettle dealer",
+    },
 }
 
 QDEF:AddConvo("escort")
@@ -100,6 +112,49 @@ QDEF:AddConvo("escort")
                 :CompleteQuest()
                 :DoneConvo()
             StateGraphUtil.AddLeaveLocation(cxt)
+        end)
+    :State("STATE_ARRIVE")
+        :Loc{
+            DIALOG_INTRO = [[
+                player:
+                    !left
+                agent:
+                    !right
+                    Who's this.
+                player:
+                    This is {dealer}, the mettle dealer that tries to sell mettle to me.
+                agent:
+                    Ah, yes, {dealer}.
+                    We've had our eye on {dealer.himher} for quite a while.
+                    Selling highly addictive hallucinagen to people and making them more violent.
+                    We can't have that under our rule, now can we?
+                    Anyway, I'll take it from here.
+                player:
+                    Careful, though, {dealer}'s highly unpredictable.
+                agent:
+                    Oh, our intel already indicated as such. We need to deal with {dealer} in a special way.
+                    Anyway, thanks for your help. Feel free to leave at any time.
+                * You turned in {dealer}. You wonder how permanent the solution is.
+            ]],
+        }
+        :Fn(function(cxt)
+            local ad = TheGame:GetGameState():GetAgent("MURDERBAY_ADMIRALTY_CONTACT")
+            if not ad then
+                -- this really shouldn't happen.
+                ad = cxt.quest:CreateSkinnedAgent( "ADMIRALTY_CLERK" )
+            end
+            ad:MoveToLocation(cxt.quest:GetCastMember("station"))
+            cxt:TalkTo(ad)
+            cxt:Dialog("DIALOG_INTRO")
+            local target = cxt.quest:GetCastMember("dealer")
+            if not target:IsDead() then
+                target:GainAspect("stripped_influence", 5)
+                target:OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
+                target:Retire()
+            end
+            cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("arrested_mettle_dealer"))
+            cxt.quest:Complete()
+            StateGraphUtil.AddEndOption(cxt)
         end)
 QDEF:AddConvo("intro")
     :Confront(function(cxt)
