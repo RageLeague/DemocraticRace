@@ -85,6 +85,61 @@ local CARDS = {
         name = "Initial Straw Army",
         flags = CARD_FLAGS.MANIPULATE | CARD_FLAGS.AMBUSH,
     },
+
+    advisor_hostile_talk_over = 
+    {
+        name = "Talk Over",
+        desc = "Prevent the next source of damage dealt to any of your arguments.",
+
+        flavour = "The best way to win is to not giving the opponent the chance to speak.",
+        
+        advisor = "ADVISOR_HOSTILE",
+        flags = CARD_FLAGS.HOSTILE,
+        cost = 1,
+
+        count = 1,
+        -- card_draw = 0,
+
+        OnPostResolve = function( self, minigame, targets )
+            self.negotiator:AddModifier("advisor_hostile_talk_over", self.count)
+            -- if self.card_draw and self.card_draw > 0 then
+            --     minigame:DrawCards( self.card_draw )
+            -- end
+        end,
+
+        modifier =
+        {
+            modifier_type = MODIFIER_TYPE.PERMANENT,
+            event_handlers =
+            {
+                [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+                    if target.negotiator == self.negotiator then
+                        -- if is_instance( source, Negotiation.Modifier ) then
+                        --     source:AttackResolve(damage, self)
+                        -- else
+                        --     source.negotiator:AttackResolve(damage, self)
+                        -- end
+                        target.composure = target.composure + damage
+                        self.negotiator:DeltaModifier(self, 1, self)
+                    end
+                end,
+
+                -- [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
+                --     self.negotiator:RemoveModifier(self.id, self.stacks)
+                -- end
+            },
+        },
+    },
+    advisor_hostile_talk_over_plus = {
+        name = "Sticky Talk Over",
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.STICKY,
+    },
+    advisor_hostile_talk_over_plus2 = {
+        name = "Boosted Talk Over",
+        desc = "Prevent the next <#UPGRADE>three sources</> of damage dealt to any of your arguments.",
+        count = 3,
+        cost = 2,
+    },
 }
 
 for i, id, def in sorted_pairs( CARDS ) do
