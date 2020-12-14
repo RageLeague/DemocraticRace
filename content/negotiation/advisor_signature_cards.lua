@@ -61,7 +61,7 @@ local CARDS = {
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, AutoUpgradeText(self, "strawman_count"))
         end,
-        flavour = "'You know the straw man arguments, the ones that the Barons likes to use? We're better than that.'",
+        flavour = "'You know the straw man argument, the one that the Barons likes to use? We're better than that.'",
         
         advisor = "ADVISOR_MANIPULATE",
         flags = CARD_FLAGS.MANIPULATE,
