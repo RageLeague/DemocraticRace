@@ -247,7 +247,7 @@ local CARDS = {
         end,
     }
 }
-for id, def in pairs( CARDS ) do
+for i, id, def in sorted_pairs( CARDS ) do
     if not def.series then
         def.series = CARD_SERIES.GENERAL
     end
