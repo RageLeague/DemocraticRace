@@ -6,31 +6,106 @@ local QDEF = QuestDef.Define
     -- precondition = function(quest) 
     --     return TheGame:GetGameState():GetCaravan():GetMoney() >= MANIFESTO_COST
     -- end,
-    on_start = function(quest)
-        quest.param.unlocked_mettle = TheGame:GetGameProfile():HasMettleUnlocked(self:GetPlayerAgent():GetContentID())
+    on_init = function(quest)
+        quest.param.unlocked_mettle = TheGame:GetGameProfile():HasMettleUnlocked(TheGame:GetGameState():GetPlayerAgent():GetContentID())
         quest.param.can_do_mettle = TheGame:GetGameState():CanDoMettle()
         quest.param.unlocked_shop = false
-        if quest.param.unlocked_mettle then
+        if true then--quest.param.unlocked_mettle then
             if math.random() < 0.5 then
-                quest.param.cost = 300
+                quest.param.cost, quest.param.cost_mod = CalculatePayment( quest:GetCastMember("dealer"), 300)
             end
         end
-        quest.param.mettle_gain = 3
+        quest.param.mettle_gain = quest.param.cost and 3 or 1
         -- Added this to change dialog upon save/load(aka "save scum")
         -- the idea is that when starting the quest, the field is initialized
         -- but it is not saved, so it will not be true upon load
         quest.did_not_save_scum = true
+        -- return true
     end, 
+    on_destroy = function(quest)
+        if quest:GetCastMember("dealer"):IsInPlayerParty() then
+            quest:GetCastMember("dealer"):Dismiss()
+        end
+    end,
 }
 :AddCastByAlias{
     cast_id = "dealer",
     alias = "DODGY_SCAVENGER",
     no_validation = true,
 }
+:AddLocationCast{
+    cast_id = "station",
+    cast_fn = function(quest, t)
+        table.insert( t, TheGame:GetGameState():GetLocation("ADMIRALTY_BARRACKS"))
+    end,
+}
+:AddObjective{
+    id = "intro",
+    state = QSTATUS.ACTIVE,
+    on_activate = function(quest)
+        quest:SetHideInOverlay(true)
+    end,    
+}
+:AddObjective{
+    id = "escort",
+    title = "Bring {dealer} to the station",
+    desc = "You arrested {dealer} for selling controlled substances, and you need to bring {dealer.himher} to the station.",
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/followup_admiralty_arrest.png"),
+    on_activate = function(quest)
+        quest:SetHideInOverlay(false)
+        quest:GetCastMember("dealer"):Recruit(PARTY_MEMBER_TYPE.CAPTIVE)
+        
+    end,
+    mark = {"station"},
+    
+}
 
-QDEF:AddConvo()
+QDEF:AddConvo("escort")
+    :Priority(CONVO_PRIORITY_HIGHEST)
     :Confront(function(cxt)
-        return "STATE_CONF"
+        if not cxt.location:HasTag("in_transit") then
+            if cxt.location == cxt.quest:GetCastMember("station") then
+                return "STATE_ARRIVE"
+            else
+                return "STATE_OTHER_LOCATION"
+            end
+        end
+    end)
+    :State("STATE_OTHER_LOCATION")
+        :Loc{
+            DIALOG_INTRO = [[
+                player:
+                    !left
+                dealer:
+                    !right
+                    Why am I here?
+                    What do you want?
+            ]],
+            OPT_LET_GO = "Let {dealer} go",
+            DIALOG_LET_GO = [[
+                player:
+                    I'm letting you go.
+                    I don't actually want to arrest you.
+                    I'm just trying to make a political statement you know?
+                    Gotta get those support up.
+                dealer:
+                    I have to say, grifter, your motives are even dodgier than mine.
+                    !exit
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+            cxt:Opt("OPT_LET_GO")
+                :Dialog("DIALOG_LET_GO")
+                :CompleteQuest()
+                :DoneConvo()
+            StateGraphUtil.AddLeaveLocation(cxt)
+        end)
+QDEF:AddConvo("intro")
+    :Confront(function(cxt)
+        if cxt.location:HasTag("in_transit") then
+            return "STATE_CONF"
+        end
     end)
     :State("STATE_CONF")
         :Loc{
@@ -100,8 +175,6 @@ QDEF:AddConvo()
                 dealer:
                     Excellent!
                     Here you go, see if you like it!
-                * You took some mettle.
-                * Nothing visible has changed, but you feel a rush of dopamine rush, and you want more of it.
             ]],
             DIALOG_ACCEPT_METTLE_COST = [[
                 player:
@@ -156,7 +229,7 @@ QDEF:AddConvo()
                     I'm trying to make money here.
                     {cost#money}, final price.
             ]],
-            OPT_PAY = "Pay {cost#money}",
+            OPT_PAY = "Pay for the cost",
             DIALOG_PAY = [[
                 player:
                 {free?
@@ -167,34 +240,8 @@ QDEF:AddConvo()
                 dealer:
                     Excellent!
                     As promised, here's the mettle. See if you like it.
-                * You took some mettle.
-                * Nothing visible has changed, but you feel a rush of dopamine rush, and you want more of it.
             ]],
-            DIALOG_METTLE_POST = [[
-                dealer:
-                    Anyway, if you want more, you know where you can find me.
-                
-                {not unlocked_shop?
-                player:
-                    Wait, I don't know where it is.
-                    {unlocked_mettle?
-                        Not in the Pearl, anyway.
-                    }
-                dealer:
-                    In that case, I'll show you.
-                * {dealer.HeShe} points the location of {dealer.hisher} shop to you.
-                }
-                {unlocked_shop?
-                player:
-                    Sure. I may consider that if I have time. 
-                }
-            ]],
-            DIALOG_METTLE_END = [[
-                dealer:
-                    See you there!
-                    !exit
-                * You wonder what the consequences of this is.
-            ]],
+            
             OPT_REJECT = "Reject mettle",
             DIALOG_REJECT = [[
                 player:
@@ -232,12 +279,116 @@ QDEF:AddConvo()
                 * {dealer} left, leaving you wondering whether you made the right call.
             ]],
             OPT_ARREST = "Arrest {dealer} on the spot",
+            REQ_KNOW_HQ = "You don't know where the Admiralty HQ is.",
+            DIALOG_ARREST = [[
+                player:
+                    I'm sorry, {dealer}, but you're under arrest.
+                dealer:
+                    What for?
+                player:
+                    For selling a dangerous controlled substance.
+                dealer:
+                {not unlocked_mettle?
+                    I'll have you know that mettle is a perfectly fine substance, thank you very much!
+                }
+                {unlocked_mettle?
+                    I've gave you a taste of power, and this is how you repay me?
+                }
+            ]],
+            DIALOG_ARREST_WIN = [[
+                {dead?
+                    * You killed {dealer}, but this might not be the rest you see of {dealer.himher}.
+                }
+                {not dead?
+                    player:
+                        !angry
+                    agent:
+                        !injured
+                        This is just a temporary setback, you and I both know this.
+                    player:
+                        Oh yeah?
+                        How about let's make it permanent, hmm?
+                    agent:
+                        What, you're going to kill me?
+                        I assure you, killing me is in no way permanent.
+                    player:
+                        If I want to kill you, I would've already done so during the fight.
+                        That's why I'm going to arrest you and bring you to the station.
+                        Try convince the people there how wonderful your "mettle" is.
+                    * You captured {dealer}.
+                }
+            ]]
         }
         :SetLooping(true)
         :Fn(function(cxt)
             if cxt:FirstLoop() then
                 cxt.enc.scratch.did_not_save_scum = cxt.quest.did_not_save_scum
+                cxt:TalkTo(cxt:GetCastMember("dealer"))
                 cxt:Dialog("DIALOG_INTRO")
             end
             cxt:Question("OPT_ASK_METTLE", "DIALOG_ASK_METTLE")
+
+            if not cxt.quest.param.need_pay then
+                cxt:Opt("OPT_ACCEPT_METTLE")
+                    :UpdatePoliticalStance("SUBSTANCE_REGULATION", -1, false, true)
+                    :Fn(function(cxt)
+                        if cxt.quest.param.cost and cxt.quest.param.cost > 0 then
+                            cxt:Dialog("DIALOG_ACCEPT_METTLE_COST")
+                            cxt.quest.param.need_pay = true
+                        else
+                            cxt:Dialog("DIALOG_ACCEPT_METTLE")
+
+                            cxt:GoTo("STATE_POST_METTLE")
+                        end
+                    end)
+            else
+                cxt:Opt("OPT_PAY")
+                    :DeliverMoney(cxt.quest.param.cost, {no_scale = true}, cxt:GetCastMember("dealer"))
+                    :Dialog("OPT_PAY")
+                    :GoTo("STATE_POST_METTLE")
+            end
+            cxt:Opt("OPT_ARREST")
+                :ReqCondition(DemocracyUtil.LocationUnlocked("ADMIRALTY_BARRACKS"), "REQ_KNOW_HQ")
+                :Dialog("DIALOG_ARREST")
+                :Battle{
+                    on_win = function(cxt) 
+                        cxt:Dialog("DIALOG_ARREST_WIN")
+                        if cxt:GetAgent():IsDead() then
+                            cxt.quest:Complete()
+                            StateGraphUtil.AddLeaveLocation(cxt)
+                        else
+                            cxt.quest:Complete("intro")
+                            cxt.quest:Activate("escort")
+                            StateGraphUtil.AddLeaveLocation(cxt)
+                        end
+                    end,
+                }
+            cxt:Opt("OPT_REJECT")
+                :Dialog("DIALOG_REJECT")
+                :CompleteQuest()
+                :Travel()
+        end)
+    :State("STATE_POST_METTLE")
+        :Loc{
+            DIALOG_METTLE = [[
+                * You took some mettle.
+                * Nothing visible has changed, but you feel a rush of dopamine as you gain {mettle_gain} mettle.
+                * Now you want more.
+            ]],
+            DIALOG_METTLE_END = [[
+                dealer:
+                    If you want more, just find me!
+                    !exit
+                * You wonder what the consequences of this is.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_METTLE")
+            cxt:Dialog("DIALOG_METTLE_END")
+
+            local character_id = cxt.player:GetContentID()
+            TheGame:GetGameProfile():UnlockMettle( character_id )
+            TheGame:GetGameProfile():AddMettlePoints( character_id, cxt.quest.param.mettle_gain )
+            cxt.quest:Complete()
+            StateGraphUtil.AddLeaveLocation(cxt)
         end)
