@@ -1093,6 +1093,41 @@ local MODIFIERS =
             return true
         end,
     },
+	GLOAT = {
+	    name = "Narccicist",
+        desc = "At the start of every turn, spawn 1 {BRAG}.",
+        icon = "negotiation/modifiers/bidder.tex",
+        modifier_type = MODIFIER_TYPE.CORE,
+		max_stacks = 1,
+		event_handlers =
+        {
+		 [ EVENT.BEGIN_PLAYER_TURN ] = function ( self, minigame )
+			self.negotiator:CreateModifier( "BRAG", 1, self )
+			end
+		},
+	},
+	BRAG = {
+		name = "Brag",
+		desc = "At the start of every turn, heal the core for 2.",
+		modifier_type = MODIFIER_TYPE.ARGUMENT,
+		max_stacks = 1,
+		max_resolve = 6,
+		OnBeginTurn = function( self, minigame )
+                self.negotiator:RestoreResolve( 2, self )
+            end
+	},
+	FRAGILE_EGO = {
+		name = "Fragile Ego",
+		desc = "Destroy all {BRAG}s and incept that much {VULNERABILITY}.",
+		modifier_type = MODIFIER_TYPE.BOUNTY,
+		max_stacks = 1,
+		max_resolve = 4,
+		OnBounty = function( self )
+		 local stacks = self.negotiator:GetModifierStacks("BRAG")
+            self.negotiator:RemoveModifier("BRAG", stacks, self)
+            self.negotiator:AddModifier("VULNERABILITY", stacks, self)
+		end
+	},
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
