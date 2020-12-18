@@ -9,39 +9,47 @@ lines:
 - tags: [opposition_intro, idea_monologue, candidate_admiralty]
   dialog:
   - |
-    Havaria is overrun with criminals, and it's up to me to stop it.
-    I believe that with my leadership and the Admiralty, we can rid Havaria of the criminal problem once and for all!
+    Since day one, Havaria has had bandits, contraband smugglers, and corruption throughout the ranks.
+    !hips
+    That's why I cast myself for the election. With my leadership, we can get rid of these problems at their roots.
+    Unfortunately, this is an election. Society could continue to be dystopian grimdark with the cast of a few ballots.
 
 - tags: [opposition_intro, idea_monologue, candidate_spree]
   dialog:
   - |
-    The Deltrean Admiralty has been pushing Havarians so hard.
-    Someone must put a end to this.
-    We need to remind the Admiralty of our sovereignty.
+    Havaria has had a tenuous relationship with Deltree for decades.
+    This mass annexation is guaranteed to be the straw that broke the Oshnu's shell.
+    !eureka
+    When I become President, I will start by establishing Havaria's independece, once and for all.
 
 - tags: [opposition_intro, idea_monologue, candidate_baron]
   dialog:
   - |
-    I don't like to pay taxes. Neither does anyone else.
-    I promise to get rid of taxes, or something like that.
+    Look. You like money.
+    I like money.
+    If I get into office, I intend to let you keep more of your money.
+    Yeah.
     * You don't feel like this person is suitable as a leader, but you don't have the courage to tell it to {agent.hisher} face.
 
 - tags: [opposition_intro, idea_monologue, candidate_rise]
   dialog:
   - |
-    The workers has always been the bottom of Havarian hierarchy.
-    They are treated like dirt by those in power.
-    It's time to change that.
+    The common workers of Havaria have always been the backbone of Havarian society.
+    But those born with silver spoons have always oppressed them.
+    The workers are like fire fuel, A powder keg of revolution and change for the better.
+    I intend to be the spark.
 
 - tags: [opposition_intro, idea_monologue, candidate_cult]
   dialog:
   - |
-    It is Hesh's will that the artifacts remain unused.
-    Therefore, we should keep them that way.
+    For years, we have watched the blessed items of Hesh be treated as trinkets. Mere baubles.
+    Once I'm in office, I shall cut no corner to cut this problem off.
+    All artifacts of Hesh will be revered as they once were, not what they mean for the bottom line.
 
 - tags: [opposition_intro, idea_monologue, candidate_jakes]
   dialog:
   - |
-    Havaria would be a lot better if everything is legalized.
-    There's plenty of people getting arrested for no reason other than they carry some contraband or something stupid like that.
-    Nobody knows what counts as a contraband and what doesn't, anyway.
+    I actually run a bit of an "independent" platform.
+    The contraband laws are, to be frank, played fast and loose by the government.
+    Unsurprisingly, I had a few troubles with that when my small business is infringed upon.
+    Naturally, I got quite a few Jakes on my side. Best keep out of my way, unless you want to be drearily unequipped.

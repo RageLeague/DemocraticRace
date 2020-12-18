@@ -158,38 +158,40 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
     :State("STATE_ASSASSINATION")
         :Loc{
             DIALOG_INTRO = [[
-                * You are about to go to sleep when you sense something is wrong.
+                * Sike, that's not happening. There's an assassin in this room, whom you couldn't pretend not to hear.
                 player:
                     !left
-                * Your grifter instinct tells you that someone is hiding in this room, probably wants to assassinate you.
-                player:
                     !angry_accuse
-                    Who's there?
+                    Alright. Show yourself. No reason to pretend you're still hidden.
                 agent:
                     !right
-                    !surprised
-                    How did you see me? I was so well hidden.
-                player:
-                    I didn't. But thanks for letting me know you're here.
+                    Ugh. Fine.
+                * {agent.HeShe} reveals {agent.himher}self.
                 agent:
-                    Oh.
+                    You're the new politician in the election?
+                player:
+                    Got it in one.
+                agent:
+                    Someone very powerful decided you we're a threat to their bottom line.
                     !fight
-                    Well, no matter. Time to die.
+                    I assume you won't go without a scuffle.
                 player:
                     !fight
-                    Here I thought there wouldn't be any boss fights today.
+                    Contract killing, eh?
+                    I used to do that for a living. Of course, that was before I became a politician.
+                    Anyway, you wanna dance? Let's dance.
                 * Just as you prepare your weapon, something just occured to you.
                 player:
                     !scared
                 * You have fought very few, if any, battle since you decide to run for president.
-                * Your skills are getting rusty. There is no way you would win a straight fight against a day 2 boss on Sal's campaign.
-                * Looks like you have to find another way.
+                * This assasain might've been easy before, but that was before you hung up your weapons.
+                * You need backup. Luckily, you can, but it'll take time.
                 player:
                     !point
-                    Look behind you!
+                    Alright, Alright. Surely you can give me the right to my last words.
                 agent:
-                    !cagey
-                    Wait, what?
+                    !crossed
+                    I suppose, but make them quick.
                 * You need to call for help and distract {agent} until help arrives!
             ]],
             OPT_DISTRACT = "Distract {agent}",
@@ -218,8 +220,9 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                 * As if on cue, the Admiralty responder enters your room.
                 responder:
                     !left
-                    !fight
                     What's going on?
+                    !fight
+                    Freeze! Under the authority of the Admiralty, you're under arrest for breaking and entering!
                 agent:
                     !surprised
                     Oh, Hesh.
@@ -244,17 +247,19 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     !fight
                 agent:
                     !fight
-                    You are quite resilient, for a politician with little combat experience.
-                    Frankly, I don't think that's gonna save you.
+                    You're getting sloppy, {player}.
+                    Sooner or later I'll have your head.
                 player:
                     !hips
                     $happyCocky
-                    Jokes on you, that's enough for me to survive and you to be arrested.
+                    If only it were that simple for you.
+                    But I'm afraid our time is going to be cut short. 
                 * As if on cue, the Admiralty responder enters your room.
                 responder:
                     !left
-                    !fight
                     What's going on?
+                    !fight
+                    Freeze! Under the authority of the Admiralty, you're under arrest for attempted murder!
                 agent:
                     !surprised
                     Oh, Hesh.
@@ -276,14 +281,18 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
             ]],
 
             DIALOG_FIGHT_PHRASE = [[
+                player:
+                    And I bequeath my-
                 agent:
-                    That's enough. I'm tired with you.
+                    Hesh, shut up! This is the 6th time you've said that.
+                    If I knew bagging a politician came with a recited memoir, I'd have asked for extra.
                     !throatcut
-                    Time for you to go to sleep, forever!
+                    Let's finish this.
                 player:
                     !fight
                 {help_called?
-                    * You hope that you will survive long enough for help to arrive.
+                    * You called for help, but couldn't stall long enough for them to arrive.
+                    * You hope that you can survive long enough to see the help arrive.
                 }
                 {not help_called?
                     * You didn't have time to call for help! Guess you have to settle things the old fashioned way.
@@ -297,25 +306,27 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     !fight
                     Had enough?
                 agent:
-                    Okay, I have to admit. I severely underestimated you.
-                    You somehow can pull it off, despite being significantly underprepared.
+                    I see you...shook off the rust quite well.
+                    You got me dead to rights here.
                 player:
-                    So you know that I'm running for president.
+                    You put up a good fight. I'll give you that much.
                     Tell me, who sent you.
                 agent:
-                    I'll tell you, if you can catch me!
-                    !exit
-                * {agent} ran away. Now why didn't you secure {agent.himher} so that this doesn't happen?
+                    You'll have to forgive me, but I can't disclose that.
+                    How about this? You let me go, and I'll give you this graft.
                 player:
                     !left
-                    Hesh damn it!
+                    Deal. You did what you had to do, following with the contract. I respect that.
+                    Now scarper off before I change my mind.
+                    !exit
+                * {agent} ran away, leaving you tired and hurt.
                 {help_called?
                     * It is not long before the responders arrive.
                     responder:
                         !right
                         What's going on?
                     player:
-                        An assassin tried to kill me, but {agent.heshe} got away.
+                        An assassin tried to kill me, but {agent.heshe} got away before you can get here.
                     responder:
                         !facepalm
                         I hate it when that happens.
@@ -324,7 +335,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     player:
                         Uh... Aren't you going to chase after {agent.himher}?
                     responder:
-                        Oh, yes. Of course.
+                        Oh, yes. Of course. Good night and good luck.
                         !exit
                 }
                 * Finally, after a long day, you're all by yourself, safe from assassinations.
@@ -341,47 +352,43 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                         !left
                     responder:
                         !right
-                        What happened here?
+                        By the-
                         !angry
                         What did you do?
                     * I have to say, the way the scene is set up, it does look like you killed {agent}.
                         {not responder_liked?
                             player:
-                                This person tries to assassinate me, so I took {agent.himher} out.
+                                I had a...bit of a scuffle with {agent}. It got slightly out of hand.
                             responder:
-                                What are you doing late at night in an office?
-                                And it isn't even your office! It belongs to {primary_advisor}!
+                                A likely story. In fact, it's likely true.
+                                You broke into {primary_advisor}'s office and killed {agent} in cold blood!
                                 I'm taking you to the station for questioning.
                         }
                         {responder_liked?
                             player:
-                                This person tries to assassinate me, so I took {agent.himher} out.
-                                It's self defense.
+                                {agent} and I got into a fight because they came to kill me.
+                                You got to believe me! They came at me first.
                             responder:
                                 !thought
-                                Now normally I won't believe in you, considering this scene looks very incriminating.
+                                Well, standard procedure says I have to take you to be badgered and questioned in an Admiralty office.
                                 !permit
-                                But you look like a trustable character, and this guy here... doesn't.
-                                So I'm just going to take your word for it.
+                                But you seem to be innocent, considering this guy came with a massive weapon like that.
+                                Plus it saves me the paperwork.
                             player:
                                 !surprised
                                 Really?
                             responder:
                                 Don't be so surprised.
                                 I'm getting rid of this body.
-                            player:
-                                !point
-                                Wait, before you go, can I have that graft?
-                            responder:
-                                !shrug
-                                I mean, sure?
-                                Anyway, see you later!
+                                Here. For your troubles.
+                            * {responder.HeShe} hands you a graft found on the body.
                                 !exit
                         }
                 }
                 {not help_called?
-                    * There is no one nearby. Now you're stuck with a dead body for the rest of the night.
-                    * Hey, at least you got a graft from {agent}'s dead body, so that counts for something.
+                    * The air stills as their body hits the floor.
+                    * You clean up the scene, and while you're at it, you pick the body's pockets.
+                    * Out of all the worthless junk {agent.heshe} carries, you find a whole graft!
                 }
             ]],
             OPT_DEFEND_SELF = "Defend yourself!"
