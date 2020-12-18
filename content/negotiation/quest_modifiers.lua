@@ -1093,40 +1093,54 @@ local MODIFIERS =
             return true
         end,
     },
-	GLOAT = {
-	    name = "Narccicist",
-        desc = "At the start of every turn, spawn 1 {BRAG}.",
+	NARCISSISM = {
+	    name = "Narcissism",
+        desc = "At the start of the player's turn, create {1} {PRIDE}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetPrideCount(self.engine and self.engine:GetDifficulty() or 1))
+        end,
+
         icon = "negotiation/modifiers/bidder.tex",
         modifier_type = MODIFIER_TYPE.CORE,
-		max_stacks = 1,
-		event_handlers =
+        max_stacks = 1,
+        
+        num_created = {1,1,2,2,2},
+        GetPrideCount = function(self, difficulty)
+            return self.num_created[math.min(difficulty, #self.num_created)]
+        end,
+        event_handlers =
         {
-		 [ EVENT.BEGIN_PLAYER_TURN ] = function ( self, minigame )
-			self.negotiator:CreateModifier( "BRAG", 1, self )
-			end
+		    [ EVENT.BEGIN_PLAYER_TURN ] = function ( self, minigame )
+			    self.negotiator:CreateModifier( "PRIDE", self:GetPrideCount(self.engine and self.engine:GetDifficulty() or 1), self )
+			end,
 		},
 	},
-	BRAG = {
-		name = "Brag",
-		desc = "At the start of every turn, heal the core for 2.",
+	PRIDE = {
+        name = "Pride",
+        -- Having it heal while having 6 resolve is a bit too much, I think.
+        desc = "At the start of {1}'s turn, apply {2} {COMPOSURE} to {1}'s core argument.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOwnerName(), self.composure_gain)
+        end,
 		modifier_type = MODIFIER_TYPE.ARGUMENT,
 		max_stacks = 1,
-		max_resolve = 6,
+        max_resolve = 2,
+        composure_gain = 2,
 		OnBeginTurn = function( self, minigame )
-                self.negotiator:RestoreResolve( 2, self )
-            end
+            self.negotiator:FindCoreArgument():DeltaComposure( self.composure_gain, self )
+        end,
 	},
 	FRAGILE_EGO = {
 		name = "Fragile Ego",
-		desc = "Destroy all {BRAG}s and incept that much {VULNERABILITY}.",
+		desc = "Remove all {PRIDE}s and incept that much {VULNERABILITY}.",
 		modifier_type = MODIFIER_TYPE.BOUNTY,
 		max_stacks = 1,
 		max_resolve = 4,
 		OnBounty = function( self )
-		 local stacks = self.negotiator:GetModifierStacks("BRAG")
-            self.negotiator:RemoveModifier("BRAG", stacks, self)
+            local stacks = self.negotiator:GetModifierStacks("PRIDE")
+            self.negotiator:RemoveModifier("PRIDE", stacks, self)
             self.negotiator:AddModifier("VULNERABILITY", stacks, self)
-		end
+		end,
 	},
 }
 for id, def in pairs( MODIFIERS ) do
