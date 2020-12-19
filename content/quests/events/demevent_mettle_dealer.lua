@@ -126,7 +126,7 @@ QDEF:AddConvo("escort")
                 agent:
                     Ah, yes, {dealer}.
                     We've had our eye on {dealer.himher} for quite a while.
-                    Selling highly addictive hallucinagen to people and making them more violent.
+                    Selling highly addictive hallucinogen to people and making them more violent.
                     We can't have that under our rule, now can we?
                     Anyway, I'll take it from here.
                 player:

@@ -278,6 +278,59 @@ local CARDS = {
         count = 3,
         cost = 2,
     },
+    advisor_hostile_ivory_tower =
+    {
+        name = "Ivory Tower",
+        desc = "Create: At the end of your turn, apply {1} {COMPOSURE} to all your arguments. Gain 1 bonus resolve for every {2#money} you have.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, AutoUpgradeText(self, "count"), self.money_divisor)
+        end,
+        flavour = "'Your opinion would've matter a lot more if you aren't poor.'",
+        
+        advisor = "ADVISOR_HOSTILE",
+        flags = CARD_FLAGS.HOSTILE,
+        cost = 1,
+
+        count = 2,
+        money_divisor = 50,
+
+        modifier =
+        {
+            modifier_type = MODIFIER_TYPE.ARGUMENT,
+            max_resolve = 1,
+            desc = "This argument has 1 bonus resolve for every {2#money} you have. At the end of your turn, apply {1} composure to all your arguments.",
+            desc_fn = function(self, fmt_str)
+                return loc.format(fmt_str, self.stacks or 1, self.money_divisor)
+            end,
+
+            money_divisor = 50,
+            OnInit = function(self)
+                self:ModifyResolve(math.floor(self.engine:GetMoney() / self.money_divisor), self)
+            end,
+            OnEndTurn = function(self, minigame)
+                local targets = minigame:CollectAlliedTargets(self.negotiator)
+                for i,target in ipairs(targets) do
+                    target:DeltaComposure(self.stacks or 1, self)
+                end
+            end,
+        },
+        OnPostResolve = function( self, minigame, targets )
+            self.negotiator:CreateModifier("advisor_hostile_ivory_tower", self.count)
+            -- if self.card_draw and self.card_draw > 0 then
+            --     minigame:DrawCards( self.card_draw )
+            -- end
+        end,
+    },
+    advisor_hostile_ivory_tower_plus =
+    {
+        name = "Stone Ivory Tower",
+        count = 3,
+    },
+    advisor_hostile_ivory_tower_plus2 =
+    {
+        name = "Initial Ivory Tower",
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.AMBUSH,
+    },
 }
 
 for i, id, def in sorted_pairs( CARDS ) do
