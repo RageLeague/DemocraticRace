@@ -1095,7 +1095,7 @@ local MODIFIERS =
     },
 	NARCISSISM = {
 	    name = "Narcissism",
-        desc = "At the start of the player's turn, create {1} {PRIDE}.",
+        desc = "At the start of the player's turn, create {1}{1: | separate }{PRIDE}.",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetPrideCount(self.engine and self.engine:GetDifficulty() or 1))
         end,
@@ -1110,8 +1110,10 @@ local MODIFIERS =
         end,
         event_handlers =
         {
-		    [ EVENT.BEGIN_PLAYER_TURN ] = function ( self, minigame )
-			    self.negotiator:CreateModifier( "PRIDE", self:GetPrideCount(self.engine and self.engine:GetDifficulty() or 1), self )
+            [ EVENT.BEGIN_PLAYER_TURN ] = function ( self, minigame )
+                for i = 1, self:GetPrideCount(self.engine and self.engine:GetDifficulty() or 1) do
+                    self.negotiator:CreateModifier( "PRIDE", 1, self )
+                end
 			end,
 		},
 	},
@@ -1125,6 +1127,9 @@ local MODIFIERS =
 		modifier_type = MODIFIER_TYPE.ARGUMENT,
 		max_stacks = 1,
         max_resolve = 2,
+        OnInit = function(self)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.LOW)
+        end,
         composure_gain = 2,
 		OnBeginTurn = function( self, minigame )
             self.negotiator:FindCoreArgument():DeltaComposure( self.composure_gain, self )
@@ -1135,7 +1140,10 @@ local MODIFIERS =
 		desc = "Remove all {PRIDE}s and incept that much {VULNERABILITY}.",
 		modifier_type = MODIFIER_TYPE.BOUNTY,
 		max_stacks = 1,
-		max_resolve = 4,
+        max_resolve = 4,
+        OnInit = function(self)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
+        end,
 		OnBounty = function( self )
             local stacks = self.negotiator:GetModifierStacks("PRIDE")
             self.negotiator:RemoveModifier("PRIDE", stacks, self)

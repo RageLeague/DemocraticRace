@@ -893,25 +893,28 @@ function ConvoOption:RequireFreeTimeAction(actions)
     return self
 end
 
-function AutoUpgradeText(self, field, invert)
+function AutoUpgradeText(self, field, invert, preprocess)
+    if not preprocess then
+        preprocess = function(x) return x end
+    end
     if not self.base_def then
-        return self[field]
+        return preprocess(self[field])
     end
     if (type(self[field]) == "string" or type(self.base_def[field]) == "string") then
         if self[field] ~= self.base_def[field] then
-            return string.format("<#UPGRADE>%s</>", self[field])
+            return string.format("<#UPGRADE>%s</>", preprocess(self[field]))
         else
-            return self[field]
+            return preprocess(self[field])
         end
     end
     if self[field] ~= self.base_def[field] then
         if (self[field] < self.base_def[field]) ~= (invert and true or false) then
-            return string.format("<#DOWNGRADE>%s</>", self[field])
+            return string.format("<#DOWNGRADE>%s</>", preprocess(self[field]))
         else
-            return string.format("<#UPGRADE>%s</>", self[field])
+            return string.format("<#UPGRADE>%s</>", preprocess(self[field]))
         end
     else
-        return self[field]
+        return preprocess(self[field])
     end
 end
 -- return {
