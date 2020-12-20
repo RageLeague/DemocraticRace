@@ -90,7 +90,7 @@ local chars =
                         self:ChooseGrowingNumbers( 1, 1 )
                     end
                     if turns % 5 == 2 then
-                        self:ChooseCard( self.no_filter )
+                        -- self:ChooseCard( self.no_filter )
                     end
                     if turns % 3 == 0 then
                         self:ChooseCard( self.fragile_ego )

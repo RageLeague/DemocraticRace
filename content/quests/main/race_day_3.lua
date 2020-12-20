@@ -1,3 +1,9 @@
+local NOON_QUEST_PRIORITY =
+{
+    RACE_ALLIANCE_TALK = 10,
+
+}
+
 local QDEF = QuestDef.Define
 {
     title = "Campaign Time",
@@ -35,6 +41,19 @@ local QDEF = QuestDef.Define
     id = "noon_event",
     on_activate = function(quest)
         DemocracyUtil.SetSubdayProgress(2)
+        local potential_subquests = copykeys(NOON_QUEST_PRIORITY)
+        table.shuffle(potential_subquests)
+
+        table.stable_sort(sorted, function(a, b) 
+            return (NOON_QUEST_PRIORITY[a] or 0) > (NOON_QUEST_PRIORITY[b] or 0)
+        end)
+        for i, id in ipairs(potential_subquests) do
+            quest.param.noon_subquest = QuestUtil.SpawnQuest( id )
+            if quest.param.noon_subquest then
+                return
+            end
+        end
+        assert_warning(quest.param.noon_subquest, "No noon subquest spawned.")
     end,
     on_complete = function(quest)
         DemocracyUtil.StartFreeTime()

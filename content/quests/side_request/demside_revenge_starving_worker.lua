@@ -142,6 +142,10 @@ local QDEF = QuestDef.Define
     no_validation = true,
     provider = true,
     unimportant = true,
+    condition = function(agent, quest)
+        return not AgentUtil.HasPlotArmour(agent) and agent:GetBrain():GetWorkPosition() == nil and ((agent:GetFactionID() == "FEUD_CITIZEN" and agent:GetRenown() <= 2)
+            or (agent:GetFactionID() == "RISE" and agent:GetRenown() <= 3))
+    end,
     cast_fn = function(quest, t)
         table.insert( t, quest:CreateSkinnedAgent( "LABORER" ) )
     end,

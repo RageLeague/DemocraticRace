@@ -1095,9 +1095,9 @@ local MODIFIERS =
     },
 	NARCISSISM = {
 	    name = "Narcissism",
-        desc = "At the start of the player's turn, create {1}{1: | separate }{PRIDE}.",
+        desc = "At the start of {1}'s turn, create {2}{2: | separate }{PRIDE}.",
         desc_fn = function(self, fmt_str)
-            return loc.format(fmt_str, self:GetPrideCount(self.engine and self.engine:GetDifficulty() or 1))
+            return loc.format(fmt_str, self:GetOwnerName(), self:GetPrideCount(self.engine and self.engine:GetDifficulty() or 1))
         end,
 
         icon = "negotiation/modifiers/bidder.tex",
@@ -1110,9 +1110,11 @@ local MODIFIERS =
         end,
         event_handlers =
         {
-            [ EVENT.BEGIN_PLAYER_TURN ] = function ( self, minigame )
-                for i = 1, self:GetPrideCount(self.engine and self.engine:GetDifficulty() or 1) do
-                    self.negotiator:CreateModifier( "PRIDE", 1, self )
+            [ EVENT.END_TURN ] = function ( self, minigame, negotiator )
+                if negotiator == self.negotiator then
+                    for i = 1, self:GetPrideCount(self.engine and self.engine:GetDifficulty() or 1) do
+                        self.negotiator:CreateModifier( "PRIDE", 1, self )
+                    end
                 end
 			end,
 		},

@@ -1,8 +1,8 @@
 local QDEF = QuestDef.Define
 {
-    title = "Opinions and Oppositions",
-    desc = "Discuss the oppositions with your advisor",
-    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/meet_opposition.png"),
+    title = "Potential Alliances",
+    desc = "Talk about potential alliance with your advisor.",
+    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/meet_opposition.png"),
 
     qtype = QTYPE.STORY,
     collect_agent_locations = function(quest, t)
@@ -50,16 +50,18 @@ local QDEF = QuestDef.Define
         local best_score = RELATIONSHIP.LIKED
         for id, data in pairs(DemocracyConstants.opposition_data) do
             local main_faction = data.main_supporter or "FEUD_CITIZEN"
-            local val = DemocracyUtil.GetVoterIntentionIndex{faction = main_faction}
-            local endorsement = DemocracyUtil.GetEndorsement(val)
-            if endorsement >= best_score then
-                local agent = TheGame:GetGameState():GetAgentByAlias(data.character)
-                if endorsement > best_score then
-                    best_score = endorsement
-                    best_characters = {}
+            local val, reason = DemocracyUtil.GetAlliancePotential(id)
+            if val then
+                local endorsement = DemocracyUtil.GetEndorsement(val)
+                if endorsement >= best_score then
+                    local agent = TheGame:GetGameState():GetAgentByAlias(data.character)
+                    if endorsement > best_score then
+                        best_score = endorsement
+                        best_characters = {}
+                    end
+                    
+                    table.insert(best_characters, agent)
                 end
-                
-                table.insert(best_characters, agent)
             end
         end
         for i, agent in ipairs(best_characters) do

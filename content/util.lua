@@ -856,6 +856,48 @@ function DemocracyUtil.GetAlliancePotential(candidate_id)
     end
     return score
 end
+function QuestDef:GetProviderCast()
+    for i, cast_def in ipairs( self.cast ) do
+        if cast_def.provider then
+            return cast_def
+        end
+    end
+end
+function DemocracyUtil.SpawnRequestQuest(agent, spawn_param)
+    if not spawn_param then
+        spawn_param = {}
+    end
+    local potential_jobs = {}
+    for id, def in pairs( Content.GetAllQuests() ) do
+        if def.qtype == QTYPE.SIDE and def:HasTag("REQUEST_JOB") and (not def:HasTag("manual_spawn")) then
+            table.insert(potential_jobs, def)
+        end
+    end
+    table.shuffle(potential_jobs)
+    table.insert(potential_jobs, Content.GetQuestDef( "PLACEHOLDER_REQUEST_QUEST" ))
+    DBG(potential_jobs)
+    for i, def in ipairs(potential_jobs) do
+        local provider_cast = def:GetProviderCast()
+        local params = deepcopy(spawn_param)
+        
+        if provider_cast then
+            if not params.cast then
+                params.cast = {}
+            end
+            params.cast[provider_cast.cast_id] = agent
+            local spawned_quest = QuestUtil.SpawnInactiveQuest(def.id, params)
+            if spawned_quest then
+                DBG(spawned_quest)
+                if params.debug_test then
+                    TheGame:GetGameState():AddActiveQuest( spawned_quest )
+                    spawned_quest:Activate()
+                end
+                return spawned_quest
+            end
+        end
+    end
+    assert(false, loc.format("No request quest spawned for {1#agent}", agent))
+end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator
