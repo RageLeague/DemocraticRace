@@ -233,3 +233,14 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 }
             ]],
         }
+        :SetLooping(true)
+        :Fn(function(cxt)
+            cxt:Question("OPT_ASK_DEBATE", "DIALOG_ASK_DEBATE")
+            cxt:Question("OPT_ASK_ALLY", "DIALOG_ASK_ALLY", function()
+                local allied = {}
+                local potential = {}
+                for id, data in pairs(DemocracyConstants.opposition_data) do
+                end
+            end)
+            StateGraphUtil.AddBackButton(cxt)
+        end)
