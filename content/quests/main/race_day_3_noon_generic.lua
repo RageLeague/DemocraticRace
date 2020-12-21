@@ -86,7 +86,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 player:
                     Let's finished up.
                 agent:
-                    Really? But we didn't even do anything?
+                    Really? But we didn't even do anything!
                 player:
                     I know all of these stuff. I just don't think it is necessary for us to go over them again.
                 agent:
@@ -109,7 +109,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
             :GoTo("STATE_QUESTIONS")
         cxt:Opt("OPT_FINISH_UP")
             :Fn(function(cxt)
-            
+                cxt.enc.scratch.asked_no_questions = not cxt.quest.param.asked_some_questions
             end)
             :Dialog("DIALOG_FINISH_UP")
             :CompleteQuest()
@@ -151,7 +151,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 agent:
                     Based on your current support, {1#agent} might be your best ally.
                 {good_ally?
-                    You share a lot in common in ideology, and you have a lot of support in {1.hisher} main supporters, {2#faction}.
+                    You share a few in common in ideology, and you have a bit of support in {1.hisher} main supporters, {2#faction}.
                     Go talk to {1.himher}. You can find {1.himher} at {3#location}.
                 }
                 {not good_ally?
@@ -235,12 +235,40 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
         }
         :SetLooping(true)
         :Fn(function(cxt)
-            cxt:Question("OPT_ASK_DEBATE", "DIALOG_ASK_DEBATE")
+            cxt:Question("OPT_ASK_DEBATE", "DIALOG_ASK_DEBATE", function()
+                cxt.quest.param.asked_some_questions = true
+            end)
             cxt:Question("OPT_ASK_ALLY", "DIALOG_ASK_ALLY", function()
                 local allied = {}
                 local potential = {}
                 for id, data in pairs(DemocracyConstants.opposition_data) do
+                    local candidate = TheGame:GetGameState():GetAgent(data.character)
+                    if candidate then
+                        if candidate:GetRelationship() > RELATIONSHIP.NEUTRAL then
+                            table.insert(allied, id)
+                        elseif candidate:GetRelationship() == RELATIONSHIP.NEUTRAL and DemocracyUtil.GetAlliancePotential(id) then
+                            table.insert(potential, id)
+                        end
+                    end
                 end
+                table.sort(potential, function(a,b) return DemocracyUtil.GetAlliancePotential(a) > DemocracyUtil.GetAlliancePotential(b) end)
+                if #allied > 0 then
+                    cxt:Dialog("DIALOG_ASK_ALLY_ALREADY_HAVE")
+                end
+                if #potential > 0 then
+                    local data = DemocracyConstants.opposition_data[potential[1]]
+                    local candidate = TheGame:GetGameState():GetAgent(data.character)
+                    cxt.enc.scratch.good_ally = DemocracyUtil.GetEndorsement(DemocracyUtil.GetAlliancePotential(potential[1])) >= RELATIONSHIP.NEUTRAL
+                    cxt:Dialog("DIALOG_ASK_ALLY_POTENTIAL", candidate, data.main_supporter, data.workplace)
+
+                    DemocracyUtil.DoLocationUnlock(cxt, data.workplace)
+                else
+                    cxt:Dialog("DIALOG_ASK_ALLY_NOONE")
+                end
+                cxt.quest.param.asked_some_questions = true
+            end)
+            cxt:Question("OPT_ASK_ELECTION", "DIALOG_ASK_ELECTION", function()
+                cxt.quest.param.asked_some_questions = true
             end)
             StateGraphUtil.AddBackButton(cxt)
         end)

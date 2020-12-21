@@ -199,6 +199,9 @@ end
 
 -- Do the convo for unlocking a location.
 function DemocracyUtil.DoLocationUnlock(cxt, id)
+    if type(id) ~= "string" then
+        id = id:GetContentID()
+    end
     if id and not table.arraycontains(TheGame:GetGameState():GetMainQuest().param.unlocked_locations, id) then
         cxt:RunLoop(function(cxt)
             cxt:Opt("OPT_UNLOCK_NEW_LOCATION",TheGame:GetGameState():GetLocation(id))

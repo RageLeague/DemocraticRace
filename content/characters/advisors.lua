@@ -54,7 +54,8 @@ local chars =
         build = "male_phicket",
         head = "head_male_jarackle_bandit_02",
 
-        skin_colour = 0xB8A792FF,
+        -- Dronumph now has a new tan color
+        skin_colour = 0xF9C771FF,--0xB8A792FF,
 
         -- renown = 4,
 

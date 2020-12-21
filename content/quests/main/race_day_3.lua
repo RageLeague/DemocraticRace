@@ -2,6 +2,7 @@ local NOON_QUEST_PRIORITY =
 {
     RACE_ALLIANCE_TALK = 10,
     RACE_ADVISOR_FAVOR = 15,
+    RACE_DAY_3_NOON_GENERIC = 0,
 }
 
 local QDEF = QuestDef.Define
