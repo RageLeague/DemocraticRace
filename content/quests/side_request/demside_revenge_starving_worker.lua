@@ -241,6 +241,38 @@ local QDEF = QuestDef.Define
         txt = "Helped them get better rights",
     },
 }
+-- We can use this on request quests, because there's no reject dialogs.
+QDEF:AddIntro(
+    --attract spiel
+    [[
+        player:
+            You don't look so good.
+        agent:
+            You don't say.
+            I got fired by {foreman}.
+            Something about "expressing dissent opinions".
+            !angry_shrug
+            Can you believe it?
+        player:
+            That doesn't sound good.
+        agent:
+            It isn't.
+            Can you do something about {foreman}?
+            Make sure {foreman} stop doing what {foreman.heshe}'s doing to other workers.
+    ]],
+    
+    --on accept
+    [[
+        player:
+            I don't like it when foremans abuse their power and oppress the working class.
+            I'll see what I can do.
+        agent:
+            Thank you.
+            I used to work at {workplace#location}. You can find {foreman} there during work time.
+            Just... Try not to kill {foreman}.
+            If you do, then people will start suspecting me for murder, as I have a motive.
+            And that wouldn't be good for your campaign, I presume.
+    ]])
 QDEF:AddConvo("tell_news", "worker")
     :Loc{
         OPT_TELL_NEWS = "Tell {agent} about what you did",

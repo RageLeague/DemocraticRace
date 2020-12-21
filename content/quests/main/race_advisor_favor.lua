@@ -14,8 +14,15 @@ local QDEF = QuestDef.Define
             quest:GetCastMember("primary_advisor"):GetBrain():SendToWork()
         end
     end,
-    function(quest)
-        return quest:GetCastMember("primary_advisor"):GetRelationship() == RELATIONSHIP.LIKED
+    postcondition = function(quest)
+        if quest:GetCastMember("primary_advisor"):GetRelationship() ~= RELATIONSHIP.LIKED then
+            return false, "Not liked"
+        end
+        quest.param.request_quest = DemocracyUtil.SpawnRequestQuest(quest:GetCastMember("primary_advisor"))
+        if not quest.param.request_quest then
+            return false, "No request quest spawned"
+        end
+        return true
     end,
     -- on_start = function(quest)
         
@@ -30,14 +37,14 @@ local QDEF = QuestDef.Define
 }
 :AddObjective{
     id = "go_to_bar",
-    title = "Visit the Noodle Shop",
+    title = "Visit the noodle shop",
     desc = "Visit the noodle shop and talk to your advisor about the upcoming plan.",
     mark = {"noodle_shop"},
     state = QSTATUS.ACTIVE,
 
     on_complete = function(quest)
         -- quest:Activate("discuss_plan")
-        quest:Activate("make_decision")
+        -- quest:Activate("make_decision")
     end,
 }
 DemocracyUtil.AddPrimaryAdvisor(QDEF)
@@ -49,19 +56,59 @@ QDEF:AddConvo("go_to_bar")
                 * [p] you arrived at the shop.
                 player:
                     !left
-                primary_advisor:
+                agent:
                     !right
                     I know you're working hard to campaign, but I want you to do something for me.
                     Of course, you don't have to accept it.
                     I want you to focus on the campaign if you need to, but if you think you have time to spare, maybe you can help me.
                 player:
                     What do I get out of this?
-                primary_advisor:
+                agent:
                     I will love you, and will help you as much as I can.
+                player:
+                    Sounds appealing.
+                    Tell me what you want me to do, then.
+            ]],
+            DIALOG_REJECT = [[
+                player:
+                    I'm sorry, but I need to focus on the campaign.
+                    I believe the campaign is surely more important than whatever you're doing.
+                agent:
+                    You're right, of course.
+                    Forget I ever asked anything.
+                    When you're done eating lunch, see me at my office and start campaigning.
+                    There's plenty to do today.
+            ]],
+            DIALOG_ACCEPT = [[
+                agent:
+                    Anyway, if you want to do it with your free time, that is okay.
+                    I don't want you to abandon the campaign for me.
+                player:
+                    Sure thing.
+                agent:
+                    When you're done eating lunch, see me at my office and start campaigning.
+                    There's plenty to do today.
             ]],
         }
-        :Fn(function(cxt)
-
-            cxt.quest:Complete("go_to_bar")
-            cxt:Dialog("DIALOG_INTRO")
+        :RunLoopingFn(function(cxt)
+            if cxt:FirstLoop() then
+                cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
+                cxt.quest:Complete("go_to_bar")
+                cxt:Dialog("DIALOG_INTRO")
+            end
+            cxt:QuestOpt( cxt.quest.param.request_quest )
+                :Fn(function(cxt)
+                    cxt:PlayQuestConvo(cxt.quest.param.request_quest, QUEST_CONVO_HOOK.INTRO)
+                    DemocracyUtil.PresentRequestQuest(cxt, cxt.quest.param.request_quest, function(cxt,quest)
+                        cxt:PlayQuestConvo(quest, QUEST_CONVO_HOOK.ACCEPTED)
+                        cxt:Dialog("DIALOG_ACCEPT")
+                        cxt.quest:Complete()
+                        StateGraphUtil.AddEndOption(cxt)
+                    end, function(cxt, quest)
+                        cxt:Dialog("DIALOG_REJECT")
+                        cxt.quest:Complete()
+                        StateGraphUtil.AddEndOption(cxt)
+                    end)
+                    
+                end)
         end)

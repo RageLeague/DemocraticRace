@@ -48,6 +48,26 @@ local QDEF = QuestDef.Define
     desc = "Exactly like how it sounds.",
     mark = {"giver"},
 }
+-- We can use this on request quests, because there's no reject dialogs.
+QDEF:AddIntro(
+    --attract spiel
+    [[
+        agent:
+            I don't have any actual request.
+            I am just very lonely.
+            So if you just talk to me. Cheer me up. I'll be happy.
+    ]],
+    
+    --on accept
+    [[
+        player:
+            So do I just chat with you?
+        agent:
+            Yeah.
+        player:
+            I accept.
+            Easiest request quest I've ever done.
+    ]])
 QDEF:AddConvo("talk", "giver")
     :Loc{
         OPT_TALK = "Chat",

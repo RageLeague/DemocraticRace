@@ -1,7 +1,7 @@
 local NOON_QUEST_PRIORITY =
 {
     RACE_ALLIANCE_TALK = 10,
-
+    RACE_ADVISOR_FAVOR = 15,
 }
 
 local QDEF = QuestDef.Define
@@ -54,7 +54,20 @@ local QDEF = QuestDef.Define
             end
         end
         assert_warning(quest.param.noon_subquest, "No noon subquest spawned.")
+        if not quest.param.noon_subquest then
+            quest:Complete("noon_event")
+        end
     end,
+    events = {
+        quests_changed = function(quest, event_quest)
+    
+            if quest.param.noon_subquest == event_quest then
+                if not event_quest:IsActive() then
+                    quest:Complete(child.id)
+                end
+            end
+        end
+    },
     on_complete = function(quest)
         DemocracyUtil.StartFreeTime()
         quest:Activate("get_job")
