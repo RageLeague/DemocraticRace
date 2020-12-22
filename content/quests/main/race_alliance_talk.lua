@@ -54,18 +54,21 @@ local QDEF = QuestDef.Define
             if val then
                 local endorsement = DemocracyUtil.GetEndorsement(val)
                 if endorsement >= best_score then
-                    local agent = TheGame:GetGameState():GetAgentByAlias(data.character)
+                    
                     if endorsement > best_score then
                         best_score = endorsement
                         best_characters = {}
                     end
                     
-                    table.insert(best_characters, agent)
+                    table.insert(best_characters, data)
                 end
             end
         end
-        for i, agent in ipairs(best_characters) do
+        if #best_characters > 0 then
+            local data = table.arraypick(best_characters)
+            local agent = TheGame:GetGameState():GetAgentByAlias(data.character)
             table.insert(t, agent)
+            quest.param.ally_work_pos = data.workplace
         end
     end,
     no_validation = true,
@@ -113,6 +116,11 @@ QDEF:AddConvo("make_decision", "potential_ally")
                     If we can work together, we will surely win!
                 agent:
                     Excellent! That's the kind of stuff I like to hear!
+                * You've agreed to ally with {agent}.
+                agent:
+                    Feel free to visit me at {ally_work_pos#location}.
+                player:
+                    Thanks.
             ]],
             OPT_DECLINE = "Decline",
 
@@ -123,10 +131,9 @@ QDEF:AddConvo("make_decision", "potential_ally")
                 agent:
                     I see.
                     It is a real shame.
-                    I thought we share something together.
+                    Well, if you ever change your mind, visit me at {ally_work_pos#location}.
                 player:
-                    Don't try to hit on me. I'm not interested in you romantically.
-                * ...Or are you?
+                    I'll keep that in mind, thanks.
             ]],
             DIALOG_THINK = [[
                 player:
@@ -141,16 +148,65 @@ QDEF:AddConvo("make_decision", "potential_ally")
             cxt:Opt("OPT_ACCEPT")
                 :PreIcon(global_images.accept)
                 :Dialog("DIALOG_ACCEPT")
+                :ReceiveOpinion(OPINION.ALLIED_WITH)
+                :Fn(function(cxt)
+                    cxt.quest.param.allied = true
+                    DemocracyUtil.DoLocationUnlock(cxt, cxt.quest.param.ally_work_pos)
+                end)
+                :GoTo("STATE_POST_DECISION")
 
             cxt:Opt("OPT_DECLINE")
                 :PreIcon(global_images.reject)
                 :Dialog("DIALOG_DECLINE")
+                :Fn(function(cxt)
+                    DemocracyUtil.DoLocationUnlock(cxt, cxt.quest.param.ally_work_pos)
+                end)
+                :GoTo("STATE_POST_DECISION")
 
-            cxt:Opt(str_id or "OPT_DONE")
+            cxt:Opt("OPT_DONE")
                 -- :SetSFX( SoundEvents.leave_conversation )
                 :Dialog("DIALOG_THINK")
                 :Fn(function(cxt) cxt:End() end)
                 :MakeUnder()
+        end)
+    :State("STATE_POST_DECISION")
+        :Loc{
+            DIALOG_INTRO = [[
+                agent:
+                    !right
+                * Your advisor comes to you.
+                agent:
+                {allied?
+                    So you decided to ally with {potential_ally}?
+                    Good for you.
+                player:
+                    I think it is the best course of action right now.
+                agent:
+                    I think so too.
+                    Just beware that other candidates might not like this, and will never ally with you.
+                player:
+                    Well, let's see what happens.
+                }
+                {not allied?
+                    So you decided to not ally with {potential_ally}?
+                player:
+                    I'm looking into more options before I make a decision.
+                agent:
+                    Perhaps that is the correct decision.
+                    You can always find {potential_ally} later, although it will take up some of your time.
+                player:
+                    True.
+                }
+                agent:
+                    Anyway, when you're done, meet me back at my office.
+                    We've got plenty to do.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+
+            cxt.quest:Complete()
+            StateGraphUtil.AddEndOption(cxt)
         end)
 QDEF:AddConvo("make_decision", "primary_advisor")
     :Loc{

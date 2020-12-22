@@ -161,7 +161,7 @@ local QDEF = QuestDef.Define
         if (#quest.param.job_history == 1) then 
             quest:Activate("meet_opposition")
         elseif (#quest.param.job_history >= 2) then
-            quest:Activate("do_interview")
+            quest:Activate("do_debate")
         else
             quest:Activate("get_job")
             DemocracyUtil.StartFreeTime()
