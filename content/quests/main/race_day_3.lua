@@ -45,7 +45,7 @@ local QDEF = QuestDef.Define
         local potential_subquests = copykeys(NOON_QUEST_PRIORITY)
         table.shuffle(potential_subquests)
 
-        table.stable_sort(sorted, function(a, b) 
+        table.stable_sort(potential_subquests, function(a, b) 
             return (NOON_QUEST_PRIORITY[a] or 0) > (NOON_QUEST_PRIORITY[b] or 0)
         end)
         for i, id in ipairs(potential_subquests) do
@@ -63,8 +63,8 @@ local QDEF = QuestDef.Define
         quests_changed = function(quest, event_quest)
     
             if quest.param.noon_subquest == event_quest then
-                if not event_quest:IsActive() then
-                    quest:Complete(child.id)
+                if event_quest:IsDone() then
+                    quest:Complete("noon_event")
                 end
             end
         end
@@ -159,7 +159,7 @@ local QDEF = QuestDef.Define
         quest.param.current_job = nil
 
         if (#quest.param.job_history == 1) then 
-            quest:Activate("meet_opposition")
+            quest:Activate("noon_event")
         elseif (#quest.param.job_history >= 2) then
             quest:Activate("do_debate")
         else
