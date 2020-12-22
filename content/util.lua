@@ -785,8 +785,32 @@ function DemocracyUtil.GetVoterIntentionIndex(data)
 
     -- Here, we cap the index from the general support, so that high general support can only get you so far.
     -- You need to work on other types of support to win a voter
-    local voter_index = math.min(15, DemocracyUtil.TryMainQuestFn("GetGeneralSupport") - DemocracyUtil.TryMainQuestFn("GetCurrentExpectation"))
+    local voter_index = 0
 
+    local delta = DemocracyUtil.TryMainQuestFn("GetGeneralSupport") - DemocracyUtil.TryMainQuestFn("GetCurrentExpectation")
+
+    if delta <= 5 then
+        voter_index = delta
+    else
+        delta = delta - 5
+        if delta >= 20 then
+            voter_index = voter_index + 5
+            delta = delta - 20
+        else
+            voter_index = voter_index + math.round(delta / 2)
+            delta = 0
+        end
+        -- if delta >= 20 then
+        --     voter_index = voter_index + 5
+        --     delta = delta - 20
+        -- else
+        --     voter_index = voter_index + math.round(delta / 4)
+        --     delta = 0
+        -- end
+        if delta > 0 then
+            voter_index = voter_index + math.round(delta / 5)
+        end
+    end
     if faction then
         voter_index = voter_index + (TheGame:GetGameState():GetMainQuest().param.faction_support[faction] or 0)
     end
@@ -833,7 +857,7 @@ function DemocracyUtil.GetAlliancePotential(candidate_id)
     local oppositions =  DemocracyConstants.opposition_data
     local candidate_data = oppositions[candidate_id]
     assert(candidate_data, "Invalid candidate_id")
-    local score = DemocracyUtil.GetFactionEndorsement(candidate_data.main_supporter)
+    local score = DemocracyUtil.GetVoterIntentionIndex({faction = candidate_data.main_supporter})
     for id, data in pairs(oppositions) do
         if id ~= candidate_id then
             local candidate = TheGame:GetGameState():GetAgent(data.character)

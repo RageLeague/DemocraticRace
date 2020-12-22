@@ -51,6 +51,7 @@ local QDEF = QuestDef.Define
         for id, data in pairs(DemocracyConstants.opposition_data) do
             local main_faction = data.main_supporter or "FEUD_CITIZEN"
             local val, reason = DemocracyUtil.GetAlliancePotential(id)
+            quest:Trace("[%s] Val=%d, Reason=%s", id, val, reason)
             if val then
                 local endorsement = DemocracyUtil.GetEndorsement(val)
                 if endorsement >= best_score then
@@ -69,6 +70,14 @@ local QDEF = QuestDef.Define
             local agent = TheGame:GetGameState():GetAgentByAlias(data.character)
             table.insert(t, agent)
             quest.param.ally_work_pos = data.workplace
+            quest.param.ally_platform = data.platform
+
+            if quest.param.ally_platform then
+                quest.param.stance_index = data.stances[quest.param.ally_platform]
+                if quest.param.ally_platform and quest.param.stance_index then
+                    quest.param.ally_stance = quest.param.ally_platform .. "_" .. quest.param.stance_index
+                end
+            end
         end
     end,
     no_validation = true,
@@ -149,6 +158,7 @@ QDEF:AddConvo("make_decision", "potential_ally")
                 :PreIcon(global_images.accept)
                 :Dialog("DIALOG_ACCEPT")
                 :ReceiveOpinion(OPINION.ALLIED_WITH)
+                :UpdatePoliticalStance(cxt.quest.param.ally_platform, cxt.quest.param.stance_index)
                 :Fn(function(cxt)
                     cxt.quest.param.allied = true
                     DemocracyUtil.DoLocationUnlock(cxt, cxt.quest.param.ally_work_pos)
@@ -203,6 +213,7 @@ QDEF:AddConvo("make_decision", "potential_ally")
             ]],
         }
         :Fn(function(cxt)
+            cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
             cxt:Dialog("DIALOG_INTRO")
 
             cxt.quest:Complete()
