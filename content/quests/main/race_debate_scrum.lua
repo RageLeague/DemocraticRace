@@ -131,7 +131,7 @@ DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 DemocracyUtil.AddHomeCasts(QDEF)
 DemocracyUtil.AddOppositionCast(QDEF)
 
-QDEF:AddConvo("go_to_interview")
+QDEF:AddConvo("go_to_debate")
     :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("backroom") end)
         :Loc{
             DIALOG_INTRO = [[
