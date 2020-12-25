@@ -1151,7 +1151,35 @@ local MODIFIERS =
             self.negotiator:RemoveModifier("PRIDE", stacks, self)
             self.negotiator:AddModifier("VULNERABILITY", stacks, self)
 		end,
-	},
+    },
+    PLANTED_EVIDENCE_MODDED = 
+    {
+        name = "Planted Evidence",
+        desc = "When this argument is destroyed, deal {1} damage to a random core argument on {2}'s side.",
+        desc_fn = function( self, fmt_str )
+            return loc.format( fmt_str, self.stacks or 2, self:GetOwnerName() )
+        end,
+
+        max_resolve = 1,
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+
+        sound = "event:/sfx/battle/cards/neg/create_argument/strawman",
+        icon = "negotiation/modifiers/planted_evidence.tex",
+
+        OnBounty = function( self )
+            local targets = {}
+            for i, modifier in self.negotiator:ModifierSlots() do
+                if modifier.modifier_type == MODIFIER_TYPE.CORE and not 
+                    (modifier:GetShieldStatus() 
+                    or modifier.max_resolve == nil) then
+                    table.insert(targets, modifier)
+                end
+            end
+            local target = table.arraypick(targets)
+            self.engine:ApplyPersuasion( self, target, self.stacks, self.stacks )
+        end,
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )

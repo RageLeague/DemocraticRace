@@ -169,7 +169,7 @@ end
 local MINI_NEGOTIATOR =
 {
     name = "Candidate",
-    desc = "At the end of your turn, <b>{1.fullname}</> acts and plays {2} cards.\nThis argument takes double damage from other candidates.",
+    desc = "This argument takes double damage from other candidates.\nAt the end of the turn, <b>{1.fullname}</> acts and plays {2} cards.",
     -- loc_strings = {
     --     ADMIRALTY_BONUS = "Then, if the opponent has no {PLANTED_EVIDENCE}, {INCEPT} one.",
     --     SPREE_BONUS = "{1.name}'s cards deals 1 bonus damage for every 2 turns passed.",
@@ -186,6 +186,9 @@ local MINI_NEGOTIATOR =
             for i, card in ipairs( self.prepared_cards) do
                 widget:PostCard( card.id, card, minigame )
             end
+        end
+        if self.alt_desc then
+            fmt_str = fmt_str .. "\n" .. (self.def or self):GetLocalizedString("ALT_DESC")
         end
         local res = loc.format(fmt_str, self.candidate_agent and self.candidate_agent:LocTable(),self.cards_played)
         return res
@@ -230,6 +233,9 @@ local MINI_NEGOTIATOR =
             card:RemoveCard()
         end
         self:PrepareCards()
+        if self.EndTurnEffect then
+            self:EndTurnEffect(minigame)
+        end
     end,
     PrepareCards = function(self)
         table.clear(self.prepared_cards)
@@ -244,6 +250,17 @@ local MINI_NEGOTIATOR =
     -- icon = engine.asset.Texture("negotiation/modifiers/voice_of_the_people.tex"),
 
     target_enemy = TARGET_ANY_RESOLVE,
+    event_priorities =
+    {
+        [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_MULTIPLIER,
+    },
+    event_handlers = {
+        [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
+            if target and target.real_owner == self and source and source..real_owner then
+                persuasion:ModifyPersuasion( persuasion.min_persuasion, persuasion.max_persuasion, self )
+            end
+        end,
+    },
 
     -- SetCandidate = function(self, candidate_agent, available_cards, special)
     --     self.candidate_agent = candidate_agent
@@ -256,6 +273,7 @@ local MINI_NEGOTIATOR =
 Content.AddNegotiationModifier("ADMIRALTY_MINI_NEGOTIATOR",
 table.extend(MINI_NEGOTIATOR){
     name = "Admiralty Regional Officer Oolo",
+    alt_desc = "Then, if the opponent has no {PLANTED_EVIDENCE_MODDED}, {INCEPT} one.",
     available_cards_def = 
     {
         {"mn_influence_damage"}, 
@@ -263,12 +281,24 @@ table.extend(MINI_NEGOTIATOR){
         {"mn_manipulate_damage"}, 
         {"mn_hostile_damage"},
         
+        -- {"mn_composure"},
         {"mn_composure"},
-        {"mn_composure"},
-        {"mn_composure"},
+        {"mn_composure_aoe"},
 
         {"mn_interrogate"},
+        {"mn_interrogate"},
     },
+    evidence_stacks = {4, 5, 6, 7},
+    EndTurnEffect = function(self, minigame)
+        local has_argument = self.anti_negotiator:FindModifier( "PLANTED_EVIDENCE_MODDED" )
+        if not has_argument then
+            local modifier = self.anti_negotiator:InceptModifier("PLANTED_EVIDENCE_MODDED", self.evidence_stacks[ 
+                math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2,
+                #self.evidence_stacks)
+            ], self )
+            self:NotifyTriggered()
+        end
+    end,
 })
 
 Content.AddNegotiationModifier("RISE_MINI_NEGOTIATOR",
