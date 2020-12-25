@@ -4,27 +4,30 @@ local EVENT = negotiation_defs.EVENT
 
 local ARGUMENT_CREATER =
 {
-    desc = "Create {2} {{1}}",
+    desc = "Create {2} {{1}}. It comes in play with double the normal resolve.",
     desc_fn = function(self, fmt_str)
-        return loc.format(fmt_str, self.argument_to_create or self.userdata.argument_to_create,
-            self.stacks_to_create or self.userdata.stacks_to_create or 1)
+        return loc.format(fmt_str, self.argument_to_create or (self.userdata and self.userdata.argument_to_create),
+            self.stacks_to_create or (self.userdata and self.userdata.stacks_to_create) or 1)
     end,
     OnPostResolve = function( self, battle, attack)
-        local modifier = self.negotiator:CreateModifier( self.argument_to_create or self.userdata.argument_to_create, 
-            self.stacks_to_create or self.userdata.stacks_to_create or 1, self )
+        local modifier = self.negotiator:CreateModifier( self.argument_to_create or (self.userdata and self.userdata.argument_to_create) or self.id, 
+            self.stacks_to_create or (self.userdata and self.userdata.stacks_to_create) or 1, self )
         modifier.real_owner = self.real_owner
+        if modifier.max_resolve then
+            modifier:ModifyResolve(modifier.max_resolve, self)
+        end
     end,
 }
 local ARGUMENT_INCEPTER =
 {
-    desc = "{INCEPT} {2} {{1}}",
+    desc = "{INCEPT} {2} {{1}}.",
     desc_fn = function(self, fmt_str)
-        return loc.format(fmt_str, self.argument_to_create or self.userdata.argument_to_create,
-            self.stacks_to_create or self.userdata.stacks_to_create or 1)
+        return loc.format(fmt_str, self.argument_to_create or (self.userdata and self.userdata.argument_to_create),
+            self.stacks_to_create or (self.userdata and self.userdata.stacks_to_create) or 1)
     end,
     OnPostResolve = function( self, battle, attack)
-        local modifier = self.anti_negotiator:CreateModifier( self.argument_to_create or self.userdata.argument_to_create, 
-            self.stacks_to_create or self.userdata.stacks_to_create or 1, self )
+        local modifier = self.anti_negotiator:CreateModifier( self.argument_to_create or (self.userdata and self.userdata.argument_to_create), 
+            self.stacks_to_create or (self.userdata and self.userdata.stacks_to_create) or 1, self )
         modifier.real_owner = self.real_owner
     end,
 }
@@ -61,9 +64,26 @@ local MINI_NEGOTIATOR_CARDS =
             COMPOSURE = 5,
         },
     },
+    mn_composure_aoe =
+    {
+        name = "Defensive",
+        desc = "Apply {1} {COMPOSURE} to all your arguments.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.features.COMPOSURE)
+        end,
+        flags = CARD_FLAGS.MANIPULATE,
+        target_self = TARGET_ANY_RESOLVE,
+        features =
+        {
+            COMPOSURE = 3,
+        },
+        target_mod = TARGET_MOD.TEAM,
+        auto_target = true,
+        manual_desc = true,
+    },
     mn_interrogate = table.extend(ARGUMENT_CREATER){
         name = "Interrogate",
-        flags = CARD_FLAGS.MANIPULATE,
+        flags = CARD_FLAGS.HOSTILE,
         argument_to_create = "INTERROGATE",
     },
     mn_kingpin = table.extend(ARGUMENT_CREATER){
@@ -75,6 +95,59 @@ local MINI_NEGOTIATOR_CARDS =
         name = "Straw Man",
         flags = CARD_FLAGS.MANIPULATE,
         argument_to_create = "straw_man",
+    },
+    mn_propaganda = table.extend(ARGUMENT_CREATER){
+        name = "Propaganda Machine",
+        argument_to_create = "mn_propaganda",
+        flags = CARD_FLAGS.MANIPULATE,
+        modifier = {
+            desc = "When the damage of this argument causes resolve loss, add {mn_brainwashed} to the owner's deck.",
+            
+            max_stacks = 1,
+            target_enemy = TARGET_ANY_RESOLVE,
+            modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+            min_persuasion = 2,
+            max_persuasion = 2,
+
+            OnBeginTurn = function( self, minigame )
+                self:ApplyPersuasion()
+            end,
+            OnInit = function( self )
+                self:SetResolve( 3, MODIFIER_SCALING.MED )
+            end,
+
+            event_handlers = {
+                [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+                    self.composure_gain = self.composure_gain or 0
+    
+                    if source and source == self then
+                        if damage > defended then
+                            if target.real_owner then
+                                if target.real_owner.available_cards then
+                                    local incepted_card = Negotiation.Card("mn_brainwashed", target.owner)
+                                    table.insert(target.real_owner.available_cards, incepted_card)
+                                end
+                            elseif target and target:IsPlayerOwner() then
+                                local incepted_card = Negotiation.Card("mn_brainwashed", target.owner)
+                                self.engine:DealCard( incepted_card, self.engine:GetDrawDeck() )
+                            end
+                        end
+                    end
+                end,
+            },
+        },
+    },
+    mn_brainwashed = 
+    {
+        name = "Brainwashed",
+        flags = CARD_FLAGS.STATUS | CARD_FLAGS.UNPLAYABLE,
+        cost = 0,
+    },
+    mn_prayer = table.extend(ARGUMENT_CREATER){
+        name = "Prayers",
+        flags = CARD_FLAGS.DIPLOMACY,
+        argument_to_create = "prayer_of_hesh",
     },
 }
 for i, id, def in sorted_pairs( MINI_NEGOTIATOR_CARDS ) do
@@ -134,7 +207,17 @@ local MINI_NEGOTIATOR =
                 table.insert(self.available_cards, card)
             end
         end
+        self.real_owner = self
         self:PrepareCards()
+    end,
+    resolve_scale = {40, 45, 50, 55},
+    OnApply = function(self, minigame)
+        
+        self.max_resolve = self.resolve_scale[ 
+            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2,
+            #self.resolve_scale)
+        ]
+        self.resolve = self.max_resolve
     end,
     OnEndTurn = function( self, minigame )
         -- if self.target_enemy then
@@ -172,13 +255,36 @@ local MINI_NEGOTIATOR =
 }
 Content.AddNegotiationModifier("ADMIRALTY_MINI_NEGOTIATOR",
 table.extend(MINI_NEGOTIATOR){
+    name = "Admiralty Regional Officer Oolo",
     available_cards_def = 
     {
         {"mn_influence_damage"}, 
-        {"mn_interrogate"}, 
         {"mn_manipulate_damage"}, 
         {"mn_manipulate_damage"}, 
         {"mn_hostile_damage"},
+        
+        {"mn_composure"},
+        {"mn_composure"},
+        {"mn_composure"},
+
+        {"mn_interrogate"},
     },
 })
 
+Content.AddNegotiationModifier("RISE_MINI_NEGOTIATOR",
+table.extend(MINI_NEGOTIATOR){
+    name = "Rise Leader Kalandra",
+    available_cards_def = 
+    {
+        {"mn_influence_damage"}, 
+        {"mn_influence_damage"}, 
+        {"mn_manipulate_damage"}, 
+        {"mn_hostile_damage"},
+        
+        {"mn_composure"},
+        {"mn_composure_aoe"},
+        {"mn_composure_aoe"},
+
+        {"mn_propaganda"},
+    },
+})
