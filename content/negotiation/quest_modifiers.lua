@@ -1184,7 +1184,7 @@ local MODIFIERS =
     {
         name = "Appropriated",
         desc = "When this argument is destroyed, all cards are returned to {2}'s hand. {2} gains 2 {VULNERABILITY}.",
-        alt_desc = "When this argument is destroyed, all cards are returned to {2}'s card pool. The opponent gains 2 {VULNERABILITY}.",
+        alt_desc = "When this argument is destroyed, all cards are returned to {2.fullname}'s card pool. The opponent gains 2 {VULNERABILITY}.",
         desc_fn = function( self, fmt_str, minigame, widget )
             if widget and widget.PostCard then
                 for i, card in ipairs( self.stolen_cards) do
@@ -1192,7 +1192,8 @@ local MODIFIERS =
                 end
             end
             if self.stolen_from and self.stolen_from.available_cards then
-                return loc.format((self.def or self):GetLocalizedString("ALT_DESC"), self:GetOwnerName(), self.stolen_from:GetLocalizedName())
+                return loc.format((self.def or self):GetLocalizedString("ALT_DESC"), self:GetOwnerName(), 
+                    self.stolen_from.candidate_agent and self.stolen_from.candidate_agent:LocTable())
             else
                 return loc.format( fmt_str, self:GetOwnerName(), self:GetOpponentName() )
             end
@@ -1203,6 +1204,7 @@ local MODIFIERS =
 
         modifier_type = MODIFIER_TYPE.BOUNTY,
         removed_sound = "event:/sfx/battle/cards/neg/appropriator_cardreleased",
+        icon = "negotiation/modifiers/appropriated.tex",
         --sound = "event:/sfx/battle/cards/neg/create_argument/strawman",
 
         OnInit = function( self )
@@ -1229,24 +1231,95 @@ local MODIFIERS =
 
         OnBounty = function( self )
             for i, card in ipairs( self.stolen_cards ) do
-                self.engine:BroadcastEvent( EVENT.CUSTOM, function( panel )
-                    local slot_widget = panel:FindSlotWidget( self )
-                    if slot_widget then
-                        local w = panel.cards:CreateCardWidget( card )
-                        local x, y = w.parent:TransformFromWidget( slot_widget, 0, 0 )
-                        w:SetPos( x, y )
-                    end
-                end )
-                card.show_dealt = false
+                
                 if self.stolen_from and self.stolen_from.available_cards then
+                    print("Return to the pool of stuff")
                     table.insert(self.stolen_from.available_cards, card)
                 else
+                    self.engine:BroadcastEvent( EVENT.CUSTOM, function( panel )
+                        local slot_widget = panel:FindSlotWidget( self )
+                        if slot_widget then
+                            local w = panel.cards:CreateCardWidget( card )
+                            local x, y = w.parent:TransformFromWidget( slot_widget, 0, 0 )
+                            w:SetPos( x, y )
+                        end
+                    end )
+                    card.show_dealt = false
                     self.engine:InsertCard( card )
                 end
             end
 
             self.anti_negotiator:InceptModifier("VULNERABILITY", 2)
         end,
+    },
+    ALL_BUSINESS_MODDED =
+    {
+        name = "All Business",
+        desc = "At the start of the turn, a random allied argument gains {COMPOSURE {1}} for each Hostility card in all opponents' intent.",
+        alt_desc = "A random allied argument gains {COMPOSURE {1}} for each Hostility card the player draw.",
+        desc_fn = function( self, fmt_str )
+            if self.negotiator and not self.negotiator:IsPlayer() then
+                return loc.format( fmt_str .. "\n" .. (self.def or self):GetLocalizedString("ALT_DESC"), self.bonus )
+            else
+                return loc.format( fmt_str, self.bonus )
+            end
+        end,
+
+        max_resolve = 1,
+        max_stacks = 1,
+        bonus = 1,
+
+        sound = "event:/sfx/battle/cards/neg/create_argument/all_business",
+        icon = "negotiation/modifiers/all_business.tex",
+
+        OnInit = function( self )
+            if self.engine then
+                local difficulty = self.engine:GetDifficulty()
+                self:SetResolve( 1, MODIFIER_SCALING.MED )
+                self.bonus = difficulty
+            end
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
+                if negotiator == self.negotiator then
+                    local did_a_thing = false
+                    for i, modifier in self.anti_negotiator:ModifierSlots() do
+                        if modifier.prepared_cards then
+                            for j, card in ipairs(modifier.prepared_cards) do
+                                if card:IsFlagged( CARD_FLAGS.HOSTILE ) then
+                                    -- self.negotiator:DeltaComposure( self.bonus, self )
+                                    local targets = self.engine:CollectAlliedTargets(self.negotiator)
+                                    if #targets > 0 then
+                                        local target = targets[math.random(#targets)]
+                                        target:DeltaComposure(self.bonus, self)
+                                        -- self:AddXP(1)
+                                        did_a_thing = true
+                                    end
+                                    
+                                end
+                            end
+                        end
+                    end
+                    if did_a_thing then
+                        self:NotifyTriggered()
+                    end
+                end
+            end,
+            [ EVENT.DRAW_CARD ] = function( self, engine, card, start_of_turn )
+                if card:IsFlagged( CARD_FLAGS.HOSTILE ) and self.negotiator and not self.negotiator:IsPlayer() then
+                    -- self.negotiator:DeltaComposure( self.bonus, self )
+                    local targets = self.engine:CollectAlliedTargets(self.negotiator)
+                    if #targets > 0 then
+                        local target = targets[math.random(#targets)]
+                        target:DeltaComposure(self.bonus, self)
+                        -- self:AddXP(1)
+                    end
+                    self:NotifyTriggered()
+                end
+            end,
+        },
     },
 }
 for id, def in pairs( MODIFIERS ) do

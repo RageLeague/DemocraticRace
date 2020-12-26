@@ -117,6 +117,11 @@ local MINI_NEGOTIATOR_CARDS =
         flags = CARD_FLAGS.HOSTILE,
         argument_to_create = "KINGPIN",
     },
+    mn_all_business = table.extend(ARGUMENT_CREATER){
+        name = "All Business",
+        flags = CARD_FLAGS.DIPLOMACY,
+        argument_to_create = "ALL_BUSINESS_MODDED",
+    },
     mn_strawman = table.extend(ARGUMENT_INCEPTER){
         name = "Straw Man",
         flags = CARD_FLAGS.MANIPULATE,
@@ -133,8 +138,8 @@ local MINI_NEGOTIATOR_CARDS =
             target_enemy = TARGET_ANY_RESOLVE,
             modifier_type = MODIFIER_TYPE.ARGUMENT,
 
-            min_persuasion = 2,
-            max_persuasion = 2,
+            min_persuasion = 3,
+            max_persuasion = 3,
 
             OnBeginTurn = function( self, minigame )
                 self:ApplyPersuasion()
@@ -380,4 +385,94 @@ table.extend(MINI_NEGOTIATOR){
             end
         end,
     },
+})
+
+Content.AddNegotiationModifier("BARON_MINI_NEGOTIATOR",
+table.extend(MINI_NEGOTIATOR){
+    name = "Fellemo's Appropriation",
+    alt_desc = "Then, appropriate a random opponent's card.",
+    available_cards_def = 
+    {
+        -- {"mn_influence_damage"}, 
+        {"mn_influence_damage"}, 
+        {"mn_manipulate_damage"},
+        {"mn_manipulate_damage"},
+        {"mn_manipulate_damage"},
+        {"mn_hostile_damage"},
+        
+        {"mn_composure"},
+        {"mn_composure"},
+        {"mn_composure_aoe"},
+
+        {"mn_all_business"},
+        {"mn_all_business"},
+        {"mn_strawman"},
+        {"mn_strawman"},
+    },
+    EndTurnEffect = function(self, minigame)
+        local MAX_STOLEN = 3
+        local MIN_TO_LEAVE = 5
+
+        local num_stolen = 0
+        for i,modifier in self.negotiator:ModifierSlots() do
+            if modifier.id == "APPROPRIATED_MODDED" then
+                num_stolen = num_stolen + modifier:GetStolenCount()
+            end
+        end
+
+        if num_stolen < MAX_STOLEN then
+            local candidates = {}
+            for i, modifier in self.anti_negotiator:ModifierSlots() do
+                if modifier.available_cards and #modifier.available_cards > MIN_TO_LEAVE then
+                    table.insert(candidates, modifier)
+                end
+            end
+            if self.anti_negotiator:IsPlayer() then
+                local cards = self.engine:GetAllPlayerCards(function(card) return not CheckBits( card.flags, CARD_FLAGS.STATUS ) end)
+
+                if #cards > MIN_TO_LEAVE then
+                    table.insert(candidates, "PLAYER")
+                end
+            end
+            while #candidates > 0 do
+                local chosen = table.arraypick(candidates)
+                table.arrayremove(candidates, chosen)
+                local count = 1
+                if type(chosen) == "table" then
+                    local cards = {}
+                    for i, card in ipairs(chosen.available_cards) do
+                        if not table.arraycontains(chosen.prepared_cards, card) then
+                            table.insert(cards, card)
+                        end
+                    end
+                    if #cards > 0 then
+                        cards = table.multipick(cards, count)
+                        local approp
+                        approp = self.negotiator:CreateModifier("APPROPRIATED_MODDED", 1, self )
+                        for i, card in ipairs( cards ) do
+                            if approp:IsApplied() then -- veryify that it still exists
+                                print( self.negotiator, "appropriated", card, "from", card.deck )
+                                approp:AppropriateCard( card, chosen )
+                            end
+                        end
+                        return
+                        
+                    end
+                else
+                    local cards = self.engine:GetAllPlayerCards(function(card) return not CheckBits( card.flags, CARD_FLAGS.STATUS ) end)
+                    cards = table.multipick(cards, count)
+                    local approp
+                    approp = self.negotiator:CreateModifier("APPROPRIATED_MODDED", 1, self )
+                    for i, card in ipairs( cards ) do
+                        if approp:IsApplied() then -- veryify that it still exists
+                            print( self.negotiator, "appropriated", card, "from", card.deck )
+                            approp:AppropriateCard( card )
+                        end
+                    end
+                    return
+                end
+                self:NotifyTriggered()
+            end
+        end
+    end,
 })
