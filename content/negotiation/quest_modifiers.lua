@@ -1180,6 +1180,74 @@ local MODIFIERS =
             self.engine:ApplyPersuasion( self, target, self.stacks, self.stacks )
         end,
     },
+    APPROPRIATED_MODDED =
+    {
+        name = "Appropriated",
+        desc = "When this argument is destroyed, all cards are returned to {2}'s hand. {2} gains 2 {VULNERABILITY}.",
+        alt_desc = "When this argument is destroyed, all cards are returned to {2}'s card pool. The opponent gains 2 {VULNERABILITY}.",
+        desc_fn = function( self, fmt_str, minigame, widget )
+            if widget and widget.PostCard then
+                for i, card in ipairs( self.stolen_cards) do
+                    widget:PostCard( card.id, card, minigame )
+                end
+            end
+            if self.stolen_from and self.stolen_from.available_cards then
+                return loc.format((self.def or self):GetLocalizedString("ALT_DESC"), self:GetOwnerName(), self.stolen_from:GetLocalizedName())
+            else
+                return loc.format( fmt_str, self:GetOwnerName(), self:GetOpponentName() )
+            end
+        end,
+
+        max_resolve = 1,
+        max_stacks = 1,
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+        removed_sound = "event:/sfx/battle/cards/neg/appropriator_cardreleased",
+        --sound = "event:/sfx/battle/cards/neg/create_argument/strawman",
+
+        OnInit = function( self )
+            self.stolen_cards = {}
+            self:SetResolve( 1, MODIFIER_SCALING.LOW )
+        end,
+
+        GetStolenCount = function( self )
+            return #self.stolen_cards
+        end,
+
+        AppropriateCard = function( self, card, owner )
+            table.insert( self.stolen_cards, card )
+            if owner and owner.available_cards then
+                table.arrayremove(owner.available_cards, card)
+            end
+            card:RemoveCard()
+            self.stolen_from = owner
+
+            self:NotifyChanged()
+           
+            self.engine:BroadcastEvent( EVENT.CARD_STOLEN, card, self )
+        end,
+
+        OnBounty = function( self )
+            for i, card in ipairs( self.stolen_cards ) do
+                self.engine:BroadcastEvent( EVENT.CUSTOM, function( panel )
+                    local slot_widget = panel:FindSlotWidget( self )
+                    if slot_widget then
+                        local w = panel.cards:CreateCardWidget( card )
+                        local x, y = w.parent:TransformFromWidget( slot_widget, 0, 0 )
+                        w:SetPos( x, y )
+                    end
+                end )
+                card.show_dealt = false
+                if self.stolen_from and self.stolen_from.available_cards then
+                    table.insert(self.stolen_from.available_cards, card)
+                else
+                    self.engine:InsertCard( card )
+                end
+            end
+
+            self.anti_negotiator:InceptModifier("VULNERABILITY", 2)
+        end,
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )

@@ -37,22 +37,48 @@ local MINI_NEGOTIATOR_CARDS =
     {
         name = "Ethos",
         flags = CARD_FLAGS.DIPLOMACY,
-        min_persuasion = 1,
-        max_persuasion = 4,
+        min_persuasion = 3,
+        max_persuasion = 5,
     },
     mn_manipulate_damage =
     {
         name = "Logos",
+        desc = "Attack twice.",
         flags = CARD_FLAGS.MANIPULATE,
         min_persuasion = 3,
         max_persuasion = 3,
+        OnPostResolve = function( self, minigame, targets )
+            minigame:ApplyPersuasion(self)
+        end
     },
     mn_hostile_damage =
     {
         name = "Pathos",
         flags = CARD_FLAGS.HOSTILE,
         min_persuasion = 2,
+        max_persuasion = 6,
+    },
+    mn_inspire =
+    {
+        name = "Inspire",
+        flags = CARD_FLAGS.DIPLOMACY,
+        min_persuasion = 2,
+        max_persuasion = 4,
+        features =
+        {
+            INFLUENCE = 2,
+        },
+    },
+    mn_dominate =
+    {
+        name = "Dominate",
+        flags = CARD_FLAGS.HOSTILE,
+        min_persuasion = 3,
         max_persuasion = 3,
+        features =
+        {
+            DOMINANCE = 2,
+        },
     },
     mn_composure =
     {
@@ -149,6 +175,11 @@ local MINI_NEGOTIATOR_CARDS =
         flags = CARD_FLAGS.DIPLOMACY,
         argument_to_create = "prayer_of_hesh",
     },
+    mn_ploy = table.extend(ARGUMENT_CREATER){
+        name = "Ploy",
+        flags = CARD_FLAGS.MANIPULATE,
+        argument_to_create = "ploy",
+    },
 }
 for i, id, def in sorted_pairs( MINI_NEGOTIATOR_CARDS ) do
     if not def.cost then
@@ -169,7 +200,7 @@ end
 local MINI_NEGOTIATOR =
 {
     name = "Candidate",
-    desc = "This argument takes double damage from other candidates.\nAt the end of the turn, <b>{1.fullname}</> acts and plays {2} cards.",
+    desc = "At the end of the turn, <b>{1.fullname}</> acts and plays {2} cards.",
     -- loc_strings = {
     --     ADMIRALTY_BONUS = "Then, if the opponent has no {PLANTED_EVIDENCE}, {INCEPT} one.",
     --     SPREE_BONUS = "{1.name}'s cards deals 1 bonus damage for every 2 turns passed.",
@@ -252,14 +283,14 @@ local MINI_NEGOTIATOR =
     target_enemy = TARGET_ANY_RESOLVE,
     event_priorities =
     {
-        [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_MULTIPLIER,
+        -- [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_MULTIPLIER,
     },
     event_handlers = {
-        [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
-            if target and target.real_owner == self and source and source..real_owner then
-                persuasion:ModifyPersuasion( persuasion.min_persuasion, persuasion.max_persuasion, self )
-            end
-        end,
+        -- [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
+        --     if target and target.real_owner == self and source and source..real_owner then
+        --         persuasion:ModifyPersuasion( persuasion.min_persuasion, persuasion.max_persuasion, self )
+        --     end
+        -- end,
     },
 
     -- SetCandidate = function(self, candidate_agent, available_cards, special)
@@ -272,7 +303,7 @@ local MINI_NEGOTIATOR =
 }
 Content.AddNegotiationModifier("ADMIRALTY_MINI_NEGOTIATOR",
 table.extend(MINI_NEGOTIATOR){
-    name = "Admiralty Regional Officer Oolo",
+    name = "Oolo's Power Abuse",
     alt_desc = "Then, if the opponent has no {PLANTED_EVIDENCE_MODDED}, {INCEPT} one.",
     available_cards_def = 
     {
@@ -281,12 +312,14 @@ table.extend(MINI_NEGOTIATOR){
         {"mn_manipulate_damage"}, 
         {"mn_hostile_damage"},
         
-        -- {"mn_composure"},
+        {"mn_composure"},
         {"mn_composure"},
         {"mn_composure_aoe"},
 
         {"mn_interrogate"},
         {"mn_interrogate"},
+        {"mn_inspire"},
+        {"mn_inspire"},
     },
     evidence_stacks = {4, 5, 6, 7},
     EndTurnEffect = function(self, minigame)
@@ -301,20 +334,50 @@ table.extend(MINI_NEGOTIATOR){
     end,
 })
 
-Content.AddNegotiationModifier("RISE_MINI_NEGOTIATOR",
+Content.AddNegotiationModifier("SPREE_MINI_NEGOTIATOR",
 table.extend(MINI_NEGOTIATOR){
-    name = "Rise Leader Kalandra",
+    name = "Nadan's Short Fuse",
+    alt_desc = "{1.name}'s cards and arguments deals 1 bonus damage for every 2 turns passed.",
+    loc_strings = {
+        TOOLTIP = "({1} bonus damage)",
+    },
+    desc_fn = function(self, ...)
+        local res = MINI_NEGOTIATOR.desc_fn(self, ...)
+        if self.engine and self.engine.turns then
+            res = res .. "\n" .. loc.format((self.def or self):GetLocalizedString("TOOLTIP"), math.floor((self.engine.turns - 1) / 2))
+        end
+        return res
+    end,
     available_cards_def = 
     {
+        -- {"mn_influence_damage"}, 
         {"mn_influence_damage"}, 
-        {"mn_influence_damage"}, 
-        {"mn_manipulate_damage"}, 
+        {"mn_hostile_damage"},
+        {"mn_hostile_damage"},
         {"mn_hostile_damage"},
         
         {"mn_composure"},
-        {"mn_composure_aoe"},
-        {"mn_composure_aoe"},
+        {"mn_composure"},
 
-        {"mn_propaganda"},
+        {"mn_kingpin"},
+        {"mn_kingpin"},
+        {"mn_ploy"},
+        {"mn_dominate"},
+        {"mn_dominate"},
+    },
+    event_priorities =
+    {
+        [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_ADDITIVE,
+    },
+    event_handlers = {
+        [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
+            if source and source.real_owner == self then
+                local turns = minigame.turns - 1
+                local delta = math.floor(turns / 2)
+                if delta > 0 then
+                    persuasion:AddPersuasion(delta, delta, self)
+                end
+            end
+        end,
     },
 })
