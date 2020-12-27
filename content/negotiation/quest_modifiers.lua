@@ -1325,6 +1325,7 @@ local MODIFIERS =
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
 end
+Content.GetNegotiationModifier("FREE_ACTION").min_stacks = -99
 local FEATURES = {
     MYRIAD_MODIFIER = 
     {

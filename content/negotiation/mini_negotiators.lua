@@ -180,6 +180,11 @@ local MINI_NEGOTIATOR_CARDS =
         flags = CARD_FLAGS.DIPLOMACY,
         argument_to_create = "prayer_of_hesh",
     },
+    mn_wrath = table.extend(ARGUMENT_CREATER){
+        name = "Wrath",
+        flags = CARD_FLAGS.HOSTILE,
+        argument_to_create = "wrath_of_hesh",
+    },
     mn_ploy = table.extend(ARGUMENT_CREATER){
         name = "Ploy",
         flags = CARD_FLAGS.MANIPULATE,
@@ -310,6 +315,7 @@ Content.AddNegotiationModifier("ADMIRALTY_MINI_NEGOTIATOR",
 table.extend(MINI_NEGOTIATOR){
     name = "Oolo's Power Abuse",
     alt_desc = "Then, if the opponent has no {PLANTED_EVIDENCE_MODDED}, {INCEPT} one.",
+    icon = "DEMOCRATICRACE:assets/modifiers/mini_negotiator/admiralty.png",
     available_cards_def = 
     {
         {"mn_influence_damage"}, 
@@ -343,6 +349,7 @@ Content.AddNegotiationModifier("SPREE_MINI_NEGOTIATOR",
 table.extend(MINI_NEGOTIATOR){
     name = "Nadan's Short Fuse",
     alt_desc = "{1.name}'s cards and arguments deals 1 bonus damage for every 2 turns passed.",
+    icon = "DEMOCRATICRACE:assets/modifiers/mini_negotiator/spree.png",
     loc_strings = {
         TOOLTIP = "({1} bonus damage)",
     },
@@ -391,21 +398,21 @@ Content.AddNegotiationModifier("BARON_MINI_NEGOTIATOR",
 table.extend(MINI_NEGOTIATOR){
     name = "Fellemo's Appropriation",
     alt_desc = "Then, appropriate a random opponent's card.",
+    icon = "DEMOCRATICRACE:assets/modifiers/mini_negotiator/baron.png",
     available_cards_def = 
     {
         -- {"mn_influence_damage"}, 
         {"mn_influence_damage"}, 
         {"mn_manipulate_damage"},
         {"mn_manipulate_damage"},
-        {"mn_manipulate_damage"},
         {"mn_hostile_damage"},
         
-        {"mn_composure"},
         {"mn_composure"},
         {"mn_composure_aoe"},
 
         {"mn_all_business"},
         {"mn_all_business"},
+        {"mn_strawman"},
         {"mn_strawman"},
         {"mn_strawman"},
     },
@@ -475,4 +482,230 @@ table.extend(MINI_NEGOTIATOR){
             end
         end
     end,
+})
+
+Content.AddNegotiationModifier("RISE_MINI_NEGOTIATOR",
+table.extend(MINI_NEGOTIATOR){
+    name = "Kalandra's Call to Rise",
+    alt_desc = "Then, a random opponent loses 1 action for their next turn.",
+    icon = "DEMOCRATICRACE:assets/modifiers/mini_negotiator/rise.png",
+    loc_strings = {
+        PENALTY_TXT = "-1 Action",
+    },
+    available_cards_def = 
+    {
+        {"mn_influence_damage"}, 
+        {"mn_influence_damage"}, 
+        {"mn_manipulate_damage"}, 
+        {"mn_hostile_damage"},
+        
+        {"mn_composure"},
+        {"mn_composure_aoe"},
+        {"mn_composure_aoe"},
+
+        {"mn_propaganda"},
+        {"mn_propaganda"},
+        {"mn_inspire"},
+        {"mn_inspire"},
+    },
+    EndTurnEffect = function(self, minigame)
+        local candidates = {}
+        for i, modifier in self.anti_negotiator:ModifierSlots() do
+            if modifier.prepared_cards and #modifier.prepared_cards > 0 then
+                table.insert(candidates, modifier)
+            end
+        end
+        if self.anti_negotiator:IsPlayer() then
+            table.insert(candidates, "PLAYER")
+        end
+        local chosen = table.arraypick(candidates)
+        local function PopupFloater(panel, source_widget)
+            local label = panel:AddChild( Widget.Label( "title", 48, (self.def or self):GetLocalizedString("PENALTY_TXT") ):SetBloom( 0.2 ))
+            local self_widget = panel:FindSlotWidget(self)
+            local sizex, sizey = source_widget:GetSize()
+            local screenw, screenh = panel:GetFE():GetScreenDims()
+
+            local sx, sy
+            if self_widget then
+                sx, sy = panel:TransformFromWidget(self_widget, 0, 0)
+            else
+                sx, sy = screenw / 2, screenh / 2
+            end
+            local tx, ty = panel:TransformFromWidget( source_widget, 0, 0 )
+
+            label:SetGlyphColour( UICOLOURS.PENALTY )
+
+            
+            -- label:SetPos( w/2, h/2 )
+            label:SetPos( sx, sy )
+            label:ScaleTo( 1.0, 1.3, 0.2, easing.outQuad )
+            panel:Delay( 0.2 )
+            label:ScaleTo( 1.3, 1.0, 0.2, easing.outQuad )
+            panel:Delay( 0.5 )
+
+            local duration = 0.3
+            label:MoveTo( tx, ty, duration, easing.inQuad )
+            -- label:AlphaTo( 0, duration )
+            -- label:ScaleTo( 1.0, 0.5, duration, easing.outQuad )
+            label:Delay( duration )
+            duration = 0.5
+            label:AlphaTo(0, duration)
+            label:ScaleTo(1.0, 0.5, duration, easing.outQuad)
+            label:Delay(duration)
+            label:Remove()
+        end
+        if type(chosen) == "table" then
+            table.remove(chosen.prepared_cards, math.random(1, #chosen.prepared_cards))
+            self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
+                PopupFloater(panel, panel:FindSlotWidget( chosen ))
+            end)
+            chosen:NotifyChanged()
+            self:NotifyTriggered()
+        else
+            self.anti_negotiator:DeltaModifier("FREE_ACTION", -1, self)
+            self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
+                PopupFloater(panel, panel.time_indicator)
+            end)
+            self:NotifyTriggered()
+        end
+        
+    end,
+})
+
+Content.AddNegotiationModifier("CULT_MINI_NEGOTIATOR",
+table.extend(MINI_NEGOTIATOR){
+    name = "Vixmalli's Zeal",
+    alt_desc = "When any argument on {1.name}'s team gets destroyed, all other arguments gain 2 resolve.",
+    icon = "DEMOCRATICRACE:assets/modifiers/mini_negotiator/cult.png",
+    available_cards_def = 
+    {
+        -- {"mn_influence_damage"}, 
+        {"mn_influence_damage"}, 
+        -- {"mn_manipulate_damage"},
+        {"mn_manipulate_damage"},
+        {"mn_manipulate_damage"},
+        
+        -- {"mn_composure"},
+        {"mn_composure"},
+        -- {"mn_composure_aoe"},
+
+        {"mn_wrath"},
+        {"mn_wrath"},
+        {"mn_wrath"},
+        {"mn_prayer"},
+        {"mn_prayer"},
+        {"mn_prayer"},
+        {"mn_strawman"},
+    },
+    event_handlers = {
+        -- [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
+        --     if source and source.real_owner == self then
+        --         local turns = minigame.turns - 1
+        --         local delta = math.floor(turns / 2)
+        --         if delta > 0 then
+        --             persuasion:AddPersuasion(delta, delta, self)
+        --         end
+        --     end
+        -- end,
+        event_handlers =
+        {
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, card )
+                if modifier.modifier_type == MODIFIER_TYPE.ARGUMENT and modifier.owner == self.owner then
+                    for i, mod in self.negotiator:Modifiers() do
+                        if mod ~= modifier and mod.modifier_type == MODIFIER_TYPE.ARGUMENT then
+                            mod:ModifyResolve( 2, self )
+                        end
+                    end
+                end
+            end,
+        }
+    },
+})
+
+Content.AddNegotiationModifier("JAKES_MINI_NEGOTIATOR",
+table.extend(MINI_NEGOTIATOR){
+    name = "Andwanette's Double Edge",
+    alt_desc = "Whenever {1.name}'s cards deal damage, they gain resolve equal to resolve loss. If no resolve is lost, they take 3 damage.",
+    icon = "DEMOCRATICRACE:assets/modifiers/mini_negotiator/jakes.png",
+    available_cards_def = 
+    {
+        {"mn_influence_damage"}, 
+        {"mn_hostile_damage"}, 
+        {"mn_hostile_damage"},
+        {"mn_manipulate_damage"},
+        {"mn_manipulate_damage"},
+        
+        {"mn_composure"},
+        {"mn_composure"},
+        {"mn_composure_aoe"},
+
+        {"mn_ploy"},
+        {"mn_ploy"},
+        {"mn_dominate"},
+        {"mn_strawman"},
+    },
+    resolve_loss = 3,
+
+    target_self = TARGET_ANY_RESOLVE,
+
+    OnBeginTurn = function( self, minigame )
+        self.composure_gain = 0
+    end,
+
+    EndTurnEffect = function( self, minigame )
+        if self.composure_gain > 0 then
+            local targets = {}
+            for i, modifier in self.negotiator:ModifierSlots() do
+                if modifier:GetResolve() ~= nil then
+                    table.insert( targets, {modifier=modifier, count=0} )
+                end
+            end
+
+            while self.composure_gain > 0 and #targets > 0 do
+                for i, target in ipairs(targets) do
+                    if self.composure_gain > 0 then
+                        target.count = target.count + 1
+                        self.composure_gain = self.composure_gain - 1
+                    end
+                end
+            end
+
+            for i, target in ipairs(targets) do
+                target.modifier:DeltaComposure( target.count, self)
+            end
+        end
+    end,
+
+    event_handlers =
+    {
+        [ EVENT.BEGIN_ENEMY_TURN ] = function( self )
+            self.active = true
+        end,
+        [ EVENT.END_TURN ] = function( self, minigame, negotiator )
+            if negotiator == self.negotiator then
+                self.active = false
+            end
+        end,
+        [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+            self.composure_gain = self.composure_gain or 0
+
+            if self.active and source and source.real_owner == self  then
+                if damage > defended then
+                    local gain = math.min( target:GetResolve(), damage - defended)
+                    self.composure_gain = self.composure_gain + gain
+                else
+                    if self.negotiator:FindCoreArgument():GetShieldStatus() or CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.NO_CORE_RESOLVE) then
+                        local targets = self.engine:CollectAllTargets(self)
+                        table.arrayremove( targets, self.negotiator:FindCoreArgument() )
+                        local edge_target = table.arraypick( targets )
+                        if edge_target then
+                            self.engine:ApplyPersuasion( target, edge_target, self.resolve_loss, self.resolve_loss )
+                        end
+                    else
+                        self.engine:ApplyPersuasion( target, self.negotiator, self.resolve_loss, self.resolve_loss )
+                    end
+                end
+            end
+        end,
+    },
 })
