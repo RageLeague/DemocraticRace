@@ -1321,6 +1321,78 @@ local MODIFIERS =
             end,
         },
     },
+    DEBATE_SCRUM_TRACKER =
+    {
+        name = "Debate Host",
+        desc = "Defeat ALL opponent negotiators to win this debate!\n" ..
+            "You cannot play any more cards if your core argument is destroyed, and you lose if your core argument and all your allies' core argument are destroyed.\n" ..
+            "Your core argument takes half the resolve damage by your opponents' cards and arguments. Opponents arguments comes in to play with double resolve.\n\n" ..
+            "Perform various feats to win the crowd. <#PENALTY>Your allies also does the same, so do more feats than your allies to stand out!</>",
+        loc_strings = {
+            SCORE_DAMAGE = "Damage Dealt",
+            SCORE_FULL_BLOCK = "Damage Deflected",
+            SCORE_ARGUMENT_DESTROYED = "Argument Refuted",
+            SCORE_OPPONENT_DESTROYED = "Opponent Refuted",
+            SCORE_DELTA = "+{1} Pts",
+        },
+        modifier_type = MODIFIER_TYPE.CORE,
+        OnInit = function(self)
+            self.scores = {}
+            self.player_score = 0
+            self:DeltaScore(200, nil, "SCORE_DAMAGE")
+        end,
+        max_stacks = 1,
+        GetScoreText = function(self, delta, reason)
+            local res
+            if self.loc_strings[reason] then
+                res = (self.def or self):GetLocalizedString(reason) .. " "
+            else
+                res = ""
+            end
+            
+            return loc.format( res ..
+                (self.def or self):GetLocalizedString("SCORE_DELTA"), delta)
+        end,
+        DeltaScore = function(self, delta, source, reason)
+            local function PopupText(panel, source_widget, deltay, text_color)
+                local label = panel:AddChild( Widget.Label( "title", 28, self:GetScoreText(delta, reason) ):SetBloom( 0.2 ))
+                label:SetGlyphColour( text_color )
+                
+                local screenw, screenh = panel:GetFE():GetScreenDims()
+                local sx, sy
+                if source_widget then
+                    sx, sy = panel:TransformFromWidget(source_widget, 0, 0)
+                else
+                    -- LOGWARN("Fail to find minigame objective for some reason")
+                    sx, sy = screenw / 2, screenh / 2
+                end
+                label:AlphaTo(0, 0)
+                label:SetPos( sx, sy )
+
+                label:MoveTo( sx, sy + deltay, 0.2, easing.outQuad )
+                label:AlphaTo(1, 0.2)
+                label:Delay(0.5)
+
+                label:MoveTo( sx, sy + 2 * deltay, 0.2, easing.inQuad )
+                label:AlphaTo(0, 0.2)
+                label:Delay(0.2)
+                label:Remove()
+            end
+            if is_instance(source, Negotiation.Modifier) then
+                source = source.real_owner
+                if source then
+                    self.scores[source.id] = (self.scores[source.id] or 0) + delta
+                end
+            else
+                self.player_score = self.player_score + delta
+                self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
+                    panel:RefreshReason()
+                    local source_widget = panel.main_overlay.minigame_objective
+                    panel:StartCoroutine(PopupText, panel, source_widget, -32, UICOLOURS.BONUS)
+                end)
+            end
+        end,
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
