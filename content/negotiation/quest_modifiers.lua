@@ -1339,23 +1339,50 @@ local MODIFIERS =
         OnInit = function(self)
             self.scores = {}
             self.player_score = 0
+            
+            self.score_widgets = {}
+            self.player_score_widget = {}
+
             self:DeltaScore(200, nil, "SCORE_DAMAGE")
+            self:DeltaScore(100, nil, "SCORE_DAMAGE")
         end,
         max_stacks = 1,
-        GetScoreText = function(self, delta, reason)
+        GetScoreText = function(self, delta, reason, multiplier)
             local res
             if self.loc_strings[reason] then
-                res = (self.def or self):GetLocalizedString(reason) .. " "
+                res = (self.def or self):GetLocalizedString(reason)
             else
                 res = ""
+            end
+            if res ~= "" then
+                res = res .. " "
+            end
+            if multiplier and multiplier > 1 then
+                res = res .. "x" .. multiplier
+            end
+            if res ~= "" then
+                res = res .. " "
             end
             
             return loc.format( res ..
                 (self.def or self):GetLocalizedString("SCORE_DELTA"), delta)
         end,
         DeltaScore = function(self, delta, source, reason)
-            local function PopupText(panel, source_widget, deltay, text_color)
+            local function PopupText(panel, source_widget, deltay, text_color, widget_list)
+                for i, data in ipairs(widget_list) do
+                    if data and data.reason and data.reason == reason then
+                        data.score = (data.score or 0) + delta
+                        data.multiplier = (data.multiplier or 1) + 1
+                        data.label:SetText(self:GetScoreText(data.score, reason, data.multiplier))
+                        return
+                    end
+                end
                 local label = panel:AddChild( Widget.Label( "title", 28, self:GetScoreText(delta, reason) ):SetBloom( 0.2 ))
+                local insert_index = 1
+                while widget_list[insert_index] ~= nil do
+                    insert_index = insert_index + 1
+                end
+                widget_list[insert_index] = {score = delta, multiplier = 1, label = label, reason = reason}
                 label:SetGlyphColour( text_color )
                 
                 local screenw, screenh = panel:GetFE():GetScreenDims()
@@ -1367,28 +1394,56 @@ local MODIFIERS =
                     sx, sy = screenw / 2, screenh / 2
                 end
                 label:AlphaTo(0, 0)
-                label:SetPos( sx, sy )
+                label:SetPos( sx, sy + (insert_index - 1) * deltay)
 
-                label:MoveTo( sx, sy + deltay, 0.2, easing.outQuad )
+                label:MoveTo( sx, sy + insert_index * deltay, 0.2, easing.outQuad )
                 label:AlphaTo(1, 0.2)
-                label:Delay(0.5)
+                -- label:Delay(1)
+                if (panel.viz_coro and panel.viz_coro:IsRunning()) or (panel.wait_coro and panel.wait_coro:IsRunning()) then
+                    local t = 1
+                    local prev_tick = widget_list[insert_index].multiplier
+                    while (t > 0) do 
+                        local dt = coroutine.yield()
+                        t = t - dt
+                        if widget_list[insert_index].multiplier ~= prev_tick then
+                            prev_tick = widget_list[insert_index].multiplier
+                            t = 1
+                        end
+                    end
+                end
 
-                label:MoveTo( sx, sy + 2 * deltay, 0.2, easing.inQuad )
+                widget_list[insert_index] = nil
+
+                label:MoveTo( sx, sy + (insert_index + 1) * deltay, 0.2, easing.inQuad )
                 label:AlphaTo(0, 0.2)
                 label:Delay(0.2)
                 label:Remove()
+                
             end
             if is_instance(source, Negotiation.Modifier) then
                 source = source.real_owner
                 if source then
-                    self.scores[source.id] = (self.scores[source.id] or 0) + delta
+                    if not self.score[source:GetUID()] then
+                        self.score[source:GetUID()] = {modifier = source, score = 0}
+                    end
+                    self.scores[source:GetUID()].score = self.scores[source:GetUID()].score + delta
+                    if not self.score_widgets[source:GetUID()] then
+                        self.score_widgets[source:GetUID()] = {}
+                    end
+                    self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
+                        -- panel:RefreshReason()
+                        local source_widget = panel:FindSlotWidget( source )
+                        if source_widget then
+                            panel:StartCoroutine(PopupText, panel, source_widget, 32, UICOLOURS.BONUS, self.score_widgets[source:GetUID()])
+                        end
+                    end)
                 end
             else
                 self.player_score = self.player_score + delta
                 self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                     panel:RefreshReason()
                     local source_widget = panel.main_overlay.minigame_objective
-                    panel:StartCoroutine(PopupText, panel, source_widget, -32, UICOLOURS.BONUS)
+                    panel:StartCoroutine(PopupText, panel, source_widget, -32, UICOLOURS.BONUS, self.player_score_widget)
                 end)
             end
         end,
