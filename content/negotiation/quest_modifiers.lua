@@ -1399,16 +1399,14 @@ local MODIFIERS =
                 label:MoveTo( sx, sy + insert_index * deltay, 0.2, easing.outQuad )
                 label:AlphaTo(1, 0.2)
                 -- label:Delay(1)
-                if (panel.viz_coro and panel.viz_coro:IsRunning()) or (panel.wait_coro and panel.wait_coro:IsRunning()) then
-                    local t = 1
-                    local prev_tick = widget_list[insert_index].multiplier
-                    while (t > 0) do 
-                        local dt = coroutine.yield()
-                        t = t - dt
-                        if widget_list[insert_index].multiplier ~= prev_tick then
-                            prev_tick = widget_list[insert_index].multiplier
-                            t = 1
-                        end
+                local t = 1
+                local prev_tick = widget_list[insert_index].multiplier
+                while (t > 0) do 
+                    local dt = coroutine.yield()
+                    t = t - dt
+                    if widget_list[insert_index].multiplier ~= prev_tick then
+                        prev_tick = widget_list[insert_index].multiplier
+                        t = 1
                     end
                 end
 
@@ -1439,14 +1437,33 @@ local MODIFIERS =
                     end)
                 end
             else
-                self.player_score = self.player_score + delta
-                self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
-                    panel:RefreshReason()
-                    local source_widget = panel.main_overlay.minigame_objective
-                    panel:StartCoroutine(PopupText, panel, source_widget, -32, UICOLOURS.BONUS, self.player_score_widget)
-                end)
+                if source == nil or source.negotiator:IsPlayer() then
+                    self.player_score = self.player_score + delta
+                    self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
+                        panel:RefreshReason()
+                        local source_widget = panel.main_overlay.minigame_objective
+                        panel:StartCoroutine(PopupText, panel, source_widget, -32, UICOLOURS.BONUS, self.player_score_widget)
+                    end)
+                end
             end
         end,
+        event_priorities =
+        {
+            [ EVENT.ATTACK_RESOLVE ] = 999,
+        },
+        event_handlers =
+        {
+            [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+                if damage > defended then
+                    self:DeltaScore((damage - defended) * 10, source, "SCORE_DAMAGE")
+                    if target == self.engine:GetPlayerNegotiator():FindCoreArgument() and not target.real_owner then
+                        local cmp_delta = math.floor((damage - defended) / 2)
+                        target.composure = target.composure + cmp_delta
+                    end
+                else
+                end
+            end,
+        },
     },
 }
 for id, def in pairs( MODIFIERS ) do
