@@ -12,6 +12,11 @@ local t = {
         stances = {
             SECURITY = 2,
             INDEPENDENCE = -2,
+            TAX_POLICY = 2,
+            LABOR_LAW = -1,
+            ARTIFACT_TREATMENT = 0,
+            SUBSTANCE_REGULATION = 1,
+            WELFARE = 0,
         },
         faction_support = {
             ADMIRALTY = 10,
@@ -43,6 +48,11 @@ local t = {
         stances = {
             SECURITY = -2,
             INDEPENDENCE = 2,
+            TAX_POLICY = 0,
+            LABOR_LAW = 0,
+            ARTIFACT_TREATMENT = 0,
+            SUBSTANCE_REGULATION = -2,
+            WELFARE = 1,
         },
         -- main = "Havaria Independence",
         -- desc = "Nadan wants to cut the ties of Havaria with Deltree. Popular among poorer people, but unpopular among the rich, Admiralty, and the Cult.",
@@ -76,7 +86,13 @@ local t = {
         platform = "TAX_POLICY",
 
         stances = {
+            SECURITY = 0,
+            INDEPENDENCE = 0,
             TAX_POLICY = -2,
+            LABOR_LAW = -2,
+            ARTIFACT_TREATMENT = -2,
+            SUBSTANCE_REGULATION = 0,
+            WELFARE = -1,
         },
         
         faction_support = {

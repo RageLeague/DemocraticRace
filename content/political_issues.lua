@@ -412,8 +412,8 @@ local val =  {
                 },
             },
             [1] = {
-                name = "Increase Taxes",
-                desc = "While lots of people don't like taxes, taxes are important tools to maintain public services and infrastructures, as well as reduce the huge wealth inequality that is rampant in Havaria. Therefore, it should be increased.",
+                name = "Restructure Taxes",
+                desc = "A big reason why people are not satisfied with the taxes is because the traditional tax structure does not care whether or not you are able to afford to pay the tax. We need to restructure taxes so that people pay what they can, and make everyone happier.",
                 faction_support = {
                     SPARK_BARONS = -4,
                     ADMIRALTY = 2,
@@ -430,7 +430,7 @@ local val =  {
                 },
             },
             [2] = {
-                name = "Max Taxes",
+                name = "Increase Taxes",
                 desc = "It is important to keep the ruling people funded so that they can provide their services for the people. The taxes collected are all eventually given back to the people. Therefore, taxes should be increased as high as possible, so that public services are properly funded.",
                 faction_support = {
                     SPARK_BARONS = -6,

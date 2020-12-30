@@ -1,3 +1,12 @@
+local HOST_BEHAVIOUR =
+{
+    OnInit = function( self, difficulty )
+        self.negotiator:AddModifier("DEBATE_SCRUM_TRACKER")
+    end,
+    Cycle = function(self, turns)
+    end,
+}
+
 local QDEF = QuestDef.Define
 {
     title = "Debate Scrum",
@@ -153,9 +162,17 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
         :UpdatePoliticalStance(topic, stance, false)
         :Dialog("DIALOG_SIDE")
         :Negotiation{
-            flags = NEGOTIATION_FLAGS.NO_BYSTANDERS,
+            flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.WORDSMITH | NEGOTIATION_FLAGS.NO_CORE_RESOLVE,
             helpers = helpers,
             hinders = hinders,
+            on_start_negotiation = function(minigame)
+                for i, card in ipairs(minigame.start_params.helper_cards) do
+                    minigame.start_params.helper_cards[i] = Negotiation.Card("debater_negotiation_support", card.owner)
+                end
+                for i, card in ipairs(minigame.start_params.hinder_cards) do
+                    minigame.start_params.hinder_cards[i] = Negotiation.Card("debater_negotiation_hinder", card.owner)
+                end
+            end,
         }
 end
 
@@ -284,6 +301,7 @@ QDEF:AddConvo("do_debate")
             end
 
             cxt:TalkTo(cxt:GetCastMember("host"))
+            cxt:GetAgent():SetTempNegotiationBehaviour(HOST_BEHAVIOUR)
             cxt:Quip(cxt:GetAgent(), "debate_question")
             CreateDebateOption(cxt, neg_helper, neg_hinder, cxt.quest.param.topic, -2)
             CreateDebateOption(cxt, pos_helper, pos_hinder, cxt.quest.param.topic, 2)

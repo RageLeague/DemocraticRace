@@ -1418,11 +1418,11 @@ local MODIFIERS =
                 label:Remove()
                 
             end
-            if is_instance(source, Negotiation.Modifier) then
+            if type(source) == "table" then
                 source = source.real_owner
                 if source then
-                    if not self.score[source:GetUID()] then
-                        self.score[source:GetUID()] = {modifier = source, score = 0}
+                    if not self.scores[source:GetUID()] then
+                        self.scores[source:GetUID()] = {modifier = source, score = 0}
                     end
                     self.scores[source:GetUID()].score = self.scores[source:GetUID()].score + delta
                     if not self.score_widgets[source:GetUID()] then
@@ -1435,16 +1435,16 @@ local MODIFIERS =
                             panel:StartCoroutine(PopupText, panel, source_widget, 32, UICOLOURS.BONUS, self.score_widgets[source:GetUID()])
                         end
                     end)
-                end
-            else
-                if source == nil or source.negotiator:IsPlayer() then
-                    self.player_score = self.player_score + delta
-                    self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
-                        panel:RefreshReason()
-                        local source_widget = panel.main_overlay.minigame_objective
-                        panel:StartCoroutine(PopupText, panel, source_widget, -32, UICOLOURS.BONUS, self.player_score_widget)
-                    end)
-                end
+                    return
+                end 
+            end
+            if source == nil or source.negotiator:IsPlayer() then
+                self.player_score = self.player_score + delta
+                self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
+                    panel:RefreshReason()
+                    local source_widget = panel.main_overlay.minigame_objective
+                    panel:StartCoroutine(PopupText, panel, source_widget, -32, UICOLOURS.BONUS, self.player_score_widget)
+                end)
             end
         end,
         event_priorities =
@@ -1455,6 +1455,7 @@ local MODIFIERS =
         {
             [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
                 if damage > defended then
+                    print(loc.format("{1} dealt damage(real_owner={2})", source, source and source.real_owner))
                     self:DeltaScore((damage - defended) * 10, source, "SCORE_DAMAGE")
                     if target == self.engine:GetPlayerNegotiator():FindCoreArgument() and not target.real_owner then
                         local cmp_delta = math.floor((damage - defended) / 2)

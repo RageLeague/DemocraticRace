@@ -263,14 +263,14 @@ local MINI_NEGOTIATOR =
             #self.resolve_scale)
         ]
         self.resolve = self.max_resolve
-        if not self.negotiator:IsPlayer() then
-            self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
-                local widget = panel:FindSlotWidget(self)
-                if widget then
-                    DBG(widget)
-                end
-            end)
-        end
+        -- if not self.negotiator:IsPlayer() then
+        --     self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
+        --         local widget = panel:FindSlotWidget(self)
+        --         if widget then
+        --             DBG(widget)
+        --         end
+        --     end)
+        -- end
     end,
     OnEndTurn = function( self, minigame )
         -- if self.target_enemy then
