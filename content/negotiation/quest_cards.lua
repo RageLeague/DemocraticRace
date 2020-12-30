@@ -329,6 +329,9 @@ local CARDS = {
                 [[
                     I thought we see eye to eye on things, {player}.
                 ]],
+                [[
+                    I can't believe this is how you really think, {player}.
+                ]],
             },
             {
                 tags = "disliked",
