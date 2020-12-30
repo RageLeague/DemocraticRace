@@ -646,7 +646,7 @@ local val =  {
                     BANDITS = 3,
                     CULT_OF_HESH = -4,
                     FEUD_CITIZEN = 2,
-                    SPARK_BARONS = -3,
+                    SPARK_BARONS = -2,
                 },
                 wealth_support = {
                     1,
@@ -664,7 +664,7 @@ local val =  {
                     BANDITS = 2,
                     CULT_OF_HESH = -2,
                     FEUD_CITIZEN = 1,
-                    SPARK_BARONS = -2,
+                    SPARK_BARONS = 1,
                 },
                 wealth_support = {
                     2,
@@ -715,7 +715,7 @@ local val =  {
                     BANDITS = -4,
                     CULT_OF_HESH = 3,
                     FEUD_CITIZEN = -2,
-                    SPARK_BARONS = 2,
+                    SPARK_BARONS = -2,
                 },
                 wealth_support = {
                     -2,

@@ -4,6 +4,7 @@ local t = {
         character = "MURDER_BAY_ADMIRALTY_CONTACT",
         workplace = "ADMIRALTY_BARRACKS",
         main_supporter = "ADMIRALTY",
+        mini_negotiator = "ADMIRALTY_MINI_NEGOTIATOR",
         
         -- main = "Security for all",
         -- desc = "Oolo plans to improve the safety of Havaria by improving the security. Powered by the Admiralty, of course. Popular among middle class who cannot afford private security, not popular among upper class(because of increased tax rate) and lower class.",
@@ -35,6 +36,7 @@ local t = {
         character = "MURDER_BAY_BANDIT_CONTACT",
         workplace = "SPREE_INN",
         main_supporter = "BANDITS",
+        mini_negotiator = "SPREE_MINI_NEGOTIATOR",
 
         platform = "INDEPENDENCE",
 
@@ -67,6 +69,7 @@ local t = {
         character = "SPARK_CONTACT",
         workplace = "GB_BARON_HQ",
         main_supporter = "SPARK_BARONS",
+        mini_negotiator = "BARON_MINI_NEGOTIATOR",
 
         -- main = "Tax cut",
         -- desc = "Reduce taxes for all. That's it. That's their plan. Fellemo isn't really that bright. Popular among rich people(and some poor people), but unpopular among those who care about equality and those who have plans for utilizing the taxes.",
@@ -102,6 +105,7 @@ local t = {
         -- desc = "Grant rights to every citizen of Havaria, I don't know, read the Declaration of Rights or something. That mostly means slavery is illegal! Popular among the workers, but unpopular among the Cult, Barons, and all those who exploit the labour of the people.",
         platform = "LABOR_LAW",
         main_supporter = "RISE",
+        mini_negotiator = "RISE_MINI_NEGOTIATOR",
 
         stances = {
             LABOR_LAW = 1,
@@ -130,6 +134,7 @@ local t = {
         character = "VIXMALLI",
         workplace = "PEARL_CULT_COMPOUND",
         main_supporter = "CULT_OF_HESH",
+        mini_negotiator = "CULT_MINI_NEGOTIATOR",
 
         platform = "ARTIFACT_TREATMENT",
 
@@ -160,6 +165,7 @@ local t = {
         character = "ANDWANETTE",
         workplace = "PEARL_PARTY_STORE",
         main_supporter = "JAKES",
+        mini_negotiator = "JAKES_MINI_NEGOTIATOR",
 
         -- main = "Deregulation",
         -- desc = "Drops many regulation to allow a healthier economy.",

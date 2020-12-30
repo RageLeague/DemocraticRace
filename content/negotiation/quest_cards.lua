@@ -245,7 +245,116 @@ local CARDS = {
             local propaganda_mod = self.negotiator:CreateModifier("PROPAGANDA_POSTER_MODIFIER", 1)
             propaganda_mod:SetData(self.userdata.imprints, self.userdata.prop_mod)
         end,
-    }
+    },
+
+    debater_negotiation_support =
+    {
+        quips = 
+        {
+            {
+                [[
+                    {player} is in the right here.
+                ]],
+                [[
+                    I must agree with {player} here.
+                ]],
+                [[
+                    Let's take them down, {player}.
+                ]],
+                [[
+                    !point
+                    %confront_argument
+                ]],
+            },
+            {
+                tags = "liked",
+                [[
+                    I believe in {player}.
+                ]],
+                [[
+                    If {player} thinks it's correct, so do I.
+                ]],
+            },
+            {
+                tags = "disliked",
+                [[
+                    Even {player} sees my way.
+                ]],
+                [[
+                    It pains me to say this, but {player} is right.
+                ]],
+            },
+        },
+        name = "Debater Support",
+        show_dealt = false,
+        quip = "support",
+        rarity = CARD_RARITY.UNIQUE,
+        flags = CARD_FLAGS.BYSTANDER,
+        OnPostResolve = function( self )
+            local mini_negotiator_id = "ADMIRALTY_MINI_NEGOTIATOR"
+            local opposition_data = DemocracyUtil.GetOppositionData(self.owner)
+            if opposition_data and opposition_data.mini_negotiator then
+                mini_negotiator_id = opposition_data.mini_negotiator
+            end
+            local mod = self.negotiator:CreateModifier( mini_negotiator_id, 1, self )
+            mod.candidate_agent = self.owner
+        end,
+    },
+    debater_negotiation_hinder =
+    {
+        quips = 
+        {
+            {
+                [[
+                    I must respectfully disagree, {player}.
+                ]],
+                [[
+                    !hips
+                    What nonsense is that?
+                ]],
+                [[
+                    !point
+                    %rebuttal
+                ]],
+                [[
+                    !point
+                    %confront_argument
+                ]],
+            },
+            {
+                tags = "liked",
+                [[
+                    Nothing personal, {player}.
+                ]],
+                [[
+                    I thought we see eye to eye on things, {player}.
+                ]],
+            },
+            {
+                tags = "disliked",
+                [[
+                    Words coming out of your mouth is automatically wrong.
+                ]],
+                [[
+                    Heh. Of course you would believe that.
+                ]],
+            },
+        },
+        name = "Debater Hinder",
+        show_dealt = false,
+        quip = "support",
+        rarity = CARD_RARITY.UNIQUE,
+        flags = CARD_FLAGS.BYSTANDER,
+        OnPostResolve = function( self )
+            local mini_negotiator_id = "ADMIRALTY_MINI_NEGOTIATOR"
+            local opposition_data = DemocracyUtil.GetOppositionData(self.owner)
+            if opposition_data and opposition_data.mini_negotiator then
+                mini_negotiator_id = opposition_data.mini_negotiator
+            end
+            local mod = self.negotiator:CreateModifier( mini_negotiator_id, 1, self )
+            mod.candidate_agent = self.owner
+        end,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     if not def.series then

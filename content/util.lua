@@ -251,6 +251,7 @@ function DemocracyUtil.AddOppositionCast(qdef)
                 cast_id = data.cast_id,
                 alias = data.character,
                 no_validation = true,
+                optional = true,
                 on_assign = function(quest, agent)
                     if agent:GetContentID() == "KALANDRA" then
                         -- just because lol.

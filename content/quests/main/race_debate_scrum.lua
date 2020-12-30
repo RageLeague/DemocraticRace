@@ -16,9 +16,26 @@ local QDEF = QuestDef.Define
             table.insert(t, { agent = quest:GetCastMember(id), location = quest:GetCastMember('theater'), role = CHARACTER_ROLES.VISITOR})
         end
     end,
-    -- on_start = function(quest)
+    on_start = function(quest)
+        local questions = {}
+        local weightings = {}
+        for id, data in pairs(DemocracyConstants.issue_data) do
+            weightings[id] = data.importance
+        end
+        for i = 1, 5 do
+            local chosen = weightedpick(weightings)
+            table.insert(questions, chosen)
+            weightings[chosen] = nil
+        end
+        quest.param.questions = questions
 
-    -- end,
+        quest.param.candidates = {}
+        for id, data in pairs(DemocracyConstants.opposition_data) do
+            if quest:GetCastMember(data.cast_id) then
+                table.insert(quest.param.candidates, quest:GetCastMember(data.cast_id))
+            end
+        end
+    end,
     -- on_complete = function(quest)
     --     if quest:GetCastMember("primary_advisor") then
     --         quest:GetCastMember("primary_advisor"):GetBrain():SendToWork()
@@ -131,6 +148,17 @@ DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 DemocracyUtil.AddHomeCasts(QDEF)
 DemocracyUtil.AddOppositionCast(QDEF)
 
+local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
+    cxt:Opt("OPT_SIDE", topic .. "_" .. stance)
+        :UpdatePoliticalStance(topic, stance, false)
+        :Dialog("DIALOG_SIDE")
+        :Negotiation{
+            flags = NEGOTIATION_FLAGS.NO_BYSTANDERS,
+            helpers = helpers,
+            hinders = hinders,
+        }
+end
+
 QDEF:AddConvo("go_to_debate")
     :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("backroom") end)
         :Loc{
@@ -160,4 +188,103 @@ QDEF:AddConvo("go_to_debate")
                     cxt.encounter:DoLocationTransition(cxt.quest:GetCastMember("theater"))
                 end)
                 :MakeUnder()
+        end)
+QDEF:AddConvo("do_debate")
+    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("theater") end)
+    :Loc{
+        DIALOG_INTRO = [[
+            * You walked into the theater.
+            * It is full of people.
+            agent:
+                !right
+            * You wait for the host to introduce the candidates.
+            * After introducing six the other candidate, an amount so large that we don't even bother to write it out, the host finally calls you in.
+            agent:
+                [p] And finally, we have {player}!
+            player:
+                !left
+                Yo.
+            agent:
+                Why do we have all the candidates gathered here today?
+                Why, it is to have a debate, of course!
+                We have plenty of questions to ask each candidates today, and they have debate out which is the best.
+                Hopefully this helps you determine which candidate is the most competent.
+        ]],
+    }
+    :Fn(function(cxt)
+        cxt:TalkTo(cxt:GetCastMember("host"))
+        cxt:Dialog("DIALOG_INTRO")
+        cxt:GoTo("STATE_QUESTION")
+    end)
+    :State("STATE_QUESTION")
+        :Quips{
+            {
+                tags = "debate_question",
+                [[
+                    agent:
+                        Many people in Havaria are very concerned about {topic#pol_issue}.
+                        What do you think about that?
+                ]],
+                [[
+                    agent:
+                        A big concern in Havaria is about {topic#pol_issue}.
+                        What is your opinion on this topic?
+                ]],
+                [[
+                    agent:
+                        Many Havarian citizens ask the question,
+                        What is the best approach to {topic#pol_issue}?
+                ]],
+                [[
+                    agent:
+                        There are a lot of ways to approach {topic#pol_issue}.
+                        In your opinion, what is the best way?
+                ]],
+            },
+        }
+        :Loc{
+            OPT_SIDE = "Argue for {1#pol_stance}",
+            DIALOG_SIDE = [[
+                player:
+                    This is my answer!
+                * A debate is about to go down!
+            ]],
+        }
+        :Fn(function(cxt)
+            if not cxt.quest.param.questions or #cxt.quest.param.questions == 0 then
+                -- Go to end state.
+            end
+            cxt.quest.param.topic = cxt.quest.param.questions[1]
+            table.remove(cxt.quest.param.questions, 1)
+
+            local neg_helper, neg_hinder, pos_helper, pos_hinder = {}, {}, {}, {}
+            for i, agent in ipairs(cxt.quest.param.candidates) do
+                local issue = DemocracyConstants.issue_data[cxt.quest.param.topic]
+
+                -- The default index of a person.
+                local stance_index = issue:GetAgentStanceIndex(agent)
+                -- How much a person's opinion will shift in your favor
+                local shift = 0
+                if agent:GetRelationship() > RELATIONSHIP.NEUTRAL then
+                    shift = 1
+                elseif agent:GetRelationship() < RELATIONSHIP.NEUTRAL then
+                    shift = -1
+                end
+                if stance_index < shift then
+                    table.insert(neg_helper, agent)
+                elseif stance_index > shift then
+                    table.insert(neg_hinder, agent)
+                end
+
+                if stance_index < -shift then
+                    table.insert(pos_hinder, agent)
+                elseif stance_index > -shift then
+                    table.insert(pos_helper, agent)
+                end
+            end
+
+            cxt:TalkTo(cxt:GetCastMember("host"))
+            cxt:Quip(cxt:GetAgent(), "debate_question")
+            CreateDebateOption(cxt, neg_helper, neg_hinder, cxt.quest.param.topic, -2)
+            CreateDebateOption(cxt, pos_helper, pos_hinder, cxt.quest.param.topic, 2)
         end)
