@@ -4,7 +4,7 @@ local EVENT = negotiation_defs.EVENT
 
 local ARGUMENT_CREATER =
 {
-    desc = "Create {2} {{1}}. It comes in play with double the normal resolve.",
+    desc = "Create {2} {{1}}.",
     desc_fn = function(self, fmt_str)
         return loc.format(fmt_str, self.argument_to_create or (self.userdata and self.userdata.argument_to_create),
             self.stacks_to_create or (self.userdata and self.userdata.stacks_to_create) or 1)
@@ -13,9 +13,9 @@ local ARGUMENT_CREATER =
         local modifier = self.negotiator:CreateModifier( self.argument_to_create or (self.userdata and self.userdata.argument_to_create) or self.id, 
             self.stacks_to_create or (self.userdata and self.userdata.stacks_to_create) or 1, self )
         modifier.real_owner = self.real_owner
-        if modifier.max_resolve then
-            modifier:ModifyResolve(modifier.max_resolve, self)
-        end
+        -- if modifier.max_resolve then
+        --     modifier:ModifyResolve(modifier.max_resolve, self)
+        -- end
     end,
 }
 local ARGUMENT_INCEPTER =
@@ -37,8 +37,8 @@ local MINI_NEGOTIATOR_CARDS =
     {
         name = "Ethos",
         flags = CARD_FLAGS.DIPLOMACY,
-        min_persuasion = 3,
-        max_persuasion = 5,
+        min_persuasion = 4,
+        max_persuasion = 7,
     },
     mn_manipulate_damage =
     {
@@ -47,6 +47,7 @@ local MINI_NEGOTIATOR_CARDS =
         flags = CARD_FLAGS.MANIPULATE,
         min_persuasion = 3,
         max_persuasion = 3,
+        attack_count = 2,
         OnPostResolve = function( self, minigame, targets )
             minigame:ApplyPersuasion(self)
         end
@@ -55,8 +56,8 @@ local MINI_NEGOTIATOR_CARDS =
     {
         name = "Pathos",
         flags = CARD_FLAGS.HOSTILE,
-        min_persuasion = 2,
-        max_persuasion = 6,
+        min_persuasion = 3,
+        max_persuasion = 8,
     },
     mn_inspire =
     {
@@ -242,6 +243,7 @@ local MINI_NEGOTIATOR =
 
     available_cards = {},
     prepared_cards = {},
+
     OnInit = function(self)
         self.prepared_cards = {}
         self.available_cards = {}
@@ -249,11 +251,13 @@ local MINI_NEGOTIATOR =
             for i, data in ipairs(self.available_cards_def) do
                 local card = Negotiation.Card(data[1], self.negotiator.agent, data[2])
                 card.real_owner = self
+                card.negotiator = self.negotiator
+                -- self.engine:AssignPrimaryTarget(card)
                 table.insert(self.available_cards, card)
             end
         end
         self.real_owner = self
-        self:PrepareCards()
+        -- self:PrepareCards()
     end,
     resolve_scale = {50, 60, 70, 80},
     OnApply = function(self, minigame)
@@ -297,23 +301,68 @@ local MINI_NEGOTIATOR =
         for i, card in ipairs(cards) do
             table.insert(self.prepared_cards, card)
         end
+        self.engine:BroadcastEvent( EVENT.INTENTS_CHANGED )
     end,
 
     no_damage_tt = true,
     -- icon = engine.asset.Texture("negotiation/modifiers/voice_of_the_people.tex"),
 
     target_enemy = TARGET_ANY_RESOLVE,
+    target_mod = TARGET_MOD.CUSTOM,
+    min_persuasion = 0,
+    max_persuasion = 0, -- for testing purpose only
+    target_fn = function(self, minigame, primary_target, targets, source)
+        if self.prepared_cards then
+            for i, card in ipairs(self.prepared_cards) do
+                minigame:AssignPrimaryTarget(card)
+                if card.min_persuasion and card.max_persuasion then
+                    local card_targets = minigame:CollectTargets(card)
+                    for i, target in ipairs(card_targets) do
+                        table.insert_unique( targets, target )
+                    end
+                end
+            end
+        end
+    end,
+    CustomDamagePreview = function(self, minigame, slot, target_modifier)
+        print("Haha", target_modifier)
+        if not target_modifier then return end
+        if self.prepared_cards then
+            for i, card in ipairs(self.prepared_cards) do
+                if card.min_persuasion and card.max_persuasion then
+                    print("Preview card:", card)
+                    minigame:AssignPrimaryTarget(card)
+                    local card_targets = minigame:CollectTargets(card)
+                    for i, target in ipairs(card_targets) do
+                        if target:GetUID() == target_modifier:GetUID() then
+                            local mindmg, maxdmg = minigame:PreviewPersuasion( card )
+                            
+                            for i = 1, card.attack_count or 1 do
+                                slot:CreateDamagePreviewLabel(self, mindmg, maxdmg)
+                            end
+                        else
+                            print(target._classname, target_modifier._classname)
+                            print(target, "Not equal to target_modifier:", target_modifier)
+                        end
+                    end
+                end
+            end
+        end
+    end,
     -- event_priorities =
     -- {
-    --     -- [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_MULTIPLIER,
+    --     [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_MULTIPLIER,
     -- },
-    -- event_handlers = {
-    --     -- [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
-    --     --     if target and target.real_owner == self and source and source..real_owner then
-    --     --         persuasion:ModifyPersuasion( persuasion.min_persuasion, persuasion.max_persuasion, self )
-    --     --     end
-    --     -- end,
-    -- },
+    event_handlers = {
+        -- [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
+        --     if target and target.real_owner == self and source and source..real_owner then
+        --         persuasion:ModifyPersuasion( persuasion.min_persuasion, persuasion.max_persuasion, self )
+        --     end
+        -- end,
+        [ EVENT.BEGIN_NEGOTIATION ] = function(self, minigame)
+            self:PrepareCards()
+        end,
+    },
 
     -- SetCandidate = function(self, candidate_agent, available_cards, special)
     --     self.candidate_agent = candidate_agent
@@ -340,8 +389,8 @@ table.extend(MINI_NEGOTIATOR){
         {"mn_composure_aoe"},
 
         {"mn_interrogate"},
-        {"mn_interrogate"},
-        {"mn_inspire"},
+        -- {"mn_interrogate"},
+        -- {"mn_inspire"},
         {"mn_inspire"},
     },
     evidence_stacks = {4, 5, 6, 7},
@@ -384,8 +433,9 @@ table.extend(MINI_NEGOTIATOR){
         {"mn_composure"},
 
         {"mn_kingpin"},
-        {"mn_kingpin"},
-        {"mn_ploy"},
+        -- {"mn_kingpin"},
+        -- {"mn_ploy"},
+        -- {"mn_dominate"},
         {"mn_dominate"},
         {"mn_dominate"},
     },
@@ -423,8 +473,8 @@ table.extend(MINI_NEGOTIATOR){
         {"mn_composure_aoe"},
 
         {"mn_all_business"},
-        {"mn_all_business"},
-        {"mn_strawman"},
+        -- {"mn_all_business"},
+        -- {"mn_strawman"},
         {"mn_strawman"},
         {"mn_strawman"},
     },
@@ -516,8 +566,8 @@ table.extend(MINI_NEGOTIATOR){
         {"mn_composure_aoe"},
 
         {"mn_propaganda"},
-        {"mn_propaganda"},
-        {"mn_inspire"},
+        -- {"mn_propaganda"},
+        -- {"mn_inspire"},
         {"mn_inspire"},
     },
     EndTurnEffect = function(self, minigame)
@@ -529,6 +579,9 @@ table.extend(MINI_NEGOTIATOR){
         end
         if self.anti_negotiator:IsPlayer() then
             table.insert(candidates, "PLAYER")
+        end
+        if #candidates == 0 then
+            return
         end
         local chosen = table.arraypick(candidates)
         local function PopupFloater(panel, source_widget)
@@ -602,10 +655,10 @@ table.extend(MINI_NEGOTIATOR){
         -- {"mn_composure_aoe"},
 
         {"mn_wrath"},
-        {"mn_wrath"},
-        {"mn_wrath"},
-        {"mn_prayer"},
-        {"mn_prayer"},
+        -- {"mn_wrath"},
+        -- {"mn_wrath"},
+        -- {"mn_prayer"},
+        -- {"mn_prayer"},
         {"mn_prayer"},
         {"mn_strawman"},
     },
@@ -651,9 +704,9 @@ table.extend(MINI_NEGOTIATOR){
         {"mn_composure_aoe"},
 
         {"mn_ploy"},
-        {"mn_ploy"},
+        -- {"mn_ploy"},
         {"mn_dominate"},
-        {"mn_strawman"},
+        -- {"mn_strawman"},
     },
     resolve_loss = 3,
 
