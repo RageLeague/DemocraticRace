@@ -255,13 +255,16 @@ local MINI_NEGOTIATOR =
         self.real_owner = self
         self:PrepareCards()
     end,
-    resolve_scale = {40, 45, 50, 55},
+    resolve_scale = {50, 60, 70, 80},
     OnApply = function(self, minigame)
-        
-        self.max_resolve = self.resolve_scale[ 
-            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2,
-            #self.resolve_scale)
-        ]
+        if self.negotiator:IsPlayer() then
+            self.max_resolve = 30
+        else
+            self.max_resolve = self.resolve_scale[ 
+                math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2,
+                #self.resolve_scale)
+            ]
+        end
         self.resolve = self.max_resolve
         -- if not self.negotiator:IsPlayer() then
         --     self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
@@ -300,17 +303,17 @@ local MINI_NEGOTIATOR =
     -- icon = engine.asset.Texture("negotiation/modifiers/voice_of_the_people.tex"),
 
     target_enemy = TARGET_ANY_RESOLVE,
-    event_priorities =
-    {
-        -- [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_MULTIPLIER,
-    },
-    event_handlers = {
-        -- [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
-        --     if target and target.real_owner == self and source and source..real_owner then
-        --         persuasion:ModifyPersuasion( persuasion.min_persuasion, persuasion.max_persuasion, self )
-        --     end
-        -- end,
-    },
+    -- event_priorities =
+    -- {
+    --     -- [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_MULTIPLIER,
+    -- },
+    -- event_handlers = {
+    --     -- [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
+    --     --     if target and target.real_owner == self and source and source..real_owner then
+    --     --         persuasion:ModifyPersuasion( persuasion.min_persuasion, persuasion.max_persuasion, self )
+    --     --     end
+    --     -- end,
+    -- },
 
     -- SetCandidate = function(self, candidate_agent, available_cards, special)
     --     self.candidate_agent = candidate_agent
@@ -584,7 +587,7 @@ table.extend(MINI_NEGOTIATOR){
 Content.AddNegotiationModifier("CULT_MINI_NEGOTIATOR",
 table.extend(MINI_NEGOTIATOR){
     name = "Vixmalli's Zeal",
-    alt_desc = "When any argument on {1.name}'s team gets destroyed, all other arguments gain 2 resolve.",
+    alt_desc = "When any argument on {1.name}'s team gets destroyed, all other arguments gain 1 resolve.",
     icon = "DEMOCRATICRACE:assets/modifiers/mini_negotiator/cult.png",
     available_cards_def = 
     {
@@ -616,18 +619,17 @@ table.extend(MINI_NEGOTIATOR){
         --         end
         --     end
         -- end,
-        event_handlers =
-        {
-            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, card )
-                if modifier.modifier_type == MODIFIER_TYPE.ARGUMENT and modifier.owner == self.owner then
-                    for i, mod in self.negotiator:Modifiers() do
-                        if mod ~= modifier and mod.modifier_type == MODIFIER_TYPE.ARGUMENT then
-                            mod:ModifyResolve( 2, self )
-                        end
+        [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, card )
+            print("Event happened")
+            if modifier.modifier_type == MODIFIER_TYPE.ARGUMENT and modifier.negotiator == self.negotiator then
+                print("Allied modifier removed...")
+                for i, mod in self.negotiator:Modifiers() do
+                    if mod ~= modifier and mod.modifier_type == MODIFIER_TYPE.ARGUMENT then
+                        mod:ModifyResolve( 1, self )
                     end
                 end
-            end,
-        }
+            end
+        end,
     },
 })
 

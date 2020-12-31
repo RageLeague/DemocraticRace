@@ -167,10 +167,14 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
             hinders = hinders,
             on_start_negotiation = function(minigame)
                 for i, card in ipairs(minigame.start_params.helper_cards) do
-                    minigame.start_params.helper_cards[i] = Negotiation.Card("debater_negotiation_support", card.owner)
+                    if DemocracyUtil.GetOppositionData(card.owner) then
+                        minigame.start_params.helper_cards[i] = Negotiation.Card("debater_negotiation_support", card.owner)
+                    end
                 end
                 for i, card in ipairs(minigame.start_params.hinder_cards) do
-                    minigame.start_params.hinder_cards[i] = Negotiation.Card("debater_negotiation_hinder", card.owner)
+                    if DemocracyUtil.GetOppositionData(card.owner) then
+                        minigame.start_params.hinder_cards[i] = Negotiation.Card("debater_negotiation_hinder", card.owner)
+                    end
                 end
             end,
         }
@@ -281,7 +285,7 @@ QDEF:AddConvo("do_debate")
                 -- The default index of a person.
                 local stance_index = issue:GetAgentStanceIndex(agent)
                 -- How much a person's opinion will shift in your favor
-                local shift = 0
+                local shift = -0.5
                 if agent:GetRelationship() > RELATIONSHIP.NEUTRAL then
                     shift = 1
                 elseif agent:GetRelationship() < RELATIONSHIP.NEUTRAL then
@@ -303,6 +307,6 @@ QDEF:AddConvo("do_debate")
             cxt:TalkTo(cxt:GetCastMember("host"))
             cxt:GetAgent():SetTempNegotiationBehaviour(HOST_BEHAVIOUR)
             cxt:Quip(cxt:GetAgent(), "debate_question")
-            CreateDebateOption(cxt, neg_helper, neg_hinder, cxt.quest.param.topic, -2)
-            CreateDebateOption(cxt, pos_helper, pos_hinder, cxt.quest.param.topic, 2)
+            CreateDebateOption(cxt, neg_helper, neg_hinder, cxt.quest.param.topic, -1)
+            CreateDebateOption(cxt, pos_helper, pos_hinder, cxt.quest.param.topic, 1)
         end)

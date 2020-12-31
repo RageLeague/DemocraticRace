@@ -124,7 +124,13 @@ local t = {
         mini_negotiator = "RISE_MINI_NEGOTIATOR",
 
         stances = {
-            LABOR_LAW = 1,
+            SECURITY = -1,
+            INDEPENDENCE = 0,
+            TAX_POLICY = 1,
+            LABOR_LAW = 2,
+            ARTIFACT_TREATMENT = 0,
+            SUBSTANCE_REGULATION = 0,
+            WELFARE = 2,
         },
         faction_support = {
             ADMIRALTY = -5,
@@ -155,7 +161,13 @@ local t = {
         platform = "ARTIFACT_TREATMENT",
 
         stances = {
+            SECURITY = 1,
+            INDEPENDENCE = -1,
+            TAX_POLICY = 0,
+            LABOR_LAW = -2,
             ARTIFACT_TREATMENT = 2,
+            SUBSTANCE_REGULATION = 2,
+            WELFARE = 0,
         },
         faction_support = {
             CULT_OF_HESH = 10,
@@ -188,22 +200,29 @@ local t = {
         platform = "SUBSTANCE_REGULATION",
 
         stances = {
+            SECURITY = 0,
+            INDEPENDENCE = 1,
+            TAX_POLICY = -2,
+            LABOR_LAW = 1,
+            ARTIFACT_TREATMENT = -1,
             SUBSTANCE_REGULATION = -2,
+            WELFARE = 0,
         },
         faction_support = {
-            ADMIRALTY = -3,
-            FEUD_CITIZEN = 1,
-            BANDITS = 2,
-            -- RISE = ,
-            SPARK_BARONS = -1,
-            CULT_OF_HESH = -2,
-            JAKES = 3,
+            ADMIRALTY = -10,
+            FEUD_CITIZEN = 2,
+            BANDITS = 7,
+            RISE = 0,
+            SPARK_BARONS = 3,
+            CULT_OF_HESH = -10,
+            JAKES = 10,
+            BILEBROKERS = 3,
         },
         wealth_support = {
-            2,
-            -2,
-            1,
-            -1,
+            3,
+            -4,
+            3,
+            -7,
         },
     },
 }

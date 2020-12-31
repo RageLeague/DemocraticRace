@@ -361,13 +361,18 @@ QDEF:AddConvo("tell_news", "worker")
                         I am truly grateful.
                 }
             }
-            {organized_strike?
+            {organize_strike?
             player:
                 I organized a strike.
                 With so many people striking, {foreman} has no choice but to accept our demands.
             agent:
-                Really?
-                That's great!
+                Of course!
+                Why did I never think of that?
+            player:
+                I don't know, actually.
+                Probably because as a politician, I am more influential.
+            agent:
+                Anyway, that's great!
                 Thanks for your help, {player}. I'm truly grateful.
             }
         ]],
