@@ -285,13 +285,14 @@ QDEF:AddConvo("do_debate")
             table.remove(cxt.quest.param.questions, 1)
 
             local neg_helper, neg_hinder, pos_helper, pos_hinder = {}, {}, {}, {}
+            local neg_neut, pos_neut = {}, {}
             for i, agent in ipairs(cxt.quest.param.candidates) do
                 local issue = DemocracyConstants.issue_data[cxt.quest.param.topic]
 
                 -- The default index of a person.
                 local stance_index = issue:GetAgentStanceIndex(agent)
                 -- How much a person's opinion will shift in your favor
-                local shift = -0.5
+                local shift = 0
                 if agent:GetRelationship() > RELATIONSHIP.NEUTRAL then
                     shift = 1
                 elseif agent:GetRelationship() < RELATIONSHIP.NEUTRAL then
@@ -301,13 +302,33 @@ QDEF:AddConvo("do_debate")
                     table.insert(neg_helper, agent)
                 elseif stance_index > shift then
                     table.insert(neg_hinder, agent)
+                else
+                    if shift == 0 then
+                        table.insert(neg_neut, agent)
+                    end
+                end
+                while #neg_neut > 0 and #neg_helper >= #neg_hinder do
+                    local idx = math.random(#neg_neut)
+                    table.insert(neg_hinder, neg_neut[idx])
+                    table.remove(neg_neut, idx)
                 end
 
                 if stance_index < -shift then
                     table.insert(pos_hinder, agent)
                 elseif stance_index > -shift then
                     table.insert(pos_helper, agent)
+                else
+                    if shift == 0 then
+                        table.insert(pos_neut, agent)
+                    end
                 end
+
+                while #pos_neut > 0 and #pos_helper >= #pos_hinder do
+                    local idx = math.random(#pos_neut)
+                    table.insert(pos_hinder, pos_neut[idx])
+                    table.remove(pos_neut, idx)
+                end
+
             end
 
             cxt:TalkTo(cxt:GetCastMember("host"))

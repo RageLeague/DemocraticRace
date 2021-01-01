@@ -283,6 +283,9 @@ local MINI_NEGOTIATOR =
         -- if self.target_enemy then
         --     self:ApplyPersuasion()
         -- end
+        self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
+            panel.last_ev_time = nil
+        end)
         for i, card in ipairs(self.prepared_cards) do
             card.show_dealt = false
             self.engine.trash_deck:InsertCard( card )

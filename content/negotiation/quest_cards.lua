@@ -298,6 +298,9 @@ local CARDS = {
             end
             local mod = self.negotiator:CreateModifier( mini_negotiator_id, 1, self )
             mod.candidate_agent = self.owner
+            self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
+                panel.last_ev_time = nil
+            end)
         end,
     },
     debater_negotiation_hinder =
@@ -356,6 +359,9 @@ local CARDS = {
             end
             local mod = self.negotiator:CreateModifier( mini_negotiator_id, 1, self )
             mod.candidate_agent = self.owner
+            self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
+                panel.last_ev_time = nil
+            end)
         end,
     },
 }

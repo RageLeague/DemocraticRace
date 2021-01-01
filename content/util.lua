@@ -926,6 +926,15 @@ function DemocracyUtil.SpawnRequestQuest(agent, spawn_param)
     end
     assert(false, loc.format("No request quest spawned for {1#agent}", agent))
 end
+function DemocracyUtil.DebugSetRandomDeck(seed)
+    local DECKS = require "content/quests/experiments/sal_day_4_decks"
+    if seed then
+        math.randomseed(seed)
+    end
+    local deck_idx = math.random(#DECKS)
+    local deck = DECKS[deck_idx]
+    TheGame:GetGameState():SetDecks(deck)
+end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator

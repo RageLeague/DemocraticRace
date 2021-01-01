@@ -1369,6 +1369,10 @@ local MODIFIERS =
         end,
         DeltaScore = function(self, delta, source, reason)
             local function PopupText(panel, source_widget, deltay, text_color, widget_list)
+                if delta == 0 then
+                    return
+                end
+                print(loc.format("{1} gains {2} pts because of {3}", source, delta, reason))
                 for i, data in ipairs(widget_list) do
                     if data and data.reason and data.reason == reason then
                         data.score = (data.score or 0) + delta
@@ -1399,14 +1403,14 @@ local MODIFIERS =
                 label:MoveTo( sx, sy + insert_index * deltay, 0.2, easing.outQuad )
                 label:AlphaTo(1, 0.2)
                 -- label:Delay(1)
-                local t = 1
+                local t = 2
                 local prev_tick = widget_list[insert_index].multiplier
                 while (t > 0) do 
                     local dt = coroutine.yield()
                     t = t - dt
                     if widget_list[insert_index].multiplier ~= prev_tick then
                         prev_tick = widget_list[insert_index].multiplier
-                        t = 1
+                        t = 2
                     end
                 end
 
@@ -1418,13 +1422,20 @@ local MODIFIERS =
                 label:Remove()
                 
             end
+            if type(source) == "number" then
+                if self.scores[source] then
+                    source = self.scores[source].modifier
+                else
+                    source = self.engine:FindModifierByUID(source)
+                end
+            end
             if type(source) == "table" then
                 source = source.real_owner
                 if source then
                     if not self.scores[source:GetUID()] then
                         self.scores[source:GetUID()] = {modifier = source, score = 0}
                     end
-                    self.scores[source:GetUID()].score = self.scores[source:GetUID()].score + delta
+                    
                     if not self.score_widgets[source:GetUID()] then
                         self.score_widgets[source:GetUID()] = {}
                     end
@@ -1432,25 +1443,27 @@ local MODIFIERS =
                         -- panel:RefreshReason()
                         local source_widget = panel:FindSlotWidget( source )
                         if source_widget then
-                            panel:StartCoroutine(PopupText, panel, source_widget, 32, UICOLOURS.BONUS, self.score_widgets[source:GetUID()])
+                            self.scores[source:GetUID()].score = self.scores[source:GetUID()].score + delta
+                            panel:StartCoroutine(PopupText, panel, source_widget, 32, UICOLOURS.HILITE, self.score_widgets[source:GetUID()])
                         end
                     end)
                     return
                 end 
             end
             if source == nil or source.negotiator:IsPlayer() then
-                self.player_score = self.player_score + delta
+                
                 self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                     panel:RefreshReason()
                     local source_widget = panel:FindSlotWidget( self.engine:GetPlayerNegotiator():FindCoreArgument() )--panel.main_overlay.minigame_objective
-                    panel:StartCoroutine(PopupText, panel, source_widget, 32, UICOLOURS.BONUS, self.player_score_widget)
+                    self.player_score = self.player_score + delta
+                    panel:StartCoroutine(PopupText, panel, source_widget, 32, UICOLOURS.HILITE, self.player_score_widget)
                 end)
             end
         end,
         event_priorities =
         {
             [ EVENT.ATTACK_RESOLVE ] = 999,
-            [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_SETTOR + 2000, 
+            [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_SETTOR, 
         },
         event_handlers =
         {
@@ -1459,6 +1472,7 @@ local MODIFIERS =
             end,
             [ EVENT.END_RESOLVE ] = function(self, minigame, card)
                 if card.damages_during_play then
+                    -- print(loc.format("{1#listing}", card.damages_during_play))
                     local delta_score = 0
                     table.sort(card.damages_during_play, function(a,b) return a > b end)
                     for i, dmg in ipairs(card.damages_during_play) do
@@ -1466,23 +1480,48 @@ local MODIFIERS =
                         -- Then, exponentially decrease score gained.
                         delta_score = delta_score + math.ceil(dmg / math.max(1, math.pow(2, i - 1)))
                     end
-                    self:DeltaScore(delta_score * 1, card, "SCORE_DAMAGE")
+                    if delta_score > 0 then
+                        self:DeltaScore(delta_score * 1, card, "SCORE_DAMAGE")
+                    end
                 end
                 card.damages_during_play = nil
             end,
             [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+                if params and params.splashed_modifier then
+                    return
+                end
                 if damage > defended then
+                    print(loc.format("{1} dealt {3} damage to {2}", source, target, damage - defended))
                     if source.damages_during_play then
                         table.insert(source.damages_during_play, damage - defended)
                         return
                     end
-                    print(loc.format("{1} dealt damage(real_owner={2})", source, source and source.real_owner))
+                    -- print(loc.format("{1} dealt damage(real_owner={2})", source, source and source.real_owner))
                     self:DeltaScore((damage - defended) * 1, source, "SCORE_DAMAGE")
                     if target == self.engine:GetPlayerNegotiator():FindCoreArgument() and not target.real_owner then
                         local cmp_delta = math.floor((damage - defended) / 2)
                         target.composure = target.composure + cmp_delta
                     end
                 else
+                    if target.composure_applier then
+                        ----------------------------
+                        -- Option 1: Anyone who applied composure share the score gained from deflection.
+                        ----------------------------
+                        local scorer = {}
+                        for id, val in pairs(target.composure_applier) do
+                            if val > 0 then
+                                table.insert_unique(scorer, id)
+                            end
+                        end
+                        local multiplier = math.max(0.5, 1 - 0.25 * (#scorer - 1))
+                        for i, id in ipairs(scorer) do
+                            if type(id) == "number" then
+                                self:DeltaScore(math.ceil(damage * multiplier), id, "SCORE_FULL_BLOCK")
+                            else
+                                self:DeltaScore(math.ceil(damage * multiplier), nil, "SCORE_FULL_BLOCK")
+                            end
+                        end
+                    end
                 end
             end,
             [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
@@ -1500,6 +1539,31 @@ local MODIFIERS =
                 -- if source.negotiator ~= self.negotiator then
                     -- print("Opponent source:", source)
                 -- end
+            end,
+            [ EVENT.DELTA_COMPOSURE ] =  function( self, modifier, new_value, old_value, source, start_of_turn )
+                local delta = new_value - old_value
+                if delta > 0 then
+                    if not modifier.composure_applier then
+                        modifier.composure_applier = {}
+                    end
+                    if source.negotiator == modifier.negotiator then
+                        if source.real_owner then
+                            modifier.composure_applier[source.real_owner:GetUID()] = (modifier.composure_applier[source.real_owner:GetUID()] or 0) + delta
+                            -- Simply register this modifier in case it gets destroyed later.
+                            self:DeltaScore(0, modifier, "SCORE_FULL_BLOCK")
+                        elseif source:IsPlayerOwner() then
+                            modifier.composure_applier["PLAYER"] = (modifier.composure_applier["PLAYER"] or 0) + delta
+                        end
+                    end
+                end
+                if new_value <= 0 then
+                    modifier.composure_applier = nil
+                end
+            end,
+            [ EVENT.MODIFIER_ADDED ] = function ( self, modifier, source )
+                if source and source.real_owner then
+                    modifier.real_owner = source.real_owner
+                end
             end,
             
         },
