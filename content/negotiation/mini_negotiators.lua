@@ -302,6 +302,7 @@ local MINI_NEGOTIATOR =
             table.insert(self.prepared_cards, card)
         end
         self.engine:BroadcastEvent( EVENT.INTENTS_CHANGED )
+        self:NotifyChanged()
     end,
 
     no_damage_tt = true,
@@ -325,12 +326,12 @@ local MINI_NEGOTIATOR =
         end
     end,
     CustomDamagePreview = function(self, minigame, slot, target_modifier)
-        print("Haha", target_modifier)
+        -- print("Haha", target_modifier)
         if not target_modifier then return end
         if self.prepared_cards then
             for i, card in ipairs(self.prepared_cards) do
                 if card.min_persuasion and card.max_persuasion then
-                    print("Preview card:", card)
+                    -- print("Preview card:", card)
                     minigame:AssignPrimaryTarget(card)
                     local card_targets = minigame:CollectTargets(card)
                     for i, target in ipairs(card_targets) do
@@ -341,8 +342,8 @@ local MINI_NEGOTIATOR =
                                 slot:CreateDamagePreviewLabel(self, mindmg, maxdmg)
                             end
                         else
-                            print(target._classname, target_modifier._classname)
-                            print(target, "Not equal to target_modifier:", target_modifier)
+                            -- print(target._classname, target_modifier._classname)
+                            -- print(target, "Not equal to target_modifier:", target_modifier)
                         end
                     end
                 end

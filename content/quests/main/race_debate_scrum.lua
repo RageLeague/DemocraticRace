@@ -165,6 +165,11 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
             flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.WORDSMITH | NEGOTIATION_FLAGS.NO_CORE_RESOLVE,
             helpers = helpers,
             hinders = hinders,
+            reason_fn = function(minigame)
+                local core = minigame:GetOpponentNegotiator():FindCoreArgument()
+                local total_amt = core.player_score or 0
+                return loc.format(cxt:GetLocString("REASON_TXT"), total_amt )
+            end,
             on_start_negotiation = function(minigame)
                 for i, card in ipairs(minigame.start_params.helper_cards) do
                     if DemocracyUtil.GetOppositionData(card.owner) then
@@ -270,6 +275,7 @@ QDEF:AddConvo("do_debate")
                     This is my answer!
                 * A debate is about to go down!
             ]],
+            REASON_TXT = "Impress the audience with your slick negotiation skills! (You have {1} {1*point|points})",
         }
         :Fn(function(cxt)
             if not cxt.quest.param.questions or #cxt.quest.param.questions == 0 then

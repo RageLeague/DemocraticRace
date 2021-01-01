@@ -39,13 +39,13 @@ function NegotiationSlot:CreateDamagePreviewLabel(source, min_delta, max_delta )
 
     self.damage_preview_root:AddChild( w ):LayoutBounds( "after", "center" ):Offset( -10, 0 )
     table.insert( self.damage_previews, w )
-    print("Preview Damage", source, min_delta, max_delta)
+    -- print("Preview Damage", source, min_delta, max_delta)
 end
 function NegotiationSlot:CreateDamagePreview( source )
     -- old_preview_fn(self, source)
     -- print("Stuff")
     -- print(source)
-    print(source._classname)
+    -- print(source._classname)
     if source.CustomDamagePreview then
         -- print("Has custom preview")
         source:CustomDamagePreview(self.minigame, self, self.modifier)

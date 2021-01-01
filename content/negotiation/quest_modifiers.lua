@@ -1343,8 +1343,8 @@ local MODIFIERS =
             self.score_widgets = {}
             self.player_score_widget = {}
 
-            self:DeltaScore(200, nil, "SCORE_DAMAGE")
-            self:DeltaScore(100, nil, "SCORE_DAMAGE")
+            -- self:DeltaScore(200, nil, "SCORE_DAMAGE")
+            -- self:DeltaScore(100, nil, "SCORE_DAMAGE")
         end,
         max_stacks = 1,
         GetScoreText = function(self, delta, reason, multiplier)
@@ -1442,21 +1442,42 @@ local MODIFIERS =
                 self.player_score = self.player_score + delta
                 self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                     panel:RefreshReason()
-                    local source_widget = panel.main_overlay.minigame_objective
-                    panel:StartCoroutine(PopupText, panel, source_widget, -32, UICOLOURS.BONUS, self.player_score_widget)
+                    local source_widget = panel:FindSlotWidget( self.engine:GetPlayerNegotiator():FindCoreArgument() )--panel.main_overlay.minigame_objective
+                    panel:StartCoroutine(PopupText, panel, source_widget, 32, UICOLOURS.BONUS, self.player_score_widget)
                 end)
             end
         end,
         event_priorities =
         {
             [ EVENT.ATTACK_RESOLVE ] = 999,
+            [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_SETTOR + 2000, 
         },
         event_handlers =
         {
+            [ EVENT.START_RESOLVE ] = function(self, minigame, card)
+                card.damages_during_play = {}
+            end,
+            [ EVENT.END_RESOLVE ] = function(self, minigame, card)
+                if card.damages_during_play then
+                    local delta_score = 0
+                    table.sort(card.damages_during_play, function(a,b) return a > b end)
+                    for i, dmg in ipairs(card.damages_during_play) do
+                        -- Gains full score for the first two hits.
+                        -- Then, exponentially decrease score gained.
+                        delta_score = delta_score + math.ceil(dmg / math.max(1, math.pow(2, i - 1)))
+                    end
+                    self:DeltaScore(delta_score * 1, card, "SCORE_DAMAGE")
+                end
+                card.damages_during_play = nil
+            end,
             [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
                 if damage > defended then
+                    if source.damages_during_play then
+                        table.insert(source.damages_during_play, damage - defended)
+                        return
+                    end
                     print(loc.format("{1} dealt damage(real_owner={2})", source, source and source.real_owner))
-                    self:DeltaScore((damage - defended) * 10, source, "SCORE_DAMAGE")
+                    self:DeltaScore((damage - defended) * 1, source, "SCORE_DAMAGE")
                     if target == self.engine:GetPlayerNegotiator():FindCoreArgument() and not target.real_owner then
                         local cmp_delta = math.floor((damage - defended) / 2)
                         target.composure = target.composure + cmp_delta
@@ -1464,6 +1485,23 @@ local MODIFIERS =
                 else
                 end
             end,
+            [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
+                if source.real_owner and (source.real_owner.uid == source.uid) then
+                    -- print("Modify score:", source)
+                    if self.scores[source:GetUID()] then
+                        local score = self.scores[source:GetUID()].score
+                        -- print("score =",score)
+                        persuasion:ModifyPersuasion(score, score, self)
+                    else
+                        -- print("score = 0")
+                        persuasion:ModifyPersuasion(0, 0, self)
+                    end
+                end
+                -- if source.negotiator ~= self.negotiator then
+                    -- print("Opponent source:", source)
+                -- end
+            end,
+            
         },
     },
 }
