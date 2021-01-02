@@ -151,6 +151,16 @@ local QDEF = QuestDef.Define
     desc = "Try to stand out, but not in a bad way.",
     mark = {"theater"},
     -- state = QSTATUS.ACTIVE,
+    events = {
+        resolve_negotiation = function(quest, minigame, repercussions)
+            if repercussions then
+                local core = minigame:GetPlayerNegotiator():FindCoreArgument()
+                if core.real_owner then
+                    repercussions.resolve = 0
+                end
+            end
+        end,
+    },
 }
 
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
@@ -181,6 +191,9 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
                         minigame.start_params.hinder_cards[i] = Negotiation.Card("debater_negotiation_hinder", card.owner)
                     end
                 end
+                -- Expand on the slot limits, as there's way too many modifiers for the max 13
+                minigame:GetPlayerNegotiator().max_modifiers = 17
+                minigame:GetOpponentNegotiator().max_modifiers = 17
             end,
         }
 end
@@ -307,12 +320,7 @@ QDEF:AddConvo("do_debate")
                         table.insert(neg_neut, agent)
                     end
                 end
-                while #neg_neut > 0 and #neg_helper >= #neg_hinder do
-                    local idx = math.random(#neg_neut)
-                    table.insert(neg_hinder, neg_neut[idx])
-                    table.remove(neg_neut, idx)
-                end
-
+                
                 if stance_index < -shift then
                     table.insert(pos_hinder, agent)
                 elseif stance_index > -shift then
@@ -322,13 +330,16 @@ QDEF:AddConvo("do_debate")
                         table.insert(pos_neut, agent)
                     end
                 end
-
-                while #pos_neut > 0 and #pos_helper >= #pos_hinder do
-                    local idx = math.random(#pos_neut)
-                    table.insert(pos_hinder, pos_neut[idx])
-                    table.remove(pos_neut, idx)
-                end
-
+            end
+            while #neg_neut > 0 and #neg_helper >= #neg_hinder do
+                local idx = math.random(#neg_neut)
+                table.insert(neg_hinder, neg_neut[idx])
+                table.remove(neg_neut, idx)
+            end
+            while #pos_neut > 0 and #pos_helper >= #pos_hinder do
+                local idx = math.random(#pos_neut)
+                table.insert(pos_hinder, pos_neut[idx])
+                table.remove(pos_neut, idx)
             end
 
             cxt:TalkTo(cxt:GetCastMember("host"))

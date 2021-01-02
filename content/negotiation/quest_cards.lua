@@ -300,6 +300,8 @@ local CARDS = {
             mod.candidate_agent = self.owner
             self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                 panel.last_ev_time = nil
+                panel.speedup_factor = nil
+                panel:RefreshCardSpeed()
             end)
         end,
     },
@@ -361,6 +363,8 @@ local CARDS = {
             mod.candidate_agent = self.owner
             self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                 panel.last_ev_time = nil
+                panel.speedup_factor = nil
+                panel:RefreshCardSpeed()
             end)
         end,
     },

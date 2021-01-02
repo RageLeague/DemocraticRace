@@ -1432,6 +1432,9 @@ local MODIFIERS =
             if type(source) == "table" then
                 source = source.real_owner
                 if source then
+                    -- Give the AI an edge. This way we can get away with lower damage output while
+                    -- making the score race still a challenge
+                    delta = delta * 2
                     if not self.scores[source:GetUID()] then
                         self.scores[source:GetUID()] = {modifier = source, score = 0}
                     end
@@ -1444,6 +1447,7 @@ local MODIFIERS =
                         local source_widget = panel:FindSlotWidget( source )
                         if source_widget then
                             self.scores[source:GetUID()].score = self.scores[source:GetUID()].score + delta
+                            source:NotifyChanged()
                             panel:StartCoroutine(PopupText, panel, source_widget, 32, UICOLOURS.HILITE, self.score_widgets[source:GetUID()])
                         end
                     end)
@@ -1524,29 +1528,29 @@ local MODIFIERS =
                     end
                 end
             end,
-            [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
-                if source.real_owner and (source.real_owner.uid == source.uid) then
-                    -- print("Modify score:", source)
-                    if self.scores[source:GetUID()] then
-                        local score = self.scores[source:GetUID()].score
-                        -- print("score =",score)
-                        persuasion:ModifyPersuasion(score, score, self)
-                    else
-                        -- print("score = 0")
-                        persuasion:ModifyPersuasion(0, 0, self)
-                    end
-                end
-                -- if source.negotiator ~= self.negotiator then
-                    -- print("Opponent source:", source)
-                -- end
-            end,
+            -- [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
+            --     if source.real_owner and (source.real_owner.uid == source.uid) and target == nil then
+            --         -- print("Modify score:", source)
+            --         if self.scores[source:GetUID()] then
+            --             local score = self.scores[source:GetUID()].score
+            --             -- print("score =",score)
+            --             persuasion:ModifyPersuasion(score, score, self)
+            --         else
+            --             -- print("score = 0")
+            --             persuasion:ModifyPersuasion(0, 0, self)
+            --         end
+            --     end
+            --     -- if source.negotiator ~= self.negotiator then
+            --         -- print("Opponent source:", source)
+            --     -- end
+            -- end,
             [ EVENT.DELTA_COMPOSURE ] =  function( self, modifier, new_value, old_value, source, start_of_turn )
                 local delta = new_value - old_value
                 if delta > 0 then
                     if not modifier.composure_applier then
                         modifier.composure_applier = {}
                     end
-                    if source.negotiator == modifier.negotiator then
+                    if source and source.negotiator == modifier.negotiator then
                         if source.real_owner then
                             modifier.composure_applier[source.real_owner:GetUID()] = (modifier.composure_applier[source.real_owner:GetUID()] or 0) + delta
                             -- Simply register this modifier in case it gets destroyed later.
@@ -1565,7 +1569,26 @@ local MODIFIERS =
                     modifier.real_owner = source.real_owner
                 end
             end,
-            
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, source )
+                if source and source.negotiator ~= modifier.negotiator then
+                    if modifier.modifier_type == MODIFIER_TYPE.CORE then
+                        self:DeltaScore(25, source, "SCORE_OPPONENT_DESTROYED")
+                        for i, mod in self.negotiator:Modifiers() do
+                            if mod.modifier_type == MODIFIER_TYPE.CORE and mod ~= self then
+                                return
+                            end
+                        end
+                        self.engine:Win()
+                    else
+                        self:DeltaScore(3, source, "SCORE_ARGUMENT_DESTROYED")
+                    end
+                end
+            end,
+            [ EVENT.SPLASH_RESOLVE ] = function( self, modifier, overflow, params )
+                if modifier.real_owner and modifier.real_owner:IsApplied() then
+                    params.splashed_modifier = modifier.real_owner
+                end
+            end,
         },
     },
 }

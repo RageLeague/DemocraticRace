@@ -38,7 +38,7 @@ local MINI_NEGOTIATOR_CARDS =
         name = "Ethos",
         flags = CARD_FLAGS.DIPLOMACY,
         min_persuasion = 4,
-        max_persuasion = 7,
+        max_persuasion = 6,
     },
     mn_manipulate_damage =
     {
@@ -57,14 +57,14 @@ local MINI_NEGOTIATOR_CARDS =
         name = "Pathos",
         flags = CARD_FLAGS.HOSTILE,
         min_persuasion = 3,
-        max_persuasion = 8,
+        max_persuasion = 6,
     },
     mn_inspire =
     {
         name = "Inspire",
         flags = CARD_FLAGS.DIPLOMACY,
-        min_persuasion = 2,
-        max_persuasion = 4,
+        min_persuasion = 1,
+        max_persuasion = 3,
         features =
         {
             INFLUENCE = 2,
@@ -74,8 +74,8 @@ local MINI_NEGOTIATOR_CARDS =
     {
         name = "Dominate",
         flags = CARD_FLAGS.HOSTILE,
-        min_persuasion = 3,
-        max_persuasion = 3,
+        min_persuasion = 2,
+        max_persuasion = 2,
         features =
         {
             DOMINANCE = 2,
@@ -88,7 +88,7 @@ local MINI_NEGOTIATOR_CARDS =
         target_self = TARGET_ANY_RESOLVE,
         features =
         {
-            COMPOSURE = 5,
+            COMPOSURE = 4,
         },
     },
     mn_composure_aoe =
@@ -102,7 +102,7 @@ local MINI_NEGOTIATOR_CARDS =
         target_self = TARGET_ANY_RESOLVE,
         features =
         {
-            COMPOSURE = 3,
+            COMPOSURE = 2,
         },
         target_mod = TARGET_MOD.TEAM,
         auto_target = true,
@@ -285,6 +285,8 @@ local MINI_NEGOTIATOR =
         -- end
         self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
             panel.last_ev_time = nil
+            panel.speedup_factor = nil
+            panel:RefreshCardSpeed()
         end)
         for i, card in ipairs(self.prepared_cards) do
             card.show_dealt = false
@@ -292,9 +294,16 @@ local MINI_NEGOTIATOR =
             self.engine:PlayCard(card)
             card:RemoveCard()
         end
-        self:PrepareCards()
+        
         if self.EndTurnEffect then
             self:EndTurnEffect(minigame)
+        end
+    end,
+    OnPrepareTurn = function(self)
+        if self.prepared_cards then
+            for i, card in ipairs(self.prepared_cards) do
+                self.engine:AssignPrimaryTarget(card)
+            end
         end
     end,
     PrepareCards = function(self)
@@ -353,6 +362,15 @@ local MINI_NEGOTIATOR =
             end
         end
     end,
+    CustomPersuasionLabel = function(self)
+        if self.engine and self.engine:GetOpponentNegotiator() then
+            local opponent_core = self.engine:GetOpponentNegotiator():FindCoreArgument()
+            if opponent_core and opponent_core.scores and opponent_core.scores[self:GetUID()] then
+                return opponent_core.scores[self:GetUID()].score or 0
+            end
+        end 
+        return 0
+    end,
     -- event_priorities =
     -- {
     --     [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_MULTIPLIER,
@@ -365,6 +383,11 @@ local MINI_NEGOTIATOR =
         -- end,
         [ EVENT.BEGIN_NEGOTIATION ] = function(self, minigame)
             self:PrepareCards()
+        end,
+        [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
+            if negotiator ~= self.negotiator then
+                self:PrepareCards()
+            end
         end,
     },
 
@@ -693,7 +716,7 @@ table.extend(MINI_NEGOTIATOR){
 Content.AddNegotiationModifier("JAKES_MINI_NEGOTIATOR",
 table.extend(MINI_NEGOTIATOR){
     name = "Andwanette's Double Edge",
-    alt_desc = "Whenever {1.name}'s cards deal damage, they gain resolve equal to resolve loss. If no resolve is lost, they take 3 damage.",
+    alt_desc = "Whenever {1.name}'s cards deal damage, they gain resolve equal to resolve loss.",
     icon = "DEMOCRATICRACE:assets/modifiers/mini_negotiator/jakes.png",
     available_cards_def = 
     {
@@ -762,16 +785,16 @@ table.extend(MINI_NEGOTIATOR){
                     local gain = math.min( target:GetResolve(), damage - defended)
                     self.composure_gain = self.composure_gain + gain
                 else
-                    if self.negotiator:FindCoreArgument():GetShieldStatus() or CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.NO_CORE_RESOLVE) then
-                        local targets = self.engine:CollectAllTargets(self)
-                        table.arrayremove( targets, self.negotiator:FindCoreArgument() )
-                        local edge_target = table.arraypick( targets )
-                        if edge_target then
-                            self.engine:ApplyPersuasion( target, edge_target, self.resolve_loss, self.resolve_loss )
-                        end
-                    else
-                        self.engine:ApplyPersuasion( target, self.negotiator, self.resolve_loss, self.resolve_loss )
-                    end
+                    -- if self.negotiator:FindCoreArgument():GetShieldStatus() or CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.NO_CORE_RESOLVE) then
+                    --     local targets = self.engine:CollectAllTargets(self)
+                    --     table.arrayremove( targets, self.negotiator:FindCoreArgument() )
+                    --     local edge_target = table.arraypick( targets )
+                    --     if edge_target then
+                    --         self.engine:ApplyPersuasion( target, edge_target, self.resolve_loss, self.resolve_loss )
+                    --     end
+                    -- else
+                    --     self.engine:ApplyPersuasion( target, self.negotiator, self.resolve_loss, self.resolve_loss )
+                    -- end
                 end
             end
         end,

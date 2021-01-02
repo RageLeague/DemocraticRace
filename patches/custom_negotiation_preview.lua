@@ -53,3 +53,13 @@ function NegotiationSlot:CreateDamagePreview( source )
         old_preview_fn(self, source)
     end
 end
+
+local NegotiationArgument = Widget.NegotiationArgument
+local old_fn = NegotiationArgument.GeneratePersuasionText
+function NegotiationArgument:GeneratePersuasionText( modifier )
+    if modifier.CustomPersuasionLabel then
+        return tostring(modifier:CustomPersuasionLabel(self))
+    else
+        return old_fn(self, modifier)
+    end
+end
