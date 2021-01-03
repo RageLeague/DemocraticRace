@@ -175,23 +175,28 @@ local function ProcessMinigame(minigame)
         mvp = {},
         valuable_players = {},
         score_agent_pairs = {},
+        win_margin = 0,
     }
     if data.won_game then
         for i, modifier in minigame:GetPlayerNegotiator():Modifiers() do
-            if modifier.modifier_type == MODIFIER_TYPE.CORE then
+            if modifier.modifier_type == MODIFIER_TYPE.CORE and modifier:GetResolve() then
                 if modifier.candidate_agent then
                     table.insert_unique(data.ally_survivors, modifier.candidate_agent)
                 else
                     table.insert_unique(data.ally_survivors, TheGame:GetGameState():GetPlayerAgent())
                 end
+                local res, maxres = modifier:GetResolve()
+                data.win_margin = data.win_margin + 0.2 + (res / maxres)
             end
         end
     else
         for i, modifier in minigame:GetOpponentNegotiator():Modifiers() do
-            if modifier.modifier_type == MODIFIER_TYPE.CORE then
+            if modifier.modifier_type == MODIFIER_TYPE.CORE and modifier:GetResolve() then
                 if modifier.candidate_agent then
                     table.insert_unique(data.ally_survivors, modifier.candidate_agent)
                 end
+                local res, maxres = modifier:GetResolve()
+                data.win_margin = data.win_margin + 0.2 + (res / maxres)
             end
         end
     end
@@ -242,6 +247,16 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
                 -- Expand on the slot limits, as there's way too many modifiers for the max 13
                 minigame:GetPlayerNegotiator().max_modifiers = 17
                 minigame:GetOpponentNegotiator().max_modifiers = 17
+            end,
+            on_success = function(cxt, minigame)
+                cxt.quest.param.debate_result = ProcessMinigame(minigame)
+                cxt.quest.param.winner_pov = topic .. "_" .. stance
+                cxt:GoTo("STATE_DEBATE_SUMMARY")
+            end,
+            on_fail = function(cxt, minigame)
+                cxt.quest.param.debate_result = ProcessMinigame(minigame)
+                cxt.quest.param.winner_pov = topic .. "_" .. (-stance)
+                cxt:GoTo("STATE_DEBATE_SUMMARY")
             end,
         }
 end
@@ -395,4 +410,53 @@ QDEF:AddConvo("do_debate")
             cxt:Quip(cxt:GetAgent(), "debate_question")
             CreateDebateOption(cxt, neg_helper, neg_hinder, cxt.quest.param.topic, -1)
             CreateDebateOption(cxt, pos_helper, pos_hinder, cxt.quest.param.topic, 1)
+        end)
+    :State("STATE_DEBATE_SUMMARY")
+        :Loc{
+            DIALOG_INTRO = [[
+                agent:
+                    That was an excellent debate!
+                    Each candidate voiced their opinion on the matter, and a lot of very interested points are raised.
+            ]],
+            DIALOG_WIN_LANDSLIDE = [[
+                agent:
+                    Although, without a doubt, the candidates that support {winner_pov#pol_stance} won by a landslide.
+            ]],
+            DIALOG_WIN_NORMAL = [[
+                agent:
+                    It was quite an interesting debate, but ultimately, the candidates that support {winner_pov#pol_stance} won.
+            ]],
+            DIALOG_WIN_CLOSE = [[
+                agent:
+                    Both sides pull up a good fight, but in the end, the candidates that support {winner_pov#pol_stance} won by a tiny margin.
+            ]],
+            DIALOG_WINNER_MVP = [[
+                agent:
+                    It is undeniable that {1#agent_list} that {2*contributes|contribute} most to the debate.
+                    Thanks to {2*{3.hisher}|their} effort, {2*{3.hisher}|their} are able to win the debate.
+            ]],
+            DIALOG_LOSER_MVP = [[
+                agent:
+                    Although, we can all agree that {1#agent_list} put out a good fight there.
+                    {2*{3.HisHer}|Their} {2*effort is|efforts are} very valiant, although {2*it|they} didn't work out in the end.
+            ]],
+            DIALOG_OTHER_OF_NOTE = [[
+                agent:
+                    Other candidates, like {1#agent_list}, also did well in this debate, although not as well as those previously mentioned.
+            ]],
+            DIALOG_END = [[
+                agent:
+                    Well done, everyone!
+                    Anyway, let's move on.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+            if cxt.quest.param.debate_result.win_margin <= 0.5 then
+                cxt:Dialog("DIALOG_WIN_CLOSE")
+            elseif cxt.quest.param.debate_result.win_margin <= 2 then
+                cxt:Dialog("DIALOG_WIN_NORMAL")
+            else
+                cxt:Dialog("DIALOG_WIN_LANDSLIDE")
+            end
         end)
