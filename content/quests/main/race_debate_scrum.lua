@@ -166,7 +166,55 @@ local QDEF = QuestDef.Define
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 DemocracyUtil.AddHomeCasts(QDEF)
 DemocracyUtil.AddOppositionCast(QDEF)
-
+local function ProcessMinigame(minigame)
+    local data = {
+        won_game = minigame.result == RESULT.WIN,
+        ally_survivors = {},
+        opponent_survivors = {},
+        mvp_score = 0,
+        mvp = {},
+        valuable_players = {},
+        score_agent_pairs = {},
+    }
+    if data.won_game then
+        for i, modifier in minigame:GetPlayerNegotiator():Modifiers() do
+            if modifier.modifier_type == MODIFIER_TYPE.CORE then
+                if modifier.candidate_agent then
+                    table.insert_unique(data.ally_survivors, modifier.candidate_agent)
+                else
+                    table.insert_unique(data.ally_survivors, TheGame:GetGameState():GetPlayerAgent())
+                end
+            end
+        end
+    else
+        for i, modifier in minigame:GetOpponentNegotiator():Modifiers() do
+            if modifier.modifier_type == MODIFIER_TYPE.CORE then
+                if modifier.candidate_agent then
+                    table.insert_unique(data.ally_survivors, modifier.candidate_agent)
+                end
+            end
+        end
+    end
+    local opponent_core = minigame:GetOpponentNegotiator():FindCoreArgument()
+    table.insert(data.score_agent_pairs, {agent = TheGame:GetGameState():GetPlayerAgent(), score = opponent_core.player_score})
+    for id, val in pairs(opponent_core.scores) do
+        table.insert(data.score_agent_pairs, {agent = val.modifier.candidate_agent, score = val.score})
+    end
+    table.stable_sort(data.score_agent_pairs, function(a,b)
+        return a.score < b.score
+    end)
+    if #data.score_agent_pairs > 0 then
+        data.mvp_score = data.score_agent_pairs[1]
+        for i, val in ipairs(data.score_agent_pairs) do
+            if val.score / data.mvp_score >= 0.95 then
+                table.insert(data.mvp, val.agent)
+            elseif val.score / data.mvp_score >= 0.75 then
+                table.insert(data.valuable_players, val.agent)
+            end
+        end
+    end
+    return data
+end
 local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
     cxt:Opt("OPT_SIDE", topic .. "_" .. stance)
         :UpdatePoliticalStance(topic, stance, false)

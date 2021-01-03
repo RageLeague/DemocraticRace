@@ -1585,8 +1585,20 @@ local MODIFIERS =
                 end
             end,
             [ EVENT.SPLASH_RESOLVE ] = function( self, modifier, overflow, params )
-                if modifier.real_owner and modifier.real_owner:IsApplied() then
+                if modifier.real_owner and modifier.real_owner:IsApplied() and modifier.real_owner.negotiator == modifier.negotiator then
                     params.splashed_modifier = modifier.real_owner
+                else
+                    if not modifier:IsPlayerOwner() or not modifier.negotiator:FindCoreArgument().real_owner then
+                        local splash_targets = {}
+                        for i, mod in modifier.negotiator:Modifiers() do
+                            if mod.modifier_type == MODIFIER_TYPE.CORE and mod:GetResolve() ~= nil and not mod:GetShieldStatus() then
+                                table.insert(splash_targets, mod)
+                            end
+                        end
+                        if #splash_targets > 0 then
+                            params.splashed_modifier = table.arraypick(splash_targets)
+                        end
+                    end
                 end
             end,
         },

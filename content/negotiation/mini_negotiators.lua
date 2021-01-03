@@ -183,6 +183,8 @@ local MINI_NEGOTIATOR_CARDS =
     },
     mn_wrath = table.extend(ARGUMENT_CREATER){
         name = "Wrath",
+        desc = "Create 1 <b>Wrath of Hesh</>.",
+        flavour = "Klei fix your Hesh damn description for Wrath of Hesh so that it doesn't break the game when not in a negotiation.",
         flags = CARD_FLAGS.HOSTILE,
         argument_to_create = "wrath_of_hesh",
     },
