@@ -44,6 +44,7 @@ local QDEF = QuestDef.Define
                 table.insert(quest.param.candidates, quest:GetCastMember(data.cast_id))
             end
         end
+        quest.param.popularity = {}
     end,
     -- on_complete = function(quest)
     --     if quest:GetCastMember("primary_advisor") then
@@ -210,11 +211,14 @@ local function ProcessMinigame(minigame, win_minigame)
     end)
     if #data.score_agent_pairs > 0 then
         data.mvp_score = data.score_agent_pairs[1].score
-        for i, val in ipairs(data.score_agent_pairs) do
-            if val.score / data.mvp_score >= 0.95 then
-                table.insert(data.mvp, val.agent)
-            elseif val.score / data.mvp_score >= 0.75 then
-                table.insert(data.valuable_players, val.agent)
+        -- Guess what? We need this to not divide by 0.
+        if data.mvp_score > 0 then
+            for i, val in ipairs(data.score_agent_pairs) do
+                if val.score / data.mvp_score >= 0.95 then
+                    table.insert(data.mvp, val.agent)
+                elseif val.score / data.mvp_score >= 0.75 then
+                    table.insert(data.valuable_players, val.agent)
+                end
             end
         end
     end
@@ -264,7 +268,9 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
             end,
         }
 end
-
+local function DeltaPopularity(table, agent, delta)
+    table[agent:GetID()] = (table[agent:GetID()] or 0) + delta
+end
 QDEF:AddConvo("go_to_debate")
     :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("backroom") end)
         :Loc{
@@ -318,6 +324,9 @@ QDEF:AddConvo("do_debate")
         ]],
     }
     :Fn(function(cxt)
+        if not cxt.quest.param.popularity then
+            cxt.quest.param.popularity = {}
+        end
         cxt:TalkTo(cxt:GetCastMember("host"))
         cxt:Dialog("DIALOG_INTRO")
         cxt:GoTo("STATE_QUESTION")
@@ -453,42 +462,89 @@ QDEF:AddConvo("do_debate")
                     Well done, everyone!
                     Anyway, let's move on.
             ]],
+            OPT_CONTINUE = "Continue",
+            OPT_REVIEW = "Review popularity",
+            DIALOG_REVIEW = [[
+                * Current popularity standing:
+            ]],
+            DIALOG_REVIEW_PERSON = [[
+                * {1#agent} has a popularity of {2}.
+            ]],
         }
+        :SetLooping(true)
         :Fn(function(cxt)
-            cxt:Dialog("DIALOG_INTRO")
-            if cxt.quest.param.debate_result.win_margin <= 0.5 then
-                cxt:Dialog("DIALOG_WIN_CLOSE")
-            elseif cxt.quest.param.debate_result.win_margin <= 2 then
-                cxt:Dialog("DIALOG_WIN_NORMAL")
-            else
-                cxt:Dialog("DIALOG_WIN_LANDSLIDE")
-            end
-            local winner_mvps = {}
-            local loser_mvps = {}
-            for i, agent in ipairs(cxt.quest.param.debate_result.mvp) do
-                if agent:IsPlayer() or table.arraycontains(cxt.quest.param.allies, agent) then
-                    if cxt.quest.param.debate_result.won_game then
-                        table.insert(winner_mvps, agent)
-                    else
-                        table.insert(loser_mvps, agent)
-                    end
-                elseif table.arraycontains(cxt.quest.param.opponents, agent) then
-                    if cxt.quest.param.debate_result.won_game then
-                        table.insert(loser_mvps, agent)
-                    else
-                        table.insert(winner_mvps, agent)
+            if cxt:FirstLoop() then
+                cxt:Dialog("DIALOG_INTRO")
+                local winner_delta = 0
+                if cxt.quest.param.debate_result.win_margin <= 0.5 then
+                    cxt:Dialog("DIALOG_WIN_CLOSE")
+                    winner_delta = 3
+                elseif cxt.quest.param.debate_result.win_margin <= 2 then
+                    cxt:Dialog("DIALOG_WIN_NORMAL")
+                    winner_delta = 5
+                else
+                    cxt:Dialog("DIALOG_WIN_LANDSLIDE")
+                    winner_delta = 8
+                end
+                for i, agent in ipairs(cxt.quest.param.debate_result.won_game and 
+                    cxt.quest.param.allies or cxt.quest.param.opponents) do
+
+                    DeltaPopularity(cxt.quest.param.popularity, agent, winner_delta)
+                end
+                if cxt.quest.param.debate_result.won_game then
+                    DeltaPopularity(cxt.quest.param.popularity, cxt.player, winner_delta)
+                end
+                for i, agent in ipairs(cxt.quest.param.debate_result.ally_survivors) do
+                    DeltaPopularity(cxt.quest.param.popularity, agent, 2)
+                end
+                for i, agent in ipairs(cxt.quest.param.debate_result.opponent_survivors) do
+                    DeltaPopularity(cxt.quest.param.popularity, agent, 2)
+                end
+                local winner_mvps = {}
+                local loser_mvps = {}
+                for i, agent in ipairs(cxt.quest.param.debate_result.mvp) do
+                    if agent:IsPlayer() or table.arraycontains(cxt.quest.param.allies, agent) then
+                        if cxt.quest.param.debate_result.won_game then
+                            table.insert(winner_mvps, agent)
+                        else
+                            table.insert(loser_mvps, agent)
+                        end
+                    elseif table.arraycontains(cxt.quest.param.opponents, agent) then
+                        if cxt.quest.param.debate_result.won_game then
+                            table.insert(loser_mvps, agent)
+                        else
+                            table.insert(winner_mvps, agent)
+                        end
                     end
                 end
+                if #winner_mvps > 0 then
+                    cxt:Dialog("DIALOG_WINNER_MVP", winner_mvps, #winner_mvps, winner_mvps[1])
+                    for i, agent in ipairs(winner_mvps) do
+                        DeltaPopularity(cxt.quest.param.popularity, agent, 5)
+                    end
+                end
+                if #loser_mvps > 0 then
+                    cxt:Dialog("DIALOG_LOSER_MVP", loser_mvps, #loser_mvps, loser_mvps[1])
+                    for i, agent in ipairs(loser_mvps) do
+                        DeltaPopularity(cxt.quest.param.popularity, agent, 5)
+                    end
+                end
+                if #cxt.quest.param.debate_result.valuable_players > 0 then
+                    cxt:Dialog("DIALOG_OTHER_OF_NOTE", cxt.quest.param.debate_result.valuable_players)
+                    for i, agent in ipairs(cxt.quest.param.debate_result.valuable_players) do
+                        DeltaPopularity(cxt.quest.param.popularity, agent, 3)
+                    end
+                end
+                cxt:Dialog("DIALOG_END")
             end
-            if #winner_mvps > 0 then
-                cxt:Dialog("DIALOG_WINNER_MVP", winner_mvps, #winner_mvps, winner_mvps[1])
-            end
-            if #loser_mvps > 0 then
-                cxt:Dialog("DIALOG_LOSER_MVP", loser_mvps, #loser_mvps, loser_mvps[1])
-            end
-            if #cxt.quest.param.debate_result.valuable_players > 0 then
-                cxt:Dialog("DIALOG_OTHER_OF_NOTE", cxt.quest.param.debate_result.valuable_players)
-            end
-            cxt:Dialog("DIALOG_END")
-            cxt:Opt("OPT_DONE")
+            DBG(cxt.quest.param.popularity)
+            cxt:Opt("OPT_CONTINUE")
+                :GoTo("STATE_QUESTION")
+            cxt:Opt("OPT_REVIEW")
+                :Dialog("DIALOG_REVIEW")
+                :Fn(function(cxt)
+                    for id, val in pairs(cxt.quest.param.popularity) do
+                        cxt:Dialog("DIALOG_REVIEW_PERSON", TheGame:GetGameState():GetAgent(id), val)
+                    end
+                end)
         end)

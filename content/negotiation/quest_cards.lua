@@ -284,6 +284,15 @@ local CARDS = {
                     It pains me to say this, but {player} is right.
                 ]],
             },
+            {
+                tags = "player_rook, spark_contact",
+                [[
+                    Just like the old times, eh?
+                ]],
+                [[
+                    Let's take them down, Captain!
+                ]],
+            },
         },
         name = "Debater Support",
         show_dealt = false,

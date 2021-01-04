@@ -772,6 +772,7 @@ table.extend(MINI_NEGOTIATOR){
     end,
 
     EndTurnEffect = function( self, minigame )
+        print(self.composure_gain)
         if self.composure_gain > 0 then
             local targets = {}
             for i, modifier in self.negotiator:ModifierSlots() do
@@ -797,8 +798,10 @@ table.extend(MINI_NEGOTIATOR){
 
     event_handlers =
     {
-        [ EVENT.BEGIN_ENEMY_TURN ] = function( self )
-            self.active = true
+        [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
+            if negotiator == self.negotiator then
+                self.active = true
+            end
         end,
         [ EVENT.END_TURN ] = function( self, minigame, negotiator )
             if negotiator == self.negotiator then

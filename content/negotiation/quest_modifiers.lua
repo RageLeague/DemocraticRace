@@ -1491,7 +1491,9 @@ local MODIFIERS =
                     return
                 end
             end
-            self.engine:Win()
+            if not self.engine:CheckGameOver() then
+                self.engine:Win()
+            end
         end,
         event_priorities =
         {
