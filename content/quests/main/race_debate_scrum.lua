@@ -155,7 +155,7 @@ local QDEF = QuestDef.Define
         resolve_negotiation = function(quest, minigame, repercussions)
             if repercussions then
                 local core = minigame:GetPlayerNegotiator():FindCoreArgument()
-                if core.real_owner then
+                if core and core.candidate_agent then
                     repercussions.resolve = 0
                 end
             end
@@ -166,9 +166,9 @@ local QDEF = QuestDef.Define
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 DemocracyUtil.AddHomeCasts(QDEF)
 DemocracyUtil.AddOppositionCast(QDEF)
-local function ProcessMinigame(minigame)
+local function ProcessMinigame(minigame, win_minigame)
     local data = {
-        won_game = minigame.result == RESULT.WIN,
+        won_game = win_minigame,
         ally_survivors = {},
         opponent_survivors = {},
         mvp_score = 0,
@@ -206,10 +206,10 @@ local function ProcessMinigame(minigame)
         table.insert(data.score_agent_pairs, {agent = val.modifier.candidate_agent, score = val.score})
     end
     table.stable_sort(data.score_agent_pairs, function(a,b)
-        return a.score < b.score
+        return a.score > b.score
     end)
     if #data.score_agent_pairs > 0 then
-        data.mvp_score = data.score_agent_pairs[1]
+        data.mvp_score = data.score_agent_pairs[1].score
         for i, val in ipairs(data.score_agent_pairs) do
             if val.score / data.mvp_score >= 0.95 then
                 table.insert(data.mvp, val.agent)
@@ -224,6 +224,10 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
     cxt:Opt("OPT_SIDE", topic .. "_" .. stance)
         :UpdatePoliticalStance(topic, stance, false)
         :Dialog("DIALOG_SIDE")
+        :Fn(function(cxt)
+            cxt.quest.param.allies = helpers
+            cxt.quest.param.opponents = hinders
+        end)
         :Negotiation{
             flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.WORDSMITH | NEGOTIATION_FLAGS.NO_CORE_RESOLVE,
             helpers = helpers,
@@ -249,12 +253,12 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
                 minigame:GetOpponentNegotiator().max_modifiers = 17
             end,
             on_success = function(cxt, minigame)
-                cxt.quest.param.debate_result = ProcessMinigame(minigame)
+                cxt.quest.param.debate_result = ProcessMinigame(minigame, true)
                 cxt.quest.param.winner_pov = topic .. "_" .. stance
                 cxt:GoTo("STATE_DEBATE_SUMMARY")
             end,
             on_fail = function(cxt, minigame)
-                cxt.quest.param.debate_result = ProcessMinigame(minigame)
+                cxt.quest.param.debate_result = ProcessMinigame(minigame, false)
                 cxt.quest.param.winner_pov = topic .. "_" .. (-stance)
                 cxt:GoTo("STATE_DEBATE_SUMMARY")
             end,
@@ -432,8 +436,8 @@ QDEF:AddConvo("do_debate")
             ]],
             DIALOG_WINNER_MVP = [[
                 agent:
-                    It is undeniable that {1#agent_list} that {2*contributes|contribute} most to the debate.
-                    Thanks to {2*{3.hisher}|their} effort, {2*{3.hisher}|their} are able to win the debate.
+                    It is undeniable that {1#agent_list} that {2*contributes|contribute} the most to the debate.
+                    Thanks to {2*{3.hisher}|their} effort, {2*{3.hisher}|their} side is able to win the debate.
             ]],
             DIALOG_LOSER_MVP = [[
                 agent:
@@ -459,4 +463,32 @@ QDEF:AddConvo("do_debate")
             else
                 cxt:Dialog("DIALOG_WIN_LANDSLIDE")
             end
+            local winner_mvps = {}
+            local loser_mvps = {}
+            for i, agent in ipairs(cxt.quest.param.debate_result.mvp) do
+                if agent:IsPlayer() or table.arraycontains(cxt.quest.param.allies, agent) then
+                    if cxt.quest.param.debate_result.won_game then
+                        table.insert(winner_mvps, agent)
+                    else
+                        table.insert(loser_mvps, agent)
+                    end
+                elseif table.arraycontains(cxt.quest.param.opponents, agent) then
+                    if cxt.quest.param.debate_result.won_game then
+                        table.insert(loser_mvps, agent)
+                    else
+                        table.insert(winner_mvps, agent)
+                    end
+                end
+            end
+            if #winner_mvps > 0 then
+                cxt:Dialog("DIALOG_WINNER_MVP", winner_mvps, #winner_mvps, winner_mvps[1])
+            end
+            if #loser_mvps > 0 then
+                cxt:Dialog("DIALOG_LOSER_MVP", loser_mvps, #loser_mvps, loser_mvps[1])
+            end
+            if #cxt.quest.param.debate_result.valuable_players > 0 then
+                cxt:Dialog("DIALOG_OTHER_OF_NOTE", cxt.quest.param.debate_result.valuable_players)
+            end
+            cxt:Dialog("DIALOG_END")
+            cxt:Opt("OPT_DONE")
         end)

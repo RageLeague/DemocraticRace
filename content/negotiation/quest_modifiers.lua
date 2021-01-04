@@ -1326,16 +1326,33 @@ local MODIFIERS =
         name = "Debate Host",
         desc = "Defeat ALL opponent negotiators to win this debate!\n" ..
             "You cannot play any more cards if your core argument is destroyed, and you lose if your core argument and all your allies' core argument are destroyed.\n" ..
-            "Your core argument takes half the resolve damage by your opponents' cards and arguments. Opponents arguments comes in to play with double resolve.\n\n" ..
-            "Perform various feats to win the crowd. <#PENALTY>Your allies also does the same, so do more feats than your allies to stand out!</>",
+            "Opponents arguments comes in to play with +{1} resolve.\n\n" ..
+            "Perform various feats to score points and win the crowd. <#PENALTY>Your allies will also do the same, so score more than your allies to stand out!</>",
         loc_strings = {
             SCORE_DAMAGE = "Damage Dealt",
             SCORE_FULL_BLOCK = "Damage Deflected",
             SCORE_ARGUMENT_DESTROYED = "Argument Refuted",
             SCORE_OPPONENT_DESTROYED = "Opponent Refuted",
+            SCORE_ARGUMENT_CREATED = "Argument Created",
+            SCORE_ARGUMENT_INCEPTED = "Argument Incepted",
             SCORE_DELTA = "+{1} Pts",
         },
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetBonusResolve())
+        end,
+        
         modifier_type = MODIFIER_TYPE.CORE,
+        max_stacks = 1,
+
+        bonus_resolve = {2, 3, 4, 5},
+        GetBonusResolve = function(self)
+            local boss_scale = GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2
+            if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                return self.bonus_resolve[math.min(#self.bonus_resolve, boss_scale)]
+            end
+            return self.bonus_resolve[2]
+        end,
+
         OnInit = function(self)
             self.scores = {}
             self.player_score = 0
@@ -1346,7 +1363,7 @@ local MODIFIERS =
             -- self:DeltaScore(200, nil, "SCORE_DAMAGE")
             -- self:DeltaScore(100, nil, "SCORE_DAMAGE")
         end,
-        max_stacks = 1,
+        
         GetScoreText = function(self, delta, reason, multiplier)
             local res
             if self.loc_strings[reason] then
@@ -1381,13 +1398,15 @@ local MODIFIERS =
                         return
                     end
                 end
-                local label = panel:AddChild( Widget.Label( "title", 28, self:GetScoreText(delta, reason) ):SetBloom( 0.2 ))
+                local label = panel:AddChild( Widget.Label( "title", 28, self:GetScoreText(delta, reason) ):SetBloom( 0.1 ))
                 local insert_index = 1
                 while widget_list[insert_index] ~= nil do
                     insert_index = insert_index + 1
                 end
                 widget_list[insert_index] = {score = delta, multiplier = 1, label = label, reason = reason}
                 label:SetGlyphColour( text_color )
+                    :SetOutlineColour( 0x000000FF )
+                    :EnableOutline( 0.25 )
                 
                 local screenw, screenh = panel:GetFE():GetScreenDims()
                 local sx, sy
@@ -1448,21 +1467,31 @@ local MODIFIERS =
                         if source_widget then
                             self.scores[source:GetUID()].score = self.scores[source:GetUID()].score + delta
                             source:NotifyChanged()
-                            panel:StartCoroutine(PopupText, panel, source_widget, 32, UICOLOURS.HILITE, self.score_widgets[source:GetUID()])
+                            panel:StartCoroutine(PopupText, panel, source_widget, 32, UICOLOURS.WHITE, self.score_widgets[source:GetUID()])
                         end
                     end)
                     return
                 end 
             end
-            if source == nil or source.negotiator:IsPlayer() then
+            local is_source_incepted = source and (source.modifier_type == MODIFIER_TYPE.BOUNTY or source.modifier_type == MODIFIER_TYPE.INCEPTION)
+            if source == nil or (source.negotiator:IsPlayer() and not is_source_incepted) or (source.anti_negotiator:IsPlayer() and is_source_incepted) then
                 
                 self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                     panel:RefreshReason()
-                    local source_widget = panel:FindSlotWidget( self.engine:GetPlayerNegotiator():FindCoreArgument() )--panel.main_overlay.minigame_objective
+                    local source_widget = self.engine:GetPlayerNegotiator():FindCoreArgument() and 
+                        panel:FindSlotWidget( self.engine:GetPlayerNegotiator():FindCoreArgument() ) or nil--panel.main_overlay.minigame_objective
                     self.player_score = self.player_score + delta
-                    panel:StartCoroutine(PopupText, panel, source_widget, 32, UICOLOURS.HILITE, self.player_score_widget)
+                    panel:StartCoroutine(PopupText, panel, source_widget, 32, UICOLOURS.WHITE, self.player_score_widget)
                 end)
             end
+        end,
+        CheckGameOver = function(self)
+            for i, mod in self.negotiator:Modifiers() do
+                if mod.modifier_type == MODIFIER_TYPE.CORE and mod ~= self then
+                    return
+                end
+            end
+            self.engine:Win()
         end,
         event_priorities =
         {
@@ -1494,6 +1523,9 @@ local MODIFIERS =
                 if params and params.splashed_modifier then
                     return
                 end
+                if source.negotiator == target.negotiator then
+                    return -- self harm, does nothing.
+                end
                 if damage > defended then
                     print(loc.format("{1} dealt {3} damage to {2}", source, target, damage - defended))
                     if source.damages_during_play then
@@ -1502,10 +1534,11 @@ local MODIFIERS =
                     end
                     -- print(loc.format("{1} dealt damage(real_owner={2})", source, source and source.real_owner))
                     self:DeltaScore((damage - defended) * 1, source, "SCORE_DAMAGE")
-                    if target == self.engine:GetPlayerNegotiator():FindCoreArgument() and not target.real_owner then
-                        local cmp_delta = math.floor((damage - defended) / 2)
-                        target.composure = target.composure + cmp_delta
-                    end
+
+                    -- if target == self.engine:GetPlayerNegotiator():FindCoreArgument() and not target.real_owner then
+                    --     local cmp_delta = math.floor((damage - defended) / 2)
+                    --     target.composure = target.composure + cmp_delta
+                    -- end
                 else
                     if target.composure_applier then
                         ----------------------------
@@ -1528,22 +1561,6 @@ local MODIFIERS =
                     end
                 end
             end,
-            -- [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
-            --     if source.real_owner and (source.real_owner.uid == source.uid) and target == nil then
-            --         -- print("Modify score:", source)
-            --         if self.scores[source:GetUID()] then
-            --             local score = self.scores[source:GetUID()].score
-            --             -- print("score =",score)
-            --             persuasion:ModifyPersuasion(score, score, self)
-            --         else
-            --             -- print("score = 0")
-            --             persuasion:ModifyPersuasion(0, 0, self)
-            --         end
-            --     end
-            --     -- if source.negotiator ~= self.negotiator then
-            --         -- print("Opponent source:", source)
-            --     -- end
-            -- end,
             [ EVENT.DELTA_COMPOSURE ] =  function( self, modifier, new_value, old_value, source, start_of_turn )
                 local delta = new_value - old_value
                 if delta > 0 then
@@ -1568,17 +1585,38 @@ local MODIFIERS =
                 if source and source.real_owner then
                     modifier.real_owner = source.real_owner
                 end
+                if modifier.negotiator == self.negotiator and modifier.modifier_type == MODIFIER_TYPE.ARGUMENT then
+                    modifier:ModifyResolve(self:GetBonusResolve(), self)
+                end
+                if source and source.negotiator == modifier.negotiator and modifier.modifier_type == MODIFIER_TYPE.ARGUMENT then
+                    self:DeltaScore(3, source, "SCORE_ARGUMENT_CREATED")
+                end
+                if source and source.negotiator == modifier.anti_negotiator and 
+                    (modifier.modifier_type == MODIFIER_TYPE.BOUNTY or modifier.modifier_type == MODIFIER_TYPE.INCEPTION) then
+                    
+                    self:DeltaScore(3, source, "SCORE_ARGUMENT_INCEPTED")
+                end
             end,
             [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, source )
                 if source and source.negotiator ~= modifier.negotiator then
                     if modifier.modifier_type == MODIFIER_TYPE.CORE then
                         self:DeltaScore(25, source, "SCORE_OPPONENT_DESTROYED")
-                        for i, mod in self.negotiator:Modifiers() do
-                            if mod.modifier_type == MODIFIER_TYPE.CORE and mod ~= self then
-                                return
+                        self:CheckGameOver()
+                        if modifier.negotiator == self.negotiator then
+                            
+                        else
+                            for i, mod in self.anti_negotiator:Modifiers() do
+                                if mod.modifier_type == MODIFIER_TYPE.CORE and not mod.candidate_agent then
+                                    return
+                                end
                             end
+                            -- only other candidates are left. You can no longer do anything.
+                            local minigame = self.engine
+                            minigame.hand_deck:TransferCards( minigame.trash_deck )
+                            minigame.draw_deck:TransferCards( minigame.trash_deck )
+                            minigame.discard_deck:TransferCards( minigame.trash_deck )
+                            -- self.resolve_deck:TransferCards( self.trash_deck )
                         end
-                        self.engine:Win()
                     else
                         self:DeltaScore(3, source, "SCORE_ARGUMENT_DESTROYED")
                     end
@@ -1600,6 +1638,9 @@ local MODIFIERS =
                         end
                     end
                 end
+            end,
+            [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
+                self:CheckGameOver()
             end,
         },
     },

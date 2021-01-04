@@ -38,7 +38,7 @@ local MINI_NEGOTIATOR_CARDS =
         name = "Ethos",
         flags = CARD_FLAGS.DIPLOMACY,
         min_persuasion = 4,
-        max_persuasion = 6,
+        max_persuasion = 7,
     },
     mn_manipulate_damage =
     {
@@ -57,14 +57,14 @@ local MINI_NEGOTIATOR_CARDS =
         name = "Pathos",
         flags = CARD_FLAGS.HOSTILE,
         min_persuasion = 3,
-        max_persuasion = 6,
+        max_persuasion = 8,
     },
     mn_inspire =
     {
         name = "Inspire",
         flags = CARD_FLAGS.DIPLOMACY,
-        min_persuasion = 1,
-        max_persuasion = 3,
+        min_persuasion = 2,
+        max_persuasion = 4,
         features =
         {
             INFLUENCE = 2,
@@ -74,8 +74,8 @@ local MINI_NEGOTIATOR_CARDS =
     {
         name = "Dominate",
         flags = CARD_FLAGS.HOSTILE,
-        min_persuasion = 2,
-        max_persuasion = 2,
+        min_persuasion = 3,
+        max_persuasion = 3,
         features =
         {
             DOMINANCE = 2,
@@ -204,6 +204,12 @@ for i, id, def in sorted_pairs( MINI_NEGOTIATOR_CARDS ) do
     if not def.rarity then
         def.rarity = CARD_RARITY.UNIQUE
     end
+    def.EvaluateTargetWeight = function( self, target, targets )
+        if self.real_owner and self.real_owner.EvaluateCardTargetWeight then
+            return self.real_owner:EvaluateCardTargetWeight(self, target, targets) or 1
+        end
+        return 1
+    end,
     -- if not def.shop_price then
     --     def.shop_price = 250
     -- end
@@ -373,6 +379,30 @@ local MINI_NEGOTIATOR =
         end 
         return 0
     end,
+    EvaluateCardTargetWeight = function(self, card, target, targets)
+        if card.target_enemy then
+            local weight = 1
+            if target.real_owner and target.real_owner.negotiator == target.negotiator then
+                local self_agent = self.candidate_agent
+                local target_fac = target.real_owner.candidate_agent and target.real_owner.candidate_agent:GetFactionID() or "NEUTRAL"
+                if self_agent and self_agent:GetFactionRelationship(target_fac) < RELATIONSHIP.NEUTRAL then
+                    -- Increase weight if hates the other guy
+                    weight = weight + (RELATIONSHIP.NEUTRAL - self_agent:GetFactionRelationship(target_fac)) / 2
+                end
+            end
+            if target.modifier_type ~= MODIFIER_TYPE.CORE then
+                weight = weight + 0.5
+            end
+            if target.target_enemy then
+                weight = weight + 1.5
+            end
+            if target.target_mod == TARGET_MOD.TEAM then
+                weight = weight + 1.5
+            end
+            return weight
+        end
+        return 1
+    end,
     -- event_priorities =
     -- {
     --     [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_MULTIPLIER,
@@ -422,14 +452,10 @@ table.extend(MINI_NEGOTIATOR){
         -- {"mn_inspire"},
         {"mn_inspire"},
     },
-    evidence_stacks = {4, 5, 6, 7},
     EndTurnEffect = function(self, minigame)
         local has_argument = self.anti_negotiator:FindModifier( "PLANTED_EVIDENCE_MODDED" )
         if not has_argument then
-            local modifier = self.anti_negotiator:InceptModifier("PLANTED_EVIDENCE_MODDED", self.evidence_stacks[ 
-                math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2,
-                #self.evidence_stacks)
-            ], self )
+            local modifier = self.anti_negotiator:InceptModifier("PLANTED_EVIDENCE_MODDED", (self.engine:GetDifficulty() or 1) * 2, self )
             self:NotifyTriggered()
         end
     end,
