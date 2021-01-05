@@ -691,3 +691,25 @@ QDEF:AddConvo("do_debate")
                 end)
         end)
     :State("STATE_END")
+        :Loc{
+            DIALOG_END = [[
+                agent:
+                    That is all, folks!
+                * Wow, that was a handful. Quite literally if you are a human or a phicket.
+                * We don't discriminate phickets around here.
+                * Anyway, let's see how you do!
+            ]],
+            DIALOG_CHEER = [[
+                agent:
+                    {winner}! {winner}! {winner}!
+                {player_winner?
+                    * Oh wow! You are really popular!
+                    |
+                    * Oh wow! You are not really popular!
+                }
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:TalkTo(cxt:GetCastMember("host"))
+            cxt:Dialog("DIALOG_END")
+        end)
