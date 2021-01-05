@@ -303,34 +303,34 @@ QDEF:AddConvo("go_to_debate")
         end)
 QDEF:AddConvo("do_debate")
     :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("theater") end)
-    :Loc{
-        DIALOG_INTRO = [[
-            * You walked into the theater.
-            * It is full of people.
-            agent:
-                !right
-            * You wait for the host to introduce the candidates.
-            * After introducing six the other candidate, an amount so large that we don't even bother to write it out, the host finally calls you in.
-            agent:
-                [p] And finally, we have {player}!
-            player:
-                !left
-                Yo.
-            agent:
-                Why do we have all the candidates gathered here today?
-                Why, it is to have a debate, of course!
-                We have plenty of questions to ask each candidates today, and they have debate out which is the best.
-                Hopefully this helps you determine which candidate is the most competent.
-        ]],
-    }
-    :Fn(function(cxt)
-        if not cxt.quest.param.popularity then
-            cxt.quest.param.popularity = {}
-        end
-        cxt:TalkTo(cxt:GetCastMember("host"))
-        cxt:Dialog("DIALOG_INTRO")
-        cxt:GoTo("STATE_QUESTION")
-    end)
+        :Loc{
+            DIALOG_INTRO = [[
+                * You walked into the theater.
+                * It is full of people.
+                agent:
+                    !right
+                * You wait for the host to introduce the candidates.
+                * After introducing six the other candidate, an amount so large that we don't even bother to write it out, the host finally calls you in.
+                agent:
+                    [p] And finally, we have {player}!
+                player:
+                    !left
+                    Yo.
+                agent:
+                    Why do we have all the candidates gathered here today?
+                    Why, it is to have a debate, of course!
+                    We have plenty of questions to ask each candidates today, and they have debate out which is the best.
+                    Hopefully this helps you determine which candidate is the most competent.
+            ]],
+        }
+        :Fn(function(cxt)
+            if not cxt.quest.param.popularity then
+                cxt.quest.param.popularity = {}
+            end
+            cxt:TalkTo(cxt:GetCastMember("host"))
+            cxt:Dialog("DIALOG_INTRO")
+            cxt:GoTo("STATE_QUESTION")
+        end)
     :State("STATE_QUESTION")
         :Quips{
             {
@@ -365,6 +365,8 @@ QDEF:AddConvo("do_debate")
                 * A debate is about to go down!
             ]],
             REASON_TXT = "Impress the audience with your slick negotiation skills! (You have {1} {1*point|points})",
+            OPT_SIT_OUT = "Skip the debate and observe the opponents",
+            TT_SIT_OUT = "You will not be able to debate and stand out, but you will restore some resolve",
         }
         :Fn(function(cxt)
             if not cxt.quest.param.questions or #cxt.quest.param.questions == 0 then
@@ -423,6 +425,146 @@ QDEF:AddConvo("do_debate")
             cxt:Quip(cxt:GetAgent(), "debate_question")
             CreateDebateOption(cxt, neg_helper, neg_hinder, cxt.quest.param.topic, -1)
             CreateDebateOption(cxt, pos_helper, pos_hinder, cxt.quest.param.topic, 1)
+            cxt:Opt("OPT_SIT_OUT")
+                :PostText("TT_SIT_OUT")
+                :GoTo("STATE_AUTO_DEBATE")
+        end)
+    :State("STATE_AUTO_DEBATE")
+        :Quips{
+            {
+                tags = "debate_mvp",
+                [[
+                    * The debate goes on for a long time, but there is one person who shines above others.
+                    * With {agent}'s wits and cunning, {agent.heshe} is able to convince the other team to shut up.
+                ]],
+            },
+            {
+                tags = "debate_mvp, admiralty",
+                [[
+                    * You noticed how {agent} plants evidence every turn, and {agent.hisher} allies always use that planted evidence to be more convincing.
+                    * Eventually, the opponent just gives up seeing how {agent} just makes up evidence on the fly and everyone just believes that.
+                ]],
+            },
+            {
+                tags = "debate_mvp, bandits",
+                [[
+                    * The debate drags on for a long time, but the longer the debate goes on, the more {agent} becomes impatient.
+                    * {agent.HeShe} quickly ends the debate with {agent.hisher} aggressive method.
+                ]],
+            },
+            {
+                tags = "debate_mvp, spark_barons",
+                [[
+                    * You doubt it at first, but {agent} has a way with {agent.hisher} words.
+                    * {agent.HeShe} uses many straw man arguments, and uses FACTS and LOGIC and DESTROYS the opposition.
+                    * Couple with the fact that {agent.heshe} prevents the opponent from using certain tactics unless they expose themselves, {agent.heshe} quickly becomes a force to be reckoned with.
+                    * In the end, {agent.hisher} side won, surprising everyone.
+                ]],
+            },
+            {
+                tags = "debate_mvp, rise",
+                [[
+                    * During the debate, it is clear that {agent} is an inspirational talker.
+                    * {agent} is able to use {agent.hisher} words and make the opponent forget what they are saying, and quickly, this becomes out of hand.
+                    * The opponent will sometimes spend a turn during virtually nothing, and it is no wonder they lost in the end.
+                    * It is clear who the MVP is, despite the fact that during so when you're involved doesn't make {agent.himher} such.
+                    * Funny how that works.
+                ]],
+            },
+            {
+                tags = "debate_mvp, cult_of_hesh",
+                [[
+                    * {agent} is able to quickly maintain dominance.
+                    * {agent.HeShe} creates a Wrath of Hesh argument on the first turn, and ever since then, it does so much work.
+                    * And worst of all, WHY AREN'T THE OPPONENTS TARGETTING IT?
+                    * IT IS CLEARLY THE MOST DETRIMENTAL ARGUMENT, YET YOU ARE NOT TARGETTING IT!
+                    * WHAT ARE YOU DOING FOR HESH SAKE?
+                    * And yeah, {agent} won, surprising no one.
+                ]],
+            },
+            {
+                tags = "debate_mvp, jakes",
+                [[
+                    * During the debate, one person uses an unconventional tactics to stand out.
+                    * The opponents underestimate {agent}, so {agent.heshe} uses this opportunity to act.
+                    * With {agent.hisher} double edge, it makes the opponent's tactics less useful.
+                    * Eventually, {agent} won in the long term.
+                ]],
+            },
+            {
+                -- Can't figure out how to have "or" relation for tags, so just copy and paste
+                tags = "debate_mvp, andwanette",
+                [[
+                    * During the debate, one person uses an unconventional tactics to stand out.
+                    * The opponents underestimate {agent}, so {agent.heshe} uses this opportunity to act.
+                    * With {agent.hisher} double edge, it makes the opponent's tactics less useful.
+                    * Eventually, {agent} won in the long term.
+                ]],
+            },
+        }
+        :Loc{
+            DIALOG_INTRO = [[
+                player:
+                    Nah, I think I'll just sit this one out.
+                agent:
+                    Okay, then.
+                * You decide to skip this question and let the others debate.
+                * And you observe the behaviour of others.
+            ]],
+            DIALOG_POST = [[
+                * This observation is very insightful(hopefully), and you are now more prepared for the next debate!
+            ]],
+            OPT_CONTINUE = "Continue",
+            OPT_REVIEW = "Review popularity",
+            DIALOG_REVIEW = [[
+                * Current popularity standing:
+            ]],
+            DIALOG_REVIEW_PERSON = [[
+                * {1#agent} has a popularity of {2}.
+            ]],
+        }
+        :Fn(function(cxt)
+            local neg, pos = {}, {}
+            for i, agent in ipairs(cxt.quest.param.candidates) do
+                local issue = DemocracyConstants.issue_data[cxt.quest.param.topic]
+
+                -- The default index of a person.
+                local stance_index = issue:GetAgentStanceIndex(agent)
+                -- How much a person's opinion will shift in your favor
+                if stance_index < 0 then
+                    table.insert(neg, agent)
+                elseif stance_index > 0 then
+                    table.insert(pos, agent)
+                end
+            end
+            local winners
+            if math.random(#neg + #pos) <= #neg then
+                winners = neg
+            else
+                winners = pos
+            end
+            local mvp = table.arraypick(winners)
+            for i, agent in ipairs(winners) do
+                DeltaPopularity(cxt.quest.param.popularity, agent, 7)
+            end
+            DeltaPopularity(cxt.quest.param.popularity, mvp, 5)
+
+            cxt:Dialog("DIALOG_INTRO")
+
+            cxt:TalkTo(mvp)
+            cxt:Quip( mvp, "debate_mvp")
+            
+            cxt:Dialog("DIALOG_POST")
+            ConvoUtil.DoResolveDelta(cxt, 15)
+            cxt:Opt("OPT_CONTINUE")
+                :GoTo("STATE_QUESTION")
+            cxt:Opt("OPT_REVIEW")
+                :Dialog("DIALOG_REVIEW")
+                :Fn(function(cxt)
+                    for id, val in pairs(cxt.quest.param.popularity) do
+                        cxt:Dialog("DIALOG_REVIEW_PERSON", TheGame:GetGameState():GetAgent(id), val)
+                    end
+                end)
         end)
     :State("STATE_DEBATE_SUMMARY")
         :Loc{
@@ -548,3 +690,4 @@ QDEF:AddConvo("do_debate")
                     end
                 end)
         end)
+    :State("STATE_END")
