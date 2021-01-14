@@ -55,6 +55,9 @@ local QDEF = QuestDef.Define
         quest:GetCastMember("primary_advisor"):GetBrain():SendToWork()
         if quest.param.parent_quest then
             quest.param.parent_quest.param.did_debate_scrum = true
+            quest.param.parent_quest.param.good_debate = quest.param.good_debate
+            quest.param.parent_quest.param.bad_debate = quest.param.bad_debate
+            quest.param.parent_quest.param.popularity_rankings = quest.param.popularity_rankings
         end
     end,
 }
@@ -162,6 +165,21 @@ local QDEF = QuestDef.Define
             end
         end,
     },
+    on_complete = function(quest)
+        quest:Activate("report_to_advisor")
+        quest:Activate("talk_to_candidates")
+    end,
+}
+:AddObjective{
+    id = "report_to_advisor",
+    title = "Return to your advisor",
+    desc = "Talk to your advisor about how you did today.",
+}
+:AddObjective{
+    id = "talk_to_candidates",
+    title = "(Optional) Talk to other candidates",
+    desc = "Other candidates might be interested in an alliance if you've cooperated with them a lot during the debate. Use this opportunity to hopefully form an alliance",
+
 }
 
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
@@ -327,6 +345,18 @@ QDEF:AddConvo("do_debate")
             if not cxt.quest.param.popularity then
                 cxt.quest.param.popularity = {}
             end
+            for i, agent in cxt.location:Agents() do
+                if agent:GetRoleAtLocation( cxt.location ) == CHARACTER_ROLES.PATRON then
+                    if agent:GetRelationship() > RELATIONSHIP.NEUTRAL then
+                        DeltaPopularity(cxt.quest.param.popularity, cxt.player, 1)
+                    end
+                    for id, data in pairs(DemocracyConstants.opposition_data) do
+                        if agent:GetFactionID() == data.main_supporter then
+                            DeltaPopularity(cxt.quest.param.popularity, cxt:GetCastMember(data.cast_id), 1)
+                        end
+                    end
+                end
+            end
             cxt:TalkTo(cxt:GetCastMember("host"))
             cxt:Dialog("DIALOG_INTRO")
             cxt:GoTo("STATE_QUESTION")
@@ -371,6 +401,7 @@ QDEF:AddConvo("do_debate")
         :Fn(function(cxt)
             if not cxt.quest.param.questions or #cxt.quest.param.questions == 0 then
                 -- Go to end state.
+                cxt:GoTo("STATE_END")
             end
             cxt.quest.param.topic = cxt.quest.param.questions[1]
             table.remove(cxt.quest.param.questions, 1)
@@ -523,39 +554,42 @@ QDEF:AddConvo("do_debate")
                 * {1#agent} has a popularity of {2}.
             ]],
         }
+        :SetLooping(true)
         :Fn(function(cxt)
-            local neg, pos = {}, {}
-            for i, agent in ipairs(cxt.quest.param.candidates) do
-                local issue = DemocracyConstants.issue_data[cxt.quest.param.topic]
+            if cxt:FirstLoop() then
+                local neg, pos = {}, {}
+                for i, agent in ipairs(cxt.quest.param.candidates) do
+                    local issue = DemocracyConstants.issue_data[cxt.quest.param.topic]
 
-                -- The default index of a person.
-                local stance_index = issue:GetAgentStanceIndex(agent)
-                -- How much a person's opinion will shift in your favor
-                if stance_index < 0 then
-                    table.insert(neg, agent)
-                elseif stance_index > 0 then
-                    table.insert(pos, agent)
+                    -- The default index of a person.
+                    local stance_index = issue:GetAgentStanceIndex(agent)
+                    -- How much a person's opinion will shift in your favor
+                    if stance_index < 0 then
+                        table.insert(neg, agent)
+                    elseif stance_index > 0 then
+                        table.insert(pos, agent)
+                    end
                 end
-            end
-            local winners
-            if math.random(#neg + #pos) <= #neg then
-                winners = neg
-            else
-                winners = pos
-            end
-            local mvp = table.arraypick(winners)
-            for i, agent in ipairs(winners) do
-                DeltaPopularity(cxt.quest.param.popularity, agent, 7)
-            end
-            DeltaPopularity(cxt.quest.param.popularity, mvp, 5)
+                local winners
+                if math.random(#neg + #pos) <= #neg then
+                    winners = neg
+                else
+                    winners = pos
+                end
+                local mvp = table.arraypick(winners)
+                for i, agent in ipairs(winners) do
+                    DeltaPopularity(cxt.quest.param.popularity, agent, 7)
+                end
+                DeltaPopularity(cxt.quest.param.popularity, mvp, 5)
 
-            cxt:Dialog("DIALOG_INTRO")
+                cxt:Dialog("DIALOG_INTRO")
 
-            cxt:TalkTo(mvp)
-            cxt:Quip( mvp, "debate_mvp")
-            
-            cxt:Dialog("DIALOG_POST")
-            ConvoUtil.DoResolveDelta(cxt, 15)
+                cxt:TalkTo(mvp)
+                cxt:Quip( mvp, "debate_mvp")
+                
+                cxt:Dialog("DIALOG_POST")
+                ConvoUtil.DoResolveDelta(cxt, 15)
+            end
             cxt:Opt("OPT_CONTINUE")
                 :GoTo("STATE_QUESTION")
             cxt:Opt("OPT_REVIEW")
@@ -694,22 +728,61 @@ QDEF:AddConvo("do_debate")
         :Loc{
             DIALOG_END = [[
                 agent:
+                    !right
                     That is all, folks!
                 * Wow, that was a handful. Quite literally if you are a human or a phicket.
                 * We don't discriminate phickets around here.
                 * Anyway, let's see how you do!
             ]],
             DIALOG_CHEER = [[
-                agent:
-                    {winner}! {winner}! {winner}!
                 {player_winner?
                     * Oh wow! You are really popular!
+                    * Everyone just cheers you on!
                     |
                     * Oh wow! You are not really popular!
+                    * Everyone cheers on {1#agent} instead!
+                    * How are you ever going to recover?
                 }
             ]],
         }
         :Fn(function(cxt)
             cxt:TalkTo(cxt:GetCastMember("host"))
             cxt:Dialog("DIALOG_END")
+            cxt.quest.param.popularity_rankings = shallowcopy(cxt.quest.param.candidates)
+            table.insert(cxt.quest.param.popularity_rankings, 1, cxt.player)
+            table.stable_sort(cxt.quest.param.popularity_rankings, function(a,b)
+                return (cxt.quest.param.popularity[a:GetID()] or 0) > (cxt.quest.param.popularity[b:GetID()] or 0)
+            end)
+            cxt.quest.param.winner = cxt.quest.param.popularity_rankings[1]
+            cxt.quest.param.player_winner = cxt.quest.param.winner and cxt.quest.param.winner:IsPlayer()
+            for i, agent in ipairs(cxt.quest.param.popularity_rankings) do
+                if agent:IsPlayer() then
+                    cxt.quest.param.player_rank = i
+                    break
+                end
+            end
+            if not cxt.quest.param.player_rank then
+                cxt.quest.param.player_rank = #cxt.quest.param.popularity_rankings + 1
+            end
+            if cxt.quest.param.player_rank == 1 then
+                cxt.quest.param.good_debate = true
+            elseif cxt.quest.param.player_rank > 2 then
+                cxt.quest.param.bad_debate = true
+            end
+            cxt:Dialog("DIALOG_CHEER", cxt.quest.param.popularity_rankings[1])
+            cxt.quest:Complete("do_debate")
+            StateGraphUtil.AddEndOption(cxt)
         end)
+QDEF:AddConvo("report_to_advisor", "primary_advisor")
+    :Loc{
+        OPT_REVIEW = "Finish up",
+        DIALOG_REVIEW = [[
+            agent:
+                Let's finish up.
+        ]],
+    }
+    :Hub(function(cxt)
+        cxt:Opt("OPT_REVIEW")
+            :Dialog("DIALOG_REVIEW")
+            :CompleteQuest()
+    end)
