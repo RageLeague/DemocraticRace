@@ -402,6 +402,7 @@ QDEF:AddConvo("do_debate")
             if not cxt.quest.param.questions or #cxt.quest.param.questions == 0 then
                 -- Go to end state.
                 cxt:GoTo("STATE_END")
+                return
             end
             cxt.quest.param.topic = cxt.quest.param.questions[1]
             table.remove(cxt.quest.param.questions, 1)
