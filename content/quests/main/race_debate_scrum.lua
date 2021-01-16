@@ -174,12 +174,13 @@ local QDEF = QuestDef.Define
     id = "report_to_advisor",
     title = "Return to your advisor",
     desc = "Talk to your advisor about how you did today.",
+    mark = {"primary_advisor"},
 }
 :AddObjective{
     id = "talk_to_candidates",
     title = "(Optional) Talk to other candidates",
     desc = "Other candidates might be interested in an alliance if you've cooperated with them a lot during the debate. Use this opportunity to hopefully form an alliance",
-
+    mark = {"theater"},
 }
 
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
