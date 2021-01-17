@@ -1,6 +1,27 @@
 Content.AddStringTable("DEMOCRACY", {
     DEMOCRACY =
     {
+        ADVANCEMENT =
+        {
+            LEVEL_0_NAME = "Level 0: Law school",
+            LEVEL_0_DESC = "For those who just wants to enjoy the story.\nNegotiations are significantly easier.\nYour advisor has more faith in you.",
+            LEVEL_1_NAME = "Level 1: The first real test",
+            LEVEL_1_DESC = "The default experience for the Democratic Race.\nDefault negotiation difficulty.\nYour advisors will abandon you if you don't have much support.",
+            LEVEL_2_NAME = "Level 2: The Griftlands strikes back",
+            LEVEL_2_DESC = "You cannot restart the day after losing.\nNon-boss enemies have upgraded abilities, and have a chance to spawn as a promoted version.\nNegotiation opponents have improved arguments.",
+            LEVEL_3_NAME = "Level 3: Hostile population",
+            LEVEL_3_DESC = "Negotiation opponents have increased resolve and damage.\nChallenge negotiations are more challenging.\nYour advisor has higher expectations.",
+            LEVEL_4_NAME = "Level 4: Keep your hands clean",
+            LEVEL_4_DESC = "Resolve is no longer restored after battle.\nOnly heal 50% of your health and resolve when sleeping.\nEngaging in battle hurts your reputation.",
+            LEVEL_5_NAME = "Level 5: Tricky enemies",
+            LEVEL_5_DESC = "Challenge negotiations are even more challenging.\nMore people dislike you on principle.",
+            LEVEL_6_NAME = "Level 6: Strive for perfection",
+            LEVEL_6_DESC = "Start with 20% less maximum health and maximum resolve.\nYour advisor has even higher expectations.",
+            LEVEL_7_NAME = "Level 7: Do more with less",
+            LEVEL_7_DESC = "Everything costs 25% more shills.\nStart with 1 fewer battle graft slots and negotiation graft slots.",
+            LEVEL_8_NAME = "Level 8: Test your mettle",
+            LEVEL_8_DESC = "You no longer earn Mettle, and your Mettle upgrades are disabled.",
+        },
         DELTA_SUPPORT_REASON =
         {
             DEFAULT_UP = "favorable action",

@@ -999,6 +999,7 @@ local MODIFIERS =
             return self.engine:GetPlayerNegotiator() == card.negotiator and 
                 not CheckBits( card.flags, CARD_FLAGS.UNPLAYABLE ) and
                 not CheckAnyBits( card.flags, CARD_FLAGS.BYSTANDER ) and card.played_from_hand
+                and not CheckAnyBits( card.flags, CARD_FLAGS.FLOURISH )
         end,
 
         CheckAllowRecord = function(self, source)
@@ -1038,6 +1039,9 @@ local MODIFIERS =
             end,
             [ EVENT.MODIFIER_REMOVED ] = function ( self, modifier, source )
                 self:CheckAllowRecord(source)
+            end,
+            [ EVENT.INTENT_REMOVED ] = function( self, card )
+                self:CheckAllowRecord(card)
             end,
         },
     },

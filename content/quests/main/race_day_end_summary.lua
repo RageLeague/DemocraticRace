@@ -194,7 +194,7 @@ QDEF:AddConvo("summary", "primary_advisor")
             local expectation = DemocracyUtil.GetCurrentExpectation()
             local delta = support_level - expectation
             
-            local RANGE = 7
+            local RANGE = 4 + 3 * cxt.quest:GetRank()
             local rank = clamp( math.round((RANGE * #RANKS / 2 - delta) / RANGE) ,1, #RANKS)
             
             cxt.enc.scratch.loved = cxt:GetAgent():GetRelationship() == RELATIONSHIP.LOVED

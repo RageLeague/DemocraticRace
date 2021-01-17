@@ -873,7 +873,7 @@ function DemocracyUtil.GetAlliancePotential(candidate_id)
                     -- This happens when you are liked with hated, loved with disliked,
                     -- disliked of loved(never happens unless somehow a faction has more than 1 candidates)
                     -- or hated of liked
-                    return nil, "Alliance or opponent of bad candidate"
+                    return nil, candidate
                 elseif fof == -1 then
                     score = score - 25
                 else
@@ -934,6 +934,36 @@ function DemocracyUtil.DebugSetRandomDeck(seed)
     local deck_idx = math.random(#DECKS)
     local deck = DECKS[deck_idx]
     TheGame:GetGameState():SetDecks(deck)
+end
+function DemocracyUtil.DoAllianceConvo(cxt, ally)
+    local candidate_data = DemocracyUtil.GetOppositionData(ally)
+    cxt:Dialog("DIALOG_ALLIANCE_TALK_INTRO")
+    if not candidate_data then
+        cxt:Dialog("DIALOG_ALLIANCE_TALK_INVALID")
+    else
+        local potential, problem_agent = DemocracyUtil.GetAlliancePotential(candidate_data.cast_id)
+        local platform = candidate_data.platform
+        local oppo_main_stance = candidate_data.stances[platform]
+        local player_main_stance = DemocracyUtil.GetStance(platform) or 0
+        cxt.enc.scratch.opposite_spectrum = oppo_main_stance * player_main_stance <= -2
+        if potential and DemocracyUtil.GetEndorsement(potential) > RELATIONSHIP.NEUTRAL then
+            cxt:Dialog("DIALOG_ALLIANCE_TALK_UNCONDITIONAL")
+            if cxt.enc.scratch.opposite_spectrum then
+                
+            else
+
+            end
+        elseif potential and DemocracyUtil.GetEndorsement(potential) == RELATIONSHIP.NEUTRAL then
+            cxt:Dialog("DIALOG_ALLIANCE_TALK_CONDITIONAL")
+        else
+            if problem_agent then
+                cxt.enc.scratch.is_problem_ally = problem_agent:GetRelationship() > RELATIONSHIP.NEUTRAL
+                cxt:Dialog("DIALOG_ALLIANCE_TALK_BAD_ALLY", problem_agent)
+            else
+                cxt:Dialog("DIALOG_ALLIANCE_TALK_REJECT")
+            end
+        end
+    end
 end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
