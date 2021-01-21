@@ -68,12 +68,35 @@ Content.AddStringTable( "DEM_CONVO", {
             player:
                 Well, screw you too.
         ]],
+        OPT_ALLIANCE_TALK_ACCEPT = "Accept alliance",
+        DIALOG_ALLIANCE_TALK_ACCEPT = [[
+            player:
+                [p] We have a deal.
+            agent:
+                Great!
+        ]],
         OPT_ALLIANCE_TALK_AGREE_STANCE = "Opt to support {agent}'s stance",
+        DIALOG_ALLIANCE_TALK_AGREE_STANCE = [[
+            player:
+                [p] You know what? I agree with you.
+            agent:
+                Yeah, yeah.
+                But this time, it's for real. Don't try to change your stance to the opposition.
+            player:
+                Sure, pinky promise.
+        ]],
         OPT_ALLIANCE_TALK_HERE_DEMANDS = "Hear out {agent}'s demands",
+        DIALOG_ALLIANCE_TALK_HERE_DEMANDS = [[
+            player:
+                Alright, then, what do you want?
+            agent:
+                What I want is simple.
+                If you can {1#demand_list}, then we're in business.
+        ]],
         OPT_ALLIANCE_TALK_REJECT_ALLIANCE = "Reject alliance",
         DIALOG_ALLIANCE_TALK_REJECT_ALLIANCE = [[
             player:
-                You know what? I reconsider.
+                [p] You know what? I reconsider.
             agent:
                 What a waste of my time.
         ]],

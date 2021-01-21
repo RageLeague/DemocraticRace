@@ -949,12 +949,42 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally)
         if potential and DemocracyUtil.GetEndorsement(potential) > RELATIONSHIP.NEUTRAL then
             cxt:Dialog("DIALOG_ALLIANCE_TALK_UNCONDITIONAL")
             if cxt.enc.scratch.opposite_spectrum then
+                cxt:Opt("OPT_ALLIANCE_TALK_AGREE_STANCE")
+                    :Dialog("DIALOG_ALLIANCE_TALK_AGREE_STANCE")
+                    :UpdatePoliticalStance(platform, oppo_main_stance)
+                    :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
+                    :DoneConvo()
                 
             else
-
+                cxt:Opt("OPT_ALLIANCE_TALK_ACCEPT")
+                    :Dialog("DIALOG_ALLIANCE_TALK_ACCEPT")
+                    -- :UpdatePoliticalStance(platform, oppo_main_stance)
+                    :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
+                    :DoneConvo()
             end
+            cxt:Opt("OPT_ALLIANCE_TALK_REJECT_ALLIANCE")
+                :Dialog("DIALOG_ALLIANCE_TALK_REJECT_ALLIANCE")
+                :Fn(function()
+                    ally:Remember("REJECTED_ALLIANCE")
+                end)
+                :DoneConvo()
         elseif potential and DemocracyUtil.GetEndorsement(potential) == RELATIONSHIP.NEUTRAL then
             cxt:Dialog("DIALOG_ALLIANCE_TALK_CONDITIONAL")
+            if cxt.enc.scratch.opposite_spectrum then
+                cxt:RunLoop(function(cxt)
+                    cxt:Opt("OPT_ALLIANCE_TALK_AGREE_STANCE")
+                        :Dialog("DIALOG_ALLIANCE_TALK_AGREE_STANCE")
+                        :UpdatePoliticalStance(platform, oppo_main_stance)
+                        -- :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
+                        :Pop()
+                    cxt:Opt("OPT_ALLIANCE_TALK_REJECT_ALLIANCE")
+                        :Dialog("DIALOG_ALLIANCE_TALK_REJECT_ALLIANCE")
+                        :Fn(function()
+                            ally:Remember("REJECTED_ALLIANCE")
+                        end)
+                        :DoneConvo()
+                end)
+            end
         else
             if problem_agent then
                 cxt.enc.scratch.is_problem_ally = problem_agent:GetRelationship() > RELATIONSHIP.NEUTRAL
@@ -962,6 +992,9 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally)
             else
                 cxt:Dialog("DIALOG_ALLIANCE_TALK_REJECT")
             end
+            -- ally:OpinionEvent(OPINION.ALLIED_WITH)
+            ally:Remember("REJECTED_ALLIANCE")
+            StateGraphUtil.AddEndOption(cxt)
         end
     end
 end
