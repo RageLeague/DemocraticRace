@@ -985,6 +985,32 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally)
                         :DoneConvo()
                 end)
             end
+            local rawcost = 250 - potential * 8
+            -- local cost, reasons = CalculatePayment(ally, rawcost)
+            local demands, demand_list = ally:HasMemory("ALLIANCE_DEMANDS"), ally:HasMemory("ALLIANCE_DEMAND_LIST")
+            if not demands or not demand_list then
+                demands, demand_list = DemocracyUtil.GenerateDemandList(rawcost, ally, nil, {auto_scale = true})
+                ally:Remember("ALLIANCE_DEMANDS", demands)
+                ally:Remember("ALLIANCE_DEMAND_LIST", demand_list)
+                cxt.enc.scratch.new_demands = true
+            end
+            cxt:Dialog("DIALOG_ALLIANCE_TALK_DEMANDS", demand_list)
+            cxt:RunLoop(function(cxt)
+                local done_all = DemocracyUtil.AddDemandConvo(cxt, demand_list, demands)
+                if done_all then
+                    cxt:Opt("DIALOG_ALLIANCE_TALK_ACCEPT_CONDITIONAL")
+                    ally:OpinionEvent(OPINION.ALLIED_WITH)
+                    StateGraphUtil.AddEndOption(cxt)
+                    return
+                end
+            -- local demand_list = DemocracyUtil.ParseDemandList(demands)
+                cxt:Opt("OPT_ALLIANCE_TALK_REJECT_ALLIANCE")
+                    :Dialog("DIALOG_ALLIANCE_TALK_REJECT_ALLIANCE")
+                    :Fn(function()
+                        ally:Remember("REJECTED_ALLIANCE")
+                    end)
+                    :DoneConvo()
+            end)
         else
             if problem_agent then
                 cxt.enc.scratch.is_problem_ally = problem_agent:GetRelationship() > RELATIONSHIP.NEUTRAL

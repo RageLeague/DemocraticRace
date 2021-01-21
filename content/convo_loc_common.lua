@@ -39,6 +39,15 @@ Content.AddStringTable( "DEM_CONVO", {
                 Who would've guess something like this would happen?
             }
         ]],
+        DIALOG_ALLIANCE_TALK_DEMANDS = [[
+            agent:
+            {opposite_spectrum?
+                While that's well and good, that's not all you need to do.
+            player:
+                Of course it's not.
+            }
+                If you can {1#demand_list}, then we can form an alliance.
+        ]],
         DIALOG_ALLIANCE_TALK_BAD_ALLY = [[
             agent:
                 [p] That sounds good, but actually it's not.
@@ -74,6 +83,13 @@ Content.AddStringTable( "DEM_CONVO", {
                 [p] We have a deal.
             agent:
                 Great!
+        ]],
+        DIALOG_ALLIANCE_TALK_ACCEPT_CONDITIONAL = [[
+            player:
+                Alright, I did what you asked. Time to hold up to your end of the bargain.
+            agent:
+                Yes, of course.
+                {player}, I now officially form an alliance with you!
         ]],
         OPT_ALLIANCE_TALK_AGREE_STANCE = "Opt to support {agent}'s stance",
         DIALOG_ALLIANCE_TALK_AGREE_STANCE = [[
