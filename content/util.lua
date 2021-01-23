@@ -1024,6 +1024,23 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally)
         end
     end
 end
+function DemocracyUtil.GenerateGenericOppositionTable()
+    local GENERIC_OPPOSITION = {"GAMBLER", "SEEMLI", "TEI", "DANGEROUS_STRANGER"}
+    local player_id = TheGame:GetGameState():GetPlayerAgent():GetContentID()
+    if player_id ~= "SAL" then
+        table.insert(GENERIC_OPPOSITION, "NPC_SAL")
+    end
+    if player_id ~= "ROOK" then
+        table.insert(GENERIC_OPPOSITION, "NPC_ROOK")
+    end
+    if player_id ~= "SMITH" then
+        table.insert(GENERIC_OPPOSITION, "NPC_SMITH")
+    end
+    if player_id ~= "PC_SHEL" then
+        table.insert(GENERIC_OPPOSITION, "BRAVE_MERCHANT")
+    end
+    return GENERIC_OPPOSITION
+end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator
