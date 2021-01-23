@@ -117,6 +117,7 @@ local MINI_NEGOTIATOR_CARDS =
         name = "Kingpin",
         flags = CARD_FLAGS.HOSTILE,
         argument_to_create = "KINGPIN",
+        cost = 2,
     },
     mn_all_business = table.extend(ARGUMENT_CREATER){
         name = "All Business",
@@ -316,7 +317,17 @@ local MINI_NEGOTIATOR =
     end,
     PrepareCards = function(self)
         table.clear(self.prepared_cards)
-        local cards = table.multipick( self.available_cards, math.min(#self.available_cards, self.cards_played) )
+        local cards = {} -- table.multipick( self.available_cards, math.min(#self.available_cards, self.cards_played) )
+        local available_cards = shallowcopy(self.available_cards)
+        local actions_left = self.cards_played
+        while actions_left > 0 and #available_cards > 0 do
+            local chosen = table.arraypick(available_cards)
+            if (chosen.cost or 1) >= actions_left then
+                table.insert(cards, chosen)
+                actions_left = actions_left - (chosen.cost or 1)
+            end
+            table.arrayremove(available_cards, chosen)
+        end
         -- table.shuffle(cards)
         for i, card in ipairs(cards) do
             table.insert(self.prepared_cards, card)
