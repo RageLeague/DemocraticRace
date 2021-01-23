@@ -320,11 +320,14 @@ local MINI_NEGOTIATOR =
         local cards = {} -- table.multipick( self.available_cards, math.min(#self.available_cards, self.cards_played) )
         local available_cards = shallowcopy(self.available_cards)
         local actions_left = self.cards_played
+        print("Preparing for", self)
         while actions_left > 0 and #available_cards > 0 do
+            print("actions_left:", actions_left)
             local chosen = table.arraypick(available_cards)
-            if (chosen.cost or 1) >= actions_left then
+            if (chosen.cost or 1) <= actions_left then
                 table.insert(cards, chosen)
                 actions_left = actions_left - (chosen.cost or 1)
+                print("Chosen card:",chosen)
             end
             table.arrayremove(available_cards, chosen)
         end
