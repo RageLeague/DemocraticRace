@@ -40,7 +40,7 @@ local CARDS = {
                     end
                 end
             end,
-        }
+        },
     },
     advisor_diplomacy_relatable_plus =
     {
@@ -114,6 +114,48 @@ local CARDS = {
     {
         name = "Twisted Virtue Signal",
         req_argument_id = "DOMINANCE",
+    },
+    advisor_diplomacy_smiling_daggers =
+    {
+        name = "Smiling Daggers",
+        desc = "This card deals 1 bonus damage for every 2 {DOMINANCE} you have.",
+        flavour = "'What a nice thing you got there. Would it be a shame if something were to happen to it.'",
+
+        advisor = "ADVISOR_DIPLOMACY",
+        flags = CARD_FLAGS.DIPLOMACY,
+        cost = 1,
+
+        min_persuasion = 1,
+        max_persuasion = 4,
+
+        bonus_count = 2,
+        event_priorities =
+        {
+            [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_ADDITIVE,
+        },
+
+        event_handlers =
+        {
+            [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion )
+                if source == self then
+                    local stacks = self.negotiator:GetModifierStacks("DOMINANCE")
+                    if stacks > 0 then
+                        persuasion:AddPersuasion(math.floor(stacks / self.bonus_count), math.floor(stacks / self.bonus_count), self)
+                    end
+                end
+            end,
+        },
+    },
+    advisor_diplomacy_smiling_daggers_plus =
+    {
+        name = "Tall Smiling Daggers",
+        max_persuasion = 7,
+    },
+    advisor_diplomacy_smiling_daggers_plus2 =
+    {
+        name = "Enhanced Smiling Daggers",
+        desc = "This card deals 1 bonus damage for every <#UPGRADE>{DOMINANCE}</> you have.",
+        bonus_count = 1,
     },
     advisor_manipulate_straw_army = 
     {
@@ -220,6 +262,68 @@ local CARDS = {
         PostProcess = function(self, target, sources)
             if sources and #sources > 0 then
                 self.engine:DrawCards(#sources)
+            end
+        end,
+    },
+    advisor_manipulate_moreef_defense = 
+    {
+        name = "Moreef Defense",
+        desc = "Create {1} separate {advisor_manipulate_moreef_defense}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, AutoUpgradeText(self, "argument_count"))
+        end,
+        flavour = "'If Sweet Moreef doesn't live in Rentoria, you must acquit.'",
+
+        advisor = "ADVISOR_MANIPULATE",
+        flags = CARD_FLAGS.MANIPULATE,
+        cost = 1,
+
+        argument_count = 2,
+
+        OnPostResolve = function(self, minigame, targets)
+            local new_args = {}
+            for i = 1, self.argument_count do
+                table.insert(new_args, self.negotiator:CreateModifier("advisor_manipulate_moreef_defense", 1, self))
+            end
+            if self.PostProcess then
+                self:PostProcess(new_args, minigame)
+            end
+        end,
+        modifier = {
+            name = "Moreef Defense",
+            desc = "",
+            modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+            max_resolve = 4,
+            OnSetStacks = function( self, old_stacks )
+                local delta = self.stacks - math.max( 1, old_stacks )
+                self:ModifyResolve( delta * 4 )
+            end,
+        },
+    },
+    advisor_manipulate_moreef_defense_plus =
+    {
+        name = "Boosted Moreef Defense",
+        argument_count = 3,
+    },
+    advisor_manipulate_moreef_defense_plus2 =
+    {
+        name = "Distracting Moreef Defense",
+        desc = "Create {1} separate {advisor_manipulate_moreef_defense}. <#UPGRADE>Force all opponent intents to target an argument created this way.</>",
+
+        PostProcess = function(self, new_args, minigame)
+            local target = new_args[1]
+            if target and target:IsApplied() then
+                for i,intent in ipairs(minigame:GetOtherNegotiator(self.negotiator):GetIntents()) do
+                    if intent.target then
+                        intent.target = target
+                    end
+                end
+                for i,argument in minigame:GetOtherNegotiator(self.negotiator):Modifiers() do
+                    if argument.target then
+                        argument.target = target
+                    end
+                end
             end
         end,
     },
@@ -330,6 +434,92 @@ local CARDS = {
     {
         name = "Initial Ivory Tower",
         flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.AMBUSH,
+    },
+    advisor_hostile_duckspeak =
+    {
+        name = "Duckspeak",
+        desc = "Choose a card from your hand that costs X. Create a {advisor_hostile_duckspeak} and {IMPRINT} that card onto it.",
+        flavour = "'You keep saying that. I don't think you know what it means.'\n'Who cares? You know I'm right.'",
+
+        loc_strings =
+        {
+            CHOOSE_IMPRINT = "Choose a card to <b>Imprint</>",
+        },
+
+        advisor = "ADVISOR_HOSTILE",
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND | CARD_FLAGS.VARIABLE_COST,
+        cost = 0,
+
+        OnPostResolve = function( self, minigame, targets )
+            local chosen_card = minigame:ChooseCard( 
+                function(card)
+                    if card:IsFlagged(CARD_FLAGS.VARIABLE_COST) then
+                        return false
+                    end
+                    if minigame:CalculateActionCost(card) > minigame:GetActionCount() then
+                        return false
+                    end
+                    return true
+                end, 
+                self.def:GetLocalizedString("CHOOSE_IMPRINT")
+            )
+            
+            if chosen_card then
+                minigame:ModifyActionCount(-minigame:CalculateActionCost(chosen_card))
+                
+                local mod = Negotiation.Modifier( "advisor_hostile_duckspeak", self.negotiator )
+                mod.imprinted_card = chosen_card
+                self.negotiator:CreateModifier( mod )
+                
+                chosen_card:RemoveCard()
+
+                self.engine:BroadcastEvent( EVENT.CARD_STOLEN, chosen_card, mod )
+            end
+            
+        end,
+
+        modifier = {
+            desc = "At the end of your turn, play the card imprinted for free.\nIf the imprinted card moves to anywhere other than the discard, remove this argument and return the imprinted card to play.\nWhen this argument is removed, return the imprinted card to your discard.",
+            desc_fn = function(self, fmt_str, minigame, widget)
+                if widget and widget.PostCard and self.imprinted_card then
+                    widget:PostCard( self.imprinted_card.id, self.imprinted_card, minigame )
+                end
+                return fmt_str
+            end,
+            
+            modifier_type = MODIFIER_TYPE.ARGUMENT,
+            max_resolve = 3,
+
+            OnEndTurn = function(self, minigame)
+                if self.imprinted_card then
+                    self.imprinted_card.show_dealt = false
+                    minigame.discard_deck:InsertCard( self.imprinted_card )
+                    minigame:PlayCard(self.imprinted_card)
+                    if self.imprinted_card.deck == minigame.discard_deck then
+                        self.imprinted_card:RemoveCard()
+                    else
+                        self.negotiator:RemoveModifier(self)
+                    end
+                else
+                    self.negotiator:RemoveModifier(self)
+                end
+            end,
+            OnUnapply = function ( self )
+                if self.imprinted_card and not self.imprinted_card.deck and self.engine then
+                    self.engine.discard_deck:InsertCard(self.imprinted_card)
+                end
+            end,
+        },
+    },
+    advisor_hostile_duckspeak_plus =
+    {
+        name = "Initial Duckspeak",
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND | CARD_FLAGS.VARIABLE_COST | CARD_FLAGS.AMBUSH,
+    },
+    advisor_hostile_duckspeak_plus2 =
+    {
+        name = "Enduring Duckspeak",
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.VARIABLE_COST,
     },
 }
 
