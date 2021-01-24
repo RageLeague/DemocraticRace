@@ -674,10 +674,10 @@ local CARDS = {
         flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND,
         cost = 1,
 
-        gain_count = 1,
+        gain_count = 2,
 
         OnPostResolve = function(self)
-            self.negotiator:AddModifier("advisor_hostile_whataboutism", 1, self)
+            self.negotiator:AddModifier("advisor_hostile_whataboutism", self.gain_count, self)
         end,
         modifier = 
         {
