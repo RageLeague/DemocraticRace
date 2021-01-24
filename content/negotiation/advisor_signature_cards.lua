@@ -11,6 +11,7 @@ local CARDS = {
             return loc.format(fmt_str, AutoUpgradeText(self, "influence_gain"))
         end,
         flavour = "'Being relatable to your target is important to gain their trust, remember that. That's why you should use hip languages around others.'",
+        icon = "DEMOCRATICRACE:assets/cards/relatable.png",
         
         advisor = "ADVISOR_DIPLOMACY",
         flags = CARD_FLAGS.DIPLOMACY,
@@ -334,6 +335,8 @@ local CARDS = {
         desc = "Prevent the next source of damage dealt to any of your arguments.",
 
         flavour = "The best way to win is to not giving the opponent the chance to speak.",
+
+        icon = "DEMOCRATICRACE:assets/cards/talk_over.png",
         
         advisor = "ADVISOR_HOSTILE",
         flags = CARD_FLAGS.HOSTILE,
@@ -390,6 +393,7 @@ local CARDS = {
             return loc.format(fmt_str, AutoUpgradeText(self, "count"), self.money_divisor)
         end,
         flavour = "'Your opinion would've matter a lot more if you aren't poor.'",
+        icon = "DEMOCRATICRACE:assets/cards/ivory_tower.png",
         
         advisor = "ADVISOR_HOSTILE",
         flags = CARD_FLAGS.HOSTILE,
