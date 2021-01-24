@@ -1,7 +1,9 @@
 local negotiation_defs = require "negotiation/negotiation_defs"
 local CARD_FLAGS = negotiation_defs.CARD_FLAGS
 local EVENT = negotiation_defs.EVENT
-
+local function PlainDescFn(self, fmt_str)
+    return fmt_str
+end
 local CARDS = {
     advisor_diplomacy_relatable = 
     {
@@ -158,6 +160,101 @@ local CARDS = {
         desc = "This card deals 1 bonus damage for every <#UPGRADE>{DOMINANCE}</> you have.",
         bonus_count = 1,
     },
+    advisor_diplomacy_hive_mind =
+    {
+        name = "Hive Mind",
+        desc = "{advisor_diplomacy_hive_mind|}Create: At the end of your turn, deal damage equal to the number of arguments, bounties, and inceptions you have to a random opponent argument.",
+        flavour = "Great minds think alike.",
+
+        advisor = "ADVISOR_DIPLOMACY",
+        flags = CARD_FLAGS.DIPLOMACY | CARD_FLAGS.EXPEND,
+        cost = 1,
+
+        argument_id = "advisor_diplomacy_hive_mind",
+
+        OnPostResolve = function(self, minigame, targets)
+            self.negotiator:CreateModifier(self.argument_id, 1, self)
+        end,
+        modifier = 
+        {
+            desc = "At the end of your turn, deal damage equal to the number of arguments, bounties, and inceptions you have to a random opponent argument.",
+            modifier_type = MODIFIER_TYPE.ARGUMENT,
+            max_resolve = 5,
+
+            min_persuasion = 0,
+            max_persuasion = 0,
+
+            target_enemy = TARGET_ANY_RESOLVE,
+
+            no_damage_tt = true,
+
+            CalculateDamage = function(self)
+                local count = 0
+                for i, mod in self.negotiator:Modifiers() do
+                    if mod.modifier_type == MODIFIER_TYPE.ARGUMENT or 
+                        mod.modifier_type == MODIFIER_TYPE.BOUNTY or 
+                        mod.modifier_type == MODIFIER_TYPE.INCEPTION then
+
+                        count = count + 1
+                    end
+                end
+                return count
+            end,
+            OnEndTurn = function(self, minigame)
+                self:ApplyPersuasion()
+            end,
+            event_handlers =
+            {
+                [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
+                    if source == self then
+                        local damage = self:CalculateDamage()
+                        persuasion:AddPersuasion( damage, damage, self )
+                    end
+                end,
+                [ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
+                    self:NotifyChanged()
+                end,
+                [ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
+                    self:NotifyChanged()
+                end,
+            },
+        },
+    },
+    advisor_diplomacy_hive_mind_plus =
+    {
+        name = "Wide Hive Mind",
+        desc = "{advisor_diplomacy_hive_mind_plus|}Create: At the end of your turn, deal damage equal to the number of arguments, bounties, and inceptions <#UPGRADE>anyone has</> to a random opponent argument.",
+        argument_id = "advisor_diplomacy_hive_mind_plus",
+        modifier =
+        {
+            desc = "At the end of your turn, deal damage equal to the number of arguments, bounties, and inceptions anyone has to a random opponent argument.",
+            CalculateDamage = function(self)
+                local count = 0
+                for i, mod in self.negotiator:Modifiers() do
+                    if mod.modifier_type == MODIFIER_TYPE.ARGUMENT or 
+                        mod.modifier_type == MODIFIER_TYPE.BOUNTY or 
+                        mod.modifier_type == MODIFIER_TYPE.INCEPTION then
+
+                        count = count + 1
+                    end
+                end
+                for i, mod in self.anti_negotiator:Modifiers() do
+                    if mod.modifier_type == MODIFIER_TYPE.ARGUMENT or 
+                        mod.modifier_type == MODIFIER_TYPE.BOUNTY or 
+                        mod.modifier_type == MODIFIER_TYPE.INCEPTION then
+
+                        count = count + 1
+                    end
+                end
+                return count
+            end,
+        },
+    },
+    advisor_diplomacy_hive_mind_plus2 =
+    {
+        name = "Enduring Hive Mind",
+        flags = CARD_FLAGS.DIPLOMACY,
+    },
     advisor_manipulate_straw_army = 
     {
         name = "Straw Army",
@@ -293,12 +390,13 @@ local CARDS = {
         modifier = {
             name = "Moreef Defense",
             desc = "",
+            desc_fn = PlainDescFn,
             modifier_type = MODIFIER_TYPE.ARGUMENT,
 
-            max_resolve = 4,
+            max_resolve = 6,
             OnSetStacks = function( self, old_stacks )
                 local delta = self.stacks - math.max( 1, old_stacks )
-                self:ModifyResolve( delta * 4 )
+                self:ModifyResolve( delta * 6 )
             end,
         },
     },
@@ -328,6 +426,44 @@ local CARDS = {
             end
         end,
     },
+    advisor_manipulate_rapid_speaker =
+    {
+        name = "Rapid Speaker",
+        desc = "Attack {1} times.",
+        alt_desc = "{BLIND}.",
+        desc_fn = function(self, fmt_str)
+            if self.target_mod == TARGET_MOD.RANDOM1 then
+                return loc.format((self.def or self):GetLocalizedString("ALT_DESC") .. "\n" .. fmt_str, AutoUpgradeText(self, "attack_count"))
+            end
+            return loc.format(fmt_str, AutoUpgradeText(self, "attack_count"))
+        end,
+        flavour = "'Imagine, hypothetically, bear with me...'\n'Oh, no. Here we go again.'",
+
+        advisor = "ADVISOR_MANIPULATE",
+        flags = CARD_FLAGS.MANIPULATE,
+        cost = 1,
+
+        min_persuasion = 1,
+        max_persuasion = 1,
+
+        attack_count = 6,
+        target_mod = TARGET_MOD.RANDOM1,
+        OnPostResolve = function( self, minigame, targets )
+            for i=2, self.attack_count do
+                minigame:ApplyPersuasion(self)
+            end
+        end,
+    },
+    advisor_manipulate_rapid_speaker_plus =
+    {
+        name = "Focused Rapid Speaker",
+        target_mod = TARGET_MOD.SINGLE,
+    },
+    advisor_manipulate_rapid_speaker_plus2 =
+    {
+        name = "Very Rapid Speaker",
+        attack_count = 10,
+    },
 
     advisor_hostile_talk_over = 
     {
@@ -346,7 +482,7 @@ local CARDS = {
         -- card_draw = 0,
 
         OnPostResolve = function( self, minigame, targets )
-            self.negotiator:AddModifier("advisor_hostile_talk_over", self.count)
+            self.negotiator:AddModifier("advisor_hostile_talk_over", self.count, self)
             -- if self.card_draw and self.card_draw > 0 then
             --     minigame:DrawCards( self.card_draw )
             -- end
@@ -524,6 +660,65 @@ local CARDS = {
     {
         name = "Enduring Duckspeak",
         flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.VARIABLE_COST,
+    },
+    advisor_hostile_whataboutism =
+    {
+        name = "Whataboutism",
+        desc = "Gain {1} {advisor_hostile_whataboutism}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, AutoUpgradeText(self, "gain_count"))
+        end,
+        flavour = "'You claim that exploiting my workers is bad, but have you considered the violent act of the Rise ten years ago?'",
+
+        advisor = "ADVISOR_HOSTILE",
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND,
+        cost = 1,
+
+        gain_count = 1,
+
+        OnPostResolve = function(self)
+            self.negotiator:AddModifier("advisor_hostile_whataboutism", 1, self)
+        end,
+        modifier = 
+        {
+            
+            desc = "Whenever one of your arguments is destroyed, deal {1} damage to a random opponent argument.\nWhen an opponent argument is destroyed, gain 1 stacks.",
+            alt_desc = "Whenever one of your arguments is destroyed, deal damage equal to the number of stacks of this argument to a random opponent argument.\nWhen an opponent argument is destroyed, gain 1 stacks.",
+            desc_fn = function(self, fmt_str)
+                if not self.stacks then
+                    return loc.format((self.def or self):GetLocalizedString("ALT_DESC"))
+                end
+                return loc.format(fmt_str, self.stacks)
+            end,
+
+            modifier_type = MODIFIER_TYPE.ARGUMENT,
+            max_resolve = 4,
+
+            event_handlers = 
+            {
+                [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, source )
+                    if modifier.stacks > 0 then
+                        if modifier.negotiator == self.negotiator then
+                            self.target_enemy = TARGET_ANY_RESOLVE
+                            self.engine:ApplyPersuasion( self, nil, self.stacks, self.stacks )
+                            self.target_enemy = nil
+                        else
+                            self.negotiator:AddModifier(self, 1, self)
+                        end
+                    end
+                end,
+            },
+        },
+    },
+    advisor_hostile_whataboutism_plus =
+    {
+        name = "Enduring Whataboutism",
+        flags = CARD_FLAGS.HOSTILE,
+    },
+    advisor_hostile_whataboutism_plus2 =
+    {
+        name = "Initial Whataboutism",
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND | CARD_FLAGS.AMBUSH,
     },
 }
 

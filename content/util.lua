@@ -1079,6 +1079,7 @@ function ConvoOption:RequireFreeTimeAction(actions)
 end
 
 function AutoUpgradeText(self, field, invert, preprocess)
+    -- assert(self[field] ~= nil, "Empty field")
     if not preprocess then
         preprocess = function(x) return x end
     end
