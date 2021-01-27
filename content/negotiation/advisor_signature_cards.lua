@@ -255,6 +255,59 @@ local CARDS = {
         name = "Enduring Hive Mind",
         flags = CARD_FLAGS.DIPLOMACY,
     },
+    advisor_diplomacy_underdog =
+    {
+        name = "Underdog",
+        desc = "Gain +{1} damage for each argument your opponent has and for each bounty and inception you have.",
+        flavour = "'They oppose me because they don't want you to know the truth!'",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, AutoUpgradeText(self, "damage_bonus"))
+        end,
+
+        advisor = "ADVISOR_DIPLOMACY",
+        flags = CARD_FLAGS.DIPLOMACY,
+        cost = 1,
+
+        min_persuasion = 2,
+        max_persuasion = 3,
+
+        damage_bonus = 1,
+
+        event_priorities =
+        {
+            [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_ADDITIVE,
+        },
+        event_handlers =
+        {
+            [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion )
+                if source == self then
+                    local count = 0
+                    for i, mod in self.negotiator:Modifiers() do
+                        if mod.modifier_type == MODIFIER_TYPE.BOUNTY or mod.modifier_type == MODIFIER_TYPE.INCEPTION then
+                            count = count + 1
+                        end
+                    end
+                    for i, mod in self.anti_negotiator:Modifiers() do
+                        if mod.modifier_type == MODIFIER_TYPE.ARGUMENT then
+                            count = count + 1
+                        end
+                    end
+                    persuasion:AddPersuasion(count * self.damage_bonus, count * self.damage_bonus, self)
+                end
+            end,
+        }
+    },
+    advisor_diplomacy_underdog_plus =
+    {
+        name = "Tall Underdog",
+
+        max_persuasion = 6,
+    },
+    advisor_diplomacy_underdog_plus2 =
+    {
+        name = "Enhanced Underdog",
+        damage_bonus = 2,
+    },
     advisor_manipulate_straw_army = 
     {
         name = "Straw Army",
@@ -463,6 +516,74 @@ local CARDS = {
     {
         name = "Very Rapid Speaker",
         attack_count = 10,
+    },
+    advisor_manipulate_projection =
+    {
+        name = "Projection",
+        desc = "{1} a card from your {2}. {INCEPT} {3} {FLUSTERED} if it's a diplomacy card, {4} {DOUBT} if it's a manipulate card, and {5} {VULNERABILITY} if it's a hostile card.",
+        flavour = "'You try to argue with me, but deep down, you know that I'm right.'",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, 
+                AutoUpgradeText(self, "improvise_count", false, function(x)
+                    if x > 3 then
+                        return "{IMPROVISE_PLUS}"
+                    else
+                        return "{IMPROVISE}"
+                    end
+                end),
+                AutoUpgradeText(self, "change_to_discard", false, function(x)
+                    if x then
+                        return string.lower(LOC"UI.CARDS.DISCARDS_DECK_DIALOG_TITLE")
+                    else
+                        return string.lower(LOC "UI.CARDS.DRAW_DECK_DIALOG_TITLE")
+                    end
+                end),
+                AutoUpgradeText(self, "fluster_count"),
+                AutoUpgradeText(self, "doubt_count"),
+                AutoUpgradeText(self, "vulnerability_count")
+            )
+        end,
+
+        advisor = "ADVISOR_MANIPULATE",
+        flags = CARD_FLAGS.MANIPULATE,
+        cost = 1,
+
+        improvise_count = 3,
+        change_to_discard = false,
+
+        fluster_count = 1,
+        doubt_count = 2,
+        vulnerability_count = 1,
+
+        OnPostResolve = function(self, minigame, targets)
+            if minigame:GetDrawDeck():CountCards() == 0 and not self.change_to_discard then
+                minigame:ShuffleDiscardToDraw()
+            end
+            local candidates = self.change_to_discard and minigame:GetDiscardDeck().cards or minigame:GetDrawDeck().cards
+            local cards = minigame:ImproviseCards( table.multipick(candidates, self.improvise_count), 1, nil, "ad_lib", nil, self )
+            for i, card in ipairs(cards) do
+                if CheckBits(card.flags, CARD_FLAGS.DIPLOMACY ) then
+                    self.anti_negotiator:DeltaModifier("FLUSTERED", self.fluster_count, self)
+                end
+                if CheckBits(card.flags, CARD_FLAGS.MANIPULATE ) then
+                    self.anti_negotiator:DeltaModifier("DOUBT", self.doubt_count, self)
+                end
+                if CheckBits(card.flags, CARD_FLAGS.HOSTILE ) then
+                    self.anti_negotiator:DeltaModifier("VULNERABILITY", self.vulnerability_count, self)
+                end
+            end
+        end,
+    },
+    advisor_manipulate_projection_plus =
+    {
+        name = "Wide Projection",
+        improvise_count = 5,
+    },
+    advisor_manipulate_projection_plus2 =
+    {
+        name = "Twisted Projection",
+        improvise_count = 5,
+        change_to_discard = true,
     },
 
     advisor_hostile_talk_over = 
@@ -719,6 +840,40 @@ local CARDS = {
     {
         name = "Initial Whataboutism",
         flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND | CARD_FLAGS.AMBUSH,
+    },
+    advisor_hostile_incoherent_rambling =
+    {
+        name = "Incoherent Rambling",
+        desc = "Attack twice.\nGain {1} {VULNERABILITY}",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, AutoUpgradeText(self, "gain_stacks", true))
+        end,
+        flavour = "'Why say a few words when a lot do the trick?'",
+
+        advisor = "ADVISOR_HOSTILE",
+        flags = CARD_FLAGS.HOSTILE,
+        cost = 1,
+
+        min_persuasion = 3,
+        max_persuasion = 3,
+
+        gain_stacks = 2,
+
+        OnPostResolve = function( self, minigame, targets )
+            minigame:ApplyPersuasion(self)
+            self.negotiator:DeltaModifier("VULNERABILITY", self.gain_stacks, self)
+        end,
+    },
+    advisor_hostile_incoherent_rambling_plus =
+    {
+        name = "Boosted Incoherent Rambling",
+        min_persuasion = 4,
+        max_persuasion = 4,
+    },
+    advisor_hostile_incoherent_rambling_plus2 =
+    {
+        name = "Slightly Incoherent Rambling",
+        gain_stacks = 1,
     },
 }
 

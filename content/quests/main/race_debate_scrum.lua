@@ -250,6 +250,12 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
         :Fn(function(cxt)
             cxt.quest.param.allies = helpers
             cxt.quest.param.opponents = hinders
+            for i, agent in ipairs(helpers) do
+                cxt.quest.param.candidate_opinion[agent:GetID()] = (cxt.quest.param.candidate_opinion[agent:GetID()] or 0) + 1
+            end
+            for i, agent in ipairs(hinders) do
+                cxt.quest.param.candidate_opinion[agent:GetID()] = (cxt.quest.param.candidate_opinion[agent:GetID()] or 0) - 1
+            end
         end)
         :Negotiation{
             flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.WORDSMITH | NEGOTIATION_FLAGS.NO_CORE_RESOLVE,
@@ -345,6 +351,9 @@ QDEF:AddConvo("do_debate")
         :Fn(function(cxt)
             if not cxt.quest.param.popularity then
                 cxt.quest.param.popularity = {}
+            end
+            if not cxt.quest.param.candidate_opinion then
+                cxt.quest.param.candidate_opinion = {}
             end
             for i, agent in cxt.location:Agents() do
                 if agent:GetRoleAtLocation( cxt.location ) == CHARACTER_ROLES.PATRON then
@@ -746,6 +755,10 @@ QDEF:AddConvo("do_debate")
                     * How are you ever going to recover?
                 }
             ]],
+            DIALOG_FRIEND_LOST = [[
+                * {1#agent_list} {2*looks|look} at you with disappointment.
+                * It is clear that your opinions displayed during the debate disappointed {2*{3.himher}|them}.
+            ]],
         }
         :Fn(function(cxt)
             cxt:TalkTo(cxt:GetCastMember("host"))
@@ -772,6 +785,22 @@ QDEF:AddConvo("do_debate")
                 cxt.quest.param.bad_debate = true
             end
             cxt:Dialog("DIALOG_CHEER", cxt.quest.param.popularity_rankings[1])
+
+            local betrayed_friends = {}
+            for id, delta in pairs(cxt.quest.param.candidate_opinion) do
+                if delta <= -2 then
+                    local agent = TheGame:GetGameState():GetAgent(id)
+                    if agent:GetRelationship() >= RELATIONSHIP.LIKED then
+                        table.insert(betrayed_friends, agent)
+                        agent:OpinionEvent(OPINION.DISLIKE_IDEOLOGY)
+                    end 
+                end
+            end
+            if #betrayed_friends > 0 then
+                cxt:Dialog("DIALOG_FRIEND_LOST", betrayed_friends, #betrayed_friends, betrayed_friends[1])
+            end
+            cxt.quest.param.betrayed_friends = betrayed_friends
+
             cxt.quest:Complete("do_debate")
             StateGraphUtil.AddEndOption(cxt)
         end)
@@ -788,3 +817,80 @@ QDEF:AddConvo("report_to_advisor", "primary_advisor")
             :Dialog("DIALOG_REVIEW")
             :CompleteQuest()
     end)
+QDEF:AddConvo("talk_to_candidates")
+    :AttractState("STATE_CHAT", function(cxt)
+        cxt.quest.param.post_debate_chat = cxt.quest.param.post_debate_chat or {}
+        if not DemocracyUtil.GetOppositionData(cxt:GetAgent()) then
+            return false
+        end
+        return not table.arraycontains(cxt.quest.param.post_debate_chat, cxt:GetAgent())
+    end)
+        :Loc{
+            DIALOG_OPPOSE = [[
+                agent:
+                    !sigh
+                    I can't believe you betrayed my trust like that!
+                    I thought we share the same ideology!
+                    Guess I was wrong.
+            ]],
+            DIALOG_GENERAL = [[
+                agent:
+                {good_debate?
+                    {liked?
+                        !clap
+                        Well done, {player}! I knew you had it in you.
+                        Clearly, I made the right choice by allying with you.
+                    player:
+                        Great, thanks.
+                    }
+                    {not liked?
+                        !clap
+                        Wow! Impressive trick you pulled here.
+                        Now I have to be careful.
+                    player:
+                        Oh wow, thanks.
+                    }
+                }
+                {not good_debate and not bad_debate?
+                    {liked?
+                        !happy
+                        You did pretty good today.
+                    player:
+                        Thanks. Not as good as you, though.
+                    agent:
+                        Don't be too modest here.
+                    }
+                    {not liked?
+                        That was a nice debate!
+                    player:
+                        Thanks.
+                    }
+                }
+                {bad_debate?
+                    {liked?
+                        What's up?
+                    player:
+                        Didn't do so well today.
+                    agent:
+                        Don't be so hard on yourself. I'm sure you will recover.
+                    }
+                    {not liked?
+                        What a great debate that was!
+                    player:
+                        Is it really?
+                    agent:
+                        Not really.
+                        I'm just saying that to be polite.
+                    }
+                }
+            ]],
+            DIALOG_SUPPORT = [[
+                agent:
+                {disliked?
+                    Perhaps I judged you too harshly.
+                }
+                {not disliked?
+                    Maybe we are more alike than we thought.
+                }
+            ]],
+        }

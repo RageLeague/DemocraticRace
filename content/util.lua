@@ -935,7 +935,8 @@ function DemocracyUtil.DebugSetRandomDeck(seed)
     local deck = DECKS[deck_idx]
     TheGame:GetGameState():SetDecks(deck)
 end
-function DemocracyUtil.DoAllianceConvo(cxt, ally)
+function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
+    potential_offset = potential_offset or 0
     local candidate_data = DemocracyUtil.GetOppositionData(ally)
     cxt:Dialog("DIALOG_ALLIANCE_TALK_INTRO")
     if not candidate_data then
@@ -1086,7 +1087,7 @@ function AutoUpgradeText(self, field, invert, preprocess)
     if not self.base_def then
         return preprocess(self[field])
     end
-    if (type(self[field]) == "string" or type(self.base_def[field]) == "string") then
+    if not (type(self[field]) == "number" and type(self.base_def[field]) == "number") then
         if self[field] ~= self.base_def[field] then
             return string.format("<#UPGRADE>%s</>", preprocess(self[field]))
         else
