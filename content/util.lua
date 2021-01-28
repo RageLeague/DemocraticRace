@@ -947,7 +947,7 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
         local oppo_main_stance = candidate_data.stances[platform]
         local player_main_stance = DemocracyUtil.GetStance(platform) or 0
         cxt.enc.scratch.opposite_spectrum = oppo_main_stance * player_main_stance <= -2
-        if potential and DemocracyUtil.GetEndorsement(potential) > RELATIONSHIP.NEUTRAL then
+        if potential and DemocracyUtil.GetEndorsement(potential + potential_offset) > RELATIONSHIP.NEUTRAL then
             cxt:Dialog("DIALOG_ALLIANCE_TALK_UNCONDITIONAL")
             if cxt.enc.scratch.opposite_spectrum then
                 cxt:Opt("OPT_ALLIANCE_TALK_AGREE_STANCE")
@@ -969,7 +969,8 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
                     ally:Remember("REJECTED_ALLIANCE")
                 end)
                 :DoneConvo()
-        elseif potential and DemocracyUtil.GetEndorsement(potential) == RELATIONSHIP.NEUTRAL then
+        elseif potential and DemocracyUtil.GetEndorsement(potential + potential_offset) == RELATIONSHIP.NEUTRAL then
+            potential = potential + potential_offset
             cxt:Dialog("DIALOG_ALLIANCE_TALK_CONDITIONAL")
             if cxt.enc.scratch.opposite_spectrum then
                 cxt:RunLoop(function(cxt)
@@ -988,7 +989,7 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
             end
             local rawcost = 250 - potential * 8
             -- local cost, reasons = CalculatePayment(ally, rawcost)
-            local demands, demand_list = ally:HasMemory("ALLIANCE_DEMANDS"), ally:HasMemory("ALLIANCE_DEMAND_LIST")
+            local demands, demand_list = ally:HasMemoryFromToday("ALLIANCE_DEMANDS"), ally:HasMemoryFromToday("ALLIANCE_DEMAND_LIST")
             if not demands or not demand_list then
                 demands, demand_list = DemocracyUtil.GenerateDemandList(rawcost, ally, nil, {auto_scale = true})
                 ally:Remember("ALLIANCE_DEMANDS", demands)

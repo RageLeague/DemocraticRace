@@ -6,6 +6,10 @@ local chars =
         bio = "Aellon is not sure what the word \"based\" means as an adjective, but it sounds hip and cool to him, and that's good enough for him to use it everywhere.",
         name = "Aellon",
         nickname = "*The Based",
+
+        loved_bio = "To this day, Aellon still hasn't figured out what \"based\" means as an adjective, but he would describe it as an adjective that applies to you.",
+        hated_bio = "While Aellon doesn't know what \"based\" means as an adjective, he certainly figured out the meaning of the word \"cringe\", and you won't like it.",
+
         tags = {"advisor", "advisor_diplomacy"},
         gender = "MALE",
         species = "HUMAN",
@@ -28,6 +32,9 @@ local chars =
         name = "Benni",
         title = "Priest",
 
+        loved_bio = "Facts don't care about your feelings, but Benni does.",
+        hated_bio = "Benni's facts and logic cannot predict your shear incompetence. Then again, her facts and logic works better as hindsights.",
+
         tags = {"advisor", "advisor_manipulate"},
         gender = "FEMALE",
         species = "KRADESHI",
@@ -44,8 +51,11 @@ local chars =
     CharacterDef("ADVISOR_HOSTILE",
     {
         base_def = "WEALTHY_MERCHANT",
-        bio = "Dronumph is very impatient, and prefers solving his problems with fists. It's a good thing that he's legally not allowed to do that first in Democratic Havaria.",
+        bio = "Dronumph thinks very highly of himself, which is totally understandable. You should've seen how many zeros are in his net worth, all of which are leading.",
         name = "Dronumph",
+
+        loved_bio = "It's no doubt that Dronumph loves himself the most. There's no way to chance that due to his narcissistic nature. You however, comes quite close.",
+        hated_bio = "You'd think that Dronumph would be punished for his impatience <i>way</> earlier, his impatience definitely punished him this time by putting his trust in <i>you</>.",
 
         tags = {"advisor", "advisor_hostile"},
         gender = "MALE",
