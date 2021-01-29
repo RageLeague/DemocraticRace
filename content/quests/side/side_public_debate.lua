@@ -188,21 +188,21 @@ QDEF:AddConvo("meet_opponent")
             DIALOG_INTRO = [[
                 player:
                     !left
-                    * You arrive a few minutes before {opponent}'s debate with <other cast character> ends.
-                    * It's very clear that <other cast character> is not doing very well, and the audience is booing .himher off the stage.
+                    * You arrive a few minutes before {opponent}'s debate with {laughing_stock} ends.
+                    * It's very clear that {laughing_stock} is not doing very well, and the audience is booing {laughing_stock.himher} off the stage.
                     !exit
-                <other cast character>:
+                laughing_stock:
                     !left
                     !scared
                 opponent:
                     !right
                     !chuckle
                     haha your argument bad, mine good
-                <other cast character>:
+                laughing_stock:
                     !scared
                     ...I'll take my leave now.
                     !exit
-                    * <other cast character> sulks off the stage.
+                    * {laughing_stock} sulks off the stage.
                 player:
                     !left
                     * Undaunted by this, you walk up to the other microphone.
@@ -229,11 +229,22 @@ QDEF:AddConvo("meet_opponent")
             cxt.quest:Complete("meet_opponent")
             cxt.quest:Activate("win_audience")
             cxt.quest.param.audience_stage = 0       --This needs to range from 0-4, changing depending on your negotiation and resulting in different rewards afterwards. See bottom for description of quest
+            cxt.quest.param.lost_negotiation = false
+            cxt:Opt("OPT_DEBATE")
+                :Dialog("DIALOG_DEBATE")
+                :Negotiation{
+                    on_success = function(cxt,minigame)
+                        cxt.quest.param.audience_stage = math.random(0,4)
+                        cxt:GoTo("STATE_RESULTS")
+                    end,
+                    on_fail = function(cxt,minigame)
+                        cxt.quest.param.lost_negotiation = true
+                        cxt:GoTo("STATE_RESULTS")
+                    end,
+                }
             -- cxt.quest:Complete()
             -- ConvoUtil.GiveQuestRewards(cxt)
         end)
-        
-QDEF:AddConvo("finish") --Use these accordingly when checking audience_stage after negotiation
     :State("STATE_RESULTS")
         :Loc{
             DIALOG_LOSS = [[
@@ -341,15 +352,34 @@ QDEF:AddConvo("finish") --Use these accordingly when checking audience_stage aft
                     * Surprisingly, the audience is rooting for you now.
                 opponent:
                     !scared
-                    * <opponent> knows when to cut <opponent.hisher> losses, and subsequently finds the quickest way to leave.
+                    * {opponent} knows when to cut {opponent.hisher} losses, and subsequently finds the quickest way to leave.
                     I've got a doctor's appointment with my laundry- I mean I-
                     !exit
-                    * <opponent> leaves, being as subtle as a vroc in heat. 
+                    * {opponent} leaves, being as subtle as a vroc in heat. 
                 player:
                     !happy
                     * The audience is on your side. Clearly, this is a huge win.
             ]],
         }
+        :Fn(function(cxt)
+			if cxt.quest.param.lost_negotiation == true then
+				cxt.quest.param.audience_stage = -1
+				cxt:Dialog("DIALOG_LOSS")
+			end
+			if cxt.quest.param.audience_stage == 0 then
+				cxt:Dialog("DIALOG_HOSTILE")
+			elseif cxt.quest.param.audience_stage == 1 then
+				cxt:Dialog("DIALOG_SKEPTICAL")
+			elseif cxt.quest.param.audience_stage == 2 then
+				cxt:Dialog("DIALOG_NEUTRAL")
+			elseif cxt.quest.param.audience_stage == 3 then
+				cxt:Dialog("DIALOG_FRIENDLY")
+			elseif cxt.quest.param.audience_stage == 4 then
+				cxt:Dialog("DIALOG_SYMPATHETIC")
+			end
+            cxt.quest:Complete()
+            -- ConvoUtil.GiveQuestRewards(cxt)
+        end)
             
 --[[
 Public Debate - “{opponent} is hosting a public debate, you might be able to make use of the large audience by swaying them to your side.”

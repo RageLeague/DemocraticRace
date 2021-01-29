@@ -1650,6 +1650,51 @@ local MODIFIERS =
             end,
         },
     },
+    CROWD_OPINION =
+    {
+        name = "Crowd Opinion",
+        desc = "Bring the crowd to your side by playing certain cards.\nWhenever {1} destroys an argument or bounty you have, reduce the stacks of this argument by 1.",
+        loc_strings = {
+            CURRENT_OPINION = "The crowd's current opinion is {1}.",
+            NAME_1 = "<#PENALTY>Hostile</>",
+            NAME_2 = "<#PENALTY>Skeptical</>",
+            NAME_3 = "Divisive",
+            NAME_4 = "<#BONUS>Sympathetic</>",
+            NAME_5 = "<#BONUS>Supportive</>",
+
+            BONUS_DMG = "{1} deals 1 bonus damage to {2}.",
+        },
+        desc_fn = function(self, fmt_str)
+            local desc_lst = {}
+            if self.engine and self.stacks then
+                table.insert(desc_lst, loc.format((self.def or self):GetLocalizedString("CURRENT_OPINION"), (self.def or self):GetLocalizedString("NAME_" .. self.stacks)))
+                if self.stacks < 3 then
+                    table.insert(desc_lst, loc.format((self.def or self):GetLocalizedString("BONUS_DMG"), self:GetOwnerName(), self:GetOpponentName()))
+                elseif self.stacks > 3 then
+                    table.insert(desc_lst, loc.format((self.def or self):GetLocalizedString("BONUS_DMG"), self:GetOpponentName(), self:GetOwnerName()))
+                end
+            end
+            table.insert(desc_lst, loc.format(fmt_str, self:GetOwnerName()))
+            return table.concat(desc_lst, "\n")
+        end,
+        modifier_type = MODIFIER_TYPE.PERMANENT,
+        event_priorities = {
+            [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_ADDITIVE, 
+        },
+        event_handlers = {
+            [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
+                if self.stacks < 3 then
+                    if self.negotiator == source.negotiator and self.anti_negotiator == target.negotiator then
+                        persuasion:AddPersuasion(1, 1, self)
+                    end
+                elseif self.stacks > 3 then
+                    if self.anti_negotiator == source.negotiator and self.negotiator == target.negotiator then
+                        persuasion:AddPersuasion(1, 1, self)
+                    end
+                end
+            end,
+        },
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
