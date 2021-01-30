@@ -377,6 +377,21 @@ local CARDS = {
             end)
         end,
     },
+    appeal_to_crowd_quest =
+    {
+        name = "Appeal to the Crowd",
+        desc = "Gain 1 {CROWD_OPINION}, up to 5 maximum.",
+
+        cost = 1,
+        flags = CARD_FLAGS.DIPLOMACY,
+        rarity = CARD_RARITY.UNIQUE,
+
+        OnPostResolve = function( self, minigame, targets )
+            if minigame:GetOpponentNegotiator():GetModifierStacks("CROWD_OPINION") < 5 then
+                minigame:GetOpponentNegotiator():AddModifier("CROWD_OPINION", 1, self)
+            end
+        end,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     if not def.series then

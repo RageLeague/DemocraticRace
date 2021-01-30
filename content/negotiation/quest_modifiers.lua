@@ -1653,7 +1653,7 @@ local MODIFIERS =
     CROWD_OPINION =
     {
         name = "Crowd Opinion",
-        desc = "Bring the crowd to your side by playing certain cards.\nWhenever {1} destroys an argument or bounty you have, reduce the stacks of this argument by 1.",
+        desc = "Bring the crowd to your side by playing {2#card}.\nWhenever {1} destroys an argument or bounty you have, reduce the stacks of this argument by 1 and remove a {2#card} from your deck.",
         loc_strings = {
             CURRENT_OPINION = "The crowd's current opinion is {1}.",
             NAME_1 = "<#PENALTY>Hostile</>",
@@ -1674,26 +1674,77 @@ local MODIFIERS =
                     table.insert(desc_lst, loc.format((self.def or self):GetLocalizedString("BONUS_DMG"), self:GetOpponentName(), self:GetOwnerName()))
                 end
             end
-            table.insert(desc_lst, loc.format(fmt_str, self:GetOwnerName()))
+            table.insert(desc_lst, loc.format(fmt_str, self:GetOwnerName(), "appeal_to_crowd_quest"))
             return table.concat(desc_lst, "\n")
         end,
+
         modifier_type = MODIFIER_TYPE.PERMANENT,
+        max_stacks = 5,
+        
         event_priorities = {
             [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_ADDITIVE, 
         },
         event_handlers = {
             [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
-                if self.stacks < 3 then
-                    if self.negotiator == source.negotiator and self.anti_negotiator == target.negotiator then
-                        persuasion:AddPersuasion(1, 1, self)
+                if source and target then
+                    if self.stacks < 3 then
+                        if self.negotiator == source.negotiator and self.anti_negotiator == target.negotiator then
+                            persuasion:AddPersuasion(1, 1, self)
+                        end
+                    elseif self.stacks > 3 then
+                        if self.anti_negotiator == source.negotiator and self.negotiator == target.negotiator then
+                            persuasion:AddPersuasion(1, 1, self)
+                        end
                     end
-                elseif self.stacks > 3 then
-                    if self.anti_negotiator == source.negotiator and self.negotiator == target.negotiator then
-                        persuasion:AddPersuasion(1, 1, self)
+                end
+            end,
+            [ EVENT.MODIFIER_REMOVED ] = function(self, modifier, source)
+                if modifier.negotiator == self.anti_negotiator and (modifier.modifier_type == MODIFIER_TYPE.ARGUMENT or modifier.modifier_type == MODIFIER_TYPE.BOUNTY) then
+                    if source and source.negotiator == self.negotiator then
+                        if self.stacks > 1 then
+                            self.negotiator:RemoveModifier(self, 1, self)
+                        end
+                        local all_cards = table.merge( self.engine:GetDrawDeck().cards, self.engine:GetDiscardDeck().cards, self.engine:GetHandDeck().cards )
+                        for i, card in ipairs(all_cards) do
+                            if card.id == "appeal_to_crowd_quest" then
+                                self.engine:ExpendCard(card)
+                                break
+                            end
+                        end
                     end
                 end
             end,
         },
+    },
+    INSTIGATE_CROWD =
+    {
+        name = "Instigate Crowd",
+        desc = "{MYRIAD_MODIFIER {1}}.\nWhen destroyed, add a {2#card} to your draw pile.",
+
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.bonus_per_generation, "appeal_to_crowd_quest")
+        end,
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+        init_max_resolve = 3,
+
+        bonus_per_generation = 2,
+        -- bonus_scale = {2, 2, 3, 4},
+
+        generation = 0,
+
+        OnInit = function(self)
+            self.bonus_per_generation = math.ceil(self.engine:GetDifficulty() / 2)
+            if self.generation and self.generation > 0 then
+                self.init_max_resolve = self.init_max_resolve + self.bonus_per_generation
+            end
+            self:SetResolve(self.init_max_resolve, MODIFIER_SCALING.MED)
+        end,
+        OnBounty = function(self)
+            local card = Negotiation.Card("appeal_to_crowd_quest", self.engine:GetPlayer()) 
+            self.engine:InceptCard( card, self )
+            CreateNewSelfMod(self)
+        end,
     },
 }
 for id, def in pairs( MODIFIERS ) do

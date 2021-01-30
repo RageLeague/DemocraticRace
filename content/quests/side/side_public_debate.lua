@@ -19,8 +19,17 @@ local QDEF = QuestDef.Define
     desc = [[{opponent} is hosting a public debate, you might be able to make use of the large audience by swaying them to your side.]],
     rank = {1, 5},
     icon = engine.asset.Texture("icons/quests/handler_admiralty_find_bandit_informant.tex"),
+    
+    tags = {"RALLY_JOB"},
     act_filter = DemocracyUtil.DemocracyActFilter,
     focus = QUEST_FOCUS.NEGOTIATION,
+
+    collect_agent_locations = function(quest, t)
+        table.insert(t, { agent = quest:GetCastMember("opponent"), location = quest:GetCastMember('junction'), role = CHARACTER_ROLES.VISITOR})
+        table.insert(t, { agent = quest:GetCastMember("laughing_stock"), location = quest:GetCastMember('junction'), role = CHARACTER_ROLES.VISITOR})
+        
+    end,
+    
     on_start = function(quest)
         local location = Location( LOCATION_DEF.id )
         assert(location)
@@ -156,7 +165,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-            cxt.quest:Activate("go_to_junction")
+            -- cxt.quest:Activate("go_to_junction")
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{
@@ -179,7 +188,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
 QDEF:AddConvo("meet_opponent")
     
     :Confront(function(cxt)
-        if cxt.location == cxt.quest:GetCastMember("POPULOUS_JUNCTION") then
+        if cxt.location == cxt.quest:GetCastMember("junction") then
             return "STATE_INTRO"
         end
     end)
@@ -225,16 +234,19 @@ QDEF:AddConvo("meet_opponent")
             ]],
         }
         :Fn(function(cxt)
+            cxt:TalkTo(cxt:GetCastMember("opponent"))
             cxt:Dialog("DIALOG_INTRO")
-            cxt.quest:Complete("meet_opponent")
-            cxt.quest:Activate("win_audience")
             cxt.quest.param.audience_stage = 0       --This needs to range from 0-4, changing depending on your negotiation and resulting in different rewards afterwards. See bottom for description of quest
             cxt.quest.param.lost_negotiation = false
             cxt:Opt("OPT_DEBATE")
                 :Dialog("DIALOG_DEBATE")
                 :Negotiation{
+                    on_start_negotiation = function(minigame)
+                        minigame:GetOpponentNegotiator():CreateModifier("CROWD_OPINION", 1)
+                        minigame:GetOpponentNegotiator():CreateModifier("INSTIGATE_CROWD", 1)
+                    end,
                     on_success = function(cxt,minigame)
-                        cxt.quest.param.audience_stage = math.random(0,4)
+                        cxt.quest.param.audience_stage = minigame:GetOpponentNegotiator():GetModifierStacks("CROWD_OPINION") - 1
                         cxt:GoTo("STATE_RESULTS")
                     end,
                     on_fail = function(cxt,minigame)
@@ -312,7 +324,7 @@ QDEF:AddConvo("meet_opponent")
                     * Half the audience is stunned, the others seem a lot more meek than before.
                 opponent:
                     !angry
-                    * <opponent> is still headstrong, however.
+                    * {opponent} is still headstrong, however.
                     You think you can come to <i>my</i> debate panel and beat <i>me</i>?
                 player:
                     !dubious
@@ -332,7 +344,7 @@ QDEF:AddConvo("meet_opponent")
                     * Maybe you were just hearing things, but it sounded like some members of the audience really liked your performance.
                 opponent:
                     !angry
-                    * <opponent> is still headstrong, however.
+                    * {opponent} is still headstrong, however.
                     You think you can come to <i>my</i> debate panel and beat <i>me</i>?
                 player:
                     !dubious
