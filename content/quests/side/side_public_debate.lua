@@ -37,28 +37,36 @@ local QDEF = QuestDef.Define
         quest:AssignCastMember("junction", location )
         quest:Activate("meet_opponent")
     end,
+    on_destroy = function( quest )
+        if quest:GetCastMember("junction") then
+            TheGame:GetGameState():MarkLocationForDeletion(quest:GetCastMember("junction"))
+        end
+        for i, agent in ipairs( quest.param.crowd or {}) do
+            agent:RemoveAspect("bribed")
+        end
+    end,
 }
 
 :AddObjective{
     id = "meet_opponent",
     title = "Attend {opponent}'s debate.",
-    desc = [[]],
+    desc = "{opponent} is debating random strangers. See if you can use it to your advantage.",
     mark = { "junction" },
 }
 
-:AddObjective{
-    id = "win_audience",
-    title = "Win over the audience and win the debate.",
-    desc = [[]],
-    mark = { "junction" },
-}
+-- :AddObjective{
+--     id = "win_audience",
+--     title = "Win over the audience and win the debate.",
+--     desc = [[]],
+--     mark = { "junction" },
+-- }
 
-:AddObjective{
-    id = "finish",
-    title = "Return. (placeholder)",
-    desc = [[]],
-    mark = { "giver" },
-}
+-- :AddObjective{
+--     id = "finish",
+--     title = "Return. (placeholder)",
+--     desc = [[]],
+--     mark = { "giver" },
+-- }
 
 :AddCast{
     cast_id = "opponent",
@@ -99,6 +107,17 @@ local QDEF = QuestDef.Define
         return quest:GetCastMember("opponent"):GetFactionRelationship(agent:GetFactionID()) <= RELATIONSHIP.NEUTRAL
     end,
     when = QWHEN.MANUAL,
+}
+:AddCast{
+    cast_id = "crowd",
+    when = QWHEN.MANUAL,
+    condition = function(agent, quest)
+        return DemocracyUtil.RandomBystanderCondition(agent)
+            and (quest.param.crowd == nil or not table.arrayfind(quest.param.crowd, agent))
+    end,
+    score_fn = function(agent, quest)
+        return (agent:GetFactionRelationship(quest:GetCastMember("opponent"):GetFactionID()) * 20) + math.random() * 60 + (agent:HasAspect("bribed") and 45 or 0)
+    end,
 }
 
 :AddLocationCast{
@@ -235,6 +254,13 @@ QDEF:AddConvo("meet_opponent")
         }
         :Fn(function(cxt)
             cxt:TalkTo(cxt:GetCastMember("opponent"))
+            cxt.quest.param.crowd = {}
+            for i = 1, 4 do
+                cxt.quest:AssignCastMember("crowd")
+                cxt.quest:GetCastMember("crowd"):MoveToLocation(cxt.location)
+                table.insert(cxt.quest.param.crowd, cxt.quest:GetCastMember("crowd"))
+                cxt.quest:UnassignCastMember("crowd")
+            end
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest.param.audience_stage = 0       --This needs to range from 0-4, changing depending on your negotiation and resulting in different rewards afterwards. See bottom for description of quest
             cxt.quest.param.lost_negotiation = false
@@ -374,22 +400,46 @@ QDEF:AddConvo("meet_opponent")
             ]],
         }
         :Fn(function(cxt)
+            local gain_supporter, lose_supporter = 0, 0
 			if cxt.quest.param.lost_negotiation == true then
 				cxt.quest.param.audience_stage = -1
-				cxt:Dialog("DIALOG_LOSS")
+                cxt:Dialog("DIALOG_LOSS")
+                gain_supporter, lose_supporter = 0, 4
 			end
-			if cxt.quest.param.audience_stage == 0 then
-				cxt:Dialog("DIALOG_HOSTILE")
+			if cxt.quest.param.audience_stage <= 0 then
+                cxt:Dialog("DIALOG_HOSTILE")
+                gain_supporter, lose_supporter = 0, 3
 			elseif cxt.quest.param.audience_stage == 1 then
-				cxt:Dialog("DIALOG_SKEPTICAL")
+                cxt:Dialog("DIALOG_SKEPTICAL")
+                gain_supporter, lose_supporter = 1, 2
 			elseif cxt.quest.param.audience_stage == 2 then
-				cxt:Dialog("DIALOG_NEUTRAL")
+                cxt:Dialog("DIALOG_NEUTRAL")
+                gain_supporter, lose_supporter = 2, 2
 			elseif cxt.quest.param.audience_stage == 3 then
-				cxt:Dialog("DIALOG_FRIENDLY")
-			elseif cxt.quest.param.audience_stage == 4 then
-				cxt:Dialog("DIALOG_SYMPATHETIC")
-			end
-            cxt.quest:Complete()
+                cxt:Dialog("DIALOG_FRIENDLY")
+                gain_supporter, lose_supporter = 2, 1
+			elseif cxt.quest.param.audience_stage >= 4 then
+                cxt:Dialog("DIALOG_SYMPATHETIC")
+                gain_supporter, lose_supporter = 3, 0
+            end
+            for i, agent in ipairs(cxt.quest.param.crowd or {}) do
+                if i <= gain_supporter then
+                    agent:OpinionEvent(cxt.quest:GetOpinionEvent("liked_debate"))
+                elseif #(cxt.quest.param.crowd or {}) - i < lose_supporter then
+                    agent:OpinionEvent(cxt.quest:GetOpinionEvent("disliked_debate"))
+                end
+            end
+            if cxt.quest.param.lost_negotiation or cxt.quest.param.audience_stage <= 0 then
+                cxt.quest:Fail()
+            else
+                if cxt.quest.param.audience_stage <= 2 then
+                    cxt.quest.param.poor_performance = true
+                end
+                cxt.quest:Complete()
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", cxt.quest.param.audience_stage * 4, "COMPLETED_QUEST")
+                ConvoUtil.GiveQuestRewards(cxt)
+            end
+            StateGraphUtil.AddLeaveLocation(cxt)
             -- ConvoUtil.GiveQuestRewards(cxt)
         end)
             

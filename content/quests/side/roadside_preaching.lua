@@ -76,7 +76,7 @@ local QDEF = QuestDef.Define
         if quest:GetCastMember("junction") then
             TheGame:GetGameState():MarkLocationForDeletion(quest:GetCastMember("junction"))
         end
-        for i, agent in ipairs( quest.param.crowd ) do
+        for i, agent in ipairs( quest.param.crowd or {} ) do
             agent:RemoveAspect("bribed")
         end
     end,
