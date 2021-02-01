@@ -123,6 +123,7 @@ local CARDS = {
         name = "Smiling Daggers",
         desc = "This card deals 1 bonus damage for every 2 {DOMINANCE} you have.",
         flavour = "'What a nice thing you got there. Would it be a shame if something were to happen to it.'",
+        icon = "DEMOCRATICRACE:assets/cards/smiling_daggers.png",
 
         advisor = "ADVISOR_DIPLOMACY",
         flags = CARD_FLAGS.DIPLOMACY,
@@ -165,6 +166,7 @@ local CARDS = {
         name = "Hive Mind",
         desc = "{advisor_diplomacy_hive_mind|}Create: At the end of your turn, deal damage equal to the number of arguments, bounties, and inceptions you have to a random opponent argument.",
         flavour = "Great minds think alike.",
+        icon = "DEMOCRATICRACE:assets/cards/hive_mind.png",
 
         advisor = "ADVISOR_DIPLOMACY",
         flags = CARD_FLAGS.DIPLOMACY | CARD_FLAGS.EXPEND,
@@ -316,6 +318,7 @@ local CARDS = {
             return loc.format(fmt_str, AutoUpgradeText(self, "strawman_count"))
         end,
         flavour = "'You know the straw man argument, the one that the Barons likes to use? We're better than that.'",
+        icon = "DEMOCRATICRACE:assets/cards/straw_army.png",
         
         advisor = "ADVISOR_MANIPULATE",
         flags = CARD_FLAGS.MANIPULATE,
@@ -345,6 +348,7 @@ local CARDS = {
         desc = "Remove target argument or bounty you control. Until the beginning of your next turn, "
             .. "all opponent sources that are targeting it deal no damage.",
         flavour = "'I have no idea what you're talking about. You must be crazy.'",
+        icon = "DEMOCRATICRACE:assets/cards/gaslighting.png",
 
         advisor = "ADVISOR_MANIPULATE",
         flags = CARD_FLAGS.MANIPULATE,
@@ -424,6 +428,7 @@ local CARDS = {
             return loc.format(fmt_str, AutoUpgradeText(self, "argument_count"))
         end,
         flavour = "'If Sweet Moreef doesn't live in Rentoria, you must acquit.'",
+        icon = "DEMOCRATICRACE:assets/cards/moreef_defense.png",
 
         advisor = "ADVISOR_MANIPULATE",
         flags = CARD_FLAGS.MANIPULATE,
@@ -491,6 +496,7 @@ local CARDS = {
             return loc.format(fmt_str, AutoUpgradeText(self, "attack_count"))
         end,
         flavour = "'Imagine, hypothetically, bear with me...'\n'Oh, no. Here we go again.'",
+        icon = "DEMOCRATICRACE:assets/cards/rapid_speaker.png",
 
         advisor = "ADVISOR_MANIPULATE",
         flags = CARD_FLAGS.MANIPULATE,
@@ -701,6 +707,7 @@ local CARDS = {
         name = "Duckspeak",
         desc = "Choose a card from your hand that costs X. Create a {advisor_hostile_duckspeak} and {IMPRINT} that card onto it.",
         flavour = "'You keep saying that. I don't think you know what it means.'\n'Who cares? You know I'm right.'",
+        icon = "DEMOCRATICRACE:assets/cards/duckspeak.png",
 
         loc_strings =
         {
@@ -790,6 +797,7 @@ local CARDS = {
             return loc.format(fmt_str, AutoUpgradeText(self, "gain_count"))
         end,
         flavour = "'You claim that exploiting my workers is bad, but have you considered the violent act of the Rise ten years ago?'",
+        icon = "DEMOCRATICRACE:assets/cards/whataboutism.png",
 
         advisor = "ADVISOR_HOSTILE",
         flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND,

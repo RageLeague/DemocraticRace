@@ -198,7 +198,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
             }
             {has_primary_advisor?
                 !point
-                Promise.
+                That would probably be a no from me.
             }
         ]],
     }

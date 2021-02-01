@@ -55,7 +55,7 @@ local chars =
         name = "Dronumph",
 
         loved_bio = "It's no doubt that Dronumph loves himself the most. There's no way to chance that due to his narcissistic nature. You however, comes quite close.",
-        hated_bio = "You'd think that Dronumph would be punished for his impatience <i>way</> earlier, his impatience definitely punished him this time by putting his trust in <i>you</>.",
+        hated_bio = "Dronumph used to believe that he is the best at everything. Now, he learnt his mistake: his ability to recognize talent is certainly troubling, considering that he somehow trusted <b>you</>.",
 
         tags = {"advisor", "advisor_hostile"},
         gender = "MALE",
