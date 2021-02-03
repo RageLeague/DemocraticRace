@@ -24,20 +24,22 @@ QDEF:AddConvo()
         :SetLooping()
         :Quips{
             {
+        --Wumpus; If this is the correct format for making new quips, maybe I could add some for meditation and some for strolls specifically? That can wait, however.
                 tags = "stroll_monologue",
                 [[
-                    * It is not often that you have this much time on your hands, that you can do what you want.
-                    * It is quite nice, actually.
+                    * Since you started on your path in life, you've felt time has flown by with nary a break.
+                    * But now you have a moment of calm, a moment of peace. There's no pressure to perform here, no one to judge.
+                    * Just you, your thoughts, and the smell of the fresh grass.
                 ]],
                 [[
-                    * This reminds me of your childhood, when there's much less to worry about.
-                    * It feels good to not have to worry about anything.
-                    * Of course, that doesn't make your problems disappear.
+                    * You feel the fond memories of your childhood drift in and out of your head.
+                    * it reminds you of a simpler time, a cherished time. One where the world was simple, black and white.
+                    * Those times couldn't stay though, and soon you return to the present, with a renewed spirit.
                 ]],
                 [[
-                    * Your mind still hasn't lay off the thoughts of the campaign.
-                    * Now you can't just use fists to solve all your problems, the world becomes more complicated.
-                    * This is precisely why you need time to gather your thoughts.
+                    * Even as you clear your mind, your thoughts still lay on your campaign.
+                    * The world's much different now. You're not able to fight people freely without consequence, as you did before becoming a politician.
+                    * You needed this small mental vacation for a while now. It's been too long since you could just gather your thoughts.
                 ]],
                 [[
                     * There are a lot of questions you have about all this.
@@ -46,8 +48,9 @@ QDEF:AddConvo()
                     * Those are big questions, that no one knows for sure.
                 ]],
                 [[
-                    * There are no thoughts on your mind.
-                    * There doesn't have to be, considering you're here to relax.
+                    * Deep breath in...deep breath out.
+                    * No thoughts exist in your mind. No stresses, no anxieties, no pains...
+                    * Just the sounds of nature and your own deep and relaxed breathing.
                 ]],
                 [[
                     * What will you do after you've get elected?
@@ -70,7 +73,7 @@ QDEF:AddConvo()
             OPT_STROLL = "Take a stroll",
 
             DIALOG_STROLL = [[
-                * You take a little stroll.
+                * You take a slow walk through the area, taking in the scenery.
                 %stroll_monologue
             ]],
 
@@ -78,7 +81,7 @@ QDEF:AddConvo()
             TT_MEDITATE = "This will increase your max resolve by <#BONUS>{1}</>",
 
             DIALOG_MEDITATE = [[
-                * You meditate.
+                * You sit down and slow your breathing.
                 %stroll_monologue
             ]],
         }
