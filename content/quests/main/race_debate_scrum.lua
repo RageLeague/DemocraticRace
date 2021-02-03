@@ -802,6 +802,15 @@ QDEF:AddConvo("do_debate")
             cxt.quest.param.betrayed_friends = betrayed_friends
 
             cxt.quest:Complete("do_debate")
+
+            local your_score = cxt.quest.param.popularity[cxt.player:GetID()] or 0
+            if cxt.quest.param.good_debate then
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.5))
+            elseif cxt.quest.param.bad_debate then
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.25))
+            else
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.35))
+            end
             StateGraphUtil.AddEndOption(cxt)
         end)
 QDEF:AddConvo("report_to_advisor", "primary_advisor")
@@ -894,3 +903,12 @@ QDEF:AddConvo("talk_to_candidates")
                 }
             ]],
         }
+        :Fn(function(cxt, who)
+            if table.arraycontains(cxt.quest.param.betrayed_friends or {}, who) then
+                cxt:Dialog("DIALOG_OPPOSE")
+            elseif cxt.quest.param.candidate_opinion and cxt.quest.param.candidate_opinion[who:GetID()] >= 2 then
+                cxt:Dialog("DIALOG_SUPPORT")
+            else
+                cxt:Dialog("DIALOG_GENERAL")
+            end
+        end)

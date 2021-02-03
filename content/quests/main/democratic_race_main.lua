@@ -46,7 +46,7 @@ end
 local DAY_SCHEDULE = {
     {quest = "RACE_DAY_1", difficulty = 1, support_expectation = {0,10,25}},
     {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {25,40,55,70}},
-    {quest = "RACE_DAY_3", difficulty = 3, support_expectation = {70,90,115,140}},
+    {quest = "RACE_DAY_3", difficulty = 3, support_expectation = {70,90,115,135}},
     -- {quest = "RACE_DAY_4", difficulty = 4},
     -- {quest = "RACE_DAY_5", difficulty = 5},
 }
