@@ -305,13 +305,13 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
             player:
                 !left
                 Y'know what? Maybe it'll be a bit too much work for too little reward.
-	    {not has_primary_advisor?
-		What else could I do...
-	    }
-	    {has_primary_advisor?
-	    agent:
-		Back to the drawing board. Let's see what else we could do...
-	    }
+            {not has_primary_advisor?
+                What else could I do...
+            }
+            {has_primary_advisor?
+            agent:
+                Back to the drawing board. Let's see what else we could do...
+            }
         ]],
     }
     :State("START")
@@ -319,16 +319,16 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
             cxt:Dialog("DIALOG_INTRO")
             
         end)
-QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
-    :Loc{
-        DIALOG_INTRO = [[
-            player:
-                !left
-                Seems way too stressful.
-                Besides, lots of people hate preachers.
-        ]],
-    }
-    :State("START")
-        :Fn(function(cxt)
-            cxt:Dialog("DIALOG_INTRO")
-        end)
+-- QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
+--     :Loc{
+--         DIALOG_INTRO = [[
+--             player:
+--                 !left
+--                 Seems way too stressful.
+--                 Besides, lots of people hate preachers.
+--         ]],
+--     }
+--     :State("START")
+--         :Fn(function(cxt)
+--             cxt:Dialog("DIALOG_INTRO")
+--         end)
