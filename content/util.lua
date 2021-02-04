@@ -529,6 +529,9 @@ function DemocracyUtil.GetAllPunishmentTargets()
 end
 
 function DemocracyUtil.GetOppositionID(agent)
+    if not agent then
+        return nil
+    end
     for id, data in pairs(DemocracyConstants.opposition_data) do
         if data.character and data.character == agent:GetContentID() then
             return id
@@ -1042,6 +1045,12 @@ function DemocracyUtil.GenerateGenericOppositionTable()
         table.insert(GENERIC_OPPOSITION, "BRAVE_MERCHANT")
     end
     return GENERIC_OPPOSITION
+end
+function DemocracyUtil.GetAgentStanceIndex(issue, agent)
+    if type(issue) == "string" then
+        issue = DemocracyConstants.issue_data[issue]
+    end
+    return issue:GetAgentStanceIndex(agent)
 end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"

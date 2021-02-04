@@ -902,12 +902,58 @@ QDEF:AddConvo("talk_to_candidates")
                     Maybe we are more alike than we thought.
                 }
             ]],
+            OPT_APOLOGIZE = "Apologize",
+            DIALOG_APOLOGIZE = [[
+                player:
+                    [p] Look, I'm sorry that I stood against you tonight.
+                    I promise I will not do that again.
+                agent:
+                    Is that so?
+            ]],
+            DIALOG_APOLOGIZE_SUCCESS = [[
+                agent:
+                    [p] You know what? Because you asked so nicely, I'll forgive you.
+                    Not worth it worrying about such a small problem.
+            ]],
+            DIALOG_APOLOGIZE_FAILURE = [[
+                agent:
+                    [p] I think I heard more than enough of your excuses.
+                    We're done here.
+            ]],
+            OPT_IGNORE_CONCERN = "Ignore {agent}'s concern",
+            DIALOG_IGNORE_CONCERN = [[
+                player:
+                    [p] I did what I had to do.
+                agent:
+                    That's fair, I guess.
+                    But since you're not willing to help me, I'm not willing to help you.
+            ]],
         }
-        :Fn(function(cxt, who)
+        :Fn(function(cxt)
+            local who = cxt:GetAgent()
+            table.insert(cxt.quest.param.post_debate_chat, who)
+            local opposition_data = DemocracyUtil.GetOppositionData(who)
             if table.arraycontains(cxt.quest.param.betrayed_friends or {}, who) then
                 cxt:Dialog("DIALOG_OPPOSE")
+                cxt:Opt("OPT_APOLOGIZE")
+                    :Dialog("DIALOG_APOLOGIZE")
+                    :UpdatePoliticalStance(opposition_data.platform, DemocracyUtil.GetAgentStanceIndex(opposition_data.platform, who))
+                    :Negotiation{
+
+                    }:OnSuccess()
+                        :Dialog("DIALOG_APOLOGIZE_SUCCESS")
+                        :ReceiveOpinion(OPINION.ALLIED_WITH)
+                    :OnFailure()
+                        :Dialog("DIALOG_APOLOGIZE_FAILURE")
+                cxt:Opt("OPT_IGNORE_CONCERN")
+                    :Dialog("DIALOG_IGNORE_CONCERN")
             elseif cxt.quest.param.candidate_opinion and cxt.quest.param.candidate_opinion[who:GetID()] >= 2 then
                 cxt:Dialog("DIALOG_SUPPORT")
+                if who:GetRelationship() < RELATIONSHIP.NEUTRAL then
+                    who:OpinionEvent(OPINION.SHARE_IDEOLOGY)
+                elseif who:GetRelationship() == RELATIONSHIP.NEUTRAL then
+                    -- Special alliance talk.
+                end
             else
                 cxt:Dialog("DIALOG_GENERAL")
             end
