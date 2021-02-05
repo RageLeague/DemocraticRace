@@ -377,10 +377,92 @@ local DEMANDS = {
                 end)
         end,
     },
+    demand_drink = {
+        name = "Demand Drink",
+        
+        title = "drink with {agent}{1*| {1} times}",
+        title_fn = function(self, fmt_str, data)
+            return loc.format(fmt_str, data.stacks or 0)
+        end,
+
+        desc = "At the end of each turn, {1#percent} chance of removing 1 stack of this bounty. When destroyed by the player, {2} will reduce the number of drinks demanded by {3}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.reduce_chance, Negotiation.Modifier.GetOwnerName(self), self.stacks or 1)
+        end,
+
+        reduce_chance = .4,
+        common_demand = true,
+        max_demand_use = 1,
+
+        event_handlers =
+        {
+
+            [ EVENT.END_PLAYER_TURN ] = function( self, minigame )
+                if math.random() < self.reduce_chance then
+                    self.negotiator:DeltaModifier(self, -1)
+                    AUDIO:PlayEvent("event:/sfx/battle/cards/neg/bonus_tick_down")
+                end
+            end
+
+        },
+
+        OnInit = function( self, source )
+            self:SetResolve( (5 + 2 * self.engine:GetDifficulty()) * (self.stacks or 1) )
+            AUDIO:PlayEvent("event:/sfx/battle/cards/neg/create_argument/bonus")
+        end,
+
+        OnBounty = function( self, card )
+            local demand_list = self.engine.demand_list
+            local demand_data = self.demand_data
+            if demand_list then
+                local money_entry
+                for i, entry in ipairs(demand_list) do
+                    if entry.id == self.id then
+                        money_entry = entry
+                        break
+                    end
+                end
+                if money_entry then
+                    money_entry.stacks = (money_entry.stacks or 0) - self.stacks
+                    if money_entry.stacks <= 0 then
+                        table.arrayremove(demand_list, money_entry)
+                    end
+                end
+            end
+            if demand_data then
+                demand_data.stacks = (demand_data.stacks or 0) - self.stacks
+                if demand_data.stacks <= 0 then
+                    demand_data.resolved = true
+                end
+            end
+            DemocracyUtil.CheckHeavyHanded(self, card, self.engine)
+        end,
+
+        GenerateDemand = function(self, pts, data) -- takes in pts for points allocated to this demand
+            if not (data.location and data.location:HasTag("tavern")) then
+                print("Require Tavern")
+                return
+            end
+            local count = 1
+            while math.random() < 0.5 do
+                count = count + 1
+            end
+            count = math.min(math.floor(pts / 50), count)
+            if count > 0 then
+                return count * 50, {id = self.id, stacks = count}
+            end
+        end,
+        ParseDemandList = function(self, data, t)
+            table.insert(t, shallowcopy(data))
+        end,
+    },
 }
 local COMMON_DEMANDS = {}
 local function AddDemandModifier(id, data)
     data.id = id
+    if not data.modifier_type then
+        data.modifier_type = MODIFIER_TYPE.BOUNTY
+    end
     if data.common_demand then
         table.insert(COMMON_DEMANDS, id)
         print("Added common demand " .. id)

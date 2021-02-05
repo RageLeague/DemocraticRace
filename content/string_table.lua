@@ -137,5 +137,6 @@ Content.AddStringTable("DEMOCRACY", {
     MISC = 
     {
         DO_NOTHING = "do nothing",
+        ME = "me",
     },
 })
