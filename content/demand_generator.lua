@@ -142,21 +142,35 @@ local DEMANDS = {
     },
     demand_instant_stance = {
         name = "Demand Stance Taking",
+        loc_strings = {
+            TITLE_LOOSE = "take the stance favoring {1#pol_stance} on {2#pol_issue}",
+            DESC_FULL = "{2} will stop demanding you from taking this stance.",
+            DESC_PARTIAL = "{2} will <#HILITE>only require you to favor this stance instead</>.",
+
+            REMINDER_FULL = "<#HILITE>({1#pol_stance} on {2#pol_issue})</>",
+            REMINDER_LOOSE = "<#HILITE>(Favoring {1#pol_stance} on {2#pol_issue})</>",
+        },
         title = "take the stance {1#pol_stance} on {2#pol_issue}",
         title_fn = function(self, fmt_str, data)
             local issue = DemocracyConstants.issue_data[data.issue_id]
             if issue then
-                return loc.format(fmt_str, issue:GetStance(data.stance), issue)
+                if data.loose then
+                    return loc.format((self.def or self):GetLocalizedString("TITLE_LOOSE"), issue:GetStance(data.stance), issue)
+                else
+                    return loc.format(fmt_str, issue:GetStance(data.stance), issue)
+                end
             end
             return fmt_str
         end,
 
-        desc = "This modifier will remove itself after {1} {1*turn|turns}.\nWhen destroyed by the player, {2} will stop demanding you from taking this stance.",
-        alt_desc = "<#HILITE>({1#pol_stance} on {2#pol_issue})</>",
+        desc = "This modifier will remove itself after {1} {1*turn|turns}.\nWhen destroyed by the player, ",
+        -- alt_desc = "<#HILITE>({1#pol_stance} on {2#pol_issue})</>",
         desc_fn = function(self, fmt_str)
-            local rval = loc.format(fmt_str, self.stacks or 4, Negotiation.Modifier.GetOwnerName(self))
+            local rval = loc.format(fmt_str .. (self.def or self):GetLocalizedString((self.loose or self.stacks > 2) 
+                and "DESC_FULL" or "DESC_PARTIAL"), self.stacks or 4, Negotiation.Modifier.GetOwnerName(self))
             if self.issue and self.stance then
-                rval = rval .. "\n" .. loc.format( (self.def or self):GetLocalizedString("ALT_DESC"), self.stance, self.issue )
+                rval = rval .. "\n" .. loc.format( (self.def or self):GetLocalizedString(self.loose and "REMINDER_LOOSE" or 
+                    "REMINDER_FULL"), self.stance, self.issue )
             end
             return rval
         end,
@@ -183,14 +197,16 @@ local DEMANDS = {
         ApplyData = function(self, data)
             self.issue = DemocracyConstants.issue_data[data.issue_id]
             self.stance = self.issue:GetStance(data.stance)
+            self.loose = data.loose
             self:NotifyChanged()
         end,
         max_demand_use = 2,
         
         OnBounty = function( self, card )
+            local full_remove = (self.loose or self.stacks > 2) 
             local demand_list = self.engine.demand_list
             local demand_data = self.demand_data
-            if demand_list then
+            if demand_list and demand_data then
                 local money_entry
                 for i, entry in ipairs(demand_list) do
                     if entry.id == self.id and entry.issue_id == demand_data.issue_id then
@@ -199,8 +215,13 @@ local DEMANDS = {
                     end
                 end
                 if money_entry then
-                    table.arrayremove(demand_list, money_entry)
-                    demand_data.resolved = true
+                    if full_remove then
+                        table.arrayremove(demand_list, money_entry)
+                        demand_data.resolved = true
+                    else
+                        money_entry.loose = true
+                        demand_data.loose = true
+                    end
                 end
             end
             DemocracyUtil.CheckHeavyHanded(self, card, self.engine)
@@ -253,7 +274,7 @@ local DEMANDS = {
             if cost <= pts then
                 data.used_issues = data.used_issues or {}
                 table.insert(data.used_issues, issue_id)
-                return cost, {id = self.id, stacks = math.random(3,5), issue_id = issue_id, stance = stance}
+                return cost, {id = self.id, stacks = 4, issue_id = issue_id, stance = stance}
             end
         end,
         ParseDemandList = function(self, data, t)
@@ -262,7 +283,7 @@ local DEMANDS = {
         GenerateConvoOption = function(self, cxt, opt, data, demand_modifiers)
             opt:PreIcon( global_images.order )
                 -- :Dialog("DEMAND_STRING.DIALOG_ACCEPT_MONEY")
-                :UpdatePoliticalStance(data.issue_id, data.stance, true, true)
+                :UpdatePoliticalStance(data.issue_id, data.stance, not data.loose)
                 :Fn(function(cxt)
                     data.resolved = true
                     for i, modifier in ipairs(demand_modifiers) do
@@ -388,6 +409,7 @@ local function GenerateDemands(pts, agent, rank, _params)
         rank = rank or TheGame:GetGameState():GetCurrentBaseDifficulty(), 
         agent = agent,
         used_issues = {},
+        location = agent and agent:GetLocation() or TheGame:GetGameState():GetPlayerAgent():GetLocation(),
     }
     local ratio = math.randomGauss(1 - (variance or 0.2), 1 + (variance or 0.2))
     local pts_left = math.round(pts * ratio)

@@ -201,8 +201,16 @@ local QDEF = QuestDef.Define
                 return
             end
             local support_delta = DELTA_SUPPORT[new_rel] - DELTA_SUPPORT[old_rel]
+            
             if support_delta ~= 0 then
-                quest:DefFn("DeltaAgentSupport", support_delta, agent, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
+                local opposition_data = DemocracyUtil.GetOppositionData(agent)
+                if opposition_data then
+                    quest:DefFn("DeltaGeneralSupport", (new_rel - old_rel) * 8, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
+                    quest:DefFn("DeltaGroupFactionSupport", opposition_data.faction_support, new_rel - old_rel )
+                    quest:DefFn("DeltaGroupWealthSupport", opposition_data.wealth_support, new_rel - old_rel )
+                else
+                    quest:DefFn("DeltaAgentSupport", support_delta, agent, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
+                end
             end
             -- if new_rel == RELATIONSHIP.LOVED and old_rel ~= RELATIONSHIP.LOVED then
             --     TheGame:GetGameState():GetCaravan():DeltaMaxResolve(1)

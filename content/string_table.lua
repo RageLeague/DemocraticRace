@@ -86,7 +86,7 @@ Content.AddStringTable("DEMOCRACY", {
             {
                 TITLE = "Stance Updated",
                 DETAIL_STRICT = "Your stance regarding {1#pol_issue} is updated to {2#pol_stance}.",
-                DETAIL_LOOSE = "Your stance regarding {1#pol_issue} is loosely updated to {2#pol_stance}.",
+                DETAIL_LOOSE = "Your stance regarding {1#pol_issue} is updated to favoring {2#pol_stance}.",
                 
             },
             WEALTH_SUPPORT =

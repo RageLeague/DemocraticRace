@@ -788,7 +788,7 @@ QDEF:AddConvo("do_debate")
 
             local betrayed_friends = {}
             for id, delta in pairs(cxt.quest.param.candidate_opinion) do
-                if delta <= -2 then
+                if delta <= -1 then
                     local agent = TheGame:GetGameState():GetAgent(id)
                     if agent:GetRelationship() >= RELATIONSHIP.LIKED then
                         table.insert(betrayed_friends, agent)
@@ -898,7 +898,10 @@ QDEF:AddConvo("talk_to_candidates")
                 {disliked?
                     Perhaps I judged you too harshly.
                 }
-                {not disliked?
+                {liked?
+                    I know I could count on you!
+                }
+                {not disliked and not liked?
                     Maybe we are more alike than we thought.
                 }
             ]],
@@ -928,6 +931,12 @@ QDEF:AddConvo("talk_to_candidates")
                     That's fair, I guess.
                     But since you're not willing to help me, I'm not willing to help you.
             ]],
+            OPT_ALLIANCE = "Use this opportunity to talk about potential alliance",
+            DIALOG_ALLIANCE_TALK_INTRO = [[
+                player:
+                    [p] I say you and me, we make a great team.
+                    How about this: we make an alliance for this upcoming election.
+            ]],
         }
         :Fn(function(cxt)
             local who = cxt:GetAgent()
@@ -953,6 +962,12 @@ QDEF:AddConvo("talk_to_candidates")
                     who:OpinionEvent(OPINION.SHARE_IDEOLOGY)
                 elseif who:GetRelationship() == RELATIONSHIP.NEUTRAL then
                     -- Special alliance talk.
+                    cxt:Opt("OPT_ALLIANCE")
+                        :Fn(function(cxt)
+                            DemocracyUtil.DoAllianceConvo(cxt, who, 15)
+                        end)
+
+                    StateGraphUtil.AddEndOption(cxt)
                 end
             else
                 cxt:Dialog("DIALOG_GENERAL")
