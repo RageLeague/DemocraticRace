@@ -33,9 +33,9 @@ QDEF:AddConvo()
     :ConfrontState("STATE_CONFRONT")
         :Loc{
             DIALOG_INTRO = [[
-                * Just as the boredom of treking across the loam makes you consider why you're doing this, you see two people arguing.
-                * You hear just enough buzzwords to realize it's about {issue_name}, and both of them are spitting bricks about it.
-                * You try your best to disengage with it.
+                * Just as the boredom of treking across the loam makes you consider why you're doing this, you see two people arguing off the side of the road.
+                * You hear just enough buzzwords to realize it's about {issue_name}, and both of them are evidently passionate about it.
+                * You try your best to disengage from the debate.
                 * Keyword; try.
                 player:
                     !left
@@ -60,7 +60,7 @@ QDEF:AddConvo()
                     !right
                 player:
                     !left
-                    Out of the both of you, {agent} has the better beliefs.
+                    Out of the both of you, {agent} is in the right.
                 other:
                     !surprised
                     What? You would rather side with {agent} than me?
