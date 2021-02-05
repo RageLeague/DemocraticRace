@@ -102,20 +102,29 @@ QDEF:AddConvo("go_to_bar")
                     !left
                 primary_advisor:
                     !right
-                    Looks like you have company.
+                    The interview isn't the only thing I set up last night.
+                    I set up a meet and greet with another one of the candidates in the Race.
+                    You'd do well to gather some intel from them.
+                * {opposition} walks up to you and extends a hand.
                 opposition:
                     !right
-                    Hello there. I heard that you're running for president.
+                    Hello there. My name is {opposition}. You may have heard of me already down the grapevine.
                 player:
-                    Yeah, you got it. That's me.
+                    {player}. Charmed to meet you, {opposition.sirma'am}.
                 opposition:
-                    It just so happens that I'm also running for president.
+                    !happy
+                    Respectful to their future leader? I like that in a loser.
                 primary_advisor:
                     !right
-                    It's not just {opposition}.
-                    There are many other candidates who are running for president.
-                    And they have been doing a lot of work to gain their support.
-                    You think this is going to be easy? Think again.
+                    Don't pay them any mind. With luck, they'll fall off the weighside when the pressure mounts.
+                player:
+                    So why am I gathering intel on a loser, then?
+                primary_advisor:
+                    Well, I said with luck.
+                    You're not the only one in the election. Neither are they your only opposition.
+                    There's many candidates out there, vying for presidency over Havaria.
+                    You'll have to deal with the tug and pull of supporters with these guys.
+                    I'll clam up. Go ingratiate yourself to them, see if they'll spill any beans.
             ]],
         }
         :Fn(function(cxt)
@@ -128,36 +137,39 @@ QDEF:AddConvo("meet_opposition", "opposition")
         OPT_GREET = "Greet {agent}",
         DIALOG_GREET = [[
             player:
-                [p] hello, i'm {player}.
-                nice to meet you.
+                So I believe we should introduce ourselves a scoche bit better.
+                If you're going to win, surely you've nothing to hide from your opponents.
             agent:
-                nice to meet you too.
+                Nothing I couldn't tell you about me that the public doesn't already.
+                Ask away.
             player:
-                i heard you're running for president, yes?
+                What's your goal in this democratic race? What drives you forward?
             agent:
-                that's right.
+                I'm glad you asked.
+            * {agent} clears {agent.hisher} throat loudly.
                 %opposition_intro idea_monologue {opposition_id}
             player:
-                good talk.
+                I must say, i'm stunned by your rhetoric.
             agent:
-                do you agree with my platform?
+                I bet you are!
+                What say you? Are you persuaded by my speech?
         ]],
         OPT_AGREE = "Agree",
         DIALOG_AGREE = [[
             player:
-                I have to say that I sympathize with your cause.
+                Believe me, friend. I'm a firm believer in your ideology.
             agent:
-                I'm glad we can come to an agreement.
+                Ah-ha, my dear {player}. We needn't fight at all in this race.
             player:
-                That said, we're still opponents.
-                I'll beat you in this democratic race!
+                Now, Now, I still disagree with you on a number of things.
+                You're still going to lose in this Democratic Race!
             agent:
-                Funny, 'cause I was about to say the same thing.
+                Hark! Well, when you falter, know your voters will join me in the end.
         ]],
         OPT_DISAGREE = "Disagree",
         DIALOG_DISAGREE = [[
             player:
-                With all due respect, I can't say that I agree with your idea.
+                I can't say I do.
             agent:
                 A shame. We could've been great allies.
             player:
@@ -390,7 +402,6 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                         you don't sound so sure.
                         oh well.
                     }
-
                 }
             ]],
         }
@@ -559,16 +570,19 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         -- haven't figure out whether to use vixmali or the bishop
         [[
             player:
-                [p] what's his deal?
+                So what's the cult's candidates clause?
             agent:
             {not cult_of_hesh?
-                You know the cult. Wanting to <!pol_stance_artifact_treatment_2>preserve artifacts</> and what not.
+                It's the cult. They always want more power.
+                But they dont really have anything that jives with the public voting blocks.
+                Well, everything except <!pol_stance_artifact_treatment_2>preserve artifacts</>.
             }
             {cult_of_hesh?
                 To <!pol_stance_artifact_treatment_2>preserve artifacts</>, obviously.
             }
-                It's going to be popular among the Cult, as well as people who care about Havarian heritage.
-                But people who wants to use and sell those artifacts will not like it.
+                They'll likely just start preaching about Hesh declaring them the president.
+                Their supporters are going to be rigidly pro-cult unless you stoop to their level.
+                If you do though, watch your back from those who want the artifacts for profit.
         ]],
         nil,
         nil,
@@ -578,17 +592,16 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 I'm assuming the Jakes has someone that represents them?
             agent:
                 Actually, no.
-                The Jakes lacks a formal hierarchy, so there's not really any figurehead that represents them.
-            * Seriously, there's like zero named Jakes character that would be interested in politics.
-            * I tried, okay?
-                However, Andwanette, a local celebrity, is running.
-                Her stances are probably support by the Jakes.
+                The Jakes are illegal by nature. It's unlikely they could put anyone important on the world stage and get away with it.
+                However, there is a candidate trying to levy support from the Jakes in particular.
+                Her name's Andwannette. Big character in the foam before, but now she's got a fire in her belly to take it to new heights.
             player:
-                Speaking of her stances, what are those.
+                So what are her actual viewpoints, or is she just waffling to the Jakes?
             agent:
-                She plans to <!pol_stance_substance_regulation_-2>remove lots of existing regulations</>.
+                She's a merchant who deals in Back-alley goods. She wants to put those goods on a market that isn't the black market.
+                Expect her to lean towards <!pol_stance_substance_regulation_-2>removing lots of existing regulations</>.
                 !shrug
-                I guess people don't want to get arrested for carry contraband.
+                Can't say I exactly disagree with her on that. Just don't believe she'll make it, is all.
             player:
                 Fair enough.
                 Though I imagine the people in authority won't like it.
