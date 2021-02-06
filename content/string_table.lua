@@ -22,6 +22,10 @@ Content.AddStringTable("DEMOCRACY", {
             LEVEL_8_NAME = "Level 8: Test your mettle",
             LEVEL_8_DESC = "You no longer earn Mettle, and your Mettle upgrades are disabled.",
         },
+        CONTROLS = 
+        {
+            SWITCH_MODE = "{1#binding} Switch Mode",
+        },
         DELTA_SUPPORT_REASON =
         {
             DEFAULT_UP = "favorable action",
@@ -114,6 +118,17 @@ Content.AddStringTable("DEMOCRACY", {
             TITLE = "Support Analysis",
             DESC = "To get elected, you need to have high support among the people. Your advisor has compiled the support breakdown for your campaign. Use this to carefully plan your campaign.",
             SWITCH_MODE = "Switch mode",
+            SWITCH_MODE_TT = "The current mode: <#HILITE>{1}</>\n\n{2}\n\nClick on this button to switch to another mode.",
+            MODE = {
+                DEFAULT_TITLE = "Default",
+                DEFAULT_DESC = "Shows the absolute value of your support level.",
+                RELATIVE_GENERAL_TITLE = "Relative to General Support",
+                RELATIVE_GENERAL_DESC = "Shows the support level relative to your general support level. Useful for determining how much you've done to specifically boost your support among certain demographics.",
+                RELATIVE_CURRENT_TITLE = "Relative to Current Expectation",
+                RELATIVE_CURRENT_DESC = "Shows the support level relative to your current support expectation(1st value). Useful for determining your current support among certain demographics.",
+                RELATIVE_GOAL_TITLE = "Relative to Daily Goal",
+                RELATIVE_GOAL_DESC = "Shows the support level relative to your support goal of today(2nd value). Useful for not getting kicked out by your advisor.",
+            },
         },
         WEALTH_STRING =
         {

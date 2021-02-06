@@ -105,6 +105,32 @@ function SupportEntry:SetColour(color)
     return self
 end
 
+function SupportEntry:SetMode(new_mode)
+    if not self.support_screen_mode then
+        self.support_screen_mode = SUPPORT_SCREEN_MODE.DEFAULT
+    end
+    if new_mode then
+        self.support_screen_mode = new_mode
+    end
+end
+
+function SupportEntry:AdjustValue(value)
+    if self.support_screen_mode == SUPPORT_SCREEN_MODE.RELATIVE_GENERAL then
+        if self._classname ~= "DemocracyClass.Widget.GeneralSupportEntry" then
+            value = loc.format("{1%+d}", value - DemocracyUtil.TryMainQuestFn("GetGeneralSupport")) 
+        end
+    elseif self.support_screen_mode == SUPPORT_SCREEN_MODE.RELATIVE_CURRENT then
+        if self._classname ~= "DemocracyClass.Widget.SupportExpectationEntry" then
+            value = loc.format("{1%+d}", value - DemocracyUtil.TryMainQuestFn("GetCurrentExpectation"))
+        end
+    elseif self.support_screen_mode == SUPPORT_SCREEN_MODE.RELATIVE_GOAL then
+        if self._classname ~= "DemocracyClass.Widget.SupportExpectationEntry" then
+            value = loc.format("{1%+d}", value - DemocracyUtil.TryMainQuestFn("GetDayEndExpectation"))
+        end
+    end
+    return value
+end
+
 
 local FactionSupportEntry = class( "DemocracyClass.Widget.FactionSupportEntry", DemocracyClass.Widget.SupportEntry )
 
@@ -120,13 +146,17 @@ function FactionSupportEntry:init(faction, icon_size, max_width)
     self:Refresh()
 end
 
-function FactionSupportEntry:Refresh()
+function FactionSupportEntry:Refresh(new_mode)
+    self:SetMode(new_mode)
+
     if self.faction then
+        local support_level = self:AdjustValue(DemocracyUtil.TryMainQuestFn("GetFactionSupport", self.faction.id)) 
+        
         self:SetIcon(self.faction:GetIcon())
         self:SetText(
             loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.FACTION_SUPPORT", 
                 self.faction, 
-                DemocracyUtil.TryMainQuestFn("GetFactionSupport", self.faction.id)
+                support_level
             )
         )
         if self.faction:GetColour() then
@@ -146,12 +176,16 @@ function WealthSupportEntry:init(renown, icon_size, max_width)
     self:Refresh()
 end
 
-function WealthSupportEntry:Refresh()
+function WealthSupportEntry:Refresh(new_mode)
+    self:SetMode(new_mode)
+
+    local support_level = self:AdjustValue(DemocracyUtil.TryMainQuestFn("GetWealthSupport", self.renown)) 
+
     self:SetIcon(DemocracyUtil.GetWealthIcon(self.renown))
     self:SetText(
         loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.WEALTH_SUPPORT", 
             self.renown, 
-            DemocracyUtil.TryMainQuestFn("GetWealthSupport", self.renown)
+            support_level
         )
     )
     self:SetColour(DemocracyUtil.GetWealthColor(self.renown))
@@ -171,11 +205,15 @@ function GeneralSupportEntry:init(icon_size, max_width)
     self:Refresh()
 end
 
-function GeneralSupportEntry:Refresh()
+function GeneralSupportEntry:Refresh(new_mode)
+    self:SetMode(new_mode)
+
+    local support_level = self:AdjustValue(DemocracyUtil.TryMainQuestFn("GetGeneralSupport")) 
+
     self:SetIcon(DemocracyConstants.icons.support)
     self:SetText(
         loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.GENERAL_SUPPORT", 
-            DemocracyUtil.TryMainQuestFn("GetGeneralSupport")
+            support_level
         )
     )
     self:SetColour(0x00cc00ff)
@@ -195,12 +233,17 @@ function SupportExpectationEntry:init(icon_size, max_width)
     self:Refresh()
 end
 
-function SupportExpectationEntry:Refresh()
+function SupportExpectationEntry:Refresh(new_mode)
+    self:SetMode(new_mode)
+
+    local current_exp = self:AdjustValue(DemocracyUtil.TryMainQuestFn("GetCurrentExpectation"))
+    local day_end_exp = self:AdjustValue(DemocracyUtil.TryMainQuestFn("GetDayEndExpectation"))
+
     self:SetIcon(DemocracyConstants.icons.support)
     self:SetText(
         loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.SUPPORT_EXPECTATION", 
-            DemocracyUtil.TryMainQuestFn("GetCurrentExpectation"),
-            DemocracyUtil.TryMainQuestFn("GetDayEndExpectation")
+            current_exp,
+            day_end_exp
         )
     )
     self:SetColour(0x00ccccff)

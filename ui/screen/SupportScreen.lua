@@ -14,6 +14,17 @@ local CONTAINER_H = PANEL_H - PANEL_PADDING*2
 local GRAFT_SLOT_SIZE = 110
 local DETAILS_W = RES_X*0.6
 
+SUPPORT_SCREEN_MODE, SUPPORT_SCREEN_MODE_NAME = MakeEnumValues{ "DEFAULT", "RELATIVE_GENERAL", "RELATIVE_CURRENT", "RELATIVE_GOAL" }
+SUPPORT_SCREEN_MODE_SIZE = 4
+
+local function CycleScreenMode(mode)
+    mode = mode + 1
+    if mode > SUPPORT_SCREEN_MODE_SIZE then
+        mode = SUPPORT_SCREEN_MODE.DEFAULT
+    end
+    return mode
+end
+
 SupportScreen.CONTROL_MAP = {
     {
         hint = function(self, left, right)
@@ -31,7 +42,19 @@ SupportScreen.CONTROL_MAP = {
         hint = function(self, left, right)
             table.insert(right, loc.format(LOC"UI.CONTROLS.CLOSE", Controls.Digital.MENU_CANCEL))
         end
-    }
+    },
+    {
+        control = Controls.Digital.SKIP,
+        fn = function(self)
+            -- AUDIO:PlayEvent( "event:/ui/grafts_menu/close" )
+            -- self:FadeOut()
+            self:OnModeSwitch()
+            return true
+        end,
+        hint = function(self, left, right)
+            table.insert(right, loc.format(LOC"DEMOCRACY.CONTROLS.SWITCH_MODE", Controls.Digital.SKIP))
+        end
+    },
 }
 
 
@@ -40,6 +63,8 @@ function SupportScreen:init( owner, on_end_fn )
 
     self:SetupUnderlay( true )
     self:SetAnchors( "center", "center" )
+
+    self.support_screen_mode = SUPPORT_SCREEN_MODE.DEFAULT
     
     -- self.locked = locked
 
@@ -136,7 +161,7 @@ function SupportScreen:init( owner, on_end_fn )
 
     self.mode_button = self.bottom_left:AddChild( Widget.IconButton( LOC"DEMOCRACY.SUPPORT_SCREEN.SWITCH_MODE", 
         function()
-            self:OnClickClose()
+            self:OnModeSwitch()
         end ) )
     self.mode_button:SetIcon( global_images.close )
     self.mode_button:LayoutBounds( "after", "center", self.close_button )
@@ -167,13 +192,18 @@ function SupportScreen:OnClickClose()
     self:Close()
 end
 
+function SupportScreen:OnModeSwitch()
+    self.support_screen_mode = CycleScreenMode(self.support_screen_mode)
+    self:Refresh(self.support_screen_mode)
+end
+
 function SupportScreen:Close()
     if self:IsOnStack() then
         self:FadeOut()
     end
 end
 
-function SupportScreen:Refresh()
+function SupportScreen:Refresh(new_mode)
     -- Update tab counts
     -- local installed_grafts, max_grafts
     -- installed_grafts, max_grafts = self.graft_widgets[GRAFT_TYPE.COMBAT]:GetGraftCount()
@@ -182,6 +212,17 @@ function SupportScreen:Refresh()
     -- -- Show grafts
     -- self.graft_widgets[GRAFT_TYPE.COMBAT]:Refresh():Layout()
     -- self.graft_widgets[GRAFT_TYPE.NEGOTIATION]:Refresh():Layout()
+    self.general_support:Refresh(new_mode)
+    self.faction_support:Refresh(new_mode)
+    self.wealth_support:Refresh(new_mode)
+
+    local mode_name = SUPPORT_SCREEN_MODE_NAME[self.support_screen_mode]
+
+    self.mode_button:SetToolTip(loc.format(
+        LOC"DEMOCRACY.SUPPORT_SCREEN.SWITCH_MODE_TT",
+        LOC("DEMOCRACY.SUPPORT_SCREEN.MODE."..mode_name.."_TITLE"),
+        LOC("DEMOCRACY.SUPPORT_SCREEN.MODE."..mode_name.."_DESC")
+    ))
 
     self:Layout()
 end

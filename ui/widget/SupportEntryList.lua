@@ -27,10 +27,10 @@ function SupportEntryList:UpdateEntryWidth()
     return self
 end
 
-function SupportEntryList:Refresh()
+function SupportEntryList:Refresh(...)
     for i, widget in ipairs(self.widget_list) do
         if widget.Refresh then
-            widget:Refresh()
+            widget:Refresh(...)
         end
     end
     self:Layout()
