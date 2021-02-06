@@ -11,6 +11,13 @@ local QDEF = QuestDef.Define
     tags = {"REQUEST_JOB"},
     reward_mod = 0,
     can_flush = false,
+
+    events = {
+        base_difficulty_change = function(quest, new_diff, old_diff)
+            quest:SetRank(new_diff)
+        end,
+    },
+
     on_init = function(quest)
         local motivation = {"make_example", "rush_quota"}
         local id = table.arraypick(motivation)

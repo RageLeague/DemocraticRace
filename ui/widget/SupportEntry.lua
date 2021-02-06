@@ -184,3 +184,28 @@ function GeneralSupportEntry:Refresh()
     -- end
     return GeneralSupportEntry._base.Refresh(self)
 end
+
+local SupportExpectationEntry = class( "DemocracyClass.Widget.SupportExpectationEntry", DemocracyClass.Widget.SupportEntry )
+
+function SupportExpectationEntry:init(icon_size, max_width)
+    SupportExpectationEntry._base.init(self, icon_size, max_width)
+
+    -- self.renown = renown or 1
+
+    self:Refresh()
+end
+
+function SupportExpectationEntry:Refresh()
+    self:SetIcon(DemocracyConstants.icons.support)
+    self:SetText(
+        loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.SUPPORT_EXPECTATION", 
+            DemocracyUtil.TryMainQuestFn("GetCurrentExpectation"),
+            DemocracyUtil.TryMainQuestFn("GetDayEndExpectation")
+        )
+    )
+    self:SetColour(0x00ccccff)
+    -- if self.faction:GetColour() then
+    --     self:SetColour(self.faction:GetColour())
+    -- end
+    return SupportExpectationEntry._base.Refresh(self)
+end

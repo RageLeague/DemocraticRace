@@ -424,9 +424,9 @@ QDEF:AddConvo("meet_opponent")
             end
             for i, agent in ipairs(cxt.quest.param.crowd or {}) do
                 if i <= gain_supporter then
-                    agent:OpinionEvent(cxt.quest:GetOpinionEvent("liked_debate"))
+                    agent:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("liked_debate"))
                 elseif #(cxt.quest.param.crowd or {}) - i < lose_supporter then
-                    agent:OpinionEvent(cxt.quest:GetOpinionEvent("disliked_debate"))
+                    agent:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("disliked_debate"))
                 end
             end
             if cxt.quest.param.lost_negotiation or cxt.quest.param.audience_stage <= 0 then

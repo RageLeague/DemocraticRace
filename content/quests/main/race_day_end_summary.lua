@@ -190,7 +190,10 @@ QDEF:AddConvo("summary", "primary_advisor")
         :Fn(function(cxt)
             -- the idea here is that the advisor check how much they support you
             -- instead of the general public to further their agenda
-            local support_level = DemocracyUtil.GetSupportForAgent(cxt:GetAgent())
+            -- but the bias would be too obvious
+            local general_support = DemocracyUtil.GetGeneralSupport()
+            local agent_support = DemocracyUtil.GetSupportForAgent(cxt:GetAgent())
+            local support_level = general_support * .5 + agent_support * .5
             local expectation = DemocracyUtil.GetCurrentExpectation()
             local delta = support_level - expectation
             

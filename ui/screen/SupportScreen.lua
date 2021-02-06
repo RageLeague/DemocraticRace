@@ -134,6 +134,14 @@ function SupportScreen:init( owner, on_end_fn )
     self.close_button:SetIcon( global_images.close )
     self.close_button:LayoutBounds( "left", "above", 60, 60 )
 
+    self.mode_button = self.bottom_left:AddChild( Widget.IconButton( LOC"DEMOCRACY.SUPPORT_SCREEN.SWITCH_MODE", 
+        function()
+            self:OnClickClose()
+        end ) )
+    self.mode_button:SetIcon( global_images.close )
+    self.mode_button:LayoutBounds( "after", "center", self.close_button )
+        :Offset(SPACING.M1, 0)
+
     self.on_end_fn = on_end_fn
     
     self:Refresh()

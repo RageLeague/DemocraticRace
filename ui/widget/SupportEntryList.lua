@@ -133,6 +133,6 @@ local GeneralSupportEntryList = class( "DemocracyClass.Widget.GeneralSupportEntr
 
 function GeneralSupportEntryList:init(max_width)
 
-    local widget_list = {DemocracyClass.Widget.GeneralSupportEntry()}
-    GeneralSupportEntryList._base.init(self, widget_list, max_width, 1)
+    local widget_list = {DemocracyClass.Widget.GeneralSupportEntry(), DemocracyClass.Widget.SupportExpectationEntry()}
+    GeneralSupportEntryList._base.init(self, widget_list, max_width, 2)
 end

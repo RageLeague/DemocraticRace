@@ -379,8 +379,9 @@ local DEMANDS = {
     },
     demand_drink = {
         name = "Demand Drink",
+        icon = "DEMOCRATICRACE:assets/modifiers/demand_drink.png",
         
-        title = "drink with {agent}{1*| {1} times}",
+        title = "drink with {agent} {1*once|{1} times}",
         title_fn = function(self, fmt_str, data)
             return loc.format(fmt_str, data.stacks or 0)
         end,
@@ -389,6 +390,28 @@ local DEMANDS = {
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.reduce_chance, Negotiation.Modifier.GetOwnerName(self), self.stacks or 1)
         end,
+
+        loc_strings = {
+            OPT_OFFER = "Offer to drink {1#card}",
+            DIALOG_OFFER_LUMIN_WINE = [[
+                {not offered_lumin_wine?
+                player:
+                    I have some Aqua Lumina that we can drink.
+                agent:
+                    Ooh! We're going fancy, huh?
+                    Sure, why not.
+                }
+                {offered_lumin_wine?
+                player:
+                    How about another bottle?
+                agent:
+                    It's not going to kill me, right?
+                player:
+                    Only one way to find out!
+                }
+                * You poured some Aqua Lumina into {agent}'s cup.
+            ]],
+        },
 
         reduce_chance = .4,
         common_demand = true,
@@ -407,7 +430,7 @@ local DEMANDS = {
         },
 
         OnInit = function( self, source )
-            self:SetResolve( (5 + 2 * self.engine:GetDifficulty()) * (self.stacks or 1) )
+            self:SetResolve( (5 + 3 * self.engine:GetDifficulty()) * (self.stacks or 1) )
             AUDIO:PlayEvent("event:/sfx/battle/cards/neg/create_argument/bonus")
         end,
 
@@ -443,17 +466,79 @@ local DEMANDS = {
                 print("Require Tavern")
                 return
             end
+            local DRINK_VALUE = 50
             local count = 1
-            while math.random() < 0.5 do
+            while math.random() < 0.6 do
                 count = count + 1
             end
-            count = math.min(math.floor(pts / 50), count)
+            count = math.min(math.floor(pts / DRINK_VALUE), count)
             if count > 0 then
-                return count * 50, {id = self.id, stacks = count}
+                return count * DRINK_VALUE, {id = self.id, stacks = count}
             end
         end,
         ParseDemandList = function(self, data, t)
             table.insert(t, shallowcopy(data))
+        end,
+        GenerateConvoOption = function(self, cxt, opt, data, demand_modifiers)
+            local function ProcessDrink(cxt, amt)
+                data.stacks = (data.stacks or 0) - amt
+                if data.stacks <= 0 then
+                    data.resolved = true
+                end
+                for i, modifier in ipairs(demand_modifiers) do
+                    if modifier.id == self.id then
+                        modifier.stacks = (modifier.stacks or 0) - amt
+                        if modifier.stacks <= 0 then
+                            modifier.resolved = true
+                        end
+                        -- modifier.resolved = true
+                        return
+                    end
+                end
+            end
+            opt:PreIcon( global_images.order )
+                -- :Dialog("DEMAND_STRING.DIALOG_ACCEPT_MONEY")
+                :Fn(function() TheGame:GetGameProfile():SetDrankWith( cxt:GetAgent():GetUniqueID() ) end)
+                :DoDrink( BAR_DRINK_COST * 2, math.max( 5, DRINK_RESTORE_RESOLVE_AMOUNT - 5 ), cxt:GetAgent() )
+                :Fn(function(cxt)
+                    ProcessDrink(cxt, 1)
+                end)
+            local lumin_wine = cxt.player.battler:FindCardByID("lumin_wine")
+            if lumin_wine then
+                cxt:RawOpt((self.def or self):GetLocalizedString("OPT_OFFER"), nil, lumin_wine)
+                    :PreIcon(global_images.drink)
+                    :RawDialog((self.def or self):GetLocalizedString("DIALOG_OFFER_LUMIN_WINE"))
+                    :Quip(cxt.enc:GetPlayer(), "meet_demand", self.id)
+                    :Quip(cxt:GetAgent(), "accept_demand", self.id)
+                    :Fn(function(cxt)
+                        cxt.enc.scratch.offered_lumin_wine = true
+                        cxt.player.battler:RemoveCard(lumin_wine)
+
+                        local drink_effects = {
+                            cards = { "drunk_player", "drunk" },
+                            health_gain = 6,
+                            resolve_gain = 10,
+                        }
+                        TheGame:GetEvents():BroadcastEvent( "do_drink", drink_effects ) 
+                        
+                        if drink_effects.resolve_gain and drink_effects.resolve_gain > 0 then
+                            ConvoUtil.DoResolveDelta(cxt, drink_effects.resolve_gain)
+                        end
+                        if drink_effects.health_gain and drink_effects.health_gain > 0 then
+                            ConvoUtil.DoHealthDelta(cxt, drink_effects.health_gain)
+                        end
+                        if #drink_effects.cards > 0 then
+                            cxt:ForceTakeCards( drink_effects.cards )
+                        end
+                        cxt:GetAgent().health:Delta(6)
+
+                        AgentUtil.MakeDrunk( cxt:GetAgent() )
+
+                        TheGame:GetEvents():BroadcastEvent( "had_drink", drink_effects ) 
+
+                        ProcessDrink(cxt, 2)
+                    end)
+            end
         end,
     },
 }

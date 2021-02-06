@@ -5,8 +5,8 @@ end
 rawset(_G, patch_id, true)
 print("Loaded patch:"..patch_id)
 
-function ConvoStateGraph:RawOpt(txt, id)
-    txt = self.enc:LocFormat( txt )
+function ConvoStateGraph:RawOpt(txt, id, ...)
+    txt = self.enc:LocFormat( txt, ... )
     local opt = ConvoOption( txt )
     self.encounter:AddOption( opt )
 
@@ -18,13 +18,17 @@ function ConvoStateGraph:RawOpt(txt, id)
 
     return opt
 end
-function ConvoStateGraph:RawDialog(txt, id)
+function ConvoStateGraph:RawDialog(txt, id, ...)
     if id then
         self.fresh_dialog = not TheGame:GetGameState():HasDialogMemory(id)
         TheGame:GetGameState():RememberDialog(id)
     end
-    txt = self.enc:LocFormat( txt )
+    txt = self.enc:LocFormat( txt, ... )
     self.fresh_dialog = nil
 
     self.enc:Dialog(txt)
+end
+function ConvoOption:RawDialog(txt, id, ...)
+    self:PushHandler( self.hub.RawDialog, self.hub, txt, id, ...)
+    return self
 end

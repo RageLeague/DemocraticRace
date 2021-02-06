@@ -107,11 +107,13 @@ Content.AddStringTable("DEMOCRACY", {
             FACTION_SUPPORT = "{1#faction}: {2}",
             GENERAL_SUPPORT = "General Support: {1}",
             WEALTH_SUPPORT = "{1#wealth_name}: {2}",
+            SUPPORT_EXPECTATION = "Expected Support: {1}/{2}",
         },
         SUPPORT_SCREEN = 
         {
             TITLE = "Support Analysis",
             DESC = "To get elected, you need to have high support among the people. Your advisor has compiled the support breakdown for your campaign. Use this to carefully plan your campaign.",
+            SWITCH_MODE = "Switch mode",
         },
         WEALTH_STRING =
         {

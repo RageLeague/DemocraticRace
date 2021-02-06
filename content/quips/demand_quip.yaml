@@ -34,7 +34,19 @@ lines:
   dialog:
   - I'm taking your stance.
   - I'll make a public statement as soon as possible.
-
+- tags: [meet_demand, demand_drink]
+  pre: |
+    agent:
+      !cheers
+    player:
+      !cheers
+  dialog:
+    - Cheers!
+    - Bottoms up!
+    - Alcoholism surely solves everything!
+    - How about a drink?
+    - To your health!
+    
 - tags: [accept_demand]
   dialog:
   - |

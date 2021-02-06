@@ -612,6 +612,10 @@ local QDEF = QuestDef.Define
         local arr = quest:DefFn("GetCurrentExpectationArray")
         return arr[math.min(#arr, quest.param.sub_day_progress or 1)] -- - 100
     end,
+    GetDayEndExpectation = function(quest)
+        local arr = quest:DefFn("GetCurrentExpectationArray")
+        return arr[#arr]
+    end,
 
     -- debug functions
     DebugUnlockAllLocations = function(quest)

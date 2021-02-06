@@ -1726,7 +1726,7 @@ local MODIFIERS =
         end,
 
         modifier_type = MODIFIER_TYPE.BOUNTY,
-        init_max_resolve = 3,
+        init_max_resolve = 2,
 
         bonus_per_generation = 2,
         -- bonus_scale = {2, 2, 3, 4},
