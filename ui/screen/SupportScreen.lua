@@ -138,6 +138,9 @@ function SupportScreen:init( owner, on_end_fn )
     self.faction_support = self.content:AddChild(DemocracyClass.Widget.FactionSupportEntryList())
 
     self.wealth_support = self.content:AddChild(DemocracyClass.Widget.WealthSupportEntryList())
+
+    self.test_track = self.content:AddChild(DemocracyClass.Widget.PoliticalIssueTrack():SetIssue("SECURITY"))
+        
         -- :SetIcon(DemocracyConstants.icons.support)
         -- :SetText("Maybe I <i>DO</> know what I'm doing.")
         -- :SetColour(UICOLOURS.FIGHT)
@@ -326,6 +329,11 @@ function SupportScreen:Layout()
         :Offset( 0, SPACING.M1 )
     self.wealth_support:LayoutBounds("left", "below", self.faction_support)
         :Offset( 0, SPACING.M1 )
+
+    if self.test_track then
+        self.test_track:LayoutBounds("left", "below", self.wealth_support)
+            :Offset( 0, SPACING.M1 )
+    end
     -- self.graft_widgets[GRAFT_TYPE.NEGOTIATION]:LayoutBounds( "left", "below", self.text_content ):Offset( 0, -30 )
     -- self.graft_widgets[GRAFT_TYPE.COMBAT]:LayoutBounds( "after", "top", self.graft_widgets[GRAFT_TYPE.NEGOTIATION] ):Offset( SPACING.M1, 0 )
 
