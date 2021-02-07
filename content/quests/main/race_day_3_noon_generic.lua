@@ -242,7 +242,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 local allied = {}
                 local potential = {}
                 for id, data in pairs(DemocracyConstants.opposition_data) do
-                    local candidate = TheGame:GetGameState():GetAgent(data.character)
+                    local candidate = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
                     if candidate then
                         if candidate:GetRelationship() > RELATIONSHIP.NEUTRAL then
                             table.insert(allied, id)
@@ -257,7 +257,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 end
                 if #potential > 0 then
                     local data = DemocracyConstants.opposition_data[potential[1]]
-                    local candidate = TheGame:GetGameState():GetAgent(data.character)
+                    local candidate = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
                     cxt.enc.scratch.good_ally = DemocracyUtil.GetEndorsement(DemocracyUtil.GetAlliancePotential(potential[1])) >= RELATIONSHIP.NEUTRAL
                     cxt:Dialog("DIALOG_ASK_ALLY_POTENTIAL", candidate, data.main_supporter, data.workplace)
 

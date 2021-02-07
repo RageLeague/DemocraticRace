@@ -16,11 +16,12 @@ function PoliticalIssueTrack:init(max_width, max_height, spacing)
     PoliticalIssueTrack._base.init( self )
 
     self.widget_w = max_width or 1200
-    self.widget_h = max_height or 120
+    self.widget_h = max_height or 180
 
     self.spacing = spacing or 5
 
     self.icon_size = 40
+    self.portrait_offset = 40
 
     self.hitbox = self:AddChild( Widget.SolidBox( 100, 100, 0xffff0030 ) )
         :SetTintAlpha( 0 )
@@ -40,15 +41,28 @@ function PoliticalIssueTrack:init(max_width, max_height, spacing)
         :Bloom( 0.15 )
         :SetTintColour(0x0000ffff)
 
-    self.issue_title = self:AddChild(Widget.Label("body", 36 ):LeftAlign())
+    self.issue_title = self:AddChild(Widget.Label("body", 48 ):LeftAlign())
 
     self.stance_icons = {}
+
+    self.agent_portraits = {}
 
     for i = -2, 2 do
         table.insert(self.stance_icons, self:AddChild(DemocracyClass.Widget.StanceIcon(self.icon_size):SetDefaultIcon(i)))
     end
 
     self:Refresh()
+end
+
+function PoliticalIssueTrack:AddAgent(agent)
+    for i, widget in ipairs(self.agent_portraits) do
+        if widget.agent == agent then
+            return self
+        end
+    end
+    table.insert(self.agent_portraits, self:AddChild(Widget.TrackedAgentPortrait(agent)))
+    self:Refresh()
+    return self
 end
 
 function PoliticalIssueTrack:Refresh()
@@ -97,10 +111,32 @@ function PoliticalIssueTrack:Layout()
     self.hitbox:LayoutBounds("center", "center", self)
     self.background:LayoutBounds("center", "center", self)
 
-    self.opinion_track:LayoutBounds("center", "center", self.hitbox)
+    self.opinion_track:LayoutBounds("center", "bottom", self.hitbox):Offset(0, self.icon_size + 2 * self.spacing)
     self.issue_title:LayoutBounds("left", "top", self.hitbox):Offset(SPACING.M1, -self.spacing)
     for i, icon in ipairs(self.stance_icons) do
         local percent_align = (i - 1) / (#self.stance_icons - 1)
         icon:LayoutBounds("center", "bottom", self.hitbox):Offset(math.round((self.track_w - self.icon_size) * (percent_align - .5)), self.spacing)
+    end
+
+    if self.issue then
+        local stance_groupings = {{},{},{},{},{}}
+        for i, widget in ipairs(self.agent_portraits) do
+            local stance = self.issue:GetAgentStanceIndex(widget.agent) or 0
+            table.insert(stance_groupings[stance + 3], widget)
+        end
+        local barx, bary = self.stance_icons[1]:TransformFromWidget(self.opinion_track)
+        for i, group in ipairs(stance_groupings) do
+            if #group > 0 then
+                for j, widget in ipairs(group) do
+                    local offset = j - ((#group + 1) / 2)
+                    if i == 1 then
+                        offset = j - 1
+                    elseif i == 5 then
+                        offset = j - #group
+                    end
+                    widget:LayoutBounds("center","above", self.stance_icons[i]):Offset(math.round(offset * self.portrait_offset), bary - 15)
+                end
+            end
+        end
     end
 end

@@ -67,7 +67,7 @@ local QDEF = QuestDef.Define
         end
         if #best_characters > 0 then
             local data = table.arraypick(best_characters)
-            local agent = TheGame:GetGameState():GetAgentByAlias(data.character)
+            local agent = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
             table.insert(t, agent)
             quest.param.ally_work_pos = data.workplace
             quest.param.ally_platform = data.platform

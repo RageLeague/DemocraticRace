@@ -864,7 +864,7 @@ function DemocracyUtil.GetAlliancePotential(candidate_id)
     local score = DemocracyUtil.GetVoterIntentionIndex({faction = candidate_data.main_supporter})
     for id, data in pairs(oppositions) do
         if id ~= candidate_id then
-            local candidate = TheGame:GetGameState():GetAgent(data.character)
+            local candidate = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
             if candidate then
                 local rel_with_player = candidate:GetRelationship()
                 local faction_rel = TheGame:GetGameState():GetFactions():GetFactionRelationship( 

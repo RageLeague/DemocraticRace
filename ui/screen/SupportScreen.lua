@@ -139,20 +139,15 @@ function SupportScreen:init( owner, on_end_fn )
 
     self.wealth_support = self.content:AddChild(DemocracyClass.Widget.WealthSupportEntryList())
 
-    self.test_track = self.content:AddChild(DemocracyClass.Widget.PoliticalIssueTrack():SetIssue("SECURITY"))
-        
-        -- :SetIcon(DemocracyConstants.icons.support)
-        -- :SetText("Maybe I <i>DO</> know what I'm doing.")
-        -- :SetColour(UICOLOURS.FIGHT)
-    -- Setup grafts display
-    -- self.graft_root = self.content:AddChild(Widget())
-    -- self.graft_widgets = {
-    --     [GRAFT_TYPE.COMBAT] = self.graft_root:AddChild( Widget.GraftScreenSlotContainer(GRAFT_TYPE.COMBAT, self.owner, GRAFT_SLOT_SIZE, self.locked) ):HideTT(),
-    --     [GRAFT_TYPE.NEGOTIATION] = self.graft_root:AddChild( Widget.GraftScreenSlotContainer(GRAFT_TYPE.NEGOTIATION, self.owner, GRAFT_SLOT_SIZE, self.locked) ):HideTT(),
-    -- }
-    -- self.graft_widgets[GRAFT_TYPE.COMBAT]:SetWidth( (DETAILS_W-SPACING.M1)/2 )
-    -- self.graft_widgets[GRAFT_TYPE.NEGOTIATION]:SetWidth( (DETAILS_W-SPACING.M1)/2 )
-
+    self.test_track = self.content:AddChild(DemocracyClass.Widget.PoliticalIssueTrack()
+        :SetIssue("SECURITY")
+        :AddAgent(TheGame:GetGameState():GetPlayerAgent()))
+        :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_admiralty"))
+        :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_spree"))
+        :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_baron"))
+        :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_rise"))
+        :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_cult"))
+        :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_jakes"))
     -- Back button
     self.bottom_left = self:AddChild( Widget() ):SetAnchors( "left", "bottom" )
     self.close_button = self.bottom_left:AddChild( Widget.IconButton( LOC"UI.OVERLAYS.CLOSE", 

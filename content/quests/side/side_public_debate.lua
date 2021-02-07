@@ -76,7 +76,7 @@ local QDEF = QuestDef.Define
         local has_candidate = false
         for id, data in pairs(DemocracyConstants.opposition_data) do
             local candidate = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
-            if candidate:GetRelationship() < RELATIONSHIP.NEUTRAL or DemocracyUtil.GetFactionEndorsement(data.main_supporter) < RELATIONSHIP.NEUTRAL then
+            if candidate:GetRelationship() <= RELATIONSHIP.NEUTRAL or DemocracyUtil.GetFactionEndorsement(data.main_supporter) < RELATIONSHIP.NEUTRAL then
                 table.insert(t, candidate)
                 has_candidate = true
             end
@@ -90,7 +90,7 @@ local QDEF = QuestDef.Define
                 if not agent then
                     agent = TheGame:GetGameState():AddSkinnedAgent(chosen_id)
                 end
-                if agent and not agent:IsRetired() then
+                if agent and not agent:IsRetired() and candidate:GetRelationship() <= RELATIONSHIP.NEUTRAL then
                     table.insert(t, agent)
                     has_candidate = true
                 end
