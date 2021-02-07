@@ -281,7 +281,7 @@ local val =  {
                     ADMIRALTY = 5,
                     FEUD_CITIZEN = -4,
                     BANDITS = -5,
-                    CULT_OF_HESH = 3,
+                    CULT_OF_HESH = 4,
                     JAKES = -3,
                 },
                 wealth_support = {
@@ -313,7 +313,7 @@ local val =  {
                 desc = "The tension between Deltree and Havaria is too high, that no one will benefit if a decision is made immediately. It's probably better to not touch on this issue.",
                 faction_support = {
                     ADMIRALTY = -1,
-                    FEUD_CITIZEN = -1,
+                    FEUD_CITIZEN = 1,
                 },
                 wealth_support = {
                     -1,

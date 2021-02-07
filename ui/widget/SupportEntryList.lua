@@ -148,7 +148,15 @@ function StancesEntryList:init(max_width)
 
     local widget_list = {}
     for i, id, data in sorted_pairs(TheGame:GetGameState():GetMainQuest().param.stances) do
-        table.insert(widget_list,DemocracyClass.Widget.PoliticalIssueTrack(max_width):SetIssue(id):AddAgent())
+        local widget = DemocracyClass.Widget.PoliticalIssueTrack(max_width)
+            :SetIssue(id)
+            :AddAgent(TheGame:GetGameState():GetPlayerAgent())
+        
+        for i, agent in ipairs(DemocracyUtil.GetStanceIntel()) do
+            widget:AddAgent(agent)
+        end
+
+        table.insert(widget_list,widget)
     end
     StancesEntryList._base.init(self, widget_list, max_width, 1)
 end

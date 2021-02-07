@@ -258,6 +258,7 @@ local SupportExpectationEntry = class( "DemocracyClass.Widget.SupportExpectation
 function SupportExpectationEntry:init(icon_size, max_width)
     SupportExpectationEntry._base.init(self, icon_size, max_width)
 
+    self:SetToolTip(LOC"DEMOCRACY.SUPPORT_SCREEN.EXPECTED_SUPPPRT_TT")
     -- self.renown = renown or 1
 
     self:Refresh()

@@ -49,7 +49,16 @@ function PoliticalIssueTrack:init(max_width, max_height, spacing)
 
     for i = -2, 2 do
         table.insert(self.stance_icons, self:AddChild(DemocracyClass.Widget.StanceIcon(self.icon_size):SetDefaultIcon(i)))
+        if i >= -1 then
+            self.stance_icons[#self.stance_icons]:SetFocusDir("left", self.stance_icons[#self.stance_icons-1], true)
+        end
     end
+
+    self:SetOnClickFn(function()
+        -- if not table.arraycontains(self.stance_icons, TheGame:FE():GetFocusWidget()) then
+        self.stance_icons[1]:SetFocus()
+        -- end
+    end)
 
     self:Refresh()
 end
@@ -71,16 +80,15 @@ function PoliticalIssueTrack:GetSize()
 end
 
 function PoliticalIssueTrack:AddAgent(agent)
-    if agent == nil then
-        agent = TheGame:GetGameState():GetPlayerAgent()
-    end
-    for i, widget in ipairs(self.agent_portraits) do
-        if widget.agent == agent then
-            return self
+    if agent then
+        for i, widget in ipairs(self.agent_portraits) do
+            if widget.agent == agent then
+                return self
+            end
         end
+        table.insert(self.agent_portraits, self:AddChild(Widget.TrackedAgentPortrait(agent)))
+        self:Refresh()
     end
-    table.insert(self.agent_portraits, self:AddChild(Widget.TrackedAgentPortrait(agent)))
-    self:Refresh()
     return self
 end
 
@@ -118,6 +126,7 @@ function PoliticalIssueTrack:SetIssue(issue)
     if self.issue then
         self:SetToolTipClass(Widget.TooltipCodex)
         self:SetToolTip(self.issue)
+        self:ShowToolTipOnFocus()
         for i = -2, 2 do
             self.stance_icons[i + 3]:SetStance(self.issue.stances[i], i)
         end

@@ -1,4 +1,4 @@
-local StanceIcon = class( "DemocracyClass.Widget.StanceIcon", Widget )
+local StanceIcon = class( "DemocracyClass.Widget.StanceIcon", Widget.Clickable )
 
 local DEFAULT_ICON = {
     [-2] = global_images.relationship_level[RELATIONSHIP.HATED],
@@ -14,10 +14,14 @@ function StanceIcon:init( size )
 
     size = size or 40
 
-    self.size = size
+    self.icon_size = size
 
     self.icon = self:AddChild( Widget.Image( DEFAULT_ICON[0], size, size ) )
     self.stance = nil
+
+    self:SetOnClickFn(function()
+        self:SetFocus()
+    end)
 end
 function StanceIcon:SetIcon(icon)
     self.icon:SetTexture(icon)
@@ -41,6 +45,35 @@ function StanceIcon:Refresh()
     if self.stance then
         self:SetToolTipClass(Widget.TooltipCodex)
         self:SetToolTip(self.stance)
+        self:ShowToolTipOnFocus()
     end
     return self
+end
+
+function StanceIcon:UpdateImage()
+    if self.focus then
+        self.icon:Bloom(0.15)
+    else
+        self.icon:Bloom(0)
+    end
+end
+
+function StanceIcon:OnGainFocus()
+    StanceIcon._base.OnGainFocus(self)
+    self:UpdateImage()
+end
+
+function StanceIcon:OnLoseFocus()
+    StanceIcon._base.OnLoseFocus(self)
+    self:UpdateImage()
+end
+
+function StanceIcon:OnGainHover()
+    StanceIcon._base.OnGainHover(self)
+    self:UpdateImage()
+end
+
+function StanceIcon:OnLoseHover()
+    StanceIcon._base.OnLoseHover(self)
+    self:UpdateImage()
 end

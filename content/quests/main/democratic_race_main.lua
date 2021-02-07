@@ -616,6 +616,18 @@ local QDEF = QuestDef.Define
         local arr = quest:DefFn("GetCurrentExpectationArray")
         return arr[#arr]
     end,
+    GetStanceIntel = function(quest)
+        local intel = {}
+        if quest:GetCastMember("primary_advisor") then
+            table.insert(intel, quest:GetCastMember("primary_advisor"))
+        end
+        for i, id, data in sorted_pairs(DemocracyConstants.opposition_data) do
+            if quest:GetCastMember(id):KnowsPlayer() then
+                table.insert(intel, quest:GetCastMember(id))
+            end
+        end
+        return intel
+    end,
 
     -- debug functions
     DebugUnlockAllLocations = function(quest)
