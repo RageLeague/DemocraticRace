@@ -109,12 +109,21 @@ local QDEF = QuestDef.Define
         -- Also they determine a whole bunch of things. Very important to keep high.
         -- Just read the README
         quest.param.support_level = 0
+
+        quest.param.support_gain_source = {}
+        quest.param.support_loss_source = {}
         -- Your support among factions.
         -- This is stored as the support relative to the general support
         -- The displayed support level is already adjusted.
         quest.param.faction_support = {}
+
+        quest.param.faction_support_gain_source = {}
+        quest.param.faction_support_loss_source = {}
         -- Your support level among wealth levels.(renown levels)
         quest.param.wealth_support = {}
+
+        quest.param.wealth_support_gain_source = {}
+        quest.param.wealth_support_loss_source = {}
         -- The locations you've unlocked.
         quest.param.unlocked_locations = --shallowcopy(Content.GetWorldRegion("democracy_pearl").locations)--{"MURDERBAY_NOODLE_SHOP"}
         {"MURDERBAY_NOODLE_SHOP"}
@@ -393,7 +402,7 @@ local QDEF = QuestDef.Define
             quest:DefFn("DeltaGeneralSupport", amt, notification)
         end
     end,
-    DeltaGeneralSupport = function(quest, amt, notification)
+    DeltaGeneralSupport = function(quest, amt, notification, delta_type)
         quest.param.support_level = (quest.param.support_level or 0) + amt
         if notification == nil then
             notification = true
@@ -404,8 +413,15 @@ local QDEF = QuestDef.Define
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_general_support", amt )
         end
+        if not delta_type and type(notification) == "string" then
+            delta_type = notification
+        end
+        quest:DefFn("TrackDeltaGeneralSupport", amt, delta_type)
     end,
-    DeltaFactionSupport = function(quest, amt, faction, notification)
+    DeltaFactionSupport = function(quest, amt, faction, notification, delta_type)
+        if not quest.param.faction_support then
+            quest.param.faction_support = {}
+        end
         faction = DemocracyUtil.ToFactionID(faction)
         quest.param.faction_support[faction] = (quest.param.faction_support[faction] or 0) + amt
         if notification == nil then
@@ -417,8 +433,15 @@ local QDEF = QuestDef.Define
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_faction_support_" .. faction, amt )
         end
+        if not delta_type and type(notification) == "string" then
+            delta_type = notification
+        end
+        quest:DefFn("TrackDeltaFactionSupport", amt, faction, delta_type)
     end,
-    DeltaWealthSupport = function(quest, amt, renown, notification)
+    DeltaWealthSupport = function(quest, amt, renown, notification, delta_type)
+        if not quest.param.wealth_support then
+            quest.param.wealth_support = {}
+        end
         local r = DemocracyUtil.GetWealth(renown)
         quest.param.wealth_support[r] = (quest.param.wealth_support[r] or 0) + amt
         if notification == nil then
@@ -430,12 +453,105 @@ local QDEF = QuestDef.Define
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_wealth_support_" .. r, amt )
         end
+        if not delta_type and type(notification) == "string" then
+            delta_type = notification
+        end
+        quest:DefFn("TrackDeltaWealthSupport", amt, r, delta_type)
     end,
 
-    DeltaAgentSupport = function(quest, amt, agent, notification)
-        quest:DefFn("DeltaGeneralSupport", amt, false)
-        quest:DefFn("DeltaFactionSupport", amt, agent, false)
-        quest:DefFn("DeltaWealthSupport", amt, agent, false)
+    TrackDeltaGeneralSupport = function(quest, amt, delta_type)
+        if not quest.param.support_gain_source then
+            quest.param.support_gain_source = {}
+        end
+        if not quest.param.support_loss_source then
+            quest.param.support_loss_source = {}
+        end
+        
+        if amt ~= 0 then
+            if amt > 0 then
+                if not delta_type then
+                    delta_type = "DEFAULT_UP"
+                end
+                quest.param.support_gain_source[delta_type] = (quest.param.support_gain_source[delta_type] or 0) + amt
+            else
+                if not delta_type then
+                    delta_type = "DEFAULT_DOWN"
+                end
+                quest.param.support_loss_source[delta_type] = (quest.param.support_loss_source[delta_type] or 0) - amt
+            end
+        end
+    end,
+    TrackDeltaFactionSupport = function(quest, amt, faction, delta_type)
+        if not quest.param.faction_support_gain_source then
+            quest.param.faction_support_gain_source = {}
+        end
+        if not quest.param.faction_support_loss_source then
+            quest.param.faction_support_loss_source = {}
+        end
+
+        local target_table
+        
+        if amt ~= 0 then
+            if amt > 0 then
+                if not delta_type then
+                    delta_type = "DEFAULT_UP"
+                end
+                if not quest.param.faction_support_gain_source[faction] then
+                    quest.param.faction_support_gain_source[faction] = {}
+                end
+                target_table = quest.param.faction_support_gain_source[faction]
+            else
+                if not delta_type then
+                    delta_type = "DEFAULT_DOWN"
+                end
+                if not quest.param.faction_support_loss_source[faction] then
+                    quest.param.faction_support_loss_source[faction] = {}
+                end
+                target_table = quest.param.faction_support_loss_source[faction]
+            end
+            target_table[delta_type] = (target_table[delta_type] or 0) + math.abs(amt)
+        end
+    end,
+    TrackDeltaWealthSupport = function(quest, amt, wealth, delta_type)
+        if not quest.param.wealth_support_gain_source then
+            quest.param.wealth_support_gain_source = {}
+        end
+        if not quest.param.wealth_support_loss_source then
+            quest.param.wealth_support_loss_source = {}
+        end
+
+        local target_table
+        
+        if amt ~= 0 then
+            if amt > 0 then
+                if not delta_type then
+                    delta_type = "DEFAULT_UP"
+                end
+                if not quest.param.wealth_support_gain_source[wealth] then
+                    quest.param.wealth_support_gain_source[wealth] = {}
+                end
+                target_table = quest.param.wealth_support_gain_source[wealth]
+            else
+                if not delta_type then
+                    delta_type = "DEFAULT_DOWN"
+                end
+                if not quest.param.wealth_support_loss_source[wealth] then
+                    quest.param.wealth_support_loss_source[wealth] = {}
+                end
+                target_table = quest.param.wealth_support_loss_source[wealth]
+            end
+            target_table[delta_type] = (target_table[delta_type] or 0) + math.abs(amt)
+        end
+    end,
+
+    DeltaAgentSupport = function(quest, amt, agent, notification, delta_type)
+
+        if not delta_type and type(notification) == "string" then
+            delta_type = notification
+        end
+        quest:DefFn("DeltaGeneralSupport", amt, false, delta_type)
+        quest:DefFn("DeltaFactionSupport", amt, agent, false, delta_type)
+        quest:DefFn("DeltaWealthSupport", amt, agent, false, delta_type)
         if notification == nil then
             notification = true
         end
@@ -449,7 +565,10 @@ local QDEF = QuestDef.Define
     -- DeltaWealthSupportAgent = function(quest, amt, agent, ignore_notification)
     --     quest:DefFn("DeltaWealthSupport", amt, agent:GetRenown() or 1, ignore_notification)
     -- end,
-    DeltaGroupFactionSupport = function(quest, group_delta, multiplier, notification)
+    DeltaGroupFactionSupport = function(quest, group_delta, multiplier, notification, delta_type)
+        if not delta_type and type(notification) == "string" then
+            delta_type = notification
+        end
         multiplier = multiplier or 1
         if notification == nil then
             notification = true
@@ -457,13 +576,16 @@ local QDEF = QuestDef.Define
         local actual_group = {}
         for id, val in pairs(group_delta or {}) do
             actual_group[id] = math.round(val * multiplier)
-            quest:DefFn("DeltaFactionSupport", actual_group[id], id, false)
+            quest:DefFn("DeltaFactionSupport", actual_group[id], id, false, delta_type)
         end
         if notification then
             TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GROUP_FACTION_SUPPORT, actual_group, notification)
         end
     end,
-    DeltaGroupWealthSupport = function(quest, group_delta, multiplier, notification)
+    DeltaGroupWealthSupport = function(quest, group_delta, multiplier, notification, delta_type)
+        if not delta_type and type(notification) == "string" then
+            delta_type = notification
+        end
         multiplier = multiplier or 1
         if notification == nil then
             notification = true
@@ -471,7 +593,7 @@ local QDEF = QuestDef.Define
         local actual_group = {}
         for id, val in pairs(group_delta or {}) do
             actual_group[id] = math.round(val * multiplier)
-            quest:DefFn("DeltaWealthSupport", math.round(val * multiplier), id, false)
+            quest:DefFn("DeltaWealthSupport", math.round(val * multiplier), id, false, delta_type)
         end
         if notification then
             TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GROUP_WEALTH_SUPPORT, actual_group, notification)
