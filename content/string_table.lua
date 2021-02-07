@@ -117,6 +117,8 @@ Content.AddStringTable("DEMOCRACY", {
         {
             TITLE = "Support Analysis",
             DESC = "To get elected, you need to have high support among the people. Your advisor has compiled the support breakdown for your campaign. Use this to carefully plan your campaign.",
+            CURRENT_STANCE = "{1#agent}'s current stance is {2#pol_stance}",
+            CURRENT_STANCE_LOOSE = "{1#agent}'s current stance is favoring {2#pol_stance}",
             SWITCH_MODE = "Switch mode",
             SWITCH_MODE_TT = "The current mode: <#HILITE>{1}</>\n\n{2}\n\nClick on this button to switch to another mode.",
             MODE = {

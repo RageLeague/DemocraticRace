@@ -10,7 +10,7 @@ local assets = {
 
 local OUTLINE_SIZE = 3
 
-local PoliticalIssueTrack = class( "DemocracyClass.Widget.PoliticalIssueTrack", Widget )
+local PoliticalIssueTrack = class( "DemocracyClass.Widget.PoliticalIssueTrack", Widget.Clickable )
 
 function PoliticalIssueTrack:init(max_width, max_height, spacing)
     PoliticalIssueTrack._base.init( self )
@@ -54,7 +54,26 @@ function PoliticalIssueTrack:init(max_width, max_height, spacing)
     self:Refresh()
 end
 
+function PoliticalIssueTrack:SetSize(w, h)
+    self.widget_w = w or self.widget_w
+    self.widget_h = h or self.widget_h
+    self:Refresh()
+    return self
+end
+function PoliticalIssueTrack:SetWidth(w)
+    return self:SetSize(w)
+end
+function PoliticalIssueTrack:SetHeight(h)
+    return self:SetSize(nil, h)
+end
+function PoliticalIssueTrack:GetSize()
+    return self.hitbox:GetSize()
+end
+
 function PoliticalIssueTrack:AddAgent(agent)
+    if agent == nil then
+        agent = TheGame:GetGameState():GetPlayerAgent()
+    end
     for i, widget in ipairs(self.agent_portraits) do
         if widget.agent == agent then
             return self
@@ -108,8 +127,8 @@ function PoliticalIssueTrack:SetIssue(issue)
     return self
 end
 function PoliticalIssueTrack:Layout()
-    self.hitbox:LayoutBounds("center", "center", self)
-    self.background:LayoutBounds("center", "center", self)
+    -- self.hitbox:LayoutBounds("center", "center", self)
+    -- self.background:LayoutBounds("center", "center", self.hitbox)
 
     self.opinion_track:LayoutBounds("center", "bottom", self.hitbox):Offset(0, self.icon_size + 2 * self.spacing)
     self.issue_title:LayoutBounds("left", "top", self.hitbox):Offset(SPACING.M1, -self.spacing)
@@ -122,6 +141,11 @@ function PoliticalIssueTrack:Layout()
         local stance_groupings = {{},{},{},{},{}}
         for i, widget in ipairs(self.agent_portraits) do
             local stance = self.issue:GetAgentStanceIndex(widget.agent) or 0
+            if widget.agent:IsPlayer() and DemocracyUtil.GetStanceChangeFreebie(self.issue) then
+                widget:SetToolTip(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.CURRENT_STANCE_LOOSE", widget.agent, self.issue.stances[stance]))
+            else
+                widget:SetToolTip(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.CURRENT_STANCE", widget.agent, self.issue.stances[stance]))
+            end
             table.insert(stance_groupings[stance + 3], widget)
         end
         local barx, bary = self.stance_icons[1]:TransformFromWidget(self.opinion_track)
@@ -139,4 +163,35 @@ function PoliticalIssueTrack:Layout()
             end
         end
     end
+    return self
+end
+
+function PoliticalIssueTrack:UpdateImage()
+    if self.hover or self.focus then
+        self.background:SetTexture( engine.asset.Texture( "UI/left_border_frame_faint_border.tex" ) )
+            :MoveTo( 6, 0, 0.2, easing.outQuad )
+    else
+        self.background:SetTexture( engine.asset.Texture( "UI/left_border_frame_faint.tex" ) )
+            :MoveTo( 0, 0, 0.2, easing.outQuad )
+    end
+end
+
+function PoliticalIssueTrack:OnGainFocus()
+    PoliticalIssueTrack._base.OnGainFocus(self)
+    self:UpdateImage()
+end
+
+function PoliticalIssueTrack:OnLoseFocus()
+    PoliticalIssueTrack._base.OnLoseFocus(self)
+    self:UpdateImage()
+end
+
+function PoliticalIssueTrack:OnGainHover()
+    PoliticalIssueTrack._base.OnGainHover(self)
+    self:UpdateImage()
+end
+
+function PoliticalIssueTrack:OnLoseHover()
+    PoliticalIssueTrack._base.OnLoseHover(self)
+    self:UpdateImage()
 end

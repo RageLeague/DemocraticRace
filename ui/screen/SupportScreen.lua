@@ -139,15 +139,22 @@ function SupportScreen:init( owner, on_end_fn )
 
     self.wealth_support = self.content:AddChild(DemocracyClass.Widget.WealthSupportEntryList())
 
-    self.test_track = self.content:AddChild(DemocracyClass.Widget.PoliticalIssueTrack()
-        :SetIssue("SECURITY")
-        :AddAgent(TheGame:GetGameState():GetPlayerAgent()))
-        :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_admiralty"))
-        :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_spree"))
-        :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_baron"))
-        :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_rise"))
-        :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_cult"))
-        :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_jakes"))
+    self.issue_trackers = self.content:AddChild(DemocracyClass.Widget.StancesEntryList())
+
+    -- if self.issue_trackers.widget_list[1] then
+    --     self.issue_trackers.widget_list[1]:SetFocusDir("up",self.wealth_support.widget_list[4], true)
+    -- end
+    
+
+    -- self.test_track = self.content:AddChild(DemocracyClass.Widget.PoliticalIssueTrack()
+    --     :SetIssue("SECURITY")
+    --     :AddAgent(TheGame:GetGameState():GetPlayerAgent()))
+    --     :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_admiralty"))
+    --     :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_spree"))
+    --     :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_baron"))
+    --     :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_rise"))
+    --     :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_cult"))
+    --     :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_jakes"))
     -- Back button
     self.bottom_left = self:AddChild( Widget() ):SetAnchors( "left", "bottom" )
     self.close_button = self.bottom_left:AddChild( Widget.IconButton( LOC"UI.OVERLAYS.CLOSE", 
@@ -168,6 +175,9 @@ function SupportScreen:init( owner, on_end_fn )
     self.on_end_fn = on_end_fn
     
     self:Refresh()
+
+    print("Testloal", self.wealth_support.widget_list[1]:GetFocusDir("down"))
+    print("Testloal", self.wealth_support.widget_list[4]:GetFocusDir("down"))
 end
 
 function SupportScreen:HandleControlDown(control, device)
@@ -213,6 +223,7 @@ function SupportScreen:Refresh(new_mode)
     self.general_support:Refresh(new_mode)
     self.faction_support:Refresh(new_mode)
     self.wealth_support:Refresh(new_mode)
+    self.issue_trackers:Refresh()
 
     local mode_name = SUPPORT_SCREEN_MODE_NAME[self.support_screen_mode]
 
@@ -268,16 +279,11 @@ function SupportScreen:OnScreenModeChange( sm )
 end
 
 function SupportScreen:GetDefaultFocus()
-    return self.close_button
-    -- return ( self.graft_widgets
-    --         and self.graft_widgets[GRAFT_TYPE.NEGOTIATION]
-    --         and self.graft_widgets[GRAFT_TYPE.NEGOTIATION]:IsShown()
-    --         and self.graft_widgets[GRAFT_TYPE.NEGOTIATION]:GetDefaultFocus() )
-    --     or ( self.graft_widgets
-    --         and self.graft_widgets[GRAFT_TYPE.COMBAT]
-    --         and self.graft_widgets[GRAFT_TYPE.COMBAT]:IsShown()
-    --         and self.graft_widgets[GRAFT_TYPE.COMBAT]:GetDefaultFocus() )
-    --     or self.close_button
+    return (self.general_support and self.general_support:GetDefaultFocus())
+        or (self.faction_support and self.faction_support:GetDefaultFocus())
+        or (self.wealth_support and self.wealth_support:GetDefaultFocus())
+        or (self.issue_trackers and self.issue_trackers:GetDefaultFocus())
+        or self.close_button
 end
 
 
@@ -323,6 +329,8 @@ function SupportScreen:Layout()
     self.faction_support:LayoutBounds("left", "below", self.general_support)
         :Offset( 0, SPACING.M1 )
     self.wealth_support:LayoutBounds("left", "below", self.faction_support)
+        :Offset( 0, SPACING.M1 )
+    self.issue_trackers:LayoutBounds("left", "below", self.wealth_support)
         :Offset( 0, SPACING.M1 )
 
     if self.test_track then

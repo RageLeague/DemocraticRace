@@ -1,4 +1,4 @@
-local SupportEntry = class( "DemocracyClass.Widget.SupportEntry", Widget )
+local SupportEntry = class( "DemocracyClass.Widget.SupportEntry", Widget.Clickable )
 
 function SupportEntry:init(icon_size, max_width)
     SupportEntry._base.init( self )
@@ -50,7 +50,7 @@ function SupportEntry:SetText(text)
 end
 function SupportEntry:SetWidth(width, no_refresh)
     self.max_width = width
-    self.text_width = self.max_width - self.icon_size - self.spacing * 3
+    self.text_width = self.max_width - self.icon_size - self.spacing * 4
     if not no_refresh then
         self:Refresh()
     end
@@ -59,7 +59,7 @@ end
 
 function SupportEntry:SetTextWidth(width, no_refresh)
     self.text_width = width
-    self.max_width = self.text_width + self.icon_size + self.spacing * 3
+    self.max_width = self.text_width + self.icon_size + self.spacing * 4
     if not no_refresh then
         self:Refresh()
     end
@@ -92,7 +92,7 @@ end
 function SupportEntry:Layout()
     
 
-    self.icon:LayoutBounds("left", "top"):Offset(self.spacing, -self.spacing)
+    self.icon:LayoutBounds("left", "top"):Offset(self.spacing * 2, -self.spacing)
     -- self.details:LayoutBounds("after","center")--:SetAutoSize( self.text_width ):LayoutBounds("after", "center")
     -- print(self.text.text)
     self.text:LayoutBounds("after","center", self.icon):Offset(self.spacing, 0)
@@ -129,6 +129,36 @@ function SupportEntry:AdjustValue(value)
         end
     end
     return value
+end
+
+function SupportEntry:UpdateImage()
+    if self.hover or self.focus then
+        self.background:SetTexture( engine.asset.Texture( "UI/left_border_frame_faint_border.tex" ) )
+            :MoveTo( 6, 0, 0.2, easing.outQuad )
+    else
+        self.background:SetTexture( engine.asset.Texture( "UI/left_border_frame_faint.tex" ) )
+            :MoveTo( 0, 0, 0.2, easing.outQuad )
+    end
+end
+
+function SupportEntry:OnGainFocus()
+    SupportEntry._base.OnGainFocus(self)
+    self:UpdateImage()
+end
+
+function SupportEntry:OnLoseFocus()
+    SupportEntry._base.OnLoseFocus(self)
+    self:UpdateImage()
+end
+
+function SupportEntry:OnGainHover()
+    SupportEntry._base.OnGainHover(self)
+    self:UpdateImage()
+end
+
+function SupportEntry:OnLoseHover()
+    SupportEntry._base.OnLoseHover(self)
+    self:UpdateImage()
 end
 
 
