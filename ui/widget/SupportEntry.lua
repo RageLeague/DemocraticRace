@@ -192,6 +192,11 @@ function FactionSupportEntry:Refresh(new_mode)
         if self.faction:GetColour() then
             self:SetColour(self.faction:GetColour())
         end
+        self:SetToolTipClass(DemocracyClass.Widget.TooltipSupport)
+        local breakdown = DemocracyUtil.GetFactionSupportBreakdown(self.faction)
+        breakdown.title = loc.format("{1#faction}", self.faction)
+        breakdown.desc = loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.FACTION_SUPPORT_DESC", self.faction)
+        self:SetToolTip(breakdown)
     end
     return FactionSupportEntry._base.Refresh(self)
 end
@@ -219,6 +224,13 @@ function WealthSupportEntry:Refresh(new_mode)
         )
     )
     self:SetColour(DemocracyUtil.GetWealthColor(self.renown))
+
+    self:SetToolTipClass(DemocracyClass.Widget.TooltipSupport)
+    local breakdown = DemocracyUtil.GetWealthSupportBreakdown(self.renown)
+    assert(type(breakdown) == "table", "Not a table", self.renown)
+    breakdown.title = loc.format("{1#wealth_name}", self.renown)
+    breakdown.desc = loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.WEALTH_SUPPORT_DESC", self.renown)
+    self:SetToolTip(breakdown)
     -- if self.faction:GetColour() then
     --     self:SetColour(self.faction:GetColour())
     -- end
@@ -231,6 +243,11 @@ function GeneralSupportEntry:init(icon_size, max_width)
     GeneralSupportEntry._base.init(self, icon_size, max_width)
 
     -- self.renown = renown or 1
+    self:SetToolTipClass(DemocracyClass.Widget.TooltipSupport)
+    local breakdown = DemocracyUtil.GetGeneralSupportBreakdown()
+    breakdown.title = LOC"DEMOCRACY.SUPPORT_SCREEN.GENERAL_SUPPORT_TITLE"
+    breakdown.desc = LOC"DEMOCRACY.SUPPORT_SCREEN.GENERAL_SUPPORT_DESC"
+    self:SetToolTip(breakdown)
 
     self:Refresh()
 end
@@ -258,7 +275,12 @@ local SupportExpectationEntry = class( "DemocracyClass.Widget.SupportExpectation
 function SupportExpectationEntry:init(icon_size, max_width)
     SupportExpectationEntry._base.init(self, icon_size, max_width)
 
-    self:SetToolTip(LOC"DEMOCRACY.SUPPORT_SCREEN.EXPECTED_SUPPPRT_TT")
+    self:SetToolTipClass(DemocracyClass.Widget.TooltipSupport)
+    local breakdown = {}
+    breakdown.title = LOC"DEMOCRACY.SUPPORT_SCREEN.EXPECTED_SUPPORT_TITLE"
+    breakdown.desc = LOC"DEMOCRACY.SUPPORT_SCREEN.EXPECTED_SUPPORT_DESC"
+    self:SetToolTip(breakdown)
+    -- self:SetToolTip(LOC"DEMOCRACY.SUPPORT_SCREEN.EXPECTED_SUPPPRT_TT")
     -- self.renown = renown or 1
 
     self:Refresh()

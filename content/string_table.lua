@@ -28,24 +28,24 @@ Content.AddStringTable("DEMOCRACY", {
         },
         DELTA_SUPPORT_REASON =
         {
-            DEFAULT_UP = "favorable action",
-            DEFAULT_DOWN = "unfavorable action",
+            DEFAULT_UP = "Favorable Action",
+            DEFAULT_DOWN = "Unfavorable Action",
             
-            COMPLETED_QUEST = "quest completed",
-            FAILED_QUEST = "quest failed",
-            POOR_QUEST = "poor quest result",
+            COMPLETED_QUEST = "Quest Completed",
+            FAILED_QUEST = "Quest Failed",
+            POOR_QUEST = "Poor Quest Result",
 
-            RELATIONSHIP_UP = "improved relationship",
-            RELATIONSHIP_DOWN = "bad relationship",
+            RELATIONSHIP_UP = "Improved Relationship",
+            RELATIONSHIP_DOWN = "Bad Relationship",
 
-            ATTACK = "unprovoked attack",
-            MURDER = "murder",
-            SUSPICION = "suspicion of murder",
-            ACCOMPLICE = "accomplice to murder",
-            NEGLIGENCE = "negligence",
+            ATTACK = "Unprovoked Attack",
+            MURDER = "Murder",
+            SUSPICION = "Suspicion of Murder",
+            ACCOMPLICE = "Accomplice to Murder",
+            NEGLIGENCE = "Negligence",
 
-            CONSISTENT_STANCE = "consistent stance",
-            INCONSISTENT_STANCE = "hypocrisy",
+            CONSISTENT_STANCE = "Consistent Stance",
+            INCONSISTENT_STANCE = "Hypocrisy",
         },
         NOTIFICATION = 
         {
@@ -121,10 +121,21 @@ Content.AddStringTable("DEMOCRACY", {
             
             CURRENT_STANCE = "{1#agent}'s current stance is {2#pol_stance}",
             CURRENT_STANCE_LOOSE = "{1#agent}'s current stance is favoring {2#pol_stance}",
+
+            GENERAL_SUPPORT_TITLE = "General Support",
+            GENERAL_SUPPORT_DESC = "This indicates how popular you are among the people. The more support you have, the more likely it is for someone to vote for you.\n\nChange to the general support also indirectly affects your support among factions and wealth levels.",
+
+            FACTION_SUPPORT_DESC = "This indicates how popular you are among {1#faction}. The more support you have among this faction, the more likely someone from this faction will vote for you, and the more likely their main candidate will ally with you.",
+
+            WEALTH_SUPPORT_DESC = "This indicates how popular you are among {1#wealth_name}. The more support you have among this wealth level, the more likely someone from it will vote for you, and the more funding you will get from this wealth level.",
             
-            EXPECTED_SUPPPRT_TT = "<#TITLE>Expected Support</>\n" ..
-                "This indicates the baseline used to calculate how popular you are among the people. Having your support above the expectation means people are more likely to vote for you, while having your support below the expectation means people are more likely to vote for your opposition.\n\n" ..
+            EXPECTED_SUPPORT_TITLE = "Expected Support",
+            EXPECTED_SUPPORT_DESC = "This indicates the baseline used to calculate how popular you are among the people. Having your support above the expectation means people are more likely to vote for you, while having your support below the expectation means people are more likely to vote for your opposition.\n\n" ..
                 "The first value indicates the expected support at the moment, while the second value indicates the expected support at the end of today. The advisor will judge your support level at the end of each day, so be prepared!",
+            
+            GAIN_SOURCE = "Source Of Gain:",
+            LOSS_SOURCE = "Source Of Loss:",
+            
             SWITCH_MODE = "Switch mode",
             SWITCH_MODE_TT = "The current mode: <#HILITE>{1}</>\n\n{2}\n\nClick on this button to switch to another mode.",
             MODE = {

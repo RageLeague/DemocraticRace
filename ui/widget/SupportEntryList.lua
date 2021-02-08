@@ -22,6 +22,13 @@ function SupportEntryList:init(widget_list, max_width, entry_per_row)
     self:Refresh()
 end
 
+function SupportEntryList:SetWidth(w)
+    self.max_width = w
+    self:UpdateEntryWidth()
+    self:Refresh()
+    return self
+end
+
 function SupportEntryList:UpdateEntryWidth()
     self.entry_width = (self.max_width - self.spacing * (self.entry_per_row + 1)) / self.entry_per_row
     return self
@@ -32,9 +39,11 @@ function SupportEntryList:GetDefaultFocus()
 end
 
 function SupportEntryList:Refresh(...)
+    self.hitbox:SetSize(self.max_width, 0)
     for i, widget in ipairs(self.widget_list) do
         if widget.Refresh then
-            widget:Refresh(...)
+            widget:SetWidth(self.entry_width):Refresh(...)
+                
         end
     end
     self:Layout()

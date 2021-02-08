@@ -133,13 +133,18 @@ function SupportScreen:init( owner, on_end_fn )
         :Bloom(0.1)
 
         -- :SetShown(false)
+    local content_width = DETAILS_W -- / TheGame:FE():GetBaseWidgetScale()
     self.general_support = self.content:AddChild(DemocracyClass.Widget.GeneralSupportEntryList())
-        -- :SetWidth(1200)
+        :SetWidth(content_width)
+
     self.faction_support = self.content:AddChild(DemocracyClass.Widget.FactionSupportEntryList())
+        :SetWidth(content_width)
 
     self.wealth_support = self.content:AddChild(DemocracyClass.Widget.WealthSupportEntryList())
+        :SetWidth(content_width)
 
     self.issue_trackers = self.content:AddChild(DemocracyClass.Widget.StancesEntryList())
+        :SetWidth(content_width)
 
     -- if self.issue_trackers.widget_list[1] then
     --     self.issue_trackers.widget_list[1]:SetFocusDir("up",self.wealth_support.widget_list[4], true)
@@ -269,6 +274,11 @@ function SupportScreen:OnScreenModeChange( sm )
 
     self.title:SetAutoSize(content_w)
     self.subtitle:SetAutoSize(content_w)
+    
+    self.general_support:SetWidth(content_w)
+    self.faction_support:SetWidth(content_w)
+    self.wealth_support:SetWidth(content_w)
+    self.issue_trackers:SetWidth(content_w)
     -- self.graft_widgets[GRAFT_TYPE.COMBAT]:SetWidth( (content_w-SPACING.M1)/2 )
     -- self.graft_widgets[GRAFT_TYPE.NEGOTIATION]:SetWidth( (content_w-SPACING.M1)/2 )
 

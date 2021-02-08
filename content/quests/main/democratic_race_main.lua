@@ -609,6 +609,17 @@ local QDEF = QuestDef.Define
         local r = DemocracyUtil.GetWealth(renown)
         return quest.param.support_level + (quest.param.wealth_support[r] or 0)
     end,
+    GetGeneralSupportBreakdown = function(quest)
+        return {gain_table = quest.param.support_gain_source, loss_table = quest.param.support_loss_source}
+    end,
+    GetFactionSupportBreakdown = function(quest, faction)
+        faction = DemocracyUtil.ToFactionID(faction)
+        return {gain_table = quest.param.faction_support_gain_source[faction], loss_table = quest.param.faction_support_loss_source[faction]}
+    end,
+    GetWealthSupportBreakdown = function(quest, wealth)
+        local r = DemocracyUtil.GetWealth(wealth)
+        return {gain_table = quest.param.wealth_support_gain_source[r], loss_table = quest.param.wealth_support_loss_source[r]}
+    end,
     GetCompoundSupport = function(quest, faction, renown)
         faction = DemocracyUtil.ToFactionID(faction)
         return quest.param.support_level + (quest.param.faction_support[faction] or 0) + (quest.param.wealth_support[DemocracyUtil.GetWealth(renown)] or 0)
