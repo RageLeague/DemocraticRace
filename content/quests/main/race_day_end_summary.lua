@@ -252,7 +252,7 @@ QDEF:AddConvo("summary", "primary_advisor")
             if not cxt.enc.scratch.loved then
                 cxt:GetAgent():OpinionEvent(OPINION["SUPPORT_EXPECTATION_" .. RANKS[rank]])
             end
-            if cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL then
+            if cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL and not TheGame:GetGameState():GetMainQuest().param.allow_skip_side then
                 cxt:Dialog("DIALOG_UNLOCK_SKIP")
                 TheGame:GetGameState():GetMainQuest().param.allow_skip_side = true
             end

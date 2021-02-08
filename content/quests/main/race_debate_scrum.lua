@@ -15,11 +15,11 @@ local QDEF = QuestDef.Define
 
     qtype = QTYPE.STORY,
     collect_agent_locations = function(quest, t)
-        -- if quest:IsActive("return_to_advisor") then
-        --     table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('home')})
-        -- else
-        table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('backroom'), role = CHARACTER_ROLES.VISITOR})
-        -- end
+        if quest:IsActive("report_to_advisor") then
+            table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('home')})
+        else
+            table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('backroom'), role = CHARACTER_ROLES.VISITOR})
+        end
         table.insert(t, { agent = quest:GetCastMember("host"), location = quest:GetCastMember('theater')})
         for id, data in pairs(DemocracyConstants.opposition_data) do 
             table.insert(t, { agent = quest:GetCastMember(id), location = quest:GetCastMember('theater'), role = CHARACTER_ROLES.VISITOR})
@@ -180,7 +180,20 @@ local QDEF = QuestDef.Define
     id = "talk_to_candidates",
     title = "(Optional) Talk to other candidates",
     desc = "Other candidates might be interested in an alliance if you've cooperated with them a lot during the debate. Use this opportunity to hopefully form an alliance",
-    mark = {"theater"},
+    mark = function(quest, t, in_location)
+        -- print("workplace mark evaluated")
+        -- print(DemocracyUtil.IsFreeTimeActive())
+        if in_location then
+            -- table.insert(t, quest:GetCastMember("foreman"))
+            for i, agent in ipairs(quest.param.candidates or {}) do
+                if not table.arraycontains(quest.param.post_debate_chat or {}, agent) then
+                    table.insert(t, agent)
+                end
+            end
+        else
+            table.insert(t, quest:GetCastMember("theater"))
+        end
+    end,-- {"theater"},
 }
 
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
@@ -814,17 +827,53 @@ QDEF:AddConvo("do_debate")
             StateGraphUtil.AddEndOption(cxt)
         end)
 QDEF:AddConvo("report_to_advisor", "primary_advisor")
+    :ConfrontState("STATE_CONFRONT")
     :Loc{
-        OPT_REVIEW = "Finish up",
         DIALOG_REVIEW = [[
             agent:
-                Let's finish up.
+                You are back.
+            player:
+                Yeah.
+            agent:
+            {good_debate?
+                !clap
+                I have to say, that was quite impressive.
+                Everyone has their eyes on you!
+                Well done!
+            }
+            {bad_debate?
+                !sigh
+                Are you sure you tried?
+            player:
+                I mean, yeah?
+            agent:
+                Well the results doesn't reflect that way.
+                Nobody in the crowd remembers you.
+            }
+            {not good_debate and not bad_debate?
+                That was not that great, but certainly not the worse.
+                I hoped you can do better than that.
+            player:
+                It's way too hard to be first at everything at life.
+                So I'd settle for second place.
+            agent:
+                {advisor_hostile?
+                    That's why you are less successful than I am, huh?
+                    But whatever, I don't care.
+                    |
+                    !shrug
+                    Fair enough.
+                }
+            }
+            agent:
+                Anyway, we can talk more later during the summaries.
         ]],
     }
-    :Hub(function(cxt)
-        cxt:Opt("OPT_REVIEW")
-            :Dialog("DIALOG_REVIEW")
-            :CompleteQuest()
+    :Fn(function(cxt)
+        cxt:Dialog("DIALOG_REVIEW")
+        
+        cxt.quest:Complete()
+        StateGraphUtil.AddEndOption(cxt)
     end)
 QDEF:AddConvo("talk_to_candidates")
     :AttractState("STATE_CHAT", function(cxt)

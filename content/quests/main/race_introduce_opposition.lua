@@ -391,22 +391,32 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                         glad to hear that.
                         but don't let that fool you. you're still opponents.
                         there can only be one.
+                        Still, feel free to negotiate an alliance between you two.
+                        You are going to need it if you want to win.
                     }
                     {disagreed?
                         we have some ideological differences, but we might still get along.
                     agent:
                         great. now you know how other's think, you need to use that to your advantage.
+                        Feel free to find an ally.
+                        You are going to need them if you want to win.
                     }
                     {not (agreed or disagreed)?
                     agent:
                         you don't sound so sure.
                         oh well.
+                        Just in case, if you find someone who share an ideology with you, try negotiating an alliance.
+                        You must do it if you want to win.
                     }
+                    ** You can now talk to other candidates with similar interests and form an alliance!
                 }
             ]],
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
+            if cxt.quest.param.greeted and not cxt.quest.param.talked_to_advisor then
+                QuestUtil.SpawnQuest("CAMPAIGN_NEGOTIATE_ALLIANCE")
+            end
             cxt.quest.param.talked_to_advisor = true
         end)
     :Hub(function(cxt)

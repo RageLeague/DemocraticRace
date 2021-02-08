@@ -22,7 +22,7 @@ local function GenerateCardShop(card_type, signature_id)
             return card.advisor == signature_id
         end)
 
-        if signature_id and not has_signature and math.random() < 0.5 then
+        if signature_id and math.random() < 0.5 then
             table.arrayadd( cards, NegotiationCardCollection(
                 function(cd) 
                     return cd.advisor == signature_id and not CheckBits(cd.flags, CARD_FLAGS.UPGRADED)

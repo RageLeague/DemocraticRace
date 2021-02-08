@@ -706,10 +706,10 @@ local QDEF = QuestDef.Define
             if issue_data then
                 local stance = issue_data.stances[val]
                 if stance.faction_support then
-                    DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport", stance.faction_support, multiplier)
+                    DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport", stance.faction_support, multiplier, "TAKING_STANCE")
                 end
                 if stance.wealth_support then
-                    DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport", stance.wealth_support, multiplier)
+                    DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport", stance.wealth_support, multiplier, "TAKING_STANCE")
                 end
             end
         end

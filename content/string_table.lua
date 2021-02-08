@@ -44,6 +44,8 @@ Content.AddStringTable("DEMOCRACY", {
             ACCOMPLICE = "Accomplice to Murder",
             NEGLIGENCE = "Negligence",
 
+            TAKING_STANCE = "Taking Stance",
+
             CONSISTENT_STANCE = "Consistent Stance",
             INCONSISTENT_STANCE = "Hypocrisy",
         },
