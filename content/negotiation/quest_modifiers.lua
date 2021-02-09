@@ -91,8 +91,9 @@ local MODIFIERS =
         agents = {},
         ignored_agents = {},
         CreateTarget = function(self, agent)
-            local modifier = self.negotiator:CreateModifier("PREACH_TARGET_INTEREST")
+            local modifier = Negotiation.Modifier("PREACH_TARGET_INTEREST", self.negotiator) 
             modifier:SetAgent(agent)
+            self.negotiator:CreateModifier(modifier)
         end,
         TryCreateNewTarget = function(self)
             if self.agents and #self.agents > 0 then
@@ -229,10 +230,11 @@ local MODIFIERS =
 
         OnBounty = function(self, source)
             if source and source ~= self then
-                local modifier = self.anti_negotiator:CreateModifier("PREACH_TARGET_INTERESTED")
+                local modifier = Negotiation.Modifier( "PREACH_TARGET_INTERESTED", self.anti_negotiator )
                 if modifier and modifier.SetAgent then
                     modifier:SetAgent(self.target_agent)
                 end
+                self.anti_negotiator:CreateModifier( modifier )
             end
         end,
 

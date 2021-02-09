@@ -214,9 +214,9 @@ local QDEF = QuestDef.Define
             if support_delta ~= 0 then
                 local opposition_data = DemocracyUtil.GetOppositionData(agent)
                 if opposition_data then
-                    quest:DefFn("DeltaGeneralSupport", (new_rel - old_rel) * 8, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
-                    quest:DefFn("DeltaGroupFactionSupport", opposition_data.faction_support, new_rel - old_rel )
-                    quest:DefFn("DeltaGroupWealthSupport", opposition_data.wealth_support, new_rel - old_rel )
+                    quest:DefFn("DeltaGeneralSupport", (new_rel - old_rel) * 8, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE")
+                    quest:DefFn("DeltaGroupFactionSupport", opposition_data.faction_support, new_rel - old_rel, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE" )
+                    quest:DefFn("DeltaGroupWealthSupport", opposition_data.wealth_support, new_rel - old_rel, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE" )
                 else
                     quest:DefFn("DeltaAgentSupport", support_delta, agent, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
                 end
@@ -706,10 +706,10 @@ local QDEF = QuestDef.Define
             if issue_data then
                 local stance = issue_data.stances[val]
                 if stance.faction_support then
-                    DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport", stance.faction_support, multiplier, "TAKING_STANCE")
+                    DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport", stance.faction_support, multiplier, "STANCE_TAKEN")
                 end
                 if stance.wealth_support then
-                    DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport", stance.wealth_support, multiplier, "TAKING_STANCE")
+                    DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport", stance.wealth_support, multiplier, "STANCE_TAKEN")
                 end
             end
         end

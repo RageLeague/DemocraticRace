@@ -906,7 +906,7 @@ function DemocracyUtil.SpawnRequestQuest(agent, spawn_param)
     end
     table.shuffle(potential_jobs)
     table.insert(potential_jobs, Content.GetQuestDef( "PLACEHOLDER_REQUEST_QUEST" ))
-    DBG(potential_jobs)
+    -- DBG(potential_jobs)
     for i, def in ipairs(potential_jobs) do
         local provider_cast = def:GetProviderCast()
         local params = deepcopy(spawn_param)
@@ -918,7 +918,7 @@ function DemocracyUtil.SpawnRequestQuest(agent, spawn_param)
             params.cast[provider_cast.cast_id] = agent
             local spawned_quest = QuestUtil.SpawnInactiveQuest(def.id, params)
             if spawned_quest then
-                DBG(spawned_quest)
+                -- DBG(spawned_quest)
                 if params.debug_test then
                     TheGame:GetGameState():AddActiveQuest( spawned_quest )
                     spawned_quest:Activate()

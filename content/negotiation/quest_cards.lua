@@ -242,8 +242,9 @@ local CARDS = {
         flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
         rarity = CARD_RARITY.UNIQUE,
         OnPostResolve = function( self, minigame, targets )
-            local propaganda_mod = self.negotiator:CreateModifier("PROPAGANDA_POSTER_MODIFIER", 1)
+            local propaganda_mod = Negotiation.Modifier("PROPAGANDA_POSTER_MODIFIER", self.negotiator) 
             propaganda_mod:SetData(self.userdata.imprints, self.userdata.prop_mod)
+            self.negotiator:CreateModifier(propaganda_mod)
         end,
     },
 

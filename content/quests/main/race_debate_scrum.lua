@@ -293,6 +293,9 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
                 -- Expand on the slot limits, as there's way too many modifiers for the max 13
                 minigame:GetPlayerNegotiator().max_modifiers = 17
                 minigame:GetOpponentNegotiator().max_modifiers = 17
+                if cxt.quest.param.fatigued then
+                    minigame.player_negotiator:AddModifier("FATIGUED")
+                end
             end,
             on_success = function(cxt, minigame)
                 cxt.quest.param.debate_result = ProcessMinigame(minigame, true)
@@ -419,7 +422,7 @@ QDEF:AddConvo("do_debate")
             ]],
             REASON_TXT = "Impress the audience with your slick negotiation skills! (You have {1} {1*point|points})",
             OPT_SIT_OUT = "Skip the debate and observe the opponents",
-            TT_SIT_OUT = "You will not be able to debate and stand out, but you will restore some resolve",
+            TT_SIT_OUT = "You will not be able to debate and stand out, but you will restore some resolve, and you will start the next negotiation without fatigue.",
         }
         :Fn(function(cxt)
             if not cxt.quest.param.questions or #cxt.quest.param.questions == 0 then
@@ -572,11 +575,11 @@ QDEF:AddConvo("do_debate")
             OPT_CONTINUE = "Continue",
             OPT_REVIEW = "Review popularity",
             DIALOG_REVIEW = [[
-                * Current popularity standing:
+                * Currently, the most popular candidates are: {1#agent_list}, in that order.
             ]],
-            DIALOG_REVIEW_PERSON = [[
-                * {1#agent} has a popularity of {2}.
-            ]],
+            -- DIALOG_REVIEW_PERSON = [[
+            --     * {1#agent} has a popularity of {2}.
+            -- ]],
         }
         :SetLooping(true)
         :Fn(function(cxt)
@@ -613,15 +616,22 @@ QDEF:AddConvo("do_debate")
                 
                 cxt:Dialog("DIALOG_POST")
                 ConvoUtil.DoResolveDelta(cxt, 15)
+                cxt.quest.param.fatigued = false
             end
             cxt:Opt("OPT_CONTINUE")
                 :GoTo("STATE_QUESTION")
             cxt:Opt("OPT_REVIEW")
-                :Dialog("DIALOG_REVIEW")
+                -- :Dialog("DIALOG_REVIEW")
                 :Fn(function(cxt)
-                    for id, val in pairs(cxt.quest.param.popularity) do
-                        cxt:Dialog("DIALOG_REVIEW_PERSON", TheGame:GetGameState():GetAgent(id), val)
-                    end
+                    local ranking = shallowcopy(cxt.quest.param.candidates)
+                    table.insert(ranking, 1, cxt.player)
+                    table.stable_sort(ranking, function(a,b)
+                        return (cxt.quest.param.popularity[a:GetID()] or 0) > (cxt.quest.param.popularity[b:GetID()] or 0)
+                    end)
+                    cxt:Dialog("DIALOG_REVIEW", ranking)
+                    -- for id, val in pairs(cxt.quest.param.popularity) do
+                    --     cxt:Dialog("DIALOG_REVIEW_PERSON", TheGame:GetGameState():GetAgent(id), val)
+                    -- end
                 end)
         end)
     :State("STATE_DEBATE_SUMMARY")
@@ -665,11 +675,11 @@ QDEF:AddConvo("do_debate")
             OPT_CONTINUE = "Continue",
             OPT_REVIEW = "Review popularity",
             DIALOG_REVIEW = [[
-                * Current popularity standing:
+                * Currently, the most popular candidates are: {1#agent_list}, in that order.
             ]],
-            DIALOG_REVIEW_PERSON = [[
-                * {1#agent} has a popularity of {2}.
-            ]],
+            -- DIALOG_REVIEW_PERSON = [[
+            --     * {1#agent} has a popularity of {2}.
+            -- ]],
         }
         :SetLooping(true)
         :Fn(function(cxt)
@@ -736,16 +746,23 @@ QDEF:AddConvo("do_debate")
                     end
                 end
                 cxt:Dialog("DIALOG_END")
+                cxt.quest.param.fatigued = true
             end
-            DBG(cxt.quest.param.popularity)
+            -- DBG(cxt.quest.param.popularity)
             cxt:Opt("OPT_CONTINUE")
                 :GoTo("STATE_QUESTION")
             cxt:Opt("OPT_REVIEW")
-                :Dialog("DIALOG_REVIEW")
+                -- :Dialog("DIALOG_REVIEW")
                 :Fn(function(cxt)
-                    for id, val in pairs(cxt.quest.param.popularity) do
-                        cxt:Dialog("DIALOG_REVIEW_PERSON", TheGame:GetGameState():GetAgent(id), val)
-                    end
+                    local ranking = shallowcopy(cxt.quest.param.candidates)
+                    table.insert(ranking, 1, cxt.player)
+                    table.stable_sort(ranking, function(a,b)
+                        return (cxt.quest.param.popularity[a:GetID()] or 0) > (cxt.quest.param.popularity[b:GetID()] or 0)
+                    end)
+                    cxt:Dialog("DIALOG_REVIEW", ranking)
+                    -- for id, val in pairs(cxt.quest.param.popularity) do
+                    --     cxt:Dialog("DIALOG_REVIEW_PERSON", TheGame:GetGameState():GetAgent(id), val)
+                    -- end
                 end)
         end)
     :State("STATE_END")

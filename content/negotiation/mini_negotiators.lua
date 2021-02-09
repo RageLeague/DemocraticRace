@@ -361,6 +361,7 @@ local MINI_NEGOTIATOR =
     end,
     CustomDamagePreview = function(self, minigame, slot, target_modifier)
         -- print("Haha", target_modifier)
+        print(self)
         if not target_modifier then return end
         if self.prepared_cards then
             for i, card in ipairs(self.prepared_cards) do
