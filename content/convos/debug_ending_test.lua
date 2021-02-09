@@ -17,9 +17,23 @@ Convo("DEBUG_ENDING_TEST")
             agent:
                 Oh no, it didn't work.
         ]],
+
+        OPT_QUERY_STANCE = "[Debug] Query Stance",
+        OPT_ASK_ABOUT_STANCE = "Get stance for {1#pol_issue}",
+        DIALOG_ASK_ABOUT_STANCE = [[
+            * {agent}'s stance on {1#pol_issue} is {2#pol_stance}.
+        ]],
     }
     :Hub(function(cxt)
-        cxt:BasicNegotiation("TALK")
+        -- cxt:BasicNegotiation("TALK")
+        cxt:Opt("OPT_QUERY_STANCE")
+            :LoopingFn(function(cxt)
+                for id, issue in pairs(DemocracyConstants.issue_data) do
+                    cxt:Opt("OPT_ASK_ABOUT_STANCE", issue)
+                        :Dialog("DIALOG_ASK_ABOUT_STANCE", issue, issue:GetAgentStance(cxt:GetAgent()))
+                end
+                StateGraphUtil.AddBackButton(cxt)
+            end)
             -- :SetQuestMark(cxt.quest)
             -- :OnSuccess()
             --     :CompleteQuest()
