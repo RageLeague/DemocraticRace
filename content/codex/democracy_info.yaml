@@ -45,3 +45,9 @@ strategic_voting:
   trigger: Strategic Voting|strategic voting
   body: |
     Because in a First Past The Post system, each voter has one vote, it is pointless to vote for a candidate that you know is not going to win. As such, a person can vote strategically, and choose the person that is the most likely to win instead of the person that most align with their ideology, to achieve a better outcome.
+
+mettle:
+  title: Mettle
+  trigger: Mettle|mettle
+  body: |
+    A powerful hallucinogen capable of enhancing performance across the multiverse, as long as a universe is in reach of the mettle industry.

@@ -63,7 +63,7 @@ QDEF:AddConvo()
                     !right
                 player:
                     !left
-                    I have to say, I must agree with {agent} here.
+                    Out of the both of you, {agent} is in the right.
                 other:
                     !surprised
                     What? You would rather side with {agent} than me?
@@ -78,6 +78,7 @@ QDEF:AddConvo()
                     I won't forget this!
                     !exit
                 * {other.HeShe} leaves.
+                * {agent} slumps {agent.hisher} shoulders and lets out a sigh of relief
                 player:
                     !left
                 agent:

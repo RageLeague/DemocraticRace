@@ -2,6 +2,121 @@ Content.AddStringTable( "DEM_CONVO", {
     CONVO_COMMON = {
         OPT_ACCEPT_FAILURE = "Accept your failure",
 
+        DIALOG_ALLIANCE_TALK_INTRO = [[
+            player:
+                [p] There's a lot of similarities between us.
+                Perhaps we can join forces.
+        ]],
+        DIALOG_ALLIANCE_TALK_INVALID = [[
+            agent:
+                [p] {player.gender:Sir|Ma'am|Excuse me}, this is a Wendy's.
+        ]],
+        DIALOG_ALLIANCE_TALK_UNCONDITIONAL = [[
+            agent:
+                [p] Sounds like a great idea!
+                Let's do this!
+            {opposite_spectrum?
+                As long as we fix a small problem first.
+            player:
+                What?
+            agent:
+                I support {1#pol_stance}, and you support the opposite.
+                We can't really have that.
+                That is, of course, unless you decide to change your mind on the topic.
+            }
+        ]],
+        DIALOG_ALLIANCE_TALK_CONDITIONAL = [[
+            agent:
+                [p] I doubt your ability.
+                You have high potential, but you aren't there yet.
+            {opposite_spectrum?
+                And there's the problem that I support {1#pol_stance}, and you support the opposite.
+                So we have to fix that first.
+            }
+            {not opposite_spectrum?
+                So you need to convince me first.
+            player:
+                Who would've guess something like this would happen?
+            }
+        ]],
+        DIALOG_ALLIANCE_TALK_DEMANDS = [[
+            agent:
+            {opposite_spectrum?
+                While that's well and good, that's not all you need to do.
+            player:
+                Of course it's not.
+            }
+                If you can {1#demand_list}, then we can form an alliance.
+        ]],
+        DIALOG_ALLIANCE_TALK_BAD_ALLY = [[
+            agent:
+                [p] That sounds good, but actually it's not.
+            player:
+                Why?
+            {is_problem_ally?
+                You see, you have {1#agent} as your ally.
+                And that is a problem.
+                Because we hate each other.
+            player:
+                Understandable.
+            }
+            {not is_problem_ally?
+                You see, you just made the wrong enemy, that is all.
+                {1#agent} and I look out for each other, and you made {1.himher} mad.
+                So we can't be allies.
+            player:
+                In that case, can I ship you two in my OC?
+            agent:
+                Hesh off!
+            }
+        ]],
+        DIALOG_ALLIANCE_TALK_REJECT = [[
+            agent:
+                [p] A funny joke.
+                You know what, I may consider it if you suck less.
+            player:
+                Well, screw you too.
+        ]],
+        OPT_ALLIANCE_TALK_ACCEPT = "Accept alliance",
+        DIALOG_ALLIANCE_TALK_ACCEPT = [[
+            player:
+                [p] We have a deal.
+            agent:
+                Great!
+        ]],
+        DIALOG_ALLIANCE_TALK_ACCEPT_CONDITIONAL = [[
+            player:
+                Alright, I did what you asked. Time to hold up to your end of the bargain.
+            agent:
+                Yes, of course.
+                {player}, I now officially form an alliance with you!
+        ]],
+        OPT_ALLIANCE_TALK_AGREE_STANCE = "Opt to support {agent}'s stance",
+        DIALOG_ALLIANCE_TALK_AGREE_STANCE = [[
+            player:
+                [p] You know what? I agree with you.
+            agent:
+                Yeah, yeah.
+                But this time, it's for real. Don't try to change your stance to the opposition.
+            player:
+                Sure, pinky promise.
+        ]],
+        OPT_ALLIANCE_TALK_HERE_DEMANDS = "Hear out {agent}'s demands",
+        DIALOG_ALLIANCE_TALK_HERE_DEMANDS = [[
+            player:
+                Alright, then, what do you want?
+            agent:
+                What I want is simple.
+                If you can {1#demand_list}, then we're in business.
+        ]],
+        OPT_ALLIANCE_TALK_REJECT_ALLIANCE = "Reject alliance",
+        DIALOG_ALLIANCE_TALK_REJECT_ALLIANCE = [[
+            player:
+                [p] You know what? I reconsider.
+            agent:
+                What a waste of my time.
+        ]],
+
         OPT_DEBUG_BYPASS_HARD_CHECK = "[Debug] Bypass hard check",
         TT_DEBUG_BYPASS_HARD_CHECK = "This will bypass a hard check in the game for debug purpose. Choosing this makes this run illegitimate.",
 
@@ -105,8 +220,8 @@ Content.AddStringTable( "DEM_CONVO", {
         
         TT_UPDATE_STANCE = "Your stance regarding <b>{1#pol_issue}</> will be updated to <b>{2#pol_stance}</>.",
         TT_UPDATE_STANCE_OLD = "Your stance regarding <b>{1#pol_issue}</> will be updated from <b>{3#pol_stance}</> to <b>{2#pol_stance}</>.",
-        TT_UPDATE_STANCE_LOOSE = "Your stance regarding <b>{1#pol_issue}</> will be loosely updated to <b>{2#pol_stance}</>.",
-        TT_UPDATE_STANCE_LOOSE_OLD = "Your stance regarding <b>{1#pol_issue}</> will be loosely updated from <b>{3#pol_stance}</> to <b>{2#pol_stance}</>.",
+        TT_UPDATE_STANCE_LOOSE = "Your stance regarding <b>{1#pol_issue}</> will be updated to favoring <b>{2#pol_stance}</>.",
+        TT_UPDATE_STANCE_LOOSE_OLD = "Your stance regarding <b>{1#pol_issue}</> will be updated from <b>{3#pol_stance}</> to favoring <b>{2#pol_stance}</>.",
         TT_UPDATE_STANCE_SAME = "You stance regarding <b>{1#pol_issue}</> will be reinforced.(<b>{2#pol_stance}</>)",
 
         TT_UPDATE_STANCE_WARNING = "<#PENALTY>Warning: Frequent change of stance might cause you to lose support!</>",

@@ -61,7 +61,7 @@ local RELATION_OFFSET = {
 local QDEF = QuestDef.Define
 {
     title = "Interview",
-    desc = "Do the interview and gain support.",
+    desc = "Go to the interview and spread awareness of your campaign.",
     icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/interview.png"),
 
     qtype = QTYPE.STORY,
@@ -243,6 +243,7 @@ QDEF:AddConvo("go_to_interview")
                     !placate
                     Let's focus on our inter-personal relationship AFTER I survive this.
                 primary_advisor:
+		    !point
                     IF you survive, at this point, but true. Let's me give you the once over about the interview.
                 * You and {primary_advisor} chatter about the interview, with them giving you pointers that make no sense to the task at hand.
                 * Eventually, a worker calls for you, and you steel your nerves.
@@ -265,22 +266,24 @@ QDEF:AddConvo("do_interview")
     :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("theater") end)
         :Loc{
             DIALOG_INTRO = [[
-                * [p] When you enter the room, you see a bunch of people in the theater.
-                * Looks like lots of people wants to watch your interview.
-                * Some are your supporters who wants to see you succeed, while others wants to see you fail miserably.
+                * Stepping on stage, the bright Lumin lights threaten to blind you before you reach your seat.
+                * Looking out to the crowd, you see quite a few faces you know, for better or for worse.
+                * Standing in the middle of the stage is {host}, keeping the crowd excited for your entrance.
                 agent:
                     !right
-                    Let's welcome our special guest tonight, {player}!
+                    Alright people, tonight's guest is an up and coming political upstart, making a name for themselves on the Havarian stage TONIGHT!
+		    Everyone, give a round of applause for our guest, {player}!
+		    Have a seat, {player}.
                 player:
                     !left
-                * As everyone clapped, you enter the stage and sit at your side.
+                * Some clapped, others booed your arrival.  
                 agent:
-                    {player} here is an up and coming politician wanting to participating in the election.
+                    A little background for the audience, {player} is actually a retired Grifter, hanging up {player.hisher} weapons to join Havaria's First Election.
                 {liked?
                     Although {player.heshe} have just started, {player.heshe} has gained quite some followers, and might even be more popular than seasoned politicians like Oolo and Fellemo.
                 }
                 {disliked?
-                    As such, {player.hisher} leadership skills are questionable at best.
+                    As such, {player.hisher} leadership skills have been questionable at best.
                 }
                 {not liked and not disliked?
                     Many people wondered whether {player.heshe} will be able to compete with other seasoned politicians.
@@ -290,7 +293,7 @@ QDEF:AddConvo("do_interview")
                 player:
                     Thank you for inviting me, {agent}.
                 agent:
-                    I have a few questions for you...
+                    Let's start this show with a few questions...
                 * Try to survive the interview, I guess?
             ]],
             OPT_DO_INTERVIEW = "Do the interview",
@@ -299,10 +302,13 @@ QDEF:AddConvo("do_interview")
 
             DIALOG_INTERVIEW_SUCCESS = [[
                 agent:
-                    [p] once again, thank you for coming.
+                    Spectacular, {player}. You are quite savvy at interviews.
+		    Once again, thank you for coming on the show.
                 player:
-                    no problems.
-                * phew! you survived the interview.
+                    No problems.
+		agent:
+		    One last round of applause for our guest, {player}!
+                * This time, you hear a few less boos than before. You survived the interview.
             ]],
             DIALOG_INTERVIEW_FAIL = [[
                 player:

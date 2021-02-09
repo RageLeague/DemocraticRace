@@ -12,6 +12,7 @@ end
 local QDEF = QuestDef.Define
 {
     qtype = QTYPE.EVENT,
+    act_filter = DemocracyUtil.DemocracyActFilter,
     on_destroy = function(quest)
         if quest:GetCastMember("admiralty"):IsInPlayerParty() then
             quest:GetCastMember("admiralty"):Dismiss()

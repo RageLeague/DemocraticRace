@@ -14,6 +14,17 @@ local CONTAINER_H = PANEL_H - PANEL_PADDING*2
 local GRAFT_SLOT_SIZE = 110
 local DETAILS_W = RES_X*0.6
 
+SUPPORT_SCREEN_MODE, SUPPORT_SCREEN_MODE_NAME = MakeEnumValues{ "DEFAULT", "RELATIVE_GENERAL", "RELATIVE_CURRENT", "RELATIVE_GOAL" }
+SUPPORT_SCREEN_MODE_SIZE = 4
+
+local function CycleScreenMode(mode)
+    mode = mode + 1
+    if mode > SUPPORT_SCREEN_MODE_SIZE then
+        mode = SUPPORT_SCREEN_MODE.DEFAULT
+    end
+    return mode
+end
+
 SupportScreen.CONTROL_MAP = {
     {
         hint = function(self, left, right)
@@ -31,7 +42,19 @@ SupportScreen.CONTROL_MAP = {
         hint = function(self, left, right)
             table.insert(right, loc.format(LOC"UI.CONTROLS.CLOSE", Controls.Digital.MENU_CANCEL))
         end
-    }
+    },
+    {
+        control = Controls.Digital.SKIP,
+        fn = function(self)
+            -- AUDIO:PlayEvent( "event:/ui/grafts_menu/close" )
+            -- self:FadeOut()
+            self:OnModeSwitch()
+            return true
+        end,
+        hint = function(self, left, right)
+            table.insert(right, loc.format(LOC"DEMOCRACY.CONTROLS.SWITCH_MODE", Controls.Digital.SKIP))
+        end
+    },
 }
 
 
@@ -40,6 +63,8 @@ function SupportScreen:init( owner, on_end_fn )
 
     self:SetupUnderlay( true )
     self:SetAnchors( "center", "center" )
+
+    self.support_screen_mode = SUPPORT_SCREEN_MODE.DEFAULT
     
     -- self.locked = locked
 
@@ -108,23 +133,33 @@ function SupportScreen:init( owner, on_end_fn )
         :Bloom(0.1)
 
         -- :SetShown(false)
+    local content_width = DETAILS_W -- / TheGame:FE():GetBaseWidgetScale()
     self.general_support = self.content:AddChild(DemocracyClass.Widget.GeneralSupportEntryList())
-        -- :SetWidth(1200)
+        :SetWidth(content_width)
+
     self.faction_support = self.content:AddChild(DemocracyClass.Widget.FactionSupportEntryList())
+        :SetWidth(content_width)
 
     self.wealth_support = self.content:AddChild(DemocracyClass.Widget.WealthSupportEntryList())
-        -- :SetIcon(DemocracyConstants.icons.support)
-        -- :SetText("Maybe I <i>DO</> know what I'm doing.")
-        -- :SetColour(UICOLOURS.FIGHT)
-    -- Setup grafts display
-    -- self.graft_root = self.content:AddChild(Widget())
-    -- self.graft_widgets = {
-    --     [GRAFT_TYPE.COMBAT] = self.graft_root:AddChild( Widget.GraftScreenSlotContainer(GRAFT_TYPE.COMBAT, self.owner, GRAFT_SLOT_SIZE, self.locked) ):HideTT(),
-    --     [GRAFT_TYPE.NEGOTIATION] = self.graft_root:AddChild( Widget.GraftScreenSlotContainer(GRAFT_TYPE.NEGOTIATION, self.owner, GRAFT_SLOT_SIZE, self.locked) ):HideTT(),
-    -- }
-    -- self.graft_widgets[GRAFT_TYPE.COMBAT]:SetWidth( (DETAILS_W-SPACING.M1)/2 )
-    -- self.graft_widgets[GRAFT_TYPE.NEGOTIATION]:SetWidth( (DETAILS_W-SPACING.M1)/2 )
+        :SetWidth(content_width)
 
+    self.issue_trackers = self.content:AddChild(DemocracyClass.Widget.StancesEntryList())
+        :SetWidth(content_width)
+
+    -- if self.issue_trackers.widget_list[1] then
+    --     self.issue_trackers.widget_list[1]:SetFocusDir("up",self.wealth_support.widget_list[4], true)
+    -- end
+    
+
+    -- self.test_track = self.content:AddChild(DemocracyClass.Widget.PoliticalIssueTrack()
+    --     :SetIssue("SECURITY")
+    --     :AddAgent(TheGame:GetGameState():GetPlayerAgent()))
+    --     :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_admiralty"))
+    --     :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_spree"))
+    --     :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_baron"))
+    --     :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_rise"))
+    --     :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_cult"))
+    --     :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_jakes"))
     -- Back button
     self.bottom_left = self:AddChild( Widget() ):SetAnchors( "left", "bottom" )
     self.close_button = self.bottom_left:AddChild( Widget.IconButton( LOC"UI.OVERLAYS.CLOSE", 
@@ -134,9 +169,20 @@ function SupportScreen:init( owner, on_end_fn )
     self.close_button:SetIcon( global_images.close )
     self.close_button:LayoutBounds( "left", "above", 60, 60 )
 
+    self.mode_button = self.bottom_left:AddChild( Widget.IconButton( LOC"DEMOCRACY.SUPPORT_SCREEN.SWITCH_MODE", 
+        function()
+            self:OnModeSwitch()
+        end ) )
+    self.mode_button:SetIcon( global_images.close )
+    self.mode_button:LayoutBounds( "after", "center", self.close_button )
+        :Offset(SPACING.M1, 0)
+
     self.on_end_fn = on_end_fn
     
     self:Refresh()
+
+    print("Testloal", self.wealth_support.widget_list[1]:GetFocusDir("down"))
+    print("Testloal", self.wealth_support.widget_list[4]:GetFocusDir("down"))
 end
 
 function SupportScreen:HandleControlDown(control, device)
@@ -159,13 +205,18 @@ function SupportScreen:OnClickClose()
     self:Close()
 end
 
+function SupportScreen:OnModeSwitch()
+    self.support_screen_mode = CycleScreenMode(self.support_screen_mode)
+    self:Refresh(self.support_screen_mode)
+end
+
 function SupportScreen:Close()
     if self:IsOnStack() then
         self:FadeOut()
     end
 end
 
-function SupportScreen:Refresh()
+function SupportScreen:Refresh(new_mode)
     -- Update tab counts
     -- local installed_grafts, max_grafts
     -- installed_grafts, max_grafts = self.graft_widgets[GRAFT_TYPE.COMBAT]:GetGraftCount()
@@ -174,6 +225,18 @@ function SupportScreen:Refresh()
     -- -- Show grafts
     -- self.graft_widgets[GRAFT_TYPE.COMBAT]:Refresh():Layout()
     -- self.graft_widgets[GRAFT_TYPE.NEGOTIATION]:Refresh():Layout()
+    self.general_support:Refresh(new_mode)
+    self.faction_support:Refresh(new_mode)
+    self.wealth_support:Refresh(new_mode)
+    self.issue_trackers:Refresh()
+
+    local mode_name = SUPPORT_SCREEN_MODE_NAME[self.support_screen_mode]
+
+    self.mode_button:SetToolTip(loc.format(
+        LOC"DEMOCRACY.SUPPORT_SCREEN.SWITCH_MODE_TT",
+        LOC("DEMOCRACY.SUPPORT_SCREEN.MODE."..mode_name.."_TITLE"),
+        LOC("DEMOCRACY.SUPPORT_SCREEN.MODE."..mode_name.."_DESC")
+    ))
 
     self:Layout()
 end
@@ -211,6 +274,11 @@ function SupportScreen:OnScreenModeChange( sm )
 
     self.title:SetAutoSize(content_w)
     self.subtitle:SetAutoSize(content_w)
+    
+    self.general_support:SetWidth(content_w)
+    self.faction_support:SetWidth(content_w)
+    self.wealth_support:SetWidth(content_w)
+    self.issue_trackers:SetWidth(content_w)
     -- self.graft_widgets[GRAFT_TYPE.COMBAT]:SetWidth( (content_w-SPACING.M1)/2 )
     -- self.graft_widgets[GRAFT_TYPE.NEGOTIATION]:SetWidth( (content_w-SPACING.M1)/2 )
 
@@ -221,16 +289,11 @@ function SupportScreen:OnScreenModeChange( sm )
 end
 
 function SupportScreen:GetDefaultFocus()
-    return self.close_button
-    -- return ( self.graft_widgets
-    --         and self.graft_widgets[GRAFT_TYPE.NEGOTIATION]
-    --         and self.graft_widgets[GRAFT_TYPE.NEGOTIATION]:IsShown()
-    --         and self.graft_widgets[GRAFT_TYPE.NEGOTIATION]:GetDefaultFocus() )
-    --     or ( self.graft_widgets
-    --         and self.graft_widgets[GRAFT_TYPE.COMBAT]
-    --         and self.graft_widgets[GRAFT_TYPE.COMBAT]:IsShown()
-    --         and self.graft_widgets[GRAFT_TYPE.COMBAT]:GetDefaultFocus() )
-    --     or self.close_button
+    return (self.general_support and self.general_support:GetDefaultFocus())
+        or (self.faction_support and self.faction_support:GetDefaultFocus())
+        or (self.wealth_support and self.wealth_support:GetDefaultFocus())
+        or (self.issue_trackers and self.issue_trackers:GetDefaultFocus())
+        or self.close_button
 end
 
 
@@ -277,6 +340,13 @@ function SupportScreen:Layout()
         :Offset( 0, SPACING.M1 )
     self.wealth_support:LayoutBounds("left", "below", self.faction_support)
         :Offset( 0, SPACING.M1 )
+    self.issue_trackers:LayoutBounds("left", "below", self.wealth_support)
+        :Offset( 0, SPACING.M1 )
+
+    if self.test_track then
+        self.test_track:LayoutBounds("left", "below", self.wealth_support)
+            :Offset( 0, SPACING.M1 )
+    end
     -- self.graft_widgets[GRAFT_TYPE.NEGOTIATION]:LayoutBounds( "left", "below", self.text_content ):Offset( 0, -30 )
     -- self.graft_widgets[GRAFT_TYPE.COMBAT]:LayoutBounds( "after", "top", self.graft_widgets[GRAFT_TYPE.NEGOTIATION] ):Offset( SPACING.M1, 0 )
 

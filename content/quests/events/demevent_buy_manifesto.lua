@@ -287,7 +287,7 @@ local convo = QDEF:AddConvo()
             DIALOG_EXCUSE_SUCCESS = [[
                 player:
                     I actually do support the Rise.
-                {sal?
+                {player_sal?
                     in fact, my parents are the leader of the Rise movement 10 years ago.
                 }
                     It's just that, i'm a politician now, and i have to be careful with what i'm saying.

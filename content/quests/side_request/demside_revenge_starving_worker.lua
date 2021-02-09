@@ -11,6 +11,13 @@ local QDEF = QuestDef.Define
     tags = {"REQUEST_JOB"},
     reward_mod = 0,
     can_flush = false,
+
+    events = {
+        base_difficulty_change = function(quest, new_diff, old_diff)
+            quest:SetRank(new_diff)
+        end,
+    },
+
     on_init = function(quest)
         local motivation = {"make_example", "rush_quota"}
         local id = table.arraypick(motivation)
@@ -142,6 +149,10 @@ local QDEF = QuestDef.Define
     no_validation = true,
     provider = true,
     unimportant = true,
+    condition = function(agent, quest)
+        return not AgentUtil.HasPlotArmour(agent) and agent:GetBrain():GetWorkPosition() == nil and ((agent:GetFactionID() == "FEUD_CITIZEN" and agent:GetRenown() <= 2)
+            or (agent:GetFactionID() == "RISE" and agent:GetRenown() <= 3))
+    end,
     cast_fn = function(quest, t)
         table.insert( t, quest:CreateSkinnedAgent( "LABORER" ) )
     end,
@@ -237,6 +248,38 @@ local QDEF = QuestDef.Define
         txt = "Helped them get better rights",
     },
 }
+-- We can use this on request quests, because there's no reject dialogs.
+QDEF:AddIntro(
+    --attract spiel
+    [[
+        player:
+            You don't look so good.
+        agent:
+            You don't say.
+            I got fired by {foreman}.
+            Something about "expressing dissent opinions".
+            !angry_shrug
+            Can you believe it?
+        player:
+            That doesn't sound good.
+        agent:
+            It isn't.
+            Can you do something about {foreman}?
+            Make sure {foreman} stop doing what {foreman.heshe}'s doing to other workers.
+    ]],
+    
+    --on accept
+    [[
+        player:
+            I don't like it when foremans abuse their power and oppress the working class.
+            I'll see what I can do.
+        agent:
+            Thank you.
+            I used to work at {workplace#location}. You can find {foreman} there during work time.
+            Just... Try not to kill {foreman}.
+            If you do, then people will start suspecting me for murder, as I have a motive.
+            And that wouldn't be good for your campaign, I presume.
+    ]])
 QDEF:AddConvo("tell_news", "worker")
     :Loc{
         OPT_TELL_NEWS = "Tell {agent} about what you did",
@@ -325,13 +368,18 @@ QDEF:AddConvo("tell_news", "worker")
                         I am truly grateful.
                 }
             }
-            {organized_strike?
+            {organize_strike?
             player:
                 I organized a strike.
                 With so many people striking, {foreman} has no choice but to accept our demands.
             agent:
-                Really?
-                That's great!
+                Of course!
+                Why did I never think of that?
+            player:
+                I don't know, actually.
+                Probably because as a politician, I am more influential.
+            agent:
+                Anyway, that's great!
                 Thanks for your help, {player}. I'm truly grateful.
             }
         ]],

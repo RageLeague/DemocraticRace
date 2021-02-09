@@ -76,7 +76,7 @@ local QDEF = QuestDef.Define
         if quest:GetCastMember("junction") then
             TheGame:GetGameState():MarkLocationForDeletion(quest:GetCastMember("junction"))
         end
-        for i, agent in ipairs( quest.param.crowd ) do
+        for i, agent in ipairs( quest.param.crowd or {} ) do
             agent:RemoveAspect("bribed")
         end
     end,
@@ -146,20 +146,22 @@ QDEF:AddConvo("go_to_junction")
     :State("STATE_INTRO")
         :Loc{
             DIALOG_INTRO = [[
-                * You arrived at the junction and start preaching.
-                * Lots of people come and go.
-                * Now, it's time to let them know what you stand for.
+                * You find a crossroads, busy with activity and rushing passer-bys.
+		* You begin to preach to those who would listen. A few gather around you.
             ]],
             OPT_PREACH = "Preach!",
             REASON_PREACH = "Convince as many people as you can to join your side!",
             
             DIALOG_CONVINCED_PEOPLE = [[
-                * You have enlightened {1} {1*person|people} with your ideology.
+                * You count about {1} {1*person|people} staying close, cheering on your beliefs.
                 * {1:Not great, but that's something.|That's a good start.|Well done!}
             ]],
             DIALOG_UNCONVINCED_PEOPLE = [[
-                * After a long time, you haven't convinced even a single person with your ideology.
-                * Clearly that was a failure.
+                player:
+		  Hear ye, Hear ye! I bring free thoughts on the-
+                  Wait...where are you going?
+		* The crowd around you disperses. It's clear you haven't enticed them further than the inital interest.
+		* With their leave, you leave as well. You wonder if you simply needed a better technique.
             ]],
         }
         :Fn(function(cxt)
@@ -259,19 +261,16 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
         DIALOG_INTRO = [[
             player:
                 !left
-                Maybe I should preach at popular locations.
             {not has_primary_advisor?
-                Hopefully I can convince some apathetic people to join my cause.
-                I don't really know how effective that will be, though.
+                What's the classic way of getting ideologies out into the world?
+		A good workday's worth of political soapboxing!
+		Who knows? Might even rally some support!
             }
             {has_primary_advisor?
             agent:
-                You think this can bring people to your side?
-            player:
-                Perhaps.
-            agent:
-                You need to attract these people's attention before they get annoyed.
-                Are you sure you can manage that?
+		I think we should get back to the roots of campaigning.
+		You're going to stand out in a populous crossroads and preach to the passer-bys.
+		You'll need to reel the listeners in before they can get annoyed, but it should be a slam dunk.
             }
         ]],
     }
@@ -286,7 +285,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
                 !left
                 Might be worth a shot.
             {not has_primary_advisor?
-                I'll find a location, where I can preach.
+                Think I know where to hit the trail to start preaching.
             }
             {has_primary_advisor?
             agent:
@@ -305,11 +304,31 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
         DIALOG_INTRO = [[
             player:
                 !left
-                Seems way too stressful.
-                Besides, lots of people hate preachers.
+                Y'know what? Maybe it'll be a bit too much work for too little reward.
+            {not has_primary_advisor?
+                What else could I do...
+            }
+            {has_primary_advisor?
+            agent:
+                Back to the drawing board. Let's see what else we could do...
+            }
         ]],
     }
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
+            
         end)
+-- QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
+--     :Loc{
+--         DIALOG_INTRO = [[
+--             player:
+--                 !left
+--                 Seems way too stressful.
+--                 Besides, lots of people hate preachers.
+--         ]],
+--     }
+--     :State("START")
+--         :Fn(function(cxt)
+--             cxt:Dialog("DIALOG_INTRO")
+--         end)

@@ -1,0 +1,1024 @@
+local HOST_BEHAVIOUR =
+{
+    OnInit = function( self, difficulty )
+        self.negotiator:AddModifier("DEBATE_SCRUM_TRACKER")
+    end,
+    Cycle = function(self, turns)
+    end,
+}
+
+local QDEF = QuestDef.Define
+{
+    title = "Debate Scrum",
+    desc = "You are invited to the presidential debate with other candidates. Impress the audience with your debate skills.",
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/interview.png"),
+
+    qtype = QTYPE.STORY,
+    collect_agent_locations = function(quest, t)
+        if quest:IsActive("report_to_advisor") then
+            table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('home')})
+        else
+            table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('backroom'), role = CHARACTER_ROLES.VISITOR})
+        end
+        table.insert(t, { agent = quest:GetCastMember("host"), location = quest:GetCastMember('theater')})
+        for id, data in pairs(DemocracyConstants.opposition_data) do 
+            table.insert(t, { agent = quest:GetCastMember(id), location = quest:GetCastMember('theater'), role = CHARACTER_ROLES.VISITOR})
+        end
+    end,
+    on_start = function(quest)
+        local questions = {}
+        local weightings = {}
+        for id, data in pairs(DemocracyConstants.issue_data) do
+            weightings[id] = data.importance
+        end
+        for i = 1, 5 do
+            local chosen = weightedpick(weightings)
+            table.insert(questions, chosen)
+            weightings[chosen] = nil
+        end
+        quest.param.questions = questions
+
+        quest.param.candidates = {}
+        for id, data in pairs(DemocracyConstants.opposition_data) do
+            if quest:GetCastMember(data.cast_id) then
+                table.insert(quest.param.candidates, quest:GetCastMember(data.cast_id))
+            end
+        end
+        quest.param.popularity = {}
+    end,
+    -- on_complete = function(quest)
+    --     if quest:GetCastMember("primary_advisor") then
+    --         quest:GetCastMember("primary_advisor"):GetBrain():SendToWork()
+    --     end
+    -- end,
+    on_destroy = function(quest)
+        quest:GetCastMember("primary_advisor"):GetBrain():SendToWork()
+        if quest.param.parent_quest then
+            quest.param.parent_quest.param.did_debate_scrum = true
+            quest.param.parent_quest.param.good_debate = quest.param.good_debate
+            quest.param.parent_quest.param.bad_debate = quest.param.bad_debate
+            quest.param.parent_quest.param.popularity_rankings = quest.param.popularity_rankings
+        end
+    end,
+}
+:AddCast{
+    cast_id = "host",
+    cast_fn = function(quest, t) 
+        if quest:GetCastMember("theater"):GetProprietor() then
+            table.insert(t, quest:GetCastMember("theater"):GetProprietor())
+        end
+    end,
+    when = QWHEN.MANUAL,
+    events = 
+    {
+        agent_retired = function( quest, agent )
+            -- if quest:IsActive( "get_snail" ) then
+                -- If noodle chef died before we even got the snail, cast someone new.
+                quest:UnassignCastMember( "host" )
+                quest:AssignCastMember( "host" )
+            -- end
+        end,
+    },
+}
+:AddCastFallback{
+    cast_fn = function(quest, t)
+        quest:GetCastMember("theater"):GetWorkPosition("host"):TryHire()
+        if quest:GetCastMember("theater"):GetProprietor() then
+            table.insert(t, quest:GetCastMember("theater"):GetProprietor())
+        end
+    end,
+}
+:AddCast{
+    cast_id = "audience",
+    when = QWHEN.MANUAL,
+    condition = function(agent, quest)
+        return not table.arraycontains(quest.param.audience or {}, agent)
+    end,
+    score_fn = function(agent, quest)
+        if agent:HasAspect( "bribed" ) then
+            return 100
+        end
+        local sc = agent:GetRenown() * 2
+        if agent:GetRelationship() ~= RELATIONSHIP.NEUTRAL then
+            sc = sc + 5
+        end
+        return math.random(sc, 20)
+    end,
+    on_assign = function(quest, agent)
+        if not quest.param.audience then
+            quest.param.audience = {}
+        end
+        table.insert(quest.param.audience, agent)
+    end,
+}
+:AddCastFallback{
+    cast_fn = function(quest, t)
+        table.insert( t, quest:CreateSkinnedAgent() )
+    end,
+}
+:AddLocationCast{
+    cast_id = "theater",
+    cast_fn = function(quest, t)
+        table.insert(t, TheGame:GetGameState():GetLocation("GRAND_THEATER"))
+    end,
+    on_assign = function(quest, location)
+        -- quest:SpawnTempLocation("BACKROOM", "backroom")
+        quest:AssignCastMember("host")
+    end,
+    no_validation = true,
+}
+:AddLocationCast{
+    cast_id = "backroom",
+    no_validation = true,
+    cast_fn = function(quest, t)
+        table.insert(t, TheGame:GetGameState():GetLocation("GRAND_THEATER.backroom"))
+    end,
+    -- on_assign = function(quest, location)
+
+    --     -- print(location)
+    --     -- print(quest:GetCastMember("theater"))
+    --     -- print(quest:GetCastMember("theater"):GetMapPos())
+    --     -- location:SetMapPos( quest:GetCastMember("theater"):GetMapPos() )
+    -- end,
+    -- when = QWHEN.MANUAL,
+}
+:AddObjective{
+    id = "go_to_debate",
+    title = "Go to the debate",
+    desc = "Meet up with {primary_advisor} at the Grand Theater.",
+    mark = {"backroom"},
+    state = QSTATUS.ACTIVE,
+}
+:AddObjective{
+    id = "do_debate",
+    title = "Do the debate",
+    desc = "Try to stand out, but not in a bad way.",
+    mark = {"theater"},
+    -- state = QSTATUS.ACTIVE,
+    events = {
+        resolve_negotiation = function(quest, minigame, repercussions)
+            if repercussions then
+                local core = minigame:GetPlayerNegotiator():FindCoreArgument()
+                if core and core.candidate_agent then
+                    repercussions.resolve = 0
+                end
+            end
+        end,
+    },
+    on_complete = function(quest)
+        quest:Activate("report_to_advisor")
+        quest:Activate("talk_to_candidates")
+    end,
+}
+:AddObjective{
+    id = "report_to_advisor",
+    title = "Return to your advisor",
+    desc = "Talk to your advisor about how you did today.",
+    mark = {"primary_advisor"},
+}
+:AddObjective{
+    id = "talk_to_candidates",
+    title = "(Optional) Talk to other candidates",
+    desc = "Other candidates might be interested in an alliance if you've cooperated with them a lot during the debate. Use this opportunity to hopefully form an alliance",
+    mark = function(quest, t, in_location)
+        -- print("workplace mark evaluated")
+        -- print(DemocracyUtil.IsFreeTimeActive())
+        if in_location then
+            -- table.insert(t, quest:GetCastMember("foreman"))
+            for i, agent in ipairs(quest.param.candidates or {}) do
+                if not table.arraycontains(quest.param.post_debate_chat or {}, agent) then
+                    table.insert(t, agent)
+                end
+            end
+        else
+            table.insert(t, quest:GetCastMember("theater"))
+        end
+    end,-- {"theater"},
+}
+
+DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
+DemocracyUtil.AddHomeCasts(QDEF)
+DemocracyUtil.AddOppositionCast(QDEF)
+local function ProcessMinigame(minigame, win_minigame)
+    local data = {
+        won_game = win_minigame,
+        ally_survivors = {},
+        opponent_survivors = {},
+        mvp_score = 0,
+        mvp = {},
+        valuable_players = {},
+        score_agent_pairs = {},
+        win_margin = 0,
+    }
+    if data.won_game then
+        for i, modifier in minigame:GetPlayerNegotiator():Modifiers() do
+            if modifier.modifier_type == MODIFIER_TYPE.CORE and modifier:GetResolve() then
+                if modifier.candidate_agent then
+                    table.insert_unique(data.ally_survivors, modifier.candidate_agent)
+                else
+                    table.insert_unique(data.ally_survivors, TheGame:GetGameState():GetPlayerAgent())
+                end
+                local res, maxres = modifier:GetResolve()
+                data.win_margin = data.win_margin + 0.2 + (res / maxres)
+            end
+        end
+    else
+        for i, modifier in minigame:GetOpponentNegotiator():Modifiers() do
+            if modifier.modifier_type == MODIFIER_TYPE.CORE and modifier:GetResolve() then
+                if modifier.candidate_agent then
+                    table.insert_unique(data.ally_survivors, modifier.candidate_agent)
+                end
+                local res, maxres = modifier:GetResolve()
+                data.win_margin = data.win_margin + 0.2 + (res / maxres)
+            end
+        end
+    end
+    local opponent_core = minigame:GetOpponentNegotiator():FindCoreArgument()
+    table.insert(data.score_agent_pairs, {agent = TheGame:GetGameState():GetPlayerAgent(), score = opponent_core.player_score})
+    for id, val in pairs(opponent_core.scores) do
+        table.insert(data.score_agent_pairs, {agent = val.modifier.candidate_agent, score = val.score})
+    end
+    table.stable_sort(data.score_agent_pairs, function(a,b)
+        return a.score > b.score
+    end)
+    if #data.score_agent_pairs > 0 then
+        data.mvp_score = data.score_agent_pairs[1].score
+        -- Guess what? We need this to not divide by 0.
+        if data.mvp_score > 0 then
+            for i, val in ipairs(data.score_agent_pairs) do
+                if val.score / data.mvp_score >= 0.95 then
+                    table.insert(data.mvp, val.agent)
+                elseif val.score / data.mvp_score >= 0.75 then
+                    table.insert(data.valuable_players, val.agent)
+                end
+            end
+        end
+    end
+    return data
+end
+local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
+    cxt:Opt("OPT_SIDE", topic .. "_" .. stance)
+        :UpdatePoliticalStance(topic, stance, false)
+        :Dialog("DIALOG_SIDE")
+        :Fn(function(cxt)
+            cxt.quest.param.allies = helpers
+            cxt.quest.param.opponents = hinders
+            for i, agent in ipairs(helpers) do
+                cxt.quest.param.candidate_opinion[agent:GetID()] = (cxt.quest.param.candidate_opinion[agent:GetID()] or 0) + 1
+            end
+            for i, agent in ipairs(hinders) do
+                cxt.quest.param.candidate_opinion[agent:GetID()] = (cxt.quest.param.candidate_opinion[agent:GetID()] or 0) - 1
+            end
+        end)
+        :Negotiation{
+            flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.WORDSMITH | NEGOTIATION_FLAGS.NO_CORE_RESOLVE,
+            helpers = helpers,
+            hinders = hinders,
+            reason_fn = function(minigame)
+                local core = minigame:GetOpponentNegotiator():FindCoreArgument()
+                local total_amt = core.player_score or 0
+                return loc.format(cxt:GetLocString("REASON_TXT"), total_amt )
+            end,
+            on_start_negotiation = function(minigame)
+                for i, card in ipairs(minigame.start_params.helper_cards) do
+                    if DemocracyUtil.GetOppositionData(card.owner) then
+                        minigame.start_params.helper_cards[i] = Negotiation.Card("debater_negotiation_support", card.owner)
+                    end
+                end
+                for i, card in ipairs(minigame.start_params.hinder_cards) do
+                    if DemocracyUtil.GetOppositionData(card.owner) then
+                        minigame.start_params.hinder_cards[i] = Negotiation.Card("debater_negotiation_hinder", card.owner)
+                    end
+                end
+                -- Expand on the slot limits, as there's way too many modifiers for the max 13
+                minigame:GetPlayerNegotiator().max_modifiers = 17
+                minigame:GetOpponentNegotiator().max_modifiers = 17
+            end,
+            on_success = function(cxt, minigame)
+                cxt.quest.param.debate_result = ProcessMinigame(minigame, true)
+                cxt.quest.param.winner_pov = topic .. "_" .. stance
+                cxt:GoTo("STATE_DEBATE_SUMMARY")
+            end,
+            on_fail = function(cxt, minigame)
+                cxt.quest.param.debate_result = ProcessMinigame(minigame, false)
+                cxt.quest.param.winner_pov = topic .. "_" .. (-stance)
+                cxt:GoTo("STATE_DEBATE_SUMMARY")
+            end,
+        }
+end
+local function DeltaPopularity(table, agent, delta)
+    table[agent:GetID()] = (table[agent:GetID()] or 0) + delta
+end
+QDEF:AddConvo("go_to_debate")
+    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("backroom") end)
+        :Loc{
+            DIALOG_INTRO = [[
+                * [p] You arrive at the grand theater backroom, where {agent} awaits you.
+                player:
+                    !left
+                agent:
+                    !right
+                    Are you ready for tonight's debate?
+                player:
+                    Are we ever ready?
+                agent:
+                    Good point.
+                    Anyway, whether you're ready or not, time to go.
+                    Good luck.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
+            DemocracyUtil.PopulateTheater(cxt.quest, cxt.quest:GetCastMember("theater"), 8)
+            cxt:Dialog("DIALOG_INTRO")
+            cxt.quest:Complete("go_to_debate")
+            cxt.quest:Activate("do_debate")
+            cxt:Opt("OPT_LEAVE_LOCATION")
+                :Fn(function(cxt)
+                    cxt.encounter:DoLocationTransition(cxt.quest:GetCastMember("theater"))
+                end)
+                :MakeUnder()
+        end)
+QDEF:AddConvo("do_debate")
+    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("theater") end)
+        :Loc{
+            DIALOG_INTRO = [[
+                * You walked into the theater.
+                * It is full of people.
+                agent:
+                    !right
+                * You wait for the host to introduce the candidates.
+                * After introducing six the other candidate, an amount so large that we don't even bother to write it out, the host finally calls you in.
+                agent:
+                    [p] And finally, we have {player}!
+                player:
+                    !left
+                    Yo.
+                agent:
+                    Why do we have all the candidates gathered here today?
+                    Why, it is to have a debate, of course!
+                    We have plenty of questions to ask each candidates today, and they have debate out which is the best.
+                    Hopefully this helps you determine which candidate is the most competent.
+            ]],
+        }
+        :Fn(function(cxt)
+            if not cxt.quest.param.popularity then
+                cxt.quest.param.popularity = {}
+            end
+            if not cxt.quest.param.candidate_opinion then
+                cxt.quest.param.candidate_opinion = {}
+            end
+            for i, agent in cxt.location:Agents() do
+                if agent:GetRoleAtLocation( cxt.location ) == CHARACTER_ROLES.PATRON then
+                    if agent:GetRelationship() > RELATIONSHIP.NEUTRAL then
+                        DeltaPopularity(cxt.quest.param.popularity, cxt.player, 1)
+                    end
+                    for id, data in pairs(DemocracyConstants.opposition_data) do
+                        if agent:GetFactionID() == data.main_supporter then
+                            DeltaPopularity(cxt.quest.param.popularity, cxt:GetCastMember(data.cast_id), 1)
+                        end
+                    end
+                end
+            end
+            cxt:TalkTo(cxt:GetCastMember("host"))
+            cxt:Dialog("DIALOG_INTRO")
+            cxt:GoTo("STATE_QUESTION")
+        end)
+    :State("STATE_QUESTION")
+        :Quips{
+            {
+                tags = "debate_question",
+                [[
+                    agent:
+                        Many people in Havaria are very concerned about {topic#pol_issue}.
+                        What do you think about that?
+                ]],
+                [[
+                    agent:
+                        A big concern in Havaria is about {topic#pol_issue}.
+                        What is your opinion on this topic?
+                ]],
+                [[
+                    agent:
+                        Many Havarian citizens ask the question,
+                        What is the best approach to {topic#pol_issue}?
+                ]],
+                [[
+                    agent:
+                        There are a lot of ways to approach {topic#pol_issue}.
+                        In your opinion, what is the best way?
+                ]],
+            },
+        }
+        :Loc{
+            OPT_SIDE = "Argue for {1#pol_stance}",
+            DIALOG_SIDE = [[
+                player:
+                    This is my answer!
+                * A debate is about to go down!
+            ]],
+            REASON_TXT = "Impress the audience with your slick negotiation skills! (You have {1} {1*point|points})",
+            OPT_SIT_OUT = "Skip the debate and observe the opponents",
+            TT_SIT_OUT = "You will not be able to debate and stand out, but you will restore some resolve",
+        }
+        :Fn(function(cxt)
+            if not cxt.quest.param.questions or #cxt.quest.param.questions == 0 then
+                -- Go to end state.
+                cxt:GoTo("STATE_END")
+                return
+            end
+            cxt.quest.param.topic = cxt.quest.param.questions[1]
+            table.remove(cxt.quest.param.questions, 1)
+
+            local neg_helper, neg_hinder, pos_helper, pos_hinder = {}, {}, {}, {}
+            local neg_neut, pos_neut = {}, {}
+            for i, agent in ipairs(cxt.quest.param.candidates) do
+                local issue = DemocracyConstants.issue_data[cxt.quest.param.topic]
+
+                -- The default index of a person.
+                local stance_index = issue:GetAgentStanceIndex(agent)
+                -- How much a person's opinion will shift in your favor
+                local shift = 0
+                if agent:GetRelationship() > RELATIONSHIP.NEUTRAL then
+                    shift = 1
+                elseif agent:GetRelationship() < RELATIONSHIP.NEUTRAL then
+                    shift = -1
+                end
+                if stance_index < shift then
+                    table.insert(neg_helper, agent)
+                elseif stance_index > shift then
+                    table.insert(neg_hinder, agent)
+                else
+                    if shift == 0 then
+                        table.insert(neg_neut, agent)
+                    end
+                end
+                
+                if stance_index < -shift then
+                    table.insert(pos_hinder, agent)
+                elseif stance_index > -shift then
+                    table.insert(pos_helper, agent)
+                else
+                    if shift == 0 then
+                        table.insert(pos_neut, agent)
+                    end
+                end
+            end
+            while #neg_neut > 0 and #neg_helper >= #neg_hinder do
+                local idx = math.random(#neg_neut)
+                table.insert(neg_hinder, neg_neut[idx])
+                table.remove(neg_neut, idx)
+            end
+            while #pos_neut > 0 and #pos_helper >= #pos_hinder do
+                local idx = math.random(#pos_neut)
+                table.insert(pos_hinder, pos_neut[idx])
+                table.remove(pos_neut, idx)
+            end
+
+            cxt:TalkTo(cxt:GetCastMember("host"))
+            cxt:GetAgent():SetTempNegotiationBehaviour(HOST_BEHAVIOUR)
+            cxt:Quip(cxt:GetAgent(), "debate_question")
+            CreateDebateOption(cxt, neg_helper, neg_hinder, cxt.quest.param.topic, -1)
+            CreateDebateOption(cxt, pos_helper, pos_hinder, cxt.quest.param.topic, 1)
+            cxt:Opt("OPT_SIT_OUT")
+                :PostText("TT_SIT_OUT")
+                :GoTo("STATE_AUTO_DEBATE")
+        end)
+    :State("STATE_AUTO_DEBATE")
+        :Quips{
+            {
+                tags = "debate_mvp",
+                [[
+                    * The debate goes on for a long time, but there is one person who shines above others.
+                    * With {agent}'s wits and cunning, {agent.heshe} is able to convince the other team to shut up.
+                ]],
+            },
+            {
+                tags = "debate_mvp, admiralty",
+                [[
+                    * You noticed how {agent} plants evidence every turn, and {agent.hisher} allies always use that planted evidence to be more convincing.
+                    * Eventually, the opponent just gives up seeing how {agent} just makes up evidence on the fly and everyone just believes that.
+                ]],
+            },
+            {
+                tags = "debate_mvp, bandits",
+                [[
+                    * The debate drags on for a long time, but the longer the debate goes on, the more {agent} becomes impatient.
+                    * {agent.HeShe} quickly ends the debate with {agent.hisher} aggressive method.
+                ]],
+            },
+            {
+                tags = "debate_mvp, spark_barons",
+                [[
+                    * You doubt it at first, but {agent} has a way with {agent.hisher} words.
+                    * {agent.HeShe} uses many straw man arguments, and uses FACTS and LOGIC and DESTROYS the opposition.
+                    * Couple with the fact that {agent.heshe} prevents the opponent from using certain tactics unless they expose themselves, {agent.heshe} quickly becomes a force to be reckoned with.
+                    * In the end, {agent.hisher} side won, surprising everyone.
+                ]],
+            },
+            {
+                tags = "debate_mvp, rise",
+                [[
+                    * During the debate, it is clear that {agent} is an inspirational talker.
+                    * {agent} is able to use {agent.hisher} words and make the opponent forget what they are saying, and quickly, this becomes out of hand.
+                    * The opponent will sometimes spend a turn during virtually nothing, and it is no wonder they lost in the end.
+                    * It is clear who the MVP is, despite the fact that during so when you're involved doesn't make {agent.himher} such.
+                    * Funny how that works.
+                ]],
+            },
+            {
+                tags = "debate_mvp, cult_of_hesh",
+                [[
+                    * {agent} is able to quickly maintain dominance.
+                    * {agent.HeShe} creates a Wrath of Hesh argument on the first turn, and ever since then, it does so much work.
+                    * And worst of all, WHY AREN'T THE OPPONENTS TARGETTING IT?
+                    * IT IS CLEARLY THE MOST DETRIMENTAL ARGUMENT, YET YOU ARE NOT TARGETTING IT!
+                    * WHAT ARE YOU DOING FOR HESH SAKE?
+                    * And yeah, {agent} won, surprising no one.
+                ]],
+            },
+            {
+                tags = "debate_mvp, jakes",
+                [[
+                    * During the debate, one person uses an unconventional tactics to stand out.
+                    * The opponents underestimate {agent}, so {agent.heshe} uses this opportunity to act.
+                    * With {agent.hisher} double edge, it makes the opponent's tactics less useful.
+                    * Eventually, {agent} won in the long term.
+                ]],
+            },
+            {
+                -- Can't figure out how to have "or" relation for tags, so just copy and paste
+                tags = "debate_mvp, andwanette",
+                [[
+                    * During the debate, one person uses an unconventional tactics to stand out.
+                    * The opponents underestimate {agent}, so {agent.heshe} uses this opportunity to act.
+                    * With {agent.hisher} double edge, it makes the opponent's tactics less useful.
+                    * Eventually, {agent} won in the long term.
+                ]],
+            },
+        }
+        :Loc{
+            DIALOG_INTRO = [[
+                player:
+                    Nah, I think I'll just sit this one out.
+                agent:
+                    Okay, then.
+                * You decide to skip this question and let the others debate.
+                * And you observe the behaviour of others.
+            ]],
+            DIALOG_POST = [[
+                * This observation is very insightful(hopefully), and you are now more prepared for the next debate!
+            ]],
+            OPT_CONTINUE = "Continue",
+            OPT_REVIEW = "Review popularity",
+            DIALOG_REVIEW = [[
+                * Current popularity standing:
+            ]],
+            DIALOG_REVIEW_PERSON = [[
+                * {1#agent} has a popularity of {2}.
+            ]],
+        }
+        :SetLooping(true)
+        :Fn(function(cxt)
+            if cxt:FirstLoop() then
+                local neg, pos = {}, {}
+                for i, agent in ipairs(cxt.quest.param.candidates) do
+                    local issue = DemocracyConstants.issue_data[cxt.quest.param.topic]
+
+                    -- The default index of a person.
+                    local stance_index = issue:GetAgentStanceIndex(agent)
+                    -- How much a person's opinion will shift in your favor
+                    if stance_index < 0 then
+                        table.insert(neg, agent)
+                    elseif stance_index > 0 then
+                        table.insert(pos, agent)
+                    end
+                end
+                local winners
+                if math.random(#neg + #pos) <= #neg then
+                    winners = neg
+                else
+                    winners = pos
+                end
+                local mvp = table.arraypick(winners)
+                for i, agent in ipairs(winners) do
+                    DeltaPopularity(cxt.quest.param.popularity, agent, 7)
+                end
+                DeltaPopularity(cxt.quest.param.popularity, mvp, 5)
+
+                cxt:Dialog("DIALOG_INTRO")
+
+                cxt:TalkTo(mvp)
+                cxt:Quip( mvp, "debate_mvp")
+                
+                cxt:Dialog("DIALOG_POST")
+                ConvoUtil.DoResolveDelta(cxt, 15)
+            end
+            cxt:Opt("OPT_CONTINUE")
+                :GoTo("STATE_QUESTION")
+            cxt:Opt("OPT_REVIEW")
+                :Dialog("DIALOG_REVIEW")
+                :Fn(function(cxt)
+                    for id, val in pairs(cxt.quest.param.popularity) do
+                        cxt:Dialog("DIALOG_REVIEW_PERSON", TheGame:GetGameState():GetAgent(id), val)
+                    end
+                end)
+        end)
+    :State("STATE_DEBATE_SUMMARY")
+        :Loc{
+            DIALOG_INTRO = [[
+                agent:
+                    That was an excellent debate!
+                    Each candidate voiced their opinion on the matter, and a lot of very interested points are raised.
+            ]],
+            DIALOG_WIN_LANDSLIDE = [[
+                agent:
+                    Although, without a doubt, the candidates that support {winner_pov#pol_stance} won by a landslide.
+            ]],
+            DIALOG_WIN_NORMAL = [[
+                agent:
+                    It was quite an interesting debate, but ultimately, the candidates that support {winner_pov#pol_stance} won.
+            ]],
+            DIALOG_WIN_CLOSE = [[
+                agent:
+                    Both sides pull up a good fight, but in the end, the candidates that support {winner_pov#pol_stance} won by a tiny margin.
+            ]],
+            DIALOG_WINNER_MVP = [[
+                agent:
+                    It is undeniable that {1#agent_list} that {2*contributes|contribute} the most to the debate.
+                    Thanks to {2*{3.hisher}|their} effort, {2*{3.hisher}|their} side is able to win the debate.
+            ]],
+            DIALOG_LOSER_MVP = [[
+                agent:
+                    Although, we can all agree that {1#agent_list} put out a good fight there.
+                    {2*{3.HisHer}|Their} {2*effort is|efforts are} very valiant, although {2*it|they} didn't work out in the end.
+            ]],
+            DIALOG_OTHER_OF_NOTE = [[
+                agent:
+                    Other candidates, like {1#agent_list}, also did well in this debate, although not as well as those previously mentioned.
+            ]],
+            DIALOG_END = [[
+                agent:
+                    Well done, everyone!
+                    Anyway, let's move on.
+            ]],
+            OPT_CONTINUE = "Continue",
+            OPT_REVIEW = "Review popularity",
+            DIALOG_REVIEW = [[
+                * Current popularity standing:
+            ]],
+            DIALOG_REVIEW_PERSON = [[
+                * {1#agent} has a popularity of {2}.
+            ]],
+        }
+        :SetLooping(true)
+        :Fn(function(cxt)
+            if cxt:FirstLoop() then
+                cxt:Dialog("DIALOG_INTRO")
+                local winner_delta = 0
+                if cxt.quest.param.debate_result.win_margin <= 0.5 then
+                    cxt:Dialog("DIALOG_WIN_CLOSE")
+                    winner_delta = 3
+                elseif cxt.quest.param.debate_result.win_margin <= 2 then
+                    cxt:Dialog("DIALOG_WIN_NORMAL")
+                    winner_delta = 5
+                else
+                    cxt:Dialog("DIALOG_WIN_LANDSLIDE")
+                    winner_delta = 8
+                end
+                for i, agent in ipairs(cxt.quest.param.debate_result.won_game and 
+                    cxt.quest.param.allies or cxt.quest.param.opponents) do
+
+                    DeltaPopularity(cxt.quest.param.popularity, agent, winner_delta)
+                end
+                if cxt.quest.param.debate_result.won_game then
+                    DeltaPopularity(cxt.quest.param.popularity, cxt.player, winner_delta)
+                end
+                for i, agent in ipairs(cxt.quest.param.debate_result.ally_survivors) do
+                    DeltaPopularity(cxt.quest.param.popularity, agent, 2)
+                end
+                for i, agent in ipairs(cxt.quest.param.debate_result.opponent_survivors) do
+                    DeltaPopularity(cxt.quest.param.popularity, agent, 2)
+                end
+                local winner_mvps = {}
+                local loser_mvps = {}
+                for i, agent in ipairs(cxt.quest.param.debate_result.mvp) do
+                    if agent:IsPlayer() or table.arraycontains(cxt.quest.param.allies, agent) then
+                        if cxt.quest.param.debate_result.won_game then
+                            table.insert(winner_mvps, agent)
+                        else
+                            table.insert(loser_mvps, agent)
+                        end
+                    elseif table.arraycontains(cxt.quest.param.opponents, agent) then
+                        if cxt.quest.param.debate_result.won_game then
+                            table.insert(loser_mvps, agent)
+                        else
+                            table.insert(winner_mvps, agent)
+                        end
+                    end
+                end
+                if #winner_mvps > 0 then
+                    cxt:Dialog("DIALOG_WINNER_MVP", winner_mvps, #winner_mvps, winner_mvps[1])
+                    for i, agent in ipairs(winner_mvps) do
+                        DeltaPopularity(cxt.quest.param.popularity, agent, 5)
+                    end
+                end
+                if #loser_mvps > 0 then
+                    cxt:Dialog("DIALOG_LOSER_MVP", loser_mvps, #loser_mvps, loser_mvps[1])
+                    for i, agent in ipairs(loser_mvps) do
+                        DeltaPopularity(cxt.quest.param.popularity, agent, 5)
+                    end
+                end
+                if #cxt.quest.param.debate_result.valuable_players > 0 then
+                    cxt:Dialog("DIALOG_OTHER_OF_NOTE", cxt.quest.param.debate_result.valuable_players)
+                    for i, agent in ipairs(cxt.quest.param.debate_result.valuable_players) do
+                        DeltaPopularity(cxt.quest.param.popularity, agent, 3)
+                    end
+                end
+                cxt:Dialog("DIALOG_END")
+            end
+            DBG(cxt.quest.param.popularity)
+            cxt:Opt("OPT_CONTINUE")
+                :GoTo("STATE_QUESTION")
+            cxt:Opt("OPT_REVIEW")
+                :Dialog("DIALOG_REVIEW")
+                :Fn(function(cxt)
+                    for id, val in pairs(cxt.quest.param.popularity) do
+                        cxt:Dialog("DIALOG_REVIEW_PERSON", TheGame:GetGameState():GetAgent(id), val)
+                    end
+                end)
+        end)
+    :State("STATE_END")
+        :Loc{
+            DIALOG_END = [[
+                agent:
+                    !right
+                    That is all, folks!
+                * Wow, that was a handful. Quite literally if you are a human or a phicket.
+                * We don't discriminate phickets around here.
+                * Anyway, let's see how you do!
+            ]],
+            DIALOG_CHEER = [[
+                {player_winner?
+                    * Oh wow! You are really popular!
+                    * Everyone just cheers you on!
+                    |
+                    * Oh wow! You are not really popular!
+                    * Everyone cheers on {1#agent} instead!
+                    * How are you ever going to recover?
+                }
+            ]],
+            DIALOG_FRIEND_LOST = [[
+                * {1#agent_list} {2*looks|look} at you with disappointment.
+                * It is clear that your opinions displayed during the debate disappointed {2*{3.himher}|them}.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:TalkTo(cxt:GetCastMember("host"))
+            cxt:Dialog("DIALOG_END")
+            cxt.quest.param.popularity_rankings = shallowcopy(cxt.quest.param.candidates)
+            table.insert(cxt.quest.param.popularity_rankings, 1, cxt.player)
+            table.stable_sort(cxt.quest.param.popularity_rankings, function(a,b)
+                return (cxt.quest.param.popularity[a:GetID()] or 0) > (cxt.quest.param.popularity[b:GetID()] or 0)
+            end)
+            cxt.quest.param.winner = cxt.quest.param.popularity_rankings[1]
+            cxt.quest.param.player_winner = cxt.quest.param.winner and cxt.quest.param.winner:IsPlayer()
+            for i, agent in ipairs(cxt.quest.param.popularity_rankings) do
+                if agent:IsPlayer() then
+                    cxt.quest.param.player_rank = i
+                    break
+                end
+            end
+            if not cxt.quest.param.player_rank then
+                cxt.quest.param.player_rank = #cxt.quest.param.popularity_rankings + 1
+            end
+            if cxt.quest.param.player_rank == 1 then
+                cxt.quest.param.good_debate = true
+            elseif cxt.quest.param.player_rank > 2 then
+                cxt.quest.param.bad_debate = true
+            end
+            cxt:Dialog("DIALOG_CHEER", cxt.quest.param.popularity_rankings[1])
+
+            local betrayed_friends = {}
+            for id, delta in pairs(cxt.quest.param.candidate_opinion) do
+                if delta <= -1 then
+                    local agent = TheGame:GetGameState():GetAgent(id)
+                    if agent:GetRelationship() >= RELATIONSHIP.LIKED then
+                        table.insert(betrayed_friends, agent)
+                        agent:OpinionEvent(OPINION.DISLIKE_IDEOLOGY)
+                    end 
+                end
+            end
+            if #betrayed_friends > 0 then
+                cxt:Dialog("DIALOG_FRIEND_LOST", betrayed_friends, #betrayed_friends, betrayed_friends[1])
+            end
+            cxt.quest.param.betrayed_friends = betrayed_friends
+
+            cxt.quest:Complete("do_debate")
+
+            local your_score = cxt.quest.param.popularity[cxt.player:GetID()] or 0
+            if cxt.quest.param.good_debate then
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.5))
+            elseif cxt.quest.param.bad_debate then
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.25))
+            else
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.35))
+            end
+            StateGraphUtil.AddEndOption(cxt)
+        end)
+QDEF:AddConvo("report_to_advisor", "primary_advisor")
+    :ConfrontState("STATE_CONFRONT")
+    :Loc{
+        DIALOG_REVIEW = [[
+            agent:
+                You are back.
+            player:
+                Yeah.
+            agent:
+            {good_debate?
+                !clap
+                I have to say, that was quite impressive.
+                Everyone has their eyes on you!
+                Well done!
+            }
+            {bad_debate?
+                !sigh
+                Are you sure you tried?
+            player:
+                I mean, yeah?
+            agent:
+                Well the results doesn't reflect that way.
+                Nobody in the crowd remembers you.
+            }
+            {not good_debate and not bad_debate?
+                That was not that great, but certainly not the worse.
+                I hoped you can do better than that.
+            player:
+                It's way too hard to be first at everything at life.
+                So I'd settle for second place.
+            agent:
+                {advisor_hostile?
+                    That's why you are less successful than I am, huh?
+                    But whatever, I don't care.
+                    |
+                    !shrug
+                    Fair enough.
+                }
+            }
+            agent:
+                Anyway, we can talk more later during the summaries.
+        ]],
+    }
+    :Fn(function(cxt)
+        cxt:Dialog("DIALOG_REVIEW")
+        
+        cxt.quest:Complete()
+        StateGraphUtil.AddEndOption(cxt)
+    end)
+QDEF:AddConvo("talk_to_candidates")
+    :AttractState("STATE_CHAT", function(cxt)
+        cxt.quest.param.post_debate_chat = cxt.quest.param.post_debate_chat or {}
+        if not DemocracyUtil.GetOppositionData(cxt:GetAgent()) then
+            return false
+        end
+        return not table.arraycontains(cxt.quest.param.post_debate_chat, cxt:GetAgent())
+    end)
+        :Loc{
+            DIALOG_OPPOSE = [[
+                agent:
+                    !sigh
+                    I can't believe you betrayed my trust like that!
+                    I thought we share the same ideology!
+                    Guess I was wrong.
+            ]],
+            DIALOG_GENERAL = [[
+                agent:
+                {good_debate?
+                    {liked?
+                        !clap
+                        Well done, {player}! I knew you had it in you.
+                        Clearly, I made the right choice by allying with you.
+                    player:
+                        Great, thanks.
+                    }
+                    {not liked?
+                        !clap
+                        Wow! Impressive trick you pulled here.
+                        Now I have to be careful.
+                    player:
+                        Oh wow, thanks.
+                    }
+                }
+                {not good_debate and not bad_debate?
+                    {liked?
+                        !happy
+                        You did pretty good today.
+                    player:
+                        Thanks. Not as good as you, though.
+                    agent:
+                        Don't be too modest here.
+                    }
+                    {not liked?
+                        That was a nice debate!
+                    player:
+                        Thanks.
+                    }
+                }
+                {bad_debate?
+                    {liked?
+                        What's up?
+                    player:
+                        Didn't do so well today.
+                    agent:
+                        Don't be so hard on yourself. I'm sure you will recover.
+                    }
+                    {not liked?
+                        What a great debate that was!
+                    player:
+                        Is it really?
+                    agent:
+                        Not really.
+                        I'm just saying that to be polite.
+                    }
+                }
+            ]],
+            DIALOG_SUPPORT = [[
+                agent:
+                {disliked?
+                    Perhaps I judged you too harshly.
+                }
+                {liked?
+                    I know I could count on you!
+                }
+                {not disliked and not liked?
+                    Maybe we are more alike than we thought.
+                }
+            ]],
+            OPT_APOLOGIZE = "Apologize",
+            DIALOG_APOLOGIZE = [[
+                player:
+                    [p] Look, I'm sorry that I stood against you tonight.
+                    I promise I will not do that again.
+                agent:
+                    Is that so?
+            ]],
+            DIALOG_APOLOGIZE_SUCCESS = [[
+                agent:
+                    [p] You know what? Because you asked so nicely, I'll forgive you.
+                    Not worth it worrying about such a small problem.
+            ]],
+            DIALOG_APOLOGIZE_FAILURE = [[
+                agent:
+                    [p] I think I heard more than enough of your excuses.
+                    We're done here.
+            ]],
+            OPT_IGNORE_CONCERN = "Ignore {agent}'s concern",
+            DIALOG_IGNORE_CONCERN = [[
+                player:
+                    [p] I did what I had to do.
+                agent:
+                    That's fair, I guess.
+                    But since you're not willing to help me, I'm not willing to help you.
+            ]],
+            OPT_ALLIANCE = "Use this opportunity to talk about potential alliance",
+            DIALOG_ALLIANCE_TALK_INTRO = [[
+                player:
+                    [p] I say you and me, we make a great team.
+                    How about this: we make an alliance for this upcoming election.
+            ]],
+        }
+        :Fn(function(cxt)
+            local who = cxt:GetAgent()
+            table.insert(cxt.quest.param.post_debate_chat, who)
+            local opposition_data = DemocracyUtil.GetOppositionData(who)
+            if table.arraycontains(cxt.quest.param.betrayed_friends or {}, who) then
+                cxt:Dialog("DIALOG_OPPOSE")
+                cxt:Opt("OPT_APOLOGIZE")
+                    :Dialog("DIALOG_APOLOGIZE")
+                    :UpdatePoliticalStance(opposition_data.platform, DemocracyUtil.GetAgentStanceIndex(opposition_data.platform, who))
+                    :Negotiation{
+
+                    }:OnSuccess()
+                        :Dialog("DIALOG_APOLOGIZE_SUCCESS")
+                        :ReceiveOpinion(OPINION.ALLIED_WITH)
+                    :OnFailure()
+                        :Dialog("DIALOG_APOLOGIZE_FAILURE")
+                cxt:Opt("OPT_IGNORE_CONCERN")
+                    :Dialog("DIALOG_IGNORE_CONCERN")
+            elseif cxt.quest.param.candidate_opinion and cxt.quest.param.candidate_opinion[who:GetID()] >= 2 then
+                cxt:Dialog("DIALOG_SUPPORT")
+                if who:GetRelationship() < RELATIONSHIP.NEUTRAL then
+                    who:OpinionEvent(OPINION.SHARE_IDEOLOGY)
+                elseif who:GetRelationship() == RELATIONSHIP.NEUTRAL then
+                    -- Special alliance talk.
+                    cxt:Opt("OPT_ALLIANCE")
+                        :Fn(function(cxt)
+                            DemocracyUtil.DoAllianceConvo(cxt, who, 15)
+                        end)
+
+                    StateGraphUtil.AddEndOption(cxt)
+                end
+            else
+                cxt:Dialog("DIALOG_GENERAL")
+            end
+        end)

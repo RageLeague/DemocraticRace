@@ -153,15 +153,51 @@ QDEF:AddConvo("summary", "primary_advisor")
                 }
 
             ]],
+            DIALOG_POST_DEBATE_GOOD_SUPPORT = [[
+                agent:
+                {good_debate?
+                    And that was an amazing debate!
+                    You really made a good impression on all of those people!
+                    Well done!
+                }
+                {bad_debate?
+                    Although that debate was terrible.
+                    Your popularity was drowned out by other candidates' performance.
+                    We need to figure something out soon before your popularity goes to waste.
+                }
+                {not good_debate and not bad_debate?
+                    Your performance is overshadowed by {1#agent}.
+                    But I'm sure you will be fine.
+                }
+            ]],
+            DIALOG_POST_DEBATE_BAD_SUPPORT = [[
+                agent:
+                {good_debate?
+                    At least you showed off during the debate.
+                    Let's just hope that is enough to save the campaign.
+                }
+                {bad_debate?
+                    And, on top of that, you didn't even stand out during the debate!
+                    How are we supposed to gain support if no one notices you?
+                }
+                {not good_debate and not bad_debate?
+                    If you could only beat {1#agent} in popularity. That way there's a chance that our campaign can still be salvaged.
+                    But still, you are still popular enough in the debate.
+                    At least that's something.
+                }
+            ]],
         }
         :Fn(function(cxt)
             -- the idea here is that the advisor check how much they support you
             -- instead of the general public to further their agenda
-            local support_level = DemocracyUtil.GetSupportForAgent(cxt:GetAgent())
+            -- but the bias would be too obvious
+            local general_support = DemocracyUtil.GetGeneralSupport()
+            local agent_support = DemocracyUtil.GetSupportForAgent(cxt:GetAgent())
+            local support_level = general_support * .5 + agent_support * .5
             local expectation = DemocracyUtil.GetCurrentExpectation()
             local delta = support_level - expectation
             
-            local RANGE = 7
+            local RANGE = 4 + 3 * cxt.quest:GetRank()
             local rank = clamp( math.round((RANGE * #RANKS / 2 - delta) / RANGE) ,1, #RANKS)
             
             cxt.enc.scratch.loved = cxt:GetAgent():GetRelationship() == RELATIONSHIP.LOVED
@@ -202,11 +238,21 @@ QDEF:AddConvo("summary", "primary_advisor")
                         rank = math.min(#RANKS, rank + 1)
                     end
                 end
+                if parent_quest.param.did_debate_scrum then
+                    cxt.quest.param.good_debate = parent_quest.param.good_debate
+                    cxt.quest.param.bad_debate = parent_quest.param.bad_debate
+                    cxt:Dialog(rank <= 3 and "DIALOG_POST_DEBATE_GOOD_SUPPORT" or "DIALOG_POST_DEBATE_BAD_SUPPORT", parent_quest.param.popularity_rankings[1])
+                    if cxt.quest.param.good_debate then
+                        rank = math.max(1, rank - 1)
+                    elseif cxt.quest.param.bad_debate then
+                        rank = math.min(#RANKS, rank + 1)
+                    end
+                end
             end
             if not cxt.enc.scratch.loved then
                 cxt:GetAgent():OpinionEvent(OPINION["SUPPORT_EXPECTATION_" .. RANKS[rank]])
             end
-            if cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL then
+            if cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL and not TheGame:GetGameState():GetMainQuest().param.allow_skip_side then
                 cxt:Dialog("DIALOG_UNLOCK_SKIP")
                 TheGame:GetGameState():GetMainQuest().param.allow_skip_side = true
             end
