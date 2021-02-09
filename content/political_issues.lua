@@ -251,7 +251,7 @@ local val =  {
             [2] = {
                 -- "Universal" literally means "for all".
                 name = "Security for All",
-                desc = "Havaria is overrun with criminals of all kind, and the only way to fix it is through drastic measures.",
+                desc = "Havaria is overrun with criminals of all kind, and the only way to fix it is through drastic measures. By funding for Security for All, everyone, regardless of social status, can be protected from criminals.",
                 faction_support = {
                     ADMIRALTY = 5,
                     FEUD_CITIZEN = 3,
