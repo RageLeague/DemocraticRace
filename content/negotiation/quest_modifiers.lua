@@ -1488,6 +1488,8 @@ local MODIFIERS =
                         panel:FindSlotWidget( self.engine:GetPlayerNegotiator():FindCoreArgument() ) or nil--panel.main_overlay.minigame_objective
                     self.player_score = self.player_score + delta
                     panel:StartCoroutine(PopupText, panel, source_widget, 32, UICOLOURS.WHITE, self.player_score_widget)
+                    panel.player_modifiers:UpdatePersuasionLabels()
+                    panel.opponent_modifiers:UpdatePersuasionLabels()
                 end)
             end
         end,
