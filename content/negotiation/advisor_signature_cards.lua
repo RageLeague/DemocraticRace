@@ -65,7 +65,8 @@ local CARDS = {
             return loc.format(fmt_str, AutoUpgradeText(self, "modifier_threshold", true), 
                 AutoUpgradeText(self, "req_argument_id", false, function(x) return "{" .. x .. "}" end))
         end,
-        flavour = "'Establish yourself as the good guy, then anyone who opposes you must be the bad guy.'",
+        flavour = "'Look at me, I am doing good things by gifting people with money. Now vote for me.'\n'What? You don't? Then I guess you must hate the poor.'",
+        icon = "DEMOCRATICRACE:assets/cards/virtue_signal.png",
         
         advisor = "ADVISOR_DIPLOMACY",
         flags = CARD_FLAGS.DIPLOMACY,
@@ -528,6 +529,7 @@ local CARDS = {
         name = "Projection",
         desc = "{1} a card from your {2}. {INCEPT} {3} {FLUSTERED} if it's a diplomacy card, {4} {DOUBT} if it's a manipulate card, and {5} {VULNERABILITY} if it's a hostile card.",
         flavour = "'You try to argue with me, but deep down, you know that I'm right.'",
+        icon = "DEMOCRATICRACE:assets/cards/projection.png",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, 
                 AutoUpgradeText(self, "improvise_count", false, function(x)

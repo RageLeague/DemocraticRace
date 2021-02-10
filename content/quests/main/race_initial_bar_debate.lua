@@ -353,6 +353,7 @@ QDEF:AddConvo("win_argument")
                 :PostCard(insult_card, true)
                 :Dialog("DIALOG_DEBATE")
                 :Negotiation{
+                    -- flags = NEGOTIATION_FLAGS.WORDSMITH,
                     on_start_negotiation = function(minigame)
                         local n = math.max(1, math.round( minigame.player_negotiator.agent.negotiator:GetCardCount() / 5 ))
                         for k = 1, n do

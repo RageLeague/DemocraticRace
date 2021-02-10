@@ -194,7 +194,7 @@ function DemocracyUtil.CanVote(agent)
     -- non-citizens can't vote
     -- for casting purposes, player can't vote.
     return agent and not agent:IsPlayer() and not agent:IsRetired() 
-        and agent:IsSentient() and agent:GetFactionID() ~= "RENTORIAN"
+        and agent:IsSentient() and agent:GetFactionID() ~= "RENTORIAN" and agent:GetFactionID() ~= "DELTREAN"
 end
 
 -- Do the convo for unlocking a location.
