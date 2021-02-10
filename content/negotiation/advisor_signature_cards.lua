@@ -181,6 +181,7 @@ local CARDS = {
         modifier = 
         {
             desc = "At the end of your turn, deal damage equal to the number of arguments, bounties, and inceptions you have to a random opponent argument.",
+            icon = "DEMOCRATICRACE:assets/modifiers/hive_mind.png",
             modifier_type = MODIFIER_TYPE.ARGUMENT,
             max_resolve = 5,
 
@@ -266,6 +267,7 @@ local CARDS = {
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, AutoUpgradeText(self, "damage_bonus"))
         end,
+        icon = "DEMOCRATICRACE:assets/cards/underdog.png",
 
         advisor = "ADVISOR_DIPLOMACY",
         flags = CARD_FLAGS.DIPLOMACY,
@@ -450,6 +452,7 @@ local CARDS = {
             name = "Moreef Defense",
             desc = "",
             desc_fn = PlainDescFn,
+            icon = "DEMOCRATICRACE:assets/modifiers/moreef_defense.png",
             modifier_type = MODIFIER_TYPE.ARGUMENT,
 
             max_resolve = 6,
@@ -619,6 +622,7 @@ local CARDS = {
 
         modifier =
         {
+            icon = "DEMOCRATICRACE:assets/modifiers/talk_over.png",
             modifier_type = MODIFIER_TYPE.PERMANENT,
             event_handlers =
             {
@@ -669,6 +673,7 @@ local CARDS = {
 
         modifier =
         {
+            icon = "DEMOCRATICRACE:assets/modifiers/ivory_tower.png",
             modifier_type = MODIFIER_TYPE.ARGUMENT,
             max_resolve = 1,
             desc = "This argument has 1 bonus resolve for every {2#money} you have. At the end of your turn, apply {1} composure to all your arguments.",
@@ -756,6 +761,7 @@ local CARDS = {
                 end
                 return fmt_str
             end,
+            icon = "DEMOCRATICRACE:assets/modifiers/duckspeak.png",
             
             modifier_type = MODIFIER_TYPE.ARGUMENT,
             max_resolve = 3,
@@ -821,6 +827,7 @@ local CARDS = {
                 end
                 return loc.format(fmt_str, self.stacks)
             end,
+            icon = "DEMOCRATICRACE:assets/modifiers/whataboutism.png",
 
             modifier_type = MODIFIER_TYPE.ARGUMENT,
             max_resolve = 4,
@@ -859,6 +866,7 @@ local CARDS = {
             return loc.format(fmt_str, AutoUpgradeText(self, "gain_stacks", true))
         end,
         flavour = "'Why say a few words when a lot do the trick?'",
+        icon = "DEMOCRATICRACE:assets/cards/incoherent_rambling.png",
 
         advisor = "ADVISOR_HOSTILE",
         flags = CARD_FLAGS.HOSTILE,
