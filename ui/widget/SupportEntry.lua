@@ -33,7 +33,7 @@ function SupportEntry:init(icon_size, max_width)
         :SetAutoSize( self.text_width )
         :LeftAlign()
         -- :LayoutBounds("left", "center", 144, 0)
-    
+    self:ShowToolTipOnFocus()
     self:Refresh()
 end
 
