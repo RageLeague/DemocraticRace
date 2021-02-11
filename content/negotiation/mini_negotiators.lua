@@ -36,6 +36,7 @@ local MINI_NEGOTIATOR_CARDS =
     mn_influence_damage =
     {
         name = "Ethos",
+        icon = "negotiation/build_rapport.tex",
         flags = CARD_FLAGS.DIPLOMACY,
         min_persuasion = 4,
         max_persuasion = 7,
@@ -44,6 +45,7 @@ local MINI_NEGOTIATOR_CARDS =
     {
         name = "Logos",
         desc = "Attack twice.",
+        icon = "negotiation/reconsider.tex",
         flags = CARD_FLAGS.MANIPULATE,
         min_persuasion = 3,
         max_persuasion = 3,
@@ -55,6 +57,7 @@ local MINI_NEGOTIATOR_CARDS =
     mn_hostile_damage =
     {
         name = "Pathos",
+        icon = "negotiation/bellow.tex",
         flags = CARD_FLAGS.HOSTILE,
         min_persuasion = 3,
         max_persuasion = 8,
@@ -62,6 +65,7 @@ local MINI_NEGOTIATOR_CARDS =
     mn_inspire =
     {
         name = "Inspire",
+        icon = "negotiation/collected.tex",
         flags = CARD_FLAGS.DIPLOMACY,
         min_persuasion = 2,
         max_persuasion = 4,
@@ -73,6 +77,7 @@ local MINI_NEGOTIATOR_CARDS =
     mn_dominate =
     {
         name = "Dominate",
+        icon = "negotiation/domineer.tex",
         flags = CARD_FLAGS.HOSTILE,
         min_persuasion = 3,
         max_persuasion = 3,
@@ -84,6 +89,7 @@ local MINI_NEGOTIATOR_CARDS =
     mn_composure =
     {
         name = "Tangent",
+        icon = "negotiation/segue.tex",
         flags = CARD_FLAGS.MANIPULATE,
         target_self = TARGET_ANY_RESOLVE,
         features =
@@ -98,6 +104,7 @@ local MINI_NEGOTIATOR_CARDS =
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.features.COMPOSURE)
         end,
+        icon = "negotiation/standing.tex",
         flags = CARD_FLAGS.MANIPULATE,
         target_self = TARGET_ANY_RESOLVE,
         features =
@@ -110,32 +117,37 @@ local MINI_NEGOTIATOR_CARDS =
     },
     mn_interrogate = table.extend(ARGUMENT_CREATER){
         name = "Interrogate",
+        icon = "negotiation/tyrannize.tex",
         flags = CARD_FLAGS.HOSTILE,
         argument_to_create = "INTERROGATE",
     },
     mn_kingpin = table.extend(ARGUMENT_CREATER){
         name = "Kingpin",
+        icon = "negotiation/roughneck.tex",
         flags = CARD_FLAGS.HOSTILE,
         argument_to_create = "KINGPIN",
         cost = 2,
     },
     mn_all_business = table.extend(ARGUMENT_CREATER){
         name = "All Business",
+        icon = "negotiation/weight.tex",
         flags = CARD_FLAGS.DIPLOMACY,
         argument_to_create = "ALL_BUSINESS_MODDED",
     },
     mn_strawman = table.extend(ARGUMENT_INCEPTER){
         name = "Straw Man",
+        icon = "negotiation/fall_guy.tex",
         flags = CARD_FLAGS.MANIPULATE,
         argument_to_create = "straw_man",
     },
     mn_propaganda = table.extend(ARGUMENT_CREATER){
         name = "Propaganda Machine",
+        icon = "negotiation/propaganda.tex",
         argument_to_create = "mn_propaganda",
         flags = CARD_FLAGS.MANIPULATE,
         modifier = {
             desc = "When the damage of this argument causes resolve loss, add {mn_brainwashed} to the owner's deck.",
-            
+            icon = "negotiation/modifiers/brainwash.tex",
             max_stacks = 1,
             target_enemy = TARGET_ANY_RESOLVE,
             modifier_type = MODIFIER_TYPE.ARGUMENT,
@@ -174,11 +186,13 @@ local MINI_NEGOTIATOR_CARDS =
     mn_brainwashed = 
     {
         name = "Brainwashed",
+        icon = "negotiation/baffled.tex",
         flags = CARD_FLAGS.STATUS | CARD_FLAGS.UNPLAYABLE,
         cost = 0,
     },
     mn_prayer = table.extend(ARGUMENT_CREATER){
         name = "Prayers",
+        icon = "negotiation/token_of_hesh.tex",
         flags = CARD_FLAGS.DIPLOMACY,
         argument_to_create = "prayer_of_hesh",
     },
@@ -186,11 +200,13 @@ local MINI_NEGOTIATOR_CARDS =
         name = "Wrath",
         desc = "Create 1 <b>Wrath of Hesh</>.",
         flavour = "Klei fix your Hesh damn description for Wrath of Hesh so that it doesn't break the game when not in a negotiation.",
+        icon = "negotiation/inner_rage.tex",
         flags = CARD_FLAGS.HOSTILE,
         argument_to_create = "wrath_of_hesh",
     },
     mn_ploy = table.extend(ARGUMENT_CREATER){
         name = "Ploy",
+        icon = "negotiation/gossip.tex",
         flags = CARD_FLAGS.MANIPULATE,
         argument_to_create = "ploy",
     },

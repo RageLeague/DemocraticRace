@@ -79,6 +79,7 @@ local CARDS = {
         name = "Address Question",
         desc = "Target a question argument. Resolve the effect based on the question being addressed. "..
             "Remove the argument afterwards.\nIf this card leaves the hand, {EXPEND} it.",
+        flavour = "'Here is what I think about this topic...'",
         loc_strings = {
             NOT_A_QUESTION = "Target is not a question",
         },
@@ -382,6 +383,7 @@ local CARDS = {
     {
         name = "Appeal to the Crowd",
         desc = "Gain 1 {CROWD_OPINION}, up to 5 maximum.",
+        icon = "negotiation/improvise_compliment.tex",
 
         cost = 1,
         flags = CARD_FLAGS.DIPLOMACY,
