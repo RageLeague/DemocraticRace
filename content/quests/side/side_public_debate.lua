@@ -20,6 +20,7 @@ local QDEF = QuestDef.Define
     rank = {1, 5},
     icon = engine.asset.Texture("icons/quests/handler_admiralty_find_bandit_informant.tex"),
     
+    reward_mod = 0,
     tags = {"RALLY_JOB"},
     act_filter = DemocracyUtil.DemocracyActFilter,
     focus = QUEST_FOCUS.NEGOTIATION,
@@ -74,11 +75,13 @@ local QDEF = QuestDef.Define
     no_validation = true,
     cast_fn = function(quest, t)
         local has_candidate = false
-        for id, data in pairs(DemocracyConstants.opposition_data) do
-            local candidate = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
-            if candidate:GetRelationship() <= RELATIONSHIP.NEUTRAL or DemocracyUtil.GetFactionEndorsement(data.main_supporter) < RELATIONSHIP.NEUTRAL then
-                table.insert(t, candidate)
-                has_candidate = true
+        if quest:GetRank() >= 3 then
+            for id, data in pairs(DemocracyConstants.opposition_data) do
+                local candidate = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
+                if candidate:GetRelationship() < RELATIONSHIP.NEUTRAL or DemocracyUtil.GetFactionEndorsement(data.main_supporter) < RELATIONSHIP.NEUTRAL then
+                    table.insert(t, candidate)
+                    has_candidate = true
+                end
             end
         end
         if not has_candidate then

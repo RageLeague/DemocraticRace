@@ -1,6 +1,7 @@
 local HOST_BEHAVIOUR =
 {
     OnInit = function( self, difficulty )
+        self.impatience_delay = 3 - math.floor((GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1) / 2)
         self.negotiator:AddModifier("DEBATE_SCRUM_TRACKER")
     end,
     Cycle = function(self, turns)
@@ -11,7 +12,7 @@ local QDEF = QuestDef.Define
 {
     title = "Debate Scrum",
     desc = "You are invited to the presidential debate with other candidates. Impress the audience with your debate skills.",
-    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/interview.png"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/debate_scrum.png"),
 
     qtype = QTYPE.STORY,
     collect_agent_locations = function(quest, t)

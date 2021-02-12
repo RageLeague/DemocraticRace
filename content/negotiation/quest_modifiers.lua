@@ -1724,6 +1724,7 @@ local MODIFIERS =
     {
         name = "Instigate Crowd",
         desc = "{MYRIAD_MODIFIER {1}}.\nWhen destroyed, add a {2#card} to your draw pile.",
+        icon = "negotiation/modifiers/influence.tex",
 
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.bonus_per_generation, "appeal_to_crowd_quest")

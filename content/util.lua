@@ -1,6 +1,6 @@
 local DemocracyUtil = class("DemocracyUtil")
 
-
+local MODID = CURRENT_MOD_ID
 -- if access an invalid val, look for the main quest and return a val if you can
 getmetatable(DemocracyUtil).__index = function(self, k)
     if TheGame:GetGameState() and TheGame:GetGameState():GetMainQuest() then
@@ -1051,6 +1051,27 @@ function DemocracyUtil.GetAgentStanceIndex(issue, agent)
         issue = DemocracyConstants.issue_data[issue]
     end
     return issue:GetAgentStanceIndex(agent)
+end
+function DemocracyUtil.GetModSetting(id)
+    if id then
+        local file_settings = TheGame:GetGameState() and TheGame:GetGameState():GetMainQuest() and TheGame:GetGameState():GetMainQuest().param.local_file_settings or {}
+        if file_settings[id] ~= nil then
+            return file_settings[id]
+        end
+        return Content.GetModSetting( MODID, id )
+    end
+end
+function DemocracyUtil.GetModData()
+    return Content.FindMod(MODID)
+end
+function DemocracyUtil.GetPerFileSettings()
+    local data = {}
+    for i, setting in ipairs(DemocracyUtil.GetModData().mod_options) do
+        if setting.per_save_file then
+            table.insert(data,setting.key)
+        end
+    end
+    return data
 end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"

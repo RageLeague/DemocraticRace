@@ -173,12 +173,23 @@ local QDEF = QuestDef.Define
         for i, location in TheGame:GetGameState():AllLocations() do
             LocationUtil.PopulateLocation( location )
         end
-        QuestUtil.DoNextDay(DAY_SCHEDULE, quest, quest.param.start_on_day )
         
+        QuestUtil.DoNextDay(DAY_SCHEDULE, quest, quest.param.start_on_day )
+        quest:DefFn("on_post_load")
         DoAutoSave()
     end,
     plot_armour_fn = function(quest, agent)
         return agent:IsCastInQuest(quest)
+    end,
+    on_post_load = function(quest)
+        if not quest.param.local_file_settings then
+            quest.param.local_file_settings = {}
+        end
+        for i, id in ipairs(DemocracyUtil.GetPerFileSettings()) do
+            if not quest.param.local_file_settings[id] then
+                quest.param.local_file_settings[id] = DemocracyUtil.GetModSetting(id)
+            end
+        end
     end,
     events = 
     {
@@ -743,11 +754,11 @@ local QDEF = QuestDef.Define
     end,
     GetCurrentExpectation = function(quest)
         local arr = quest:DefFn("GetCurrentExpectationArray")
-        return arr[math.min(#arr, quest.param.sub_day_progress or 1)] -- - 100
+        return math.round(arr[math.min(#arr, quest.param.sub_day_progress or 1)] * DemocracyUtil.GetModSetting("support_requirement_multiplier")) -- - 100
     end,
     GetDayEndExpectation = function(quest)
         local arr = quest:DefFn("GetCurrentExpectationArray")
-        return arr[#arr]
+        return math.round(arr[#arr] * DemocracyUtil.GetModSetting("support_requirement_multiplier"))
     end,
     GetStanceIntel = function(quest)
         local intel = {}
