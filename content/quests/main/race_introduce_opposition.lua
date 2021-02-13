@@ -415,7 +415,7 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
             if cxt.quest.param.greeted and not cxt.quest.param.talked_to_advisor then
-                QuestUtil.SpawnQuest("CAMPAIGN_NEGOTIATE_ALLIANCE")
+                QuestUtil.SpawnQuest("CAMPAIGN_NEGOTIATE_ALLIANCES")
             end
             cxt.quest.param.talked_to_advisor = true
         end)

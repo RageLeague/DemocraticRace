@@ -903,7 +903,7 @@ for i, id, def in sorted_pairs( CARDS ) do
         def.rarity = CARD_RARITY.UNIQUE
     end
     if not def.shop_price then
-        def.shop_price = 250
+        def.shop_price = 210
     end
     Content.AddNegotiationCard( id, def )
 end

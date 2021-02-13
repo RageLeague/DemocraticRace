@@ -272,7 +272,7 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
             end
         end)
         :Negotiation{
-            flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.WORDSMITH | NEGOTIATION_FLAGS.NO_CORE_RESOLVE,
+            flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.WORDSMITH | NEGOTIATION_FLAGS.NO_CORE_RESOLVE | NEGOTIATION_FLAGS.NO_LOOT,
             helpers = helpers,
             hinders = hinders,
             reason_fn = function(minigame)

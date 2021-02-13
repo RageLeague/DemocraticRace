@@ -1005,7 +1005,7 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
             cxt:RunLoop(function(cxt)
                 local done_all = DemocracyUtil.AddDemandConvo(cxt, demand_list, demands)
                 if done_all then
-                    cxt:Opt("DIALOG_ALLIANCE_TALK_ACCEPT_CONDITIONAL")
+                    cxt:Dialog("DIALOG_ALLIANCE_TALK_ACCEPT_CONDITIONAL")
                     ally:OpinionEvent(OPINION.ALLIED_WITH)
                     StateGraphUtil.AddEndOption(cxt)
                     return

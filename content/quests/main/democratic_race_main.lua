@@ -648,6 +648,10 @@ local QDEF = QuestDef.Define
     -- call this function to do so.
     DoRandomOpposition = function(quest, num_to_do)
         num_to_do = num_to_do or 1
+        -- A self-balancing factor in case you get too popular.
+        if quest:DefFn("GetGeneralSupport") - quest:DefFn("GetCurrentExpectation") > 10 then
+            num_to_do = num_to_do + 1
+        end
         for i = 1, num_to_do do
             if quest:GetCastMember("random_opposition") then
                 quest:UnassignCastMember("random_opposition")
@@ -784,10 +788,17 @@ local QDEF = QuestDef.Define
     when = QWHEN.MANUAL,
     score_fn = DemocracyUtil.OppositionScore,
     condition = function(agent, quest)
+        if quest.param.prev_opposition_faction == agent:GetFactionID() or quest.param.prev_opposition_wealth == DemocracyUtil.GetWealth(agent) then
+            return false, "No consecutive faction"
+        end
         if agent:GetRelationship() == RELATIONSHIP.DISLIKED then
             return math.random() < 0.1 -- sometimes we allow disliked people to hate you.
         end
         return agent:GetRelationship() < RELATIONSHIP.LOVED and agent:GetRelationship() > RELATIONSHIP.DISLIKED
+    end,
+    on_assign = function(quest, agent)
+        quest.param.prev_opposition_faction = agent:GetFactionID()
+        quest.param.prev_opposition_wealth = DemocracyUtil.GetWealth(agent)
     end,
 }
 :AddCastFallback{
@@ -810,31 +821,6 @@ local QDEF = QuestDef.Define
         end
     end,
 }
--- :AddCastByAlias{
---     -- Let fssh be the bartender of grog n dog
---     cast_id = "fssh",
---     alias = "FSSH",
---     on_assign = function(quest, agent)
---         local location = TheGame:GetGameState():GetLocation("GROG_N_DOG")
---         if agent:GetBrain():GetWorkPosition() == nil and location then
---             AgentUtil.TakeJob(agent, location, "bartender")
---             -- agent:GetBrain():SetHome(location)
---         end
---     end,
--- }
--- :AddCastByAlias{
---     cast_id = "host",
---     alias = "HESH_AUCTIONEER",
---     on_assign = function(quest, agent)
---         local location = TheGame:GetGameState():GetLocation("GRAND_THEATER")
---         if agent:GetBrain():GetWorkPosition() == nil and location then
---             AgentUtil.TakeJob(agent, location, "host")
---             -- agent:GetBrain():SetHome(location)
---         end
---         quest:UnassignCastMember("host")
---     end,
---     optional = true,
--- }
 -- Have to do this to make plot_armour_fn work.
 :AddObjective{
     id = "start",
