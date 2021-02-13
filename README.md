@@ -22,7 +22,8 @@ Special thanks to:
 
 * JuniorElder(For helping with side quests)
 * WumpusThe19th(For helping with dialogs)
-* Minespatch(For helping with drawing some slides)
+* Minespatch(For helping with drawing some slides and card art)
+* Playr10(For helping with side quests)
 
 This mod is based on this post that is now archived: https://forums.kleientertainment.com/forums/topic/120281-democracy-mode/.
 
@@ -84,6 +85,31 @@ With the new official workshop support, you can directly install mods from steam
 Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues, or a major feature update. As such, it will be more stable.
 
 ## Changelog
+
+### 0.2.0 (Day 3 update)
+
+This is a major update that introduces a new day to the campaign, and lots of brand new mechanics!
+
+Major changes:
+
+* Day 3 of the campaign is now playable. It contains a brand new night scenario, and a branching noon event, depending on the current state of your campaign.
+* New mechanic: Signature cards! Each advisor has a few trick upon their sleeves, and they are happy to teach you if you have enough shills! Their signature cards will sometimes show up in their shop, in place of a rare card.
+* New mechanic: Alliance! Talk to other candidates on potential alliances. If your ideology lines up, and you have lots of support among their faction, you can ally with them, granting you massive boost in support. Be careful who you ally with, though, as it can turn away other potential allies!
+* Sometimes you will get request quests from your advisor, which, when completed, can cause them to love you. In the future, actual request quests for the advisors will be added. Right now you get placeholders.
+* Brand new events, including the one where you arrest a notorious mettle dealer if you so choose.
+* A brand new side quest, available from day 1. Has the potential to introduce a few more named characters into your game.
+
+Minor changes:
+
+* Changed the advisors' bio and lore.
+* Reworded "loose stance" to "favoring a particular stance".
+* Added special negotiation behaviour for Dronumph.
+* Reworked demand stance taking. Instead of a random stacks, it always gets 4 stacks. When you destroy it above 2 stacks, it removes the requirement for stance taking. Otherwise, you are only required to favor a stance.
+* Added a new demand: demand drinks. It can occur when someone is patronizing a bar, and you can pay for drinks or offer lumin wine(you can't get it yet).
+* Rebalance stances and candidate stances.
+* Added a mod option that allows you to customize support requirements. It is tied to each game file, so make your decisions before starting a game.
+* Update support screen to include your stances, stances of other candiates, the support requirements for each day, and support change breakdowns. It's a lot more useful now.
+* Various modifications to dialogs and strings.
 
 ### 0.1.7
 

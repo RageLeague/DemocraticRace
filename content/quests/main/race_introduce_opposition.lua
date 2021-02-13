@@ -580,19 +580,42 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         -- haven't figure out whether to use vixmali or the bishop
         [[
             player:
-                So what's the cult's candidates clause?
+                So who's representing the Cult of Hesh?
             agent:
+                It's Vixmalli Banquod.
+            {player_smith?
+                He's a member of one of the most prestegious-
+            player:
+                Yeah, I know who he is.
+                !thought
+                Damn it, Vix. You are not going to make it easy for me, huh?
+                Anyway, what does he want?
+            }
+            {not player_smith?
+                He's a member of one of the most prestegious families in Havaria.
+                He basically bought his way to the top of the Cult's Hierarchy.
+            player:
+                Well, that sounds good and all, but what does he want?
+            }
             {not cult_of_hesh?
                 It's the cult. They always want more power.
                 But they dont really have anything that jives with the public voting blocks.
                 Well, everything except <!pol_stance_artifact_treatment_2>preserve artifacts</>.
-            }
-            {cult_of_hesh?
-                To <!pol_stance_artifact_treatment_2>preserve artifacts</>, obviously.
-            }
                 They'll likely just start preaching about Hesh declaring them the president.
                 Their supporters are going to be rigidly pro-cult unless you stoop to their level.
                 If you do though, watch your back from those who want the artifacts for profit.
+            }
+            {cult_of_hesh?
+                To <!pol_stance_artifact_treatment_2>preserve artifacts</>, obviously.
+                He's probably going to claim that Hesh itself supports him to be the president.
+                You know how it is.
+            player:
+                What a surprise.
+            agent:
+                His supporters are probably those who believe in the holiness of those artifacts.
+                But you know how it is in Havaria. Some heathens probably wants to sell them for profits.
+            }
+                
         ]],
         nil,
         nil,
@@ -602,7 +625,7 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 I'm assuming the Jakes has someone that represents them?
             agent:
                 Actually, no.
-                The Jakes are illegal by nature. It's unlikely they could put anyone important on the world stage and get away with it.
+                The Jakes is a worker union. They don't have a hierarchy like other factions, so they don't have a particular candidate.
                 However, there is a candidate trying to levy support from the Jakes in particular.
                 Her name's Andwannette. Big character in the foam before, but now she's got a fire in her belly to take it to new heights.
             player:
@@ -611,7 +634,11 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 She's a merchant who deals in Back-alley goods. She wants to put those goods on a market that isn't the black market.
                 Expect her to lean towards <!pol_stance_substance_regulation_-2>removing lots of existing regulations</>.
                 !shrug
+            {advisor_hostile or advisor_diplomacy?
                 Can't say I exactly disagree with her on that. Just don't believe she'll make it, is all.
+                |
+                The fact of the matter is, while people might agree with her ideas, her lack in political experience may be her downfall.
+            }
             player:
                 Fair enough.
                 Though I imagine the people in authority won't like it.
