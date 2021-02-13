@@ -188,6 +188,8 @@ function DemocracyUtil.RandomBystanderCondition(agent)
         or AgentUtil.HasPlotArmour(agent) or not agent:IsSentient())
         and not (agent:GetBrain() and agent:GetBrain():GetWorkPosition() and agent:GetBrain():GetWorkPosition():ShouldBeWorking())
         and not agent:HasQuestMembership()
+        -- Kick the auctioneer out of random bystander, as his negotiation behaviour is wack
+        and agent:GetContentID() ~= "HESH_AUCTIONEER"
 end
 
 function DemocracyUtil.CanVote(agent)

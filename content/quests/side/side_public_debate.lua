@@ -78,7 +78,7 @@ local QDEF = QuestDef.Define
         if quest:GetRank() >= 3 then
             for id, data in pairs(DemocracyConstants.opposition_data) do
                 local candidate = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
-                if candidate:GetRelationship() < RELATIONSHIP.NEUTRAL or DemocracyUtil.GetFactionEndorsement(data.main_supporter) < RELATIONSHIP.NEUTRAL then
+                if candidate:GetContentID() ~= "VIXMALLI" and candidate:GetRelationship() < RELATIONSHIP.NEUTRAL or DemocracyUtil.GetFactionEndorsement(data.main_supporter) < RELATIONSHIP.NEUTRAL then
                     table.insert(t, candidate)
                     has_candidate = true
                 end
@@ -93,12 +93,13 @@ local QDEF = QuestDef.Define
                 if not agent then
                     agent = TheGame:GetGameState():AddSkinnedAgent(chosen_id)
                 end
-                if agent and not agent:IsRetired() and candidate:GetRelationship() <= RELATIONSHIP.NEUTRAL then
+                if agent and not agent:IsRetired() and agent:GetRelationship() <= RELATIONSHIP.NEUTRAL then
                     table.insert(t, agent)
                     has_candidate = true
                 end
             end
         end
+        -- assert(has_candidate)
     end,
     on_assign = function(quest, agent)
         quest:AssignCastMember("laughing_stock")
