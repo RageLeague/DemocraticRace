@@ -1668,6 +1668,14 @@ local MODIFIERS =
 
             BONUS_DMG = "{1} deals 1 bonus damage to {2}.",
         },
+        icon = "DEMOCRATICRACE:assets/modifiers/crowd_opinion_1.png",
+        icon_levels = {
+            "DEMOCRATICRACE:assets/modifiers/crowd_opinion_1.png",
+            "DEMOCRATICRACE:assets/modifiers/crowd_opinion_2.png",
+            "DEMOCRATICRACE:assets/modifiers/crowd_opinion_3.png",
+            "DEMOCRATICRACE:assets/modifiers/crowd_opinion_4.png",
+            "DEMOCRATICRACE:assets/modifiers/crowd_opinion_5.png",
+        },
         desc_fn = function(self, fmt_str)
             local desc_lst = {}
             if self.engine and self.stacks then
@@ -1684,6 +1692,14 @@ local MODIFIERS =
 
         modifier_type = MODIFIER_TYPE.PERMANENT,
         max_stacks = 5,
+
+        OnSetStacks = function(self, old_stacks)
+            local new_stacks = self.stacks
+            -- print(new_stacks)
+            -- print("newicon: ", self.icon_levels[new_stacks])
+            self.icon = self.icon_levels[new_stacks] and engine.asset.Texture(self.icon_levels[new_stacks]) or self.icon
+            self.engine:BroadcastEvent( EVENT.UPDATE_MODIFIER_ICON, self)
+        end,
         
         event_priorities = {
             [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_ADDITIVE, 

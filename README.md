@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.1.7(Alpha)
+Version: 0.2.0(Alpha)
 
 Author: RageLeague
 

@@ -209,14 +209,14 @@ local MOD_OPTIONS =
             range_min = 0,
             range_max = 3,
             step_size = .05,
-            desc = "This is the multiplier to the support requirements.",
+            desc = "This is the multiplier to the support requirements. This setting is tied to each save file.",
         },
         per_save_file = true,
     },
 }
 -- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {
-    version = "0.1.7",
+    version = "0.2.0",
     alias = "DEMOCRATICRACE",
     
     OnLoad = OnLoad,
