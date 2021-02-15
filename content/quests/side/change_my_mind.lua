@@ -175,13 +175,6 @@ QDEF:AddConvo("debate_people")
     :State("STATE_DEBATE")
         :Quips{
             {
-                tags = "rebuttal",
-                "Your argument is not sound.",
-                "Here's why your claim is wrong.",
-                "Your opinion is baseless.",
-                "You need to try harder to convince me.",
-            },
-            {
                 tags = "enlightened",
                 "I... Huh. That's certainly a way to look at it.",
                 "That was very enlightening.",

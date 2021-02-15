@@ -450,7 +450,7 @@ local CARDS = {
         end,
         modifier = {
             name = "Moreef Defense",
-            desc = "",
+            desc = "Why does this argument have no special abilities? It doesn't make any sense!",
             desc_fn = PlainDescFn,
             icon = "DEMOCRATICRACE:assets/modifiers/moreef_defense.png",
             modifier_type = MODIFIER_TYPE.ARGUMENT,
@@ -754,7 +754,7 @@ local CARDS = {
         end,
 
         modifier = {
-            desc = "At the end of your turn, play the card imprinted for free.\nIf the imprinted card moves to anywhere other than the discard, remove this argument and return the imprinted card to play.\nWhen this argument is removed, return the imprinted card to your discard.",
+            desc = "At the end of your turn, play the card imprinted for free.\n\nIf the imprinted card moves to anywhere other than the discard, remove this argument and return the imprinted card to play.\n\nWhen this argument is removed, return the imprinted card to your discard.",
             desc_fn = function(self, fmt_str, minigame, widget)
                 if widget and widget.PostCard and self.imprinted_card then
                     widget:PostCard( self.imprinted_card.id, self.imprinted_card, minigame )
@@ -819,8 +819,8 @@ local CARDS = {
         modifier = 
         {
             
-            desc = "Whenever one of your arguments is destroyed, deal {1} damage to a random opponent argument.\nWhen an opponent argument is destroyed, gain 1 stacks.",
-            alt_desc = "Whenever one of your arguments is destroyed, deal damage equal to the number of stacks of this argument to a random opponent argument.\nWhen an opponent argument is destroyed, gain 1 stacks.",
+            desc = "Whenever one of your arguments is destroyed, deal {1} damage to a random opponent argument.\n\nWhen an opponent argument is destroyed, gain 1 stacks.",
+            alt_desc = "Whenever one of your arguments is destroyed, deal damage equal to the number of stacks of this argument to a random opponent argument.\n\nWhen an opponent argument is destroyed, gain 1 stacks.",
             desc_fn = function(self, fmt_str)
                 if not self.stacks then
                     return loc.format((self.def or self):GetLocalizedString("ALT_DESC"))

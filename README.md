@@ -36,6 +36,7 @@ Supported Languages: English (Right now Simplified/Traditional Chinese is not su
 * **Know your voter base!** Each person in Griftlands has some allegiance with certain factions, and has different wealth levels. This determines what this person cares about politically. Do you hope to win by getting support from the Admiralty, or will you win by appealing to the lower class? Your choice.
 * **Take your stances!** Havaria has many problems, and different people have different opinions on certain subjects. Will you increase funding for the Admiralty to win them over, or support better worker rights? Be careful, if you change your stances too much, you will be seen as hypocritical!
 * **Pick your advisor!** You get to choose from 3 unique advisors, each specializes in one area of negotiation, and whose resemblence to any entity in real life, living or dead, is totally coincidental! They will help you with your campaign, but make sure to keep them happy, or they will stop supporting you!
+* **Know your rivals!** You are not the only one running for the election. Other Havarian bigshots, like Oolo or Kalandra, are also running for the election. You can choose to work together, or you can run against someone. Be careful who you work with, though, as the candidates more or less hate each other, and will not ally with you if you allied with the wrong person.
 * **Spend your time wisely!** You will get free time during certain points in the story, during which you can do whatever you want. Will you spend those time socializing with your supporters, or will you learn the location of the market to buy good grafts?
 * **Visit an updated Pearl-on-Foam!** The new campaign takes place in the modified version of Pearl-on-Foam, which contains iconic locations throughout Havaria. Meet familiar people, and visit familiar places. Some places even have added functionalities!
 * **Outsmart your enemies!** Directly engaging in combat is bad for your reputation, and so is killing people(duh)! However, there are a new variety of ways to deal with them. Put them out of their jobs, arrest them, or hire someone to hunt them down. The choice is yours.
@@ -45,7 +46,6 @@ Supported Languages: English (Right now Simplified/Traditional Chinese is not su
 
 At the current stage, the mod is far from finished. You can play 2 days out of 5 right now, and many mechanics are planned to be added. Some of these mechanics are:
 
-* Alliance with other candidates. In a First Past The Post system, it is better to ally with other candidates and get the votes you need to win.
 * More side quests and events.
 * More things to do at each locations, and more ways to "deal" with your enemies.
 

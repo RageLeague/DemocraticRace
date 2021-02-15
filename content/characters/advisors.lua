@@ -26,11 +26,11 @@ local chars =
     }),
     CharacterDef("ADVISOR_MANIPULATE",
     {
-        base_def = "PRIEST_PROMOTED",
+        base_def = "PRIEST",
         -- bio = "Your first mistake is listening to Benni. Your second mistake is believing in her.",
         bio = "Benni is different from other kra'deshi. No, it isn't because she has five fingers on each hand, but it is because she can convince you otherwise. Probably.",
         name = "Benni",
-        title = "Priest",
+        -- title = "Priest",
 
         loved_bio = "Facts don't care about your feelings, but Benni does.",
         hated_bio = "Benni's facts and logic cannot predict your shear incompetence. Then again, her facts and logic works better as hindsights.",

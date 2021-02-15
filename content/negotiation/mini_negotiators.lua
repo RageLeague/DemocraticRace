@@ -255,7 +255,7 @@ local MINI_NEGOTIATOR =
             end
         end
         if self.alt_desc then
-            fmt_str = fmt_str .. "\n" .. (self.def or self):GetLocalizedString("ALT_DESC")
+            fmt_str = fmt_str .. "\n\n" .. (self.def or self):GetLocalizedString("ALT_DESC")
         end
         local res = loc.format(fmt_str, self.candidate_agent and self.candidate_agent:LocTable(),self.cards_played)
         return res
@@ -503,7 +503,7 @@ table.extend(MINI_NEGOTIATOR){
     desc_fn = function(self, ...)
         local res = MINI_NEGOTIATOR.desc_fn(self, ...)
         if self.engine and self.engine.turns then
-            res = res .. "\n" .. loc.format((self.def or self):GetLocalizedString("TOOLTIP"), math.floor((self.engine.turns - 1) / 2))
+            res = res .. "\n\n" .. loc.format((self.def or self):GetLocalizedString("TOOLTIP"), math.floor((self.engine.turns - 1) / 2))
         end
         return res
     end,

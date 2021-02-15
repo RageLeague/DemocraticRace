@@ -442,7 +442,7 @@ local MODIFIERS =
     HELP_UNDERWAY = 
     {
         name = "Help Underway!",
-        desc = "Distract <b>{1}</> for {2} more turns until the help arrives!\n" ..
+        desc = "Distract <b>{1}</> for {2} more turns until the help arrives!\n\n" ..
             "If you lose the negotiation while help is underway, you can still keep {1} occupied " ..
             "through battle, and survive the assassination!",
         desc_fn = function(self, fmt_str)
@@ -471,7 +471,7 @@ local MODIFIERS =
     DISTRACTION_ENTERTAINMENT = 
     {
         name = "Distraction: Entertainment",
-        desc = "{MYRIAD_MODIFIER {2}}.\nWhen destroyed, {1} loses 1 {IMPATIENCE} if able.",
+        desc = "{MYRIAD_MODIFIER {2}}.\n\nWhen destroyed, {1} loses 1 {IMPATIENCE} if able.",
         icon = "negotiation/modifiers/card_draw.tex",
         
         modifier_type = MODIFIER_TYPE.BOUNTY,
@@ -497,7 +497,7 @@ local MODIFIERS =
     DISTRACTION_GUILTY_CONSCIENCE = 
     {
         name = "Distraction: Guilty Conscience",
-        desc = "{MYRIAD_MODIFIER {2}}.\nWhen destroyed, remove a random, non-{IMPATIENCE} intent and {1} gains 2 {VULNERABILITY}.",
+        desc = "{MYRIAD_MODIFIER {2}}.\n\nWhen destroyed, remove a random intent and {1} gains 2 {VULNERABILITY}.",
         icon = "negotiation/modifiers/scruple.tex",
 
         modifier_type = MODIFIER_TYPE.BOUNTY,
@@ -516,9 +516,9 @@ local MODIFIERS =
         OnBounty = function(self)
             local intents = {}
             for i, data in ipairs(self.negotiator:GetIntents()) do
-                if data.id ~= "impatience" then
-                    table.insert(intents, data)
-                end
+                -- if data.id ~= "impatience" then
+                table.insert(intents, data)
+                -- end
             end
             
             if #intents > 0 then
@@ -532,7 +532,7 @@ local MODIFIERS =
     DISTRACTION_CONFUSION = 
     {
         name = "Distraction: Confusion",
-        desc = "{MYRIAD_MODIFIER {2}}.\nWhen destroyed, {1} gain 2 {FLUSTERED}.",
+        desc = "{MYRIAD_MODIFIER {2}}.\n\nWhen destroyed, {1} gain 2 {FLUSTERED}.",
         icon = "negotiation/modifiers/doubt.tex",
         
         modifier_type = MODIFIER_TYPE.BOUNTY,
@@ -876,8 +876,8 @@ local MODIFIERS =
     {
         name = "Investment Opportunity",
         icon = "negotiation/modifiers/frisk.tex",
-        desc = "{MYRIAD_MODIFIER {2}}\nWhen destroyed, gain {1} {SECURED_INVESTEMENTS}.",
-        alt_desc = "{MYRIAD_MODIFIER {1}}\nWhen destroyed, gain {SECURED_INVESTEMENTS} equal to the number of stacks on this bounty.",
+        desc = "{MYRIAD_MODIFIER {2}}\n\nWhen destroyed, gain {1} {SECURED_INVESTEMENTS}.",
+        alt_desc = "{MYRIAD_MODIFIER {1}}\n\nWhen destroyed, gain {SECURED_INVESTEMENTS} equal to the number of stacks on this bounty.",
 
         desc_fn = function(self, fmt_str)
             if self.stacks then
@@ -1056,7 +1056,7 @@ local MODIFIERS =
     },
     TIME_CONSTRAINT = {
         name = "Time Is Money",
-        desc = "Every 2 turns in this negotiation, you lose a free time action for the current quest.\n<#PENALTY>The negotiation will end if you ran out of actions for the quest!</>\n({1} actions left on the quest)",
+        desc = "Every 2 turns in this negotiation, you lose a free time action for the current quest.\n\n<#PENALTY>The negotiation will end if you ran out of actions for the quest!</>\n\n({1} actions left on the quest)",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.stacks)
         end,
@@ -1101,7 +1101,7 @@ local MODIFIERS =
     },
 	NARCISSISM = {
 	    name = "Narcissism",
-        desc = "At the start of {1}'s turn, create {2}{2: | separate }{PRIDE}.",
+        desc = "At the start of {1}'s turn, create {2:a|{2} separate }{PRIDE} {2*argument|arguments}.",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName(), self:GetPrideCount(self.engine and self.engine:GetDifficulty() or 1))
         end,
@@ -1330,8 +1330,8 @@ local MODIFIERS =
     DEBATE_SCRUM_TRACKER =
     {
         name = "Debate Host",
-        desc = "Defeat ALL opponent negotiators to win this debate!\n" ..
-            "You cannot play any more cards if your core argument is destroyed, and you lose if your core argument and all your allies' core argument are destroyed.\n" ..
+        desc = "Defeat ALL opponent negotiators to win this debate!\n\n" ..
+            "You cannot play any more cards if your core argument is destroyed, and you lose if your core argument and all your allies' core argument are destroyed.\n\n" ..
             "Opponents arguments comes in to play with +{1} resolve.\n\n" ..
             "Perform various feats to score points and win the crowd. <#PENALTY>Your allies will also do the same, so score more than your allies to stand out!</>",
         loc_strings = {
@@ -1657,7 +1657,7 @@ local MODIFIERS =
     CROWD_OPINION =
     {
         name = "Crowd Opinion",
-        desc = "Bring the crowd to your side by playing {2#card}.\nWhenever {1} destroys an argument or bounty you have, reduce the stacks of this argument by 1 and remove a {2#card} from your deck.",
+        desc = "Bring the crowd to your side by playing {2#card}.\n\nWhenever {1} destroys an argument or bounty you have, reduce the stacks of this argument by 1 and remove a {2#card} from your deck.",
         loc_strings = {
             CURRENT_OPINION = "The crowd's current opinion is {1}.",
             NAME_1 = "<#PENALTY>Hostile</>",
@@ -1739,7 +1739,7 @@ local MODIFIERS =
     INSTIGATE_CROWD =
     {
         name = "Instigate Crowd",
-        desc = "{MYRIAD_MODIFIER {1}}.\nWhen destroyed, add a {2#card} to your draw pile.",
+        desc = "{MYRIAD_MODIFIER {1}}.\n\nWhen destroyed, add a {2#card} to your draw pile.",
         icon = "negotiation/modifiers/influence.tex",
 
         desc_fn = function(self, fmt_str)

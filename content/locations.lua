@@ -10,6 +10,7 @@ local WEALTHY_PATRON_DEFS = {
     
     JAKES_SMUGGLER = 1,
     
+    PEARLIE = 1,
     WEALTHY_MERCHANT = 1,
     
     ADMIRALTY_PATROL_LEADER = 0.5,
