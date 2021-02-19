@@ -213,6 +213,15 @@ Content.AddStringTable( "DEM_CONVO", {
                 Take it, or leave it.
         ]],
 
+        DIALOG_NO_JOB_YET = [[
+            player:
+                I need to think about it more.
+            agent:
+                Take your time.
+        ]],
+
+        TT_SKIP_FREE_TIME = "Selecting a job will cause you to skip all your unspent free time.",
+
         OFFER_TRINKET_GRAFT = "<b>Souvenir Trinket</>: Install {1#graft}",
 
         OPT_UNLOCK_NEW_LOCATION = "Unlock new location: {1#location}",

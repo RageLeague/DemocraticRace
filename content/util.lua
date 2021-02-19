@@ -685,6 +685,7 @@ function DemocracyUtil.PresentJobChoice(cxt, quest_options, additional_opt, on_p
                                 if on_picked_fn then
                                     on_picked_fn(cxt, quest_options, job)
                                 end
+                                cxt.quest.param.job_pool = nil
                             end,
                             function()
                                 if not cxt:PlayQuestConvo(job, QUEST_CONVO_HOOK.DECLINED) then

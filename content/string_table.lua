@@ -141,7 +141,7 @@ Content.AddStringTable("DEMOCRACY", {
             LOSS_SOURCE = "Source Of Loss:",
             
             SWITCH_MODE = "Switch mode",
-            SWITCH_MODE_TT = "The current mode: <#HILITE>{1}</>\n\n{2}\n\nClick on this button to switch to another mode.",
+            SWITCH_MODE_TT = "The current mode: <#HILITE>{1}</>\n\n{2}\n\nClick on this button or press {3#binding} to switch to another mode.",
             MODE = {
                 DEFAULT_TITLE = "Default",
                 DEFAULT_DESC = "Shows the absolute value of your support level.",
