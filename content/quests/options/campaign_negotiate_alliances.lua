@@ -14,6 +14,7 @@ local QDEF = QuestDef.Define
     :Hub(function(cxt, who)
         if who and DemocracyUtil.GetOppositionData(who) and who:GetRelationship() == RELATIONSHIP.NEUTRAL then
             cxt:Opt("OPT_ALLIANCE")
+                :PreIcon(global_images.like)
                 :PostText("TT_ALLIANCE")
                 :Fn(function(cxt)
                     DemocracyUtil.DoAllianceConvo(cxt, who)

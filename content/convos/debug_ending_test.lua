@@ -26,14 +26,14 @@ Convo("DEBUG_ENDING_TEST")
     }
     :Hub(function(cxt)
         -- cxt:BasicNegotiation("TALK")
-        cxt:Opt("OPT_QUERY_STANCE")
-            :LoopingFn(function(cxt)
-                for id, issue in pairs(DemocracyConstants.issue_data) do
-                    cxt:Opt("OPT_ASK_ABOUT_STANCE", issue)
-                        :Dialog("DIALOG_ASK_ABOUT_STANCE", issue, issue:GetAgentStance(cxt:GetAgent()))
-                end
-                StateGraphUtil.AddBackButton(cxt)
-            end)
+        -- cxt:Opt("OPT_QUERY_STANCE")
+        --     :LoopingFn(function(cxt)
+        --         for id, issue in pairs(DemocracyConstants.issue_data) do
+        --             cxt:Opt("OPT_ASK_ABOUT_STANCE", issue)
+        --                 :Dialog("DIALOG_ASK_ABOUT_STANCE", issue, issue:GetAgentStance(cxt:GetAgent()))
+        --         end
+        --         StateGraphUtil.AddBackButton(cxt)
+        --     end)
             -- :SetQuestMark(cxt.quest)
             -- :OnSuccess()
             --     :CompleteQuest()

@@ -1,0 +1,66 @@
+lines:
+
+# When meeting an agent's demand
+- tags: [successful_alliance]
+  pre: |
+    player:
+      !take
+    agent:
+      !take
+  dialog:
+  - We will do great things together.
+  - We can achieve greatness, if we do it together.
+
+- tags: [successful_alliance, player_sal, kalandra]
+  dialog:
+  - |
+    agent:
+      [p] It's been so long since we last met.
+    player:
+      I agree.
+      My days on the derricks are certainly rough.
+      But I will fight back.
+    agent:
+      You can. The election is your greatest chance at shaking the status quo upside down.
+    player:
+      Still, I am glad that I got my friend back.
+    agent:
+      Same.
+
+- tags: [successful_alliance, player_rook, spark_contact]
+  dialog:
+  - |
+    agent:
+      [p] I guess it's back to being us two, huh?
+    player:
+      Just like the old times when you and I are both still in the Admiralty.
+    agent:
+      To be honest, I was never good at this intrigue stuff.
+      I would rather beat the crap out of my enemies from the shadow than running for president.
+      I guess I will leave leading people to you, Rook.
+    player:
+      <i>Captain</> Rook.
+    agent:
+      Ah, of course, Captain.
+      Either way, I'm glad we can fight side by side again.
+    player:
+      That is based on words instead of guns.
+      I guess there's a lot we can both learn.
+- tags: [successful_alliance, player_smith, vixmalli]
+  dialog:
+  - |
+    agent:
+      [p] Perhaps you aren't as useless as I thought you would be.
+    player:
+      What kind of underhanded compliment was that, Vix?
+    agent:
+      You would rather choose to drink at bars than pursue a useful career.
+      Still, seems like drinking granted you leadership abilities you can never learn at Priest Schools.
+      Seems like there's a lot to learn from you, brother.
+    player:
+      Aw, how nice! You called me brother!
+      It's as if before you didn't consider me to be your brother as if you disowned me when you got infected by some Roaloch parasite.
+    agent:
+      What?
+    player:
+      What?

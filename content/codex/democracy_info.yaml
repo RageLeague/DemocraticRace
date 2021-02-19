@@ -51,3 +51,9 @@ mettle:
   trigger: Mettle|mettle
   body: |
     A powerful hallucinogen capable of enhancing performance across the multiverse, as long as a universe is in reach of the mettle industry.
+
+wendys:
+  title: Abigail & Wendy's Fine Diner
+  trigger: Wendy's
+  body: |
+    A diner that is owned by Wendy and her sister, Abigail. People call it Wendy's because nobody has ever seen Abigail, but Wendy doesn't like that.

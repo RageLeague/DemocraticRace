@@ -549,6 +549,7 @@ QDEF:AddConvo("take_your_heart", "foreman")
                         local payed_all = DemocracyUtil.AddDemandConvo(cxt, cxt.quest.param.demand_list, cxt.quest.param.demands)
                         if payed_all then
                             cxt:Dialog("DIALOG_MET_DEMAND")
+                            cxt:GetAgent():OpinionEvent(OPINION.APPROVE)
                             cxt.quest:Complete("take_your_heart")
                             StateGraphUtil.AddEndOption(cxt)
                         else
@@ -638,6 +639,7 @@ QDEF:AddConvo("punish_foreman")
 QDEF:AddConvo("organize_strike")
     :Loc{
         OPT_STRIKE = "Ask {agent} to strike for {worker}",
+        MOD_WORKING = "Don't want to lose their job.",
         DIALOG_STRIKE = [[
             player:
                 {foreman} treats {foreman.hisher} workers badly.
@@ -696,9 +698,14 @@ QDEF:AddConvo("organize_strike")
                     table.insert(helpers, striker)
                 end
             end
+            local sit_mod = {}
+            if who:GetBrain():IsOnDuty() then
+                table.insert(sit_mod, {value = 5 * (cxt.quest:GetRank() + 2)), text = cxt:GetLocString("MOD_WORKING")})
+            end
             cxt:BasicNegotiation("STRIKE", {
                 helpers = helpers,
                 hinders = {cxt.location == cxt:GetCastMember("foreman"):GetLocation() and cxt:GetCastMember("foreman")},
+                situation_modifiers = sit_mod,
             }):OnSuccess()
                 :Fn(function(cxt)
                     local function pst(cxt)
