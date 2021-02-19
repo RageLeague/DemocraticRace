@@ -191,6 +191,9 @@ local QDEF = QuestDef.Define
             end
         end
     end,
+    fill_out_quip_tags = function(quest, tags, agent)
+        table.insert_unique(tags, "democratic_race")
+    end,
     events = 
     {
         -- GAME_OVER = function( self, gamestate, result )

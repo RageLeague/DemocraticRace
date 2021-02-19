@@ -690,7 +690,8 @@ QDEF:AddConvo("organize_strike")
         -- and (who:GetFactionID() == "FEUD_CITIZEN" or who:GetFactionID() == "RISE"))
         if who and not AgentUtil.HasPlotArmour(who) and not (cxt.quest.param.strike_people and table.arraycontains(cxt.quest.param.strike_people, who))
             and ((who:GetFactionID() == "FEUD_CITIZEN" and who:GetRenown() <= 1) or who:GetFactionID() == "RISE") and
-            who ~= cxt:GetCastMember("worker") then
+            who ~= cxt:GetCastMember("worker") and
+            who:GetBrain():GetWorkPosition() then
                 -- print("Satisfy all conditions")
             local helpers = {}
             for i, striker in ipairs(cxt.quest.param.strike_people or {}) do
@@ -700,7 +701,7 @@ QDEF:AddConvo("organize_strike")
             end
             local sit_mod = {}
             if who:GetBrain():IsOnDuty() then
-                table.insert(sit_mod, {value = 5 * (cxt.quest:GetRank() + 2)), text = cxt:GetLocString("MOD_WORKING")})
+                table.insert(sit_mod, {value = 5 * (cxt.quest:GetRank() + 2), text = cxt:GetLocString("MOD_WORKING")})
             end
             cxt:BasicNegotiation("STRIKE", {
                 helpers = helpers,

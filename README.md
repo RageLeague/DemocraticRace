@@ -110,6 +110,7 @@ Minor changes:
 * Added a mod option that allows you to customize support requirements. It is tied to each game file, so make your decisions before starting a game.
 * Update support screen to include your stances, stances of other candiates, the support requirements for each day, and support change breakdowns. It's a lot more useful now.
 * Various modifications to dialogs and strings.
+* Only laborers who has work can strike for the starving worker. Convincing them to strike while on duty has a resolve penalty.
 
 ### 0.1.7
 
