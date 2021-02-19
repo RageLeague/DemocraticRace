@@ -142,21 +142,35 @@ local DEMANDS = {
     },
     demand_instant_stance = {
         name = "Demand Stance Taking",
+        loc_strings = {
+            TITLE_LOOSE = "take the stance favoring {1#pol_stance} on {2#pol_issue}",
+            DESC_FULL = "{2} will stop demanding you from taking this stance.",
+            DESC_PARTIAL = "{2} will <#HILITE>only require you to favor this stance instead</>.",
+
+            REMINDER_FULL = "<#HILITE>({1#pol_stance} on {2#pol_issue})</>",
+            REMINDER_LOOSE = "<#HILITE>(Favoring {1#pol_stance} on {2#pol_issue})</>",
+        },
         title = "take the stance {1#pol_stance} on {2#pol_issue}",
         title_fn = function(self, fmt_str, data)
             local issue = DemocracyConstants.issue_data[data.issue_id]
             if issue then
-                return loc.format(fmt_str, issue:GetStance(data.stance), issue)
+                if data.loose then
+                    return loc.format((self.def or self):GetLocalizedString("TITLE_LOOSE"), issue:GetStance(data.stance), issue)
+                else
+                    return loc.format(fmt_str, issue:GetStance(data.stance), issue)
+                end
             end
             return fmt_str
         end,
 
-        desc = "This modifier will remove itself after {1} {1*turn|turns}.\nWhen destroyed by the player, {2} will stop demanding you from taking this stance.",
-        alt_desc = "<#HILITE>({1#pol_stance} on {2#pol_issue})</>",
+        desc = "This modifier will remove itself after {1} {1*turn|turns}.\nWhen destroyed by the player, ",
+        -- alt_desc = "<#HILITE>({1#pol_stance} on {2#pol_issue})</>",
         desc_fn = function(self, fmt_str)
-            local rval = loc.format(fmt_str, self.stacks or 4, Negotiation.Modifier.GetOwnerName(self))
+            local rval = loc.format(fmt_str .. (self.def or self):GetLocalizedString((self.loose or self.stacks > 2) 
+                and "DESC_FULL" or "DESC_PARTIAL"), self.stacks or 4, Negotiation.Modifier.GetOwnerName(self))
             if self.issue and self.stance then
-                rval = rval .. "\n" .. loc.format( (self.def or self):GetLocalizedString("ALT_DESC"), self.stance, self.issue )
+                rval = rval .. "\n" .. loc.format( (self.def or self):GetLocalizedString(self.loose and "REMINDER_LOOSE" or 
+                    "REMINDER_FULL"), self.stance, self.issue )
             end
             return rval
         end,
@@ -183,14 +197,16 @@ local DEMANDS = {
         ApplyData = function(self, data)
             self.issue = DemocracyConstants.issue_data[data.issue_id]
             self.stance = self.issue:GetStance(data.stance)
+            self.loose = data.loose
             self:NotifyChanged()
         end,
         max_demand_use = 2,
         
         OnBounty = function( self, card )
+            local full_remove = (self.loose or self.stacks > 2) 
             local demand_list = self.engine.demand_list
             local demand_data = self.demand_data
-            if demand_list then
+            if demand_list and demand_data then
                 local money_entry
                 for i, entry in ipairs(demand_list) do
                     if entry.id == self.id and entry.issue_id == demand_data.issue_id then
@@ -199,8 +215,13 @@ local DEMANDS = {
                     end
                 end
                 if money_entry then
-                    table.arrayremove(demand_list, money_entry)
-                    demand_data.resolved = true
+                    if full_remove then
+                        table.arrayremove(demand_list, money_entry)
+                        demand_data.resolved = true
+                    else
+                        money_entry.loose = true
+                        demand_data.loose = true
+                    end
                 end
             end
             DemocracyUtil.CheckHeavyHanded(self, card, self.engine)
@@ -253,7 +274,7 @@ local DEMANDS = {
             if cost <= pts then
                 data.used_issues = data.used_issues or {}
                 table.insert(data.used_issues, issue_id)
-                return cost, {id = self.id, stacks = math.random(3,5), issue_id = issue_id, stance = stance}
+                return cost, {id = self.id, stacks = 4, issue_id = issue_id, stance = stance}
             end
         end,
         ParseDemandList = function(self, data, t)
@@ -262,7 +283,7 @@ local DEMANDS = {
         GenerateConvoOption = function(self, cxt, opt, data, demand_modifiers)
             opt:PreIcon( global_images.order )
                 -- :Dialog("DEMAND_STRING.DIALOG_ACCEPT_MONEY")
-                :UpdatePoliticalStance(data.issue_id, data.stance, true, true)
+                :UpdatePoliticalStance(data.issue_id, data.stance, not data.loose)
                 :Fn(function(cxt)
                     data.resolved = true
                     for i, modifier in ipairs(demand_modifiers) do
@@ -356,10 +377,177 @@ local DEMANDS = {
                 end)
         end,
     },
+    demand_drink = {
+        name = "Demand Drink",
+        icon = "DEMOCRATICRACE:assets/modifiers/demand_drink.png",
+        
+        title = "drink with {agent} {1*once|{1} times}",
+        title_fn = function(self, fmt_str, data)
+            return loc.format(fmt_str, data.stacks or 0)
+        end,
+
+        desc = "At the end of each turn, {1#percent} chance of removing 1 stack of this bounty. When destroyed by the player, {2} will reduce the number of drinks demanded by {3}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.reduce_chance, Negotiation.Modifier.GetOwnerName(self), self.stacks or 1)
+        end,
+
+        loc_strings = {
+            OPT_OFFER = "Offer to drink {1#card}",
+            DIALOG_OFFER_LUMIN_WINE = [[
+                {not offered_lumin_wine?
+                player:
+                    I have some Aqua Lumina that we can drink.
+                agent:
+                    Ooh! We're going fancy, huh?
+                    Sure, why not.
+                }
+                {offered_lumin_wine?
+                player:
+                    How about another bottle?
+                agent:
+                    It's not going to kill me, right?
+                player:
+                    Only one way to find out!
+                }
+                * You poured some Aqua Lumina into {agent}'s cup.
+            ]],
+        },
+
+        reduce_chance = .4,
+        common_demand = true,
+        max_demand_use = 1,
+
+        event_handlers =
+        {
+
+            [ EVENT.END_PLAYER_TURN ] = function( self, minigame )
+                if math.random() < self.reduce_chance then
+                    self.negotiator:DeltaModifier(self, -1)
+                    AUDIO:PlayEvent("event:/sfx/battle/cards/neg/bonus_tick_down")
+                end
+            end
+
+        },
+
+        OnInit = function( self, source )
+            self:SetResolve( (5 + 3 * self.engine:GetDifficulty()) * (self.stacks or 1) )
+            AUDIO:PlayEvent("event:/sfx/battle/cards/neg/create_argument/bonus")
+        end,
+
+        OnBounty = function( self, card )
+            local demand_list = self.engine.demand_list
+            local demand_data = self.demand_data
+            if demand_list then
+                local money_entry
+                for i, entry in ipairs(demand_list) do
+                    if entry.id == self.id then
+                        money_entry = entry
+                        break
+                    end
+                end
+                if money_entry then
+                    money_entry.stacks = (money_entry.stacks or 0) - self.stacks
+                    if money_entry.stacks <= 0 then
+                        table.arrayremove(demand_list, money_entry)
+                    end
+                end
+            end
+            if demand_data then
+                demand_data.stacks = (demand_data.stacks or 0) - self.stacks
+                if demand_data.stacks <= 0 then
+                    demand_data.resolved = true
+                end
+            end
+            DemocracyUtil.CheckHeavyHanded(self, card, self.engine)
+        end,
+
+        GenerateDemand = function(self, pts, data) -- takes in pts for points allocated to this demand
+            if not (data.location and data.location:HasTag("tavern")) then
+                print("Require Tavern")
+                return
+            end
+            local DRINK_VALUE = 50
+            local count = 1
+            while math.random() < 0.6 do
+                count = count + 1
+            end
+            count = math.min(math.floor(pts / DRINK_VALUE), count)
+            if count > 0 then
+                return count * DRINK_VALUE, {id = self.id, stacks = count}
+            end
+        end,
+        ParseDemandList = function(self, data, t)
+            table.insert(t, shallowcopy(data))
+        end,
+        GenerateConvoOption = function(self, cxt, opt, data, demand_modifiers)
+            local function ProcessDrink(cxt, amt)
+                data.stacks = (data.stacks or 0) - amt
+                if data.stacks <= 0 then
+                    data.resolved = true
+                end
+                for i, modifier in ipairs(demand_modifiers) do
+                    if modifier.id == self.id then
+                        modifier.stacks = (modifier.stacks or 0) - amt
+                        if modifier.stacks <= 0 then
+                            modifier.resolved = true
+                        end
+                        -- modifier.resolved = true
+                        return
+                    end
+                end
+            end
+            opt:PreIcon( global_images.order )
+                -- :Dialog("DEMAND_STRING.DIALOG_ACCEPT_MONEY")
+                :Fn(function() TheGame:GetGameProfile():SetDrankWith( cxt:GetAgent():GetUniqueID() ) end)
+                :DoDrink( BAR_DRINK_COST * 2, math.max( 5, DRINK_RESTORE_RESOLVE_AMOUNT - 5 ), cxt:GetAgent() )
+                :Fn(function(cxt)
+                    ProcessDrink(cxt, 1)
+                end)
+            local lumin_wine = cxt.player.battler:FindCardByID("lumin_wine")
+            if lumin_wine then
+                cxt:RawOpt((self.def or self):GetLocalizedString("OPT_OFFER"), nil, lumin_wine)
+                    :PreIcon(global_images.drink)
+                    :RawDialog((self.def or self):GetLocalizedString("DIALOG_OFFER_LUMIN_WINE"))
+                    :Quip(cxt.enc:GetPlayer(), "meet_demand", self.id)
+                    :Quip(cxt:GetAgent(), "accept_demand", self.id)
+                    :Fn(function(cxt)
+                        cxt.enc.scratch.offered_lumin_wine = true
+                        cxt.player.battler:RemoveCard(lumin_wine)
+
+                        local drink_effects = {
+                            cards = { "drunk_player", "drunk" },
+                            health_gain = 6,
+                            resolve_gain = 10,
+                        }
+                        TheGame:GetEvents():BroadcastEvent( "do_drink", drink_effects ) 
+                        
+                        if drink_effects.resolve_gain and drink_effects.resolve_gain > 0 then
+                            ConvoUtil.DoResolveDelta(cxt, drink_effects.resolve_gain)
+                        end
+                        if drink_effects.health_gain and drink_effects.health_gain > 0 then
+                            ConvoUtil.DoHealthDelta(cxt, drink_effects.health_gain)
+                        end
+                        if #drink_effects.cards > 0 then
+                            cxt:ForceTakeCards( drink_effects.cards )
+                        end
+                        cxt:GetAgent().health:Delta(6)
+
+                        AgentUtil.MakeDrunk( cxt:GetAgent() )
+
+                        TheGame:GetEvents():BroadcastEvent( "had_drink", drink_effects ) 
+
+                        ProcessDrink(cxt, 2)
+                    end)
+            end
+        end,
+    },
 }
 local COMMON_DEMANDS = {}
 local function AddDemandModifier(id, data)
     data.id = id
+    if not data.modifier_type then
+        data.modifier_type = MODIFIER_TYPE.BOUNTY
+    end
     if data.common_demand then
         table.insert(COMMON_DEMANDS, id)
         print("Added common demand " .. id)
@@ -388,6 +576,7 @@ local function GenerateDemands(pts, agent, rank, _params)
         rank = rank or TheGame:GetGameState():GetCurrentBaseDifficulty(), 
         agent = agent,
         used_issues = {},
+        location = agent and agent:GetLocation() or TheGame:GetGameState():GetPlayerAgent():GetLocation(),
     }
     local ratio = math.randomGauss(1 - (variance or 0.2), 1 + (variance or 0.2))
     local pts_left = math.round(pts * ratio)

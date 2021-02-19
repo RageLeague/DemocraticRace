@@ -22,15 +22,28 @@ function SupportEntryList:init(widget_list, max_width, entry_per_row)
     self:Refresh()
 end
 
+function SupportEntryList:SetWidth(w)
+    self.max_width = w
+    self:UpdateEntryWidth()
+    self:Refresh()
+    return self
+end
+
 function SupportEntryList:UpdateEntryWidth()
     self.entry_width = (self.max_width - self.spacing * (self.entry_per_row + 1)) / self.entry_per_row
     return self
 end
 
-function SupportEntryList:Refresh()
+function SupportEntryList:GetDefaultFocus()
+    return self.widget_list and self.widget_list[1]
+end
+
+function SupportEntryList:Refresh(...)
+    self.hitbox:SetSize(self.max_width, 0)
     for i, widget in ipairs(self.widget_list) do
         if widget.Refresh then
-            widget:Refresh()
+            widget:SetWidth(self.entry_width):Refresh(...)
+                
         end
     end
     self:Layout()
@@ -77,7 +90,8 @@ function SupportEntryList:Layout()
         table.insert(row, widget)
         local w, h = widget:GetSize()
         maxrowheight = math.max(h, maxrowheight)
-        widget:LayoutBounds("left","top", self):Offset(self.spacing * #row + self.entry_width * (#row - 1), -totalheight)
+        -- print(widget, "offset by", self.spacing * #row + self.entry_width * (#row - 1), totalheight)
+        widget:LayoutBounds("left","top", self.hitbox):Offset(self.spacing * #row + self.entry_width * (#row - 1), -totalheight)
         if #row >= self.entry_per_row then
             totalheight = totalheight + maxrowheight + self.spacing
             rows = rows + 1
@@ -133,6 +147,25 @@ local GeneralSupportEntryList = class( "DemocracyClass.Widget.GeneralSupportEntr
 
 function GeneralSupportEntryList:init(max_width)
 
-    local widget_list = {DemocracyClass.Widget.GeneralSupportEntry()}
-    GeneralSupportEntryList._base.init(self, widget_list, max_width, 1)
+    local widget_list = {DemocracyClass.Widget.GeneralSupportEntry(), DemocracyClass.Widget.SupportExpectationEntry()}
+    GeneralSupportEntryList._base.init(self, widget_list, max_width, 2)
+end
+
+local StancesEntryList = class( "DemocracyClass.Widget.StancesEntryList", SupportEntryList )
+
+function StancesEntryList:init(max_width)
+
+    local widget_list = {}
+    for i, id, data in sorted_pairs(TheGame:GetGameState():GetMainQuest().param.stances) do
+        local widget = DemocracyClass.Widget.PoliticalIssueTrack(max_width)
+            :SetIssue(id)
+            :AddAgent(TheGame:GetGameState():GetPlayerAgent())
+        
+        for i, agent in ipairs(DemocracyUtil.GetStanceIntel()) do
+            widget:AddAgent(agent)
+        end
+
+        table.insert(widget_list,widget)
+    end
+    StancesEntryList._base.init(self, widget_list, max_width, 1)
 end

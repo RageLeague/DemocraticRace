@@ -353,6 +353,7 @@ QDEF:AddConvo("win_argument")
                 :PostCard(insult_card, true)
                 :Dialog("DIALOG_DEBATE")
                 :Negotiation{
+                    -- flags = NEGOTIATION_FLAGS.WORDSMITH,
                     on_start_negotiation = function(minigame)
                         local n = math.max(1, math.round( minigame.player_negotiator.agent.negotiator:GetCardCount() / 5 ))
                         for k = 1, n do
@@ -365,6 +366,7 @@ QDEF:AddConvo("win_argument")
                         cxt:Dialog("DIALOG_DEBATE_WIN")
                         cxt.quest:GetCastMember("heckler"):OpinionEvent(OPINION.INSULT)
                         cxt.enc:GetPrimaryCast():GetBrain():MoveToHome()
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10)
                         -- cxt:GoTo("STATE_PICK_SIDE")
                         cxt:GoTo("STATE_DEVELOP_IDEA")
                     end,

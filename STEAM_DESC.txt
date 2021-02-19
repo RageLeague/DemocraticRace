@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.1.7(Alpha)
+Version: 0.2.0(Alpha)
 
 Author: RageLeague
 
@@ -22,7 +22,8 @@ Special thanks to:
 
 * JuniorElder(For helping with side quests)
 * WumpusThe19th(For helping with dialogs)
-* Minespatch(For helping with drawing some slides)
+* Minespatch(For helping with drawing some slides and card art)
+* Playr10(For helping with side quests)
 
 This mod is based on this post that is now archived: https://forums.kleientertainment.com/forums/topic/120281-democracy-mode/.
 
@@ -35,6 +36,7 @@ Supported Languages: English (Right now Simplified/Traditional Chinese is not su
 * [b]Know your voter base![/b] Each person in Griftlands has some allegiance with certain factions, and has different wealth levels. This determines what this person cares about politically. Do you hope to win by getting support from the Admiralty, or will you win by appealing to the lower class? Your choice.
 * [b]Take your stances![/b] Havaria has many problems, and different people have different opinions on certain subjects. Will you increase funding for the Admiralty to win them over, or support better worker rights? Be careful, if you change your stances too much, you will be seen as hypocritical!
 * [b]Pick your advisor![/b] You get to choose from 3 unique advisors, each specializes in one area of negotiation, and whose resemblence to any entity in real life, living or dead, is totally coincidental! They will help you with your campaign, but make sure to keep them happy, or they will stop supporting you!
+* [b]Know your rivals![/b] You are not the only one running for the election. Other Havarian bigshots, like Oolo or Kalandra, are also running for the election. You can choose to work together, or you can run against someone. Be careful who you work with, though, as the candidates more or less hate each other, and will not ally with you if you allied with the wrong person.
 * [b]Spend your time wisely![/b] You will get free time during certain points in the story, during which you can do whatever you want. Will you spend those time socializing with your supporters, or will you learn the location of the market to buy good grafts?
 * [b]Visit an updated Pearl-on-Foam![/b] The new campaign takes place in the modified version of Pearl-on-Foam, which contains iconic locations throughout Havaria. Meet familiar people, and visit familiar places. Some places even have added functionalities!
 * [b]Outsmart your enemies![/b] Directly engaging in combat is bad for your reputation, and so is killing people(duh)! However, there are a new variety of ways to deal with them. Put them out of their jobs, arrest them, or hire someone to hunt them down. The choice is yours.
@@ -44,7 +46,6 @@ Supported Languages: English (Right now Simplified/Traditional Chinese is not su
 
 At the current stage, the mod is far from finished. You can play 2 days out of 5 right now, and many mechanics are planned to be added. Some of these mechanics are:
 
-* Alliance with other candidates. In a First Past The Post system, it is better to ally with other candidates and get the votes you need to win.
 * More side quests and events.
 * More things to do at each locations, and more ways to "deal" with your enemies.
 
@@ -84,6 +85,32 @@ With the new official workshop support, you can directly install mods from steam
 Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues, or a major feature update. As such, it will be more stable.
 
 [h2]Changelog[/h2]
+
+[h3]0.2.0 (Day 3 update)[/h3]
+
+This is a major update that introduces a new day to the campaign, and lots of brand new mechanics!
+
+Major changes:
+
+* Day 3 of the campaign is now playable. It contains a brand new night scenario, and a branching noon event, depending on the current state of your campaign.
+* New mechanic: Signature cards! Each advisor has a few trick upon their sleeves, and they are happy to teach you if you have enough shills! Their signature cards will sometimes show up in their shop, in place of a rare card.
+* New mechanic: Alliance! Talk to other candidates on potential alliances. If your ideology lines up, and you have lots of support among their faction, you can ally with them, granting you massive boost in support. Be careful who you ally with, though, as it can turn away other potential allies!
+* Sometimes you will get request quests from your advisor, which, when completed, can cause them to love you. In the future, actual request quests for the advisors will be added. Right now you get placeholders.
+* Brand new events, including the one where you arrest a notorious mettle dealer if you so choose.
+* A brand new side quest, available from day 1. Has the potential to introduce a few more named characters into your game.
+
+Minor changes:
+
+* Changed the advisors' bio and lore.
+* Reworded "loose stance" to "favoring a particular stance".
+* Added special negotiation behaviour for Dronumph.
+* Reworked demand stance taking. Instead of a random stacks, it always gets 4 stacks. When you destroy it above 2 stacks, it removes the requirement for stance taking. Otherwise, you are only required to favor a stance.
+* Added a new demand: demand drinks. It can occur when someone is patronizing a bar, and you can pay for drinks or offer lumin wine(you can't get it yet).
+* Rebalance stances and candidate stances.
+* Added a mod option that allows you to customize support requirements. It is tied to each game file, so make your decisions before starting a game.
+* Update support screen to include your stances, stances of other candiates, the support requirements for each day, and support change breakdowns. It's a lot more useful now.
+* Various modifications to dialogs and strings.
+* Only laborers who has work can strike for the starving worker. Convincing them to strike while on duty has a resolve penalty.
 
 [h3]0.1.7[/h3]
 

@@ -69,6 +69,7 @@ local region = {
         "BARTENDER",
         "WEALTHY_MERCHANT",
         "POOR_MERCHANT",
+        "PEARLIE",
         
         "JAKES_RUNNER",
         "JAKES_SMUGGLER",

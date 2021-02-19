@@ -1,26 +1,55 @@
 Content.AddStringTable("DEMOCRACY", {
     DEMOCRACY =
     {
+        ADVANCEMENT =
+        {
+            LEVEL_0_NAME = "Level 0: Law school",
+            LEVEL_0_DESC = "For those who just wants to enjoy the story.\nNegotiations are significantly easier.\nYour advisor has more faith in you.",
+            LEVEL_1_NAME = "Level 1: The first real test",
+            LEVEL_1_DESC = "The default experience for the Democratic Race.\nDefault negotiation difficulty.\nYour advisors will abandon you if you don't have much support.",
+            LEVEL_2_NAME = "Level 2: The Griftlands strikes back",
+            LEVEL_2_DESC = "You cannot restart the day after losing.\nNon-boss enemies have upgraded abilities, and have a chance to spawn as a promoted version.\nNegotiation opponents have improved arguments.",
+            LEVEL_3_NAME = "Level 3: Hostile population",
+            LEVEL_3_DESC = "Negotiation opponents have increased resolve and damage.\nChallenge negotiations are more challenging.\nYour advisor has higher expectations.",
+            LEVEL_4_NAME = "Level 4: Keep your hands clean",
+            LEVEL_4_DESC = "Resolve is no longer restored after battle.\nOnly heal 50% of your health and resolve when sleeping.\nEngaging in battle hurts your reputation.",
+            LEVEL_5_NAME = "Level 5: Tricky enemies",
+            LEVEL_5_DESC = "Challenge negotiations are even more challenging.\nMore people dislike you on principle.",
+            LEVEL_6_NAME = "Level 6: Strive for perfection",
+            LEVEL_6_DESC = "Start with 20% less maximum health and maximum resolve.\nYour advisor has even higher expectations.",
+            LEVEL_7_NAME = "Level 7: Do more with less",
+            LEVEL_7_DESC = "Everything costs 25% more shills.\nStart with 1 fewer battle graft slots and negotiation graft slots.",
+            LEVEL_8_NAME = "Level 8: Test your mettle",
+            LEVEL_8_DESC = "You no longer earn Mettle, and your Mettle upgrades are disabled.",
+        },
+        CONTROLS = 
+        {
+            SWITCH_MODE = "{1#binding} Switch Mode",
+        },
         DELTA_SUPPORT_REASON =
         {
-            DEFAULT_UP = "favorable action",
-            DEFAULT_DOWN = "unfavorable action",
+            DEFAULT_UP = "Favorable Action",
+            DEFAULT_DOWN = "Unfavorable Action",
             
-            COMPLETED_QUEST = "quest completed",
-            FAILED_QUEST = "quest failed",
-            POOR_QUEST = "poor quest result",
+            COMPLETED_QUEST = "Quest Completed",
+            FAILED_QUEST = "Quest Failed",
+            POOR_QUEST = "Poor Quest Result",
 
-            RELATIONSHIP_UP = "improved relationship",
-            RELATIONSHIP_DOWN = "bad relationship",
+            RELATIONSHIP_UP = "Improved Relationship",
+            RELATIONSHIP_DOWN = "Bad Relationship",
 
-            ATTACK = "unprovoked attack",
-            MURDER = "murder",
-            SUSPICION = "suspicion of murder",
-            ACCOMPLICE = "accomplice to murder",
-            NEGLIGENCE = "negligence",
+            ATTACK = "Unprovoked Attack",
+            MURDER = "Murder",
+            SUSPICION = "Suspicion of Murder",
+            ACCOMPLICE = "Accomplice to Murder",
+            NEGLIGENCE = "Negligence",
 
-            CONSISTENT_STANCE = "consistent stance",
-            INCONSISTENT_STANCE = "hypocrisy",
+            STANCE_TAKEN = "Stance Taken",
+            ALLIANCE_FORMED = "Alliance Formed",
+            ENEMY_MADE = "Enemy Made",
+
+            CONSISTENT_STANCE = "Consistent Stance",
+            INCONSISTENT_STANCE = "Hypocrisy",
         },
         NOTIFICATION = 
         {
@@ -65,7 +94,7 @@ Content.AddStringTable("DEMOCRACY", {
             {
                 TITLE = "Stance Updated",
                 DETAIL_STRICT = "Your stance regarding {1#pol_issue} is updated to {2#pol_stance}.",
-                DETAIL_LOOSE = "Your stance regarding {1#pol_issue} is loosely updated to {2#pol_stance}.",
+                DETAIL_LOOSE = "Your stance regarding {1#pol_issue} is updated to favoring {2#pol_stance}.",
                 
             },
             WEALTH_SUPPORT =
@@ -86,11 +115,43 @@ Content.AddStringTable("DEMOCRACY", {
             FACTION_SUPPORT = "{1#faction}: {2}",
             GENERAL_SUPPORT = "General Support: {1}",
             WEALTH_SUPPORT = "{1#wealth_name}: {2}",
+            SUPPORT_EXPECTATION = "Expected Support: {1}/{2}",
         },
         SUPPORT_SCREEN = 
         {
             TITLE = "Support Analysis",
             DESC = "To get elected, you need to have high support among the people. Your advisor has compiled the support breakdown for your campaign. Use this to carefully plan your campaign.",
+            
+            
+            CURRENT_STANCE = "{1#agent}'s current stance is {2#pol_stance}",
+            CURRENT_STANCE_LOOSE = "{1#agent}'s current stance is favoring {2#pol_stance}",
+
+            GENERAL_SUPPORT_TITLE = "General Support",
+            GENERAL_SUPPORT_DESC = "This indicates how popular you are among the people. The more support you have, the more likely it is for someone to vote for you.\n\nChange to the general support also indirectly affects your support among factions and wealth levels.",
+
+            FACTION_SUPPORT_DESC = "This indicates how popular you are among {1#faction}. The more support you have among this faction, the more likely someone from this faction will vote for you, and the more likely their main candidate will ally with you.",
+
+            WEALTH_SUPPORT_DESC = "This indicates how popular you are among {1#wealth_name}. The more support you have among this wealth level, the more likely someone from it will vote for you, and the more funding you will get from this wealth level.",
+            
+            EXPECTED_SUPPORT_TITLE = "Expected Support",
+            EXPECTED_SUPPORT_DESC = "This indicates the baseline used to calculate how popular you are among the people. Having your support above the expectation means people are more likely to vote for you, while having your support below the expectation means people are more likely to vote for your opposition.\n\n" ..
+                "The first value indicates the expected support at the moment, while the second value indicates the expected support at the end of today. The advisor will judge your support level at the end of each day, so be prepared!",
+            
+            GAIN_SOURCE = "Source Of Gain:",
+            LOSS_SOURCE = "Source Of Loss:",
+            
+            SWITCH_MODE = "Switch mode",
+            SWITCH_MODE_TT = "The current mode: <#HILITE>{1}</>\n\n{2}\n\nClick on this button to switch to another mode.",
+            MODE = {
+                DEFAULT_TITLE = "Default",
+                DEFAULT_DESC = "Shows the absolute value of your support level.",
+                RELATIVE_GENERAL_TITLE = "Relative to General Support",
+                RELATIVE_GENERAL_DESC = "Shows the support level relative to your general support level. Useful for determining how much you've done to specifically boost your support among certain demographics.",
+                RELATIVE_CURRENT_TITLE = "Relative to Current Expectation",
+                RELATIVE_CURRENT_DESC = "Shows the support level relative to your current support expectation(1st value). Useful for determining your current support among certain demographics.",
+                RELATIVE_GOAL_TITLE = "Relative to Daily Goal",
+                RELATIVE_GOAL_DESC = "Shows the support level relative to your support goal of today(2nd value). Useful for not getting kicked out by your advisor.",
+            },
         },
         WEALTH_STRING =
         {
@@ -116,5 +177,6 @@ Content.AddStringTable("DEMOCRACY", {
     MISC = 
     {
         DO_NOTHING = "do nothing",
+        ME = "me",
     },
 })

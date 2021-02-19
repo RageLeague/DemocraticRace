@@ -10,6 +10,7 @@ local WEALTHY_PATRON_DEFS = {
     
     JAKES_SMUGGLER = 1,
     
+    PEARLIE = 1,
     WEALTHY_MERCHANT = 1,
     
     ADMIRALTY_PATROL_LEADER = 0.5,
@@ -193,3 +194,4 @@ Content.AddLocationContent{
     }
 }
 Content.GetLocationContent("PEARL_PARK").entry_scenario = "DEMOCRACY_PARK_ENTRY"
+Content.GetLocationContent("GB_NEUTRAL_BAR").faction_id = "NEUTRAL"

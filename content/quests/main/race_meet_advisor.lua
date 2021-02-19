@@ -34,7 +34,7 @@ local QDEF = QuestDef.Define
 }
 :AddObjective{
     id = "go_to_bar",
-    title = "Visit the bar",
+    title = "Visit the noodle shop",
     desc = "It's noon. Time to go to your favorite noodle shop!",
     mark = {"noodle_shop"},
     state = QSTATUS.ACTIVE,

@@ -64,6 +64,18 @@ local OPINIONS = {
         delta = OPINION_DELTAS.MAJOR_BAD,
         txt = "Completely screwed up the campaign",
     },
+    ALLIED_WITH = {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Allied with them",
+    },
+    ALLIED_WITH_ENEMY = {
+        delta = OPINION_DELTAS.DISLIKE,
+        txt = "Allied with their enemy",
+    },
+    REJECTED_ALLIANCE = {
+        delta = OPINION_DELTAS.DISLIKE,
+        txt = "Rejected their alliance",
+    },
 }
 
 for id, data in pairs(OPINIONS) do

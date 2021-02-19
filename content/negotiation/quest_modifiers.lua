@@ -91,8 +91,9 @@ local MODIFIERS =
         agents = {},
         ignored_agents = {},
         CreateTarget = function(self, agent)
-            local modifier = self.negotiator:CreateModifier("PREACH_TARGET_INTEREST")
+            local modifier = Negotiation.Modifier("PREACH_TARGET_INTEREST", self.negotiator) 
             modifier:SetAgent(agent)
+            self.negotiator:CreateModifier(modifier)
         end,
         TryCreateNewTarget = function(self)
             if self.agents and #self.agents > 0 then
@@ -229,10 +230,11 @@ local MODIFIERS =
 
         OnBounty = function(self, source)
             if source and source ~= self then
-                local modifier = self.anti_negotiator:CreateModifier("PREACH_TARGET_INTERESTED")
+                local modifier = Negotiation.Modifier( "PREACH_TARGET_INTERESTED", self.anti_negotiator )
                 if modifier and modifier.SetAgent then
                     modifier:SetAgent(self.target_agent)
                 end
+                self.anti_negotiator:CreateModifier( modifier )
             end
         end,
 
@@ -440,7 +442,7 @@ local MODIFIERS =
     HELP_UNDERWAY = 
     {
         name = "Help Underway!",
-        desc = "Distract <b>{1}</> for {2} more turns until the help arrives!\n" ..
+        desc = "Distract <b>{1}</> for {2} more turns until the help arrives!\n\n" ..
             "If you lose the negotiation while help is underway, you can still keep {1} occupied " ..
             "through battle, and survive the assassination!",
         desc_fn = function(self, fmt_str)
@@ -469,7 +471,7 @@ local MODIFIERS =
     DISTRACTION_ENTERTAINMENT = 
     {
         name = "Distraction: Entertainment",
-        desc = "{MYRIAD_MODIFIER {2}}.\nWhen destroyed, {1} loses 1 {IMPATIENCE} if able.",
+        desc = "{MYRIAD_MODIFIER {2}}.\n\nWhen destroyed, {1} loses 1 {IMPATIENCE} if able.",
         icon = "negotiation/modifiers/card_draw.tex",
         
         modifier_type = MODIFIER_TYPE.BOUNTY,
@@ -495,7 +497,7 @@ local MODIFIERS =
     DISTRACTION_GUILTY_CONSCIENCE = 
     {
         name = "Distraction: Guilty Conscience",
-        desc = "{MYRIAD_MODIFIER {2}}.\nWhen destroyed, remove a random, non-{IMPATIENCE} intent and {1} gains 2 {VULNERABILITY}.",
+        desc = "{MYRIAD_MODIFIER {2}}.\n\nWhen destroyed, remove a random intent and {1} gains 2 {VULNERABILITY}.",
         icon = "negotiation/modifiers/scruple.tex",
 
         modifier_type = MODIFIER_TYPE.BOUNTY,
@@ -514,9 +516,9 @@ local MODIFIERS =
         OnBounty = function(self)
             local intents = {}
             for i, data in ipairs(self.negotiator:GetIntents()) do
-                if data.id ~= "impatience" then
-                    table.insert(intents, data)
-                end
+                -- if data.id ~= "impatience" then
+                table.insert(intents, data)
+                -- end
             end
             
             if #intents > 0 then
@@ -530,7 +532,7 @@ local MODIFIERS =
     DISTRACTION_CONFUSION = 
     {
         name = "Distraction: Confusion",
-        desc = "{MYRIAD_MODIFIER {2}}.\nWhen destroyed, {1} gain 2 {FLUSTERED}.",
+        desc = "{MYRIAD_MODIFIER {2}}.\n\nWhen destroyed, {1} gain 2 {FLUSTERED}.",
         icon = "negotiation/modifiers/doubt.tex",
         
         modifier_type = MODIFIER_TYPE.BOUNTY,
@@ -874,8 +876,8 @@ local MODIFIERS =
     {
         name = "Investment Opportunity",
         icon = "negotiation/modifiers/frisk.tex",
-        desc = "{MYRIAD_MODIFIER {2}}\nWhen destroyed, gain {1} {SECURED_INVESTEMENTS}.",
-        alt_desc = "{MYRIAD_MODIFIER {1}}\nWhen destroyed, gain {SECURED_INVESTEMENTS} equal to the number of stacks on this bounty.",
+        desc = "{MYRIAD_MODIFIER {2}}\n\nWhen destroyed, gain {1} {SECURED_INVESTEMENTS}.",
+        alt_desc = "{MYRIAD_MODIFIER {1}}\n\nWhen destroyed, gain {SECURED_INVESTEMENTS} equal to the number of stacks on this bounty.",
 
         desc_fn = function(self, fmt_str)
             if self.stacks then
@@ -999,6 +1001,7 @@ local MODIFIERS =
             return self.engine:GetPlayerNegotiator() == card.negotiator and 
                 not CheckBits( card.flags, CARD_FLAGS.UNPLAYABLE ) and
                 not CheckAnyBits( card.flags, CARD_FLAGS.BYSTANDER ) and card.played_from_hand
+                and not CheckAnyBits( card.flags, CARD_FLAGS.FLOURISH )
         end,
 
         CheckAllowRecord = function(self, source)
@@ -1039,6 +1042,9 @@ local MODIFIERS =
             [ EVENT.MODIFIER_REMOVED ] = function ( self, modifier, source )
                 self:CheckAllowRecord(source)
             end,
+            [ EVENT.INTENT_REMOVED ] = function( self, card )
+                self:CheckAllowRecord(card)
+            end,
         },
     },
     SIMULATION_ARGUMENT = {
@@ -1050,7 +1056,7 @@ local MODIFIERS =
     },
     TIME_CONSTRAINT = {
         name = "Time Is Money",
-        desc = "Every 2 turns in this negotiation, you lose a free time action for the current quest.\n<#PENALTY>The negotiation will end if you ran out of actions for the quest!</>\n({1} actions left on the quest)",
+        desc = "Every 2 turns in this negotiation, you lose a free time action for the current quest.\n\n<#PENALTY>The negotiation will end if you ran out of actions for the quest!</>\n\n({1} actions left on the quest)",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.stacks)
         end,
@@ -1093,10 +1099,679 @@ local MODIFIERS =
             return true
         end,
     },
+	NARCISSISM = {
+	    name = "Narcissism",
+        desc = "At the start of {1}'s turn, create {2:a|{2} separate }{PRIDE} {2*argument|arguments}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOwnerName(), self:GetPrideCount(self.engine and self.engine:GetDifficulty() or 1))
+        end,
+
+        icon = "negotiation/modifiers/bidder.tex",
+        modifier_type = MODIFIER_TYPE.CORE,
+        max_stacks = 1,
+        
+        num_created = {1,1,2,2,2},
+        GetPrideCount = function(self, difficulty)
+            return self.num_created[math.min(difficulty, #self.num_created)]
+        end,
+        event_handlers =
+        {
+            [ EVENT.END_TURN ] = function ( self, minigame, negotiator )
+                if negotiator == self.negotiator then
+                    for i = 1, self:GetPrideCount(self.engine and self.engine:GetDifficulty() or 1) do
+                        self.negotiator:CreateModifier( "PRIDE", 1, self )
+                    end
+                end
+			end,
+		},
+	},
+	PRIDE = {
+        name = "Pride",
+        -- Having it heal while having 6 resolve is a bit too much, I think.
+        desc = "At the start of {1}'s turn, apply {2} {COMPOSURE} to {1}'s core argument.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOwnerName(), self.composure_gain)
+        end,
+		modifier_type = MODIFIER_TYPE.ARGUMENT,
+		max_stacks = 1,
+        max_resolve = 2,
+        OnInit = function(self)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.LOW)
+        end,
+        composure_gain = 2,
+		OnBeginTurn = function( self, minigame )
+            self.negotiator:FindCoreArgument():DeltaComposure( self.composure_gain, self )
+        end,
+	},
+	FRAGILE_EGO = {
+		name = "Fragile Ego",
+		desc = "Remove all {PRIDE}s and incept that much {VULNERABILITY}.",
+		modifier_type = MODIFIER_TYPE.BOUNTY,
+		max_stacks = 1,
+        max_resolve = 4,
+        OnInit = function(self)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
+        end,
+		OnBounty = function( self )
+            local stacks = self.negotiator:GetModifierStacks("PRIDE")
+            self.negotiator:RemoveModifier("PRIDE", stacks, self)
+            self.negotiator:AddModifier("VULNERABILITY", stacks, self)
+		end,
+    },
+    PLANTED_EVIDENCE_MODDED = 
+    {
+        name = "Planted Evidence",
+        desc = "When this argument is destroyed, deal {1} damage to a random core argument on {2}'s side.",
+        desc_fn = function( self, fmt_str )
+            return loc.format( fmt_str, self.stacks or 2, self:GetOwnerName() )
+        end,
+
+        max_resolve = 1,
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+
+        sound = "event:/sfx/battle/cards/neg/create_argument/strawman",
+        icon = "negotiation/modifiers/planted_evidence.tex",
+
+        OnBounty = function( self )
+            local targets = {}
+            for i, modifier in self.negotiator:ModifierSlots() do
+                if modifier.modifier_type == MODIFIER_TYPE.CORE and not 
+                    (modifier:GetShieldStatus() 
+                    or modifier.max_resolve == nil) then
+                    table.insert(targets, modifier)
+                end
+            end
+            local target = table.arraypick(targets)
+            self.engine:ApplyPersuasion( self, target, self.stacks, self.stacks )
+        end,
+    },
+    APPROPRIATED_MODDED =
+    {
+        name = "Appropriated",
+        desc = "When this argument is destroyed, all cards are returned to {2}'s hand. {2} gains 2 {VULNERABILITY}.",
+        alt_desc = "When this argument is destroyed, all cards are returned to {2.fullname}'s card pool. The opponent gains 2 {VULNERABILITY}.",
+        desc_fn = function( self, fmt_str, minigame, widget )
+            if widget and widget.PostCard then
+                for i, card in ipairs( self.stolen_cards) do
+                    widget:PostCard( card.id, card, minigame )
+                end
+            end
+            if self.stolen_from and self.stolen_from.available_cards then
+                return loc.format((self.def or self):GetLocalizedString("ALT_DESC"), self:GetOwnerName(), 
+                    self.stolen_from.candidate_agent and self.stolen_from.candidate_agent:LocTable())
+            else
+                return loc.format( fmt_str, self:GetOwnerName(), self:GetOpponentName() )
+            end
+        end,
+
+        max_resolve = 1,
+        max_stacks = 1,
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+        removed_sound = "event:/sfx/battle/cards/neg/appropriator_cardreleased",
+        icon = "negotiation/modifiers/appropriated.tex",
+        --sound = "event:/sfx/battle/cards/neg/create_argument/strawman",
+
+        OnInit = function( self )
+            self.stolen_cards = {}
+            self:SetResolve( 1, MODIFIER_SCALING.LOW )
+        end,
+
+        GetStolenCount = function( self )
+            return #self.stolen_cards
+        end,
+
+        AppropriateCard = function( self, card, owner )
+            table.insert( self.stolen_cards, card )
+            if owner and owner.available_cards then
+                table.arrayremove(owner.available_cards, card)
+            end
+            card:RemoveCard()
+            self.stolen_from = owner
+
+            self:NotifyChanged()
+           
+            self.engine:BroadcastEvent( EVENT.CARD_STOLEN, card, self )
+        end,
+
+        OnBounty = function( self )
+            for i, card in ipairs( self.stolen_cards ) do
+                
+                if self.stolen_from and self.stolen_from.available_cards then
+                    print("Return to the pool of stuff")
+                    table.insert(self.stolen_from.available_cards, card)
+                else
+                    self.engine:BroadcastEvent( EVENT.CUSTOM, function( panel )
+                        local slot_widget = panel:FindSlotWidget( self )
+                        if slot_widget then
+                            local w = panel.cards:CreateCardWidget( card )
+                            local x, y = w.parent:TransformFromWidget( slot_widget, 0, 0 )
+                            w:SetPos( x, y )
+                        end
+                    end )
+                    card.show_dealt = false
+                    self.engine:InsertCard( card )
+                end
+            end
+
+            self.anti_negotiator:InceptModifier("VULNERABILITY", 2)
+        end,
+    },
+    ALL_BUSINESS_MODDED =
+    {
+        name = "All Business",
+        desc = "At the start of the turn, a random allied argument gains {COMPOSURE {1}} for each Hostility card in all opponents' intent.",
+        alt_desc = "A random allied argument gains {COMPOSURE {1}} for each Hostility card the player draw.",
+        desc_fn = function( self, fmt_str )
+            if self.negotiator and not self.negotiator:IsPlayer() then
+                return loc.format( fmt_str .. "\n" .. (self.def or self):GetLocalizedString("ALT_DESC"), self.bonus )
+            else
+                return loc.format( fmt_str, self.bonus )
+            end
+        end,
+
+        max_resolve = 1,
+        max_stacks = 1,
+        bonus = 1,
+
+        sound = "event:/sfx/battle/cards/neg/create_argument/all_business",
+        icon = "negotiation/modifiers/all_business.tex",
+
+        OnInit = function( self )
+            if self.engine then
+                local difficulty = self.engine:GetDifficulty()
+                self:SetResolve( 1, MODIFIER_SCALING.MED )
+                self.bonus = difficulty
+            end
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
+                if negotiator == self.negotiator then
+                    local did_a_thing = false
+                    for i, modifier in self.anti_negotiator:ModifierSlots() do
+                        if modifier.prepared_cards then
+                            for j, card in ipairs(modifier.prepared_cards) do
+                                if card:IsFlagged( CARD_FLAGS.HOSTILE ) then
+                                    -- self.negotiator:DeltaComposure( self.bonus, self )
+                                    local targets = self.engine:CollectAlliedTargets(self.negotiator)
+                                    if #targets > 0 then
+                                        local target = targets[math.random(#targets)]
+                                        target:DeltaComposure(self.bonus, self)
+                                        -- self:AddXP(1)
+                                        did_a_thing = true
+                                    end
+                                    
+                                end
+                            end
+                        end
+                    end
+                    if did_a_thing then
+                        self:NotifyTriggered()
+                    end
+                end
+            end,
+            [ EVENT.DRAW_CARD ] = function( self, engine, card, start_of_turn )
+                if card:IsFlagged( CARD_FLAGS.HOSTILE ) and self.negotiator and not self.negotiator:IsPlayer() then
+                    -- self.negotiator:DeltaComposure( self.bonus, self )
+                    local targets = self.engine:CollectAlliedTargets(self.negotiator)
+                    if #targets > 0 then
+                        local target = targets[math.random(#targets)]
+                        target:DeltaComposure(self.bonus, self)
+                        -- self:AddXP(1)
+                    end
+                    self:NotifyTriggered()
+                end
+            end,
+        },
+    },
+    DEBATE_SCRUM_TRACKER =
+    {
+        name = "Debate Host",
+        desc = "Defeat ALL opponent negotiators to win this debate!\n\n" ..
+            "You cannot play any more cards if your core argument is destroyed, and you lose if your core argument and all your allies' core argument are destroyed.\n\n" ..
+            "Opponents arguments comes in to play with +{1} resolve.\n\n" ..
+            "Perform various feats to score points and win the crowd. <#PENALTY>Your allies will also do the same, so score more than your allies to stand out!</>",
+        loc_strings = {
+            SCORE_DAMAGE = "Damage Dealt",
+            SCORE_FULL_BLOCK = "Damage Deflected",
+            SCORE_ARGUMENT_DESTROYED = "Argument Refuted",
+            SCORE_OPPONENT_DESTROYED = "Opponent Refuted",
+            SCORE_ARGUMENT_CREATED = "Argument Created",
+            SCORE_ARGUMENT_INCEPTED = "Argument Incepted",
+            SCORE_DELTA = "+{1} Pts",
+        },
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetBonusResolve())
+        end,
+        
+        modifier_type = MODIFIER_TYPE.CORE,
+        max_stacks = 1,
+
+        bonus_resolve = {2, 3, 4, 5},
+        GetBonusResolve = function(self)
+            local boss_scale = GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2
+            if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                return self.bonus_resolve[math.min(#self.bonus_resolve, boss_scale)]
+            end
+            return self.bonus_resolve[2]
+        end,
+
+        OnInit = function(self)
+            self.scores = {}
+            self.player_score = 0
+            
+            self.score_widgets = {}
+            self.player_score_widget = {}
+
+            -- self:DeltaScore(200, nil, "SCORE_DAMAGE")
+            -- self:DeltaScore(100, nil, "SCORE_DAMAGE")
+        end,
+        
+        GetScoreText = function(self, delta, reason, multiplier)
+            local res
+            if self.loc_strings[reason] then
+                res = (self.def or self):GetLocalizedString(reason)
+            else
+                res = ""
+            end
+            if res ~= "" then
+                res = res .. " "
+            end
+            if multiplier and multiplier > 1 then
+                res = res .. "x" .. multiplier
+            end
+            if res ~= "" then
+                res = res .. " "
+            end
+            
+            return loc.format( res ..
+                (self.def or self):GetLocalizedString("SCORE_DELTA"), delta)
+        end,
+        DeltaScore = function(self, delta, source, reason)
+            local function PopupText(panel, source_widget, deltay, text_color, widget_list)
+                if delta == 0 then
+                    return
+                end
+                print(loc.format("{1} gains {2} pts because of {3}", source, delta, reason))
+                for i, data in ipairs(widget_list) do
+                    if data and data.reason and data.reason == reason then
+                        data.score = (data.score or 0) + delta
+                        data.multiplier = (data.multiplier or 1) + 1
+                        data.label:SetText(self:GetScoreText(data.score, reason, data.multiplier))
+                        return
+                    end
+                end
+                local label = panel:AddChild( Widget.Label( "title", 28, self:GetScoreText(delta, reason) ):SetBloom( 0.1 ))
+                local insert_index = 1
+                while widget_list[insert_index] ~= nil do
+                    insert_index = insert_index + 1
+                end
+                widget_list[insert_index] = {score = delta, multiplier = 1, label = label, reason = reason}
+                label:SetGlyphColour( text_color )
+                    :SetOutlineColour( 0x000000FF )
+                    :EnableOutline( 0.25 )
+                
+                local screenw, screenh = panel:GetFE():GetScreenDims()
+                local sx, sy
+                if source_widget then
+                    sx, sy = panel:TransformFromWidget(source_widget, 0, 0)
+                else
+                    -- LOGWARN("Fail to find minigame objective for some reason")
+                    sx, sy = screenw / 2, screenh / 2
+                end
+                label:AlphaTo(0, 0)
+                label:SetPos( sx, sy + (insert_index - 1) * deltay)
+
+                label:MoveTo( sx, sy + insert_index * deltay, 0.2, easing.outQuad )
+                label:AlphaTo(1, 0.2)
+                -- label:Delay(1)
+                local t = 2
+                local prev_tick = widget_list[insert_index].multiplier
+                while (t > 0) do 
+                    local dt = coroutine.yield()
+                    t = t - dt
+                    if widget_list[insert_index].multiplier ~= prev_tick then
+                        prev_tick = widget_list[insert_index].multiplier
+                        t = 2
+                    end
+                end
+
+                widget_list[insert_index] = nil
+
+                label:MoveTo( sx, sy + (insert_index + 1) * deltay, 0.2, easing.inQuad )
+                label:AlphaTo(0, 0.2)
+                label:Delay(0.2)
+                label:Remove()
+                
+            end
+            if type(source) == "number" then
+                if self.scores[source] then
+                    source = self.scores[source].modifier
+                else
+                    source = self.engine:FindModifierByUID(source)
+                end
+            end
+            if type(source) == "table" then
+                source = source.real_owner
+                if source then
+                    -- Give the AI an edge. This way we can get away with lower damage output while
+                    -- making the score race still a challenge
+                    delta = delta * 2
+                    if not self.scores[source:GetUID()] then
+                        self.scores[source:GetUID()] = {modifier = source, score = 0}
+                    end
+                    
+                    if not self.score_widgets[source:GetUID()] then
+                        self.score_widgets[source:GetUID()] = {}
+                    end
+                    self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
+                        -- panel:RefreshReason()
+                        local source_widget = panel:FindSlotWidget( source )
+                        if source_widget then
+                            self.scores[source:GetUID()].score = self.scores[source:GetUID()].score + delta
+                            source:NotifyChanged()
+                            panel:StartCoroutine(PopupText, panel, source_widget, 32, UICOLOURS.WHITE, self.score_widgets[source:GetUID()])
+                        end
+                    end)
+                    return
+                end 
+            end
+            local is_source_incepted = source and (source.modifier_type == MODIFIER_TYPE.BOUNTY or source.modifier_type == MODIFIER_TYPE.INCEPTION)
+            if source == nil or (source.negotiator:IsPlayer() and not is_source_incepted) or (source.anti_negotiator:IsPlayer() and is_source_incepted) then
+                
+                self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
+                    panel:RefreshReason()
+                    local source_widget = self.engine:GetPlayerNegotiator():FindCoreArgument() and 
+                        panel:FindSlotWidget( self.engine:GetPlayerNegotiator():FindCoreArgument() ) or nil--panel.main_overlay.minigame_objective
+                    self.player_score = self.player_score + delta
+                    panel:StartCoroutine(PopupText, panel, source_widget, 32, UICOLOURS.WHITE, self.player_score_widget)
+                    panel.player_modifiers:UpdatePersuasionLabels()
+                    panel.opponent_modifiers:UpdatePersuasionLabels()
+                end)
+            end
+        end,
+        CheckGameOver = function(self)
+            for i, mod in self.negotiator:Modifiers() do
+                if mod.modifier_type == MODIFIER_TYPE.CORE and mod ~= self then
+                    return
+                end
+            end
+            if not self.engine:CheckGameOver() then
+                self.engine:Win()
+            end
+        end,
+        event_priorities =
+        {
+            [ EVENT.ATTACK_RESOLVE ] = 999,
+            [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_SETTOR, 
+        },
+        event_handlers =
+        {
+            [ EVENT.START_RESOLVE ] = function(self, minigame, card)
+                card.damages_during_play = {}
+            end,
+            [ EVENT.END_RESOLVE ] = function(self, minigame, card)
+                if card.damages_during_play then
+                    -- print(loc.format("{1#listing}", card.damages_during_play))
+                    local delta_score = 0
+                    table.sort(card.damages_during_play, function(a,b) return a > b end)
+                    for i, dmg in ipairs(card.damages_during_play) do
+                        -- Gains full score for the first two hits.
+                        -- Then, exponentially decrease score gained.
+                        delta_score = delta_score + math.ceil(dmg / math.max(1, math.pow(2, i - 1)))
+                    end
+                    if delta_score > 0 then
+                        self:DeltaScore(delta_score * 1, card, "SCORE_DAMAGE")
+                    end
+                end
+                card.damages_during_play = nil
+            end,
+            [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+                if params and params.splashed_modifier then
+                    return
+                end
+                if source.negotiator == target.negotiator then
+                    return -- self harm, does nothing.
+                end
+                if damage > defended then
+                    print(loc.format("{1} dealt {3} damage to {2}", source, target, damage - defended))
+                    if source.damages_during_play then
+                        table.insert(source.damages_during_play, damage - defended)
+                        return
+                    end
+                    -- print(loc.format("{1} dealt damage(real_owner={2})", source, source and source.real_owner))
+                    self:DeltaScore((damage - defended) * 1, source, "SCORE_DAMAGE")
+
+                    -- if target == self.engine:GetPlayerNegotiator():FindCoreArgument() and not target.real_owner then
+                    --     local cmp_delta = math.floor((damage - defended) / 2)
+                    --     target.composure = target.composure + cmp_delta
+                    -- end
+                else
+                    if target.composure_applier then
+                        ----------------------------
+                        -- Option 1: Anyone who applied composure share the score gained from deflection.
+                        ----------------------------
+                        local scorer = {}
+                        for id, val in pairs(target.composure_applier) do
+                            if val > 0 then
+                                table.insert_unique(scorer, id)
+                            end
+                        end
+                        local multiplier = math.max(0.5, 1 - 0.25 * (#scorer - 1))
+                        for i, id in ipairs(scorer) do
+                            if type(id) == "number" then
+                                self:DeltaScore(math.ceil(damage * multiplier), id, "SCORE_FULL_BLOCK")
+                            else
+                                self:DeltaScore(math.ceil(damage * multiplier), nil, "SCORE_FULL_BLOCK")
+                            end
+                        end
+                    end
+                end
+            end,
+            [ EVENT.DELTA_COMPOSURE ] =  function( self, modifier, new_value, old_value, source, start_of_turn )
+                local delta = new_value - old_value
+                if delta > 0 then
+                    if not modifier.composure_applier then
+                        modifier.composure_applier = {}
+                    end
+                    if source and source.negotiator == modifier.negotiator then
+                        if source.real_owner then
+                            modifier.composure_applier[source.real_owner:GetUID()] = (modifier.composure_applier[source.real_owner:GetUID()] or 0) + delta
+                            -- Simply register this modifier in case it gets destroyed later.
+                            self:DeltaScore(0, modifier, "SCORE_FULL_BLOCK")
+                        elseif source:IsPlayerOwner() then
+                            modifier.composure_applier["PLAYER"] = (modifier.composure_applier["PLAYER"] or 0) + delta
+                        end
+                    end
+                end
+                if new_value <= 0 then
+                    modifier.composure_applier = nil
+                end
+            end,
+            [ EVENT.MODIFIER_ADDED ] = function ( self, modifier, source )
+                if source and source.real_owner then
+                    modifier.real_owner = source.real_owner
+                end
+                if modifier.negotiator == self.negotiator and modifier.modifier_type == MODIFIER_TYPE.ARGUMENT then
+                    modifier:ModifyResolve(self:GetBonusResolve(), self)
+                end
+                if source and source.negotiator == modifier.negotiator and modifier.modifier_type == MODIFIER_TYPE.ARGUMENT then
+                    self:DeltaScore(3, source, "SCORE_ARGUMENT_CREATED")
+                end
+                if source and source.negotiator == modifier.anti_negotiator and 
+                    (modifier.modifier_type == MODIFIER_TYPE.BOUNTY or modifier.modifier_type == MODIFIER_TYPE.INCEPTION) then
+                    
+                    self:DeltaScore(3, source, "SCORE_ARGUMENT_INCEPTED")
+                end
+            end,
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, source )
+                if source and source.negotiator ~= modifier.negotiator then
+                    if modifier.modifier_type == MODIFIER_TYPE.CORE then
+                        self:DeltaScore(25, source, "SCORE_OPPONENT_DESTROYED")
+                        self:CheckGameOver()
+                        if modifier.negotiator == self.negotiator then
+                            
+                        else
+                            for i, mod in self.anti_negotiator:Modifiers() do
+                                if mod.modifier_type == MODIFIER_TYPE.CORE and not mod.candidate_agent then
+                                    return
+                                end
+                            end
+                            -- only other candidates are left. You can no longer do anything.
+                            local minigame = self.engine
+                            minigame.hand_deck:TransferCards( minigame.trash_deck )
+                            minigame.draw_deck:TransferCards( minigame.trash_deck )
+                            minigame.discard_deck:TransferCards( minigame.trash_deck )
+                            -- self.resolve_deck:TransferCards( self.trash_deck )
+                        end
+                    else
+                        self:DeltaScore(3, source, "SCORE_ARGUMENT_DESTROYED")
+                    end
+                end
+            end,
+            [ EVENT.SPLASH_RESOLVE ] = function( self, modifier, overflow, params )
+                if modifier.real_owner and modifier.real_owner:IsApplied() and modifier.real_owner.negotiator == modifier.negotiator then
+                    params.splashed_modifier = modifier.real_owner
+                else
+                    if not modifier:IsPlayerOwner() or not modifier.negotiator:FindCoreArgument().real_owner then
+                        local splash_targets = {}
+                        for i, mod in modifier.negotiator:Modifiers() do
+                            if mod.modifier_type == MODIFIER_TYPE.CORE and mod:GetResolve() ~= nil and not mod:GetShieldStatus() then
+                                table.insert(splash_targets, mod)
+                            end
+                        end
+                        if #splash_targets > 0 then
+                            params.splashed_modifier = table.arraypick(splash_targets)
+                        end
+                    end
+                end
+            end,
+            [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
+                self:CheckGameOver()
+            end,
+        },
+    },
+    CROWD_OPINION =
+    {
+        name = "Crowd Opinion",
+        desc = "Bring the crowd to your side by playing {2#card}.\n\nWhenever {1} destroys an argument or bounty you have, reduce the stacks of this argument by 1 and remove a {2#card} from your deck.",
+        loc_strings = {
+            CURRENT_OPINION = "The crowd's current opinion is {1}.",
+            NAME_1 = "<#PENALTY>Hostile</>",
+            NAME_2 = "<#PENALTY>Skeptical</>",
+            NAME_3 = "Divisive",
+            NAME_4 = "<#BONUS>Sympathetic</>",
+            NAME_5 = "<#BONUS>Supportive</>",
+
+            BONUS_DMG = "{1} deals 1 bonus damage to {2}.",
+        },
+        icon = "DEMOCRATICRACE:assets/modifiers/crowd_opinion_1.png",
+        icon_levels = {
+            "DEMOCRATICRACE:assets/modifiers/crowd_opinion_1.png",
+            "DEMOCRATICRACE:assets/modifiers/crowd_opinion_2.png",
+            "DEMOCRATICRACE:assets/modifiers/crowd_opinion_3.png",
+            "DEMOCRATICRACE:assets/modifiers/crowd_opinion_4.png",
+            "DEMOCRATICRACE:assets/modifiers/crowd_opinion_5.png",
+        },
+        desc_fn = function(self, fmt_str)
+            local desc_lst = {}
+            if self.engine and self.stacks then
+                table.insert(desc_lst, loc.format((self.def or self):GetLocalizedString("CURRENT_OPINION"), (self.def or self):GetLocalizedString("NAME_" .. self.stacks)))
+                if self.stacks < 3 then
+                    table.insert(desc_lst, loc.format((self.def or self):GetLocalizedString("BONUS_DMG"), self:GetOwnerName(), self:GetOpponentName()))
+                elseif self.stacks > 3 then
+                    table.insert(desc_lst, loc.format((self.def or self):GetLocalizedString("BONUS_DMG"), self:GetOpponentName(), self:GetOwnerName()))
+                end
+            end
+            table.insert(desc_lst, loc.format(fmt_str, self:GetOwnerName(), "appeal_to_crowd_quest"))
+            return table.concat(desc_lst, "\n")
+        end,
+
+        modifier_type = MODIFIER_TYPE.PERMANENT,
+        max_stacks = 5,
+
+        OnSetStacks = function(self, old_stacks)
+            local new_stacks = self.stacks
+            -- print(new_stacks)
+            -- print("newicon: ", self.icon_levels[new_stacks])
+            self.icon = self.icon_levels[new_stacks] and engine.asset.Texture(self.icon_levels[new_stacks]) or self.icon
+            self.engine:BroadcastEvent( EVENT.UPDATE_MODIFIER_ICON, self)
+        end,
+        
+        event_priorities = {
+            [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_ADDITIVE, 
+        },
+        event_handlers = {
+            [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
+                if source and target then
+                    if self.stacks < 3 then
+                        if self.negotiator == source.negotiator and self.anti_negotiator == target.negotiator then
+                            persuasion:AddPersuasion(1, 1, self)
+                        end
+                    elseif self.stacks > 3 then
+                        if self.anti_negotiator == source.negotiator and self.negotiator == target.negotiator then
+                            persuasion:AddPersuasion(1, 1, self)
+                        end
+                    end
+                end
+            end,
+            [ EVENT.MODIFIER_REMOVED ] = function(self, modifier, source)
+                if modifier.negotiator == self.anti_negotiator and (modifier.modifier_type == MODIFIER_TYPE.ARGUMENT or modifier.modifier_type == MODIFIER_TYPE.BOUNTY) then
+                    if source and source.negotiator == self.negotiator then
+                        if self.stacks > 1 then
+                            self.negotiator:RemoveModifier(self, 1, self)
+                        end
+                        local all_cards = table.merge( self.engine:GetDrawDeck().cards, self.engine:GetDiscardDeck().cards, self.engine:GetHandDeck().cards )
+                        for i, card in ipairs(all_cards) do
+                            if card.id == "appeal_to_crowd_quest" then
+                                self.engine:ExpendCard(card)
+                                break
+                            end
+                        end
+                    end
+                end
+            end,
+        },
+    },
+    INSTIGATE_CROWD =
+    {
+        name = "Instigate Crowd",
+        desc = "{MYRIAD_MODIFIER {1}}.\n\nWhen destroyed, add a {2#card} to your draw pile.",
+        icon = "negotiation/modifiers/influence.tex",
+
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.bonus_per_generation, "appeal_to_crowd_quest")
+        end,
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+        init_max_resolve = 2,
+
+        bonus_per_generation = 2,
+        -- bonus_scale = {2, 2, 3, 4},
+
+        generation = 0,
+
+        OnInit = function(self)
+            self.bonus_per_generation = math.ceil(self.engine:GetDifficulty() / 2)
+            if self.generation and self.generation > 0 then
+                self.init_max_resolve = self.init_max_resolve + self.bonus_per_generation
+            end
+            self:SetResolve(self.init_max_resolve, MODIFIER_SCALING.MED)
+        end,
+        OnBounty = function(self)
+            local card = Negotiation.Card("appeal_to_crowd_quest", self.engine:GetPlayer()) 
+            self.engine:InceptCard( card, self )
+            CreateNewSelfMod(self)
+        end,
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
 end
+Content.GetNegotiationModifier("FREE_ACTION").min_stacks = -99
 local FEATURES = {
     MYRIAD_MODIFIER = 
     {

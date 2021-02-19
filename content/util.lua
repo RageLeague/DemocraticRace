@@ -1,6 +1,6 @@
 local DemocracyUtil = class("DemocracyUtil")
 
-
+local MODID = CURRENT_MOD_ID
 -- if access an invalid val, look for the main quest and return a val if you can
 getmetatable(DemocracyUtil).__index = function(self, k)
     if TheGame:GetGameState() and TheGame:GetGameState():GetMainQuest() then
@@ -188,17 +188,22 @@ function DemocracyUtil.RandomBystanderCondition(agent)
         or AgentUtil.HasPlotArmour(agent) or not agent:IsSentient())
         and not (agent:GetBrain() and agent:GetBrain():GetWorkPosition() and agent:GetBrain():GetWorkPosition():ShouldBeWorking())
         and not agent:HasQuestMembership()
+        -- Kick the auctioneer out of random bystander, as his negotiation behaviour is wack
+        and agent:GetContentID() ~= "HESH_AUCTIONEER"
 end
 
 function DemocracyUtil.CanVote(agent)
     -- non-citizens can't vote
     -- for casting purposes, player can't vote.
     return agent and not agent:IsPlayer() and not agent:IsRetired() 
-        and agent:IsSentient() and agent:GetFactionID() ~= "RENTORIAN"
+        and agent:IsSentient() and agent:GetFactionID() ~= "RENTORIAN" and agent:GetFactionID() ~= "DELTREAN"
 end
 
 -- Do the convo for unlocking a location.
 function DemocracyUtil.DoLocationUnlock(cxt, id)
+    if type(id) ~= "string" then
+        id = id:GetContentID()
+    end
     if id and not table.arraycontains(TheGame:GetGameState():GetMainQuest().param.unlocked_locations, id) then
         cxt:RunLoop(function(cxt)
             cxt:Opt("OPT_UNLOCK_NEW_LOCATION",TheGame:GetGameState():GetLocation(id))
@@ -225,7 +230,7 @@ end
 -- Get wealth based on renown.
 function DemocracyUtil.GetWealth(renown)
     if is_instance(renown, Agent) then
-        renown = renown:GetRenown() + (renown:HasTag("wealthy") and 1 or 0)
+        renown = renown:GetRenown() -- + (renown:HasTag("wealthy") and 1 or 0)
     end
     renown = renown or 1
     return clamp(math.floor(renown), 1, DemocracyConstants.wealth_levels)
@@ -248,6 +253,7 @@ function DemocracyUtil.AddOppositionCast(qdef)
                 cast_id = data.cast_id,
                 alias = data.character,
                 no_validation = true,
+                optional = true,
                 on_assign = function(quest, agent)
                     if agent:GetContentID() == "KALANDRA" then
                         -- just because lol.
@@ -480,7 +486,7 @@ function DemocracyUtil.AddDemandConvo(cxt, demand_list, demand_modifiers, haggle
         if not demand_data.resolved then
             -- this is done because it bypasses the hard check for convo_common when directly using cxt:Opt
             -- instead of taking an id, it takes the actual, localized string using our handy function
-            local opt = cxt:RawOpt(string.capitalize_sentence(loc.format("{1#one_demand}", demand_data)), demand_data.id)
+            local opt = cxt:RawOpt(loc.cap(loc.format("{1#one_demand}", demand_data)), demand_data.id)
             -- ConvoOption()
             -- cxt.enc:AddOption(opt)
             
@@ -525,6 +531,9 @@ function DemocracyUtil.GetAllPunishmentTargets()
 end
 
 function DemocracyUtil.GetOppositionID(agent)
+    if not agent then
+        return nil
+    end
     for id, data in pairs(DemocracyConstants.opposition_data) do
         if data.character and data.character == agent:GetContentID() then
             return id
@@ -761,6 +770,312 @@ function DemocracyUtil.GiveBossRewards(cxt)
     end)
 end
 
+-- A person's voter intention is a value indicating how likely they will vote for you.
+-- As a guideline, if > 50 it means 100% support, while < 50 means 100% against.
+-- [-20, 20] is the apathetic range, where they don't care enough to vote.
+-- > 20, you have the support, while < 20, people are against you.
+-- This can also be used to determine faction support or wealth support.
+-- In practice, a value from [-50, 50] will probably be added, to add randomness.
+function DemocracyUtil.GetVoterIntentionIndex(data)
+    local faction, wealth
+    if data.agent then
+        faction = data.agent:GetFactionID()
+        wealth = DemocracyUtil.GetWealth(agent)
+    end
+    if data.faction then
+        faction = type(data.faction) == "string" and data.faction or data.faction.id
+    end
+    if data.wealth then
+        wealth = DemocracyUtil.GetWealth(data.wealth)
+    end
+
+    -- Here, we cap the index from the general support, so that high general support can only get you so far.
+    -- You need to work on other types of support to win a voter
+    local voter_index = 0
+
+    local delta = DemocracyUtil.TryMainQuestFn("GetGeneralSupport") - DemocracyUtil.TryMainQuestFn("GetCurrentExpectation")
+
+    if delta <= 5 then
+        voter_index = delta
+    else
+        delta = delta - 5
+        if delta >= 20 then
+            voter_index = voter_index + 5
+            delta = delta - 20
+        else
+            voter_index = voter_index + math.round(delta / 2)
+            delta = 0
+        end
+        -- if delta >= 20 then
+        --     voter_index = voter_index + 5
+        --     delta = delta - 20
+        -- else
+        --     voter_index = voter_index + math.round(delta / 4)
+        --     delta = 0
+        -- end
+        if delta > 0 then
+            voter_index = voter_index + math.round(delta / 5)
+        end
+    end
+    if faction then
+        voter_index = voter_index + (TheGame:GetGameState():GetMainQuest().param.faction_support[faction] or 0)
+    end
+    if wealth then
+        voter_index = voter_index + (TheGame:GetGameState():GetMainQuest().param.wealth_support[wealth] or 0)
+    end
+    return voter_index
+end
+
+function DemocracyUtil.GetEndorsement(index)
+    -- I know this looks like yanderedev's code, but I'm lazy today.
+    -- Also this runs at O(1) time, so it doesn't really matter that much.
+    -- And this reuses the relationship array. It's kinda redundant having another enum with the same elements
+    -- representing similar things.
+    if index >= 50 then
+        return RELATIONSHIP.LOVED
+    elseif index >= 20 then
+        return RELATIONSHIP.LIKED
+    elseif index > -20 then
+        return RELATIONSHIP.NEUTRAL
+    elseif index > -50 then
+        return RELATIONSHIP.DISLIKED
+    else
+        return RELATIONSHIP.HATED
+    end
+end
+function DemocracyUtil.GetFactionEndorsement(faction)
+    return DemocracyUtil.GetEndorsement(DemocracyUtil.GetVoterIntentionIndex{faction = faction})
+end
+function DemocracyUtil.GetWealthEndorsement(wealth)
+    return DemocracyUtil.GetEndorsement(DemocracyUtil.GetVoterIntentionIndex{wealth = wealth})
+end
+function DemocracyUtil.CalculatePartyStrength(members)
+    if is_instance(members, Party) then
+        members = members:GetMembers()
+    end
+    local score = 0
+    for i, agent in ipairs(members) do
+        score = score + agent:GetCombatStrength()
+    end
+    return score
+end
+function DemocracyUtil.GetAlliancePotential(candidate_id)
+    local oppositions =  DemocracyConstants.opposition_data
+    local candidate_data = oppositions[candidate_id]
+    assert(candidate_data, "Invalid candidate_id")
+    local score = DemocracyUtil.GetVoterIntentionIndex({faction = candidate_data.main_supporter})
+    for id, data in pairs(oppositions) do
+        if id ~= candidate_id then
+            local candidate = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
+            if candidate then
+                local rel_with_player = candidate:GetRelationship()
+                local faction_rel = TheGame:GetGameState():GetFactions():GetFactionRelationship( 
+                    data.main_supporter, candidate_data.main_supporter )
+                -- Positive when friend with friend, enemy of enemy
+                -- Negative when enemy of friend, enemy of enemy
+                local fof = (rel_with_player - RELATIONSHIP.NEUTRAL) * (faction_rel - RELATIONSHIP.NEUTRAL)
+                if fof <= -2 then
+                    -- This happens when you are liked with hated, loved with disliked,
+                    -- disliked of loved(never happens unless somehow a faction has more than 1 candidates)
+                    -- or hated of liked
+                    return nil, candidate
+                elseif fof == -1 then
+                    score = score - 25
+                else
+                    score = score + 10 * fof 
+                end
+            end
+        end
+    end
+    return score
+end
+function QuestDef:GetProviderCast()
+    for i, cast_def in ipairs( self.cast ) do
+        if cast_def.provider then
+            return cast_def
+        end
+    end
+end
+function DemocracyUtil.SpawnRequestQuest(agent, spawn_param)
+    if not spawn_param then
+        spawn_param = {}
+    end
+    local potential_jobs = {}
+    for id, def in pairs( Content.GetAllQuests() ) do
+        if def.qtype == QTYPE.SIDE and def:HasTag("REQUEST_JOB") and (not def:HasTag("manual_spawn")) then
+            table.insert(potential_jobs, def)
+        end
+    end
+    table.shuffle(potential_jobs)
+    table.insert(potential_jobs, Content.GetQuestDef( "PLACEHOLDER_REQUEST_QUEST" ))
+    -- DBG(potential_jobs)
+    for i, def in ipairs(potential_jobs) do
+        local provider_cast = def:GetProviderCast()
+        local params = deepcopy(spawn_param)
+        
+        if provider_cast then
+            if not params.cast then
+                params.cast = {}
+            end
+            params.cast[provider_cast.cast_id] = agent
+            local spawned_quest = QuestUtil.SpawnInactiveQuest(def.id, params)
+            if spawned_quest then
+                -- DBG(spawned_quest)
+                if params.debug_test then
+                    TheGame:GetGameState():AddActiveQuest( spawned_quest )
+                    spawned_quest:Activate()
+                end
+                return spawned_quest
+            end
+        end
+    end
+    assert(false, loc.format("No request quest spawned for {1#agent}", agent))
+end
+function DemocracyUtil.DebugSetRandomDeck(seed)
+    local DECKS = require "content/quests/experiments/sal_day_4_decks"
+    if seed then
+        math.randomseed(seed)
+    end
+    local deck_idx = math.random(#DECKS)
+    local deck = DECKS[deck_idx]
+    TheGame:GetGameState():SetDecks(deck)
+end
+function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
+    potential_offset = potential_offset or 0
+    local candidate_data = DemocracyUtil.GetOppositionData(ally)
+    cxt:Dialog("DIALOG_ALLIANCE_TALK_INTRO")
+    if not candidate_data then
+        cxt:Dialog("DIALOG_ALLIANCE_TALK_INVALID")
+    else
+        local potential, problem_agent = DemocracyUtil.GetAlliancePotential(candidate_data.cast_id)
+        local platform = candidate_data.platform
+        local oppo_main_stance = candidate_data.stances[platform]
+        local player_main_stance = DemocracyUtil.GetStance(platform) or 0
+        cxt.enc.scratch.opposite_spectrum = oppo_main_stance * player_main_stance <= -2
+        if potential and DemocracyUtil.GetEndorsement(potential + potential_offset) > RELATIONSHIP.NEUTRAL then
+            cxt:Dialog("DIALOG_ALLIANCE_TALK_UNCONDITIONAL")
+            if cxt.enc.scratch.opposite_spectrum then
+                cxt:Opt("OPT_ALLIANCE_TALK_AGREE_STANCE")
+                    :Dialog("DIALOG_ALLIANCE_TALK_AGREE_STANCE")
+                    :UpdatePoliticalStance(platform, oppo_main_stance)
+                    :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
+                    :DoneConvo()
+                
+            else
+                cxt:Opt("OPT_ALLIANCE_TALK_ACCEPT")
+                    :Dialog("DIALOG_ALLIANCE_TALK_ACCEPT")
+                    -- :UpdatePoliticalStance(platform, oppo_main_stance)
+                    :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
+                    :DoneConvo()
+            end
+            cxt:Opt("OPT_ALLIANCE_TALK_REJECT_ALLIANCE")
+                :Dialog("DIALOG_ALLIANCE_TALK_REJECT_ALLIANCE")
+                :Fn(function()
+                    ally:Remember("REJECTED_ALLIANCE")
+                end)
+                :DoneConvo()
+        elseif potential and DemocracyUtil.GetEndorsement(potential + potential_offset) == RELATIONSHIP.NEUTRAL then
+            potential = potential + potential_offset
+            cxt:Dialog("DIALOG_ALLIANCE_TALK_CONDITIONAL")
+            if cxt.enc.scratch.opposite_spectrum then
+                cxt:RunLoop(function(cxt)
+                    cxt:Opt("OPT_ALLIANCE_TALK_AGREE_STANCE")
+                        :Dialog("DIALOG_ALLIANCE_TALK_AGREE_STANCE")
+                        :UpdatePoliticalStance(platform, oppo_main_stance)
+                        -- :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
+                        :Pop()
+                    cxt:Opt("OPT_ALLIANCE_TALK_REJECT_ALLIANCE")
+                        :Dialog("DIALOG_ALLIANCE_TALK_REJECT_ALLIANCE")
+                        :Fn(function()
+                            ally:Remember("REJECTED_ALLIANCE")
+                        end)
+                        :DoneConvo()
+                end)
+            end
+            local rawcost = 250 - potential * 8
+            -- local cost, reasons = CalculatePayment(ally, rawcost)
+            local demands, demand_list = ally:HasMemoryFromToday("ALLIANCE_DEMANDS"), ally:HasMemoryFromToday("ALLIANCE_DEMAND_LIST")
+            if not demands or not demand_list then
+                demands, demand_list = DemocracyUtil.GenerateDemandList(rawcost, ally, nil, {auto_scale = true})
+                ally:Remember("ALLIANCE_DEMANDS", demands)
+                ally:Remember("ALLIANCE_DEMAND_LIST", demand_list)
+                cxt.enc.scratch.new_demands = true
+            end
+            cxt:Dialog("DIALOG_ALLIANCE_TALK_DEMANDS", demand_list)
+            cxt:RunLoop(function(cxt)
+                local done_all = DemocracyUtil.AddDemandConvo(cxt, demand_list, demands)
+                if done_all then
+                    cxt:Dialog("DIALOG_ALLIANCE_TALK_ACCEPT_CONDITIONAL")
+                    ally:OpinionEvent(OPINION.ALLIED_WITH)
+                    StateGraphUtil.AddEndOption(cxt)
+                    return
+                end
+            -- local demand_list = DemocracyUtil.ParseDemandList(demands)
+                cxt:Opt("OPT_ALLIANCE_TALK_REJECT_ALLIANCE")
+                    :Dialog("DIALOG_ALLIANCE_TALK_REJECT_ALLIANCE")
+                    :Fn(function()
+                        ally:Remember("REJECTED_ALLIANCE")
+                    end)
+                    :DoneConvo()
+            end)
+        else
+            if problem_agent then
+                cxt.enc.scratch.is_problem_ally = problem_agent:GetRelationship() > RELATIONSHIP.NEUTRAL
+                cxt:Dialog("DIALOG_ALLIANCE_TALK_BAD_ALLY", problem_agent)
+            else
+                cxt:Dialog("DIALOG_ALLIANCE_TALK_REJECT")
+            end
+            -- ally:OpinionEvent(OPINION.ALLIED_WITH)
+            ally:Remember("REJECTED_ALLIANCE")
+            StateGraphUtil.AddEndOption(cxt)
+        end
+    end
+end
+function DemocracyUtil.GenerateGenericOppositionTable()
+    local GENERIC_OPPOSITION = {"GAMBLER", "TEI", "DANGEROUS_STRANGER"}
+    local player_id = TheGame:GetGameState():GetPlayerAgent():GetContentID()
+    if player_id ~= "SAL" then
+        table.insert(GENERIC_OPPOSITION, "NPC_SAL")
+    end
+    -- if player_id ~= "ROOK" then
+    --     table.insert(GENERIC_OPPOSITION, "NPC_ROOK")
+    -- end
+    -- if player_id ~= "SMITH" then
+    --     table.insert(GENERIC_OPPOSITION, "NPC_SMITH")
+    -- end
+    if player_id ~= "PC_SHEL" then
+        table.insert(GENERIC_OPPOSITION, "BRAVE_MERCHANT")
+    end
+    return GENERIC_OPPOSITION
+end
+function DemocracyUtil.GetAgentStanceIndex(issue, agent)
+    if type(issue) == "string" then
+        issue = DemocracyConstants.issue_data[issue]
+    end
+    return issue:GetAgentStanceIndex(agent)
+end
+function DemocracyUtil.GetModSetting(id)
+    if id then
+        local file_settings = TheGame:GetGameState() and TheGame:GetGameState():GetMainQuest() and TheGame:GetGameState():GetMainQuest().param.local_file_settings or {}
+        if file_settings[id] ~= nil then
+            return file_settings[id]
+        end
+        return Content.GetModSetting( MODID, id )
+    end
+end
+function DemocracyUtil.GetModData()
+    return Content.FindMod(MODID)
+end
+function DemocracyUtil.GetPerFileSettings()
+    local data = {}
+    for i, setting in ipairs(DemocracyUtil.GetModData().mod_options) do
+        if setting.per_save_file then
+            table.insert(data,setting.key)
+        end
+    end
+    return data
+end
+
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator
 
@@ -795,6 +1110,32 @@ function ConvoOption:RequireFreeTimeAction(actions)
     end
 
     return self
+end
+
+function AutoUpgradeText(self, field, invert, preprocess)
+    -- assert(self[field] ~= nil, "Empty field")
+    if not preprocess then
+        preprocess = function(x) return x end
+    end
+    if not self.base_def then
+        return preprocess(self[field])
+    end
+    if not (type(self[field]) == "number" and type(self.base_def[field]) == "number") then
+        if self[field] ~= self.base_def[field] then
+            return string.format("<#UPGRADE>%s</>", preprocess(self[field]))
+        else
+            return preprocess(self[field])
+        end
+    end
+    if self[field] ~= self.base_def[field] then
+        if (self[field] < self.base_def[field]) ~= (invert and true or false) then
+            return string.format("<#DOWNGRADE>%s</>", preprocess(self[field]))
+        else
+            return string.format("<#UPGRADE>%s</>", preprocess(self[field]))
+        end
+    else
+        return preprocess(self[field])
+    end
 end
 -- return {
 --     ADVISOR_IDS = ADVISOR_IDS,

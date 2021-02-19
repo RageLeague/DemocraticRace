@@ -33,28 +33,29 @@ QDEF:AddConvo()
     :ConfrontState("STATE_CONFRONT")
         :Loc{
             DIALOG_INTRO = [[
-                * You saw two people arguing about {issue_name}.
-                * They both seems very passionate about the topic.
-                extremist_neg:
-                    !right
-                extremist_pos:
-                    !left
-                    !angry_accuse
-                    Havaria needs {1#pol_stance}! It's the only way!
-                extremist_neg:
-                    !angry_accuse
-                    %confront_argument
-                    What we need clearly is {2#pol_stance}!
-                * As their debate gets heated, they sees you.
+                * Just as the boredom of treking across the loam makes you consider why you're doing this, you see two people arguing.
+                * You hear just enough buzzwords to realize it's about {issue_name}, and both of them are spitting bricks about it.
+                * You try your best to disengage with it.
+                * Keyword: try.
                 player:
                     !left
                 extremist_pos:
                     !right
-                    You there, grifter!
+                    Over there, Grifter!
                 extremist_neg:
                     !right
-                    We're trying to figure out whose ideology is the best.
-                    Settle this!
+                    We've been here for hours trying to figure out whose correct in their ideology.
+                    Now, of course, a sensible individual like youself knows that Havaria needs {2#pol_stance}.
+                extremist_pos:
+                    !left
+                    Oh shut it you Bogan!
+                    Pseudo-intellectuals like you are what's ruining Havaria!
+                    What we really need is {1#pol_stance}.
+                player:
+                    !left
+                extremist_neg:
+                    This isn't going anywhere.
+                    Help us settle this, will you?
             ]],
             OPT_SIDE_WITH = "Side with {1#agent}",
             DIALOG_SIDED = [[
@@ -62,11 +63,12 @@ QDEF:AddConvo()
                     !right
                 player:
                     !left
-                    I have to say, I must agree with {agent} here.
+                    Out of the both of you, {agent} is in the right.
                 other:
                     !surprised
                     What? You would rather side with {agent} than me?
                     That's just so wrong!
+                    Do you want Havaria to crash and burn?
                 agent:
                     !left
                     You're the one who's in the wrong here.
@@ -76,11 +78,13 @@ QDEF:AddConvo()
                     I won't forget this!
                     !exit
                 * {other.HeShe} leaves.
+                * {agent} slumps {agent.hisher} shoulders and lets out a sigh of relief
                 player:
                     !left
                 agent:
                     !right
-                    Thanks for backing me up back there.
+                    You have no idea how long we've been debating about that.
+                    Thank you, although I also need to get going.
                     See you!
                     !exit
                 * {agent} also left, leaving you alone to ponder whether you made the right decision or not.
@@ -88,8 +92,8 @@ QDEF:AddConvo()
             OPT_CHOOSE_NO_ONE = "Choose no one",
             DIALOG_CHOOSE_NO_ONE = [[
                 player:
-                    You know what, I don't think it is my place to settle this.
-                    Why don't you two just pretend that I was never here?
+                    Look, i'm flattered, really I am.
+                    But I don't think this kind of drama is my kind of place to weigh in.
                 extremist_neg:
                     !right
                     !surprised
@@ -100,6 +104,7 @@ QDEF:AddConvo()
                     $happyCocky
                     Was hoping for the grifter will back you up? Well too bad! {player.HeShe} isn't.
                 extremist_neg:
+                    !angry
                     Of course not!
                 * You left those two be. Better to stay neutral than getting involved, right?
             ]],

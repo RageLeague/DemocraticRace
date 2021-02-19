@@ -196,14 +196,34 @@ local function OnPreLoad( mod )
         end
     end
 end
+local MOD_OPTIONS =
+{
+    -- Access this value from the user's settings by calling:
+    -- Content.GetModSetting( <mod_id>, "resolve_per_day" )
+    {
+        title = "Support Requirement Multipliers",
+        slider = true,
+        key = "support_requirement_multiplier",
+        default_value = 1,
+        values = {
+            range_min = 0,
+            range_max = 3,
+            step_size = .05,
+            desc = "This is the multiplier to the support requirements. This setting is tied to each save file.",
+        },
+        per_save_file = true,
+    },
+}
 -- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {
-    version = "0.1.7",
+    version = "0.2.0",
     alias = "DEMOCRATICRACE",
     
     OnLoad = OnLoad,
     OnPreLoad = OnPreLoad,
     OnNewGame = OnNewGame,
+
+    mod_options = MOD_OPTIONS,
 
     title = "The Democratic Race",
     description = "The Pioneer campaign mod for the (currently) Early Access game Griftlands, Democratic Race is a mod for Griftlands that adds a negotiation based campaign mode to the game, in contrast to the direct combat.",

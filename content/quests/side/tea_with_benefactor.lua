@@ -379,6 +379,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
 
 FOLLOWUP = QDEF:AddFollowup()
 
+FOLLOWUP:GetCast("benefactor").unimportant = true
 FOLLOWUP:AddObjective{
     id = "wait",
     state = QSTATUS.ACTIVE,

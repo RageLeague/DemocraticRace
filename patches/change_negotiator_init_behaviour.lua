@@ -25,9 +25,9 @@ Negotiation.Negotiator.InitBehaviour = function(self)
         else
             self.agent.temp_negotiation_behaviour = nil
         end
-    else
-        return old_init(self)
+        
     end
+    return old_init(self)
 end
 
 function Agent:SetTempNegotiationBehaviour(data, enc)

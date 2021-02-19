@@ -190,6 +190,7 @@ lines:
   - You're wrong. Here's 100 reasons why.
   - Sore wa chigau yo!
   - You want to get your mind changed? I'll help you with that!
+  - I can easily prove you're wrong.
 
 - tags: [rebuttal]
   dialog:
@@ -197,3 +198,4 @@ lines:
   - Here's why your claim is wrong.
   - Your opinion is baseless.
   - You need to try harder to convince me!
+  - Your thought is naive!

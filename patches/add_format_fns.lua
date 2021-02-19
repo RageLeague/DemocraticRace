@@ -55,7 +55,7 @@ end
 loc.demand_list = function(list)
     local t = {}
     for i, demand in pairs( list ) do
-        table.insert( t, loc.format( "{1#one_demand}", demand ))
+        table.insert( t, (loc.format( "{1#one_demand}", demand ):gsub("{agent}", LOC"MISC.ME")))
     end
     if #t <= 0 then
         return LOC"MISC.DO_NOTHING"

@@ -249,8 +249,9 @@ local val =  {
                 },
             },
             [2] = {
-                name = "Universal Security for All",
-                desc = "Havaria is overrun with criminals of all kind, and the only way to fix it is through drastic measures.",
+                -- "Universal" literally means "for all".
+                name = "Security for All",
+                desc = "Havaria is overrun with criminals of all kind, and the only way to fix it is through drastic measures. By funding for Security for All, everyone, regardless of social status, can be protected from criminals.",
                 faction_support = {
                     ADMIRALTY = 5,
                     FEUD_CITIZEN = 3,
@@ -276,12 +277,12 @@ local val =  {
         stances = {
             [-2] = {
                 name = "Total Annexation",
-                desc = "There is no point in distinguish between Havaria and Deltree. The Admiralty more or less controls Havaria anyway, so things won't change much. Plus, annexing Havaria can make trading andadministration easier, as well as improving Havarian's living conditions.",
+                desc = "There is no point in distinguish between Havaria and Deltree. The Admiralty more or less controls Havaria anyway, so things won't change much. Plus, annexing Havaria can make trading easier, as well as improving Havarian's living conditions.",
                 faction_support = {
                     ADMIRALTY = 5,
                     FEUD_CITIZEN = -4,
                     BANDITS = -5,
-                    CULT_OF_HESH = 3,
+                    CULT_OF_HESH = 4,
                     JAKES = -3,
                 },
                 wealth_support = {
@@ -313,7 +314,7 @@ local val =  {
                 desc = "The tension between Deltree and Havaria is too high, that no one will benefit if a decision is made immediately. It's probably better to not touch on this issue.",
                 faction_support = {
                     ADMIRALTY = -1,
-                    FEUD_CITIZEN = -1,
+                    FEUD_CITIZEN = 1,
                 },
                 wealth_support = {
                     -1,
@@ -363,36 +364,38 @@ local val =  {
                 name = "Abolish Taxes",
                 desc = "Taxes are tools invented by those in power to legally steal people's hard work, therefore all taxes should be abolished. The people can find better uses for the money than giving them up to the coffers of those in power.",
                 faction_support = {
-                    SPARK_BARONS = 5,
+                    SPARK_BARONS = 4,
                     ADMIRALTY = -5,
                     RISE = -2,
                     CULT_OF_HESH = -4,
-                    FEUD_CITIZEN = 1,
-                    JAKES = 2,
+                    FEUD_CITIZEN = 2,
+                    JAKES = 3,
+                    BANDITS = 2,
                 },
                 wealth_support = {
                     2,
                     -5,
-                    -3,
-                    5,
+                    4,
+                    1,
                 },
             },
             [-1] = {
                 name = "Reduced Taxes",
                 desc = "While it is important that public infrastructure to be funded, at the current state, the taxes are just going to corrupted officials. The taxes has taken a huge toll on the people, therefore it should be reduced.",
                 faction_support = {
-                    SPARK_BARONS = 3,
+                    SPARK_BARONS = 2,
                     ADMIRALTY = -4,
                     CULT_OF_HESH = -2,
                     RISE = -1,
-                    FEUD_CITIZEN = 1,
-                    JAKES = 1,
+                    FEUD_CITIZEN = 2,
+                    JAKES = 2,
+                    BANDITS = 1,
                 },
                 wealth_support = {
                     1,
                     -3,
-                    -2,
                     3,
+                    -2,
                 },
             },
             [0] = {
@@ -412,8 +415,8 @@ local val =  {
                 },
             },
             [1] = {
-                name = "Increase Taxes",
-                desc = "While lots of people don't like taxes, taxes are important tools to maintain public services and infrastructures, as well as reduce the huge wealth inequality that is rampant in Havaria. Therefore, it should be increased.",
+                name = "Restructure Taxes",
+                desc = "A big reason why people are not satisfied with the taxes is because the traditional tax structure does not care whether or not you are able to afford to pay the tax. We need to restructure taxes so that people pay what they can, and make everyone happier.",
                 faction_support = {
                     SPARK_BARONS = -4,
                     ADMIRALTY = 2,
@@ -423,14 +426,14 @@ local val =  {
                     JAKES = -1,
                 },
                 wealth_support = {
-                    -2,
                     2,
-                    1,
+                    2,
                     -3,
+                    -2,
                 },
             },
             [2] = {
-                name = "Max Taxes",
+                name = "Increase Taxes",
                 desc = "It is important to keep the ruling people funded so that they can provide their services for the people. The taxes collected are all eventually given back to the people. Therefore, taxes should be increased as high as possible, so that public services are properly funded.",
                 faction_support = {
                     SPARK_BARONS = -6,
@@ -444,8 +447,8 @@ local val =  {
                 wealth_support = {
                     -3,
                     2,
-                    -1,
                     -5,
+                    4,
                 },
             },
         },
@@ -465,12 +468,13 @@ local val =  {
                     RISE = -5,
                     FEUD_CITIZEN = -2,
                     JAKES = -4,
+                    BANDITS = -2,
                 },
                 wealth_support = {
                     -4,
                     -2,
-                    2,
                     3,
+                    5,
                 },
             },
             [-1] = {
@@ -483,11 +487,12 @@ local val =  {
                     RISE = -4,
                     FEUD_CITIZEN = -1,
                     JAKES = -2,
+                    BANDITS = -1,
                 },
                 wealth_support = {
                     -2,
                     -1,
-                    0,
+                    2,
                     2,
                 },
             },
@@ -497,10 +502,12 @@ local val =  {
                 faction_support = {
                     SPARK_BARONS = -1,
                     RISE = -1,
+                    BANDITS = 1,
+                    JAKES = 1,
                 },
                 wealth_support = {
                     -1,
-                    0,
+                    -1,
                     0,
                     1,
                 },
@@ -515,9 +522,10 @@ local val =  {
                     RISE = 3,
                     FEUD_CITIZEN = 2,
                     JAKES = 2,
+                    BANDITS = 1,
                 },
                 wealth_support = {
-                    2,
+                    3,
                     1,
                     -2,
                     -3,
@@ -535,7 +543,7 @@ local val =  {
                     JAKES = -1,
                 },
                 wealth_support = {
-                    4,
+                    5,
                     2,
                     -3,
                     -5,
@@ -646,7 +654,7 @@ local val =  {
                     BANDITS = 3,
                     CULT_OF_HESH = -4,
                     FEUD_CITIZEN = 2,
-                    SPARK_BARONS = -3,
+                    SPARK_BARONS = -2,
                 },
                 wealth_support = {
                     1,
@@ -664,7 +672,7 @@ local val =  {
                     BANDITS = 2,
                     CULT_OF_HESH = -2,
                     FEUD_CITIZEN = 1,
-                    SPARK_BARONS = -2,
+                    SPARK_BARONS = 1,
                 },
                 wealth_support = {
                     2,
@@ -715,7 +723,7 @@ local val =  {
                     BANDITS = -4,
                     CULT_OF_HESH = 3,
                     FEUD_CITIZEN = -2,
-                    SPARK_BARONS = 2,
+                    SPARK_BARONS = -2,
                 },
                 wealth_support = {
                     -2,
@@ -742,9 +750,9 @@ local val =  {
                     RISE = -3,
                 },
                 wealth_support = {
-                    -5,
-                    -3,
-                    1,
+                    -6,
+                    -4,
+                    2,
                     5,
                 },
             },
@@ -758,10 +766,10 @@ local val =  {
                     RISE = -2,
                 },
                 wealth_support = {
-                    -3,
+                    -4,
                     -2,
-                    0,
-                    2,
+                    3,
+                    4,
                 },
             },
             [0] = {
@@ -790,10 +798,10 @@ local val =  {
                     RISE = 1,
                 },
                 wealth_support = {
+                    3,
                     2,
-                    1,
-                    0,
                     -3,
+                    -4,
                 },
             },
             [2] = {
@@ -806,9 +814,9 @@ local val =  {
                     RISE = 2,
                 },
                 wealth_support = {
-                    4,
+                    5,
                     2,
-                    -3,
+                    -4,
                     -5,
                 },
             },

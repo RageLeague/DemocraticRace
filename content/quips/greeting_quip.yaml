@@ -32,3 +32,19 @@ lines:
   # score: 100
   dialog:
   - Don't just stand around here! Work on the campaign or something!
+- tags: [player_sal, fssh, democratic_race]
+  dialog:
+  - |
+    player:
+      Didn't expect to see you here, {agent}.
+      Why are you here?
+    agent:
+      You know, because of the election, moving here just seems like good business.
+      Why are you here, then?
+    player:
+      Running for president, of course.
+      Why aren't you running? The Jakes could use a great leader like you.
+    agent:
+      Ah, of course.
+      My days of glory are over. Now I'm just trying to get by and make some shills.
+      Still, feel free to stay and have a drink.

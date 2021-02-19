@@ -46,7 +46,7 @@ end
 local DAY_SCHEDULE = {
     {quest = "RACE_DAY_1", difficulty = 1, support_expectation = {0,10,25}},
     {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {25,40,55,70}},
-    -- {quest = "RACE_DAY_3", difficulty = 3},
+    {quest = "RACE_DAY_3", difficulty = 3, support_expectation = {70,90,115,135}},
     -- {quest = "RACE_DAY_4", difficulty = 4},
     -- {quest = "RACE_DAY_5", difficulty = 5},
 }
@@ -109,12 +109,21 @@ local QDEF = QuestDef.Define
         -- Also they determine a whole bunch of things. Very important to keep high.
         -- Just read the README
         quest.param.support_level = 0
+
+        quest.param.support_gain_source = {}
+        quest.param.support_loss_source = {}
         -- Your support among factions.
         -- This is stored as the support relative to the general support
         -- The displayed support level is already adjusted.
         quest.param.faction_support = {}
+
+        quest.param.faction_support_gain_source = {}
+        quest.param.faction_support_loss_source = {}
         -- Your support level among wealth levels.(renown levels)
         quest.param.wealth_support = {}
+
+        quest.param.wealth_support_gain_source = {}
+        quest.param.wealth_support_loss_source = {}
         -- The locations you've unlocked.
         quest.param.unlocked_locations = --shallowcopy(Content.GetWorldRegion("democracy_pearl").locations)--{"MURDERBAY_NOODLE_SHOP"}
         {"MURDERBAY_NOODLE_SHOP"}
@@ -124,6 +133,25 @@ local QDEF = QuestDef.Define
         quest.param.stances = {}
         quest.param.stance_change = {}
         quest.param.stance_change_freebie = {}
+
+        local new_faction_relationships = {
+            {"BANDITS", "SPARK_BARONS", RELATIONSHIP.DISLIKED},
+            {"BANDITS", "CULT_OF_HESH", RELATIONSHIP.DISLIKED},
+            {"BANDITS", "FEUD_CITIZEN", RELATIONSHIP.DISLIKED},
+            {"SPARK_BARONS", "CULT_OF_HESH", RELATIONSHIP.HATED},
+            {"ADMIRALTY", "RISE", RELATIONSHIP.HATED},
+            -- {"BANDITS", "RISE", RELATIONSHIP.DISLIKED},
+            {"BANDITS", "JAKES", RELATIONSHIP.LIKED},
+            {"ADMIRALTY", "CULT_OF_HESH", RELATIONSHIP.LIKED},
+            {"ADMIRALTY", "SPARK_BARONS", RELATIONSHIP.LIKED},
+            {"JAKES", "SPARK_BARONS", RELATIONSHIP.LIKED},
+            {"JAKES", "ADMIRALTY", RELATIONSHIP.NEUTRAL},
+            {"JAKES", "CULT_OF_HESH", RELATIONSHIP.DISLIKED},
+            {"FEUD_CITIZEN", "RISE", RELATIONSHIP.LIKED},
+        }
+        for i, data in ipairs(new_faction_relationships) do
+            TheGame:GetGameState():GetFactions():SetFactionRelationship(table.unpack(data))
+        end
 
         -- quest.param.allow_skip_side = true
 
@@ -145,12 +173,26 @@ local QDEF = QuestDef.Define
         for i, location in TheGame:GetGameState():AllLocations() do
             LocationUtil.PopulateLocation( location )
         end
-        QuestUtil.DoNextDay(DAY_SCHEDULE, quest, quest.param.start_on_day )
         
+        QuestUtil.DoNextDay(DAY_SCHEDULE, quest, quest.param.start_on_day )
+        quest:DefFn("on_post_load")
         DoAutoSave()
     end,
     plot_armour_fn = function(quest, agent)
         return agent:IsCastInQuest(quest)
+    end,
+    on_post_load = function(quest)
+        if not quest.param.local_file_settings then
+            quest.param.local_file_settings = {}
+        end
+        for i, id in ipairs(DemocracyUtil.GetPerFileSettings()) do
+            if not quest.param.local_file_settings[id] then
+                quest.param.local_file_settings[id] = DemocracyUtil.GetModSetting(id)
+            end
+        end
+    end,
+    fill_out_quip_tags = function(quest, tags, agent)
+        table.insert_unique(tags, "democratic_race")
     end,
     events = 
     {
@@ -182,8 +224,16 @@ local QDEF = QuestDef.Define
                 return
             end
             local support_delta = DELTA_SUPPORT[new_rel] - DELTA_SUPPORT[old_rel]
+            
             if support_delta ~= 0 then
-                quest:DefFn("DeltaAgentSupport", support_delta, agent, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
+                local opposition_data = DemocracyUtil.GetOppositionData(agent)
+                if opposition_data then
+                    quest:DefFn("DeltaGeneralSupport", (new_rel - old_rel) * 8, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE")
+                    quest:DefFn("DeltaGroupFactionSupport", opposition_data.faction_support, new_rel - old_rel, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE" )
+                    quest:DefFn("DeltaGroupWealthSupport", opposition_data.wealth_support, new_rel - old_rel, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE" )
+                else
+                    quest:DefFn("DeltaAgentSupport", support_delta, agent, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
+                end
             end
             -- if new_rel == RELATIONSHIP.LOVED and old_rel ~= RELATIONSHIP.LOVED then
             --     TheGame:GetGameState():GetCaravan():DeltaMaxResolve(1)
@@ -366,7 +416,7 @@ local QDEF = QuestDef.Define
             quest:DefFn("DeltaGeneralSupport", amt, notification)
         end
     end,
-    DeltaGeneralSupport = function(quest, amt, notification)
+    DeltaGeneralSupport = function(quest, amt, notification, delta_type)
         quest.param.support_level = (quest.param.support_level or 0) + amt
         if notification == nil then
             notification = true
@@ -377,8 +427,15 @@ local QDEF = QuestDef.Define
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_general_support", amt )
         end
+        if not delta_type and type(notification) == "string" then
+            delta_type = notification
+        end
+        quest:DefFn("TrackDeltaGeneralSupport", amt, delta_type)
     end,
-    DeltaFactionSupport = function(quest, amt, faction, notification)
+    DeltaFactionSupport = function(quest, amt, faction, notification, delta_type)
+        if not quest.param.faction_support then
+            quest.param.faction_support = {}
+        end
         faction = DemocracyUtil.ToFactionID(faction)
         quest.param.faction_support[faction] = (quest.param.faction_support[faction] or 0) + amt
         if notification == nil then
@@ -390,8 +447,15 @@ local QDEF = QuestDef.Define
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_faction_support_" .. faction, amt )
         end
+        if not delta_type and type(notification) == "string" then
+            delta_type = notification
+        end
+        quest:DefFn("TrackDeltaFactionSupport", amt, faction, delta_type)
     end,
-    DeltaWealthSupport = function(quest, amt, renown, notification)
+    DeltaWealthSupport = function(quest, amt, renown, notification, delta_type)
+        if not quest.param.wealth_support then
+            quest.param.wealth_support = {}
+        end
         local r = DemocracyUtil.GetWealth(renown)
         quest.param.wealth_support[r] = (quest.param.wealth_support[r] or 0) + amt
         if notification == nil then
@@ -403,12 +467,105 @@ local QDEF = QuestDef.Define
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_wealth_support_" .. r, amt )
         end
+        if not delta_type and type(notification) == "string" then
+            delta_type = notification
+        end
+        quest:DefFn("TrackDeltaWealthSupport", amt, r, delta_type)
     end,
 
-    DeltaAgentSupport = function(quest, amt, agent, notification)
-        quest:DefFn("DeltaGeneralSupport", amt, false)
-        quest:DefFn("DeltaFactionSupport", amt, agent, false)
-        quest:DefFn("DeltaWealthSupport", amt, agent, false)
+    TrackDeltaGeneralSupport = function(quest, amt, delta_type)
+        if not quest.param.support_gain_source then
+            quest.param.support_gain_source = {}
+        end
+        if not quest.param.support_loss_source then
+            quest.param.support_loss_source = {}
+        end
+        
+        if amt ~= 0 then
+            if amt > 0 then
+                if not delta_type then
+                    delta_type = "DEFAULT_UP"
+                end
+                quest.param.support_gain_source[delta_type] = (quest.param.support_gain_source[delta_type] or 0) + amt
+            else
+                if not delta_type then
+                    delta_type = "DEFAULT_DOWN"
+                end
+                quest.param.support_loss_source[delta_type] = (quest.param.support_loss_source[delta_type] or 0) - amt
+            end
+        end
+    end,
+    TrackDeltaFactionSupport = function(quest, amt, faction, delta_type)
+        if not quest.param.faction_support_gain_source then
+            quest.param.faction_support_gain_source = {}
+        end
+        if not quest.param.faction_support_loss_source then
+            quest.param.faction_support_loss_source = {}
+        end
+
+        local target_table
+        
+        if amt ~= 0 then
+            if amt > 0 then
+                if not delta_type then
+                    delta_type = "DEFAULT_UP"
+                end
+                if not quest.param.faction_support_gain_source[faction] then
+                    quest.param.faction_support_gain_source[faction] = {}
+                end
+                target_table = quest.param.faction_support_gain_source[faction]
+            else
+                if not delta_type then
+                    delta_type = "DEFAULT_DOWN"
+                end
+                if not quest.param.faction_support_loss_source[faction] then
+                    quest.param.faction_support_loss_source[faction] = {}
+                end
+                target_table = quest.param.faction_support_loss_source[faction]
+            end
+            target_table[delta_type] = (target_table[delta_type] or 0) + math.abs(amt)
+        end
+    end,
+    TrackDeltaWealthSupport = function(quest, amt, wealth, delta_type)
+        if not quest.param.wealth_support_gain_source then
+            quest.param.wealth_support_gain_source = {}
+        end
+        if not quest.param.wealth_support_loss_source then
+            quest.param.wealth_support_loss_source = {}
+        end
+
+        local target_table
+        
+        if amt ~= 0 then
+            if amt > 0 then
+                if not delta_type then
+                    delta_type = "DEFAULT_UP"
+                end
+                if not quest.param.wealth_support_gain_source[wealth] then
+                    quest.param.wealth_support_gain_source[wealth] = {}
+                end
+                target_table = quest.param.wealth_support_gain_source[wealth]
+            else
+                if not delta_type then
+                    delta_type = "DEFAULT_DOWN"
+                end
+                if not quest.param.wealth_support_loss_source[wealth] then
+                    quest.param.wealth_support_loss_source[wealth] = {}
+                end
+                target_table = quest.param.wealth_support_loss_source[wealth]
+            end
+            target_table[delta_type] = (target_table[delta_type] or 0) + math.abs(amt)
+        end
+    end,
+
+    DeltaAgentSupport = function(quest, amt, agent, notification, delta_type)
+
+        if not delta_type and type(notification) == "string" then
+            delta_type = notification
+        end
+        quest:DefFn("DeltaGeneralSupport", amt, false, delta_type)
+        quest:DefFn("DeltaFactionSupport", amt, agent, false, delta_type)
+        quest:DefFn("DeltaWealthSupport", amt, agent, false, delta_type)
         if notification == nil then
             notification = true
         end
@@ -422,7 +579,10 @@ local QDEF = QuestDef.Define
     -- DeltaWealthSupportAgent = function(quest, amt, agent, ignore_notification)
     --     quest:DefFn("DeltaWealthSupport", amt, agent:GetRenown() or 1, ignore_notification)
     -- end,
-    DeltaGroupFactionSupport = function(quest, group_delta, multiplier, notification)
+    DeltaGroupFactionSupport = function(quest, group_delta, multiplier, notification, delta_type)
+        if not delta_type and type(notification) == "string" then
+            delta_type = notification
+        end
         multiplier = multiplier or 1
         if notification == nil then
             notification = true
@@ -430,13 +590,16 @@ local QDEF = QuestDef.Define
         local actual_group = {}
         for id, val in pairs(group_delta or {}) do
             actual_group[id] = math.round(val * multiplier)
-            quest:DefFn("DeltaFactionSupport", actual_group[id], id, false)
+            quest:DefFn("DeltaFactionSupport", actual_group[id], id, false, delta_type)
         end
         if notification then
             TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GROUP_FACTION_SUPPORT, actual_group, notification)
         end
     end,
-    DeltaGroupWealthSupport = function(quest, group_delta, multiplier, notification)
+    DeltaGroupWealthSupport = function(quest, group_delta, multiplier, notification, delta_type)
+        if not delta_type and type(notification) == "string" then
+            delta_type = notification
+        end
         multiplier = multiplier or 1
         if notification == nil then
             notification = true
@@ -444,7 +607,7 @@ local QDEF = QuestDef.Define
         local actual_group = {}
         for id, val in pairs(group_delta or {}) do
             actual_group[id] = math.round(val * multiplier)
-            quest:DefFn("DeltaWealthSupport", math.round(val * multiplier), id, false)
+            quest:DefFn("DeltaWealthSupport", math.round(val * multiplier), id, false, delta_type)
         end
         if notification then
             TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GROUP_WEALTH_SUPPORT, actual_group, notification)
@@ -459,6 +622,17 @@ local QDEF = QuestDef.Define
     GetWealthSupport = function(quest, renown)
         local r = DemocracyUtil.GetWealth(renown)
         return quest.param.support_level + (quest.param.wealth_support[r] or 0)
+    end,
+    GetGeneralSupportBreakdown = function(quest)
+        return {gain_table = quest.param.support_gain_source, loss_table = quest.param.support_loss_source}
+    end,
+    GetFactionSupportBreakdown = function(quest, faction)
+        faction = DemocracyUtil.ToFactionID(faction)
+        return {gain_table = quest.param.faction_support_gain_source[faction], loss_table = quest.param.faction_support_loss_source[faction]}
+    end,
+    GetWealthSupportBreakdown = function(quest, wealth)
+        local r = DemocracyUtil.GetWealth(wealth)
+        return {gain_table = quest.param.wealth_support_gain_source[r], loss_table = quest.param.wealth_support_loss_source[r]}
     end,
     GetCompoundSupport = function(quest, faction, renown)
         faction = DemocracyUtil.ToFactionID(faction)
@@ -477,6 +651,10 @@ local QDEF = QuestDef.Define
     -- call this function to do so.
     DoRandomOpposition = function(quest, num_to_do)
         num_to_do = num_to_do or 1
+        -- A self-balancing factor in case you get too popular.
+        if quest:DefFn("GetGeneralSupport") - quest:DefFn("GetCurrentExpectation") > 10 then
+            num_to_do = num_to_do + 1
+        end
         for i = 1, num_to_do do
             if quest:GetCastMember("random_opposition") then
                 quest:UnassignCastMember("random_opposition")
@@ -494,8 +672,8 @@ local QDEF = QuestDef.Define
         for i = 1, DemocracyConstants.wealth_levels do
             money = money + quest:DefFn("GetWealthSupport", i) * i
         end
-        money = money / 5
-        money = money + 50
+        money = money / 8
+        money = money + 100
         money = math.max(0, money)
         return math.round(money * rate)
     end,
@@ -546,10 +724,10 @@ local QDEF = QuestDef.Define
             if issue_data then
                 local stance = issue_data.stances[val]
                 if stance.faction_support then
-                    DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport", stance.faction_support, multiplier)
+                    DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport", stance.faction_support, multiplier, "STANCE_TAKEN")
                 end
                 if stance.wealth_support then
-                    DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport", stance.wealth_support, multiplier)
+                    DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport", stance.wealth_support, multiplier, "STANCE_TAKEN")
                 end
             end
         end
@@ -583,7 +761,23 @@ local QDEF = QuestDef.Define
     end,
     GetCurrentExpectation = function(quest)
         local arr = quest:DefFn("GetCurrentExpectationArray")
-        return arr[math.min(#arr, quest.param.sub_day_progress or 1)]
+        return math.round(arr[math.min(#arr, quest.param.sub_day_progress or 1)] * DemocracyUtil.GetModSetting("support_requirement_multiplier")) -- - 100
+    end,
+    GetDayEndExpectation = function(quest)
+        local arr = quest:DefFn("GetCurrentExpectationArray")
+        return math.round(arr[#arr] * DemocracyUtil.GetModSetting("support_requirement_multiplier"))
+    end,
+    GetStanceIntel = function(quest)
+        local intel = {}
+        if quest:GetCastMember("primary_advisor") then
+            table.insert(intel, quest:GetCastMember("primary_advisor"))
+        end
+        for i, id, data in sorted_pairs(DemocracyConstants.opposition_data) do
+            if quest:GetCastMember(id):KnowsPlayer() then
+                table.insert(intel, quest:GetCastMember(id))
+            end
+        end
+        return intel
     end,
 
     -- debug functions
@@ -597,10 +791,17 @@ local QDEF = QuestDef.Define
     when = QWHEN.MANUAL,
     score_fn = DemocracyUtil.OppositionScore,
     condition = function(agent, quest)
+        if quest.param.prev_opposition_faction == agent:GetFactionID() or quest.param.prev_opposition_wealth == DemocracyUtil.GetWealth(agent) then
+            return false, "No consecutive faction"
+        end
         if agent:GetRelationship() == RELATIONSHIP.DISLIKED then
             return math.random() < 0.1 -- sometimes we allow disliked people to hate you.
         end
         return agent:GetRelationship() < RELATIONSHIP.LOVED and agent:GetRelationship() > RELATIONSHIP.DISLIKED
+    end,
+    on_assign = function(quest, agent)
+        quest.param.prev_opposition_faction = agent:GetFactionID()
+        quest.param.prev_opposition_wealth = DemocracyUtil.GetWealth(agent)
     end,
 }
 :AddCastFallback{
@@ -623,31 +824,6 @@ local QDEF = QuestDef.Define
         end
     end,
 }
--- :AddCastByAlias{
---     -- Let fssh be the bartender of grog n dog
---     cast_id = "fssh",
---     alias = "FSSH",
---     on_assign = function(quest, agent)
---         local location = TheGame:GetGameState():GetLocation("GROG_N_DOG")
---         if agent:GetBrain():GetWorkPosition() == nil and location then
---             AgentUtil.TakeJob(agent, location, "bartender")
---             -- agent:GetBrain():SetHome(location)
---         end
---     end,
--- }
--- :AddCastByAlias{
---     cast_id = "host",
---     alias = "HESH_AUCTIONEER",
---     on_assign = function(quest, agent)
---         local location = TheGame:GetGameState():GetLocation("GRAND_THEATER")
---         if agent:GetBrain():GetWorkPosition() == nil and location then
---             AgentUtil.TakeJob(agent, location, "host")
---             -- agent:GetBrain():SetHome(location)
---         end
---         quest:UnassignCastMember("host")
---     end,
---     optional = true,
--- }
 -- Have to do this to make plot_armour_fn work.
 :AddObjective{
     id = "start",
