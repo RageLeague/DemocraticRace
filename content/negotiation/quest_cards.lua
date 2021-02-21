@@ -395,6 +395,16 @@ local CARDS = {
             end
         end,
     },
+    promote_product_quest =
+    {
+        name = "Promote Product",
+        desc = "Create a {promote_product_quest}. The opponent gains 1 {IMPATIENCE}",
+        flavour = "This sounds extremely unethical. Then again, if you are ethical, you wouldn't be a grifter.",
+
+        cost = 1,
+        flags = CARD_FLAGS.MANIPULATE | CARD_FLAGS.EXPEND,
+        rarity = CARD_RARITY.UNIQUE,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     if not def.series then
