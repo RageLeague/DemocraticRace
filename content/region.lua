@@ -80,10 +80,12 @@ local region = {
         "ADMIRALTY_GUARD",
         "ADMIRALTY_PATROL_LEADER",
         "ADMIRALTY_CLERK",
+        "ADMIRALTY_INVESTIGATOR",
 
         "RISE_REBEL",
         "RISE_RADICAL",
         "RISE_PAMPHLETEER",
+        "RISE_VALET",
         
         "SPARK_BARON_PROFESSIONAL",
         "SPARK_BARON_TASKMASTER",
