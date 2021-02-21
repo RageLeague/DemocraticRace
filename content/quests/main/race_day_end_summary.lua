@@ -330,13 +330,18 @@ QDEF:AddConvo("summary", "primary_advisor")
             ]],
             DIALOG_SUCCESS_NO_BONUS = [[
                 agent:
-                    Let's just agree to disagree.
-                    This is what you get for the day, and nothing more.
+                    Cool story.
+                    I would have given you extra funding for the campaign, if I had any.
+                    But I don't, so you get nothing extra.
             ]],
             DIALOG_SUCCESS = [[
                 agent:
                     Fine. Seems like you really do need some extra help from me.
                     I'll give you an extra {1#money}. Straight out of my pocket to help your campaign.
+                player:
+                    !happy
+                    Right, <i>your</> pocket.
+                agent:
                     I wonder what you will do without me.
             ]],
             DIALOG_FAILURE = [[
@@ -419,4 +424,5 @@ QDEF:AddConvo("summary", "primary_advisor")
             end
             -- DemocracyUtil.StartFreeTime()
             StateGraphUtil.AddEndOption(cxt)
+            
         end)

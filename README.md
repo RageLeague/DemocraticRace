@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.2.0(Alpha)
+Version: 0.2.1(Alpha)
 
 Author: RageLeague
 
@@ -44,7 +44,7 @@ Supported Languages: English (Right now Simplified/Traditional Chinese is not su
 
 ## Alpha Notice
 
-At the current stage, the mod is far from finished. You can play 2 days out of 5 right now, and many mechanics are planned to be added. Some of these mechanics are:
+At the current stage, the mod is far from finished. You can play **3** days out of 5 right now, and many mechanics are planned to be added. Some of these mechanics are:
 
 * More side quests and events.
 * More things to do at each locations, and more ways to "deal" with your enemies.
@@ -85,6 +85,11 @@ With the new official workshop support, you can directly install mods from steam
 Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues, or a major feature update. As such, it will be more stable.
 
 ## Changelog
+
+### 0.2.1
+
+* Allow you to look at the next rally job without accepting it. Added tooltip warning you that selecting a rally job will cause free time to end.
+* Added haggle negotiation for your daily fundings, if you have haggle badge.
 
 ### 0.2.0 (Day 3 update)
 
