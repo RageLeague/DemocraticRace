@@ -363,8 +363,8 @@ local QDEF = QuestDef.Define
     OfferJobs = function(quest, cxt, job_num, pool_name, allow_challenge, can_skip)
         local jobs = {}
         local used_ids = {}
-        if cxt.enc.scratch.job_pool then
-            jobs = cxt.enc.scratch.job_pool
+        if cxt.quest.param.job_pool then
+            jobs = cxt.quest.param.job_pool
         else
             for k = 1, job_num do
                 local new_job = quest:DefFn("SpawnPoolJob", pool_name, used_ids, true, k == 1 and allow_challenge)
@@ -373,12 +373,12 @@ local QDEF = QuestDef.Define
                     table.insert(jobs, new_job)
                 end
             end
-            cxt.enc.scratch.job_pool = jobs
+            cxt.quest.param.job_pool = jobs
         end
         DemocracyUtil.PresentJobChoice(cxt, jobs, function(cxt)
             if can_skip == true or (quest.param.allow_skip_side and can_skip ~= false) then
                 cxt:Opt("OPT_SKIP_RALLY")
-                    :MakeUnder()
+                    -- :MakeUnder()
                     :Dialog("DIALOG_CHOOSE_FREE_TIME")
                     :Fn(function(cxt)
                         cxt:Opt("OPT_INSIST_FREE_TIME")
@@ -395,6 +395,13 @@ local QDEF = QuestDef.Define
                             :PreIcon(global_images.reject)
                             :Dialog("DIALOG_NEVER_MIND_FREE_TIME")
                     end)
+            end
+            if cxt:GetAgent() and cxt:GetAgent() == cxt:GetCastMember("primary_advisor") then
+                cxt:Opt("OPT_DONE")
+                    :SetSFX( SoundEvents.leave_conversation )
+                    :Dialog("DIALOG_NO_JOB_YET")
+                    :Fn(function(cxt) cxt:End() end)
+                    :MakeUnder()
             end
         end, function(cxt, jobs_presented, job_picked) 
             cxt.quest.param.current_job = job_picked
