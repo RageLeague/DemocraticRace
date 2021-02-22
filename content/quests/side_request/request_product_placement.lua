@@ -39,6 +39,10 @@ local QDEF = QuestDef.Define
     no_validation = true,
     provider = true,
     unimportant = true,
+    condition = function(agent, quest)
+        return (agent:GetFactionID() == "SPARK_BARONS" or agent:GetFactionID() == "FEUD_CITIZEN" or agent:GetFactionID() == "JAKES") and
+            (DemocracyUtil.GetWealth(agent) > 2) and agent:GetContentID() ~= "ADVISOR_HOSTILE"
+    end,
     -- cast_fn = function(quest, t)
     --     table.insert( t, quest:CreateSkinnedAgent( "LABORER" ) )
     -- end,
@@ -50,6 +54,24 @@ local QDEF = QuestDef.Define
     on_activate = function(quest)
         TheGame:GetGameState():GetPlayerAgent().negotiator:LearnCard("promote_product_quest", {linked_quest = quest})
     end,
+    on_deactivate = function(quest)
+        for i, card in ipairs(TheGame:GetGameState():GetPlayerAgent().negotiator:GetCards()) do
+            if card.userdata.linked_quest == quest then
+                TheGame:GetGameState():GetPlayerAgent().negotiator:RemoveCard(card)
+            end
+        end
+    end,
+    events =
+    {
+        card_removed = function(quest, card)
+            for i, card in ipairs(TheGame:GetGameState():GetPlayerAgent().negotiator:GetCards()) do
+                if card.userdata.linked_quest == quest then
+                    return
+                end
+            end
+            quest:Fail("sell")
+        end,
+    },
 }
 -- We can use this on request quests, because there's no reject dialogs.
 QDEF:AddIntro(

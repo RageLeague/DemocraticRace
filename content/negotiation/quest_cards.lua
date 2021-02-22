@@ -1,6 +1,7 @@
 local negotiation_defs = require "negotiation/negotiation_defs"
 local CARD_FLAGS = negotiation_defs.CARD_FLAGS
 local EVENT = negotiation_defs.EVENT
+local RESULT = negotiation_defs.RESULT
 
 local CARDS = {
     assassin_fight_call_for_help = 
@@ -398,12 +399,62 @@ local CARDS = {
     promote_product_quest =
     {
         name = "Promote Product",
-        desc = "Create a {promote_product_quest}. The opponent gains 1 {IMPATIENCE}",
+        desc = "{1} asks you to promote their product.\nWhen played, create a {promote_product_quest}. The opponent gains 1 {IMPATIENCE}.",
+        alt_desc = "Your sponsor",
+        desc_fn = function(self, fmt_str)
+        end,
+        
         flavour = "This sounds extremely unethical. Then again, if you are ethical, you wouldn't be a grifter.",
 
         cost = 1,
         flags = CARD_FLAGS.MANIPULATE | CARD_FLAGS.EXPEND,
         rarity = CARD_RARITY.UNIQUE,
+
+        OnPostResolve = function(self, minigame, targets)
+            local mod = Negotiation.Modifier("promote_product_quest", self.negotiator)
+            mod.linked_quest = self.userdata.linked_quest
+            mod.return_card = self
+            self.negotiator:CreateModifier(mod)
+            self.anti_negotiator:DeltaModifier("IMPATIENCE", 1, self)
+        end,
+
+        modifier = {
+            desc = "When this argument is destroyed, return {promote_product_quest} to your draw pile.\n\nIf you win the negotiation while having this argument, each person present will be advertised of {1}'s product!",
+            alt_desc = "your sponsor",
+            
+            desc_fn = function(self, fmt_str)
+                return loc.format(fmt_str, self.linked_quest and self.linked_quest:GetProvider():GetName() or (self.def or self):GetLocalizedString("ALT_DESC"))
+            end,
+
+            modifier_type = MODIFIER_TYPE.ARGUMENT,
+            max_resolve = 5,
+            OnUnapply = function( self, minigame )
+                if self.return_card then
+                    self.return_card:TransferCard(minigame:GetDrawDeck())
+                end
+            end,
+
+            event_handlers = 
+            {
+                [ EVENT.END_NEGOTIATION ] = function(self, minigame)
+                    if self.linked_quest and minigame:GetResult() == RESULT.WIN then
+                        local count = 0
+                        if TheGame:GetGameState():GetPlayerAgent():GetLocation() then
+                            for i, agent in TheGame:GetGameState():GetPlayerAgent():GetLocation():Agents() do
+                                if agent:IsSentient() and not agent:IsPlayer() then
+                                    count = count + 1
+                                end
+                            end
+                        end
+                        count = math.max(1, count)
+                        self.linked_quest.param.people_advertised = self.linked_quest.param.people_advertised + count
+                        if count >= 25 then
+                            self.linked_quest:Complete("sell")
+                        end
+                    end
+                end,
+            },
+        },
     },
 }
 for i, id, def in sorted_pairs( CARDS ) do
