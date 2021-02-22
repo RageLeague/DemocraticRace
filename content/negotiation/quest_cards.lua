@@ -402,6 +402,7 @@ local CARDS = {
         desc = "{1} asks you to promote their product.\nWhen played, create a {promote_product_quest}. The opponent gains 1 {IMPATIENCE}.",
         alt_desc = "Your sponsor",
         desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.userdata and self.userdata.linked_quest and self.userdata.linked_quest:GetProvider():GetName() or (self.def or self):GetLocalizedString("ALT_DESC"))
         end,
         
         flavour = "This sounds extremely unethical. Then again, if you are ethical, you wouldn't be a grifter.",
