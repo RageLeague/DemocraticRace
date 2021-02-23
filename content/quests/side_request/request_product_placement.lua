@@ -61,6 +61,9 @@ local QDEF = QuestDef.Define
             end
         end
     end,
+    on_complete = function(quest)
+        quest:Activate("tell_giver")
+    end,
     events =
     {
         card_removed = function(quest, card)
@@ -72,6 +75,11 @@ local QDEF = QuestDef.Define
             quest:Fail("sell")
         end,
     },
+}
+:AddObjective{
+    id = "tell_giver",
+    title = "Tell {giver} about the advertising progress.",
+    desc = "You have advertised the product to enough people. Time to tell {giver} about the good news!",
 }
 -- We can use this on request quests, because there's no reject dialogs.
 QDEF:AddIntro(
@@ -124,3 +132,169 @@ QDEF:AddIntro(
         agent:
             Great! When you negotiate with someone, be sure to let them know my product!
     ]])
+QDEF:AddConvo("tell_giver")
+    :TravelConfront("STATE_ENC", function(cxt)
+        return not cxt.quest.param.did_encounter
+    end)
+        :Loc{
+            DIALOG_INTRO = [[
+                * As you travel, you encounter a Heshian.
+                player:
+                    !left
+                agent:
+                    !right
+                    [p] Yo.
+                    I heard you are selling <b>S.T.O.N.K.S</>.
+                    I would like to purchase a share.
+                    I'm sure {giver} won't mind.
+            ]],
+            OPT_ASK_SHARE = "Ask about shares",
+            DIALOG_ASK_SHARE = [[
+                player:
+                    [p] Wdym "buy share"?
+                agent:
+                    Basically, if you sell it to me, we own that amount of your product.
+                    Of course, you will be compensated heavily.
+            ]],
+            OPT_ASK_OWNERSHIP = "Ask about ownership",
+            DIALOG_ASK_OWNERSHIP = [[
+                player:
+                    [p] If I sell it to you, then I don't own half of the product.
+                    That seems bad.
+                agent:
+                    Don't worry about it.
+                    You can still control the operation. We just get a cut.
+                    And you get a lot of funding, so it's a win-win situation.
+                    There's literally no downsides to doing this, trust me bro.
+                * Don't trust {agent.himher}, bro.
+            ]],
+            OPT_SELL_THIRD = "Sell a third of the share",
+            DIALOG_SELL_THIRD = [[
+                player:
+                    [p] I need the money.
+                    Here, you can have a minority share.
+                agent:
+                    That will do.
+                    Glad to do business with you.
+                * {giver} may not like it, but this is probably for the best.
+                * You have the money, and you still maintain most profits and control.
+                * It's a win-win, if you can convince {giver} such.
+            ]],
+            OPT_SELL_TWO_THIRD = "Sell two thirds of the share",
+            DIALOG_SELL_TWO_THIRD = [[
+                player:
+                    [p] I need the money.
+                    Here, you can have the majority share.
+                agent:
+                    Really?
+                    I mean, excellent!
+                    Glad to do business with you.
+                * It was probably for the best, right?
+                * Big surprise, it's an allegory to the recent news regarding Klei and Tencent.
+                * So of course it will go wrong.
+            ]],
+            OPT_SELL_ALL = "Sell ALL of the share",
+            DIALOG_SELL_ALL = [[
+                player:
+                    [p] What could go wrong?
+                    Here, take my money.
+                    Or, rather, take my goods.
+                agent:
+                    Really?
+                    I mean, excellent!
+                    Glad to do business with you.
+                * Literally nothing can go wrong in this scenario.
+                * What are you, crazy?
+            ]],
+            OPT_SELL_NOTHING = "Sell nothing",
+            DIALOG_SELL_NOTHING = [[
+                player:
+                    [p] I'm not giving you Heshian anything!
+                agent:
+                    Fine. At least I tried.
+                * This is obviously the correct choice.
+                * Your advisor will love you for that.
+            ]],
+
+            OPT_NEGOTIATE_TERMS = "Negotiate share price...",
+            DIALOG_NEGOTIATE_TERMS = [[
+                player:
+                    [p] You think I'm willing to sell you for this low?
+                    You gotta go higher.
+            ]],
+            DIALOG_NEGOTIATE_TERMS_SUCCESS = [[
+                agent:
+                    [p] Fine, I will increase my prices.
+            ]],
+            DIALOG_NEGOTIATE_TERMS_FAILURE = [[
+                agent:
+                    [p] No. You either take it or leave it.
+            ]],
+            NEGOTIATION_REASON = "Negotiate better terms (will increase the value of a third of the shares by {1#money} on win)",
+        }
+        :SetLooping(true)
+        :Fn(function(cxt)
+            if cxt:FirstLoop() then
+                cxt.quest.param.did_encounter = true
+                cxt.quest.param.share_price = 200
+                local buyer = AgentUtil.GetFreeAgent("PRIEST")
+                cxt:TalkTo(buyer)
+                cxt:Dialog("DIALOG_INTRO")
+            end
+            cxt:QST("ASK_SHARE")
+            cxt:QST("ASK_OWNERSHIP")
+            if not cxt.quest.param.haggled_price then
+                local won_bonuses = {10}
+                cxt:BasicNegotiation("NEGOTIATE_TERMS", {
+                    on_start_negotiation = function(minigame)
+                            
+                        local amounts = {80, 40, 20}
+                        
+                        for k,amt in ipairs(amounts) do
+                            local mod = minigame.opponent_negotiator:CreateModifier( "bonus_payment", amt )
+                            mod.result_table = won_bonuses
+                        end
+                    end,
+                    reason_fn = function(minigame)
+                        local total_amt = 0
+                        for k,v in pairs(won_bonuses) do
+                            total_amt = total_amt + v
+                        end
+                        return loc.format(cxt:GetLocString("NEGOTIATION_REASON"), total_amt )
+                    end,
+
+                    enemy_resolve_required = 10 * cxt.quest:GetRank(),
+                }):OnSuccess()
+                    :Fn(function(cxt)
+                        local total_bonus = 0
+                        for k,v in ipairs(won_bonuses) do 
+                            total_bonus = total_bonus + v
+                        end
+                        cxt.quest.param.share_price = cxt.quest.param.share_price + total_bonus
+                    end)
+            end
+            cxt:Opt("OPT_SELL_THIRD")
+                :Dialog("DIALOG_SELL_THIRD")
+                :ReceiveMoney(cxt.quest.param.share_price)
+                :Fn(function(cxt)
+                    cxt.quest.param.sell_share = 1
+                end)
+                :Travel()
+            cxt:Opt("OPT_SELL_TWO_THIRD")
+                :Dialog("DIALOG_SELL_TWO_THIRD")
+                :ReceiveMoney(2 * cxt.quest.param.share_price)
+                :Fn(function(cxt)
+                    cxt.quest.param.sell_share = 2
+                end)
+                :Travel()
+            cxt:Opt("OPT_SELL_ALL")
+                :Dialog("DIALOG_SELL_ALL")
+                :ReceiveMoney(3 * cxt.quest.param.share_price)
+                :Fn(function(cxt)
+                    cxt.quest.param.sell_share = 3
+                end)
+                :Travel()
+            cxt:Opt("OPT_SELL_NOTHING")
+                :Dialog("DIALOG_SELL_NOTHING")
+                :Travel()
+        end)
