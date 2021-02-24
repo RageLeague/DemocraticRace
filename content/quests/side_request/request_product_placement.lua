@@ -11,6 +11,13 @@ local QDEF = QuestDef.Define
     tags = {"REQUEST_JOB"},
     -- reward_mod = 0,
     can_flush = false,
+
+    events = {
+        base_difficulty_change = function(quest, new_diff, old_diff)
+            quest:SetRank(new_diff)
+        end,
+    },
+
     on_start = function(quest)
         quest:Activate("sell")
         quest.param.people_advertised = 0
@@ -278,6 +285,7 @@ QDEF:AddConvo("tell_giver")
                 :ReceiveMoney(cxt.quest.param.share_price)
                 :Fn(function(cxt)
                     cxt.quest.param.sell_share = 1
+                    cxt.quest.param.sell_share_time = Now()
                 end)
                 :Travel()
             cxt:Opt("OPT_SELL_TWO_THIRD")
@@ -285,6 +293,7 @@ QDEF:AddConvo("tell_giver")
                 :ReceiveMoney(2 * cxt.quest.param.share_price)
                 :Fn(function(cxt)
                     cxt.quest.param.sell_share = 2
+                    cxt.quest.param.sell_share_time = Now()
                 end)
                 :Travel()
             cxt:Opt("OPT_SELL_ALL")
@@ -292,9 +301,160 @@ QDEF:AddConvo("tell_giver")
                 :ReceiveMoney(3 * cxt.quest.param.share_price)
                 :Fn(function(cxt)
                     cxt.quest.param.sell_share = 3
+                    cxt.quest.param.sell_share_time = Now()
                 end)
                 :Travel()
             cxt:Opt("OPT_SELL_NOTHING")
                 :Dialog("DIALOG_SELL_NOTHING")
                 :Travel()
+        end)
+
+QDEF:AddConvo("tell_giver")
+    :ConfrontState("STATE_GIVER", function(cxt)
+        if cxt:GetCastMember("giver"):GetLocation() == cxt.location then
+            return true
+        end
+        if cxt.quest.param.sell_share_time and cxt.quest.param.sell_share_time ~= Now() then
+            cxt:GetCastMember("giver"):MoveToLocation(cxt.location)
+            return true
+        end
+        return false
+    end)
+        :Loc{
+            DIALOG_INTRO_NO_SELL = [[
+                * You are greeted by {agent}.
+                player:
+                    !left
+                agent:
+                    !right
+                    [p] Nice going! Thanks for letting everyone know of our product.
+                    It is really popular.
+                player:
+                    Thanks.
+                {did_encounter?
+                    Some Heshian wants to buy some shares, but I didn't sell it to them.
+                agent:
+                    Good thinking.
+                    Those Heshians are up to no good.
+                    They don't like people selling Vagrant Age tech.
+                player:
+                    Wait, they are Vagrant Age tech?
+                agent:
+                    What? You think we are able to make this product at our current time?
+                    {advisor_diplomacy?
+                        Anyway, their thoughts are mega cringe, and I'm glad you take the precautions.
+                    }
+                }
+                {advisor_diplomacy?
+                    I am glad you can take out your time and help me.
+                    That, is what I like to call Based 100.
+                }
+                {not advisor_diplomacy?
+                    I'm glad that you are willing to help me promote this product.
+                    I won't forget this.
+                }
+            ]],
+            DIALOG_INTRO_SELL_THIRD = [[
+                * You are greeted by {agent}, who looks kinda angry.
+                player:
+                    !left
+                agent:
+                    !right
+                    [p] I was informed that some Heshian now owns a third of my shares.
+                    Care to explain?
+            ]],
+            DIALOG_INTRO_SELL_TWO_THIRD = [[
+                * You are greeted by {agent}, who looks very angry.
+                player:
+                    !left
+                agent:
+                    !right
+                    !angry
+                    [p] I was informed that some Heshian now owns a majority of my shares.
+                    Why the Hesh did you do that?
+                {advisor_diplomacy?
+                player:
+                    I just thought we need the money, that's all.
+                agent:
+                    Really?
+                    Is money all you think about?
+                player:
+                    Well, I mean it's important-
+                agent:
+                    What?!
+                    I've got plenty money. I don't need to sell <b>S.T.O.N.K.S</> to get more!
+                    No. What I need is a product that can change the world!
+                    How am I supposed to do that now that a Heshian owns a majority share?
+                    Them owning a majority share means that they have the executive power on this product!
+                player:
+                    They did promise the autonomy of your operation-
+                agent:
+                    Those are just empty promises.
+                    They are not on paper, so they don't count.
+                    Now that the Heshian owns a majority, Hesh knows what they will do with this product!
+                    Knowing them, they will ruin any Vagrant Age tech they find!
+                player:
+                    Vagrant Age?
+                agent:
+                    Doesn't matter!
+                    I thought we are on the same page, {player}.
+                    But it appears, you are but another cringe normie.
+                    I will still help you with the campaign, as promised.
+                    But don't expect me to do you any favors!
+                }
+            ]],
+            
+            DIALOG_INTRO_SELL_ALL = [[
+                * You are greeted by {agent}, who looks very angry.
+                player:
+                    !left
+                agent:
+                    !right
+                    !angry
+                    [p] I was informed that some Heshian now owns ALL of my shares!
+                    What the Hell?
+                * Then {agent} rants, {agent} hates you, blah blah blah.
+            ]],
+
+            OPT_EXPLAIN = "Explain yourself",
+
+            DIALOG_EXPLAIN = [[
+                * [p] You explain how selling the shares is for the greater good.
+            ]],
+            DIALOG_EXPLAIN_SUCCESS = [[
+                * [p] {agent} sees it now, and is not mad anymore.
+                * Then {agent} says {agent.heshe}'s grateful, blah.
+            ]],
+            DIALOG_EXPLAIN_FAILURE = [[
+                * [p] You fail to convince {agent}.
+                * Now {agent}'s pissed at you.
+                * Oof.
+            ]],
+
+            OPT_ASK_BASED = "Ask about the meaning of the word \"Based\"",
+            DIALOG_ASK_BASED = [[
+                player:
+                    I keep hearing you say the word "based".
+                    Do you know what it means?
+                agent:
+                    It means that a liquid contains less than ten millionth moles of Hydronium ion per liter of water under room temperature?
+                player:
+                    Uhh...
+                    Sure?
+                * That would be "basic", but close enough.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:TalkTo(cxt:GetCastMember("giver"))
+            if not cxt.quest.param.sell_share then
+                cxt:Dialog("DIALOG_INTRO_NO_SELL")
+                cxt.quest:Complete()
+                if cxt:GetAgent():GetContentID() == "ADVISOR_DIPLOMACY" then
+                    cxt:QST("ASK_BASED")
+                end
+                StateGraphUtil.AddEndOption(cxt)
+            else
+                local intro_id = {"DIALOG_INTRO_SELL_THIRD", "DIALOG_INTRO_SELL_TWO_THIRD", "DIALOG_INTRO_SELL_ALL"}
+                cxt:Dialog(intro_id[math.min(#intro_id, cxt.quest.param.sell_share)])
+            end
         end)
