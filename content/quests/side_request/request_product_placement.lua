@@ -310,6 +310,20 @@ QDEF:AddConvo("tell_giver")
         end)
 
 QDEF:AddConvo("tell_giver")
+    :Loc{
+        OPT_ASK_BASED = "Ask about the meaning of the word \"Based\"",
+        DIALOG_ASK_BASED = [[
+            player:
+                I keep hearing you say the word "based".
+                Do you know what it means?
+            agent:
+                It means that a liquid contains less than ten millionth moles of Hydronium ion per liter of water under room temperature?
+            player:
+                Uhh...
+                Sure?
+            * That would be "basic", but close enough.
+        ]],
+    }
     :ConfrontState("STATE_GIVER", function(cxt)
         if cxt:GetCastMember("giver"):GetLocation() == cxt.location then
             return true
@@ -373,34 +387,34 @@ QDEF:AddConvo("tell_giver")
                     [p] I was informed that some Heshian now owns a majority of my shares.
                     Why the Hesh did you do that?
                 {advisor_diplomacy?
-                player:
-                    I just thought we need the money, that's all.
-                agent:
-                    Really?
-                    Is money all you think about?
-                player:
-                    Well, I mean it's important-
-                agent:
-                    What?!
-                    I've got plenty money. I don't need to sell <b>S.T.O.N.K.S</> to get more!
-                    No. What I need is a product that can change the world!
-                    How am I supposed to do that now that a Heshian owns a majority share?
-                    Them owning a majority share means that they have the executive power on this product!
-                player:
-                    They did promise the autonomy of your operation-
-                agent:
-                    Those are just empty promises.
-                    They are not on paper, so they don't count.
-                    Now that the Heshian owns a majority, Hesh knows what they will do with this product!
-                    Knowing them, they will ruin any Vagrant Age tech they find!
-                player:
-                    Vagrant Age?
-                agent:
-                    Doesn't matter!
-                    I thought we are on the same page, {player}.
-                    But it appears, you are but another cringe normie.
-                    I will still help you with the campaign, as promised.
-                    But don't expect me to do you any favors!
+                    player:
+                        I just thought we need the money, that's all.
+                    agent:
+                        Really?
+                        Is money all you think about?
+                    player:
+                        Well, I mean it's important-
+                    agent:
+                        What?!
+                        I've got plenty money. I don't need to sell <b>S.T.O.N.K.S</> to get more!
+                        No. What I need is a product that can change the world!
+                        How am I supposed to do that now that a Heshian owns a majority share?
+                        Them owning a majority share means that they have the executive power on this product!
+                    player:
+                        They did promise the autonomy of your operation-
+                    agent:
+                        Those are just empty promises.
+                        They are not on paper, so they don't count.
+                        Now that the Heshian owns a majority, Hesh knows what they will do with this product!
+                        Knowing them, they will ruin any Vagrant Age tech they find!
+                    player:
+                        Vagrant Age?
+                    agent:
+                        Doesn't matter!
+                        I thought we are on the same page, {player}.
+                        But it appears, you are but another cringe normie.
+                        I will still help you with the campaign, as promised.
+                        But don't expect me to do you any favors!
                 }
             ]],
             
@@ -415,34 +429,6 @@ QDEF:AddConvo("tell_giver")
                     What the Hell?
                 * Then {agent} rants, {agent} hates you, blah blah blah.
             ]],
-
-            OPT_EXPLAIN = "Explain yourself",
-
-            DIALOG_EXPLAIN = [[
-                * [p] You explain how selling the shares is for the greater good.
-            ]],
-            DIALOG_EXPLAIN_SUCCESS = [[
-                * [p] {agent} sees it now, and is not mad anymore.
-                * Then {agent} says {agent.heshe}'s grateful, blah.
-            ]],
-            DIALOG_EXPLAIN_FAILURE = [[
-                * [p] You fail to convince {agent}.
-                * Now {agent}'s pissed at you.
-                * Oof.
-            ]],
-
-            OPT_ASK_BASED = "Ask about the meaning of the word \"Based\"",
-            DIALOG_ASK_BASED = [[
-                player:
-                    I keep hearing you say the word "based".
-                    Do you know what it means?
-                agent:
-                    It means that a liquid contains less than ten millionth moles of Hydronium ion per liter of water under room temperature?
-                player:
-                    Uhh...
-                    Sure?
-                * That would be "basic", but close enough.
-            ]],
         }
         :Fn(function(cxt)
             cxt:TalkTo(cxt:GetCastMember("giver"))
@@ -456,5 +442,68 @@ QDEF:AddConvo("tell_giver")
             else
                 local intro_id = {"DIALOG_INTRO_SELL_THIRD", "DIALOG_INTRO_SELL_TWO_THIRD", "DIALOG_INTRO_SELL_ALL"}
                 cxt:Dialog(intro_id[math.min(#intro_id, cxt.quest.param.sell_share)])
+
+                if cxt.quest.param.sell_share >= 3 then
+                    cxt:GetAgent():OpinionEvent(OPINION.BETRAYED)
+                    cxt.quest:Fail()
+                    StateGraphUtil.AddEndOption(cxt)
+                elseif cxt.quest.param.sell_share == 2 and cxt:GetAgent():GetContentID() == "ADVISOR_DIPLOMACY" then
+                    cxt.quest:Fail()
+                    StateGraphUtil.AddEndOption(cxt)
+                else
+                    if cxt.quest.param.sell_share == 2 then
+                        cxt.enc.scratch.majority_share = true
+                    end
+                    cxt:GoTo("STATE_EXPLAIN")
+                end
             end
+        end)
+    :State("STATE_EXPLAIN")
+        :Loc{
+            OPT_EXPLAIN = "Explain yourself",
+
+            DIALOG_EXPLAIN = [[
+                * [p] You explain how selling the shares is for the greater good.
+            ]],
+            DIALOG_EXPLAIN_SUCCESS = [[
+                * [p] {agent} sees it now, and is not mad anymore.
+                {not majority_share?
+                    * Then {agent} says {agent.heshe}'s grateful, blah.
+                }
+                {majority_share?
+                    * Then {agent} says you did good, but not great.
+                }
+            ]],
+            DIALOG_EXPLAIN_FAILURE = [[
+                * [p] You fail to convince {agent}.
+                * Now {agent}'s pissed at you.
+                * Oof.
+            ]],
+
+            SIT_MOD = "Angry at you selling a majority share to someone they don't like",
+        }
+        :Fn(function(cxt)
+            local sit_mod = {}
+            if cxt.enc.scratch.majority_share then
+                table.insert(sit_mod, {value = 20, text = cxt:GetLocString("SIT_MOD")})
+            end
+            cxt:BasicNegotiation("EXPLAIN", {
+                situation_modifiers = sit_mod,
+            })
+                :OnSuccess()
+                    :Fn(function(cxt)
+                        if cxt.enc.scratch.majority_share then
+                            cxt.quest.param.sub_optimal = true
+                        end
+                    end)
+                    :CompleteQuest()
+                    :Fn(function(cxt)
+                        if cxt:GetAgent():GetContentID() == "ADVISOR_DIPLOMACY" then
+                            cxt:QST("ASK_BASED")
+                        end
+                        StateGraphUtil.AddEndOption(cxt)
+                    end)
+                :OnFailure()
+                    :FailQuest()
+                    :DoneConvo()
         end)
