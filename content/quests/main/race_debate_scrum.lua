@@ -316,18 +316,34 @@ QDEF:AddConvo("go_to_debate")
     :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("backroom") end)
         :Loc{
             DIALOG_INTRO = [[
-                * [p] You arrive at the grand theater backroom, where {agent} awaits you.
-                player:
-                    !left
+                * You arrive back at the theater, and just like before, you're ushered in to the backroom.
+                * It's there that {primary_advisor} stands, waiting for you.
                 agent:
                     !right
-                    Are you ready for tonight's debate?
                 player:
-                    Are we ever ready?
+                    !left
+                    Once more unto the Breach, I suppose
                 agent:
-                    Good point.
-                    Anyway, whether you're ready or not, time to go.
-                    Good luck.
+                    Not quite. Tonight won't be like that interview, as you could surmise.
+                    With the Election ramping up, the theater spared to no time to stagnate on getting information out to the public.
+                    Your debate is with all the other candidates that got this far, and you could easily be filtered out of the running if this goes belly up.
+                    But at it's core, it's just talking. You seem pretty good at that, so I got faith in you.
+                    Any questions?
+            ]],
+            OPT_DEBATE = "Ask about the Debate",
+            DIALOG_DEBATE = [[
+                player:
+                    So how will the debate work?
+                agent:
+                    You'll be put on the stage with the rest of the candidates.
+                    The host from last night will also be hosting these debates.
+                    {host.heshe} will ask you a question, and it's up to you which side you choose.
+                    Keep track of your answers, though. There'll be voters taking notes, and you might alienate the wrong voters with your responses.
+                    Then comes the actual debating. You start hashing it out with the other candidates.
+                    Expect that those who believe in your stance to help you...and to debate with those who don't agree with you.
+                    With any luck, you'll prove to carry the weight of your and your allies arguments, and will make a name on the stage.
+                    With even more luck, you can ally with your allies after you get off the stage. Who knows!
+                    I get that was a lot, but you'll understand it all with time.
             ]],
         }
         :Fn(function(cxt)
@@ -336,6 +352,7 @@ QDEF:AddConvo("go_to_debate")
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Complete("go_to_debate")
             cxt.quest:Activate("do_debate")
+            cxt:Question("OPT_DEBATE", "DIALOG_DEBATE")
             cxt:Opt("OPT_LEAVE_LOCATION")
                 :Fn(function(cxt)
                     cxt.encounter:DoLocationTransition(cxt.quest:GetCastMember("theater"))
@@ -420,7 +437,7 @@ QDEF:AddConvo("do_debate")
                     This is my answer!
                 * A debate is about to go down!
             ]],
-            REASON_TXT = "Impress the audience with your slick negotiation skills! (You have {1} {1*point|points})",
+            REASON_TXT = "Discuss your ideas to win the crowd! (You have {1} {1*point|points})",
             OPT_SIT_OUT = "Skip the debate and observe the opponents",
             TT_SIT_OUT = "You will not be able to debate and stand out, but you will restore some resolve, and you will start the next negotiation without fatigue.",
         }
@@ -525,11 +542,9 @@ QDEF:AddConvo("do_debate")
             {
                 tags = "debate_mvp, rise",
                 [[
-                    * During the debate, it is clear that {agent} is an inspirational talker.
-                    * {agent} is able to use {agent.hisher} words and make the opponent forget what they are saying, and quickly, this becomes out of hand.
-                    * The opponent will sometimes spend a turn during virtually nothing, and it is no wonder they lost in the end.
-                    * It is clear who the MVP is, despite the fact that during so when you're involved doesn't make {agent.himher} such.
-                    * Funny how that works.
+                    * To call {agent} anything less than relentless to {agent.hisher} cause would be the understatement of the election.
+                    * Almost every word out of {agent.hisher} was a proclamation for the Rise, and it leaves {agent.hisher} opponents speechless while chewing on {agent.hisher} words.
+                    * By the time the question ends, the loud roar of the proletariat rings throughout the verbal arena. {agent.heshe} had won that debate/
                 ]],
             },
             {
@@ -537,7 +552,7 @@ QDEF:AddConvo("do_debate")
                 [[
                     * {agent} mutters an old heshian curse, and a silence falls upon the room.
                     * In between swigs of salt water, {agent.heshe} prays to Hesh before debating with renewed strength.
-                    * His faith guides his career, as it has also guided this debate.
+                    * {agent.hisher} faith guides {agent.hisher} career, as it has also guided this debate.
                 ]],
             },
             {
