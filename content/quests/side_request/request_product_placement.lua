@@ -70,18 +70,29 @@ local QDEF = QuestDef.Define
     end,
     on_complete = function(quest)
         quest:Activate("tell_giver")
+        if quest:IsActive("advertise_poster") then
+            quest:Complete("advertise_poster")
+        end
     end,
     events =
     {
-        card_removed = function(quest, card)
-            for i, card in ipairs(TheGame:GetGameState():GetPlayerAgent().negotiator:GetCards()) do
-                if card.userdata.linked_quest == quest then
-                    return
-                end
-            end
-            quest:Fail("sell")
-        end,
+        -- card_removed = function(quest, card)
+        --     for i, card in ipairs(TheGame:GetGameState():GetPlayerAgent().negotiator:GetCards()) do
+        --         if card.userdata.linked_quest == quest then
+        --             return
+        --         end
+        --     end
+        --     quest:Fail("sell")
+        -- end,
     },
+}
+:AddObjective{
+    id = "advertise_poster",
+    title = "Post advertisements at public places.",
+    desc = "Another idea is to post advertisements at public places for potential customers to see.",
+    on_activate = function(quest)
+        quest.posted_location = {}
+    end,
 }
 :AddObjective{
     id = "tell_giver",
@@ -166,16 +177,43 @@ QDEF:AddConvo("sell", "giver")
                 agent:
                     It's rising. Just need a few more sales.
             ]],
+            DIALOG_INTRO_NO_CARD = [[
+                player:
+                    So, uhh... I kinda just forgot the sales pitch you told me.
+                agent:
+                    !surprise
+                    You WHAT?
+                {advisor?
+                    I guess I did told you to focus on the election.
+                    Still, if you are just going to forget the things I tell you to do, you shouldn't have accepted my request in the first place!
+                }
+                {not advisor?
+                    How did that even happen?
+                player:
+                    That is a question I'm wondering myself.
+                }
+                agent:
+                    !permit
+                    Here's the pitch. Try not to forget it this time around.
+            ]],
         }
         :Fn(function(cxt)
-            local score = cxt.quest.param.people_advertised or 0
-            if score > 16 then
-                cxt:Dialog("DIALOG_INTRO_LOT")
-            elseif score > 8 then
-                cxt:Dialog("DIALOG_INTRO_SOME")
-            else
-                cxt:Dialog("DIALOG_INTRO_FEW")
+            for i, card in ipairs(TheGame:GetGameState():GetPlayerAgent().negotiator:GetCards()) do
+                if card.userdata.linked_quest == quest then
+                    local score = cxt.quest.param.people_advertised or 0
+                    if score > 16 then
+                        cxt:Dialog("DIALOG_INTRO_LOT")
+                    elseif score > 8 then
+                        cxt:Dialog("DIALOG_INTRO_SOME")
+                    else
+                        cxt:Dialog("DIALOG_INTRO_FEW")
+                    end
+                    return
+                end
             end
+            cxt:Dialog("DIALOG_INTRO_NO_CARD")
+
+            TheGame:GetGameState():GetPlayerAgent().negotiator:LearnCard("promote_product_quest", {linked_quest = quest})
         end)
 QDEF:AddConvo("tell_giver")
     :TravelConfront("STATE_ENC", function(cxt)

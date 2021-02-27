@@ -15,6 +15,9 @@ local function PickBoonForAgent( agent )
     for i = relationship, RELATIONSHIP.HATED, -1 do
         if services[ i ] then
             local t = shallowcopy( services[ i ] )
+            if relationship == RELATIONSHIP.LIKED then
+                t.SOCIALIZE = (t.SOCIALIZE or 1)
+            end
             while next(t) ~= nil do
                 local service_id = weightedpick( t )
                 local service = BOON_SERVICES[ service_id ]
