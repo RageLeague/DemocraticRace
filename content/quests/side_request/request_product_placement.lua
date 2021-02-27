@@ -1,3 +1,5 @@
+local ADVERTISEMENT_REQ = 20
+
 local QDEF = QuestDef.Define
 {
     title = "Product Placement",
@@ -26,17 +28,25 @@ local QDEF = QuestDef.Define
     on_complete = function(quest)
         if not (quest.param.sub_optimal or quest.param.poor_performance) then
             quest:GetProvider():OpinionEvent(OPINION.DID_LOYALTY_QUEST)
-            -- DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST")
-            -- DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 1, "COMPLETED_QUEST")
-            -- DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 2, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 4, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 3, "COMPLETED_QUEST")
         elseif quest.param.sub_optimal then
-            -- DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST")
-            -- DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 8, 1, "COMPLETED_QUEST")
-            -- DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 2, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 4, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 3, "COMPLETED_QUEST")
         elseif quest.param.poor_performance then
-            -- DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2, "POOR_QUEST")
-            -- DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 1, "POOR_QUEST")
-            -- DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 2, "POOR_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2, "POOR_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 4, "POOR_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 2, 3, "POOR_QUEST")
+        end
+    end,
+
+    ADVERTISEMENT_REQ = 20,
+
+    VerifyCount = function(quest)
+        if (quest.param.people_advertised or 0) >= ADVERTISEMENT_REQ then
+            quest:Complete("sell")
         end
     end,
 }
@@ -59,11 +69,20 @@ local QDEF = QuestDef.Define
     title = "Give your sales pitch to people.",
     desc = "When you are negotiating with others, you can insert the product into the conversation. The more people present, the better.",
     on_activate = function(quest)
-        TheGame:GetGameState():GetPlayerAgent().negotiator:LearnCard("promote_product_quest", {linked_quest = quest})
+        -- TheGame:GetGameState():GetPlayerAgent().negotiator:LearnCard("promote_product_quest", {linked_quest = quest})
+        local enc = TheGame:GetGameState():GetCaravan():GetCurrentEncounter()
+        if enc then
+            enc:GetScreen():ForceWaitOnLine()
+            local card = TheGame:GetGameState():GetPlayerAgent().negotiator:LearnCard("promote_product_quest", {linked_quest = quest})
+            enc:GetScreen():ShowGainCards({card}, function() enc:ResumeEncounter() end)
+            enc:YieldEncounter()
+        else
+            TheGame:GetGameState():GetPlayerAgent().negotiator:LearnCard("promote_product_quest", {linked_quest = quest})
+        end
     end,
     on_deactivate = function(quest)
         for i, card in ipairs(TheGame:GetGameState():GetPlayerAgent().negotiator:GetCards()) do
-            if card.userdata.linked_quest == quest then
+            if card.userdata and card.userdata.linked_quest == quest then
                 TheGame:GetGameState():GetPlayerAgent().negotiator:RemoveCard(card)
             end
         end
@@ -124,7 +143,7 @@ QDEF:AddIntro(
             I'm sorry, what now?
         agent:
             <b>S.T.O.N.K.S.</>.
-            It stands for "Synthetic T O Neural K System".
+            It stands for "Synthetic Transform of Neural-Kinesis System".
             (IDFK, haven't figured out the acronym yet)
         player:
             Sure, why not?
@@ -157,6 +176,44 @@ QDEF:AddIntro(
     ]])
 QDEF:AddConvo("sell", "giver")
     :Priority(CONVO_PRIORITY_LOWEST)
+    :Loc{
+        OPT_FORGOT_CARD = "Tell {agent} that you forgot the pitch",
+        DIALOG_FORGOT_CARD = [[
+            player:
+                So, uhh... I kinda just forgot the sales pitch you told me.
+            agent:
+                !surprise
+                You WHAT?
+            {advisor?
+                I guess I did told you to focus on the election.
+                Still, if you are just going to forget the things I tell you to do, you shouldn't have accepted my request in the first place!
+            }
+            {not advisor?
+                How did that even happen?
+            player:
+                That is a question I'm wondering myself.
+            }
+            agent:
+                !permit
+                Here's the pitch. Try not to forget it this time around.
+        ]],
+    }
+    :Hub(function(cxt)
+        for i, card in ipairs(TheGame:GetGameState():GetPlayerAgent().negotiator:GetCards()) do
+            if card.userdata and card.userdata.linked_quest == cxt.quest then
+                return
+            end
+        end
+        cxt:Opt("OPT_FORGOT_CARD")
+            :Dialog("DIALOG_FORGOT_CARD")
+            :Fn(function(cxt)
+                cxt.enc:GetScreen():ForceWaitOnLine()
+                local card = TheGame:GetGameState():GetPlayerAgent().negotiator:LearnCard("promote_product_quest", {linked_quest = quest})
+                cxt.enc:GetScreen():ShowGainCards({card}, function() cxt.enc:ResumeEncounter() end)
+                cxt.enc:YieldEncounter()
+            end)
+        
+    end)
     :AttractState("STATE_ATTRACT")
         :Loc{
             DIALOG_INTRO_FEW = [[
@@ -177,43 +234,19 @@ QDEF:AddConvo("sell", "giver")
                 agent:
                     It's rising. Just need a few more sales.
             ]],
-            DIALOG_INTRO_NO_CARD = [[
-                player:
-                    So, uhh... I kinda just forgot the sales pitch you told me.
-                agent:
-                    !surprise
-                    You WHAT?
-                {advisor?
-                    I guess I did told you to focus on the election.
-                    Still, if you are just going to forget the things I tell you to do, you shouldn't have accepted my request in the first place!
-                }
-                {not advisor?
-                    How did that even happen?
-                player:
-                    That is a question I'm wondering myself.
-                }
-                agent:
-                    !permit
-                    Here's the pitch. Try not to forget it this time around.
-            ]],
+            
         }
         :Fn(function(cxt)
-            for i, card in ipairs(TheGame:GetGameState():GetPlayerAgent().negotiator:GetCards()) do
-                if card.userdata.linked_quest == quest then
-                    local score = cxt.quest.param.people_advertised or 0
-                    if score > 16 then
-                        cxt:Dialog("DIALOG_INTRO_LOT")
-                    elseif score > 8 then
-                        cxt:Dialog("DIALOG_INTRO_SOME")
-                    else
-                        cxt:Dialog("DIALOG_INTRO_FEW")
-                    end
-                    return
-                end
+            
+            local score = cxt.quest.param.people_advertised or 0
+            if score > 16 then
+                cxt:Dialog("DIALOG_INTRO_LOT")
+            elseif score > 8 then
+                cxt:Dialog("DIALOG_INTRO_SOME")
+            else
+                cxt:Dialog("DIALOG_INTRO_FEW")
             end
-            cxt:Dialog("DIALOG_INTRO_NO_CARD")
-
-            TheGame:GetGameState():GetPlayerAgent().negotiator:LearnCard("promote_product_quest", {linked_quest = quest})
+            
         end)
 QDEF:AddConvo("tell_giver")
     :TravelConfront("STATE_ENC", function(cxt)
@@ -313,13 +346,13 @@ QDEF:AddConvo("tell_giver")
                 agent:
                     [p] No. You either take it or leave it.
             ]],
-            NEGOTIATION_REASON = "Negotiate better terms (will increase the value of a third of the shares by {1#money} on win)",
+            NEGOTIATION_REASON = "Negotiate better terms (increase the price of all shares by {1#money} on win)",
         }
         :SetLooping(true)
         :Fn(function(cxt)
             if cxt:FirstLoop() then
                 cxt.quest.param.did_encounter = true
-                cxt.quest.param.share_price = 200
+                cxt.quest.param.share_price = 600
                 local buyer = AgentUtil.GetFreeAgent("PRIEST")
                 cxt:TalkTo(buyer)
                 cxt:Dialog("DIALOG_INTRO")
@@ -331,7 +364,12 @@ QDEF:AddConvo("tell_giver")
                 cxt:BasicNegotiation("NEGOTIATE_TERMS", {
                     on_start_negotiation = function(minigame)
                             
-                        local amounts = {80, 40, 20}
+                        local amounts = {80, 50, 30}
+
+                        local haggle_count = cxt.player.graft_owner:CountGraftsByID( "haggle_badge" )
+                        for i = 1, haggle_count do
+                            table.insert(amount, 80)
+                        end
                         
                         for k,amt in ipairs(amounts) do
                             local mod = minigame.opponent_negotiator:CreateModifier( "bonus_payment", amt )
@@ -358,7 +396,7 @@ QDEF:AddConvo("tell_giver")
             end
             cxt:Opt("OPT_SELL_THIRD")
                 :Dialog("DIALOG_SELL_THIRD")
-                :ReceiveMoney(cxt.quest.param.share_price)
+                :ReceiveMoney(math.round(cxt.quest.param.share_price / 3))
                 :Fn(function(cxt)
                     cxt.quest.param.sell_share = 1
                     cxt.quest.param.sell_share_time = Now()
@@ -366,7 +404,7 @@ QDEF:AddConvo("tell_giver")
                 :Travel()
             cxt:Opt("OPT_SELL_TWO_THIRD")
                 :Dialog("DIALOG_SELL_TWO_THIRD")
-                :ReceiveMoney(2 * cxt.quest.param.share_price)
+                :ReceiveMoney(math.round(2 * cxt.quest.param.share_price / 3))
                 :Fn(function(cxt)
                     cxt.quest.param.sell_share = 2
                     cxt.quest.param.sell_share_time = Now()
@@ -374,7 +412,7 @@ QDEF:AddConvo("tell_giver")
                 :Travel()
             cxt:Opt("OPT_SELL_ALL")
                 :Dialog("DIALOG_SELL_ALL")
-                :ReceiveMoney(3 * cxt.quest.param.share_price)
+                :ReceiveMoney(cxt.quest.param.share_price)
                 :Fn(function(cxt)
                     cxt.quest.param.sell_share = 3
                     cxt.quest.param.sell_share_time = Now()
@@ -557,6 +595,14 @@ QDEF:AddConvo("tell_giver")
             ]],
 
             SIT_MOD = "Angry at you selling a majority share to someone they don't like",
+
+            OPT_BRUSH_OFF = "Brush off concern",
+
+            DIALOG_BRUSH_OFF = [[
+                * [p] You brush off {agent}'s concern.
+                * Obviously {agent} doesn't buy it.
+                * Why do you think the other option has a negitiation, hmm?
+            ]],
         }
         :Fn(function(cxt)
             local sit_mod = {}
@@ -580,6 +626,26 @@ QDEF:AddConvo("tell_giver")
                         StateGraphUtil.AddEndOption(cxt)
                     end)
                 :OnFailure()
-                    :FailQuest()
+                    :Fn(function(cxt)
+                        if cxt.enc.scratch.majority_share then
+                            cxt.quest.Fail()
+                        else
+                            cxt.quest.param.poor_performance = true
+                            cxt.quest.Complete()
+                            ConvoUtil.GiveQuestRewards(cxt)
+                        end
+                    end)
                     :DoneConvo()
+            cxt:Opt("OPT_BRUSH_OFF")
+                :Dialog("DIALOG_BRUSH_OFF")
+                :Fn(function(cxt)
+                    if cxt.enc.scratch.majority_share then
+                        cxt.quest.Fail()
+                    else
+                        cxt.quest.param.poor_performance = true
+                        cxt.quest.Complete()
+                        ConvoUtil.GiveQuestRewards(cxt)
+                    end
+                end)
+                :DoneConvo()
         end)

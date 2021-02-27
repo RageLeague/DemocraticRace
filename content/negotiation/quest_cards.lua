@@ -448,10 +448,12 @@ local CARDS = {
                             end
                         end
                         count = math.max(1, count)
-                        self.linked_quest.param.people_advertised = self.linked_quest.param.people_advertised + count
-                        if self.linked_quest.param.people_advertised >= 25 then
-                            self.linked_quest:Complete("sell")
-                        end
+                        local quest = self.linked_quest
+                        quest.param.people_advertised = quest.param.people_advertised + count
+                        quest:DefFn("VerifyCount")
+                        -- if quest.param.people_advertised >= 25 then
+                        --     quest:Complete("sell")
+                        -- end
                     end
                 end,
             },

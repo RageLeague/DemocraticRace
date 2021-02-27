@@ -4,7 +4,7 @@ lines:
 - push: [smalltalk]
 
 - tags: [laborer, democratic_race, pro_labor_law]
-  probability: 0.5
+  notags: [primary_advisor_diplomacy]
   dialog:
   - |
     agent:
@@ -20,15 +20,15 @@ lines:
       Glad someone considers the common folks.
   - |
     agent:
-      [p] I work for this Spark Baron.
-      Always rambling about wanting to fit in with the people.
-      His idea of "fitting in" seems way different from how everyone else thinks.
+      [p] Have I told you before that I worked for this Spark Baron.
+      Always rambling about wanting to be relatable to the common folks.
+      His idea of "being relatable" seems way different from how everyone else thinks.
     player:
       Really? How so?
     agent:
-      He seems to think using obscure and confusing words somehow makes him fit in.
+      He seems to think using obscure and confusing words somehow makes him relatable.
       First off, nobody talks like that.
-      Second, he doesn't do anything to actually be one with the people.
+      Second, he isn't actually concerned with the common folks' well-being.
       He wouldn't give a second thought to giving demerits to workers who miss their quota for something that is not their fault.
     player:
       !shrug
