@@ -87,6 +87,11 @@ local QDEF = QuestDef.Define
     id = "tell_giver",
     title = "Tell {giver} about the advertising progress.",
     desc = "You have advertised the product to enough people. Time to tell {giver} about the good news!",
+    mark = function(quest, t, in_location)
+        if in_location or DemocracyUtil.IsFreeTimeActive() then
+            table.insert(t, quest:GetCastMember("giver"))
+        end
+    end,
 }
 -- We can use this on request quests, because there's no reject dialogs.
 QDEF:AddIntro(
@@ -139,6 +144,39 @@ QDEF:AddIntro(
         agent:
             Great! When you negotiate with someone, be sure to let them know my product!
     ]])
+QDEF:AddConvo("sell", "giver")
+    :Priority(CONVO_PRIORITY_LOWEST)
+    :AttractState("STATE_ATTRACT")
+        :Loc{
+            DIALOG_INTRO_FEW = [[
+                player:
+                    How's business?
+                agent:
+                    It could be better.
+            ]],
+            DIALOG_INTRO_SOME = [[
+                player:
+                    How's business?
+                agent:
+                    It's getting better, but not good enough.
+            ]],
+            DIALOG_INTRO_LOT = [[
+                player:
+                    How's business?
+                agent:
+                    It's rising. Just need a few more sales.
+            ]],
+        }
+        :Fn(function(cxt)
+            local score = cxt.quest.param.people_advertised or 0
+            if score > 16 then
+                cxt:Dialog("DIALOG_INTRO_LOT")
+            elseif score > 8 then
+                cxt:Dialog("DIALOG_INTRO_SOME")
+            else
+                cxt:Dialog("DIALOG_INTRO_FEW")
+            end
+        end)
 QDEF:AddConvo("tell_giver")
     :TravelConfront("STATE_ENC", function(cxt)
         return not cxt.quest.param.did_encounter
@@ -328,7 +366,7 @@ QDEF:AddConvo("tell_giver")
         if cxt:GetCastMember("giver"):GetLocation() == cxt.location then
             return true
         end
-        if cxt.quest.param.sell_share_time and cxt.quest.param.sell_share_time ~= Now() then
+        if cxt.quest.param.sell_share_time and cxt.quest.param.sell_share_time ~= Now() and cxt.location:HasTag("in_transit") then
             cxt:GetCastMember("giver"):MoveToLocation(cxt.location)
             return true
         end

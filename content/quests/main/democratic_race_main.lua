@@ -193,6 +193,15 @@ local QDEF = QuestDef.Define
     end,
     fill_out_quip_tags = function(quest, tags, agent)
         table.insert_unique(tags, "democratic_race")
+        for id, data in pairs(quest.param.stances or {}) do
+            if id and data then
+                if data > 0 then
+                    table.insert_unique(tags, "pro_" .. string.lower(id))
+                elseif data < 0 then
+                    table.insert_unique(tags, "anti_" .. string.lower(id))
+                end
+            end
+        end 
     end,
     events = 
     {

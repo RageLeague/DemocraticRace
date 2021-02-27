@@ -1,0 +1,39 @@
+tag_scores:
+  democratic_race: 0
+lines:
+- push: [smalltalk]
+
+- tags: [laborer, democratic_race, pro_labor_law]
+  probability: 0.5
+  dialog:
+  - |
+    agent:
+      !sigh
+      [p] Another day of toil.
+      The rich just gets richer, and the poor stays poor.
+    player:
+      That's rough, buddy.
+      You know, I plan to change that once I'm in office.
+    agent:
+      !happy
+      Thanks.
+      Glad someone considers the common folks.
+  - |
+    agent:
+      [p] I work for this Spark Baron.
+      Always rambling about wanting to fit in with the people.
+      His idea of "fitting in" seems way different from how everyone else thinks.
+    player:
+      Really? How so?
+    agent:
+      He seems to think using obscure and confusing words somehow makes him fit in.
+      First off, nobody talks like that.
+      Second, he doesn't do anything to actually be one with the people.
+      He wouldn't give a second thought to giving demerits to workers who miss their quota for something that is not their fault.
+    player:
+      !shrug
+      What can you expect from a Spark Baron, though.
+    agent:
+      True.
+      !happy
+      Anyway, thanks for listening to my rambling. It has really lighten up my day.
