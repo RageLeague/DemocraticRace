@@ -31,83 +31,188 @@ QDEF:AddConvo()
     :ConfrontState("STATE_CONFRONT")
         :Loc{
             DIALOG_INTRO = [[
-                * You were minding your own business when you are stopped by and Admiralty.
+                * You wince at the sight of the admiralty patrol sitting up the street.
+                * One of them, {agent}, looks at you with an angered sneer on {agent.hisher} face
                 player:
                     !left
                 agent:
                     !right
-                    [p] Stop right there, criminal scum!
-                    You've violated the law!
-                    Pay the court a fine, or serve your sentence.
+                    !cruel
+                    Well, well, well, well, well.
+                    If it isn't {player}?
+                    {assaulted?
+                    You've got a lot of gall to beat up an officer of the law, i'll give you that.
+                    Unfortunately, that bravado won't hold up in court.
+                    I cannot wait to bring down your entire political career in one slam of a gavel. You're under arrest.
+                    }
+                    {not assaulted?
+                    You've got quite the following with you, lot of supporters.
+                    But you made one real mistake. You never gave the admiralty OUR cut of the policies.
+                    You're being put in the slammer 'till you learn to "see our ways" of running this Havaria.
+                    }
                 ** This event happened because you {assaulted?are wanted by the Admiralty for committing a crime|are unpopular among the Admiralty}.
             ]],
             OPT_PAY = "Pay the court a fine",
             DIALOG_PAY = [[
-                * [p] you paid the court a fine, so that you don't have to serve a sentence.
+                player:
+                You ever heard of how politicians have deep pockets?
+                agent:
+                Indeed I have.
+                player:
+                !give
+                Want a glimpse into how deep those pockets are?
+                agent:
+                !take
+                Indeed I would.
+                A misunderstanding, {player}. I'm sure you'll win in due time.
+                Take care!
             ]],
             OPT_CONVINCE = "Convince {agent} that they got the wrong person",
             DIALOG_CONVINCE = [[
                 player:
-                    [p] It wasn't me, it was the man in the chicken costume.
-                agent:
-                    A likely story, go on.
+                    {assaulted?
+                    Now let's calm down a little. There's a lot of people in Havaria with grievances towards the Admiralty.
+                    I'd like to see some proof of this, or do you just not agree with me?
+                    }
+                    {not assaulted?
+                    I see you've bought into the smear campaign of my opposition.
+                    Let me dispel some of those myths for you.
+                    }
             ]],
             SIT_MOD = "The Admiralty is cautious of you",
             DIALOG_CONVINCE_SUCCESS = [[
+                player:
+                    {not assaulted?
+                    Y'see? The admiralty'll get their cut eventually.
+                    If nothing else, I can be the counter balance to the other less than lawful candidates and make your guys look better in comparison.
                 agent:
-                    [p] Hesh damn poultry man!
-                    I'll get them.
+                    !think
+                    You do make a bit of sense
+                    Very well, but just remember I, or whoever comes after you next, might not be as lenient.
                     !exit
+                player:
+                    !salute
+                    }
+                    {assaulted?
+                    Check with my advisor. I wasn't anywhere near the scene of the crime!
+                    Next time, try to have a more solid base of evidence before you go accusing politicians like that.
+                agent:
+                    !think
+                    Hmm. If you actually have an alabi, I guess we can't do much.
+                    Though I don't think your advisor would be particularly truthful in this endeavor.
+                    But it's a lead. And the law says we have to follow it 'till were sure it's a dead end.
+                    Just know that the other officers might not be as willing to listen to that kind of vroc-wash.
+                    !exit
+                player:
+                    !salute
+                    }
             ]],
             DIALOG_CONVINCE_FAILURE = [[
+                player:
+                    {assaulted?
+                    If I actually did hurt an officer, why can't you bring them here to testify?
                 agent:
-                    [p] A great story you have there.
-                    Ashame that it doesn't absolve your duty.
+                    Because they're in the infirmary and getting a lot of their blood on the floor.
+                    Not a convincing argument you have there.
+                    }
+                    {not assaulted?
+                    I thought this was a democracy? with democratic free speech?
+                agent:
+                    Oh. You poor, poor fool.
+                    !chuckle
+                    The last thing you've done before being imprisoned is making me feel sorry for your naivety
+                    }
             ]],
             OPT_INTIMIDATE = "Scare {agent} away",
             DIALOG_INTIMIDATE = [[
                 player:
-                    [p] Look at me.
-                    I'm scary.
+                    {assaulted?
+                    Y'know, you came up to me with a warrant for assault.
+                    !throatcut
+                    Yet you seem to lapse on the fact that i'm completely willing to do the same to you.
+                    }
+                    {not assaulted?
+                    Oh. you used the word "cut".
+                    !throatcut
+                    How ironic your terminology is in this instance.
+                    }
             ]],
             DIALOG_INTIMIDATE_SUCCESS_SOLO = [[
+                player:
+                    What'll it be, switch? Want to be sent home in a body bag?
                 agent:
-                    [p] Oh no I'm scared!
+                    !scared
+                    ...Alright! You win!
+                    Aah!
                     !exit
+                * {agent} drops a few papers in {agent.hisher} panic. They seem to pertain to your arrest.
+                * You quickly confiscate them and walk away like nothing happened.
             ]],
             DIALOG_INTIMIDATE_SUCCESS = [[
-                * [p] {agent}'s followers ran away.
+                player:
+                    Try your luck, I dare you.
+                    None of you will walk away if you test me.
+                * The words carry a force that chills {agent}'s followers to the bone.
+                * They scurry away without a look back.
                 agent:
-                    I'll win next time!
-                    !exit
+                    !angry
+                    Rrgh, hesh damn it.
+                    I am reporting half of that patrol to the higher ups, I swear.
+                player:
+                    What, you want to try your luck? Prove how hard you are?
+                agent:
+                    !scared
+                    No thanks. I-i'm good.
+                * {agent} takes to the wind as well.
             ]],
             DIALOG_INTIMIDATE_OUTNUMBER = [[
-                * [p] Some of {agent}'s followers ran away.
+                player:
+                    Remember, I still know how to use my weapons.
+                    I'll take you all on!
+                * A few of the more skittish members of {agent}'s group back up
+                * Still though, they outnumber you, and {agent} is unfazed.
                 agent:
                     !fight
-                    No matter. I can still win!
+                    Come on, that the toughest you can pull off?
             ]],
             DIALOG_INTIMIDATE_FAILURE = [[
+                player:
+                    You want your insides to be eviserated? Be my guest.
                 agent:
-                    Wait, this guy isn't that strong.
+                    Pssh, as if you could pull that off.
                 {some_ran?
-                    Come back, you cowards!
-                * The routed followers came back,
+                * {agent} looks back to see some people ran off.
+                agent:
+                    Oh come on, people. Earn your shill!
+                * The routed followers came back, shaking off the nervousness.
                 }
             ]],
             DIALOG_FIGHT_WIN = [[
                 {dead?
-                    * Oh good, now you killed an Admiralty. I'm sure that they will be happy.
+                    * {agent} lies at your feet, their soul being consumed by Hesh as you stand.
+                    {assaulted?
+                    * Well, you can now add 2 to the score of government workers you murdered.
+                    * A bit ironic, considering you're running for a government office.
+                    }
+                    {not assaulted?
+                    * The admiralty will definitely be after your head now.
+                    * But maybe once you're in office you can clear your name.
+                    * You make a mental note to burn your records before shoving the body into a dark corner.
+                    }
                 }
                 {not dead?
                     agent:
                         !injured
+                    {assaulted?
                     player:
-                        [p] Had enough?
+                        You really didn't think that through, did you?
                     agent:
-                        Fine, you win this time.
-                        Just know that you made a terrible enemy.
+                        Alright, alright, you win!
+                        Just know that i'm filing a report on this!
                         !exit
+                    }
+                    {not assaulted?
+                    }
                 }
             ]],
             OPT_RESIST = "Resist Arrest",
