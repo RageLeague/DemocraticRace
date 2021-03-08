@@ -72,7 +72,8 @@ QDEF:AddConvo()
                 player:
                     {assaulted?
                     Now let's calm down a little. There's a lot of people in Havaria with grievances towards the Admiralty.
-                    I'd like to see some proof of this, or do you just not agree with me?
+                    !crossed
+                    I'd like to at least defend myself before you put me away.
                     }
                     {not assaulted?
                     I see you've bought into the smear campaign of my opposition.
@@ -87,7 +88,7 @@ QDEF:AddConvo()
                     If nothing else, I can be the counter balance to the other less than lawful candidates and make your guys look better in comparison.
                 agent:
                     !think
-                    You do make a bit of sense
+                    You do make a bit of sense.
                     Very well, but just remember I, or whoever comes after you next, might not be as lenient.
                     !exit
                 player:
@@ -96,6 +97,7 @@ QDEF:AddConvo()
                     {assaulted?
                     Check with my advisor. I wasn't anywhere near the scene of the crime!
                     Next time, try to have a more solid base of evidence before you go accusing politicians like that.
+                    It's likely just that officer trying to spread libel about my campaign.
                 agent:
                     !think
                     Hmm. If you actually have an alabi, I guess we can't do much.
@@ -112,7 +114,7 @@ QDEF:AddConvo()
                     {assaulted?
                     If I actually did hurt an officer, why can't you bring them here to testify?
                 agent:
-                    Because they're in the infirmary and getting a lot of their blood on the floor.
+                    Because they're in the infirmary and losing quite a lot of blood as we speak.
                     Not a convincing argument you have there.
                     }
                     {not assaulted?
@@ -139,6 +141,7 @@ QDEF:AddConvo()
             ]],
             DIALOG_INTIMIDATE_SUCCESS_SOLO = [[
                 player:
+                    !angry
                     What'll it be, switch? Want to be sent home in a body bag?
                 agent:
                     !scared
@@ -150,6 +153,7 @@ QDEF:AddConvo()
             ]],
             DIALOG_INTIMIDATE_SUCCESS = [[
                 player:
+                    !cruel
                     Try your luck, I dare you.
                     None of you will walk away if you test me.
                 * The words carry a force that chills {agent}'s followers to the bone.
@@ -159,6 +163,7 @@ QDEF:AddConvo()
                     Rrgh, hesh damn it.
                     I am reporting half of that patrol to the higher ups, I swear.
                 player:
+                    !angrypoint
                     What, you want to try your luck? Prove how hard you are?
                 agent:
                     !scared
@@ -191,13 +196,13 @@ QDEF:AddConvo()
                 {dead?
                     * {agent} lies at your feet, their soul being consumed by Hesh as you stand.
                     {assaulted?
-                    * Well, you can now add 2 to the score of government workers you murdered.
+                    * Well, you can now add another soul to the score of government workers you murdered.
                     * A bit ironic, considering you're running for a government office.
                     }
                     {not assaulted?
                     * The admiralty will definitely be after your head now.
                     * But maybe once you're in office you can clear your name.
-                    * You make a mental note to burn your records before shoving the body into a dark corner.
+                    * You make a mental note to burn your records before shoving the body into a dark corner of the overgrowth.
                     }
                 }
                 {not dead?
@@ -208,10 +213,25 @@ QDEF:AddConvo()
                         You really didn't think that through, did you?
                     agent:
                         Alright, alright, you win!
+                        !angrypoint
                         Just know that i'm filing a report on this!
                         !exit
                     }
                     {not assaulted?
+                    player:
+                        Come on, you let me beat you to a pulp over politics?
+                    agent:
+                        Hrgh. Jokes on you.
+                        When I get back to H.Q., we'll have the legal grounds to put you in prison for far, far longer.
+                    player:
+                        !shrug
+                        Can't be helped, but until then...
+                        !fight
+                        Watch yourself, Switch. I'm more than willing to give you an encore fight.
+                    agent:
+                        !scared
+                        I-I understand, you won't see me trying to fight you again.
+                        !exit
                     }
                 }
             ]],
@@ -224,10 +244,14 @@ QDEF:AddConvo()
             OPT_ARREST = "Serve your sentence",
             DIALOG_ARREST = [[
                 player:
-                    Fine, I'll come.
-                    But you'll be hearing from my lawyers!
+                    Y'know what, fine.
+                    I was bound to get in trouble back in my grifting days.
+                    Besides, I have people on the outside. I'll be out in days.
                 agent:
-                    Yeah, sure. Whatever.
+                    !chuckle
+                    That's what I like to hear.
+                    !angrypoint
+                    Now on with the cuffs! You're coming with me for quite a long time.
             ]],
         }
         :SetLooping(true)
