@@ -18,6 +18,7 @@ local QDEF = QuestDef.Define
         base_difficulty_change = function(quest, new_diff, old_diff)
             quest:SetRank(new_diff)
         end,
+        
     },
 
     on_start = function(quest)
@@ -95,14 +96,7 @@ local QDEF = QuestDef.Define
     end,
     events =
     {
-        -- card_removed = function(quest, card)
-        --     for i, card in ipairs(TheGame:GetGameState():GetPlayerAgent().negotiator:GetCards()) do
-        --         if card.userdata.linked_quest == quest then
-        --             return
-        --         end
-        --     end
-        --     quest:Fail("sell")
-        -- end,
+        
     },
 }
 :AddObjective{
@@ -112,6 +106,15 @@ local QDEF = QuestDef.Define
     on_activate = function(quest)
         quest.posted_location = {}
     end,
+    events =
+    {
+        phase_change = function(quest, new_phase)
+            for i, location in ipairs(quest.param.posted_location or {}) do
+                quest.param.people_advertised = (quest.param.people_advertised or 0) + location:GetCurrentPatronCapacity()
+            end
+            quest:DefFn("VerifyCount")
+        end,
+    },
 }
 :AddObjective{
     id = "tell_giver",
@@ -248,6 +251,42 @@ QDEF:AddConvo("sell", "giver")
             end
             
         end)
+QDEF:AddConvo("advertise_poster")
+    :Loc{
+        OPT_POSTER = "Post an advertisement here",
+        DIALOG_POSTER = [[
+            player:
+                [p] Can you post an ad?
+            agent:
+                I don't know, can you?
+        ]],
+        DIALOG_POSTER_SUCCESS = [[
+            player:
+                [p] I think I can.
+            agent:
+                Well then.
+        ]],
+        DIALOG_POSTER_FAILURE = [[
+            agent:
+                [p] I don't think you can.
+            player:
+                Crap.
+        ]],
+    }
+    :Hub(function(cxt, who)
+        if cxt.location:GetProprietor() and cxt.location:GetProprietor() == who and
+            not table.arraycontains(cxt.quest.param.posted_location or {}, cxt.location)
+            and cxt.location:GetCurrentPatronCapacity() > 0 then
+
+            cxt:BasicNegotiation("POSTER")
+                :OnSuccess(function(cxt)
+                    table.insert(cxt.quest.param.posted_location, cxt.location)
+                    cxt.quest.param.people_advertised = (cxt.quest.param.people_advertised or 0) + cxt.location:GetCurrentPatronCapacity()
+                    cxt.quest:DefFn("VerifyCount")
+                end)
+        end
+    
+    end)
 QDEF:AddConvo("tell_giver")
     :TravelConfront("STATE_ENC", function(cxt)
         return not cxt.quest.param.did_encounter

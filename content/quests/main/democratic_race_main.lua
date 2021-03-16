@@ -193,6 +193,15 @@ local QDEF = QuestDef.Define
     end,
     fill_out_quip_tags = function(quest, tags, agent)
         table.insert_unique(tags, "democratic_race")
+        if quest:GetCastMember("primary_advisor") == quest:GetCastMember("advisor_diplomacy") then
+            table.insert_unique(tags, "primary_advisor_diplomacy")
+        end
+        if quest:GetCastMember("primary_advisor") == quest:GetCastMember("advisor_manipulate") then
+            table.insert_unique(tags, "primary_advisor_manipulate")
+        end
+        if quest:GetCastMember("primary_advisor") == quest:GetCastMember("advisor_hostile") then
+            table.insert_unique(tags, "primary_advisor_hostile")
+        end
         for id, data in pairs(quest.param.stances or {}) do
             if id and data then
                 if data > 0 then
