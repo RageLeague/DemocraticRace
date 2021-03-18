@@ -1,3 +1,7 @@
+local function GetELO(agent)
+    return 1000 + 210 * agent:GetRenown() - 200 * agent:GetCombatStrength() + math.random(-100, 100)
+end
+
 local QDEF = QuestDef.Define
 {
     title = "Battle of Wits",
@@ -130,6 +134,35 @@ QDEF:AddConvo("find_challenger")
                 [p] Nah, I don't think I will.
         ]],
     }
-    :Hub(function(cxt)
-    
+    :Hub(function(cxt, who)
+        if who and not AgentUtil.HasPlotArmour(agent) then
+        end
     end)
+QDEF:AddConvo("go_to_game")
+    :Priority(CONVO_PRIORITY_LOW)
+    :AttractState("STATE_NO_PLAYER", function(cxt) 
+        return cxt.location == cxt:GetCastMember("giver_home") and cxt:GetAgent() and
+            (cxt:GetAgent() == cxt:GetCastMember("giver") or cxt:GetAgent() == cxt:GetCastMember("challenger"))
+    end)
+        :Loc{
+            DIALOG_INTRO_GIVER_NO_CHALLENGER = [[
+                agent:
+                    [p] You got someone to play? Great!
+                    But I guess they're not here, yet, huh?
+            ]],
+            DIALOG_INTRO_CHALLENGER_NO_GIVER = [[
+                agent:
+                    [p] Where's {giver}?
+                player:
+                    {giver.HeShe}'s not here yet.
+                agent:
+                    Oh well, we can wait.
+            ]],
+        }
+        :Fn(function(cxt)
+            if cxt:GetCastMember("giver"):GetLocation() ~= cxt.location then
+                cxt:Dialog("DIALOG_INTRO_CHALLENGER_NO_GIVER")
+            elseif cxt:GetCastMember("challenger"):GetLocation() ~= cxt.location then
+                cxt:Dialog("DIALOG_INTRO_GIVER_NO_CHALLENGER")
+            end
+        end)
