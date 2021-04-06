@@ -1,5 +1,7 @@
 local function GetELO(agent)
-    return 1000 + 210 * agent:GetRenown() - 200 * agent:GetCombatStrength() + math.random(-100, 100)
+    return agent:CalculateProperty("CHESS_ELO", function(agent)
+        return 1000 + 210 * agent:GetRenown() - 200 * agent:GetCombatStrength() + math.random(-100, 100)
+    end) 
 end
 
 local QDEF = QuestDef.Define
@@ -123,6 +125,9 @@ QDEF:AddConvo("find_challenger")
                 [p] Wanna beat {giver} in a game?
             agent:
                 Why tho?
+            {not good_player?
+                I such at chess(?).
+            }
         ]],
         DIALOG_ASK_SUCCESS = [[
             agent:
@@ -135,7 +140,9 @@ QDEF:AddConvo("find_challenger")
         ]],
     }
     :Hub(function(cxt, who)
-        if who and not AgentUtil.HasPlotArmour(agent) then
+        if who and not AgentUtil.HasPlotArmour(who) then
+            local ELO = GetELO(who)
+            cxt.enc.scratch.good_player = ELO >= 1000
         end
     end)
 QDEF:AddConvo("go_to_game")
