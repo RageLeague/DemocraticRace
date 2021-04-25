@@ -588,6 +588,7 @@ QDEF:AddConvo("tell_giver")
             if not cxt.quest.param.sell_share then
                 cxt:Dialog("DIALOG_INTRO_NO_SELL")
                 cxt.quest:Complete()
+                ConvoUtil.GiveQuestRewards(cxt)
                 if cxt:GetAgent():GetContentID() == "ADVISOR_DIPLOMACY" then
                     cxt:QST("ASK_BASED")
                 end
