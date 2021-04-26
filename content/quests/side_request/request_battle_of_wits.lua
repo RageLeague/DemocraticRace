@@ -1,6 +1,6 @@
 local function GetELO(agent)
     return agent:CalculateProperty("CHESS_ELO", function(agent)
-        return 1000 + 150 * (agent:GetRenown() - agent:GetCombatStrength()) + 10 * (agent:GetRenown() ^ 2) + math.random(-100, 100)
+        return math.round(900 + 150 * (agent:GetRenown() - agent:GetCombatStrength()) + 10 * (agent:GetRenown() ^ 2) + math.random(0, 200))
     end) 
 end
 -- Calculate the chance of A winning given eloa and elob, using the elo system.
@@ -58,11 +58,12 @@ local QDEF = QuestDef.Define
             -- DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 2, 3, "POOR_QUEST")
         end
     end,
-    process_fighter = function(quest, fighter)
-        if fighter.agent == quest:GetCastAgent("challenger") and fighter:GetTeamID() == TEAM.RED then
-            fighter:AddCondition("WANTED_DEAD")
-        end
-    end,
+    -- process_fighter = function(quest, fighter)
+    --     print(fighter.agent, fighter:GetTeamID())
+    --     if fighter.agent == quest:GetCastMember("challenger") and fighter:GetTeamID() == TEAM.RED then
+    --         fighter:AddCondition("WANTED_DEAD")
+    --     end
+    -- end,
 
 }
 :AddCast{
@@ -93,6 +94,7 @@ local QDEF = QuestDef.Define
     no_validation = true,
     on_assign = function(quest, agent)
         quest:Complete("find_challenger")
+        quest:Activate("go_to_game")
     end,
     events = {
         agent_retired = function(quest, agent)
@@ -113,6 +115,11 @@ local QDEF = QuestDef.Define
     id = "go_to_game",
     title = "Spectate the game.",
     desc = "Go visit {giver} and watch how the game with {challenger} turns out.",
+    mark = function(quest, t, in_location)
+        if DemocracyUtil.IsFreeTimeActive() then
+            table.insert(t, quest:GetCastMember("giver_home"))
+        end
+    end,
 }
 :AddObjective{
     id = "wait",
@@ -250,6 +257,7 @@ QDEF:AddConvo("go_to_game")
             OPT_OBSERVE = "Observe the game",
         }
         :Fn(function(cxt)
+            local ELO = GetELO(cxt:GetCastMember("challenger"))
             cxt.enc.scratch.good_player = ELO >= GOOD_PLAYER_THRESHOLD
             cxt:Dialog("DIALOG_INTRO")
             cxt:Opt("OPT_OBSERVE")
@@ -337,6 +345,7 @@ QDEF:AddConvo("go_to_game")
             SIT_MOD = "You are clearly making a mockery of {agent} with these terrible players",
         }
         :Fn(function(cxt)
+            cxt:TalkTo(cxt:GetCastMember("giver"))
             cxt.quest.param.failed_challengers = (cxt.quest.param.failed_challengers or 0) + 1
             if not cxt.enc.scratch.good_player then
                 cxt.quest.param.bad_challengers = (cxt.quest.param.bad_challengers or 0) + 1
@@ -363,7 +372,7 @@ QDEF:AddConvo("go_to_game")
                     :FailQuest()
                     :DoneConvo()
             else
-                cxt:UnassignCastMember("challenger")
+                cxt.quest:UnassignCastMember("challenger")
                 quest:Cancel("go_to_game")
                 quest:Activate("find_challenger")
                 StateGraphUtil.AddEndOption(cxt)
@@ -389,6 +398,8 @@ QDEF:AddConvo("go_to_game")
                 challenger:
                     WTF?
             ]],
+
+            OPT_ATTACK = "Attack {challenger}, as requested",
 
             DIALOG_ATTACK = [[
                 challenger:
@@ -424,7 +435,25 @@ QDEF:AddConvo("go_to_game")
                 }
             ]],
 
-            OPT_ORDER = "Order your hired hand to kill {challenger}",
+            OPT_ORDER = "Order {1#agent} to kill {challenger}",
+            DIALOG_ORDER = [[
+                challenger:
+                    !right
+                    !scared
+                player:
+                    [p] {hired}, kill {challenger.himher}.
+                hired:
+                    !left
+                    As you wish.
+                challenger:
+                    !exit
+                * Oof.
+                player:
+                    !left
+                giver:
+                    !right
+                    Thx.
+            ]],
 
             OPT_CALM = "Calm {giver} down",
             DIALOG_CALM = [[
@@ -466,12 +495,161 @@ QDEF:AddConvo("go_to_game")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
+            local hireling = TheGame:GetGameState():GetCaravan():GetHireling()
             cxt:Opt("OPT_ATTACK")
                 :Dialog("DIALOG_ATTACK")
                 :Battle{
                     enemies = {"challenger"},
                     on_win = function(cxt)
-                    
+                        cxt:TalkTo(cxt:GetCastMember("challenger"))
+                        cxt:Dialog("DIALOG_ATTACK_WIN")
+                        if cxt:GetAgent():IsDead() then
+                        else
+                            cxt.quest.param.sub_optimal = true
+                        end
+                        cxt.quest.Complete()
+                        ConvoUtil.GiveQuestRewards(cxt)
+                        StateGraphUtil.AddEndOption(cxt)
+                    end,
+                    on_start_battle = function(battle)
+                        battle:GetTeam(TEAM.RED):Primary():AddCondition("WANTED_DEAD")
+                    end,
+                }
+            if hireling then
+                cxt:Opt("OPT_ORDER", hireling)
+                    :Fn(function(cxt)
+                        cxt:ReassignCastMember("hired", hireling)
+                    end)
+                    :Dialog("DIALOG_ORDER")
+                    :Fn(function(cxt)
+                        cxt:GetCastMember("challenger"):Kill()
+                    end)
+                    :CompleteQuest()
+                    :DoneConvo()
+            end
+            cxt:BasicNegotiation("CALM", {
+                target_agent = cxt:GetCastMember("giver"),
+                helpers = {"challenger"},
+                -- Some special effect for this negotiation.
+            })
+                :OnSuccess()
+                    :Fn(function(cxt)
+                        -- Spawn a followup.
+                    end)
+                    :CancelQuest()
+                    :DoneConvo()
+                :OnFailure()
+                    :GoTo("STATE_AGGRO")
+            cxt:Opt("OPT_REFUSE")
+                :Dialog("DIALOG_REFUSE")
+                :GoTo("STATE_AGGRO")
+        end)
+    :State("STATE_AGGRO")
+        :Loc{
+            OPT_STEP_ASIDE = "Step aside",
+            DIALOG_STEP_ASIDE = [[
+                player:
+                    !left
+                    [p] Alright, I'll get out of your way.
+                    !exit
+                giver:
+                    !right
+                    !cruel
+                * Oof.
+                player:
+                    !left
+                giver:
+                    Got my hands dirty, but no matter.
+                    You did literally nothing.
+                player:
+                    Not my job.
+                giver:
+                    Fair.
+            ]],
+            OPT_DEFEND = "Defend {challenger}",
+            DIALOG_DEFEND = [[
+                player:
+                    !fight
+                    [p] I can't let you do that!
+            ]],
+            DIALOG_DEFEND_WIN = [[
+                {dead?
+                    {challenger_dead?
+                        * [p] Everyone dies lol.
+                    }
+                    {not challenger_dead?
+                        player:
+                            !left
+                        challenger:
+                            !right
+                            [p] Holy Hesh, you actually killed {giver.himher}.
+                            Thanks.
+                    }
+                    {advisor?
+                        * Now where will you find another advisor?
+                    }
+                }
+                {not dead?
+                    {challenger_dead?
+                        player:
+                            !left
+                        giver:
+                            !right
+                            !injured
+                            [p] Looks like {challenger}'s dead anyway.
+                            Well, was it worth it?
+                    }
+                    {not challenger_dead?
+                        giver:
+                            !right
+                            !injured
+                        player:
+                            !left
+                            [p] So? Have you finally come to your senses?
+                            You gotta accept that someone is better than you.
+                        giver:
+                            Fine, you win this.
+                            But I will remember this.
+                        * In typical Griftlands fashion, violence solves everything.
+                    }
+                }
+            ]],
+            DIALOG_DEFEND_RUN = [[
+                {advisor?
+                    giver:
+                        [p] And don't come back!
+                    * Well looks like this advisor is not willing to do more to help you now.
+                }
+                {not advisor?
+                    giver:
+                        [p] That's right. Run like a coward.
+                    * Oof, that's not good.
+                }
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:TalkTo(cxt:GetCastMember("giver"))
+            cxt:Opt("OPT_STEP_ASIDE")
+                :Dialog("DIALOG_STEP_ASIDE")
+                :Fn(function(cxt) cxt.quest.param.poor_performance = true end)
+                :CompleteQuest()
+                :DoneConvo()
+            cxt:Opt("OPT_DEFEND")
+                :Dialog("DIALOG_DEFEND")
+                :Battle{
+                    flags = BATTLE_FLAGS.SELF_DEFENCE,
+                    enemies = {"giver"},
+                    allies = {"challenger"},
+                    on_runaway = function(cxt) 
+                        cxt:Dialog("DIALOG_DEFEND_RUN")
+                        cxt.quest:Fail()
+                        cxt:GetCastMember("giver"):OpinionEvent(OPINION.BETRAYED)
+                        StateGraphUtil.AddLeaveLocation(cxt)
+                    end,
+                    on_win = function(cxt) 
+                        cxt:Dialog("DIALOG_DEFEND_WIN")
+                        cxt.quest:Fail()
+                        StateGraphUtil.AddEndOption(cxt)
                     end,
                 }
         end)
