@@ -10,6 +10,8 @@ end
 
 local GOOD_PLAYER_THRESHOLD = 1000
 
+local FOLLOW_UP
+
 local QDEF = QuestDef.Define
 {
     title = "Battle of Wits",
@@ -652,4 +654,98 @@ QDEF:AddConvo("go_to_game")
                         StateGraphUtil.AddEndOption(cxt)
                     end,
                 }
+        end)
+
+FOLLOW_UP = QDEF:AddFollowup()
+
+FOLLOW_UP:GetCast("challenger").unimportant = true
+-- FOLLOWUP:GetCast("challenger").optional = true
+
+FOLLOW_UP:AddDormancyState("wait", "comfort", false, 2, 5, true)
+    :AddDormancyState("comfort", "finale", true, 6, 12)
+    :AddObjective{
+        id = "find_opportunity",
+        events = {
+            caravan_member_event = function(quest, event, agent, old_loc, new_loc)
+                if event == "agent_location_changed" and agent == TheGame:GetGameState():GetPlayerAgent() and quest:GetCastMember("giver"):GetLocation() ~= new_loc then
+                    quest:Complete("find_opportunity")
+                    quest:Activate("finale")
+                end
+            end,
+        },
+    }
+    :AddObjective{
+        id = "finale",
+        title = "Visit {giver}",
+        desc = "It has been a while since you visited {giver}. Surely nothing bad happened, right?",
+        on_activate = function(quest)
+            quest:GetCastMember("giver"):Retire()
+        end,
+        mark = {"giver_home"},
+    }
+
+FOLLOW_UP:AddConvo("comfort", "giver")
+    :Priority(CONVO_PRIORITY_LOW)
+    :Loc{
+        OPT_COMFORT = "Comfort {agent}",
+        DIALOG_COMFORT = [[
+            player:
+                [p] Feeling depressed? Just don't be sad.
+        ]],
+        DIALOG_COMFORT_SUCCESS = [[
+            agent:
+                [p] Thanks, I'm cured.
+        ]],
+        DIALOG_COMFORT_FAILURE = [[
+            agent:
+                [p] Say no more.
+        ]],
+    }
+    :Hub(function(cxt)
+        if not cxt.quest.param.tried_comfort then
+            cxt:BasicNegotiation("COMFORT", {})
+                :OnSuccess()
+                    :CompleteQuest()
+                    :Fn(function(cxt)
+                        QDEF.on_complete(cxt.quest)
+                        -- This will probably change dronumph's narcissist personality a little, as he accepts that there
+                        -- are always people better than him, but that should not be a cause for his depression.
+                        cxt:GetAgent():Remember("ACCEPT_LIMITS")
+                    end)
+                    :DoneConvo()
+                :OnFailure()
+                    :Fn(function(cxt)
+                        cxt.quest.param.tried_comfort = true
+                    end)
+        end
+    end)
+    :AttractState("STATE_ATTRACT")
+        :Loc{
+            DIALOG_INTRO = [[
+                agent:
+                    If I'm not the best, then who am I?
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+        end)
+    
+
+FOLLOW_UP:AddConvo("finale", "giver_home")
+    :ConfrontState("STATE_CONF")
+        :Loc{
+            DIALOG_INTRO = [[
+                * [p] You arrive at {giver}'s {advisor?office|home}, but {giver} is nowhere to be seen.
+                * You found a note. It says:
+                * "I have moved to a better place, for if anyone is better than me, my entire purpose is all for nothing."
+                * And some other poetic stuff idk.
+                * I assure you that this is totally not a suicide note. {giver.HeShe}'s fine.
+                * It's just that you will never see {giver.himher} again.
+                * They are completely different.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+            cxt.quest:Cancel()
+            StateGraphUtil.AddEndOption(cxt)
         end)
