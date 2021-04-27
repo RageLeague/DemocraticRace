@@ -46,7 +46,7 @@ local QDEF = QuestDef.Define
 
     on_complete = function(quest)
         if not (quest.param.sub_optimal or quest.param.poor_performance) then
-            quest:GetProvider():OpinionEvent(OPINION.DID_LOYALTY_QUEST)
+            quest:GetCastMember("giver"):OpinionEvent(OPINION.DID_LOYALTY_QUEST)
             -- DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST")
             -- DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 4, "COMPLETED_QUEST")
             -- DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 3, "COMPLETED_QUEST")
@@ -537,6 +537,7 @@ QDEF:AddConvo("go_to_game")
                 :OnSuccess()
                     :Fn(function(cxt)
                         -- Spawn a followup.
+                        cxt.quest:SpawnFollowQuest(FOLLOW_UP.id)
                     end)
                     :CancelQuest()
                     :DoneConvo()
@@ -651,6 +652,7 @@ QDEF:AddConvo("go_to_game")
                     on_win = function(cxt) 
                         cxt:Dialog("DIALOG_DEFEND_WIN")
                         cxt.quest:Fail()
+                        cxt.quest:SpawnFollowQuest(FOLLOW_UP.id)
                         StateGraphUtil.AddEndOption(cxt)
                     end,
                 }
@@ -659,6 +661,7 @@ QDEF:AddConvo("go_to_game")
 FOLLOW_UP = QDEF:AddFollowup()
 
 FOLLOW_UP:GetCast("challenger").unimportant = true
+-- FOLLOW_UP:GetCast("giver").provider = true
 -- FOLLOWUP:GetCast("challenger").optional = true
 
 FOLLOW_UP:AddDormancyState("wait", "comfort", false, 2, 5, true)
@@ -678,8 +681,11 @@ FOLLOW_UP:AddDormancyState("wait", "comfort", false, 2, 5, true)
         id = "finale",
         title = "Visit {giver}",
         desc = "It has been a while since you visited {giver}. Surely nothing bad happened, right?",
-        on_activate = function(quest)
-            quest:GetCastMember("giver"):Retire()
+        -- on_activate = function(quest)
+        --     quest:GetCastMember("giver"):Retire()
+        -- end,
+        is_in_hiding = function(quest, agent)
+            return agent == quest:GetCastMember("giver")
         end,
         mark = {"giver_home"},
     }
@@ -731,8 +737,8 @@ FOLLOW_UP:AddConvo("comfort", "giver")
         end)
     
 
-FOLLOW_UP:AddConvo("finale", "giver_home")
-    :ConfrontState("STATE_CONF")
+FOLLOW_UP:AddConvo("finale")
+    :ConfrontState("STATE_CONF", function(cxt) return cxt.location == cxt:GetCastMember("giver_home") end)
         :Loc{
             DIALOG_INTRO = [[
                 * [p] You arrive at {giver}'s {advisor?office|home}, but {giver} is nowhere to be seen.
@@ -747,5 +753,6 @@ FOLLOW_UP:AddConvo("finale", "giver_home")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Cancel()
+            cxt.quest:GetCastMember("giver"):Retire()
             StateGraphUtil.AddEndOption(cxt)
         end)

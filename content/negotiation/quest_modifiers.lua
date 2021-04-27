@@ -1101,7 +1101,7 @@ local MODIFIERS =
     },
 	NARCISSISM = {
 	    name = "Narcissism",
-        desc = "At the start of {1}'s turn, create {2:a|{2} separate }{PRIDE} {2*argument|arguments}.",
+        desc = "At the start of {1}'s turn, create {2:a|{2} separate} {PRIDE} {2*argument|arguments}.",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName(), self:GetPrideCount(self.engine and self.engine:GetDifficulty() or 1))
         end,
