@@ -810,6 +810,25 @@ local QDEF = QuestDef.Define
         quest.param.unlocked_locations = shallowcopy(Content.GetWorldRegion("democracy_pearl").locations)
         print(loc.format("Unlocked all locations ({1} total)", #quest.param.unlocked_locations))
     end,
+
+    UpdateAdvisor = function(quest, new_advisor, change_reason)
+        local old_advisor = quest:GetCastMember("primary_advisor")
+        if old_advisor == new_advisor then
+            return
+        end
+        if old_advisor then
+            quest:UnassignCastMember("primary_advisor")
+        end
+        if new_advisor then
+            quest:AssignCastMember("primary_advisor", new_advisor)
+            TheGame:BroadcastEvent( "primary_advisor_changed", old_advisor, new_advisor, change_reason )
+        else
+            TheGame:BroadcastEvent( "primary_advisor_removed", old_advisor, new_advisor, change_reason )
+            -- Fail-check. Check for any existing advisors that are alive and is at least neutral to you.
+            -- If there are, start a side quest of finding that advisor.
+            -- Otherwise, the game autofails, and a lose slide plays.
+        end
+    end,
 }
 :AddCast{
     cast_id = "random_opposition",
