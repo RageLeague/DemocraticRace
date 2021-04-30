@@ -39,6 +39,8 @@ local chars =
         gender = "FEMALE",
         species = "KRADESHI",
 
+        theme_music = "DEMOCRATICRACE|event:/democratic_race/music/story/benni_theme",
+
         build = "female_tei_utaro_build",
         head = "head_female_kradeshi_13",
 

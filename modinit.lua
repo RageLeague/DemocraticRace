@@ -68,12 +68,6 @@ local function OnLoad( mod )
         end
         return ok, result
     end
-    
-    require "DEMOCRATICRACE:content/string_table"
-
-    rawset(_G, "DemocracyConstants", require("DEMOCRATICRACE:content/constants"))
-    require "DEMOCRATICRACE:content/util"
-    -- rawset(_G, "DemocracyUtil", )
 
     -- Patch existing files first
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:patches/", "*.lua", true )) do
@@ -83,6 +77,13 @@ local function OnLoad( mod )
             require(name)
         end
     end
+    
+    require "DEMOCRATICRACE:content/string_table"
+
+    rawset(_G, "DemocracyConstants", require("DEMOCRATICRACE:content/constants"))
+    require "DEMOCRATICRACE:content/util"
+    -- rawset(_G, "DemocracyUtil", )
+
     -- require "DEMOCRATICRACE:content/wealth_level"
     require "DEMOCRATICRACE:content/load_quips"
     require "DEMOCRATICRACE:content/load_codex"
@@ -186,6 +187,17 @@ local function OnLoad( mod )
     -- print(string.match("DemRace:lalala", "^.+[:]([^/\\].+)$"))
 end
 local function OnPreLoad( mod )
+
+    -- Patch existing files first
+    for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:preload_patches/", "*.lua", true )) do
+        local name = filepath:match( "(.+)[.]lua$" )
+        -- print(name)
+        if name then
+            require(name)
+        end
+    end
+    
+    -- Add localization
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:localization", "*.po", true )) do
         local name = filepath:match( "(.+)[.]po$" )
         print(name)
@@ -195,6 +207,9 @@ local function OnPreLoad( mod )
             Content.AddPOFileToLocalization(id, filepath)
         end
     end
+    AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.strings.bank", false)
+    -- local audiobank = AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", false)
+    AUDIO:MountModdedAudioBank("DEMOCRATICRACE", "DEMOCRATICRACE:assets/audio/Master.bank")
 end
 local MOD_OPTIONS =
 {
