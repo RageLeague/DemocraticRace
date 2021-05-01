@@ -812,6 +812,9 @@ local QDEF = QuestDef.Define
     end,
 
     UpdateAdvisor = function(quest, new_advisor, change_reason)
+        if not change_reason then
+            change_reason = "OTHER_REASON"
+        end
         local old_advisor = quest:GetCastMember("primary_advisor")
         if old_advisor == new_advisor then
             return
@@ -823,10 +826,11 @@ local QDEF = QuestDef.Define
             quest:AssignCastMember("primary_advisor", new_advisor)
             TheGame:BroadcastEvent( "primary_advisor_changed", old_advisor, new_advisor, change_reason )
         else
-            TheGame:BroadcastEvent( "primary_advisor_removed", old_advisor, new_advisor, change_reason )
+            TheGame:BroadcastEvent( "primary_advisor_removed", old_advisor, change_reason )
             -- Fail-check. Check for any existing advisors that are alive and is at least neutral to you.
             -- If there are, start a side quest of finding that advisor.
             -- Otherwise, the game autofails, and a lose slide plays.
+            quest.param.alert_advisor_removed = change_reason:lower()
         end
     end,
 }
@@ -867,6 +871,11 @@ local QDEF = QuestDef.Define
             end
         end
     end,
+    events = {
+        agent_retired = function(quest, agent) 
+            quest:DefFn("UpdateAdvisor", nil, agent:IsDead() and "ADVISOR_DEAD" or "ADVISOR_RETIRED")
+        end,
+    }
 }
 -- Have to do this to make plot_armour_fn work.
 :AddObjective{
@@ -896,6 +905,72 @@ QDEF:AddConvo()
         cxt:Dialog("DIALOG_NEW_LOCATION")
         DemocracyUtil.DoLocationUnlock(cxt, cxt.location:GetContentID())
     end)
+QDEF:AddConvo()
+    :Priority(CONVO_PRIORITY_LOWEST)
+    :ConfrontState("STATE_NO_ADVISOR", function(cxt)
+        return cxt.quest.param.alert_advisor_removed
+    end)
+        :Loc{
+            DIALOG_NO_NEW_ADVISOR = [[
+                {advisor_dead?
+                    * With the death of your advisor, there is no one left to help you in your campaign.
+                }
+                {advisor_retired?
+                    * With the disappearance of your advisor, there is no one left to help you in your campaign.
+                }
+                {advisor_rejected?
+                    * The last advisor available to you decided that you are not worth the trouble, as you lost the trust of the final person who is willing to help you.
+                }
+                * Without help, your campaign is forcefully suspended.
+            ]],
+            DIALOG_FIND_NEW_ADVISOR = [[
+                {advisor_dead?
+                    * With the death of your advisor, you need to find someone else who can help you.
+                }
+                {advisor_retired?
+                    * With the disappearance of your advisor, you need to find someone else who can help you.
+                }
+                {advisor_rejected?
+                    * The last advisor available to you decided that you are not worth the trouble, so you need to find another one.
+                }
+                {not (advisor_dead or advisor_retired or advisor_rejected)?
+                    * You can no longer rely on your old advisor. It's time to find a new one.
+                }
+            ]],
+        }
+        :Fn(function(cxt)
+            local available_advisors = {}
+            for i, id in ipairs(copykeys(DemocracyUtil.ADVISOR_IDS)) do
+                local agent = cxt:GetCastMember(id)
+                if agent and not agent:IsRetired() and agent:GetRelationship() >= RELATIONSHIP.NEUTRAL then
+                    table.insert(available_advisors, agent)
+                end
+            end
+            if #available_advisors > 0 then
+                cxt.enc.scratch[cxt.quest.param.alert_advisor_removed] = true
+
+                cxt:Dialog("DIALOG_FIND_NEW_ADVISOR")
+
+                cxt.quest.param.alert_advisor_removed = nil
+
+                QuestUtil.SpawnQuest("RACE_FIND_NEW_ADVISOR", 
+                    {
+                        parameters = {
+                            available_advisors = available_advisors,
+                        }
+                    }
+                )
+                StateGraphUtil.AddEndOption(cxt)
+            else
+                -- You lose lol
+                local flags = {
+                    [cxt.quest.param.alert_advisor_removed] = true,
+                }
+                cxt.quest.param.alert_advisor_removed = nil
+                DemocracyUtil.DoEnding(cxt, "no_more_advisors", flags)
+                
+            end
+        end)
 
 QDEF:AddDebugOption("start_on_day", {1,2})
     :AddDebugOption(

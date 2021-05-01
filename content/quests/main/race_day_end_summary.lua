@@ -14,6 +14,12 @@ local QDEF = QuestDef.Define
     mark = {"primary_advisor"},
     state = QSTATUS.ACTIVE,
 }
+:AddObjective{
+    id = "new_advisor",
+    title = "Find new advisor",
+    desc = "Finish the summary with the new advisor.",
+    mark = {"primary_advisor"},
+}
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 
 local RANKS = {
@@ -282,6 +288,13 @@ QDEF:AddConvo("summary", "primary_advisor")
                     If you are lucky, you can find a place to live.
                     One thing for sure: you aren't welcome here anymore.
             ]],
+            DIALOG_LEAVE = [[
+                player:
+                    [p] Fine, I will leave, if that's what you want.
+                    I'll find better help than you, anyway.
+                agent:
+                    Yeah, good luck with that. I don't care.
+            ]],
             DIALOG_LAST_CHANCE = [[
                 player:
                     Please, just give me one last chance.
@@ -301,10 +314,27 @@ QDEF:AddConvo("summary", "primary_advisor")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-            DemocracyUtil.AddAutofail(cxt, function(cxt)
-                cxt:Dialog("DIALOG_LAST_CHANCE")
-                cxt:GoTo("STATE_PAY")
-            end)
+            
+            cxt:Opt("OPT_LEAVE")
+                :Dialog("DIALOG_LEAVE")
+                :Fn(function(cxt)
+                    DemocracyUtil.UpdateAdvisor(nil, "ADVISOR_REJECTED")
+                end)
+                :FailQuest("summary")
+                :ActivateQuest("new_advisor")
+                :DoneConvo()
+
+            cxt:Opt("OPT_DEBUG_BYPASS_HARD_CHECK")
+                :PostText("TT_DEBUG_BYPASS_HARD_CHECK")
+                :Fn(function()
+                    TheGame:GetGameState():GetOptions().is_custom_mode = true
+                end)
+                :Dialog("DIALOG_LAST_CHANCE")
+                :GoTo("STATE_PAY")
+            -- DemocracyUtil.AddAutofail(cxt, function(cxt)
+            --     cxt:Dialog("DIALOG_LAST_CHANCE")
+            --     cxt:GoTo("STATE_PAY")
+            -- end)
         end)
     :State("STATE_PAY")
         :Loc{
