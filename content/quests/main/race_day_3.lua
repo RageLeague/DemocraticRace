@@ -51,6 +51,7 @@ local QDEF = QuestDef.Define
         for i, id in ipairs(potential_subquests) do
             quest.param.noon_subquest = QuestUtil.SpawnQuest( id )
             if quest.param.noon_subquest then
+                quest.param.noon_subquest.param.parent_quest = quest
                 return
             end
         end

@@ -314,7 +314,7 @@ local function DeltaPopularity(table, agent, delta)
     table[agent:GetID()] = (table[agent:GetID()] or 0) + delta
 end
 QDEF:AddConvo("go_to_debate")
-    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("backroom") end)
+    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("backroom") end)
         :Loc{
             DIALOG_INTRO = [[
                 * [p] You arrive at the grand theater backroom, where {agent} awaits you.

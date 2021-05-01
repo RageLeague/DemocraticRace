@@ -15,6 +15,9 @@ local QDEF = QuestDef.Define
         end
     end,
     postcondition = function(quest)
+        if not quest:GetCastMember("primary_advisor") then
+            return false, "No primary advisor"
+        end
         if quest:GetCastMember("primary_advisor"):GetRelationship() ~= RELATIONSHIP.LIKED then
             return false, "Not liked"
         end
@@ -24,6 +27,18 @@ local QDEF = QuestDef.Define
         end
         return true
     end,
+    events = {
+        agent_retired = function(quest, agent) 
+            if agent == quest:GetCastMember("primary_advisor") then
+                local replacement = QuestUtil.SpawnQuest( "RACE_DAY_3_NOON_GENERIC" )
+                if replacement then
+                    quest.param.parent_quest.param.noon_event = replacement
+                    replacement.param.parent_quest = quest.param.parent_quest
+                end
+                quest:Cancel()
+            end
+        end,
+    },
     -- on_start = function(quest)
         
     -- end,
@@ -50,7 +65,7 @@ local QDEF = QuestDef.Define
 DemocracyUtil.AddPrimaryAdvisor(QDEF)
 
 QDEF:AddConvo("go_to_bar")
-    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("noodle_shop") end)
+    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("noodle_shop") end)
         :Loc{
             DIALOG_INTRO = [[
                 * [p] you arrived at the shop.
