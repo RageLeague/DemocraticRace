@@ -22,8 +22,13 @@ return
             txt = "The last advisor available to you decided that you are not worth the trouble, as you lost the trust of the final person who is willing to help you.",
         },
         {
+            flag = "no_advisor",
+            mov = 'movies/smith_act1_slide_04.ogv',
+            txt = "All available advisors have turned you down, and there is no one left for you to rely on.",
+        },
+        {
             flag = function(flags)
-                return not (flags["advisor_dead"] or flags["advisor_retired"] or flags["advisor_rejected"])
+                return not (flags["advisor_dead"] or flags["advisor_retired"] or flags["advisor_rejected"] or flags["no_advisor"])
             end,
             mov = 'movies/smith_act1_slide_04.ogv',
             txt = "There is no one left for you to rely on for your campaign.",

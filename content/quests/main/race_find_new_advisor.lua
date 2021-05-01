@@ -26,4 +26,73 @@ local QDEF = QuestDef.Define
     end,
 }
 
-DemocracyUtil.AddAdvisors(QDEF)
+-- DemocracyUtil.AddAdvisors(QDEF)
+
+QDEF:AddConvo("locate_advisor")
+    :AttractState("STATE_ATTRACT", function(cxt)
+        return cxt:GetAgent() and table.arraycontains(cxt.quest.param.available_advisors, cxt:GetAgent())
+    end)
+        :Loc{
+            DIALOG_INTRO = [[
+                agent:
+                    [p] Ah, you're back.
+                {advisor_manipulate?
+                    Finally see that I am the most reasonable choice?
+                }
+                {advisor_diplomacy?
+                    Still thinking about my offer?
+                }
+                {advisor_hostile?
+                    I told you nobody is better than me.
+                }
+                {not (advisor_diplomacy or advisor_manipulate or advisor_hostile)?
+                    Have you finally decided to choose me instead?
+                }
+                    But if you decide to choose me now, it can only mean one thing.
+                    That your old advisor decided to kick you out because you are incompetent.
+                    Now why should I be your advisor?
+            ]],
+            DIALOG_LEAVE = [[
+                player:
+                    [p] I need to think some more.
+                agent:
+                    Yeah sure, whatever.
+            ]],
+            OPT_CONVINCE = "Convince {agent} to be your advisor",
+            DIALOG_CONVINCE = [[
+                player:
+                    [p] I'm gonna convince you now!
+            ]],
+            DIALOG_CONVINCE_SUCCESS = [[
+                agent:
+                    [p] Seems legit.
+            ]],
+            DIALOG_CONVINCE_FAILURE = [[
+                agent:
+                    [p] No way.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+            cxt:BasicNegotiation("CONVINCE", {})
+                :OnSuccess()
+                    :Fn(function(cxt)
+                        DemocracyUtil.UpdateAdvisor(cxt:GetAgent(), "NEW_ADVISOR")
+                    end)
+                    :CompleteQuest()
+                    :DoneConvo()
+                :OnFailure()
+                    :Fn(function(cxt)
+                        table.arrayremove(cxt.quest.param.available_advisors, cxt:GetAgent())
+                        if #cxt.quest.param.available_advisors <= 0 then
+                            local flags = {
+                                no_advisor = true,
+                            }
+                            DemocracyUtil.DoEnding(cxt, "no_more_advisors", flags)
+                        end
+                    end)
+                    :DoneConvo()
+            cxt:Opt("OPT_LEAVE")
+                :Dialog("DIALOG_LEAVE")
+                :DoneConvo()
+        end)
