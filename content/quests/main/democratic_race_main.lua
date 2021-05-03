@@ -862,14 +862,20 @@ local QDEF = QuestDef.Define
     when = QWHEN.MANUAL,
     no_validation = true,
     on_assign = function(quest,agent)
-        quest:AssignCastMember("home")
-        if quest.param.all_day_quests then
-            for k,v in ipairs(quest.param.all_day_quests) do
-                if v:GetQuestDef():GetCast("primary_advisor") then
-                    v:AssignCastMember("primary_advisor", quest:GetCastMember("primary_advisor"))
-                end
-            end
+        if quest:GetCastMember("home") then
+            quest:UnassignCastMember("home")
         end
+        quest:AssignCastMember("home")
+        -- if quest.param.all_day_quests then
+        --     for k,v in ipairs(quest.param.all_day_quests) do
+        --         if v:GetQuestDef():GetCast("primary_advisor") then
+        --             v:AssignCastMember("primary_advisor", quest:GetCastMember("primary_advisor"))
+        --         end
+        --     end
+        -- end
+    end,
+    on_unassign = function(quest, agent)
+        quest:UnassignCastMember("home")
     end,
     events = {
         agent_retired = function(quest, agent) 

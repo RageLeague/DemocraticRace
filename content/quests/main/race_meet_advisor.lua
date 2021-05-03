@@ -70,7 +70,7 @@ local QDEF = QuestDef.Define
 :AddCast{
     cast_id = "primary_advisor",
     when = QWHEN.MANUAL,
-    -- no_validation = true,
+    no_validation = true,
 }
 :AddLocationCast{
     cast_id = "home",
@@ -108,8 +108,11 @@ local function GetAdvisorFn(advisor_id)
                     end
                 end
                 cxt.quest.param.bad_advisor = table.arraypick(not_chosen_advisor)
-                TheGame:GetGameState():GetMainQuest():AssignCastMember("primary_advisor", cxt:GetAgent())
+
+                DemocracyUtil.UpdateAdvisor(cxt:GetAgent(), "NEW_ADVISOR")
+                -- TheGame:GetGameState():GetMainQuest():AssignCastMember("primary_advisor", cxt:GetAgent())
                 cxt.quest:AssignCastMember("primary_advisor", cxt:GetAgent())
+                
                 for i, val in ipairs(not_chosen_advisor) do
                     cxt:Quip(
                         cxt.quest:GetCastMember(val),
