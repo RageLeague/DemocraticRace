@@ -24,27 +24,27 @@ local chars =
 
         -- social_boons = table.empty,
             negotiation_data = 
-        {
-            behaviour =
             {
-                OnInit = function( self )
-                    self.negotiator:AddModifier("RELATABLE")
-                    self:SetPattern( self.BasicCycle )
-                end,
-				--this can be tweaked later, but for now I just copied it from dronumph because I am wumpus, and I don't understand half of this.
-                BasicCycle = function( self, turns )
-                    
-                    if (turns-1) % 3 == 0 then
-                        -- Double attack.
-                        self:ChooseGrowingNumbers( 2, 0 )
+                behaviour =
+                {
+                    OnInit = function( self )
+                        self.negotiator:AddModifier("RELATABLE")
+                        self:SetPattern( self.BasicCycle )
+                    end,
+                    --this can be tweaked later, but for now I just copied it from dronumph because I am wumpus, and I don't understand half of this.
+                    BasicCycle = function( self, turns )
+                        
+                        if (turns-1) % 3 == 0 then
+                            -- Double attack.
+                            self:ChooseGrowingNumbers( 2, 0 )
 
-                    else
-                        -- Single attack.
-                        self:ChooseGrowingNumbers( 1, 1 )
-                    end
-                end,
-            }
-		},
+                        else
+                            -- Single attack.
+                            self:ChooseGrowingNumbers( 1, 1 )
+                        end
+                    end,
+                }
+            },
     }),
     CharacterDef("ADVISOR_MANIPULATE",
     {
@@ -72,36 +72,36 @@ local chars =
 
         -- social_boons = table.empty,
             negotiation_data =
-		{
-			behaviour =
             {
-                OnInit = function( self )
-                    self.negotiator:AddModifier("FACTS")
-					self.logic = self:AddArgument( "LOGIC" )
-					self.flawed_logic = self:AddArgument( "FLAWED_LOGIC" )
-                    self:SetPattern( self.BasicCycle )
-                end,
-				 BasicCycle = function( self, turns )
-                    
-                    if (turns-1) % 3 == 0 then
-                        -- Double attack.
-                        self:ChooseGrowingNumbers( 2, 0, 1 )
+                behaviour =
+                {
+                    OnInit = function( self )
+                        self.negotiator:AddModifier("FACTS")
+                        self.logic = self:AddArgument( "LOGIC" )
+                        self.flawed_logic = self:AddArgument( "FLAWED_LOGIC" )
+                        self:SetPattern( self.BasicCycle )
+                    end,
+                    BasicCycle = function( self, turns )
+                        
+                        if (turns-1) % 3 == 0 then
+                            -- Double attack.
+                            self:ChooseGrowingNumbers( 2, 0, 1 )
 
-                    else
-                        -- Single attack.
-                        self:ChooseGrowingNumbers( 1, 1, 1 )
-                    end
-					
-					if turns % 3 == 0 then
-                        self:ChooseCard( self.flawed_logic )
-                    end
-					
-					if turns % 2 == 0 then
-						self:ChooseCard( self.logic )
-					end
-                end,
-			}
-		},
+                        else
+                            -- Single attack.
+                            self:ChooseGrowingNumbers( 1, 1, 1 )
+                        end
+                        
+                        if turns % 3 == 0 then
+                            self:ChooseCard( self.flawed_logic )
+                        end
+                        
+                        if turns % 2 == 0 then
+                            self:ChooseCard( self.logic )
+                        end
+                    end,
+                }
+            },
     }),
     CharacterDef("ADVISOR_HOSTILE",
     {
