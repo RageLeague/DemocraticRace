@@ -1767,6 +1767,237 @@ local MODIFIERS =
             CreateNewSelfMod(self)
         end,
     },
+    RELATABLE = {
+		name = "Relatable",
+		desc = "Certain arguments will be given to Aellon when you get certain arguments yourself.",
+		modifier_type = MODIFIER_TYPE.CORE,
+		max_stacks = 1,
+		icon = "negotiation/modifiers/cool_head.tex",
+		event_handlers =
+		{
+		--there is probably...definitely...TOTALLY a better way to do this but wump no know lua.
+	[ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
+		if modifier.owner ~= self.owner then
+			if (modifier.modifier_type == MODIFIER_TYPE.ARGUMENT or modifier.modifier_type == MODIFIER_TYPE.BOUNTY) then
+                if modifier.id == "DOMINANCE" then
+				self.negotiator:AddModifier( "CONTRARIAN", 1, self )
+				end
+				if modifier.id == "RENOWN" then
+				self.negotiator:AddModifier( "UPVOTE", 1, self )
+				end
+				if modifier.id == "BAIT" then
+				self.negotiator:AddModifier( "SHAD_BAN", 1, self )
+				end
+				if modifier.id == "INFLUENCE" then
+				self.negotiator:AddModifier( "TRENDY", 1, self )
+				end
+				--if modifier.id == "RIG_HEADS" or modifier.id == "RIG_SNAILS" then
+				--self.negotiator:AddModifier( "FAKE_NEWS", 1, self )
+				--end
+            		end
+		end
+	end,
+			--so it adds to trendy instead of making a whole new trendy
+	[ EVENT.MODIFIER_CHANGED ] = function( self, modifier, delta, clone, source )
+                if modifier.id == "INFLUENCE" and delta > 0 then
+                self.negotiator:AddModifier( "TRENDY", 1, self )
+                end
+            end,
+		}		
+	},
+	CONTRARIAN = {
+		name = "Contrarian",
+		desc = "When the core takes damage, this argument deals that amount of damage to a random argument.",
+		modifier_type = MODIFIER_TYPE.ARGUMENT,
+		max_resolve = 3,
+		icon = "negotiation/abrupt_remark.tex",
+		event_handlers =
+            {
+                [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+                if target == self.negotiator:FindCoreArgument() and damage > 0 then
+                    self.engine:PushPostHandler( function()
+                        self.min_persuasion = damage
+                        self.max_persuasion =  damage
+                        self.target_enemy = TARGET_ANY_RESOLVE
+                        self.engine:AssignPrimaryTarget( self )
+
+                        self:ApplyPersuasion()
+                        self.target_enemy = nil
+                        self.min_persuasion = nil
+                        self.max_persuasion = nil
+                    end )
+                end
+            end,
+            },
+	},
+	UPVOTE = {
+		name = "Upvotes",
+		desc = "",
+        desc_fn = function( self, fmt_str )
+            return loc.format(fmt_str, self.max_persuasion)
+        end,
+		icon = "negotiation/modifiers/voice_of_the_people.tex",
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+        max_resolve = 4,
+
+        min_persuasion = 1,
+        max_persuasion = 1,
+
+        target_enemy = TARGET_ANY_RESOLVE,
+
+        OnSetStacks = function( self, old_stacks )
+            self.min_persuasion = self.stacks
+            self.max_persuasion = self.stacks
+        end,
+
+        OnApply = function( self )
+            self:PrepareTurn()
+        end,
+
+        event_handlers = 
+        {
+            [ EVENT.END_TURN ] = function( self, minigame )
+                self:ApplyPersuasion()
+            end
+        },
+	},
+	SHAD_BAN = {
+		name = "Shadow Ban",
+		max_resolve = 6,
+		modifier_type = MODIFIER_TYPE.ARGUMENT,
+		icon = "negotiation/modifiers/bidder.tex",
+        desc = "At the start of {1}'s turn, add {SHIELDED} to a friendly argument.",
+        desc_fn = function( self, fmt_str )
+                local bonus = self.bonus or 0
+                return loc.format( fmt_str, self:GetOwnerName()) 
+            end,
+
+            ShieldArgument = function( self, target )
+                if self.last_shield and self.last_shield:IsApplied() then
+                    self.last_shield:SetShieldStatus( nil )
+                end
+
+                if target and target:IsApplied() then
+                    target:SetShieldStatus( true )
+                    self.last_shield = target
+                end
+            end,
+
+            OnUnapply = function( self )
+                self:ShieldArgument( nil )
+            end,
+
+            event_handlers =
+            {
+                [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
+                    if negotiator == self.negotiator then
+                        local targets = {}
+                        for i, modifier in self.negotiator:ModifierSlots() do
+                            if modifier:GetResolve() ~= nil and not modifier:GetShieldStatus() then
+                                table.insert( targets, modifier )
+                            end
+                        end
+
+                        local target = table.arraypick( targets )
+                        if target then
+                            self:NotifyTriggered()
+                            self:ShieldArgument( target )
+                        end
+
+                    end
+                end,
+            },
+	},
+	--Wumpus; cody suggested this, though working later on i'm not too sure on it's...well, I certainly don't know how to make it.
+	FAKE_NEWS = {
+		name = "Fake News",
+		desc = "hides intents and adds damage to intents 50% of the time",
+		max_resolve = 2,
+		modifier_type = MODIFIER_TYPE.ARGUMENT,
+		},
+	TRENDY = {
+		name = "Trending",
+		desc = "When this reaches 5 stacks, Heal all arguments and the core resolve for 5 resolve.",
+		max_resolve = 10,
+        	resolve_gain = 5,
+		counter = 5,
+		modifier_type = MODIFIER_TYPE.ARGUMENT,
+		--Wumpus; I'm stumped on this one. Ive tried a lot, but either i
+        	event_handlers = {
+		[ EVENT.POST_RESOLVE ] = function( self, minigame, card )
+				local targets = self.engine:CollectAlliedTargets(self.negotiator)
+					if #targets > 0 then
+                            		for i,target in ipairs(targets) do
+						if self.stacks >= self.counter then
+                        				target:ModifyResolve(self.resolve_gain, self)
+						self.negotiator:RemoveModifier( self )
+                        		end
+                        	end
+			end
+            	end,
+		},
+		},
+	FACTS = {
+		name = "Facts",
+		desc = "If {1}'s opponent has no {SMARTS}, {1} deals +{2} damage.",
+		desc_fn = function( self, fmt_str )
+                    return loc.format(fmt_str, self:GetOwnerName(), self.damage_bonus[math.min(GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1, #self.damage_bonus)])
+			end,
+		damage_bonus = { 1, 1, 1, 2 },
+		modifier_type = MODIFIER_TYPE.CORE,
+		max_stacks = 1,
+		icon = "negotiation/modifiers/recall.tex",
+		bonus_count = 1,
+		--okay this definitely needs to be made better but for now, from what I can tell...it does it's job enough.
+		event_handlers =
+		{
+			[ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
+				if source.negotiator == self.negotiator and self.bonus_count and self.bonus_count > 0 then
+				local bonus = self.damage_bonus[math.min(GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1, #self.damage_bonus)]
+                            persuasion:AddPersuasion( bonus * self.bonus_count, bonus * self.bonus_count, self )
+							end
+					end,
+		[ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
+			if modifier.owner ~= self.owner then
+				if (modifier.modifier_type == MODIFIER_TYPE.ARGUMENT or modifier.modifier_type == MODIFIER_TYPE.BOUNTY) then
+					if modifier.id == "SMARTS" then
+						self.bonus_count = 0
+					end
+				end
+			end
+		end,
+		},
+	},
+	FLAWED_LOGIC = 
+	{
+		name = "Flawed Logic",
+		modifier_type = MODIFIER_TYPE.BOUNTY,
+		desc = "Gives you {1} {SMARTS} and deals {2} damage to {3}'s core argument.",
+		desc_fn = function( self, fmt_str )
+                    return loc.format(fmt_str, self.smarts_amount, self.bounty_resolve, self:GetOwnerName() )
+				end,
+		max_stacks = 1,
+		max_resolve = 3,
+		bounty_resolve = 6,
+		smarts_amount = 2,
+		icon = "negotiation/modifiers/wary.tex",
+		OnBounty = function( self )
+			self.anti_negotiator:AddModifier("SMARTS", 2, self)
+			self.negotiator:ModifyResolve( -self.bounty_resolve * self.stacks, self )
+		end,
+	},
+	--Wumpus; logic can have something unique made later on. for now, this is more of a test of form.
+	LOGIC =
+	{
+		name = "Logic",
+		target_enemy = TARGET_ANY_RESOLVE,
+		max_stacks = 1,
+		max_resolve = 4,
+		modifier_type = MODIFIER_TYPE.ARGUMENT,
+		icon = "negotiation/modifiers/strategy.tex",
+		max_persuasion = 3,
+		min_persuasion = 2,
+	},
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
