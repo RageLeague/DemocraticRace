@@ -320,3 +320,12 @@ QDEF:AddConvo("ask_info")
             end
             StateGraphUtil.AddEndOption(cxt)
         end)
+
+local BAD_EVENT = QuestDef.Define{
+    id = "REQUEST_CTENOPHORIAN_MYSTERY_EVENT",
+    qtype = QTYPE.STORY,
+}
+:AddObjective{
+    id = "start",
+    status = QSTATUS.ACTIVE,
+}
