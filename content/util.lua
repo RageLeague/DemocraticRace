@@ -1102,6 +1102,15 @@ function DemocracyUtil.GetPerFileSettings()
     end
     return data
 end
+function DemocracyUtil.GetBodyguards()
+    candidates = {}
+    for i, agent in ipairs(TheGame:GetGameState():GetCaravan():GetParty():GetMembers()) do
+        if agent:IsHiredMember() or agent:IsPet() then
+            table.insert(candidates, agent)
+        end
+    end
+    return candidates
+end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator

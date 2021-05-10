@@ -316,6 +316,13 @@ QDEF:AddConvo("ask_info")
                     -- oops, someone who doesn't like your stuff overheard your little heresy.
                     -- a quest will spawn that is baad.
                     cxt.quest.param.spawned_interrupt = true
+                    QuestUtil.SpawnQuest("SMITH_STORY_GET_RACING_SNAIL_LATER", {
+                        parameters =
+                        {
+                            overheard = candidates,
+                            cultist = cxt:GetAgent(),
+                        },
+                    })
                 end
             end
             StateGraphUtil.AddEndOption(cxt)
@@ -329,3 +336,100 @@ local BAD_EVENT = QuestDef.Define{
     id = "start",
     status = QSTATUS.ACTIVE,
 }
+
+BAD_EVENT:AddConvo()
+    :TravelConfront("INTERRUPT", function(cxt) return TheGame:GetGameState():CanSpawnTravelEvent() end)
+        :Loc{
+            DIALOG_INTRO = [[
+                * [p] You are interrupted by {agent}.
+                agent:
+                {liked?
+                    I can't believe it.
+                    You out of all people are having heretic thoughts.
+                }
+                {not liked?
+                    I heard someone is asking questions that they shouldn't ask.
+                }
+                player:
+                    What do you mean?
+                agent:
+                {leader_important?
+                    {leader} overheard your little talk with {cultist}.
+                }
+                {not leader_important?
+                    I heard your talk with {cultist}.
+                }
+                    What do you have to say to that?
+            ]],
+            OPT_GASLIGHT = "Gaslight {agent}",
+            DIALOG_GASLIGHT = [[
+                player:
+                {not leader_important?
+                    [p] Pretty sure that wasn't me.
+                agent:
+                    Oh yeah? Then who did I saw, then?
+                }
+                {leader_important?
+                    [p] Pretty sure {leader} was mistaken.
+                agent:
+                    Are you seriously doubting {leader}'s cognitive abilities?
+                }
+            ]],
+            DIALOG_GASLIGHT_SUCCESS = [[
+                agent:
+                    [p] Well, if you insist that is wasn't you, then it probably wasn't.
+                    Sorry for the trouble.
+                * I can't believe that worked.
+            ]],
+            DIALOG_GASLIGHT_FAILURE = [[
+                agent:
+                    [p] Yeah right, who else wears the distinct outfit that you are currently wearing?
+                player:
+                    Good point.
+                    Crap.
+                * Uh oh.
+            ]],
+
+            OPT_USE_GUARD = "Send your guard to distract",
+            DIALOG_USE_GUARD = [[
+                player:
+                    [p] Go, {guard}!
+                * {guard} deals with the Heshians while you tactically retreat.
+            ]],
+
+            DIALOG_DEFEND = [[
+                player:
+                    [p] Easier just to fight.
+            ]],
+            DIALOG_DEFEND_WIN = [[
+                * [p] You win. Now what.
+            ]],
+        }
+        :SetLooping(true)
+        :Fn(function(cxt)
+            if cxt:FirstLoop() then
+                cxt.quest.param.overheard = cxt.quest.param.overheard or {}
+                local leader
+                if #cxt.quest.param.overheard > 0 then
+                    leader = table.arraypick(cxt.quest.param.overheard)
+                    
+                    if AgentUtil.HasPlotArmour(leader) then
+                        cxt.enc.scratch.leader_important = true
+                    end
+                    cxt:ReassignCastMember("leader", leader)
+                end
+                local opfor
+                if leader and not cxt.enc.scratch.leader_important then
+                    leader:MoveToLocation(cxt.location)
+                    opfor = CreateCombatBackup(leader, "HESH_PATROL", cxt.quest:GetRank())
+                else
+                    opfor = CreateCombatParty("HESH_PATROL", cxt.quest:GetRank(), cxt.location, true)
+                end
+                cxt:TalkTo(opfor[1])
+                cxt:Dialog("DIALOG_INTRO")
+            end
+            cxt:BasicNegotiation("GASLIGHT")
+                :OnSuccess()
+                    :CompleteQuest()
+                    :Travel()
+        end)
