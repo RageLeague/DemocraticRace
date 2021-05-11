@@ -390,8 +390,8 @@ BAD_EVENT:AddConvo()
                 * Uh oh.
             ]],
 
-            OPT_USE_GUARD = "Send your guard to distract",
-            DIALOG_USE_GUARD = [[
+            OPT_USE_BODYGUARD = "Send your guard to distract",
+            DIALOG_USE_BODYGUARD = [[
                 player:
                     [p] Go, {guard}!
                 * {guard} deals with the Heshians while you tactically retreat.
@@ -432,4 +432,12 @@ BAD_EVENT:AddConvo()
                 :OnSuccess()
                     :CompleteQuest()
                     :Travel()
+
+            DemocracyUtil.AddBodyguardOpt(cxt, function(cxt, agent)
+                cxt:ReassignCastMember("guard", agent)
+                cxt:Dialog("DIALOG_USE_BODYGUARD")
+
+                cxt.quest:Complete()
+                StateGraphUtil.AddLeaveLocation(cxt)
+            end)
         end)

@@ -1111,6 +1111,21 @@ function DemocracyUtil.GetBodyguards()
     end
     return candidates
 end
+function DemocracyUtil.AddBodyguardOpt(cxt, fn, opt_id)
+    local candidates = DemocracyUtil.GetBodyguards()
+    if candidates and #candidates > 0 then
+        cxt:Opt(opt_id or "OPT_USE_BODYGUARD")
+            :LoopingFn(function(cxt)
+                for i, agent in ipairs(candidates) do
+                    cxt:Opt("OPT_SELECT_AGENT", agent)
+                        :Fn(function(cxt)
+                            fn(cxt, agent)
+                        end)
+                end
+            end)
+        StateGraphUtil.AddBackButton(cxt)
+    end
+end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator
