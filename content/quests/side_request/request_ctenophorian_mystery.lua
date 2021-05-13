@@ -98,18 +98,25 @@ QDEF:AddIntro(
     --attract spiel
     [[
         agent:
-            [p] Let's say, that hypothetically, that I want to know whether Hesh is ctenophore or cnidarian.
-            And let's say, that hypothetically, I would ask you to help me out.
-            Would you agree?
+            Hypothetically, Hesh could be a ctenophore.
+            !think
+            But hypothetically, Hesh could also be a cnidarian.
+        player:
+            What does that have to do with helping you?
+        agent:
+            Well, this is a paradoxical question.
+            It doesn't fit cleanly into my FACTS and LOGIC.
+            That's where you come in, as of now.
+            Go out, and try to weasel out a straight answer.
     ]],
     
     --on accept
     [[
         player:
-            [p] I have no idea what you just said, but it sounds fun.
+            Well, now you've got me a bit curious. Sure, why not?
         agent:
-            Just make sure that the Cult doesn't hear of this.
-            They don't enjoy FACTS and LOGIC like I do.
+            Well, that "why not" might be your reputation with the cult.
+            But just keep an eye out for any eavesdroppers. You never know they're listening until it's too late.
     ]])
 
 QDEF:AddConvo("ask_info")
@@ -138,32 +145,44 @@ QDEF:AddConvo("ask_info")
     :State("STATE_CAUTIOUS")
         :Loc{
             DIALOG_TALK = [[
-                player:
-                    [p] So about Hesh...
+                * The mentioning of Hesh makes {agent} perk up in alert.
                 agent:
-                    Careful. You don't know who's listening.
+                    Quiet! That's a sensitive topic and you know it.
             ]],
             OPT_DROP = "Drop the topic",
             DIALOG_DROP = [[
                 player:
-                    [p] You are right, I don't.
+                    Oh, pardon.
                 agent:
-                    Smart choice.
+                    It's...fine. Hesh forgives the cautious, but will also punish the curious.
+                    Do you understand that?
+                player:
+                    Well enough, {agent}.
             ]],
             OPT_PROBE = "Probe info",
             DIALOG_PROBE = [[
                 player:
-                    [p] You think I came here just to choose the back down option?
+                    But why is it a sensitive topic? Surely a question like this should be common lore.
                 agent:
                     Uhh...
             ]],
             DIALOG_PROBE_SUCCESS = [[
+                player:
+                    Look, just say your piece quietly, if you think that someone's going to hear you.
+                    One straight answer, and i'll drop the subject.
                 agent:
-                    [p] You win.
+                    Fine, if you insist.
             ]],
             DIALOG_PROBE_FAILURE = [[
                 agent:
-                    [p] Yeah I'm not telling you anything.
+                    It's a sensitive topic because we can't possibly know!
+                player:
+                    Really? No hashing out the details?
+                agent:
+                    No! It's a leviathan sized creature that eats us all in the end!
+                    Can't exactly break out the yardstick on a creature we can't comprehend.
+                player:
+                    Alright, alright.
             ]],
         }
         :Fn(function(cxt)
@@ -180,35 +199,56 @@ QDEF:AddConvo("ask_info")
                 player:
                     [p] So about Hesh...
                 agent:
-                    I'm glad you're interested.
-                    I have a lot to talk about.
+                    You're one of the politicians, right?
                 player:
-                    Oh no.
+                    That would be correct, were I talking to you as a politician.
+                    But I talk to you as a scholar, instead.
+                agent:
+                    This is so great! I have so many notes on Hesh from all the snippets of lore i've found.
+                    Say...how much time do you have to burn?
             ]],
             OPT_ENDURE = "Endure {agent}'s lecture",
-            DIALOG_ENDURE = "",
-            DIALOG_ENDURE_SUCCESS = [[
-                * It's finally over.
+            DIALOG_ENDURE = [[
+                player:
+                    !sigh
+                    As much as you need.
                 agent:
+                    So it all starts with the symmetry...
+            ]],
+            DIALOG_ENDURE_SUCCESS = [[
+                agent:
+                    But, I say, what of the lumin that Hesh supposedly shed in it's birthing?
+                    Well, the soulution was obvious once I looked at it like that.
                     In conclusion...
             ]],
             DIALOG_ENDURE_FAILURE = [[
-                * [p] You passed out before {agent} could finish.
+                * As {agent} drones on, {agent.hisher} words start to glaze over.
+                * Syllables blur together, becoming a potent white noise, and you barely hear {agent.hisher} notes on tentacle lengths before slumping over, asleep.
             ]],
             DIALOG_ENDURE_FAILURE_2 = [[
-                * ...
-                * You woke up when {agent} shakes you violently.
+                * Your hazy slumber is plagued with the occasional vision of creatures from the abyss
+                * Before whatever part of you still congnizant could process it, you slowly wake up to more droning.
             ]],
             DIALOG_ENDURE_FAILURE_3 = [[
                 agent:
-                    [p] Come on!
-                    Did you hear what I said?
+                  So in conclusion, Hesh is a-
                 player:
-                    No, I just became more confused.
+                  !drunk
+                  Hey, wait a minute...Hesh is a wha...?
                 agent:
-                    Typical.
-                    !exit
-                * {agent} left, leaving you with 2 less brain cells.
+                  !question
+                  Did you fall asleep?
+                player:
+                  Hrm? Yeah...I'm uh, sorry.
+                agent:
+                  !angry
+                  How could you fall asleep? This is the classification of Hesh we're talking about!
+                player:
+                  Maybe you could make the lecture a bit more entertaining, professor.
+                agent:
+                  Unbelievable. Unbelievable!
+                  !exit
+                * {agent} storms off in a huff, leaving you with a few new questions that you slept through the answers to.
             ]],
         }
         :Fn(function(cxt)
@@ -291,7 +331,8 @@ QDEF:AddConvo("ask_info")
                     |
                     Hesh is a cnidarian.
                     |
-                    Hesh is not something that us mortals can comprehend.
+                    Hesh is not ctenophorian, nor is it cnidarian.
+                    Hesh is a multi-faceted being, and to classify it is to waste what precious time we have before being consumed.
                 }
             player:
                 Yeah that definitely make sense and not at all confusing.
