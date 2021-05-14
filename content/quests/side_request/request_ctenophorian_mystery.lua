@@ -6,7 +6,7 @@ local function GetHeshBelief(agent)
     elseif agent:GetContentID() == "TEI" then
         return HeshBelief.ANTI
     end
-    return agent:CalculateProperty("CHESS_ELO", function(agent)
+    return agent:CalculateProperty("HESH_BELIEF", function(agent)
         local omni_hesh_chance = agent:GetRenown() * .15
         if agent:GetFactionID() ~= "CULT_OF_HESH" then
             if agent:GetFactionID() == "ADMIRALTY" then
@@ -85,6 +85,22 @@ local QDEF = QuestDef.Define
     id = "ask_info",
     title = "Ask about Hesh among the Heshians",
     desc = "Maybe other Heshians knows more about Hesh's true form.",
+    events = {
+        on_say_quip = function(quest, cxt, agent, param)
+            if table.arraycontains(param.tags, "go_to_sleep") and not param.override_quip then
+                local opinion_count = 0
+                local asked_people = 0
+                for id, val in pairs(quest.param.hesh_id or {}) do
+                    opinion_count = opinion_count + 1
+                    asked_people = asked_people + val
+                end
+                if opinion_count >= 2 and asked_people >= 3 then
+                    param.override_quip = true
+                    cxt:PlayQuestConvo(quest, "HOOK_SLEEP")
+                end
+            end
+        end,
+    },
 }
 :AddOpinionEvents{
     suspicious = 
@@ -118,14 +134,15 @@ QDEF:AddConvo("ask_info")
     }
     :Hub(function(cxt)
         cxt.quest.param.people_asked = cxt.quest.param.people_asked or {}
-        if cxt:GetAgent() and not table.arraycontains(cxt.quest.param.people_asked, cxt:GetAgent())
+        if cxt:GetAgent() and cxt:GetAgent() ~= cxt:GetCastMember("giver") and
+            not table.arraycontains(cxt.quest.param.people_asked, cxt:GetAgent())
             and cxt:GetAgent():GetFactionID() == "CULT_OF_HESH" then
 
             cxt:Opt("OPT_ASK_HESH")
                 :Fn(function(cxt)
                     table.insert(cxt.quest.param.people_asked, cxt:GetAgent())
                     local belief = GetHeshBelief(cxt:GetAgent())
-                    if belief = HeshBelief.FANATIC then
+                    if belief == HeshBelief.FANATIC then
                         cxt:GoTo("STATE_FANATIC")
                     elseif belief == HeshBelief.ANTI then
                         cxt:GoTo("STATE_ANTI")
@@ -168,7 +185,7 @@ QDEF:AddConvo("ask_info")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_TALK")
-            cxt:BasicNegotiation("Probe")
+            cxt:BasicNegotiation("PROBE")
                 :OnSuccess()
                 :GoTo("STATE_SUCCESS")
             cxt:Opt("OPT_DROP")
@@ -298,10 +315,10 @@ QDEF:AddConvo("ask_info")
             ]],
         }
         :Fn(function(cxt)
-            cxt.enc.scratch.hesh_identity = cxt.enc.scratch.hesh_identity or 1
+            cxt.enc.scratch.hesh_identity = cxt.enc.scratch.hesh_identity or math.random(1, 3)
             cxt:Dialog("DIALOG_ANSWER", cxt.enc.scratch.hesh_identity)
             cxt.quest.param.hesh_id = cxt.quest.param.hesh_id or {}
-            cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] = cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] + 1
+            cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] = (cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] or 0) + 1
             
             if not cxt.quest.param.spawned_interrupt then
                 local candidates = {}
@@ -309,14 +326,14 @@ QDEF:AddConvo("ask_info")
                     if not agent:IsInPlayerParty() and agent:IsSentient() and agent:GetFactionID() == "CULT_OF_HESH"
                         and GetHeshBelief(agent) == HeshBelief.ANTI then
 
-                        table.insert(candidate, agent)
+                        table.insert(candidates, agent)
                     end
                 end
-                if #candidate > 0 then
+                if #candidates > 0 then
                     -- oops, someone who doesn't like your stuff overheard your little heresy.
                     -- a quest will spawn that is baad.
                     cxt.quest.param.spawned_interrupt = true
-                    QuestUtil.SpawnQuest("SMITH_STORY_GET_RACING_SNAIL_LATER", {
+                    QuestUtil.SpawnQuest("REQUEST_CTENOPHORIAN_MYSTERY_EVENT", {
                         parameters =
                         {
                             overheard = candidates,
@@ -326,6 +343,34 @@ QDEF:AddConvo("ask_info")
                 end
             end
             StateGraphUtil.AddEndOption(cxt)
+        end)
+QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
+    :State("START")
+        :Loc{
+            DIALOG_INTRO = [[
+                * [p] With all the ridiculous thoughts in your head, you fall into sleep.
+                * Plot twist, you dreamt of Hesh itself.
+                * Themself? What does Hesh identify themself with?
+                * That is precisely the question you are asking.
+                * And now, maybe a special negotiation or something.
+            ]],
+            OPT_UNDERSTAND = "Try to understand Hesh",
+            DIALOG_UNDERSTAND = [[
+                player:
+                    !left
+                    [p] I'm gonna convince you now!
+            ]],
+            DIALOG_UNDERSTAND_SUCCESS = [[
+                player:
+                    [p] That makes so much sense now!
+            ]],
+            DIALOG_UNDERSTAND_FAILURE = [[
+                player:
+                    [p] My brain hurts.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
         end)
 
 local BAD_EVENT = QuestDef.Define{
@@ -353,10 +398,10 @@ BAD_EVENT:AddConvo()
                 player:
                     What do you mean?
                 agent:
-                {leader_important?
+                {leader_absent?
                     {leader} overheard your little talk with {cultist}.
                 }
-                {not leader_important?
+                {not leader_absent?
                     I heard your talk with {cultist}.
                 }
                     What do you have to say to that?
@@ -364,12 +409,12 @@ BAD_EVENT:AddConvo()
             OPT_GASLIGHT = "Gaslight {agent}",
             DIALOG_GASLIGHT = [[
                 player:
-                {not leader_important?
+                {not leader_absent?
                     [p] Pretty sure that wasn't me.
                 agent:
                     Oh yeah? Then who did I saw, then?
                 }
-                {leader_important?
+                {leader_absent?
                     [p] Pretty sure {leader} was mistaken.
                 agent:
                     Are you seriously doubting {leader}'s cognitive abilities?
@@ -413,19 +458,19 @@ BAD_EVENT:AddConvo()
                 if #cxt.quest.param.overheard > 0 then
                     leader = table.arraypick(cxt.quest.param.overheard)
                     
-                    if AgentUtil.HasPlotArmour(leader) then
-                        cxt.enc.scratch.leader_important = true
+                    if AgentUtil.HasPlotArmour(leader) or not AgentUtil.CanAct(leader) then
+                        cxt.enc.scratch.leader_absent = true
                     end
                     cxt:ReassignCastMember("leader", leader)
                 end
-                local opfor
-                if leader and not cxt.enc.scratch.leader_important then
+                
+                if leader and not cxt.enc.scratch.leader_absent then
                     leader:MoveToLocation(cxt.location)
-                    opfor = CreateCombatBackup(leader, "HESH_PATROL", cxt.quest:GetRank())
+                    cxt.enc.scratch.opfor = CreateCombatBackup(leader, "HESH_PATROL", cxt.quest:GetRank())
                 else
-                    opfor = CreateCombatParty("HESH_PATROL", cxt.quest:GetRank(), cxt.location, true)
+                    cxt.enc.scratch.opfor = CreateCombatParty("HESH_PATROL", cxt.quest:GetRank(), cxt.location, true)
                 end
-                cxt:TalkTo(opfor[1])
+                cxt:TalkTo(cxt.enc.scratch.opfor[1])
                 cxt:Dialog("DIALOG_INTRO")
             end
             cxt:BasicNegotiation("GASLIGHT")
@@ -436,8 +481,21 @@ BAD_EVENT:AddConvo()
             DemocracyUtil.AddBodyguardOpt(cxt, function(cxt, agent)
                 cxt:ReassignCastMember("guard", agent)
                 cxt:Dialog("DIALOG_USE_BODYGUARD")
-
+                if agent:IsPet() then
+                    QuestUtil.SpawnQuest("STORY_PET_RETURN", { cast = { pet = agent } })
+                end
+                agent:Dismiss()
                 cxt.quest:Complete()
                 StateGraphUtil.AddLeaveLocation(cxt)
             end)
+
+            cxt:Opt("OPT_DEFEND")
+                :Dialog("DIALOG_DEFEND")
+                :Battle{
+                    enemies = cxt.enc.scratch.opfor,
+                }
+                    :OnWin()
+                        :Dialog("DIALOG_DEFEND_WIN")
+                        :CompleteQuest()
+                        :DoneConvo()
         end)
