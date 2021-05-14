@@ -210,7 +210,9 @@ QDEF:AddConvo("ask_info")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_TALK")
-            cxt:BasicNegotiation("PROBE")
+            cxt:BasicNegotiation("PROBE", {
+                -- Opponent will have a secret intel bounty.
+            })
                 :OnSuccess()
                 :GoTo("STATE_SUCCESS")
             cxt:Opt("OPT_DROP")
@@ -276,7 +278,11 @@ QDEF:AddConvo("ask_info")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_TALK")
-            cxt:BasicNegotiation("ENDURE", {})
+            cxt:BasicNegotiation("ENDURE", {
+                -- This will be a special negotiation.
+                -- Opponent has no core, meaning you can't win by damage.
+                -- You win by surviving a set amount of rounds.
+            })
                 :OnSuccess()
                     :GoTo("STATE_SUCCESS")
                 :OnFailure()
@@ -418,9 +424,15 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
+
+            -- We don't have a hesh character, so right now I just put a random thing here.
+            -- You never actually saw hesh, so this will be cognitive hesh or something.
             cxt:TalkTo(TheGame:GetGameState():AddSkinnedAgent("GROUT_MONSTER"))
 
-            cxt:BasicNegotiation("UNDERSTAND")
+            cxt:BasicNegotiation("UNDERSTAND", {
+                -- You will be negotiating against a custom character with custom negotiation behaviour.
+                -- The behaviour changes every turn, mostly due to the cards you play.
+            })
                 :OnSuccess()
                     :CompleteQuest("ask_info")
                     :ActivateQuest("tell_result")
@@ -556,7 +568,9 @@ BAD_EVENT:AddConvo()
                 cxt:TalkTo(cxt.enc.scratch.opfor[1])
                 cxt:Dialog("DIALOG_INTRO")
             end
-            cxt:BasicNegotiation("GASLIGHT")
+            cxt:BasicNegotiation("GASLIGHT", {
+                -- Opponent gains bonus resolve for other witnesses.
+            })
                 :OnSuccess()
                     :CompleteQuest()
                     :Travel()

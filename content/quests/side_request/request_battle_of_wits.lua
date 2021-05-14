@@ -533,6 +533,9 @@ QDEF:AddConvo("go_to_game")
                 target_agent = cxt:GetCastMember("giver"),
                 helpers = {"challenger"},
                 -- Some special effect for this negotiation.
+                -- For this negotiation, giver will gain a permanent argument that increases stacks when you play hostile cards.
+                -- It decreases stacks each turn or by playing diplomacy.
+                -- If it reaches a certain threshold, you insta-lose.
             })
                 :OnSuccess()
                     :Fn(function(cxt)
@@ -709,7 +712,15 @@ FOLLOW_UP:AddConvo("comfort", "giver")
     }
     :Hub(function(cxt)
         if not cxt.quest.param.tried_comfort then
-            cxt:BasicNegotiation("COMFORT", {})
+            cxt:BasicNegotiation("COMFORT", {
+                -- This will be a special negotiation.
+                -- giver will start at low resolve, and you must bring their resolve to full to actually win the negotiation.
+                -- Winning negotiation without bringing up resolve, like using damage or oolo's requisition, has bad effect.
+
+                -- Opponent will have attacks targetting their own core.
+                -- Opponent will be given special bounties that will increase resolve or give composure.
+                -- You can also gift composure to opponent core via special action.
+            })
                 :OnSuccess()
                     :CompleteQuest()
                     :Fn(function(cxt)
