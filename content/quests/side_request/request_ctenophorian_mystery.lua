@@ -102,6 +102,12 @@ local QDEF = QuestDef.Define
         end,
     },
 }
+:AddObjective{
+    id = "tell_result",
+    title = "Tell your findings to {giver}",
+    desc = "Your dream has given you quite the knowledge about Hesh. {giver} would be quite pleased with this information.",
+    mark = {"giver"},
+}
 :AddOpinionEvents{
     suspicious = 
     {
@@ -412,8 +418,44 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-        end)
+            cxt:TalkTo(TheGame:GetGameState():AddSkinnedAgent("GROUT_MONSTER"))
 
+            cxt:BasicNegotiation("UNDERSTAND")
+                :OnSuccess()
+                    :CompleteQuest("ask_info")
+                    :ActivateQuest("tell_result")
+                :OnFailure()
+                    :Fn(function(cxt)
+                        -- You earn a special card or something.
+                        cxt.quest.param.went_crazy = true
+                    end)
+                    :CompleteQuest("ask_info")
+                    :ActivateQuest("tell_result")
+        end)
+QDEF:AddConvo("tell_result", "giver")
+    :AttractState("STATE_ATTRACT")
+        :Loc{
+            DIALOG_INTRO = [[
+                agent:
+                    [p] So you figured out Hesh's true form?
+                player:
+                {not went_crazy?
+                    Facts, logic, it's all an illusion.
+                    The truth is in the eye of the beholder.
+                agent:
+                    This is very significant and may affect the ending in some way.
+                }
+                {went_crazy?
+                    I saw too much, and I talk crazy.
+                agent:
+                    Oh no, now I feel bad for you.
+                }
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+            cxt.quest.Complete()
+        end)
 local BAD_EVENT = QuestDef.Define{
     id = "REQUEST_CTENOPHORIAN_MYSTERY_EVENT",
     qtype = QTYPE.STORY,
