@@ -222,7 +222,7 @@ local QDEF = QuestDef.Define
         -- end,
         agent_location_changed = function(quest, agent, old_loc, new_loc)
             -- if event == "agent_location_changed" then
-                print("location change triggered")
+                -- print("location change triggered")
                 local disguise = RISE_DISGUISE_BUILDS[agent:GetContentID()]
                 if disguise then
                     print("Has disguise yay!" .. disguise)
@@ -824,9 +824,11 @@ local QDEF = QuestDef.Define
         end
         if new_advisor then
             quest:AssignCastMember("primary_advisor", new_advisor)
-            TheGame:BroadcastEvent( "primary_advisor_changed", old_advisor, new_advisor, change_reason )
-        else
-            TheGame:BroadcastEvent( "primary_advisor_removed", old_advisor, change_reason )
+        end
+        print("Broadcasting event: primary_advisor_changed")
+        TheGame:BroadcastEvent( "primary_advisor_changed", old_advisor, new_advisor, change_reason )
+        print("End Broadcasting event: primary_advisor_changed")
+        if not new_advisor then
             -- Fail-check. Check for any existing advisors that are alive and is at least neutral to you.
             -- If there are, start a side quest of finding that advisor.
             -- Otherwise, the game autofails, and a lose slide plays.

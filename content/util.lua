@@ -90,19 +90,7 @@ function DemocracyUtil.AddPrimaryAdvisor(qdef, mandatory)
                 quest:AssignCastMember("home")
             end
         end,
-        events = {
-            primary_advisor_removed = function(quest, old_advisor, change_reason)
-                if quest:GetCastMember("primary_advisor") then
-                    quest:UnassignCastMember("primary_advisor")
-                end
-                if quest:GetQuestDef():GetCast("home") and quest:GetCastMember("home") then
-                    quest:UnassignCastMember("home")
-                end
-                if quest:GetQuestDef():GetCast("player_room") and quest:GetCastMember("home") then
-                    quest:UnassignCastMember("player_room")
-                end
-                
-            end,
+        global_events = {
             primary_advisor_changed = function(quest, old_advisor, new_advisor, change_reason)
                 if quest:GetCastMember("primary_advisor") then
                     quest:UnassignCastMember("primary_advisor")
@@ -113,7 +101,11 @@ function DemocracyUtil.AddPrimaryAdvisor(qdef, mandatory)
                 if quest:GetQuestDef():GetCast("player_room") and quest:GetCastMember("home") then
                     quest:UnassignCastMember("player_room")
                 end
-                quest:AssignCastMember(new_advisor)
+                if new_advisor then
+                    quest:AssignCastMember("primary_advisor", new_advisor)
+                else
+                    quest.param.has_primary_advisor = false
+                end
             end,
         },
         no_validation = true,
