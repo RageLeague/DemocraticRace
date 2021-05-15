@@ -401,25 +401,38 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
     :State("START")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] With all the ridiculous thoughts in your head, you fall into sleep.
-                * Plot twist, you dreamt of Hesh itself.
-                * Themself? What does Hesh identify themself with?
-                * That is precisely the question you are asking.
-                * And now, maybe a special negotiation or something.
+                * Sleep sucks you into it's grasp, and for a moment you feel a weightlessness you've grown accustomed to as the day's stress dissapates.
+                * You stumble into a dream, but this dream...it's different.
+                * Suddenly, you're up to your ankles in saltwater. The water rises, reaching your knees, then your neck.
+                * Finally, a percussive force of seawater envelops you, and for a moment the ocean becomes the only thing you can feel.
+                agent:
+                !right
+                * And from the deep blue, a marine creature appears. A...you can't discern. It's face shifts too quickly for you to understand it.
+                * But you need to understand it. You must...
             ]],
+            --Wumpus;If I can make something up that isn't blaring against canon, there'll be things for the three main characters based on these "weird dreams". gonna look into that. 
             OPT_UNDERSTAND = "Try to understand Hesh",
             DIALOG_UNDERSTAND = [[
-                player:
-                    !left
-                    [p] I'm gonna convince you now!
+                * You swim forward, towards the creature, but not too close, afraid of it's might.
+                * You concentrate on the creature. Every fiber of your mind invests itself into understanding the thing that lies before you.
+                * After an arduous, pained moment, finally it opens it's mouth to speak...
             ]],
             DIALOG_UNDERSTAND_SUCCESS = [[
-                player:
-                    [p] That makes so much sense now!
+                * Finally, it closes it's gaping jaw. You step out of your trance and stare at what you've deciphered.
+                * It still blurs the lines between cnidarian, or ctenophorian, or something else entirely, but it doesn't have to have clarity.
+                * You internalize that Hesh is a creature of unknowable definition. Of a size and shape undefined.
+                * And you accept this, just as much as you accept the saltwater around you, which drains as your fascination dwindles as well.
+                * When the space around you returns to dry land, sleep leaves, peacefully as it came, and dropping you into your room, refreshed.
             ]],
             DIALOG_UNDERSTAND_FAILURE = [[
-                player:
-                    [p] My brain hurts.
+                * Sand.
+                * The knowledge feels like it slips out of your hands like sand through a sieve.
+                * Sand. The ground closest to Hesh, at the beaches. The closest anyone will ever be to seeing the true Hesh.
+                agent:
+                !exit
+                * it is the sand of the beach you are confined to, the sand that you cannot go beyond, as the creature of your dreams slips further into the murky blue.
+                * It's face still shifts between identities, but you were so close to understanding, if only you could reach beyond the sand, if only you could see, IF ONLY-
+                * You wake with a start, your mind racing between visions, logic, and the crumbling walls between them.
             ]],
         }
         :Fn(function(cxt)
