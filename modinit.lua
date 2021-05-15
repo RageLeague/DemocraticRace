@@ -209,6 +209,7 @@ local function OnPreLoad( mod )
     end
     AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.strings.bank", false)
     -- local audiobank = AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", false)
+    -- Yeah this doesn't work because fmod doesn't allow loading of multiple projects.
     AUDIO:MountModdedAudioBank("DEMOCRATICRACE", "DEMOCRATICRACE:assets/audio/Master.bank")
 end
 local MOD_OPTIONS =
