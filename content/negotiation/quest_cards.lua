@@ -459,6 +459,39 @@ local CARDS = {
             },
         },
     },
+    self_deprecation_special = 
+    {
+        cost = 1,
+
+        show_dealt = false,
+        rarity = CARD_RARITY.UNIQUE,
+        flags = CARD_FLAGS.OPPONENT,
+        target_self = TARGET_FLAG.CORE,
+
+        quips = 
+        {
+            {
+                [[I won't achieve anything!]],
+                [[Who am I if anyone else is better than me?]],
+            }
+        },
+
+        OnPreResolve = function( self, minigame, targets )
+            local core_max = self.negotiator:FindCoreArgument() and self.negotiator:FindCoreArgument():GetResolve() or 0
+            local self_damage = math.round(.7 * core_max)
+            self.max_persuasion = self_damage
+            self.min_persuasion = self_damage
+
+            self.engine:BroadcastEvent( EVENT.CUSTOM, function(panel, self)
+                panel:SayCardQuip(self)
+                panel:Delay(1.0)
+            end, self )
+        end,
+
+        OnPostResolve = function( self, minigame, targets )
+            self.negotiator:CreateModifier("RESTORE_RESOLVE_GOAL", 1, self)
+        end,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     if not def.series then

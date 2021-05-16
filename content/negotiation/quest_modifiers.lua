@@ -2006,6 +2006,8 @@ local MODIFIERS =
             return loc.format(fmt_str, self:GetOwnerName(), CalculateBonusScale(self), self.resolve_gain)
         end,
 
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+
         bonus_per_generation = 1,
         init_max_resolve = 2,
         resolve_scaling = MODIFIER_SCALING.LOW,
@@ -2015,9 +2017,32 @@ local MODIFIERS =
         OnInit = MyriadInit,
 
         OnBounty = function(self)
-            self.negotiator:RestoreResolve( self.resolve_gain, self )
+            self.negotiator:ModifyResolve( self.resolve_gain, self )
             CreateNewSelfMod(self)
         end,
+    },
+    RESTORE_RESOLVE_GOAL = 
+    {
+        name = "Restore Resolve",
+        desc = "{1} is feeling down and lost. Restore their resolve to the starting resolve to win this negotiation!",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOwnerName())
+        end,
+
+        modifier_type = MODIFIER_TYPE.PERMANENT,
+        max_stacks = 1,
+
+        event_handlers = {
+            [ EVENT.DELTA_RESOLVE ] = function( self, modifier, resolve, max_resolve, delta, source, params )
+                if modifier == (self.negotiator and self.negotiator:FindCoreArgument())
+                    and resolve >= (self.engine.start_param.enemy_resolve_required or MiniGame.GetPersuasionRequired( self.engine:GetDifficulty() )) then
+                    
+                    if not self.engine:CheckGameOver() then
+                        self.engine:Win()
+                    end
+                end
+            end,
+        },
     },
 }
 for id, def in pairs( MODIFIERS ) do
