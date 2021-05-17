@@ -1773,34 +1773,33 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.CORE,
         max_stacks = 1,
         icon = "negotiation/modifiers/cool_head.tex",
+
+        argument_map =
+        {
+            DOMINANCE = "CONTRARIAN",
+            INFLUENCE = "TRENDY",
+            RENOWN = "UPVOTE",
+            BAIT = "SHAD_BAN",
+            RIG_HEADS = "FAKE_NEWS",
+            RIG_SNAILS = "FAKE_NEWS",
+        },
+
         event_handlers =
         {
             --there is probably...definitely...TOTALLY a better way to do this but wump no know lua.
             [ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
                 if modifier.owner ~= self.owner then
-                    if (modifier.modifier_type == MODIFIER_TYPE.ARGUMENT or modifier.modifier_type == MODIFIER_TYPE.BOUNTY) then
-                        if modifier.id == "DOMINANCE" then
-                            self.negotiator:AddModifier( "CONTRARIAN", 1, self )
-                        end
-                        if modifier.id == "RENOWN" then
-                            self.negotiator:AddModifier( "UPVOTE", 1, self )
-                        end
-                        if modifier.id == "BAIT" then
-                            self.negotiator:AddModifier( "SHAD_BAN", 1, self )
-                        end
-                        if modifier.id == "INFLUENCE" then
-                            self.negotiator:AddModifier( "TRENDY", 1, self )
-                        end
-                        --if modifier.id == "RIG_HEADS" or modifier.id == "RIG_SNAILS" then
-                        --self.negotiator:AddModifier( "FAKE_NEWS", 1, self )
-                        --end
+                    if self.argument_map[modifier.id] then
+                        self.negotiator:AddModifier( self.argument_map[modifier.id], modifier.stacks or 1, self )
                     end
                 end
             end,
                     --so it adds to trendy instead of making a whole new trendy
             [ EVENT.MODIFIER_CHANGED ] = function( self, modifier, delta, clone, source )
-                if modifier.id == "INFLUENCE" and delta > 0 then
-                    self.negotiator:AddModifier( "TRENDY", 1, self )
+                if modifier.owner ~= self.owner and delta > 0 then
+                    if self.argument_map[modifier.id] then
+                        self.negotiator:AddModifier( self.argument_map[modifier.id], delta, self )
+                    end
                 end
             end,
         }		
@@ -1908,12 +1907,30 @@ local MODIFIERS =
             end,
         },
     },
-    --Wumpus; cody suggested this, though working later on i'm not too sure on it's...well, I certainly don't know how to make it.
     FAKE_NEWS = {
         name = "Fake News",
+        -- I made the hide intent part. If you want to make the add damage part, make it yourself because this doesn't
+        -- actually say anything about how much damage added.
         desc = "hides intents and adds damage to intents 50% of the time",
         max_resolve = 2,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        -- This is the crafty template.
+        OnUnapply = function ( self )
+            -- Need to trigger reveal for targets.
+            self.engine:BroadcastEvent( EVENT.TARGETS_CHANGED )
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.CALC_BOOLEAN ] = function( self, acc, key )
+                if not self.negotiator:IsPlayer() and self.engine:GetTurns() > self.turn_applied then
+                    if key == "HIDE_INTENT" then
+                        acc:ModifyValue( true, self )
+                    end
+                end
+            end,
+        },
     },
     TRENDY = {
         name = "Trending",
@@ -2043,6 +2060,73 @@ local MODIFIERS =
                 end
             end,
         },
+    },
+    PESSIMIST = 
+    {
+        name = "Pessimist",
+        desc = "At the beginning of {1}'s turn, remove a random attack intent and take damage equal to the damage from the intent.\n\n"
+            .. "Arguments {1} control removes their composure at the end of their turn instead of at the beginning of their turn.",
+
+        desc_fn = function(self, fmt_str )
+
+            return loc.format(fmt_str, self:GetOwnerName())
+        end,
+        -- icon = "negotiation/modifiers/heckler.tex",
+        modifier_type = MODIFIER_TYPE.CORE,
+
+        OnBeginTurn = function( self, minigame )
+            local intents = {}
+            for i, data in ipairs(self.negotiator:GetIntents()) do
+                if data.min_persuasion and data.max_persuasion then
+                    table.insert(intents, data)
+                end
+            end
+            
+            if #intents > 0 then
+                local selected_intent = table.arraypick(intents)
+                self.negotiator:DismissIntent(selected_intent)
+                minigame:ApplyPersuasion( self, self, selected_intent.min_persuasion or selected_intent.max_persuasion or 0, selected_intent.max_persuasion or 0 )
+            end
+        end,
+        OnEndTurn = function( self, minigame )
+            for i, modifier in self.negotiator:Modifiers() do
+                if modifier.composure then
+                    modifier:DeltaComposure(modifier.composure, self)
+                end
+            end
+        end,
+
+        event_priorities = 
+        {
+            [ EVENT.CALC_COMPOSURE_DECAY ] = EVENT_PRIORITY_SETTOR,
+        },
+
+        event_handlers = 
+        {
+            [ EVENT.CALC_COMPOSURE_DECAY ] = function( self, source, decay )
+                if source.negotiator == self.negotiator then
+                    decay:ClearValue(self)
+                end
+            end,
+        },
+    },
+    SELF_LOATHE =
+    {
+        name = "Self-Loathe",
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        OnInit = function( self )
+            self:SetResolve( 1, MODIFIER_SCALING.MED )
+            local difficulty = self.engine and self.engine:GetDifficulty() or 1
+            self.min_persuasion = 1 + math.ceil(difficulty/2)
+            self.max_persuasion = 3 + difficulty
+        end,
+
+        target_self = TARGET_FLAG.CORE,
+
+        OnBeginTurn = function( self, minigame )
+            self:ApplyPersuasion()
+        end,
     },
 }
 for id, def in pairs( MODIFIERS ) do
