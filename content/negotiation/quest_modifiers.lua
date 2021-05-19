@@ -1802,7 +1802,7 @@ local MODIFIERS =
                     end
                 end
             end,
-        }		
+        },
     },
     CONTRARIAN = {
         name = "Contrarian",
