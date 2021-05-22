@@ -282,6 +282,10 @@ QDEF:AddConvo("ask_info")
                 -- This will be a special negotiation.
                 -- Opponent has no core, meaning you can't win by damage.
                 -- You win by surviving a set amount of rounds.
+                flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE,
+				on_start_negotiation = function(minigame)
+					minigame.player_negotiator:AddModifier("FANATIC_LECTURE", math.max(4, 6 - math.floor(cxt.quest:GetRank() / 2)))
+				end,
             })
                 :OnSuccess()
                     :GoTo("STATE_SUCCESS")
@@ -440,6 +444,10 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
 
             -- We don't have a hesh character, so right now I just put a random thing here.
             -- You never actually saw hesh, so this will be cognitive hesh or something.
+            -- Wumpus; I did some window shopping for a character with as many clothes and masks as possible. Try these on for size.
+			-- head_female_luminari_build.zip
+			-- med_male_pilgrim_build.zip
+			-- Gives a character with a decent bit of "mystic, hooded traveler" physique.
             cxt:TalkTo(TheGame:GetGameState():AddSkinnedAgent("GROUT_MONSTER"))
 
             cxt:BasicNegotiation("UNDERSTAND", {
