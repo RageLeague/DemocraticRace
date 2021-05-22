@@ -8,6 +8,35 @@ local function GetWinChance(eloa, elob)
     return 1 / (1 + 10 ^ ((elob - eloa) / 400))
 end
 
+local DEPRESSION_BEHAVIOUR =
+{
+    OnInit = function( self, difficulty )
+        local modifier = self.negotiator:AddModifier("PESSIMIST")
+
+        if self.negotiator:FindCoreArgument() and self.negotiator:FindCoreArgument():GetResolve() then
+            self.negotiator:FindCoreArgument():ModifyResolve(math.floor(0.7 * self.negotiator:FindCoreArgument():GetResolve()), self)
+        end
+        self.negotiator:CreateModifier("RESTORE_RESOLVE_GOAL", 1, self)
+
+        self.self_loathe = self:AddArgument("SELF_LOATHE")
+
+        self:SetPattern( self.BasicCycle )
+    end,
+
+	BasicCycle = function( self, turns )
+        if math.random() < 0.5 then
+            self:ChooseCard(self.self_loathe)
+        else
+            self:ChooseGrowingNumbers( 1, -1 )
+        end
+		if turns % 3 == 0 then
+            self:ChooseGrowingNumbers( 2, 0 )
+        else
+            self:ChooseGrowingNumbers( 1, 1 )
+        end
+	end,
+}
+
 local GOOD_PLAYER_THRESHOLD = 1000
 
 local FOLLOW_UP
@@ -705,6 +734,14 @@ FOLLOW_UP:AddConvo("comfort", "giver")
             agent:
                 [p] Thanks, I'm cured.
         ]],
+        DIALOG_COMFORT_WIN = [[
+            agent:
+                [p] Everything to you is about winning, isn't it?
+            player:
+                That's what you taught me.
+            agent:
+                Well you don't have to talk to a loser like me.
+        ]],
         DIALOG_COMFORT_FAILURE = [[
             agent:
                 [p] Say no more.
@@ -712,28 +749,43 @@ FOLLOW_UP:AddConvo("comfort", "giver")
     }
     :Hub(function(cxt)
         if not cxt.quest.param.tried_comfort then
-            cxt:BasicNegotiation("COMFORT", {
-                -- This will be a special negotiation.
-                -- giver will start at low resolve, and you must bring their resolve to full to actually win the negotiation.
-                -- Winning negotiation without bringing up resolve, like using damage or oolo's requisition, has bad effect.
+            cxt:Opt("OPT_COMFORT")
+                :Dialog("DIALOG_COMFORT")
+                :Fn(function(cxt)
+                    cxt:GetAgent():SetTempNegotiationBehaviour(DEPRESSION_BEHAVIOUR)
+                end)
+                :Negotiation{
+                    -- This will be a special negotiation.
+                    -- giver will start at low resolve, and you must bring their resolve to full to actually win the negotiation.
+                    -- Winning negotiation without bringing up resolve, like using damage or oolo's requisition, has bad effect.
 
-                -- Opponent will have attacks targetting their own core.
-                -- Opponent will be given special bounties that will increase resolve or give composure.
-                -- You can also gift composure to opponent core via special action.
-            })
-                :OnSuccess()
-                    :CompleteQuest()
-                    :Fn(function(cxt)
-                        QDEF.on_complete(cxt.quest)
-                        -- This will probably change dronumph's narcissist personality a little, as he accepts that there
-                        -- are always people better than him, but that should not be a cause for his depression.
-                        cxt:GetAgent():Remember("ACCEPT_LIMITS")
-                    end)
-                    :DoneConvo()
-                :OnFailure()
-                    :Fn(function(cxt)
+                    -- Opponent will have attacks targetting their own core.
+                    -- Opponent will be given special bounties that will increase resolve or give composure.
+                    -- You can also gift composure to opponent core via special action.
+                    on_success = function(cxt, minigame)
+                        local core = minigame:GetOpponentNegotiator():FindCoreArgument()
+                        local resolve_left = core and core:GetResolve()
+                        if resolve_left > (minigame.start_param.enemy_resolve_required
+                            or MiniGame.GetPersuasionRequired( minigame:GetDifficulty() )) then
+
+                            -- We win legit
+                            cxt:Dialog("DIALOG_COMFORT_SUCCESS")
+                            cxt.quest:Complete()
+                            QDEF.on_complete(cxt.quest)
+                            -- This will probably change dronumph's narcissist personality a little, as he accepts that there
+                            -- are always people better than him, but that should not be a cause for his depression.
+                            cxt:GetAgent():Remember("ACCEPT_LIMITS")
+                            StateGraphUtil.AddEndOption(cxt)
+                        else
+                            cxt:Dialog("DIALOG_COMFORT_WIN")
+                            cxt.quest.param.tried_comfort = true
+                        end
+                    end,
+                    on_fail = function(cxt) 
+                        cxt:Dialog("DIALOG_COMFORT_FAILURE")
                         cxt.quest.param.tried_comfort = true
-                    end)
+                    end,
+                }
         end
     end)
     :AttractState("STATE_ATTRACT")

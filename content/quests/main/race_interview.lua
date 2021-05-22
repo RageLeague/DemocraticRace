@@ -2,7 +2,7 @@ local INTERVIEWER_BEHAVIOR = {
     OnInit = function( self, difficulty )
         -- self.bog_boil = self:AddCard("bog_boil")
         local relationship_delta = self.agent and (self.agent:GetRelationship() - RELATIONSHIP.NEUTRAL) or 0
-		self:SetPattern( self.BasicCycle )
+        self:SetPattern( self.BasicCycle )
         local modifier = self.negotiator:AddModifier("INTERVIEWER")
         -- modifier.agents = shallowcopy(self.agents)
         -- modifier:InitModifiers()
@@ -17,14 +17,14 @@ local INTERVIEWER_BEHAVIOR = {
     end,
     available_issues = copyvalues(DemocracyConstants.issue_data),
     params = {},
-	BasicCycle = function( self, turns )
-		-- Double attack every 2 rounds; Single attack otherwise.
-		if self.difficulty >= 4 and turns % 2 == 0 then
-			self:ChooseGrowingNumbers( 3, -1 )
-		elseif turns % 2 == 0 then
-			self:ChooseGrowingNumbers( 2, 0 )
-		else
-			self:ChooseGrowingNumbers( 1, 1 )
+    BasicCycle = function( self, turns )
+        -- Double attack every 2 rounds; Single attack otherwise.
+        if self.difficulty >= 4 and turns % 2 == 0 then
+            self:ChooseGrowingNumbers( 3, -1 )
+        elseif turns % 2 == 0 then
+            self:ChooseGrowingNumbers( 2, 0 )
+        else
+            self:ChooseGrowingNumbers( 1, 1 )
         end
         -- if turns == 1 then
         --     self:ChooseGrowingNumbers( 1, 2 )
@@ -46,7 +46,7 @@ local INTERVIEWER_BEHAVIOR = {
             -- self:ChooseGrowingNumbers( 1, 1 )
             self.modifier_picker:ChooseCards(question_count < 4 and 2 or 1)
         end
-	end,
+    end,
 }
 
 local RELATION_OFFSET = {
@@ -243,7 +243,7 @@ QDEF:AddConvo("go_to_interview")
                     !placate
                     Let's focus on our inter-personal relationship AFTER I survive this.
                 primary_advisor:
-		    !point
+            !point
                     IF you survive, at this point, but true. Let's me give you the once over about the interview.
                 * You and {primary_advisor} chatter about the interview, with them giving you pointers that make no sense to the task at hand.
                 * Eventually, a worker calls for you, and you steel your nerves.
@@ -272,8 +272,8 @@ QDEF:AddConvo("do_interview")
                 agent:
                     !right
                     Alright people, tonight's guest is an up and coming political upstart, making a name for themselves on the Havarian stage TONIGHT!
-		    Everyone, give a round of applause for our guest, {player}!
-		    Have a seat, {player}.
+            Everyone, give a round of applause for our guest, {player}!
+            Have a seat, {player}.
                 player:
                     !left
                 * Some clapped, others booed your arrival.  
@@ -303,11 +303,11 @@ QDEF:AddConvo("do_interview")
             DIALOG_INTERVIEW_SUCCESS = [[
                 agent:
                     Spectacular, {player}. You are quite savvy at interviews.
-		    Once again, thank you for coming on the show.
+                    Once again, thank you for coming on the show.
                 player:
                     No problems.
-		agent:
-		    One last round of applause for our guest, {player}!
+                agent:
+                    One last round of applause for our guest, {player}!
                 * This time, you hear a few less boos than before. You survived the interview.
             ]],
             DIALOG_INTERVIEW_FAIL = [[
