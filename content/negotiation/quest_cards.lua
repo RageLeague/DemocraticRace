@@ -498,7 +498,7 @@ local CARDS = {
         desc = "Transfer all composure on target argument you control to your opponent's core argument.",
 
         cost = 1,
-        flags = CARD_FLAGS.DIPLOMACY,
+        flags = CARD_FLAGS.DIPLOMACY | CARD_FLAGS.REPLENISH,
         rarity = CARD_RARITY.UNIQUE,
 
         target_self = TARGET_ANY_RESOLVE,
@@ -507,8 +507,8 @@ local CARDS = {
             for i, target in ipairs(targets) do
                 local delta = target.composure
                 if self.anti_negotiator:FindCoreArgument() then
-                    self.anti_negotiator:FindCoreArgument():ModifyResolve(delta, self)
-                    target:ModifyResolve(-delta, self)
+                    self.anti_negotiator:FindCoreArgument():DeltaComposure(delta, self)
+                    target:DeltaComposure(-delta, self)
                 end
             end
         end,

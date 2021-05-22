@@ -14,25 +14,33 @@ local DEPRESSION_BEHAVIOUR =
         local modifier = self.negotiator:AddModifier("PESSIMIST")
 
         if self.negotiator:FindCoreArgument() and self.negotiator:FindCoreArgument():GetResolve() then
-            self.negotiator:FindCoreArgument():ModifyResolve(math.floor(0.7 * self.negotiator:FindCoreArgument():GetResolve()), self)
+            self.negotiator:FindCoreArgument():ModifyResolve(-math.floor(0.7 * self.negotiator:FindCoreArgument():GetResolve()), self)
         end
-        self.negotiator:CreateModifier("RESTORE_RESOLVE_GOAL", 1, self)
+        -- self.negotiator:CreateModifier("RESTORE_RESOLVE_GOAL", 1, self)
 
         self.self_loathe = self:AddArgument("SELF_LOATHE")
+
+        self.negotiator:AddModifier("ENCOURAGEMENT")
+
+        local cards = {}
+        for i = 1, 3 do
+            table.insert(cards, Negotiation.Card( "console_opponent", self.engine:GetPlayer() ))
+        end
+        self.engine:InceptCards( cards, self )
 
         self:SetPattern( self.BasicCycle )
     end,
 
 	BasicCycle = function( self, turns )
-        if math.random() < 0.5 then
+        if turns == 1 or math.random() < 0.5 then
             self:ChooseCard(self.self_loathe)
         else
             self:ChooseGrowingNumbers( 1, -1 )
         end
 		if turns % 3 == 0 then
-            self:ChooseGrowingNumbers( 2, 0 )
+            self:ChooseGrowingNumbers( 3, 0 )
         else
-            self:ChooseGrowingNumbers( 1, 1 )
+            self:ChooseGrowingNumbers( 2, 1 )
         end
 	end,
 }
@@ -765,7 +773,7 @@ FOLLOW_UP:AddConvo("comfort", "giver")
                     on_success = function(cxt, minigame)
                         local core = minigame:GetOpponentNegotiator():FindCoreArgument()
                         local resolve_left = core and core:GetResolve()
-                        if resolve_left > (minigame.start_param.enemy_resolve_required
+                        if resolve_left > (minigame.start_params.enemy_resolve_required
                             or MiniGame.GetPersuasionRequired( minigame:GetDifficulty() )) then
 
                             -- We win legit

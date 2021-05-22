@@ -2026,7 +2026,7 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.BOUNTY,
 
         bonus_per_generation = 1,
-        init_max_resolve = 2,
+        init_max_resolve = 3,
         resolve_scaling = MODIFIER_SCALING.LOW,
 
         resolve_gain = 8,
@@ -2052,7 +2052,7 @@ local MODIFIERS =
         event_handlers = {
             [ EVENT.DELTA_RESOLVE ] = function( self, modifier, resolve, max_resolve, delta, source, params )
                 if modifier == (self.negotiator and self.negotiator:FindCoreArgument())
-                    and resolve >= (self.engine.start_param.enemy_resolve_required or MiniGame.GetPersuasionRequired( self.engine:GetDifficulty() )) then
+                    and resolve >= (self.engine.start_params.enemy_resolve_required or MiniGame.GetPersuasionRequired( self.engine:GetDifficulty() )) then
                     
                     if not self.engine:CheckGameOver() then
                         self.engine:Win()
@@ -2064,7 +2064,9 @@ local MODIFIERS =
     PESSIMIST = 
     {
         name = "Pessimist",
-        desc = "At the beginning of {1}'s turn, remove a random attack intent and take damage equal to the damage from the intent.\n\n"
+        desc = "{1} is feeling down.\n\nAt the beginning of {1}'s turn, if this argument has at least an amount of resolve "
+            .. "equal to {1}'s starting resolve, you win the negotiation!\n\n"
+            .. "Otherwise, remove a random attack intent and take damage equal to the damage from the intent.\n\n"
             .. "Arguments {1} control removes their composure at the end of their turn instead of at the beginning of their turn.",
 
         desc_fn = function(self, fmt_str )
@@ -2075,6 +2077,12 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.CORE,
 
         OnBeginTurn = function( self, minigame )
+            if self.resolve >= (minigame.start_params.enemy_resolve_required or MiniGame.GetPersuasionRequired( minigame:GetDifficulty() )) then
+                if not self.engine:CheckGameOver() then
+                    self.engine:Win()
+                end
+                return
+            end
             local intents = {}
             for i, data in ipairs(self.negotiator:GetIntents()) do
                 if data.min_persuasion and data.max_persuasion then
@@ -2091,7 +2099,7 @@ local MODIFIERS =
         OnEndTurn = function( self, minigame )
             for i, modifier in self.negotiator:Modifiers() do
                 if modifier.composure then
-                    modifier:DeltaComposure(modifier.composure, self)
+                    modifier:DeltaComposure(-modifier.composure, self)
                 end
             end
         end,
@@ -2103,8 +2111,10 @@ local MODIFIERS =
 
         event_handlers = 
         {
-            [ EVENT.CALC_COMPOSURE_DECAY ] = function( self, source, decay )
+            [ EVENT.CALC_COMPOSURE_DECAY ] = function( self, decay, source )
+                DBG(source)
                 if source.negotiator == self.negotiator then
+                    print("Same negotiator as self")
                     decay:ClearValue(self)
                 end
             end,
@@ -2125,7 +2135,9 @@ local MODIFIERS =
         target_self = TARGET_FLAG.CORE,
 
         OnBeginTurn = function( self, minigame )
-            self:ApplyPersuasion()
+            if not minigame:CheckGameOver() then
+                self:ApplyPersuasion()
+            end
         end,
     },
 }
