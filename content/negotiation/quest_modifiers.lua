@@ -2128,6 +2128,50 @@ local MODIFIERS =
             self:ApplyPersuasion()
         end,
     },
+    FANATIC_LECTURE =
+	{
+		name = "Long Lecture",
+		desc = "This negotiation has no core resolve. Rather, wait {1} turns to survive the lecture and win the negotiation.",
+		desc_fn = function( self, fmt_str )
+            return loc.format(fmt_str, self.stacks or 1)
+        end,
+		icon = "negotiation/prattle.tex",
+		modifier_type = MODIFIER_TYPE.PERMANENT,
+		event_handlers = {
+            [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
+                if minigame:GetTurns() > (self.stacks or 1) then
+                    minigame:Win()
+                end
+            end,
+        },
+	},
+    SHORT_TEMPERED =
+    {
+        name = "Short Tempered",
+        desc = "Increase by 1 for every hostile card you play, reduce by 1 for every diplomacy card you play. If this reaches {1} stacks, the negotiation is lost",
+        max_stacks = 5,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+	    counter = 5,
+	    icon = "negotiation/modifiers/heated.tex",
+        event_handlers =
+	    {
+	    [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
+                if card:GetNegotiator() ~= self.negotiator and self.negotiator:FindCoreArgument() then
+					--if it's hostile, add a stack, otherwise, if it's diplomacy, remove a stack.
+					if CheckBits( card.flags, CARD_FLAGS.HOSTILE ) then
+						self.negotiator:AddModifier( self, 1 )
+					end
+					if CheckBits( card.flags, CARD_FLAGS.DIPLOMACY) and self.stacks > 1 then
+						self.negotiator:RemoveModifier( self, 1 )
+					end
+
+                    if self.stacks >= self.counter then
+                        minigame:Lose()
+                    end
+                end
+            end
+	    },	
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
