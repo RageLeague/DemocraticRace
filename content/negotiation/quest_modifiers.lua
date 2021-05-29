@@ -2204,12 +2204,15 @@ local MODIFIERS =
         end,
 
         multiplier_scale = {1, 1, 2, 2, 3},
-
-        [ EVENT.END_PLAYER_TURN ] = function( self, minigame )
-            if self.anti_negotiator:IsPlayer() then
-                self.anti_negotiator:AttackResolve(minigame:GetHandDeck():CountCards() * self:GetDamageMultiplier())
-            end
-        end,
+        event_handlers = {
+            [ EVENT.END_PLAYER_TURN ] = function ( self, minigame )
+                print("triggered")
+                if self.anti_negotiator:IsPlayer() then
+                    print("is player")
+                    self.anti_negotiator:AttackResolve(minigame:GetHandDeck():CountCards() * self:GetDamageMultiplier(), self)
+                end
+            end,
+        },
     },
     -- This is apparently the literall meaning for "Ctenophora". Makes perfect sense.
     COMB_BEARER =
@@ -2240,7 +2243,7 @@ local MODIFIERS =
 
         event_priorities =
         {
-            [ BATTLE_EVENT.CALC_ACTION_COST ] = EVENT_PRIORITY_ADDITIVE,
+            [ EVENT.CALC_ACTION_COST ] = EVENT_PRIORITY_ADDITIVE,
         },
 
         event_handlers =
@@ -2304,7 +2307,7 @@ local MODIFIERS =
             end,
 
             [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
-                if source.negotiator == self.negotiator and target.composure and target.composure > 0 then
+                if source.negotiator == self.negotiator and target and target.composure and target.composure > 0 then
                     persuasion:AddPersuasion( self.sting_bonus, self.sting_bonus, self )
                 end
             end,

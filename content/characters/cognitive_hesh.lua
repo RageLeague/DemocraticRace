@@ -25,7 +25,7 @@ Content.AddCharacterDef
         boss = true,
 
         unique = true,
-        
+
         death_money = 0,
 
         negotiation_data =
@@ -33,7 +33,28 @@ Content.AddCharacterDef
             behaviour =
             {
                 OnInit = function( self, difficulty )
-                    --self.negotiator:AddModifier( "GRIFTER" )
+                    self.negotiator:AddModifier( "ELDRITCH_EXISTENCE" )
+                    self.phylum_args = self:MakePicker()
+                        :AddArgument("COMB_BEARER", 1)
+                        :AddArgument("STINGING_NETTLE", 1)
+                    self.curiosity = self:AddArgument( "CURIOSITY" )
+
+                    self:SetPattern( self.Cycle )
+                end,
+                Cycle = function( self, turn )
+                    local special_count = self.negotiator:GetModifierInstances( "COMB_BEARER" ) + self.negotiator:GetModifierInstances( "STINGING_NETTLE" )
+                    if turn % 3 == 2 then
+                        self:ChooseCard(self.curiosity)
+                    elseif special_count == 0 then
+                        self.phylum_args:ChooseCards( 1 )
+                    else
+                        self:ChooseComposure( 1, 1 + self.difficulty, 1 + self.difficulty )
+                    end
+                    if turn % 2 == 1 then
+                        self:ChooseGrowingNumbers( 1, -1 )
+                    else
+                        self:ChooseGrowingNumbers( 2, -1 )
+                    end
                 end,
             }
         },
