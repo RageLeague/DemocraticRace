@@ -1,13 +1,20 @@
 -- Want to make Hesh its own gender and let it have a bunch of pronouns specifically for Hesh,
 -- but there would be just too much work for very little effect.
 
+-- What the hesh are these all about:
+-- https://en.wikipedia.org/wiki/Ctenophora
+-- Meaning "Comb Bearer". Common name "Comb Jelly".
+-- Eight "comb rows" of fused cilia.
+-- https://en.wikipedia.org/wiki/Cnidaria
+-- Meaning "Stinging Nettle"
+-- Have stinging cells called "cnidocyte"
 Content.AddCharacterDef
 (
     CharacterDef("COGNITIVE_HESH",
     {
         base_def = "MONSTER",
         name = "Hesh of the Dark",
-        title = "Transgenus Deity",
+        title = "Transphylum Deity",
         -- Can't figure this out.
         build = "luminthian",
         head = "head_luminari",
