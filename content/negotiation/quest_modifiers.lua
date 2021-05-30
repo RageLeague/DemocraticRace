@@ -74,7 +74,6 @@ local MODIFIERS =
                     minigame:Win()
                     minigame.impasse = true
                 end
-
             end,
         },
     },
@@ -2307,9 +2306,13 @@ local MODIFIERS =
             end,
 
             [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
-                if source.negotiator == self.negotiator and target and target.composure and target.composure > 0 then
+                if self.can_buff and source.negotiator == self.negotiator and
+                    target and target.composure and target.composure > 0 then
                     persuasion:AddPersuasion( self.sting_bonus, self.sting_bonus, self )
                 end
+            end,
+            [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
+                self.can_buff = true
             end,
         },
     },

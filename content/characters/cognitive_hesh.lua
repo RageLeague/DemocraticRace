@@ -8,6 +8,7 @@
 -- https://en.wikipedia.org/wiki/Cnidaria
 -- Meaning "Stinging Nettle"
 -- Have stinging cells called "cnidocyte"
+-- Also: https://en.wikipedia.org/wiki/Phylum#Animals
 Content.AddCharacterDef
 (
     CharacterDef("COGNITIVE_HESH",
@@ -43,18 +44,23 @@ Content.AddCharacterDef
                 end,
                 Cycle = function( self, turn )
                     local special_count = self.negotiator:GetModifierInstances( "COMB_BEARER" ) + self.negotiator:GetModifierInstances( "STINGING_NETTLE" )
-                    if turn % 3 == 2 then
+                    if turn % 4 == 2 then
                         self:ChooseCard(self.curiosity)
+                        self:ChooseGrowingNumbers( 2, -1 )
                     elseif special_count == 0 then
                         self.phylum_args:ChooseCards( 1 )
                     else
-                        self:ChooseComposure( 1, 1 + self.difficulty, 1 + self.difficulty )
+                        if math.random < 0.5 then
+                            self:ChooseComposure( 1, 1 + self.difficulty, 1 + self.difficulty )
+                        else
+                            self:ChooseGrowingNumbers( 1, -1 )
+                        end
                     end
-                    if turn % 2 == 1 then
-                        self:ChooseGrowingNumbers( 1, -1 )
-                    else
-                        self:ChooseGrowingNumbers( 2, -1 )
-                    end
+                    -- if turn % 2 == 1 then
+                    --     self:ChooseGrowingNumbers( 1, -1 )
+                    -- else
+                    --     self:ChooseGrowingNumbers( 2, -1 )
+                    -- end
                 end,
             }
         },
