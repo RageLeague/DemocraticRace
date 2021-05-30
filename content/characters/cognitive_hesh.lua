@@ -39,6 +39,8 @@ Content.AddCharacterDef
                         :AddArgument("COMB_BEARER", 1)
                         :AddArgument("STINGING_NETTLE", 1)
                     self.curiosity = self:AddArgument( "CURIOSITY" )
+                    self.fracture_mind = self:AddCard( "ai_fracture_mind" )
+                    self.fracture_mind.count = math.ceil(difficulty / 2)
 
                     self:SetPattern( self.Cycle )
                 end,
@@ -50,17 +52,13 @@ Content.AddCharacterDef
                     elseif special_count == 0 then
                         self.phylum_args:ChooseCards( 1 )
                     else
-                        if math.random < 0.5 then
-                            self:ChooseComposure( 1, 1 + self.difficulty, 1 + self.difficulty )
-                        else
-                            self:ChooseGrowingNumbers( 1, -1 )
-                        end
+                        self:ChooseComposure( 1, 1 + self.difficulty, 3 + self.difficulty )
                     end
-                    -- if turn % 2 == 1 then
-                    --     self:ChooseGrowingNumbers( 1, -1 )
-                    -- else
-                    --     self:ChooseGrowingNumbers( 2, -1 )
-                    -- end
+                    if turn % 3 == 0 then
+                        self:ChooseGrowingNumbers( 1, 0 )
+                    else
+                        self:ChooseCard(self.fracture_mind)
+                    end
                 end,
             }
         },

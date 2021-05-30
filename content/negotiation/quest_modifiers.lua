@@ -2283,7 +2283,7 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.retaliate_damage, self:GetOwnerName(), self.sting_bonus)
         end,
-        retaliate_damage = 2,
+        retaliate_damage = 1,
         sting_bonus = 2,
 
         modifier_type = MODIFIER_TYPE.ARGUMENT,

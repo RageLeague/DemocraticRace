@@ -533,10 +533,12 @@ local CARDS = {
         cost = 1,
         flags =  CARD_FLAGS.STATUS | CARD_FLAGS.EXPEND | CARD_FLAGS.REPLENISH,
         rarity = CARD_RARITY.UNIQUE,
+
         target_self = TARGET_ANY_RESOLVE,
+        target_mod = TARGET_MOD.RANDOM1,
 
         on_init = function( self )
-            self.userdata.count = 8
+            self.userdata.count = 4
         end,
 
         OnPostResolve = function( self, minigame, targets )
@@ -550,8 +552,7 @@ local CARDS = {
             [ EVENT.END_PLAYER_TURN ] = function( self, minigame )
                 local new_amt = math.floor(self.userdata.count / 2)
                 if new_amt > 0 then
-                    self:NotifyTriggered()
-                    minigame:BroadcastEvent( EVENT.DELAY, 0.25 )
+                    self:NotifyChanged()
                     minigame:ExpendCard(self)
                     local cards = {}
                     for k = 1, 2 do
@@ -572,6 +573,10 @@ local CARDS = {
         desc_fn = function( self, fmt_str )
             return loc.format( fmt_str, self.count )
         end,
+
+        cost = 1,
+        flags = CARD_FLAGS.OPPONENT,
+        rarity = CARD_RARITY.UNIQUE,
 
         count = 1,
 

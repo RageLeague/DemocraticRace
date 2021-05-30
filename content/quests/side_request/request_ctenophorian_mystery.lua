@@ -26,7 +26,7 @@ local function GetHeshBelief(agent)
             return HeshBelief.FANATIC
         end
         return HeshBelief.CAUTIOUS
-    end) 
+    end)
 end
 
 local QDEF = QuestDef.Define
@@ -47,7 +47,7 @@ local QDEF = QuestDef.Define
         base_difficulty_change = function(quest, new_diff, old_diff)
             quest:SetRank(new_diff)
         end,
-        
+
     },
 
     on_start = function(quest)
@@ -109,7 +109,7 @@ local QDEF = QuestDef.Define
     mark = {"giver"},
 }
 :AddOpinionEvents{
-    suspicious = 
+    suspicious =
     {
         delta = OPINION_DELTAS.DIMINISH,
         txt = "Is suspicious of you",
@@ -131,7 +131,7 @@ QDEF:AddIntro(
             That's where you come in, as of now.
             Go out, and try to weasel out a straight answer.
     ]],
-    
+
     --on accept
     [[
         player:
@@ -376,7 +376,7 @@ QDEF:AddConvo("ask_info")
             cxt:Dialog("DIALOG_ANSWER", cxt.enc.scratch.hesh_identity)
             cxt.quest.param.hesh_id = cxt.quest.param.hesh_id or {}
             cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] = (cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] or 0) + 1
-            
+
             if not cxt.quest.param.spawned_interrupt then
                 local candidates = {}
                 for i, agent in cxt.location:Agents() do
@@ -414,7 +414,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 * And from the deep blue, a marine creature appears. A...you can't discern. It's face shifts too quickly for you to understand it.
                 * But you need to understand it. You must...
             ]],
-            --Wumpus;If I can make something up that isn't blaring against canon, there'll be things for the three main characters based on these "weird dreams". gonna look into that. 
+            --Wumpus;If I can make something up that isn't blaring against canon, there'll be things for the three main characters based on these "weird dreams". gonna look into that.
             OPT_UNDERSTAND = "Try to understand Hesh",
             DIALOG_UNDERSTAND = [[
                 * You swim forward, towards the creature, but not too close, afraid of it's might.
@@ -442,17 +442,9 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
 
-            -- We don't have a hesh character, so right now I just put a random thing here.
-            -- You never actually saw hesh, so this will be cognitive hesh or something.
-            -- Wumpus; I did some window shopping for a character with as many clothes and masks as possible. Try these on for size.
-			-- head_female_luminari_build.zip
-			-- med_male_pilgrim_build.zip
-			-- Gives a character with a decent bit of "mystic, hooded traveler" physique.
-            cxt:TalkTo(TheGame:GetGameState():AddSkinnedAgent("GROUT_MONSTER"))
+            cxt:TalkTo(TheGame:GetGameState():AddSkinnedAgent("COGNITIVE_HESH"))
 
             cxt:BasicNegotiation("UNDERSTAND", {
-                -- You will be negotiating against a custom character with custom negotiation behaviour.
-                -- The behaviour changes every turn, mostly due to the cards you play.
             })
                 :OnSuccess()
                     :CompleteQuest("ask_info")
@@ -573,13 +565,13 @@ BAD_EVENT:AddConvo()
                 local leader
                 if #cxt.quest.param.overheard > 0 then
                     leader = table.arraypick(cxt.quest.param.overheard)
-                    
+
                     if AgentUtil.HasPlotArmour(leader) or not AgentUtil.CanAct(leader) then
                         cxt.enc.scratch.leader_absent = true
                     end
                     cxt:ReassignCastMember("leader", leader)
                 end
-                
+
                 if leader and not cxt.enc.scratch.leader_absent then
                     leader:MoveToLocation(cxt.location)
                     cxt.enc.scratch.opfor = CreateCombatBackup(leader, "HESH_PATROL", cxt.quest:GetRank())
