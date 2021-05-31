@@ -22,7 +22,16 @@ Content.AddStringTable("DEMOCRACY", {
             LEVEL_8_NAME = "Level 8: Test your mettle",
             LEVEL_8_DESC = "You no longer earn Mettle, and your Mettle upgrades are disabled.",
         },
-        CONTROLS = 
+        COLLECT_DECK =
+        {
+            SUCCESS = "Success!",
+            SUCCESS_DESC = "Your deck is copied onto your clipboard.",
+            NOT_IN_GAME = "Error: Not In a Game",
+            NOT_IN_GAME_DESC = "You are currently not in a campaign.",
+            WRONG_CAMPAIGN = "Error: Wrong Campaign",
+            WRONG_CAMPAIGN_DESC = "You are playing in a campaign other than the Democratic Race.",
+        },
+        CONTROLS =
         {
             SWITCH_MODE = "{1#binding} Switch Mode",
         },
@@ -30,7 +39,7 @@ Content.AddStringTable("DEMOCRACY", {
         {
             DEFAULT_UP = "Favorable Action",
             DEFAULT_DOWN = "Unfavorable Action",
-            
+
             COMPLETED_QUEST = "Quest Completed",
             FAILED_QUEST = "Quest Failed",
             POOR_QUEST = "Poor Quest Result",
@@ -51,7 +60,7 @@ Content.AddStringTable("DEMOCRACY", {
             CONSISTENT_STANCE = "Consistent Stance",
             INCONSISTENT_STANCE = "Hypocrisy",
         },
-        NOTIFICATION = 
+        NOTIFICATION =
         {
             AGENT_SUPPORT =
             {
@@ -76,14 +85,14 @@ Content.AddStringTable("DEMOCRACY", {
                 DETAIL_INCREASE = "Your support is increased to {1} due to {2}.",
                 DETAIL_DECREASE = "Your support is decreased to {1} due to {2}.",
             },
-            GROUP_FACTION_SUPPORT = 
+            GROUP_FACTION_SUPPORT =
             {
                 TITLE = "Support From Factions Changed",
                 DETAIL_INCREASE = "Your support from {1#faction_list} are increased.",
                 DETAIL_DECREASE = "Your support from {1#faction_list} are decreased.",
                 DETAIL_BOTH = "Your support from {1#faction_list} are increased, while your support from {2#faction_list} are decreased.",
             },
-            GROUP_WEALTH_SUPPORT = 
+            GROUP_WEALTH_SUPPORT =
             {
                 TITLE = "Support Among Classes Changed",
                 DETAIL_INCREASE = "Your support among {1#wealth_name_list} are increased.",
@@ -95,7 +104,7 @@ Content.AddStringTable("DEMOCRACY", {
                 TITLE = "Stance Updated",
                 DETAIL_STRICT = "Your stance regarding {1#pol_issue} is updated to {2#pol_stance}.",
                 DETAIL_LOOSE = "Your stance regarding {1#pol_issue} is updated to favoring {2#pol_stance}.",
-                
+
             },
             WEALTH_SUPPORT =
             {
@@ -110,19 +119,19 @@ Content.AddStringTable("DEMOCRACY", {
             HATRED = "you hate this person",
             QUEST_REQ = "one or more quests require you to punish this person",
         },
-        SUPPORT_ENTRY = 
+        SUPPORT_ENTRY =
         {
             FACTION_SUPPORT = "{1#faction}: {2}",
             GENERAL_SUPPORT = "General Support: {1}",
             WEALTH_SUPPORT = "{1#wealth_name}: {2}",
             SUPPORT_EXPECTATION = "Expected Support: {1}/{2}",
         },
-        SUPPORT_SCREEN = 
+        SUPPORT_SCREEN =
         {
             TITLE = "Support Analysis",
             DESC = "To get elected, you need to have high support among the people. Your advisor has compiled the support breakdown for your campaign. Use this to carefully plan your campaign.",
-            
-            
+
+
             CURRENT_STANCE = "{1#agent}'s current stance is {2#pol_stance}",
             CURRENT_STANCE_LOOSE = "{1#agent}'s current stance is favoring {2#pol_stance}",
 
@@ -132,14 +141,14 @@ Content.AddStringTable("DEMOCRACY", {
             FACTION_SUPPORT_DESC = "This indicates how popular you are among {1#faction}. The more support you have among this faction, the more likely someone from this faction will vote for you, and the more likely their main candidate will ally with you.",
 
             WEALTH_SUPPORT_DESC = "This indicates how popular you are among {1#wealth_name}. The more support you have among this wealth level, the more likely someone from it will vote for you, and the more funding you will get from this wealth level.",
-            
+
             EXPECTED_SUPPORT_TITLE = "Expected Support",
             EXPECTED_SUPPORT_DESC = "This indicates the baseline used to calculate how popular you are among the people. Having your support above the expectation means people are more likely to vote for you, while having your support below the expectation means people are more likely to vote for your opposition.\n\n" ..
                 "The first value indicates the expected support at the moment, while the second value indicates the expected support at the end of today. The advisor will judge your support level at the end of each day, so be prepared!",
-            
+
             GAIN_SOURCE = "Source Of Gain:",
             LOSS_SOURCE = "Source Of Loss:",
-            
+
             SWITCH_MODE = "Switch mode",
             SWITCH_MODE_TT = "The current mode: <#HILITE>{1}</>\n\n{2}\n\nClick on this button to switch to another mode.",
             MODE = {
@@ -160,21 +169,21 @@ Content.AddStringTable("DEMOCRACY", {
             LVL_3 = "Upper Class",
             LVL_4 = "Elite Class",
         },
-        WIP_SCREEN = 
+        WIP_SCREEN =
         {
             TITLE = "End of Alpha",
             BODY = "Congratulations! You have now finished what the mod has to offer as of right now. Please leave a feedback at the steam workshop page, on GitHub, or on Klei's forum, so I can improve this mod.",
             BUTTON = "I win!",
         },
         STANCE_FOR_ISSUE = "This is a stance for the issue: {1#pol_issue}.",
-        
+
     },
     UI = {
         RELATIONSHIP_SCREEN = {
             SUPPRESSED = "SUPPRESSED",
         },
     },
-    MISC = 
+    MISC =
     {
         DO_NOTHING = "do nothing",
         ME = "me",
