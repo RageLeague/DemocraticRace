@@ -404,6 +404,7 @@ QDEF:AddConvo("ask_info")
                     for i, agent in ipairs(candidates) do
                         table.insert_unique(cxt.quest.param.overheard, agent)
                     end
+                    cxt.quest.param.cultist = cxt.quest.param.cultist or cxt:GetAgent()
                     cxt.quest:Activate("bad_event")
                 end
             end
