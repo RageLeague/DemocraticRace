@@ -28,7 +28,7 @@ local function OnLoad( mod )
         name = "The Democratic Race",
         title = "I Love Democracy",
         desc = "Use FACTS and LOGIC to win the democratic race. No combat required!",
-        
+
         act_image = engine.asset.Texture("DEMOCRATICRACE:assets/icons/campaign_icon.png"),
         colour_frame = "0x66F15Dff",
         colour_text = "0xC3FFBFff",
@@ -43,7 +43,7 @@ local function OnLoad( mod )
             "democracy_intro_slides",
         },
 
-        starting_fn = function(agent) 
+        starting_fn = function(agent)
             agent:DeltaMoney( STARTING_MONEY )
         end,
         convo_filter_fn = function( convo_def, game_state )
@@ -54,7 +54,7 @@ local function OnLoad( mod )
             return true
         end,
 
-        score_modifiers = 
+        score_modifiers =
         {
             money = -STARTING_MONEY,
         }
@@ -69,6 +69,12 @@ local function OnLoad( mod )
         return ok, result
     end
 
+    require "DEMOCRATICRACE:content/string_table"
+
+    rawset(_G, "DemocracyConstants", require("DEMOCRATICRACE:content/constants"))
+    require "DEMOCRATICRACE:content/util"
+    -- rawset(_G, "DemocracyUtil", )
+
     -- Patch existing files first
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:patches/", "*.lua", true )) do
         local name = filepath:match( "(.+)[.]lua$" )
@@ -77,7 +83,7 @@ local function OnLoad( mod )
             require(name)
         end
     end
-    
+
     require "DEMOCRATICRACE:content/string_table"
 
     rawset(_G, "DemocracyConstants", require("DEMOCRATICRACE:content/constants"))
@@ -97,7 +103,7 @@ local function OnLoad( mod )
     require "DEMOCRATICRACE:content/opinion_events"
     require "DEMOCRATICRACE:content/grifts"
     require "DEMOCRATICRACE:content/more_boon_services"
-    
+
     -- we load slides before we load act data. who knows what would happen if we didn't?
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:content/slides/", "*.lua", true )) do
         local name = filepath:match( "(.+)[.]lua$" )
@@ -117,7 +123,7 @@ local function OnLoad( mod )
         data:AddAct(act_data)
         Content.internal.ACT_DATA[act_data.id] = data.acts[#data.acts]
     end
-    
+
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:ui/", "*.lua", true )) do
         local name = filepath:match( "(.+)[.]lua$" )
         -- print(name)
@@ -196,7 +202,7 @@ local function OnPreLoad( mod )
             require(name)
         end
     end
-    
+
     -- Add localization
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:localization", "*.po", true )) do
         local name = filepath:match( "(.+)[.]po$" )
@@ -229,12 +235,22 @@ local MOD_OPTIONS =
         },
         per_save_file = true,
     },
+    {
+        title = "Collect Deck (Voluntary Deck Collection Program)",
+        button = true,
+        key = "collect_deck",
+        desc = "Copy the current deck information onto your clipboard.",
+        on_click = function()
+            local fn = require "DEMOCRATICRACE:content/collect_deck_script"
+            fn()
+        end,
+    }
 }
 -- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {
     version = "0.2.1",
     alias = "DEMOCRATICRACE",
-    
+
     OnLoad = OnLoad,
     OnPreLoad = OnPreLoad,
     OnNewGame = OnNewGame,
@@ -251,7 +267,7 @@ return {
         -----------------------------------------
         -- Cross character campaign. both modify graft rewards, but CCC overrides the change.
         "CrossCharacterCampaign",
-        
+
         -----------------------------------------
         -- New characters
         -----------------------------------------
