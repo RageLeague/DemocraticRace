@@ -108,6 +108,9 @@ local QDEF = QuestDef.Define
     desc = "Your dream has given you quite the knowledge about Hesh. {giver} would be quite pleased with this information.",
     mark = {"giver"},
 }
+:AddObjective{
+    id = "bad_event"
+}
 :AddOpinionEvents{
     suspicious =
     {
@@ -390,13 +393,18 @@ QDEF:AddConvo("ask_info")
                     -- oops, someone who doesn't like your stuff overheard your little heresy.
                     -- a quest will spawn that is baad.
                     cxt.quest.param.spawned_interrupt = true
-                    QuestUtil.SpawnQuest("REQUEST_CTENOPHORIAN_MYSTERY_EVENT", {
-                        parameters =
-                        {
-                            overheard = candidates,
-                            cultist = cxt:GetAgent(),
-                        },
-                    })
+                    -- QuestUtil.SpawnQuest("REQUEST_CTENOPHORIAN_MYSTERY_EVENT", {
+                    --     parameters =
+                    --     {
+                    --         overheard = candidates,
+                    --         cultist = cxt:GetAgent(),
+                    --     },
+                    -- })
+                    cxt.quest.param.overheard = cxt.quest.param.overheard or {}
+                    for i, agent in ipairs(candidates) do
+                        table.insert_unique(cxt.quest.param.overheard, agent)
+                    end
+                    cxt.quest:Activate("bad_event")
                 end
             end
             StateGraphUtil.AddEndOption(cxt)
@@ -481,16 +489,16 @@ QDEF:AddConvo("tell_result", "giver")
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest.Complete()
         end)
-local BAD_EVENT = QuestDef.Define{
-    id = "REQUEST_CTENOPHORIAN_MYSTERY_EVENT",
-    qtype = QTYPE.STORY,
-}
-:AddObjective{
-    id = "start",
-    status = QSTATUS.ACTIVE,
-}
+-- local BAD_EVENT = QuestDef.Define{
+--     id = "REQUEST_CTENOPHORIAN_MYSTERY_EVENT",
+--     qtype = QTYPE.STORY,
+-- }
+-- :AddObjective{
+--     id = "start",
+--     status = QSTATUS.ACTIVE,
+-- }
 
-BAD_EVENT:AddConvo()
+QDEF:AddConvo("bad_event")
     :TravelConfront("INTERRUPT", function(cxt) return TheGame:GetGameState():CanSpawnTravelEvent() end)
         :Loc{
             DIALOG_INTRO = [[
@@ -585,7 +593,7 @@ BAD_EVENT:AddConvo()
                 -- Opponent gains bonus resolve for other witnesses.
             })
                 :OnSuccess()
-                    :CompleteQuest()
+                    :CompleteQuest("bad_event")
                     :Travel()
 
             DemocracyUtil.AddBodyguardOpt(cxt, function(cxt, agent)
@@ -595,7 +603,7 @@ BAD_EVENT:AddConvo()
                     QuestUtil.SpawnQuest("STORY_PET_RETURN", { cast = { pet = agent } })
                 end
                 agent:Dismiss()
-                cxt.quest:Complete()
+                cxt.quest:Complete("bad_event")
                 StateGraphUtil.AddLeaveLocation(cxt)
             end)
 
@@ -606,6 +614,6 @@ BAD_EVENT:AddConvo()
                 }
                     :OnWin()
                         :Dialog("DIALOG_DEFEND_WIN")
-                        :CompleteQuest()
+                        :CompleteQuest("bad_event")
                         :DoneConvo()
         end)
