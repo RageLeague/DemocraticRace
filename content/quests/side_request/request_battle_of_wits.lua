@@ -1,7 +1,7 @@
 local function GetELO(agent)
     return agent:CalculateProperty("CHESS_ELO", function(agent)
         return math.round(900 + 150 * (agent:GetRenown() - agent:GetCombatStrength()) + 10 * (agent:GetRenown() ^ 2) + math.random(0, 200))
-    end) 
+    end)
 end
 -- Calculate the chance of A winning given eloa and elob, using the elo system.
 local function GetWinChance(eloa, elob)
@@ -67,7 +67,7 @@ local QDEF = QuestDef.Define
         base_difficulty_change = function(quest, new_diff, old_diff)
             quest:SetRank(new_diff)
         end,
-        
+
     },
 
     -- collect_agent_locations = function(quest, t)
@@ -76,7 +76,7 @@ local QDEF = QuestDef.Define
     --     end
     --     -- table.insert(t, { agent = quest:GetCastMember("potential_ally"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.VISITOR})
     -- end,
-    
+
     on_start = function(quest)
         quest:Activate("find_challenger")
     end,
@@ -84,17 +84,17 @@ local QDEF = QuestDef.Define
     on_complete = function(quest)
         if not (quest.param.sub_optimal or quest.param.poor_performance) then
             quest:GetCastMember("giver"):OpinionEvent(OPINION.DID_LOYALTY_QUEST)
-            -- DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST")
-            -- DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 4, "COMPLETED_QUEST")
-            -- DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 3, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 4, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 3, "COMPLETED_QUEST")
         elseif quest.param.sub_optimal then
-            -- DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST")
-            -- DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 4, "COMPLETED_QUEST")
-            -- DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 3, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 4, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 3, "COMPLETED_QUEST")
         elseif quest.param.poor_performance then
-            -- DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2, "POOR_QUEST")
-            -- DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 4, "POOR_QUEST")
-            -- DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 2, 3, "POOR_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2, "POOR_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 4, "POOR_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 2, 3, "POOR_QUEST")
         end
     end,
     -- process_fighter = function(quest, fighter)
@@ -174,7 +174,7 @@ QDEF:AddIntro(
             To prove this, find someone who can beat me at Chess(?).
             You can't, but please try.
     ]],
-    
+
     --on accept
     [[
         player:
@@ -209,8 +209,8 @@ QDEF:AddConvo("find_challenger")
             local ELO = GetELO(who)
             cxt.enc.scratch.good_player = ELO >= GOOD_PLAYER_THRESHOLD
             cxt:BasicNegotiation("ASK", {
-                situation_modifiers = (not cxt.enc.scratch.good_player) and 
-                    {{value = 10, text = cxt:GetLocString("SIT_MOD")}} 
+                situation_modifiers = (not cxt.enc.scratch.good_player) and
+                    {{value = 10, text = cxt:GetLocString("SIT_MOD")}}
                     or nil,
             })
                 :OnSuccess()
@@ -222,7 +222,7 @@ QDEF:AddConvo("find_challenger")
     end)
 QDEF:AddConvo("go_to_game")
     :Priority(CONVO_PRIORITY_LOW)
-    :AttractState("STATE_NO_PLAYER", function(cxt) 
+    :AttractState("STATE_NO_PLAYER", function(cxt)
         return cxt.location == cxt:GetCastMember("giver_home") and cxt:GetAgent() and
             (cxt:GetAgent() == cxt:GetCastMember("giver") or cxt:GetAgent() == cxt:GetCastMember("challenger"))
     end)
@@ -395,8 +395,8 @@ QDEF:AddConvo("go_to_game")
                 cxt:UnassignCastMember("challenger")
 
                 cxt:BasicNegotiation("CONVINCE", {
-                    situation_modifiers = (cxt.quest.param.bad_challengers or 0) >= 1 and 
-                    {{value = cxt.quest.param.bad_challengers * 10, text = cxt:GetLocString("SIT_MOD")}} 
+                    situation_modifiers = (cxt.quest.param.bad_challengers or 0) >= 1 and
+                    {{value = cxt.quest.param.bad_challengers * 10, text = cxt:GetLocString("SIT_MOD")}}
                     or nil,
                 })
                     :OnSuccess()
@@ -683,13 +683,13 @@ QDEF:AddConvo("go_to_game")
                     flags = BATTLE_FLAGS.SELF_DEFENCE,
                     enemies = {"giver"},
                     allies = {"challenger"},
-                    on_runaway = function(cxt) 
+                    on_runaway = function(cxt)
                         cxt:Dialog("DIALOG_DEFEND_RUN")
                         cxt.quest:Fail()
                         cxt:GetCastMember("giver"):OpinionEvent(OPINION.BETRAYED)
                         StateGraphUtil.AddLeaveLocation(cxt)
                     end,
-                    on_win = function(cxt) 
+                    on_win = function(cxt)
                         cxt:Dialog("DIALOG_DEFEND_WIN")
                         cxt.quest:Fail()
                         cxt.quest:SpawnFollowQuest(FOLLOW_UP.id)
@@ -789,7 +789,7 @@ FOLLOW_UP:AddConvo("comfort", "giver")
                             cxt.quest.param.tried_comfort = true
                         end
                     end,
-                    on_fail = function(cxt) 
+                    on_fail = function(cxt)
                         cxt:Dialog("DIALOG_COMFORT_FAILURE")
                         cxt.quest.param.tried_comfort = true
                     end,
@@ -806,7 +806,7 @@ FOLLOW_UP:AddConvo("comfort", "giver")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
         end)
-    
+
 
 FOLLOW_UP:AddConvo("finale")
     :ConfrontState("STATE_CONF", function(cxt) return cxt.location == cxt:GetCastMember("giver_home") end)
