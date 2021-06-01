@@ -60,6 +60,12 @@ Of course, other forms of feedbacks are welcome.
 
 You can leave feedbacks either on the Steam workshop page (https://steamcommunity.com/sharedfiles/filedetails/?id=2291214111), Klei's forum (DM me or https://forums.kleientertainment.com/forums/topic/123481-the-democratic-racealpha-available/), or on GitHub (https://github.com/RageLeague/DemocraticRace).
 
+## Voluntary Deck Collection Program
+
+A brand new deck collection program is open to help me gather decks and balance the mod. For more information, visit
+https://forms.gle/2YWzmuUgN8KmTcJj9. If you are from a region where Google is not supported, I have
+to say, under such environment, actually very probematic, not gonna lie.
+
 ## How to install?
 
 ### Directly fron GitHub
