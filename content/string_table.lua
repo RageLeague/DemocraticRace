@@ -25,7 +25,7 @@ Content.AddStringTable("DEMOCRACY", {
         COLLECT_DECK =
         {
             SUCCESS = "Success!",
-            SUCCESS_DESC = "Your deck is copied onto your clipboard.",
+            SUCCESS_DESC = "Your deck is copied onto your clipboard. Visit https://forms.gle/2YWzmuUgN8KmTcJj9 to submit your deck.",
             NOT_IN_GAME = "Error: Not In a Game",
             NOT_IN_GAME_DESC = "You are currently not in a campaign.",
             WRONG_CAMPAIGN = "Error: Wrong Campaign",
