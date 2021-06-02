@@ -1144,7 +1144,7 @@ local MODIFIERS =
     },
     FRAGILE_EGO = {
         name = "Fragile Ego",
-        desc = "Remove all {PRIDE}s and incept that much {VULNERABILITY}.",
+        desc = "Remove all {PRIDE}s and incept that much {VULNERABILITY} when destroyed.",
         modifier_type = MODIFIER_TYPE.BOUNTY,
         max_stacks = 1,
         max_resolve = 4,
@@ -2196,13 +2196,10 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.CORE,
 
         GetDamageMultiplier = function(self)
-            if self.engine then
-                return self.multiplier_scale[math.min(#self.multiplier_scale, self.engine:GetDifficulty())]
-            end
-            return 1
+            return self.multiplier_scale[math.min(#self.multiplier_scale, GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1)]
         end,
 
-        multiplier_scale = {1, 1, 2, 2, 3},
+        multiplier_scale = {1, 1, 1, 2},
         event_handlers = {
             [ EVENT.END_PLAYER_TURN ] = function ( self, minigame )
                 print("triggered")
@@ -2228,6 +2225,10 @@ local MODIFIERS =
         OnApply = function(self)
             self.card_costs = {}
             self.sticky_applied = {}
+            if not self.negotiator:FindCoreArgument():GetShieldStatus() then
+                self.core_shield = true
+                self.negotiator:FindCoreArgument():SetShieldStatus(true)
+            end
         end,
 
         CanChoose = function(card)
@@ -2237,6 +2238,9 @@ local MODIFIERS =
         OnUnapply = function( self )
             for card in self.sticky_applied or {} do
                 card:ClearFlags(CARD_FLAGS.STICKY)
+            end
+            if self.core_shield and self.negotiator:FindCoreArgument() then
+                self.negotiator:FindCoreArgument():SetShieldStatus(nil)
             end
         end,
 
@@ -2290,6 +2294,19 @@ local MODIFIERS =
 
         OnInit = function( self )
             self:SetResolve( 6, MODIFIER_SCALING.HIGH )
+        end,
+
+        OnApply = function(self)
+            if not self.negotiator:FindCoreArgument():GetShieldStatus() then
+                self.core_shield = true
+                self.negotiator:FindCoreArgument():SetShieldStatus(true)
+            end
+        end,
+
+        OnUnapply = function(self)
+            if self.core_shield and self.negotiator:FindCoreArgument() then
+                self.negotiator:FindCoreArgument():SetShieldStatus(nil)
+            end
         end,
 
         event_priorities =
