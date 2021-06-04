@@ -2,6 +2,8 @@
 
 local filepath = require "util/filepath"
 
+local bank_loading_handle
+
 local function OnNewGame( mod, game_state )
     -- Require this Mod to be installed to launch this save game.
     if DemocracyUtil.IsDemocracyCampaign(game_state:GetCurrentActID()) then
@@ -215,8 +217,11 @@ local function OnPreLoad( mod )
     end
     AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.strings.bank", false)
     -- local audiobank = AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", false)
-    -- Yeah this doesn't work because fmod doesn't allow loading of multiple projects.
+    -- I guess we are loading it synchronously. Too complicated to do async
     AUDIO:MountModdedAudioBank("DEMOCRATICRACE", "DEMOCRATICRACE:assets/audio/Master.bank")
+
+    -- AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", false)
+    -- bank_loading_handle = AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", true)
 end
 local MOD_OPTIONS =
 {
