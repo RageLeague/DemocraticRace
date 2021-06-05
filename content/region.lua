@@ -99,13 +99,15 @@ local region = {
             return "SPREE_TENT"
         end
 
-        if agent:HasTag("wealthy") then
-            if agent:GetFaction():IsLawful() then
-                return "FEUD_DOMICILE_NICE"
-            end
+        if agent:GetFactionID() == "SPARK_BARONS" then
+            return "SPARK_BARON_RESIDENCE"
         end
 
-        return "FEUD_DOMICILE"
+        if DemocracyUtil.GetWealth(agent) >= 3 then
+            return "PEARL_RICH_HOUSE"
+        end
+
+        return "PEARL_POOR_HOUSE"
     end,
 }
 
