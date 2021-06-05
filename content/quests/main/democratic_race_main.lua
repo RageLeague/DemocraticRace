@@ -178,13 +178,20 @@ local QDEF = QuestDef.Define
             local id = agent:GetContentID()
             population_count[id] = (population_count[id] or 0) + 1
         end
-
+        local summon_people = {}
         for i, id in ipairs(TheGame:GetGameState().region:GetContent().population) do
             local content = Content.GetCharacterDef( id )
             local threshold = 6 - (content.renown or 1)
             while (population_count[id] or 0) < threshold do
                 population_count[id] = (population_count[id] or 0) + 1
-                TheGame:GetGameState():AddSkinnedAgent( id )
+                table.insert(summon_people, id)
+            end
+        end
+        table.shuffle(summon_people)
+        for i, id in ipairs(summon_people) do
+            local agent = TheGame:GetGameState():AddSkinnedAgent(id)
+            if math.random() < 0.5 then
+                AgentUtil.PutAgentInWorld(agent)
             end
         end
 
