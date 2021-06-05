@@ -264,10 +264,15 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
             :PreIcon(global_images.sleep)
             :Dialog("DIALOG_GO_TO_SLEEP")
             :Fn(function(cxt)
-                -- local grog = cxt.location
-                -- cxt.encounter:DoLocationTransition( cxt.quest:GetCastMember("player_room") )
-                -- grog:SetPlax()
-                -- DemocracyUtil.DoAlphaMessage()
+                local grog = cxt.location
+                cxt.encounter:DoLocationTransition( cxt.quest:GetCastMember("player_room") )
+                grog:SetPlax()
+
+                TheGame:FE():FindScreen( Screen.ConversationScreen ).character_music = nil
+                TheGame:GetMusic():StopCharacterMusic()
+
+                cxt:TalkTo()
+
                 ConvoUtil.DoSleep(cxt, "DIALOG_WAKE")
 
                 cxt.quest:Complete()
@@ -276,6 +281,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     :MakeUnder()
                     :Fn(function()
                         cxt.encounter:DoLocationTransition( cxt.quest:GetCastMember("home") )
+                        DemocracyUtil.DoAlphaMessage()
                         cxt:End()
                     end)
 

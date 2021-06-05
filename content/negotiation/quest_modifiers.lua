@@ -2236,7 +2236,7 @@ local MODIFIERS =
         end,
 
         OnUnapply = function( self )
-            for card in ipairs(self.sticky_applied or {}) do
+            for i, card in ipairs(self.sticky_applied or {}) do
                 card:ClearFlags(CARD_FLAGS.STICKY)
             end
             if self.core_shield and self.negotiator:FindCoreArgument() then
