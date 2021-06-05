@@ -215,7 +215,7 @@ local function OnPreLoad( mod )
             Content.AddPOFileToLocalization(id, filepath)
         end
     end
-    if Content.GetModSetting(mod, "replace_to") then
+    if Content.GetModSetting(mod, "enable_audio_debug") then
         AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.strings.bank", false)
         -- local audiobank = AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", false)
         -- I guess we are loading it synchronously. Too complicated to do async
@@ -223,6 +223,7 @@ local function OnPreLoad( mod )
 
         -- AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", false)
         -- bank_loading_handle = AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", true)
+        Content.SetModSetting(mod, "enable_audio_debug", true)
     end
 end
 local MOD_OPTIONS =
