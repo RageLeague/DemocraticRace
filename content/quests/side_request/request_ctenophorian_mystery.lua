@@ -462,6 +462,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                     :Fn(function(cxt)
                         -- You earn a special card or something.
                         cxt.quest.param.went_crazy = true
+                        cxt.caravan:DeltaMaxResolve(-5)
                     end)
                     :CompleteQuest("ask_info")
                     :ActivateQuest("tell_result")
