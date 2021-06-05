@@ -24,7 +24,7 @@ end
 function AudioSystem:ConvertAudioEventFormat(str)
     local namespace, eventname = str:match("^(.-)|(.*)$")
     if namespace and eventname then
-        if not self.bank_alias_map[namespace] then
+        if not self.bank_alias_map or not self.bank_alias_map[namespace] then
             return str, nil
         end
         return eventname, self.bank_alias_map[namespace]

@@ -39,9 +39,9 @@ local QUEST_IDS = {
 
 for i, id in ipairs(QUEST_IDS) do
     local ok, message = AppendActFilterToQuest(id, DemocracyUtil.DemocracyActFilter)
-    if ok then
-        print("Successfully replace " .. id .. ": " .. message)
-    else
-        print("Fail to replace " .. id .. ": " .. message)
-    end
+    -- if ok then
+    --     print("Successfully replace " .. id .. ": " .. message)
+    -- else
+    --     print("Fail to replace " .. id .. ": " .. message)
+    -- end
 end
