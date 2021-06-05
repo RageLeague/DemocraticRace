@@ -24,12 +24,12 @@ local SPAWN_NAMED_CHAR = {
     -- RAKE = {workplace = "MARKET_STALL", workpos = "battle_shop"},
     -- PLOCKA = {workplace = "MARKET_STALL", workpos = "graft_shop"},
     -- BEASTMASTER = {workplace = "MARKET_STALL", workpos = "beastmaster_shop"},
-    
+
 }
 local function InitNamedChars()
     for id, data in pairs(SPAWN_NAMED_CHAR) do
 
-        
+
         local agent = TheGame:GetGameState():GetAgentOrMemento( id )
         if not agent then
             print("Initializing: " .. id)
@@ -83,7 +83,7 @@ local QDEF = QuestDef.Define
 
     max_day = MAX_DAYS,
     get_narrative_progress = function(quest)
-        
+
         local total_days = MAX_DAYS
         local completed_days = (quest.param.day or 1)-1
 
@@ -100,7 +100,7 @@ local QDEF = QuestDef.Define
         -- TheGame:GetGameState():SetRollbackThresh(1)
         InitNamedChars()
         TheGame:GetGameState():GetCaravan():MoveToLocation(TheGame:GetGameState():GetLocation("MURDERBAY_NOODLE_SHOP"))
-        
+
         -- TheGame:GetGameState():AddLocation(Location("DIPL_PRES_OFFICE"))
         -- TheGame:GetGameState():AddLocation(Location("MANI_PRES_OFFICE"))
         -- TheGame:GetGameState():AddLocation(Location("HOST_PRES_OFFICE"))
@@ -127,7 +127,7 @@ local QDEF = QuestDef.Define
         -- The locations you've unlocked.
         quest.param.unlocked_locations = --shallowcopy(Content.GetWorldRegion("democracy_pearl").locations)--{"MURDERBAY_NOODLE_SHOP"}
         {"MURDERBAY_NOODLE_SHOP"}
-        
+
         -- quest.param.free_time_actions = 1
 
         quest.param.stances = {}
@@ -170,10 +170,26 @@ local QDEF = QuestDef.Define
         QuestUtil.SpawnQuest("SAL_STORY_MERCHANTS")
         -- populate all locations.
         -- otherwise there's a lot of bartenders attending the first change my mind quest for some dumb reason.
-        for i, location in TheGame:GetGameState():AllLocations() do
-            LocationUtil.PopulateLocation( location )
+        -- for i, location in TheGame:GetGameState():AllLocations() do
+        --     LocationUtil.PopulateLocation( location )
+        -- end
+        local population_count = {}
+        for i, agent in TheGame:GetGameState():Agents() do
+            local id = agent:GetContentID()
+            population_count[id] = (population_count[id] or 0) + 1
         end
-        
+
+        for i, id in ipairs(TheGame:GetGameState().region:GetContent().population) do
+            local content = Content.GetCharacterDef( id )
+            local threshold = 6 - (content.renown or 1)
+            while (population_count[id] or 0) < threshold do
+                population_count[id] = (population_count[id] or 0) + 1
+                TheGame:GetGameState():AddSkinnedAgent( id )
+            end
+        end
+
+        DBG(population_count)
+
         QuestUtil.DoNextDay(DAY_SCHEDULE, quest, quest.param.start_on_day )
         quest:DefFn("on_post_load")
         DoAutoSave()
@@ -210,9 +226,9 @@ local QDEF = QuestDef.Define
                     table.insert_unique(tags, "anti_" .. string.lower(id))
                 end
             end
-        end 
+        end
     end,
-    events = 
+    events =
     {
         -- GAME_OVER = function( self, gamestate, result )
         --     if result == GAMEOVER.VICTORY then
@@ -242,7 +258,7 @@ local QDEF = QuestDef.Define
                 return
             end
             local support_delta = DELTA_SUPPORT[new_rel] - DELTA_SUPPORT[old_rel]
-            
+
             if support_delta ~= 0 then
                 local opposition_data = DemocracyUtil.GetOppositionData(agent)
                 if opposition_data then
@@ -336,13 +352,13 @@ local QDEF = QuestDef.Define
         local new_quest
         for _, quest_id in ipairs(attempt_quest_ids) do
             local overrides = {qrank = TheGame:GetGameState():GetCurrentBaseDifficulty() + (spawn_as_challenge and 1 or 0)}
-            
+
             if spawn_as_inactive then
-                new_quest = QuestUtil.SpawnInactiveQuest( quest_id, overrides) 
+                new_quest = QuestUtil.SpawnInactiveQuest( quest_id, overrides)
             else
-                new_quest = QuestUtil.SpawnQuest( quest_id, overrides) 
+                new_quest = QuestUtil.SpawnQuest( quest_id, overrides)
             end
-        
+
             if new_quest then
                 if quest.param.day == 1 then
                     new_quest.upfront_reward = true
@@ -357,13 +373,13 @@ local QDEF = QuestDef.Define
             table.stable_sort(all_quest_ids, function(a,b) return quest_scores[a] < quest_scores[b] end)
             for _, quest_id in ipairs(all_quest_ids) do
                 local overrides = {qrank = TheGame:GetGameState():GetCurrentBaseDifficulty() + (spawn_as_challenge and 1 or 0)}
-                
+
                 if spawn_as_inactive then
-                    new_quest = QuestUtil.SpawnInactiveQuest( quest_id, overrides) 
+                    new_quest = QuestUtil.SpawnInactiveQuest( quest_id, overrides)
                 else
-                    new_quest = QuestUtil.SpawnQuest( quest_id, overrides) 
+                    new_quest = QuestUtil.SpawnQuest( quest_id, overrides)
                 end
-            
+
                 if new_quest then
                     if quest.param.day == 1 then
                         new_quest.upfront_reward = true
@@ -421,7 +437,7 @@ local QDEF = QuestDef.Define
                     :Fn(function(cxt) cxt:End() end)
                     :MakeUnder()
             end
-        end, function(cxt, jobs_presented, job_picked) 
+        end, function(cxt, jobs_presented, job_picked)
             cxt.quest.param.current_job = job_picked
             quest.param.recent_side_id = job_picked:GetContentID()
             cxt.quest:Complete("get_job")
@@ -429,7 +445,7 @@ local QDEF = QuestDef.Define
             --cxt:PlayQuestConvo(cxt.quest.param.job, QUEST_CONVO_HOOK.INTRO)
             StateGraphUtil.AddEndOption(cxt)
         end)
-        
+
     end,
     DeltaSupport = function(quest, amt, target, notification)
         local type, t = DemocracyUtil.DetermineSupportTarget(target)
@@ -447,7 +463,7 @@ local QDEF = QuestDef.Define
             notification = true
         end
         if notification and amt ~= 0 then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GENERAL_SUPPORT, amt, quest:DefFn("GetGeneralSupport"), notification ) 
+            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GENERAL_SUPPORT, amt, quest:DefFn("GetGeneralSupport"), notification )
         end
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_general_support", amt )
@@ -467,7 +483,7 @@ local QDEF = QuestDef.Define
             notification = true
         end
         if notification and amt ~= 0 then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_FACTION_SUPPORT, amt, quest:DefFn("GetFactionSupport", faction), TheGame:GetGameState():GetFaction(faction), notification ) 
+            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_FACTION_SUPPORT, amt, quest:DefFn("GetFactionSupport", faction), TheGame:GetGameState():GetFaction(faction), notification )
         end
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_faction_support_" .. faction, amt )
@@ -487,7 +503,7 @@ local QDEF = QuestDef.Define
             notification = true
         end
         if notification and amt ~= 0 then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_WEALTH_SUPPORT, amt, quest:DefFn("GetWealthSupport", r), r, notification ) 
+            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_WEALTH_SUPPORT, amt, quest:DefFn("GetWealthSupport", r), r, notification )
         end
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_wealth_support_" .. r, amt )
@@ -505,7 +521,7 @@ local QDEF = QuestDef.Define
         if not quest.param.support_loss_source then
             quest.param.support_loss_source = {}
         end
-        
+
         if amt ~= 0 then
             if amt > 0 then
                 if not delta_type then
@@ -529,7 +545,7 @@ local QDEF = QuestDef.Define
         end
 
         local target_table
-        
+
         if amt ~= 0 then
             if amt > 0 then
                 if not delta_type then
@@ -560,7 +576,7 @@ local QDEF = QuestDef.Define
         end
 
         local target_table
-        
+
         if amt ~= 0 then
             if amt > 0 then
                 if not delta_type then
@@ -595,7 +611,7 @@ local QDEF = QuestDef.Define
             notification = true
         end
         if notification and amt then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_AGENT_SUPPORT, amt, agent, notification ) 
+            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_AGENT_SUPPORT, amt, agent, notification )
         end
     end,
     -- DeltaFactionSupportAgent = function(quest, amt, agent, ignore_notification)
@@ -726,8 +742,8 @@ local QDEF = QuestDef.Define
                 quest.param.stance_change[issue] = math.max(0, quest.param.stance_change[issue] - 1)
                 quest.param.stance_change_freebie[issue] = false
             else
-                if quest.param.stance_change_freebie[issue] 
-                    and (quest.param.stances[issue] > 0) == (val > 0) 
+                if quest.param.stance_change_freebie[issue]
+                    and (quest.param.stances[issue] > 0) == (val > 0)
                     and (quest.param.stances[issue] < 0) == (val < 0) then
 
                     quest:DefFn("DeltaGeneralSupport", 1, "CONSISTENT_STANCE")
@@ -757,7 +773,7 @@ local QDEF = QuestDef.Define
             end
         end
         print(loc.format("Updated stance: '{1}': {2}(strict: {3})", issue, val, strict))
-        
+
     end,
     GetStance = function(quest, issue)
         if type(issue) == "table" then
@@ -880,7 +896,7 @@ local QDEF = QuestDef.Define
         quest:UnassignCastMember("home")
     end,
     events = {
-        agent_retired = function(quest, agent) 
+        agent_retired = function(quest, agent)
             quest:DefFn("UpdateAdvisor", nil, agent:IsDead() and "ADVISOR_DEAD" or "ADVISOR_RETIRED")
         end,
     }
@@ -900,7 +916,7 @@ QDEF:AddConvo()
     :Priority(CONVO_PRIORITY_HIGHEST)
     :ConfrontState("STATE_UNLOCK", function(cxt)
         local id = cxt.location:GetContentID()
-        return id and table.arraycontains(LocUnlock.ALL_LOCATION_UNLOCKS, id) 
+        return id and table.arraycontains(LocUnlock.ALL_LOCATION_UNLOCKS, id)
             and not DemocracyUtil.LocationUnlocked(id)
     end)
     :Loc{
@@ -961,7 +977,7 @@ QDEF:AddConvo()
 
                 cxt.quest.param.alert_advisor_removed = nil
 
-                QuestUtil.SpawnQuest("RACE_FIND_NEW_ADVISOR", 
+                QuestUtil.SpawnQuest("RACE_FIND_NEW_ADVISOR",
                     {
                         parameters = {
                             available_advisors = available_advisors,
@@ -976,7 +992,7 @@ QDEF:AddConvo()
                 }
                 cxt.quest.param.alert_advisor_removed = nil
                 DemocracyUtil.DoEnding(cxt, "no_more_advisors", flags)
-                
+
             end
         end)
 

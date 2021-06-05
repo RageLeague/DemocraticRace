@@ -7,7 +7,7 @@ local region = {
 
     default_outdoor_location = "MURDER_BAY_ROAD",
 
-    outdoor_locations = 
+    outdoor_locations =
     {
         "MURDER_BAY_SHORE",
         "MURDER_BAY_ROAD",
@@ -61,7 +61,7 @@ local region = {
         "PRIEST",
         "LUMINARI",
         "LUMINITIATE",
-        
+
         "LABORER",
         "HEAVY_LABORER",
         "OSHNU_WRANGLER",
@@ -70,12 +70,11 @@ local region = {
         "WEALTHY_MERCHANT",
         "POOR_MERCHANT",
         "PEARLIE",
-        
+
         "JAKES_RUNNER",
         "JAKES_SMUGGLER",
         "JAKES_LIFTER",
-        
-        
+
         "ADMIRALTY_GOON",
         "ADMIRALTY_GUARD",
         "ADMIRALTY_PATROL_LEADER",
@@ -84,14 +83,14 @@ local region = {
         "RISE_REBEL",
         "RISE_RADICAL",
         "RISE_PAMPHLETEER",
-        
+
         "SPARK_BARON_PROFESSIONAL",
         "SPARK_BARON_TASKMASTER",
         "SPARK_BARON_GOON",
     },
 
-    home_generator = function(agent) 
-        
+    home_generator = function(agent)
+
         if agent:GetFactionID() == "ADMIRALTY" then
             return "BASIC_DORM"
         end
