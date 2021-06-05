@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="ParameterPreset" id="{1c0c8410-768d-4dce-9a38-7e16b8bdde83}">
+		<property name="name">
+			<value>duckstorymusic</value>
+		</property>
+		<relationship name="folder">
+			<destination>{8fc0e0f7-0e37-48d2-b9a4-a626a3eecd70}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{f12faa2a-357a-43bc-a28e-09527e312bf4}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{f12faa2a-357a-43bc-a28e-09527e312bf4}">
+		<property name="parameterType">
+			<value>2</value>
+		</property>
+		<property name="maximum">
+			<value>2</value>
+		</property>
+		<property name="enumerationLabels">
+			<value>Enabled</value>
+			<value>Disabled</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>

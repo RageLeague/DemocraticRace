@@ -22,12 +22,18 @@ end
 -- Example:
 -- DemocraticRace|event:/...
 function AudioSystem:ConvertAudioEventFormat(str)
-    local namespace, eventname = str:match("^(.-)|(.*)$")
-    if namespace and eventname then
-        if not self.bank_alias_map[namespace] then
-            return str, nil
-        end
-        return eventname, self.bank_alias_map[namespace]
+    -- local namespace, eventname = str:match("^(.-)|(.*)$")
+    -- if namespace and eventname then
+    --     if not self.bank_alias_map[namespace] then
+    --         return str, nil
+    --     end
+    --     return eventname, self.bank_alias_map[namespace]
+    -- end
+
+    local has_match = str:match("democratic_race")
+    if has_match then
+        print("Matched String", str)
+        return str, self.bank_alias_map["DEMOCRATICRACE"]
     end
 
     -- By default, do nothing with it.

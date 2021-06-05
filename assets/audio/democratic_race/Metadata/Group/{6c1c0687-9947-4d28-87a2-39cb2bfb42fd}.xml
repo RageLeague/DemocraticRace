@@ -4,6 +4,9 @@
 		<property name="name">
 			<value>democratic_race</value>
 		</property>
+		<relationship name="masters">
+			<destination>{4f4ace99-348b-467f-9b3e-579161bdcd7a}</destination>
+		</relationship>
 		<relationship name="effectChain">
 			<destination>{37288b06-7046-4750-8597-66476ad8de4f}</destination>
 		</relationship>

@@ -25,7 +25,7 @@ Convo("DEBUG_ENDING_TEST")
         ]],
     }
     :Hub(function(cxt)
-        -- cxt:BasicNegotiation("TALK")
+        cxt:BasicNegotiation("TALK")
         -- cxt:Opt("OPT_QUERY_STANCE")
         --     :LoopingFn(function(cxt)
         --         for id, issue in pairs(DemocracyConstants.issue_data) do
@@ -44,5 +44,5 @@ Convo("DEBUG_ENDING_TEST")
         --         cxt.player.negotiator:AddCard(card)
         --         -- DemocracyUtil.DoEnding(cxt, "arrested")
         --     end)
-        
+
     end)
