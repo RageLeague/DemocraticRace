@@ -915,7 +915,7 @@ function QuestDef:GetProviderCast()
         end
     end
 end
-function DemocracyUtil.SpawnRequestQuest(agent, spawn_param)
+function DemocracyUtil.SpawnRequestQuest(agent, allow_placeholder, spawn_param)
     if not spawn_param then
         spawn_param = {}
     end
@@ -926,7 +926,7 @@ function DemocracyUtil.SpawnRequestQuest(agent, spawn_param)
         end
     end
     table.shuffle(potential_jobs)
-    table.insert(potential_jobs, Content.GetQuestDef( "PLACEHOLDER_REQUEST_QUEST" ))
+    -- table.insert(potential_jobs, Content.GetQuestDef( "PLACEHOLDER_REQUEST_QUEST" ))
     -- DBG(potential_jobs)
     for i, def in ipairs(potential_jobs) do
         local provider_cast = def:GetProviderCast()
@@ -948,7 +948,19 @@ function DemocracyUtil.SpawnRequestQuest(agent, spawn_param)
             end
         end
     end
-    assert(false, loc.format("No request quest spawned for {1#agent}", agent))
+    if allow_placeholder then
+        local spawned_quest = QuestUtil.SpawnInactiveQuest("PLACEHOLDER_REQUEST_QUEST", params)
+        if spawned_quest then
+            -- DBG(spawned_quest)
+            if params.debug_test then
+                TheGame:GetGameState():AddActiveQuest( spawned_quest )
+                spawned_quest:Activate()
+            end
+            return spawned_quest
+        end
+    end
+    return nil
+    -- assert(false, loc.format("No request quest spawned for {1#agent}", agent))
 end
 function DemocracyUtil.DebugSetRandomDeck(seed)
     local DECKS = require "content/quests/experiments/sal_day_4_decks"

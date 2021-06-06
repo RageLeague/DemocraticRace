@@ -111,7 +111,7 @@ local QDEF = QuestDef.Define
     provider = true,
     unimportant = true,
     condition = function(agent, quest)
-        return agent:GetContentID() == "ADVISOR_HOSTILE" or (DemocracyUtil.GetWealth(agent) >= 4)
+        return agent:GetContentID() == "ADVISOR_HOSTILE" or (DemocracyUtil.GetWealth(agent) >= 3 and not agent:HasTag("advisor"))
     end,
     -- cast_fn = function(quest, t)
     --     table.insert( t, quest:CreateSkinnedAgent( "LABORER" ) )
