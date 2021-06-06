@@ -15,7 +15,7 @@ local QDEF = QuestDef.Define
         end
     end,
     -- on_start = function(quest)
-        
+
     -- end,
 }
 :AddLocationCast{
@@ -23,7 +23,7 @@ local QDEF = QuestDef.Define
     cast_fn = function(quest, t)
         table.insert(t, TheGame:GetGameState():GetLocation("MURDERBAY_NOODLE_SHOP"))
     end,
-    
+
 }
 :AddObjective{
     id = "go_to_bar",
@@ -51,16 +51,16 @@ local QDEF = QuestDef.Define
         for id, data in pairs(DemocracyConstants.opposition_data) do
             local main_faction = data.main_supporter or "FEUD_CITIZEN"
             local val, reason = DemocracyUtil.GetAlliancePotential(id)
-            quest:Trace("[%s] Val=%d, Reason=%s", id, val, reason)
+            -- quest:Trace("[%s] Val=%d, Reason=%s", id, val, reason)
             if val then
                 local endorsement = DemocracyUtil.GetEndorsement(val)
                 if endorsement >= best_score then
-                    
+
                     if endorsement > best_score then
                         best_score = endorsement
                         best_characters = {}
                     end
-                    
+
                     table.insert(best_characters, data)
                 end
             end
@@ -85,7 +85,7 @@ local QDEF = QuestDef.Define
 DemocracyUtil.AddPrimaryAdvisor(QDEF)
 
 QDEF:AddConvo("go_to_bar")
-    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("noodle_shop") end)
+    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("noodle_shop") end)
         :Loc{
             DIALOG_INTRO = [[
                 * [p] you arrived at the shop.
@@ -232,7 +232,7 @@ QDEF:AddConvo("make_decision", "primary_advisor")
             :Dialog("DIALOG_ASK")
             :GoTo("STATE_QUESTIONS")
     end)
-    :AskAboutHubConditions("STATE_QUESTIONS", 
+    :AskAboutHubConditions("STATE_QUESTIONS",
     {
         nil,
         "Ask about alliance",
@@ -304,7 +304,7 @@ QDEF:AddConvo("make_decision", "primary_advisor")
                 It is not about voting someone you like the most, it's about voting for someone who are most likely to win.
                 Look at my fellow Jarackles there, eager to vote for someone who represent them the most.
                 But you don't represent anyone. You're here to <i>win</>.
-                And people prefer that than someone who will make drastic changes against them. 
+                And people prefer that than someone who will make drastic changes against them.
             player:
                 I see.
                 So, if I ally with someone, votes that should have go to them are likely to go to me!

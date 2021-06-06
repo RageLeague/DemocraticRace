@@ -45,12 +45,13 @@ local QDEF = QuestDef.Define
         local potential_subquests = copykeys(NOON_QUEST_PRIORITY)
         table.shuffle(potential_subquests)
 
-        table.stable_sort(potential_subquests, function(a, b) 
+        table.stable_sort(potential_subquests, function(a, b)
             return (NOON_QUEST_PRIORITY[a] or 0) > (NOON_QUEST_PRIORITY[b] or 0)
         end)
         for i, id in ipairs(potential_subquests) do
             quest.param.noon_subquest = QuestUtil.SpawnQuest( id )
             if quest.param.noon_subquest then
+                quest.param.noon_subquest.param.parent_quest = quest
                 return
             end
         end
@@ -61,7 +62,7 @@ local QDEF = QuestDef.Define
     end,
     events = {
         quests_changed = function(quest, event_quest)
-    
+
             if quest.param.noon_subquest == event_quest then
                 if event_quest:IsDone() then
                     quest:Complete("noon_event")
@@ -101,6 +102,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "go_to_sleep",
     title = "Go to sleep",
+    mark = {"primary_advisor"},
     on_activate = function(quest)
         DemocracyUtil.StartFreeTime()
     end,
@@ -130,15 +132,15 @@ local QDEF = QuestDef.Define
     --         DemocracyUtil.StartFreeTime()
     --     end
     -- end,
-    on_complete = function(quest) 
+    on_complete = function(quest)
         quest:Activate("do_job")
     end,
-    
+
 }
 :AddObjective{
     id = "do_job",
     hide_in_overlay = true,
-    events = 
+    events =
     {
         quests_changed = function(quest, event_quest)
             if quest.param.current_job == event_quest and not event_quest:IsActive() then
@@ -152,13 +154,13 @@ local QDEF = QuestDef.Define
             quest.param.current_job = DemocracyUtil.StartFreeTime(1.5)
         end
     end,
-    on_complete = function(quest) 
+    on_complete = function(quest)
         quest.param.job_history = quest.param.job_history or {}
         table.insert(quest.param.job_history, quest.param.current_job)
         quest.param.recent_job = quest.param.current_job
         quest.param.current_job = nil
 
-        if (#quest.param.job_history == 1) then 
+        if (#quest.param.job_history == 1) then
             quest:Activate("noon_event")
         elseif (#quest.param.job_history >= 2) then
             quest:Activate("do_debate")
@@ -214,7 +216,7 @@ QDEF:AddConvo("get_job")
                 $neutralThoughtful
                 Here's what I can do...
             ]],
-        
+
     }
     :RunLoopingFn(function(cxt)
         cxt:Dialog("DIALOG_INTRO")
@@ -261,19 +263,25 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
         cxt:Opt("OPT_SLEEP")
             :PreIcon(global_images.sleep)
             :Dialog("DIALOG_GO_TO_SLEEP")
-            :Fn(function(cxt) 
-                -- local grog = cxt.location
-                -- cxt.encounter:DoLocationTransition( cxt.quest:GetCastMember("player_room") )
-                -- grog:SetPlax()
-                DemocracyUtil.DoAlphaMessage()
+            :Fn(function(cxt)
+                local grog = cxt.location
+                cxt.encounter:DoLocationTransition( cxt.quest:GetCastMember("player_room") )
+                grog:SetPlax()
+
+                TheGame:FE():FindScreen( Screen.ConversationScreen ).character_music = nil
+                TheGame:GetMusic():StopCharacterMusic()
+
+                cxt:TalkTo()
+
                 ConvoUtil.DoSleep(cxt, "DIALOG_WAKE")
-                
+
                 cxt.quest:Complete()
 
                 cxt:Opt("OPT_LEAVE")
                     :MakeUnder()
-                    :Fn(function() 
+                    :Fn(function()
                         cxt.encounter:DoLocationTransition( cxt.quest:GetCastMember("home") )
+                        DemocracyUtil.DoAlphaMessage()
                         cxt:End()
                     end)
 

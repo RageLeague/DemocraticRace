@@ -106,14 +106,15 @@ local QDEF = QuestDef.Define
         quest:Complete()
     end,
 }
-:AddCast{
-    cast_id = "primary_advisor",
-    when = QWHEN.MANUAL,
-    cast_fn = function(quest, t)
-        table.insert(t, TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor"))
-    end,
-    no_validation = true,
-}
+-- :AddCast{
+--     cast_id = "primary_advisor",
+--     when = QWHEN.MANUAL,
+--     cast_fn = function(quest, t)
+--         table.insert(t, TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor"))
+--     end,
+--     no_validation = true,
+-- }
+DemocracyUtil.AddPrimaryAdvisor(QDEF)
 QDEF:AddConvo("get_job")
     :ConfrontState("STATE_CONFRONT", function(cxt)
         if not cxt.quest:GetCastMember("primary_advisor") then

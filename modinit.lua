@@ -2,6 +2,8 @@
 
 local filepath = require "util/filepath"
 
+local bank_loading_handle
+
 local function OnNewGame( mod, game_state )
     -- Require this Mod to be installed to launch this save game.
     if DemocracyUtil.IsDemocracyCampaign(game_state:GetCurrentActID()) then
@@ -83,6 +85,13 @@ local function OnLoad( mod )
             require(name)
         end
     end
+
+    require "DEMOCRATICRACE:content/string_table"
+
+    rawset(_G, "DemocracyConstants", require("DEMOCRATICRACE:content/constants"))
+    require "DEMOCRATICRACE:content/util"
+    -- rawset(_G, "DemocracyUtil", )
+
     -- require "DEMOCRATICRACE:content/wealth_level"
     require "DEMOCRATICRACE:content/load_quips"
     require "DEMOCRATICRACE:content/load_codex"
@@ -186,6 +195,17 @@ local function OnLoad( mod )
     -- print(string.match("DemRace:lalala", "^.+[:]([^/\\].+)$"))
 end
 local function OnPreLoad( mod )
+
+    -- Patch existing files first
+    for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:preload_patches/", "*.lua", true )) do
+        local name = filepath:match( "(.+)[.]lua$" )
+        -- print(name)
+        if name then
+            require(name)
+        end
+    end
+
+    -- Add localization
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:localization", "*.po", true )) do
         local name = filepath:match( "(.+)[.]po$" )
         print(name)
@@ -194,6 +214,16 @@ local function OnPreLoad( mod )
             print(id)
             Content.AddPOFileToLocalization(id, filepath)
         end
+    end
+    if Content.GetModSetting(mod, "enable_audio_debug") then
+        AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.strings.bank", false)
+        -- local audiobank = AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", false)
+        -- I guess we are loading it synchronously. Too complicated to do async
+        AUDIO:MountModdedAudioBank("DEMOCRATICRACE", "DEMOCRATICRACE:assets/audio/Master.bank")
+
+        -- AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", false)
+        -- bank_loading_handle = AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", true)
+        Content.SetModSetting(mod, "enable_audio_debug", true)
     end
 end
 local MOD_OPTIONS =
@@ -222,7 +252,17 @@ local MOD_OPTIONS =
             local fn = require "DEMOCRATICRACE:content/collect_deck_script"
             fn()
         end,
-    }
+    },
+    {
+        title = "[Debug] Enable Audio For the Next Game",
+        button = true,
+        key = "enable_audio_debug",
+        desc = "There is a bug where restarting the game cause the game to crash, so this button enables audio only if you want.",
+        on_click = function()
+            Content.SetModSetting(mod, "enable_audio_debug", true)
+            UIHelpers.InfoPopup( "Success!", "I'm too lazy to bother with localization" )
+        end,
+    },
 }
 -- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {

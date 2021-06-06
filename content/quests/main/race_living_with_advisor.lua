@@ -43,7 +43,7 @@ local QDEF = QuestDef.Define
     state = QSTATUS.ACTIVE,
     hide_in_overlay = true,
     low_priority = true,
-    mark = {"primary_advisor"},
+    mark = {"home"},
 }
 DemocracyUtil.AddAdvisors(QDEF)
 QDEF:AddConvo(nil, "primary_advisor")
