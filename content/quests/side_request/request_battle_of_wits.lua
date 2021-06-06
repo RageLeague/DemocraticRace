@@ -186,19 +186,26 @@ QDEF:AddConvo("find_challenger")
         OPT_ASK = "Ask {agent} to play Chess(?) with {giver}",
         DIALOG_ASK = [[
             player:
-                [p] Wanna beat {giver} in a game?
+                [p] Wanna beat {giver} at Chess(?)?
             agent:
                 Why tho?
-            {not good_player?
-                I such at chess(?).
+            {good_player?
+                Why should I bother?
+                |
+                I'm bad.
             }
         ]],
-        DIALOG_ASK_SUCCESS = [[
+        OPT_CONVINCE = "Convince {agent} to play",
+        DIALOG_CONVINCE = [[
+            player:
+                [p] Okay, just bear with me for a sec.
+        ]],
+        DIALOG_CONVINCE_SUCCESS = [[
             agent:
                 [p] Good point.
                 I'll meet up with {giver} and play.
         ]],
-        DIALOG_ASK_FAILURE = [[
+        DIALOG_CONVINCE_FAILURE = [[
             agent:
                 [p] Nah, I don't think I will.
         ]],
@@ -208,16 +215,21 @@ QDEF:AddConvo("find_challenger")
         if who and not AgentUtil.HasPlotArmour(who) then
             local ELO = GetELO(who)
             cxt.enc.scratch.good_player = ELO >= GOOD_PLAYER_THRESHOLD
-            cxt:BasicNegotiation("ASK", {
-                situation_modifiers = (not cxt.enc.scratch.good_player) and
-                    {{value = 10, text = cxt:GetLocString("SIT_MOD")}}
-                    or nil,
-            })
-                :OnSuccess()
-                    :Fn(function(cxt)
-                        cxt.quest:AssignCastMember("challenger", who)
-                    end)
-                    :DoneConvo()
+            cxt:Opt("OPT_ASK")
+                :Dialog("DIALOG_ASK")
+                :LoopingFn(function(cxt)
+                    cxt:BasicNegotiation("CONVINCE", {
+                        situation_modifiers = (not cxt.enc.scratch.good_player) and
+                            {{value = 10, text = cxt:GetLocString("SIT_MOD")}}
+                            or nil,
+                    })
+                        :OnSuccess()
+                            :Fn(function(cxt)
+                                cxt.quest:AssignCastMember("challenger", who)
+                            end)
+                            :DoneConvo()
+                    StateGraphUtil.AddBackButton(cxt)
+                end)
         end
     end)
 QDEF:AddConvo("go_to_game")
@@ -412,15 +424,15 @@ QDEF:AddConvo("go_to_game")
                     :DoneConvo()
             else
                 cxt.quest:UnassignCastMember("challenger")
-                quest:Cancel("go_to_game")
-                quest:Activate("find_challenger")
+                cxt.quest:Cancel("go_to_game")
+                cxt.quest:Activate("find_challenger")
                 StateGraphUtil.AddEndOption(cxt)
             end
         end)
     :State("STATE_LOSE")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] The gae goes on, but clearly {giver} is no match for {challenger}.
+                * [p] The game goes on, but clearly {giver} is no match for {challenger}.
                 challenger:
                     !left
                     !happy
@@ -531,6 +543,8 @@ QDEF:AddConvo("go_to_game")
                 giver:
                     Guess I will have to do it myself!
             ]],
+
+            SIT_MOD = "{giver} doesn't like losing!",
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
@@ -573,6 +587,14 @@ QDEF:AddConvo("go_to_game")
                 -- For this negotiation, giver will gain a permanent argument that increases stacks when you play hostile cards.
                 -- It decreases stacks each turn or by playing diplomacy.
                 -- If it reaches a certain threshold, you insta-lose.
+                situation_modifiers =
+                {
+                    { value = 10, text = cxt:GetLocString("SIT_MOD") }
+                },
+
+                on_start_negotiation = function(minigame)
+                    minigame.opponent_negotiator:CreateModifier( "SHORT_TEMPERED" )
+                end,
             })
                 :OnSuccess()
                     :Fn(function(cxt)

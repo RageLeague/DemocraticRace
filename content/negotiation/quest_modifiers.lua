@@ -2160,28 +2160,34 @@ local MODIFIERS =
     SHORT_TEMPERED =
     {
         name = "Short Tempered",
-        desc = "Increase by 1 for every hostile card you play, reduce by 1 for every diplomacy card you play. If this reaches {1} stacks, the negotiation is lost",
-        max_stacks = 5,
-        modifier_type = MODIFIER_TYPE.ARGUMENT,
-        counter = 5,
+        desc = "Whenever one of {1}'s arguments takes damage from a card, increase the stacks of this by 1. " ..
+            "If this reaches {2} stacks, deal {3} damage to the opponent's core argument and reset the stacks to 1.\n\n" ..
+            "At the end of {1}'s turn, half the number of stacks on this, rounded up.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(self:GetOwnerName(), self.threshold, self.explode_damage)
+        end,
+
+        modifier_type = MODIFIER_TYPE.PERMANENT,
         icon = "negotiation/modifiers/heated.tex",
+
+        threshold = 10,
+        explode_damage = 15,
+
+        OnEndTurn = function( self, minigame )
+            self.negotiator:DeltaModifier(self, -Math.floor(self.stacks / 2))
+        end,
         event_handlers =
         {
-            [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
-                if card:GetNegotiator() ~= self.negotiator and self.negotiator:FindCoreArgument() then
-                    --if it's hostile, add a stack, otherwise, if it's diplomacy, remove a stack.
-                    if CheckBits( card.flags, CARD_FLAGS.HOSTILE ) then
-                        self.negotiator:AddModifier( self, 1 )
-                    end
-                    if CheckBits( card.flags, CARD_FLAGS.DIPLOMACY) and self.stacks > 1 then
-                        self.negotiator:RemoveModifier( self, 1 )
-                    end
-
-                    if self.stacks >= self.counter then
-                        minigame:Lose()
+            [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+                if target.negotiator == self.negotiator and is_instance( source, Negotiation.Card ) then
+                    self.negotiator:AddModifier( self, 1 )
+                    if self.stacks >= self.threshold then
+                        self.anti_negotiator:AttackResolve( self.explode_damage, self )
+                        self:SetStacks()
+                        self.negotiator:DeltaModifier(self, -self.stacks + 1)
                     end
                 end
-            end
+            end,
         },
     },
     ELDRITCH_EXISTENCE =
