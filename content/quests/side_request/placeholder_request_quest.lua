@@ -31,6 +31,11 @@ local QDEF = QuestDef.Define
             -- DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 2, "POOR_QUEST")
         end
     end,
+    events = {
+        base_difficulty_change = function(quest, new_diff, old_diff)
+            quest:SetRank(new_diff)
+        end,
+    },
 }
 
 :AddCast{
@@ -57,7 +62,7 @@ QDEF:AddIntro(
             I am just very lonely.
             So if you just talk to me. Cheer me up. I'll be happy.
     ]],
-    
+
     --on accept
     [[
         player:

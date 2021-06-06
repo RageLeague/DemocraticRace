@@ -720,7 +720,14 @@ QDEF:AddConvo("go_to_game")
                 }
         end)
 
-FOLLOW_UP = QDEF:AddFollowup()
+FOLLOW_UP = QDEF:AddFollowup({
+    events =
+    {
+        base_difficulty_change = function(quest, new_diff, old_diff)
+            quest:SetRank(new_diff)
+        end,
+    }
+})
 
 FOLLOW_UP:GetCast("challenger").unimportant = true
 -- FOLLOW_UP:GetCast("giver").provider = true

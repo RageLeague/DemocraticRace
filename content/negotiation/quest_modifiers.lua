@@ -2037,29 +2037,6 @@ local MODIFIERS =
             CreateNewSelfMod(self)
         end,
     },
-    RESTORE_RESOLVE_GOAL =
-    {
-        name = "Restore Resolve",
-        desc = "{1} is feeling down and lost. Restore their resolve to the starting resolve to win this negotiation!",
-        desc_fn = function(self, fmt_str)
-            return loc.format(fmt_str, self:GetOwnerName())
-        end,
-
-        modifier_type = MODIFIER_TYPE.PERMANENT,
-        max_stacks = 1,
-
-        event_handlers = {
-            [ EVENT.DELTA_RESOLVE ] = function( self, modifier, resolve, max_resolve, delta, source, params )
-                if modifier == (self.negotiator and self.negotiator:FindCoreArgument())
-                    and resolve >= (self.engine.start_params.enemy_resolve_required or MiniGame.GetPersuasionRequired( self.engine:GetDifficulty() )) then
-
-                    if not self.engine:CheckGameOver() then
-                        self.engine:Win()
-                    end
-                end
-            end,
-        },
-    },
     PESSIMIST =
     {
         name = "Pessimist",
