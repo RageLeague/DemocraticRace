@@ -29,8 +29,8 @@ local DEMANDS = {
             return loc.format(fmt_str, data and data.stacks or 0)
         end,
 
-        desc = "At the start of {1}'s turn, remove {2#percent} of stacks on this argument.\nWhen destroyed by the player, remove {3#money} from {1}'s demand.",
-        alt_desc = "At the start of {1}'s turn, remove {2#percent} of stacks on this argument.\nWhen destroyed by the player, remove shills equal to the number of stacks on this argument from {1}'s demand.",
+        desc = "At the start of {1}'s turn, remove {2#percent} of stacks on this argument.\nWhen destroyed by the player, remove {3#money} from {1}'s demand, then gain 1 {IMPATIENCE}.",
+        alt_desc = "At the start of {1}'s turn, remove {2#percent} of stacks on this argument.\nWhen destroyed by the player, remove shills equal to the number of stacks on this argument from {1}'s demand, then gain 1 {IMPATIENCE}.",
         desc_fn = function(self, fmt_str)
             local owner = Negotiation.Modifier.GetOwnerName(self)
             if self.stacks then
@@ -64,7 +64,7 @@ local DEMANDS = {
             end
 
         },
-        
+
         OnBounty = function( self, card )
             local demand_list = self.engine.demand_list
             local demand_data = self.demand_data
@@ -90,6 +90,7 @@ local DEMANDS = {
                 end
             end
             DemocracyUtil.CheckHeavyHanded(self, card, self.engine)
+            self.negotiator:AddModifier("IMPATIENCE", 1, self)
         end,
         GenerateDemand = function(self, pts, data) -- takes in pts for points allocated to this demand
             local rank = data and data.rank or TheGame:GetGameState():GetCurrentBaseDifficulty()
@@ -144,8 +145,8 @@ local DEMANDS = {
         name = "Demand Stance Taking",
         loc_strings = {
             TITLE_LOOSE = "take the stance favoring {1#pol_stance} on {2#pol_issue}",
-            DESC_FULL = "{2} will stop demanding you from taking this stance.",
-            DESC_PARTIAL = "{2} will <#HILITE>only require you to favor this stance instead</>.",
+            DESC_FULL = "{2} will stop demanding you from taking this stance and gain 1 {IMPATIENCE}.",
+            DESC_PARTIAL = "{2} will <#HILITE>only require you to favor this stance instead</> and gain 1 {IMPATIENCE}.",
 
             REMINDER_FULL = "<#HILITE>({1#pol_stance} on {2#pol_issue})</>",
             REMINDER_LOOSE = "<#HILITE>(Favoring {1#pol_stance} on {2#pol_issue})</>",
@@ -166,10 +167,10 @@ local DEMANDS = {
         desc = "This modifier will remove itself after {1} {1*turn|turns}.\nWhen destroyed by the player, ",
         -- alt_desc = "<#HILITE>({1#pol_stance} on {2#pol_issue})</>",
         desc_fn = function(self, fmt_str)
-            local rval = loc.format(fmt_str .. (self.def or self):GetLocalizedString((self.loose or self.stacks > 2) 
+            local rval = loc.format(fmt_str .. (self.def or self):GetLocalizedString((self.loose or self.stacks > 2)
                 and "DESC_FULL" or "DESC_PARTIAL"), self.stacks or 4, Negotiation.Modifier.GetOwnerName(self))
             if self.issue and self.stance then
-                rval = rval .. "\n" .. loc.format( (self.def or self):GetLocalizedString(self.loose and "REMINDER_LOOSE" or 
+                rval = rval .. "\n" .. loc.format( (self.def or self):GetLocalizedString(self.loose and "REMINDER_LOOSE" or
                     "REMINDER_FULL"), self.stance, self.issue )
             end
             return rval
@@ -201,9 +202,9 @@ local DEMANDS = {
             self:NotifyChanged()
         end,
         max_demand_use = 2,
-        
+
         OnBounty = function( self, card )
-            local full_remove = (self.loose or self.stacks > 2) 
+            local full_remove = (self.loose or self.stacks > 2)
             local demand_list = self.engine.demand_list
             local demand_data = self.demand_data
             if demand_list and demand_data then
@@ -225,8 +226,9 @@ local DEMANDS = {
                 end
             end
             DemocracyUtil.CheckHeavyHanded(self, card, self.engine)
+            self.negotiator:AddModifier("IMPATIENCE", 1, self)
         end,
-        
+
         GenerateDemand = function(self, pts, data) -- takes in pts for points allocated to this demand
             local rank = data and data.rank or TheGame:GetGameState():GetCurrentBaseDifficulty()
             local issue_id, stance = data.force_issue, data.force_stance
@@ -298,7 +300,7 @@ local DEMANDS = {
         name = "Demand Favor",
         title = "call for a favor",
 
-        desc = "This modifier will remove itself after {1} {1*turn|turns}.\nWhen destroyed by the player, {2} will stop demanding you from calling in a favor(reducing your relationship with them).",
+        desc = "This modifier will remove itself after {1} {1*turn|turns}.\nWhen destroyed by the player, {2} will stop demanding you from calling in a favor(reducing your relationship with them) and gain 1 {IMPATIENCE}.",
 
         desc_fn = function(self, fmt_str)
             local rval = loc.format(fmt_str, self.stacks or 4, Negotiation.Modifier.GetOwnerName(self))
@@ -329,7 +331,7 @@ local DEMANDS = {
         --     self:NotifyChanged()
         -- end,
         max_demand_use = 1,
-        
+
         OnBounty = function( self, card )
             local demand_list = self.engine.demand_list
             local demand_data = self.demand_data
@@ -347,8 +349,9 @@ local DEMANDS = {
                 end
             end
             DemocracyUtil.CheckHeavyHanded(self, card, self.engine)
+            self.negotiator:AddModifier("IMPATIENCE", 1, self)
         end,
-        
+
         GenerateDemand = function(self, pts, data) -- takes in pts for points allocated to this demand
             if not (data.agent and data.agent:GetRelationship() > RELATIONSHIP.NEUTRAL) then
                 print("Require friendly relationship")
@@ -380,13 +383,13 @@ local DEMANDS = {
     demand_drink = {
         name = "Demand Drink",
         icon = "DEMOCRATICRACE:assets/modifiers/demand_drink.png",
-        
+
         title = "drink with {agent} {1*once|{1} times}",
         title_fn = function(self, fmt_str, data)
             return loc.format(fmt_str, data.stacks or 0)
         end,
 
-        desc = "At the end of each turn, {1#percent} chance of removing 1 stack of this bounty. When destroyed by the player, {2} will reduce the number of drinks demanded by {3}.",
+        desc = "At the end of each turn, {1#percent} chance of removing 1 stack of this bounty. When destroyed by the player, {2} will reduce the number of drinks demanded by {3}, then gain 1 {IMPATIENCE}.",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.reduce_chance, Negotiation.Modifier.GetOwnerName(self), self.stacks or 1)
         end,
@@ -459,6 +462,7 @@ local DEMANDS = {
                 end
             end
             DemocracyUtil.CheckHeavyHanded(self, card, self.engine)
+            self.negotiator:AddModifier("IMPATIENCE", 1, self)
         end,
 
         GenerateDemand = function(self, pts, data) -- takes in pts for points allocated to this demand
@@ -468,7 +472,7 @@ local DEMANDS = {
             end
             local DRINK_VALUE = 50
             local count = 1
-            while math.random() < 0.6 do
+            while math.random() < 0.35 do
                 count = count + 1
             end
             count = math.min(math.floor(pts / DRINK_VALUE), count)
@@ -519,8 +523,8 @@ local DEMANDS = {
                             health_gain = 6,
                             resolve_gain = 10,
                         }
-                        TheGame:GetEvents():BroadcastEvent( "do_drink", drink_effects ) 
-                        
+                        TheGame:GetEvents():BroadcastEvent( "do_drink", drink_effects )
+
                         if drink_effects.resolve_gain and drink_effects.resolve_gain > 0 then
                             ConvoUtil.DoResolveDelta(cxt, drink_effects.resolve_gain)
                         end
@@ -534,7 +538,7 @@ local DEMANDS = {
 
                         AgentUtil.MakeDrunk( cxt:GetAgent() )
 
-                        TheGame:GetEvents():BroadcastEvent( "had_drink", drink_effects ) 
+                        TheGame:GetEvents():BroadcastEvent( "had_drink", drink_effects )
 
                         ProcessDrink(cxt, 2)
                     end)
@@ -563,7 +567,7 @@ local function GenerateDemands(pts, agent, rank, _params)
     if not _params then
         _params = {}
     end
-    local variance, additional_demands, forced_demands, blocked_demands = 
+    local variance, additional_demands, forced_demands, blocked_demands =
         _params.variance, _params.additional_demands,
         _params.forced_demands, _params.blocked_demands
     if _params.auto_scale then
@@ -573,7 +577,7 @@ local function GenerateDemands(pts, agent, rank, _params)
     local demand_uses = {}
     local demands = {}
     local params = {
-        rank = rank or TheGame:GetGameState():GetCurrentBaseDifficulty(), 
+        rank = rank or TheGame:GetGameState():GetCurrentBaseDifficulty(),
         agent = agent,
         used_issues = {},
         location = agent and agent:GetLocation() or TheGame:GetGameState():GetPlayerAgent():GetLocation(),
