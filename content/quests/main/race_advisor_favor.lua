@@ -21,6 +21,9 @@ local QDEF = QuestDef.Define
         if quest:GetCastMember("primary_advisor"):GetRelationship() ~= RELATIONSHIP.LIKED then
             return false, "Not liked"
         end
+        if DemocracyUtil.HasRequestQuest(quest:GetCastMember("primary_advisor")) then
+            return false, "Already has request"
+        end
         quest.param.request_quest = DemocracyUtil.SpawnRequestQuest(quest:GetCastMember("primary_advisor"))
         if not quest.param.request_quest then
             return false, "No request quest spawned"
@@ -28,7 +31,7 @@ local QDEF = QuestDef.Define
         return true
     end,
     events = {
-        agent_retired = function(quest, agent) 
+        agent_retired = function(quest, agent)
             if agent == quest:GetCastMember("primary_advisor") then
                 local replacement = QuestUtil.SpawnQuest( "RACE_DAY_3_NOON_GENERIC" )
                 if replacement then
@@ -40,7 +43,7 @@ local QDEF = QuestDef.Define
         end,
     },
     -- on_start = function(quest)
-        
+
     -- end,
 }
 :AddLocationCast{
@@ -48,7 +51,7 @@ local QDEF = QuestDef.Define
     cast_fn = function(quest, t)
         table.insert(t, TheGame:GetGameState():GetLocation("MURDERBAY_NOODLE_SHOP"))
     end,
-    
+
 }
 :AddObjective{
     id = "go_to_bar",
@@ -124,6 +127,6 @@ QDEF:AddConvo("go_to_bar")
                         cxt.quest:Complete()
                         StateGraphUtil.AddEndOption(cxt)
                     end)
-                    
+
                 end)
         end)
