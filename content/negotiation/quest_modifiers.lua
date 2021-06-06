@@ -2170,7 +2170,7 @@ local MODIFIERS =
     ELDRITCH_EXISTENCE =
     {
         name = "Eldritch Existence",
-        desc = "At the end of the player turn, for each card remaining in their hand, their core argument takes {1} damage.",
+        desc = "At the end of the player turn, for each card remaining in their hand, target argument takes {1} damage.",
 
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetDamageMultiplier())
@@ -2183,12 +2183,31 @@ local MODIFIERS =
         end,
 
         multiplier_scale = {1, 1, 1, 2},
+
+        target_enemy = TARGET_ANY_RESOLVE,
+        min_persuasion = 0,
+        max_persuasion = 0,
+
+        no_damage_tt = true,
+
+        UpdateAttack = function(self, minigame)
+            local damage = minigame:GetHandDeck():CountCards() * self:GetDamageMultiplier()
+            self.min_persuasion = damage
+            self.max_persuasion = damage
+            self:NotifyChanged()
+        end,
+
         event_handlers = {
+            [ EVENT.CARD_MOVED ] = function( self, card, source_deck, source_idx, target_deck, target_idx )
+                self:UpdateAttack(self.engine)
+            end,
             [ EVENT.END_PLAYER_TURN ] = function ( self, minigame )
                 print("triggered")
                 if self.anti_negotiator:IsPlayer() then
                     print("is player")
-                    self.anti_negotiator:AttackResolve(minigame:GetHandDeck():CountCards() * self:GetDamageMultiplier(), self)
+                    -- self.anti_negotiator:AttackResolve(minigame:GetHandDeck():CountCards() * self:GetDamageMultiplier(), self)
+                    self:UpdateAttack(minigame)
+                    self:ApplyPersuasion()
                 end
             end,
         },
