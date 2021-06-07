@@ -293,5 +293,7 @@ return {
         "LOSTPASSAGE",
         -- For rise of kashio
         "RISE", -- ffs, can you use a more unique alias?
+        -- Arint mod
+        "ARINTMOD",
     },
 }
