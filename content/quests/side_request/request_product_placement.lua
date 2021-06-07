@@ -132,41 +132,41 @@ QDEF:AddIntro(
     [[
         agent:
         {advisor_diplomacy?
-            I'm not just helping you for nothing you know?
+            Now that your political image is a bit larger than that of the wandering grifter, I got a job for you.
         player:
-            Of course I know. You kept a cut of our funding for yourself every day.
-            !angry
-            The money is supposed to be the funding for the campaign, you know? And you keep it to yourself.
-            !neutral
+            Is the job any bigger than what you've had me doing all this time?
         agent:
-            That's cringe of you to think that way.
-            No. The reason is that I want to use this campaign as an opportunity to sell some <b>S.T.O.N.K.S.</>.
+            Not really. What I need you to do is promote some <b>S.T.O.N.K.S.</>.
         player:
             !dubious
-            I'm sorry, what now?
+            Bless you?
         agent:
-            <b>S.T.O.N.K.S.</>.
-            It stands for "Synthetic Transform of Neural-Kinesis System".
+            That's the name of the product. <b>S.T.O.N.K.S.</>.
+            It stands for "Synthetic Transform Of Neural-Kinesis System".
             (IDFK, haven't figured out the acronym yet)
         player:
-            Sure, why not?
-            You want me to advertise it to the people during my campaign?
+            That's a very...odd naming convention.
         agent:
-            If you can, then sure, go ahead.
+            But snappy, yes? Really rolls off the tounge, like the word "based" or "cringe".
+            <b>S.T.O.N.K.S.</>.
+        player:
+            So do you want me to advertise it to the people during my campaign?
+        agent:
+            If you find the time, then yes.
         }
         {not advisor_diplomacy?
-            I'm trying to run a side business.
-            Selling some product, that's all.
+            I have an idea for a side business, but the word isn't exactly out there about it.
         player:
-            Okay...? What does that have to do with me?
+            So what does that have to do with me? I'm your politician, not the door-to-door.
         agent:
-            You see... I don't got many business.
-            I'm thinking... Maybe you can help me sell it.
+            Oh you don't need to make it a big deal.
+            Just...y'know. Talk about it a little. Spark a little interest.
         player:
-            I'm a politician, not a salesman.
+            !question
+            In a completely normal conversation.
         agent:
-            Oh, no. You don't need to do it separately.
-            You just need to insert the product into your normal conversations, that's all.
+            !hips
+            You're a smart lumicyte. I'm sure you can figure out a good segue into my line of products.
         }
     ]],
     
@@ -175,7 +175,13 @@ QDEF:AddIntro(
         player:
             Eh, sure, why not.
         agent:
-            Great! When you negotiate with someone, be sure to let them know my product!
+            Great! Just remember to name drop it like you're a Banquod!
+        {player_smith?
+        player:
+            But I am a Banquod.
+        agent:
+            well then you're already halfway there. Don't stop now!
+        }
     ]])
 QDEF:AddConvo("sell", "giver")
     :Priority(CONVO_PRIORITY_LOWEST)
@@ -572,14 +578,26 @@ QDEF:AddConvo("tell_giver")
             ]],
             
             DIALOG_INTRO_SELL_ALL = [[
-                * You are greeted by {agent}, who looks very angry.
+                * In an almost harmonic fashion, the click of the door as you enter syncs up spectacularly with the angry stomping down the hallway from {agent}.
                 player:
                     !left
                 agent:
                     !right
                     !angry
-                    [p] I was informed that some Heshian now owns ALL of my shares!
-                    What the Hell?
+                    $angryseething
+                    You no-good scoundrel!
+                player:
+                    !dubious
+                    No-good scoundrel? Sure you can't be a little more creative?
+                agent:
+                    No, {player}, I can't be a little more creative for <i>your</> sake.
+                    I've been too busy fuming about the fact that a damned heshie owns my entire vagrant age product line!
+                player:
+                    !taken_aback
+                    Vagrant age?!
+                agent:
+                    !angrypoint
+                    Grab your damn things, and get out of my damn office!
                 * Then {agent} rants, {agent} hates you, blah blah blah.
             ]],
         }
@@ -617,22 +635,42 @@ QDEF:AddConvo("tell_giver")
             OPT_EXPLAIN = "Explain yourself",
 
             DIALOG_EXPLAIN = [[
-                * [p] You explain how selling the shares is for the greater good.
+                player:
+                    I understand that trying to change the world is a big deal. I'm trying to change it as well.
+                    !question
+                    But tell me, {agent}. What makes that world we're trying to change spin?
             ]],
             DIALOG_EXPLAIN_SUCCESS = [[
-                * [p] {agent} sees it now, and is not mad anymore.
+                player:
+                    So you see, if you just take that money we got from selling the shares and invest it into a new, hip product line.
+                    Well, the world'll unravel at the seams at your touch. Change it how you like.
                 {not majority_share?
-                    * Then {agent} says {agent.heshe}'s grateful, blah.
+                 agent:
+                    I suppose so. I do have a few other projects that I could tinker with.
+                    Just don't pull this same kind of stunt on any of your political allies, and i'll let this one slide.
                 }
                 {majority_share?
-                    * Then {agent} says you did good, but not great.
+                 agent:
+                    !question
+                    I suppose that is a lot of money this pulled in from selling just the shares.
+                    But the product would've made more. I'm sure of it.
+                    !angrypoint
+                    You come to me next time you try to pull this same kind of stunt, understand?
                 }
             ]],
             DIALOG_EXPLAIN_FAILURE = [[
-                * [p] You fail to convince {agent}.
-                * Now {agent}'s pissed at you.
-                * Oof.
-            ]],
+                player:
+                    Just look at all the money you have now!
+                agent:
+                    You mean money <i>you </>have now.
+                    Money that I didn't get a say in how you obtained.
+                player:
+                    Because you take half the campaign funding from me and put it in your own pockets!
+                agent:
+                    That doesn't mean you get to shoot my hopes and dreams in the foot!
+                    !angrypoint
+                    Look, you better work like a vroc once you get in office to make up for this.
+            ]], 
 
             SIT_MOD = "Angry at you selling a majority share to someone they don't like",
 
