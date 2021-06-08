@@ -2,7 +2,7 @@
 --     [DemocracyConstants.opposition_data.candidate_admiralty.character] = "admiralty",
 --     [DemocracyConstants.opposition_data.candidate_rise.character] = "rise",
 --     [DemocracyConstants.opposition_data.candidate_baron.character] = "baron",
-    
+
 -- }
 local available_opposition = {}
 for i, data in pairs(DemocracyConstants.opposition_data) do
@@ -18,8 +18,8 @@ local QDEF = QuestDef.Define
 
     qtype = QTYPE.STORY,
     collect_agent_locations = function(quest, t)
-        table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.VISITOR})
-        table.insert(t, { agent = quest:GetCastMember("opposition"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.VISITOR})
+        table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('home'))
+        table.insert(t, { agent = quest:GetCastMember("opposition"), location = quest:GetCastMember('home'), role = CHARACTER_ROLES.VISITOR})
     end,
     on_complete = function(quest)
         if quest:GetCastMember("primary_advisor") then
@@ -27,27 +27,8 @@ local QDEF = QuestDef.Define
         end
     end,
     -- on_start = function(quest)
-        
-    -- end,
-}
-:AddLocationCast{
-    cast_id = "noodle_shop",
-    cast_fn = function(quest, t)
-        table.insert(t, TheGame:GetGameState():GetLocation("MURDERBAY_NOODLE_SHOP"))
-    end,
-    
-}
-:AddObjective{
-    id = "go_to_bar",
-    title = "Visit the noodle Shop",
-    desc = "Visit the noodle shop and talk to your advisor about the upcoming plan.",
-    mark = {"noodle_shop"},
-    state = QSTATUS.ACTIVE,
 
-    on_complete = function(quest)
-        quest:Activate("discuss_plan")
-        quest:Activate("meet_opposition")
-    end,
+    -- end,
 }
 :AddObjective{
     id = "discuss_plan",
@@ -57,7 +38,8 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "meet_opposition",
     title = "Acquaint with {opposition}",
-    mark = {"opposition"}
+    mark = {"opposition"},
+    state = QSTATUS.ACTIVE,
 }
 :AddCastByAlias{
     cast_id = "opposition",
@@ -92,100 +74,49 @@ local QDEF = QuestDef.Define
     end,
 }
 DemocracyUtil.AddPrimaryAdvisor(QDEF)
+DemocracyUtil.AddHomeCasts(QDEF)
 
-QDEF:AddConvo("go_to_bar")
-    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("noodle_shop") end)
-        :Loc{
-            DIALOG_INTRO = [[
-                * You arrive at the noodle shop.
-                player:
-                    !left
-                primary_advisor:
-                    !right
-                    The interview isn't the only thing I set up last night.
-                    I set up a meet and greet with another one of the candidates in the Race.
-                    You'd do well to gather some intel from them.
-                * {opposition} walks up to you and extends a hand.
-                opposition:
-                    !right
-                    Hello there. My name is {opposition}. You may have heard of me already down the grapevine.
-                player:
-                    {player}. Charmed to meet you, {opposition.sirma'am}.
-                opposition:
-                    !happy
-                    Respectful to their future leader? I like that in a loser.
-                primary_advisor:
-                    !right
-                    Don't pay them any mind. With luck, they'll fall off the weighside when the pressure mounts.
-                player:
-                    So why am I gathering intel on a loser, then?
-                primary_advisor:
-                    Well, I said with luck.
-                    You're not the only one in the election. Neither are they your only opposition.
-                    There's many candidates out there, vying for presidency over Havaria.
-                    You'll have to deal with the tug and pull of supporters with these guys.
-                    I'll clam up. Go ingratiate yourself to them, see if they'll spill any beans.
-            ]],
-        }
-        :Fn(function(cxt)
-            cxt.quest:Complete("go_to_bar")
-            cxt:Dialog("DIALOG_INTRO")
-            DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 3)
-        end)
+-- QDEF:AddConvo("go_to_bar")
+--     :ConfrontState("STATE_CONFRONT", function(cxt) return cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("noodle_shop") end)
+--         :Loc{
+--             DIALOG_INTRO = [[
+--                 * You arrive at the noodle shop.
+--                 player:
+--                     !left
+--                 primary_advisor:
+--                     !right
+--                     The interview isn't the only thing I set up last night.
+--                     I set up a meet and greet with another one of the candidates in the Race.
+--                     You'd do well to gather some intel from them.
+--                 * {opposition} walks up to you and extends a hand.
+--                 opposition:
+--                     !right
+--                     Hello there. My name is {opposition}. You may have heard of me already down the grapevine.
+--                 player:
+--                     {player}. Charmed to meet you, {opposition.sirma'am}.
+--                 opposition:
+--                     !happy
+--                     Respectful to their future leader? I like that in a loser.
+--                 primary_advisor:
+--                     !right
+--                     Don't pay them any mind. With luck, they'll fall off the weighside when the pressure mounts.
+--                 player:
+--                     So why am I gathering intel on a loser, then?
+--                 primary_advisor:
+--                     Well, I said with luck.
+--                     You're not the only one in the election. Neither are they your only opposition.
+--                     There's many candidates out there, vying for presidency over Havaria.
+--                     You'll have to deal with the tug and pull of supporters with these guys.
+--                     I'll clam up. Go ingratiate yourself to them, see if they'll spill any beans.
+--             ]],
+--         }
+--         :Fn(function(cxt)
+--             cxt.quest:Complete("go_to_bar")
+--             cxt:Dialog("DIALOG_INTRO")
+--             DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 3)
+--         end)
 QDEF:AddConvo("meet_opposition", "opposition")
     :Loc{
-        OPT_GREET = "Greet {agent}",
-        DIALOG_GREET = [[
-            player:
-                So I believe we should introduce ourselves a scoche bit better.
-                If you're going to win, surely you've nothing to hide from your opponents.
-            agent:
-                Nothing I couldn't tell you about me that the public doesn't already.
-                Ask away.
-            player:
-                What's your goal in this democratic race? What drives you forward?
-            agent:
-                I'm glad you asked.
-            * {agent} clears {agent.hisher} throat loudly.
-                %opposition_intro idea_monologue {opposition_id}
-            player:
-                I must say, i'm stunned by your rhetoric.
-            agent:
-                I bet you are!
-                What say you? Are you persuaded by my speech?
-        ]],
-        OPT_AGREE = "Agree",
-        DIALOG_AGREE = [[
-            player:
-                Believe me, friend. I'm a firm believer in your ideology.
-            agent:
-                Ah-ha, my dear {player}. We needn't fight at all in this race.
-            player:
-                Now, Now, I still disagree with you on a number of things.
-                You're still going to lose in this Democratic Race!
-            agent:
-                Hark! Well, when you falter, know your voters will join me in the end.
-        ]],
-        OPT_DISAGREE = "Disagree",
-        DIALOG_DISAGREE = [[
-            player:
-                I can't say I do.
-            agent:
-                A shame. We could've been great allies.
-            player:
-                But aren't we political opponents, though?
-            agent:
-                Yeah, you're right.
-                Well, good luck with your campaign, because I'll beat you.
-        ]],
-        OPT_IGNORE = "Remain silent on this issue",
-        DIALOG_IGNORE = [[
-            player:
-                I don't want to make any statement regarding this issue.
-            agent:
-                Oh well.
-                Just be warned. You can't deflect the issue forever. Especially on these important issues.
-        ]],
         DIALOG_GREET_PST = [[
             agent:
                 Anyway, nice to meet you.
@@ -197,77 +128,102 @@ QDEF:AddConvo("meet_opposition", "opposition")
         ]],
     }
     :Hub(function(cxt)
-        -- local opposition_data = DemocracyConstants.opposition_data[cxt.quest.param.opposition_id]
-        -- if opposition_data and opposition_data.platform then
-        --     cxt.quest.param.oppo_issue = DemocracyConstants.issue_data[opposition_data.platform]
-        --     if cxt.quest.param.oppo_issue then
-        --         local stances = opposition_data.stances[opposition_data.platform]
-        --         cxt.quest.param.oppo_stance = cxt.quest.param.oppo_issue.stances[stances]
-        --         cxt.quest.param.stance_index = stances
-        --     end
-        -- end
-        if not cxt.quest.param.greeted then
-            cxt:Opt("OPT_GREET")
-                :Fn(function(cxt)
-                    
-                end)
-                :Dialog("DIALOG_GREET")
-                :Fn(function(cxt)
-                    -- local opposition_data = DemocracyConstants.opposition_data[cxt.quest.param.opposition_id]
-                    -- local platform = opposition_data.platform
-                    -- local platform_stance
-                    -- if platform then
-                    --     platform_stance = opposition_data.stances[platform]
-                    -- end
-                    cxt:Opt("OPT_AGREE")
-                        :Dialog("DIALOG_AGREE")
-                        :UpdatePoliticalStance(cxt.quest.param.oppo_issue, cxt.quest.param.stance_index)
-                        :Fn(function(cxt)
-                            -- DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport",
-                            --     opposition_data.faction_support, 1)
-                            -- DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport",
-                            --     opposition_data.wealth_support, 1)
-                            -- if platform and platform_stance then
-                            --     DemocracyUtil.TryMainQuestFn("UpdateStance", platform, platform_stance)
-                            -- end
-                            cxt.quest.param.greeted = true
-                            cxt.quest.param.agreed = true
-                            cxt:Dialog("DIALOG_GREET_PST")
-                        end)
-                    cxt:Opt("OPT_DISAGREE")
-                        :Dialog("DIALOG_DISAGREE")
-                        :UpdatePoliticalStance(cxt.quest.param.oppo_issue, -cxt.quest.param.stance_index)
-                        :Fn(function(cxt)
-                            -- DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport",
-                            --     opposition_data.faction_support, -1)
-                            -- DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport",
-                            --     opposition_data.wealth_support, -1)
-                            -- if platform and platform_stance then
-                            --     DemocracyUtil.TryMainQuestFn("UpdateStance", )
-                            -- end
-                            cxt.quest.param.greeted = true
-                            cxt.quest.param.disagreed = true
-                            cxt:Dialog("DIALOG_GREET_PST")
-                        end)
-                    cxt:Opt("OPT_IGNORE")
-                        :Dialog("DIALOG_IGNORE")
-                        :Fn(function(cxt)
-                            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport",
-                                -1)
-                            cxt.quest.param.greeted = true
-                            cxt:Dialog("DIALOG_GREET_PST")
-                        end)
-                end)
-        
-        else
-            cxt:Opt("OPT_ASK_ABOUT")
-                :IsHubOption(true)
-                :Dialog("DIALOG_QUESTION")
-                :GoTo("STATE_QUESTIONS")
-        end
+        cxt:Opt("OPT_ASK_ABOUT")
+            :IsHubOption(true)
+            :Dialog("DIALOG_QUESTION")
+            :GoTo("STATE_QUESTIONS")
     end)
-    --
-    :AskAboutHubConditions("STATE_QUESTIONS", 
+    :AttractState("STATE_ATTRACT", function(cxt) return not cxt.quest.param.greeted end)
+        :Loc{
+            DIALOG_GREET = [[
+                * You walk up to {agent}.
+                * {agent} extends a hand to greet you.
+                agent:
+                    !right
+                    Hello there. My name is {agent}. You may have heard of me already down the grapevine.
+                player:
+                    {player}. Charmed to meet you, {agent.honorific}.
+                    So I believe we should introduce ourselves a scoche bit better.
+                    If you're going to win, surely you've nothing to hide from your opponents.
+                agent:
+                    Nothing I couldn't tell you about me that the public doesn't already.
+                    Ask away.
+                player:
+                    What's your goal in the race? What drives you forward?
+                agent:
+                    I'm glad you asked.
+                * {agent} clears {agent.hisher} throat loudly.
+                    %opposition_intro idea_monologue {opposition_id}
+                player:
+                    I must say, i'm stunned by your rhetoric.
+                agent:
+                    I bet you are!
+                    What say you? Are you persuaded by my speech?
+            ]],
+            OPT_AGREE = "Agree",
+            DIALOG_AGREE = [[
+                player:
+                    Believe me, friend. I'm a firm believer in your ideology.
+                agent:
+                    Ah-ha, my dear {player}. We needn't fight at all in this race.
+                player:
+                    Now, Now, I still disagree with you on a number of things.
+                    You're still going to lose in this Democratic Race!
+                agent:
+                    Hark! Well, when you falter, know your voters will join me in the end.
+            ]],
+            OPT_DISAGREE = "Disagree",
+            DIALOG_DISAGREE = [[
+                player:
+                    I can't say I do.
+                agent:
+                    A shame. We could've been great allies.
+                player:
+                    But aren't we political opponents, though?
+                agent:
+                    Yeah, you're right.
+                    Well, good luck with your campaign, because I'll beat you.
+            ]],
+            OPT_IGNORE = "Remain silent on this issue",
+            DIALOG_IGNORE = [[
+                player:
+                    I don't want to make any statement regarding this issue.
+                agent:
+                    Oh well.
+                    Just be warned. You can't deflect the issue forever. Especially on these important issues.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_GREET")
+            cxt:Opt("OPT_AGREE")
+                :Dialog("DIALOG_AGREE")
+                :UpdatePoliticalStance(cxt.quest.param.oppo_issue, cxt.quest.param.stance_index)
+                :Fn(function(cxt)
+                    cxt.quest.param.greeted = true
+                    cxt.quest.param.agreed = true
+                    cxt:Dialog("DIALOG_GREET_PST")
+                    cxt.quest:Activate("discuss_plan")
+                end)
+            cxt:Opt("OPT_DISAGREE")
+                :Dialog("DIALOG_DISAGREE")
+                :UpdatePoliticalStance(cxt.quest.param.oppo_issue, -cxt.quest.param.stance_index)
+                :Fn(function(cxt)
+                    cxt.quest.param.greeted = true
+                    cxt.quest.param.disagreed = true
+                    cxt:Dialog("DIALOG_GREET_PST")
+                    cxt.quest:Activate("discuss_plan")
+                end)
+            cxt:Opt("OPT_IGNORE")
+                :Dialog("DIALOG_IGNORE")
+                :Fn(function(cxt)
+                    DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport",
+                        -1)
+                    cxt.quest.param.greeted = true
+                    cxt:Dialog("DIALOG_GREET_PST")
+                    cxt.quest:Activate("discuss_plan")
+                end)
+        end)
+    :AskAboutHubConditions("STATE_QUESTIONS",
     {
         ---------------------------------------
         -- Each question is represented by 4 arguments in this table.
@@ -277,7 +233,7 @@ QDEF:AddConvo("meet_opposition", "opposition")
         -- 4th arg: Any post-processing function that happens.
         -- Note: The last item should always be non-null, even if it's an empty function
         ---------------------------------------
-        
+
         nil,
         "Ask about {agent}'s goal",
         [[
@@ -363,15 +319,30 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         OPT_DONE_QUEST = "Finish Up",
         DIALOG_DONE_QUEST = [[
             player:
-                [p] i'm done with intel gathering.
+                [p] I'm done with intel gathering.
             agent:
-                good
-                remember, there's still an interview coming up.
-                you need to prepare for it.
-                Go back to my office when you're ready to start working.
-                
+                Time for you to do some work.
+            player:
+                The world seems a bit dangerous for me now.
+            agent:
+                I guess you're pretty shaken from the yesterday's assassination, huh?
+                If you want to feel safer, hire a bodyguard or something.
         ]],
     }
+    :Hub(function(cxt)
+        cxt:Opt("OPT_ASK_ABOUT")
+            :IsHubOption(true)
+            -- :Dialog("DIALOG_QUESTION")
+            :GoTo("STATE_QUESTIONS")
+        cxt:Opt("OPT_DONE_QUEST")
+            :SetQuestMark( cxt.quest )
+            :Dialog("DIALOG_DONE_QUEST")
+            :Fn(function(cxt)
+                QuestUtil.SpawnQuest("CAMPAIGN_BODYGUARD")
+            end)
+            :CompleteQuest()
+            :DoneConvo()
+    end)
     :AttractState("STATE_ATTRACT", function(cxt) return not cxt.quest.param.talked_to_advisor end)
         :Loc{
             DIALOG_INTRO = [[
@@ -419,18 +390,8 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             end
             cxt.quest.param.talked_to_advisor = true
         end)
-    :Hub(function(cxt)
-        cxt:Opt("OPT_ASK_ABOUT")
-            :IsHubOption(true)
-            -- :Dialog("DIALOG_QUESTION")
-            :GoTo("STATE_QUESTIONS")
-        cxt:Opt("OPT_DONE_QUEST")
-            :SetQuestMark( cxt.quest )
-            :Dialog("DIALOG_DONE_QUEST")
-            :CompleteQuest()
-            :DoneConvo()
-    end)
-    :AskAboutHubConditions("STATE_QUESTIONS", 
+
+    :AskAboutHubConditions("STATE_QUESTIONS",
     {
         nil,
         "Ask about opposition",
@@ -463,7 +424,7 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 That sounds like a much better plan.
         ]],
         nil,
-        
+
         nil,
         "Ask about candidates...",
         [[
@@ -615,7 +576,6 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 His supporters are probably those who believe in the holiness of those artifacts.
                 But you know how it is in Havaria. Some heathens probably wants to sell them for profits.
             }
-                
         ]],
         nil,
         nil,
