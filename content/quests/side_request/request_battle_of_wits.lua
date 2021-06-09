@@ -170,15 +170,21 @@ QDEF:AddIntro(
     --attract spiel
     [[
         agent:
-            [p] Nobody knows more than me.
-            To prove this, find someone who can beat me at Chess(?).
-            You can't, but please try.
+		Do you know how to win 5 points in an opening gambit with just a single coin flip?
+	* You open your mouth to tell him that's an illegal move, but your stopped expression is all {giver} needs to continue.
+	agent:
+		Of course you don't! Because no one's better at the game than I.
+		To prove it, run along and find me a good player when you find the time.
     ]],
-
+	--Wumpus;I think the game was not so much chess as more...coin flip poker.
+	--Every card that mentions it just makes the joke that the game is confusing and that's how Rook befuddles his opponents 
     --on accept
     [[
         player:
-            [p] A weird request, but okay...?
+            	How am I supposed to find someone good at Chess(?)
+	agent:
+		!hips
+		Well, you're a talkative sort. I'm sure you'll find someone if you just bustle up and ask.
     ]])
 
 QDEF:AddConvo("find_challenger")
@@ -186,7 +192,9 @@ QDEF:AddConvo("find_challenger")
         OPT_ASK = "Ask {agent} to play Chess(?) with {giver}",
         DIALOG_ASK = [[
             player:
-                [p] Wanna beat {giver} at Chess(?)?
+                I've got a sucker, {giver}, just ready to give up his shills to whoever plays him. Want in?
+		|
+		You play Chess(?). I've got someone who wants to play, if you're interested.
             agent:
                 Why tho?
             {good_player?
@@ -279,31 +287,45 @@ QDEF:AddConvo("go_to_game")
     end)
         :Loc{
             DIALOG_INTRO = [[
-                player:
-                    !left
-                giver:
-                    !right
-                    [p] Perfect timing!
-                    You are just in time for the big show!
-                challenger:
-                    !left
-                giver:
-                    So you are the challenger, hmm?
+                * The room fills with a tense silence as {challenger} and {giver} sit down at the table.
+		player:
+		!left
+		giver:
+		!right
+		Ah, {player}. You've got some mighty fine timing.
                 {good_player?
-                    Let's see what you got!
-                challenger:
-                    I'm not pulling any punches!
+                I need you to stand watch and
+		!crossed
+		Make sure {challenger} isn't up to any shenanigans.
+		challenger:
+		!left
+		!angrypoint
+		Shenanigans? Are you implying I'm a cheat?
+		giver:
+		!placate
+		Not a cheat, per se. Just...in the spirit of fairness, yes?
+		challenger:
+		!crossed
+		Alright. Then how about {player} makes sure you aren't up to anything underhanded.
+		giver:
+		{player.heshe} will see to it that no funny business occurs.
+		From <i>either </> of us.
                 }
                 {not good_player?
-                    Really, {player}?
-                    Who do you think I am? Pairing me with this guy who is clearly bad at chess(?).
-                challenger:
-                    Well, this guy is going to kick your royal arse.
+                I need you to explain why you brought this simpleton to the board.
+		challenger:
+		!left
+		Hey! I at least know how to play!
+		giver:
+		A child knows how to play as well. An adult knows how to win.
+		I, of course, belong to neither of those brackets.
+		!hips
+		<i>I </> dominate this game.
+		challenger:
+		!fight
+		Oh it's on!
                 }
-                player:
-                    !left
-                giver:
-                    Anyway, leave it to us.
+                * You seat yourself across from the table, just as the first few moves are made, calculated, and occasionally blundered.
             ]],
             OPT_OBSERVE = "Observe the game",
         }
@@ -324,18 +346,27 @@ QDEF:AddConvo("go_to_game")
     :State("STATE_WIN")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] The game goes on, but clearly {challenger} is no match for {giver}.
+                * The game slouches on, and your crude understanding of the rules, along with just eyeing {challenger.hisher} wallet tells you that {challenger.heshe}'s losing desparately
                 challenger:
-                    !left
-                    !injured
+		    !left
+                    I double the ante.
                 giver:
-                    !right
-                    !happy
-                    Haha! You are no match for me!
-                challenger:
-                    NoooOOOOOO!
-                    !exit
-                * {challenger} runs away in shame.
+		    !right
+		    Triple. You have to go all in.
+		challenger:
+		    !scared
+		    Wait, what?!
+		giver:
+		    !coinflip
+		* A coin flips through the air, and {challenger} looks at with fear one can only muster when knee deep into a game.
+                giver:
+		    I win.
+		challenger:
+		    !angrypoint
+		    Wait, woah! I know you fudged the scoring bracket somewhere along the lines
+		giver:
+		    !hips		
+		    You can hand-inspect it, if you'd like. I made no such adjustments.
                 player:
                     !left
                 giver:
@@ -432,23 +463,32 @@ QDEF:AddConvo("go_to_game")
     :State("STATE_LOSE")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] The game goes on, but clearly {giver} is no match for {challenger}.
+                * The game drones on, but just when your eyes start to flap shut from boredom, you hear quite possibly the loudest stack of shills hit the table.
                 challenger:
-                    !left
-                    !happy
-                giver:
-                    !right
-                    !scared
-                    How could I, the great {giver}, loses?
+		   !left
+		giver:
+		   !right
+		   !angry
+		   All in.
+		challenger:
+		   Your loss. 
+                   !coinflip
+	        * In a matter of seconds after the coin lands on the table, a bellow of anger erupts from {giver}.
                 challenger:
-                    Idk, how about you tone down your ego a bit.
-                giver:
-                    If I am not the best...
-                    I'll make sure anyone who's better than me die!
-                    {player}! Take care of {challenger.himher}.
-                challenger:
-                    WTF?
-            ]],
+                   Hey, hey! I win the whole kit!
+		* {giver} steams with anger, but quickly {giver.heshe} regains some composure as {giver.heshe} sits straighter in {giver.hisher} chair.
+		giver:
+		   Well, it seems I have been outsmarted...
+		   !angrypoint
+		   By a cheater!
+		challenger:
+		   Woah, you lost and you know it.
+		giver:
+		   Silence, lesser player. You should have lost, fair and square, it is only natural to assume you are a cheat.
+		   {player}. Please, <i> escort </> {challenger} away from the table.
+		   !angry
+		   Forcefully, I must mandate.
+            ]],        
 
             OPT_ATTACK = "Attack {challenger}, as requested",
 
@@ -458,17 +498,18 @@ QDEF:AddConvo("go_to_game")
                     !scared
                 player:
                     !left
-                    [p] Nothing personnel, kid.
+                    Finally, some normal grifter work.
             ]],
 
             DIALOG_ATTACK_WIN = [[
                 {dead?
-                    player:
-                        !left
-                    giver:
-                        !right
-                        [p] Well, {challenger.heshe}'s dead.
-                        Thanks.
+                * {giver} gives one last mean spirited kick to the stomach of {challenger}'s body before facing you.
+		    giver:
+			Well, that was certainly vindicating.
+		    player:
+			For you, maybe.
+		    giver:
+			Well, regardless of how you feel, I am indebted for your aid in the test of my mental faculties against others.
                 }
                 {not dead?
                     player:
