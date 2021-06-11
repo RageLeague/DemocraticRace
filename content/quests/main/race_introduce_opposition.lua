@@ -18,7 +18,7 @@ local QDEF = QuestDef.Define
 
     qtype = QTYPE.STORY,
     collect_agent_locations = function(quest, t)
-        table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('home'))
+        table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('home')})
         table.insert(t, { agent = quest:GetCastMember("opposition"), location = quest:GetCastMember('home'), role = CHARACTER_ROLES.VISITOR})
     end,
     on_complete = function(quest)
