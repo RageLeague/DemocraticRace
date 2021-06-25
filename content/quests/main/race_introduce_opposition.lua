@@ -29,6 +29,11 @@ local QDEF = QuestDef.Define
     -- on_start = function(quest)
 
     -- end,
+    on_post_load = function(quest)
+        if quest:IsInactive("meet_opposition") then
+            quest:Activate("meet_opposition")
+        end
+    end,
 }
 :AddObjective{
     id = "discuss_plan",
