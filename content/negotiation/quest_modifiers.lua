@@ -1101,6 +1101,7 @@ local MODIFIERS =
     NARCISSISM = {
         name = "Narcissism",
         desc = "At the start of {1}'s turn, create {2:a|{2} separate} {PRIDE} {2*argument|arguments}.",
+        icon = "DEMOCRATICRACE:assets/modifiers/narcissism.png",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName(), self:GetPrideCount(self.engine and self.engine:GetDifficulty() or 1))
         end,
@@ -1128,6 +1129,7 @@ local MODIFIERS =
         name = "Pride",
         -- Having it heal while having 6 resolve is a bit too much, I think.
         desc = "At the start of {1}'s turn, apply {2} {COMPOSURE} to {1}'s core argument.",
+        icon = "DEMOCRATICRACE:assets/modifiers/pride.png",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName(), self.composure_gain)
         end,
@@ -1145,6 +1147,7 @@ local MODIFIERS =
     FRAGILE_EGO = {
         name = "Fragile Ego",
         desc = "Remove all {PRIDE}s and incept that much {VULNERABILITY} when destroyed.",
+        icon = "DEMOCRATICRACE:assets/modifiers/fragile_ego.png",
         modifier_type = MODIFIER_TYPE.BOUNTY,
         max_stacks = 1,
         max_resolve = 4,
