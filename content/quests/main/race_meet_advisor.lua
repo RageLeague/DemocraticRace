@@ -2,7 +2,7 @@ local OPPO_COUNT = 1
 local ADVISOR_ID = {
     "advisor_diplomacy", "advisor_hostile", "advisor_manipulate"
 }
-local CleanUpFn = function(quest) 
+local CleanUpFn = function(quest)
     if quest:GetCastMember("primary_advisor"):IsInPlayerParty() then
         quest:GetCastMember("primary_advisor"):Dismiss()
     end
@@ -16,7 +16,7 @@ local QDEF = QuestDef.Define
     qtype = QTYPE.STORY,
 
     -- on_start = function(quest)
-        
+
     -- end,
     collect_agent_locations = function(quest, t)
         if quest:IsActive("go_to_bar") or quest:IsActive("choose_advisor") then
@@ -38,7 +38,7 @@ local QDEF = QuestDef.Define
     desc = "It's noon. Time to go to your favorite noodle shop!",
     mark = {"noodle_shop"},
     state = QSTATUS.ACTIVE,
-    
+
 }
 :AddObjective{
     id = "choose_advisor",
@@ -112,7 +112,7 @@ local function GetAdvisorFn(advisor_id)
                 DemocracyUtil.UpdateAdvisor(cxt:GetAgent(), "NEW_ADVISOR")
                 -- TheGame:GetGameState():GetMainQuest():AssignCastMember("primary_advisor", cxt:GetAgent())
                 cxt.quest:AssignCastMember("primary_advisor", cxt:GetAgent())
-                
+
                 for i, val in ipairs(not_chosen_advisor) do
                     cxt:Quip(
                         cxt.quest:GetCastMember(val),
@@ -128,6 +128,7 @@ local function GetAdvisorFn(advisor_id)
                 cxt:Dialog("DIALOG_PICK_PST")
                 cxt.quest:Complete("choose_advisor")
                 cxt.quest:Activate("discuss_plan")
+                StateGraphUtil.AddEndOption(cxt)
             end)
         cxt:Opt("OPT_LATER")
             :PreIcon(global_images.reject)
@@ -222,6 +223,7 @@ QDEF:AddConvo("go_to_bar")
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Complete("go_to_bar")
             cxt.quest:Activate("choose_advisor")
+            StateGraphUtil.AddEndOption(cxt)
         end)
 QDEF:AddConvo("choose_advisor", "advisor_diplomacy")
     :AttractState("STATE_TALK")
@@ -296,7 +298,7 @@ QDEF:AddConvo("choose_advisor", "advisor_hostile")
                     And you win by default.
                 ** {agent} will provide more hostile cards in {agent.hisher} card shop, is what {agent.heshe}'s saying.
             ]],
-            
+
             DIALOG_PICK = [[
                 player:
                     I guess I'll pick you.
@@ -410,7 +412,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 -- :Fn(function()DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 2)end)
                 -- :Dialog("DIALOG_NO_CONT")
             -- StateGraphUtil.AddEndOption(cxt.hub)
-            
+
             -- cxt:GetAgent():GetBrain():MoveToHome()
             -- QuestUtil.SpawnQuest("RACE_LIVING_WITH_ADVISOR")
         end)
@@ -517,7 +519,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                         DemocracyUtil.TryMainQuestFn("DoRandomOpposition", OPPO_COUNT)
                         cxt.quest.param.did_opposition = true
                         cxt:Dialog("DIALOG_SKIP_OPPOSITION")
-                        
+
                     end
                     cxt:GoTo("STATE_COMPLETE_DIALOG")
                 end)

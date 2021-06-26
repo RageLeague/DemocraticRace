@@ -57,50 +57,57 @@ local QDEF = QuestDef.Define{
     end,
     qtype = QTYPE.STORY,--QTYPE.OPPORTUNITY,
     act_filter = DemocracyUtil.DemocracyActFilter,
-    on_init = function(quest)
-        quest.param.free_time_actions = DemocracyUtil.GetBaseFreeTimeActions()
-    end,
-    events =
-    {
-        resolve_negotiation = function(quest, minigame)
-            for i, modifier in minigame:GetPlayerNegotiator():Modifiers() do
-                if modifier.id == "NO_PLAY_FROM_HAND" then
-                    return
-                end
-            end
-            quest:DefFn("DeltaActions", -1)
-        end,
-        resolve_battle = function(quest, battle)
-            quest:DefFn("DeltaActions", -2)
-        end,
-        caravan_move_location = function(quest, location)
-            if location:HasTag("road") then
-                quest:DefFn("DeltaActions", -1)
-            end
-        end,
-    },
-    DeltaActions = function(quest, delta)
-        quest.param.free_time_actions = quest.param.free_time_actions + delta
-        print("New action count: "..quest.param.free_time_actions)
-        if quest.param.free_time_actions <= 0 then
-            quest:Complete()
-        end
-        quest:NotifyChanged()
-    end
+    -- on_init = function(quest)
+    --     quest.param.free_time_actions = DemocracyUtil.GetBaseFreeTimeActions()
+    -- end,
+    -- events =
+    -- {
+    --     resolve_negotiation = function(quest, minigame)
+    --         for i, modifier in minigame:GetPlayerNegotiator():Modifiers() do
+    --             if modifier.id == "NO_PLAY_FROM_HAND" then
+    --                 return
+    --             end
+    --         end
+    --         quest:DefFn("DeltaActions", -1)
+    --     end,
+    --     resolve_battle = function(quest, battle)
+    --         quest:DefFn("DeltaActions", -2)
+    --     end,
+    --     caravan_move_location = function(quest, location)
+    --         if location:HasTag("road") then
+    --             quest:DefFn("DeltaActions", -1)
+    --         end
+    --     end,
+    -- },
+    -- DeltaActions = function(quest, delta)
+    --     quest.param.free_time_actions = quest.param.free_time_actions + delta
+    --     print("New action count: "..quest.param.free_time_actions)
+    --     if quest.param.free_time_actions <= 0 then
+    --         quest:Complete()
+    --     end
+    --     quest:NotifyChanged()
+    -- end
 }
-:AddObjective{
-    id = "action_tracker",
-    title = "You have {1} {1*action|actions} left",
-    title_fn = function(quest, str)
-        return loc.format(str, quest.param.free_time_actions or 0)
-    end,
-    desc = "You can choose to visit a location during your free time.",
+-- :AddObjective{
+--     id = "action_tracker",
+--     title = "You have {1} {1*action|actions} left",
+--     title_fn = function(quest, str)
+--         return loc.format(str, quest.param.free_time_actions or 0)
+--     end,
+--     desc = "You can choose to visit a location during your free time.",
 
+--     state = QSTATUS.ACTIVE,
+--     mark = function(quest, t, in_location)
+--         DemocracyUtil.AddUnlockedLocationMarks(t)
+--     end,
+--     -- terminal = true,
+-- }
+:AddFreeTimeObjective{
+    id = "action_tracker",
     state = QSTATUS.ACTIVE,
-    mark = function(quest, t, in_location)
-        DemocracyUtil.AddUnlockedLocationMarks(t)
+    on_complete = function(quest)
+        quest:Complete()
     end,
-    -- terminal = true,
 }
 :AddCast{
     cast_id = "friend",

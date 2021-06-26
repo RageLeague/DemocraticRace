@@ -1227,8 +1227,9 @@ function QuestDef:AddFreeTimeObjective( child )
             DemocracyUtil.AddUnlockedLocationMarks(t)
         end,
         on_activate = function(quest)
-            quest.param.free_time_actions = math.round(DemocracyUtil.GetBaseFreeTimeActions() * (quest:GetQuestDef().action_multiplier))
+            quest.param.free_time_actions = math.round(DemocracyUtil.GetBaseFreeTimeActions() * (quest:GetQuestDef().action_multiplier or 1))
         end,
+        is_free_time = true,
         events =
         {
             resolve_negotiation = function(quest, minigame)
