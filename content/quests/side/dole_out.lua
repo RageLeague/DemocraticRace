@@ -1,5 +1,5 @@
-local function CanFeed(agent)
-    return DemocracyUtil.RandomBystanderCondition(agent)
+local function CanFeed(agent, quest)
+    return DemocracyUtil.RandomBystanderCondition(agent) and quest.param.gifted_people and table.arraycontains(quest.param.gifted_people, agent)
 end
 
 local QDEF = QuestDef.Define{
@@ -21,7 +21,7 @@ local QDEF = QuestDef.Define{
         -- if quest.param.poor_performance then
         --     DemocracyUtil.DeltaGeneralSupport(2 * #quest.param.posted_location, "POOR_QUEST")
         -- else
-        local score = 3 * (quest.param.feed_people or 0)
+        local score = 3 * (quest.param.gifted_people and #quest.param.gifted_people or 0)
         DemocracyUtil.DeltaGeneralSupport(score, "COMPLETED_QUEST")
         -- end
     end,
@@ -47,7 +47,7 @@ local QDEF = QuestDef.Define{
         if in_location then
             local location = TheGame:GetGameState():GetPlayerAgent():GetLocation()
             for i, agent in location:Agents() do
-                if CanFeed(agent) then
+                if CanFeed(agent, quest) then
                     table.insert(t, agent)
                 end
             end
@@ -101,7 +101,7 @@ local QDEF = QuestDef.Define{
         txt = "Changed political opinion for them.",
     },
     paid = {
-        delta = OPINION_DELTAS.MAJOR_GOOD,
+        delta = OPINION_DELTAS.LIKE,
         txt = "Gave them money and bread.",
     },
     peeved = {
@@ -109,7 +109,7 @@ local QDEF = QuestDef.Define{
         txt = "Called a populist.",
     },
     political_waffle = {
-        delta = OPINION_DELTAS.MAJOR_GOOD,
+        delta = OPINION_DELTAS.LIKE,
         txt = "Agreed with them on all the big issues.",
     },
     political_angry = {
@@ -192,8 +192,8 @@ QDEF:AddConvo("dole_out_three")
     }
         --this is the randomizer. for some reason the option part doesn't work for some reason, but i'll fix that at some point
     :Hub(function(cxt, who)
-        if who and CanFeed(who) then
-
+        if who and CanFeed(who, cxt.quest) then
+            cxt.quest.param.gifted_people = cxt.quest.param.gifted_people or {}
             cxt:Opt("OPT_GIVE_BREAD")
                 :Dialog("DIALOG_SATISFIES_CONDITIONS")
                 :SetQuestMark()
@@ -253,7 +253,7 @@ QDEF:AddConvo("dole_out_three")
             --cxt:Opt("OPT_GIVE_BREAD")
             --cxt.quest:AssignCastMember("pan", cxt:GetAgent())
             cxt:Dialog("DIALOG_PAN_HANDLE")
-            cxt.quest.param.people_fed = (cxt.quest.param.people_fed or 0) + 1
+            table.insert(cxt.quest.param.gifted_people, cxt:GetAgent())
             cxt:Opt("OPT_GIVE")
                 :Dialog("DIALOG_GIVE")
                 :DeliverMoney(100)
@@ -301,7 +301,7 @@ QDEF:AddConvo("dole_out_three")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_POLITICAL")
-            cxt.quest.param.people_fed = (cxt.quest.param.people_fed or 0) + 1
+            table.insert(cxt.quest.param.gifted_people, cxt:GetAgent())
 
             cxt:Opt("OPT_AGREE")
                 :UpdatePoliticalStance("WELFARE", 2, false, true)
@@ -335,7 +335,7 @@ QDEF:AddConvo("dole_out_three")
                 :Dialog("DIALOG_AGREE_2")
                 -- :CompleteQuest("feed_politic")
                 :Fn(function(cxt)
-                    cxt.quest.param.people_fed = (cxt.quest.param.people_fed or 0) + 1
+                    table.insert(cxt.quest.param.gifted_people, cxt:GetAgent())
                 end)
                 :DoneConvo()
             cxt:Opt("OPT_DISAGREE_2")
@@ -487,7 +487,7 @@ QDEF:AddConvo("dole_out_three")
                     on_success = function(cxt)
                         cxt:Dialog("DIALOG_CONVINCE_SUCCESS")
                         -- cxt.quest:Complete("feed_ungrate")
-                        cxt.quest.param.people_fed = (cxt.quest.param.people_fed or 0) + 1
+                        table.insert(cxt.quest.param.gifted_people, cxt:GetAgent())
                         StateGraphUtil.AddEndOption(cxt)
                     end,
                     on_fail = function(cxt)
@@ -533,7 +533,7 @@ QDEF:AddConvo("dole_out_three")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_GRATE")
-            cxt.quest.param.people_fed = (cxt.quest.param.people_fed or 0) + 1
+            table.insert(cxt.quest.param.gifted_people, cxt:GetAgent())
             StateGraphUtil.AddEndOption(cxt)
         end)
 QDEF:AddConvo("dole_out_three", "primary_advisor")
