@@ -14,27 +14,6 @@ local QDEF = QuestDef.Define{
         return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")
     end,
 }
---now it won't choose the proprietor as a possible cast member.
--- :AddCast{
---     cast_id = "pan",
---     when = QWHEN.MANUAL,
--- }
--- :AddCast{
---     cast_id = "political",
---     when = QWHEN.MANUAL,
--- }
--- :AddCast{
---     cast_id = "grateful",
---     when = QWHEN.MANUAL,
--- }
--- :AddCast{
---     cast_id = "ungrateful",
---     when = QWHEN.MANUAL,
--- }
---:AddDefCastSpawn("political", "HEAVY_LABORER")
---:AddDefCastSpawn("pan", "POOR_MERCHANT")
---:AddDefCastSpawn("grateful", "LABORER")
---:AddDefCastSpawn("ungrateful", "RISE_REBEL")
 :AddObjective{
     id = "go_to_advisor",
     title = "Wait for the votes to roll in",
@@ -42,53 +21,12 @@ local QDEF = QuestDef.Define{
     mark = {"primary_advisor"},
 
     on_activate = function(quest)
-        -- if quest:IsActive("feed_grateful") then
-        --     quest:Cancel("feed_grateful")
-        -- end
-        -- if quest:IsActive("feed_politic") then
-        --     quest:Cancel("feed_politic")
-        -- end
-        -- if quest:IsActive("feed_ungrate") then
-        --     quest:Cancel("feed_ungrate")
-        -- end
-        -- if quest:IsActive("feed_pan") then
-        --     quest:Cancel("feed_pan")
-        -- end
+
     end,
-    -- I removed this because it is redundant, and it might cause some issues.
-    -- on_complete = function(quest)
-    --     -- This is kinda redundant, so I added an active check.
-    --     if quest:IsActive() then
-    --         quest:Complete()
-    --     end
-    -- end,
 }
 :AddObjective{
     id = "dole_out_three",
     title = "Feed some people",
-    -- hide_in_overlay = true,
-    -- on_activate = function(quest)
-    --     quest:Activate("feed_grateful")
-    --     quest:Activate("feed_pan")
-    --     quest:Activate("feed_ungrate")
-    --     quest:Activate("feed_politic")
-    -- end,
-    -- events =
-    -- {
-    --     quests_changed = function(quest, event_quest)
-    --         if event_quest == quest then
-    --             local num_complete = (quest:IsComplete("feed_pan") and 1 or 0) +
-    --                                     (quest:IsComplete("feed_ungrate") and 1 or 0) +
-    --                                     (quest:IsComplete("feed_politic") and 1 or 0) +
-    --                                     (quest:IsComplete("feed_grateful") and 1 or 0)
-
-    --             if num_complete >= 3 then
-    --                 quest:Complete("dole_out_three")
-    --                 quest:Activate("go_to_advisor")
-    --             end
-    --         end
-    --     end,
-    -- },
     mark = function(quest, t, in_location)
         if in_location then
             local location = TheGame:GetGameState():GetPlayerAgent():GetLocation()
@@ -163,7 +101,7 @@ local QDEF = QuestDef.Define{
         txt = "Agreed with them on all the big issues.",
     },
     political_angry = {
-        delta = OPINION_DELTAS.MAJOR_BAD,
+        delta = OPINION_DELTAS.BAD,
         txt = "Let them call you a strawman.",
     },
 }
@@ -248,13 +186,17 @@ QDEF:AddConvo("dole_out_three")
             cxt:Opt("OPT_GIVE_BREAD")
                 :Dialog("DIALOG_SATISFIES_CONDITIONS")
                 :SetQuestMark()
+                :RequireFreeTimeAction(1)
                 :Fn(function(cxt, who)
                     local weight = {
                         STATE_PANHANDLER = 1,
                         STATE_GRATEFUL = 1,
-                        STATE_UNGRATEFUL = 1,
+                        STATE_UNGRATEFUL = who:GetRenown() * (who:GetRenown() + 1) / 2,
                         STATE_POLITICAL = 1,
                     }
+                    if who:GetFactionID() == "RISE" then
+                        weight.STATE_POLITICAL = weight.STATE_POLITICAL + 2
+                    end
                     local state = weightedpick(weight)
                     cxt:GoTo(state)
                 end)
@@ -300,11 +242,10 @@ QDEF:AddConvo("dole_out_three")
             --cxt:Opt("OPT_GIVE_BREAD")
             --cxt.quest:AssignCastMember("pan", cxt:GetAgent())
             cxt:Dialog("DIALOG_PAN_HANDLE")
+            cxt.quest.param.people_fed = (cxt.quest.param.people_fed or 0) + 1
             cxt:Opt("OPT_GIVE")
                 :Dialog("DIALOG_GIVE")
                 :DeliverMoney(100)
-                --because video game no like be nice.
-                --just...sometimes you have to wonder if code just...got up on the wrong side of the bed whenever it want to run.
                 :ReceiveOpinion("paid")
                 :DoneConvo()
                     -- :CompleteQuest("feed_pan")
@@ -349,6 +290,8 @@ QDEF:AddConvo("dole_out_three")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_POLITICAL")
+            cxt.quest.param.people_fed = (cxt.quest.param.people_fed or 0) + 1
+
             cxt:Opt("OPT_AGREE")
                 :UpdatePoliticalStance("WELFARE", 2, false, true)
                 :RecieveOpinion("politic")
@@ -380,6 +323,9 @@ QDEF:AddConvo("dole_out_three")
                 :RecieveOpinion("political_waffle")
                 :Dialog("DIALOG_AGREE_2")
                 -- :CompleteQuest("feed_politic")
+                :Fn(function(cxt)
+                    cxt.quest.param.people_fed = (cxt.quest.param.people_fed or 0) + 1
+                end)
                 :DoneConvo()
             cxt:Opt("OPT_DISAGREE_2")
                 :Dialog("DIALOG_DISAGREE_2")
@@ -530,6 +476,7 @@ QDEF:AddConvo("dole_out_three")
                     on_success = function(cxt)
                         cxt:Dialog("DIALOG_CONVINCE_SUCCESS")
                         -- cxt.quest:Complete("feed_ungrate")
+                        cxt.quest.param.people_fed = (cxt.quest.param.people_fed or 0) + 1
                         StateGraphUtil.AddEndOption(cxt)
                     end,
                     on_fail = function(cxt)
@@ -574,6 +521,7 @@ QDEF:AddConvo("dole_out_three")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_GRATE")
+            cxt.quest.param.people_fed = (cxt.quest.param.people_fed or 0) + 1
             cxt:Opt("OPT_BRING_ALONG")
                 :RecruitMember( PARTY_MEMBER_TYPE.HIRED )
                 :Dialog("DIALOG_BRING_ALONG")
@@ -588,19 +536,26 @@ QDEF:AddConvo("dole_out_three")
         end)
 QDEF:AddConvo("dole_out_three", "primary_advisor")
     :Loc{
-        OPT_ADMIT_DEFEAT = "Tell {primary_advisor} you couldn't finish the task",
-        DIALOG_ADMIT_DEFEAT = [[
+        OPT_END_EARLY = "Finish quest early",
+        DIALOG_END_EARLY = [[
             player:
-                I give up.
+                I'm done.
             agent:
-                Why?
+                Wait, really?
+                But there's still plenty of time!
             player:
-                I simply cannot go on, for reasons that are different depending on the circumstances surrounding it.
+                Nothing else I can do.
             agent:
-                Alright then.
-        ]]
-        }
+                Suit yourself, I guess.
+        ]],
+    }
     :Hub(function(cxt, who)
+        cxt:Opt("OPT_END_EARLY")
+            :SetQuestMark(cxt.quest)
+            :Dialog("DIALOG_END_EARLY")
+            :Fn(function(cxt)
+                cxt.quest:Complete("time_countdown")
+            end)
         cxt:Opt("OPT_ADMIT_DEFEAT")
             :Fn(function(cxt)
                 if not cxt.quest:IsComplete("dole_out_three") then
@@ -611,23 +566,59 @@ QDEF:AddConvo("dole_out_three", "primary_advisor")
     end)
 QDEF:AddConvo("go_to_advisor", "primary_advisor")
     :Loc{
-        OPT_GET_PAID = "Show the empty bag to {primary_advisor}.",
-        DIALOG_GET_PAID = [[
-            player:
-                [p]'ey
+        OPT_TALK_PROGRESS = "Talk about your progress",
+        DIALOG_TALK_PROGRESS = [[
             agent:
-                'ey
-                You done?
+                So? How did you do?
+        ]],
+        DIALOG_NO_GIFT = [[
             player:
-                Yup.
+                [p] I gifted no one.
             agent:
-                cool beans.
-        ]]
+                Wow you suck.
+        ]],
+        DIALOG_ONE_GIFT = [[
+            player:
+                [p] I gifted about one person.
+            agent:
+                You might as well not do that.
+        ]],
+        DIALOG_FEW_GIFT = [[
+            player:
+                [p] I gifted {1} people.
+            agent:
+                [p] Not great, but not bad either.
+        ]],
+        DIALOG_MORE_GIFT = [[
+            player:
+                [p] I gifted {1} people.
+            agent:
+                [p] You did good.
+        ]],
     }
     --This final part is where the issue lies.
     :Hub(function(cxt)
-        cxt:Opt("OPT_GET_PAID")
+        cxt:Opt("OPT_TALK_PROGRESS")
             :SetQuestMark()
-            :Dialog("DIALOG_GET_PAID")
-            :CompleteQuest()
+            :Dialog("DIALOG_PRE")
+            :Fn(function(cxt)
+                local count = cxt.quest.param.feed_people or 0
+                if count == 0 then
+                    cxt:Dialog("DIALOG_NO_GIFT", count)
+                    cxt.quest:Fail()
+                elseif count == 1 then
+                    cxt:Dialog("DIALOG_ONE_GIFT", count)
+                    cxt.quest:Fail()
+                elseif count <= 3 then
+                    cxt:Dialog("DIALOG_FEW_GIFT", count)
+                    cxt.quest.param.poor_performance = true
+                    cxt.quest:Complete()
+                    ConvoUtil.GiveQuestRewards(cxt)
+                else
+                    cxt:Dialog("DIALOG_MORE_GIFT", count)
+                    cxt.quest:Complete()
+                    ConvoUtil.GiveQuestRewards(cxt)
+                end
+            end)
+            :DoneConvo()
     end)

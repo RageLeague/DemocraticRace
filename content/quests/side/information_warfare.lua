@@ -193,31 +193,6 @@ local QDEF = QuestDef.Define
     end,
 }
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
--- QDEF:AddConvo()
---     :ConfrontState("STATE_OUT_OF_TIME", function(cxt)
---         if cxt.quest.param.actions and cxt.quest.param.actions <= 0 and not cxt.quest:IsActive("out_of_time")
---             and not cxt.location:HasTag("in_transit") then
---             return true
---         end
---         return false
---     end)
---         :Loc{
---             DIALOG_INTRO = [[
---                 * Unfortunately, you ran out of time.
---                 * Time to check in with {primary_advisor} and see how you did.
---             ]],
---         }
---         :Fn(function(cxt)
---             cxt:Dialog("DIALOG_INTRO")
---             if cxt.quest:IsActive("commission") then
---                 cxt.quest:Fail("commission")
---             end
---             if cxt.quest:IsActive("post") then
---                 cxt.quest:Cancel("post")
---             end
---             cxt.quest:Activate("out_of_time")
---             StateGraphUtil.AddLeaveLocation(cxt)
---         end)
 QDEF:AddConvo("out_of_time", "primary_advisor")
     :Loc{
         OPT_TALK_PROGRESS = "Talk about your progress",
@@ -394,13 +369,7 @@ QDEF:AddConvo("post")
                 :SetQuestMark(cxt.quest)
                 :Dialog("DIALOG_END_EARLY")
                 :Fn(function(cxt)
-                    if cxt.quest:IsActive("commission") then
-                        cxt.quest:Fail("commission")
-                    end
-                    if cxt.quest:IsActive("post") then
-                        cxt.quest:Cancel("post")
-                    end
-                    cxt.quest:Activate("out_of_time")
+                    cxt.quest:Complete("time_left")
                 end)
             return
         end
