@@ -106,10 +106,10 @@ local QDEF = QuestDef.Define{
     desc = "Go around and find some impoverished to feed.",
 }
 :AddObjective{
-  id = "feed_grateful",
-  mark = { "grateful" },
-  title = "Feed some people",
-  desc = "Find someone and give them some bread",
+    id = "feed_grateful",
+    mark = { "grateful" },
+    title = "Feed some people",
+    desc = "Find someone and give them some bread",
 }
 :AddObjective{
     id = "feed_pan",
