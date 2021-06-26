@@ -1196,6 +1196,7 @@ function ConvoOption:DeltaSupport(amt, target, ignore_notification)
     end)
     return self
 end
+
 function ConvoOption:RequireFreeTimeAction(actions)
     if actions then
         self:PostText("TT_FREE_TIME_ACTION_COST", actions)
@@ -1210,6 +1211,55 @@ function ConvoOption:RequireFreeTimeAction(actions)
             q:DefFn("DeltaActions", -actions)
         end)
     end
+
+    return self
+end
+
+function QuestDef:AddFreeTimeObjective( child )
+    local new_child = table.extend{
+        id = "time_countdown",
+        title = "You have {1} {1*action|actions} left",
+        title_fn = function(quest, str)
+            return loc.format(str, quest.param.free_time_actions or 0)
+        end,
+        desc = "You can choose to visit a location during your free time.",
+        mark = function(quest, t, in_location)
+            DemocracyUtil.AddUnlockedLocationMarks(t)
+        end,
+        on_activate = function(quest)
+            quest.param.free_time_actions = math.round(DemocracyUtil.GetBaseFreeTimeActions() * (quest:GetQuestDef().action_multiplier))
+        end,
+        events =
+        {
+            resolve_negotiation = function(quest, minigame)
+                for i, modifier in minigame:GetPlayerNegotiator():Modifiers() do
+                    if modifier.id == "NO_PLAY_FROM_HAND" then
+                        return
+                    end
+                end
+                quest:DefFn("DeltaActions", -1)
+            end,
+            resolve_battle = function(quest, battle)
+                quest:DefFn("DeltaActions", -2)
+            end,
+            caravan_move_location = function(quest, location)
+                if location:HasTag("road") then
+                    quest:DefFn("DeltaActions", -1)
+                end
+            end,
+        },
+    }(child)
+
+    self.DeltaActions = function(quest, delta)
+        quest.param.free_time_actions = quest.param.free_time_actions + delta
+        print("New action count: "..quest.param.free_time_actions)
+        if quest.param.free_time_actions <= 0 then
+            quest:Complete(new_child.id)
+        end
+        quest:NotifyChanged()
+    end
+
+    self:AddObjective(new_child)
 
     return self
 end
@@ -1239,41 +1289,3 @@ function AutoUpgradeText(self, field, invert, preprocess)
         return preprocess(self[field])
     end
 end
--- return {
---     ADVISOR_IDS = ADVISOR_IDS,
---     ADVISOR_HOME = ADVISOR_HOME,
---     AddAdvisors = AddAdvisors,
---     AddHomeCasts = AddHomeCasts,
---     AddPrimaryAdvisor = AddPrimaryAdvisor,
---     StartFreeTime = StartFreeTime,
---     EndFreeTime = EndFreeTime,
---     IsFreeTimeActive = IsFreeTimeActive,
---     SupportScore = SupportScore,
---     OppositionScore = OppositionScore,
---     RandomBystanderCondition = RandomBystanderCondition,
---     CanVote = CanVote,
---     DoLocationUnlock = DoLocationUnlock,
---     GetWealth = GetWealth,
---     GetWealthString = GetWealthString,
---     GetWealthIcon = GetWealthIcon,
---     AddOppositionCast = AddOppositionCast,
---     GetWealthColor = GetWealthColor,
---     TryMainQuestFn = TryMainQuestFn,
---     DebugSupportScreen = DebugSupportScreen,
---     AddDebugBypass = AddDebugBypass,
---     AddAutofail = AddAutofail,
---     DetermineSupportTarget = DetermineSupportTarget,
---     ToFactionID = ToFactionID,
---     IsDemocracyCampaign = IsDemocracyCampaign,
---     DemocracyActFilter= DemocracyActFilter,
---     PresentRequestQuest = PresentRequestQuest,
---     CollectIssueImportance = CollectIssueImportance,
---     CheckHeavyHanded = CheckHeavyHanded,
---     AddDemandConvo = AddDemandConvo,
-
---     -- Demand generator stuff
---     demand_generator = demand_generator,
---     AddDemandModifier = demand_generator.AddDemandModifier,
---     GenerateDemands = demand_generator.GenerateDemands,
---     ParseDemandList = demand_generator.ParseDemandList,
--- }
