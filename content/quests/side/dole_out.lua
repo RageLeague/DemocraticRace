@@ -230,15 +230,17 @@ QDEF:AddConvo("dole_out_three")
 			}
 			--this is the randomizer. for some reason the option part doesn't work for some reason, but i'll fix that at some point
 		:Hub(function(cxt, who)
-		if who and not AgentUtil.HasPlotArmour(who) and (who:GetFactionID() == "FEUD_CITIZEN" and who:GetRenown() >= 2) or (who:GetFactionID() == "RISE" and who:GetRenown() <= 2)
+		if who and not AgentUtil.HasPlotArmour(who) and (who:GetFactionID() == "FEUD_CITIZEN" and who:GetRenown() <= 2) or (who:GetFactionID() == "RISE" and who:GetRenown() <= 2)
 			and not (who:GetProprietor()) then
 			cxt:Dialog("DIALOG_SATISFIES_CONDITIONS")
 			cxt:Opt("OPT_GIVE_BREAD")
 				:SetQuestMark()
+			:Fn(function(cxt, who)
 				local castroles = {"pan", "ungrateful", "grateful", "political"}
 				table.shuffle(castroles)
 				cxt.quest:AssignCastMember(castroles[1], cxt:GetAgent())
 				table.remove(castroles, 1)
+			end)
 		if who == cxt:GetCastMember("pan") then
 				cxt:GoTo("STATE_PANHANDLER")
 				--table.remove(castroles, 1)
@@ -259,7 +261,6 @@ QDEF:AddConvo("dole_out_three")
 	end)
 		:State("STATE_PANHANDLER")
         :Loc{
-			OPT_GIVE_BREAD = "[p] give bread",
             DIALOG_PAN_HANDLE = [[
                 * [p] You find {agent} sitting on the side of the road, sullen.
                 player:
