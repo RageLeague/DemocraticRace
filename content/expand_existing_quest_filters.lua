@@ -23,7 +23,7 @@ local QUEST_IDS = {
     "EVENT_FOUND_A_ROBOT",
     "EVENT_LOAN_SHARK",
     "EVENT_LOAN_SHARK_REPAY",
-    "EVENT_DEEP_BOGGER_01",
+    -- "EVENT_DEEP_BOGGER_01",
     "EVENT_FILTHY_GRAFT",
     "EVENT_FOUND_BY_LUMICYTE",
     -- This doesn't help

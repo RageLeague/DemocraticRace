@@ -33,16 +33,16 @@ local QDEF = QuestDef.Define
             and quest:GetLocalizedStr( "GET_JOB_ADVISOR" )
             or quest:GetLocalizedStr( "GET_JOB_ALONE" )
     end,
-    
-    on_complete = function(quest) 
+
+    on_complete = function(quest)
         quest:Activate("do_job")
     end,
-    
+
 }
 :AddObjective{
     id = "do_job",
     hide_in_overlay = true,
-    events = 
+    events =
     {
         quests_changed = function(quest, event_quest)
             if quest.param.current_job == event_quest and event_quest:IsDone() then
@@ -51,18 +51,18 @@ local QDEF = QuestDef.Define
         end
     },
     on_activate = function(quest)
-        DemocracyUtil.EndFreeTime()
+        DemocracyUtil.EndFreeTime(true)
         if quest.param.current_job == "FREE_TIME" then
             quest.param.current_job = DemocracyUtil.StartFreeTime(1.5)
         end
     end,
-    on_complete = function(quest) 
+    on_complete = function(quest)
         quest.param.job_history = quest.param.job_history or {}
         table.insert(quest.param.job_history, quest.param.current_job)
         quest.param.recent_job = quest.param.current_job
         quest.param.current_job = nil
 
-        if (#quest.param.job_history == 1) then 
+        if (#quest.param.job_history == 1) then
             quest:Activate("meet_advisor")
         elseif (#quest.param.job_history >= 2) then
             quest:Activate("do_summary")
@@ -86,7 +86,7 @@ local QDEF = QuestDef.Define
 :AddSubQuest{
     id = "do_summary",
     quest_id = "RACE_DAY_END_SUMMARY",
-    on_activate = function(quest) 
+    on_activate = function(quest)
         UIHelpers.PassTime(DAY_PHASE.NIGHT)
         DemocracyUtil.SetSubdayProgress(3)
     end,
@@ -130,7 +130,7 @@ QDEF:AddConvo("get_job")
                 $neutralThoughtful
                 Here's what I can do...
             ]],
-        
+
     }
     :RunLoopingFn(function(cxt)
         cxt:Dialog("DIALOG_INTRO")

@@ -139,7 +139,7 @@ local QDEF = QuestDef.Define
         end
     },
     on_activate = function(quest)
-        DemocracyUtil.EndFreeTime()
+        DemocracyUtil.EndFreeTime(true)
         if quest.param.current_job == "FREE_TIME" then
             quest.param.current_job = DemocracyUtil.StartFreeTime(1.5)
         end

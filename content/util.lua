@@ -166,7 +166,10 @@ function DemocracyUtil.StartFreeTime(actions)
     return quest
 end
 
-function DemocracyUtil.GetFreeTimeQuests()
+function DemocracyUtil.GetFreeTimeQuests(exact)
+    if exact then
+        return TheGame:GetGameState():GetActiveQuestWithContentID("FREE_TIME_EVENT")
+    end
     local result = {}
     for i, quest in TheGame:GetGameState():ActiveQuests() do
         local objective_id = quest:GetQuestDef().free_time_objective_id
@@ -177,16 +180,16 @@ function DemocracyUtil.GetFreeTimeQuests()
     return result
 end
 
-function DemocracyUtil.EndFreeTime()
+function DemocracyUtil.EndFreeTime(exact)
     -- TheGame:GetGameState():ClearOpportunities()
-    local events = DemocracyUtil.GetFreeTimeQuests()
+    local events = DemocracyUtil.GetFreeTimeQuests(exact)
     for i, event in ipairs(events) do
         print("End quest: " .. tostring(event))
         event:Complete()
     end
 end
-function DemocracyUtil.IsFreeTimeActive()
-    return #(DemocracyUtil.GetFreeTimeQuests()) > 0
+function DemocracyUtil.IsFreeTimeActive(exact)
+    return #(DemocracyUtil.GetFreeTimeQuests(exact)) > 0
 end
 local SUPPORT_DELTA = {
     [RELATIONSHIP.HATED] = -60,
@@ -1239,7 +1242,9 @@ function QuestDef:AddFreeTimeObjective( child )
             DemocracyUtil.AddUnlockedLocationMarks(t)
         end,
         on_activate = function(quest)
-            quest.param.free_time_actions = math.round(DemocracyUtil.GetBaseFreeTimeActions() * (quest:GetQuestDef().action_multiplier or 1))
+            local questdef = quest:GetQuestDef()
+            local multiplier = questdef:GetObjective(questdef.free_time_objective_id).action_multiplier or 1
+            quest.param.free_time_actions = math.round(DemocracyUtil.GetBaseFreeTimeActions() * multiplier)
         end,
         events =
         {
