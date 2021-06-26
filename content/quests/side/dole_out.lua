@@ -8,28 +8,29 @@ local QDEF = QuestDef.Define{
     tags = {"RALLY_JOB"},
     on_start = function(quest)
         quest:Activate("dole_out_three")
+        quest:Activate("time_countdown")
     end,
     precondition = function(quest)
         return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")
     end,
 }
 --now it won't choose the proprietor as a possible cast member.
-:AddCast{
-    cast_id = "pan",
-    when = QWHEN.MANUAL,
-}
-:AddCast{
-    cast_id = "political",
-    when = QWHEN.MANUAL,
-}
-:AddCast{
-    cast_id = "grateful",
-    when = QWHEN.MANUAL,
-}
-:AddCast{
-    cast_id = "ungrateful",
-    when = QWHEN.MANUAL,
-}
+-- :AddCast{
+--     cast_id = "pan",
+--     when = QWHEN.MANUAL,
+-- }
+-- :AddCast{
+--     cast_id = "political",
+--     when = QWHEN.MANUAL,
+-- }
+-- :AddCast{
+--     cast_id = "grateful",
+--     when = QWHEN.MANUAL,
+-- }
+-- :AddCast{
+--     cast_id = "ungrateful",
+--     when = QWHEN.MANUAL,
+-- }
 --:AddDefCastSpawn("political", "HEAVY_LABORER")
 --:AddDefCastSpawn("pan", "POOR_MERCHANT")
 --:AddDefCastSpawn("grateful", "LABORER")
@@ -41,18 +42,18 @@ local QDEF = QuestDef.Define{
     mark = {"primary_advisor"},
 
     on_activate = function(quest)
-        if quest:IsActive("feed_grateful") then
-            quest:Cancel("feed_grateful")
-        end
-        if quest:IsActive("feed_politic") then
-            quest:Cancel("feed_politic")
-        end
-        if quest:IsActive("feed_ungrate") then
-            quest:Cancel("feed_ungrate")
-        end
-        if quest:IsActive("feed_pan") then
-            quest:Cancel("feed_pan")
-        end
+        -- if quest:IsActive("feed_grateful") then
+        --     quest:Cancel("feed_grateful")
+        -- end
+        -- if quest:IsActive("feed_politic") then
+        --     quest:Cancel("feed_politic")
+        -- end
+        -- if quest:IsActive("feed_ungrate") then
+        --     quest:Cancel("feed_ungrate")
+        -- end
+        -- if quest:IsActive("feed_pan") then
+        --     quest:Cancel("feed_pan")
+        -- end
     end,
     -- I removed this because it is redundant, and it might cause some issues.
     -- on_complete = function(quest)
@@ -64,29 +65,30 @@ local QDEF = QuestDef.Define{
 }
 :AddObjective{
     id = "dole_out_three",
-    hide_in_overlay = true,
-    on_activate = function(quest)
-        quest:Activate("feed_grateful")
-        quest:Activate("feed_pan")
-        quest:Activate("feed_ungrate")
-        quest:Activate("feed_politic")
-    end,
-    events =
-    {
-        quests_changed = function(quest, event_quest)
-            if event_quest == quest then
-                local num_complete = (quest:IsComplete("feed_pan") and 1 or 0) +
-                                        (quest:IsComplete("feed_ungrate") and 1 or 0) +
-                                        (quest:IsComplete("feed_politic") and 1 or 0) +
-                                        (quest:IsComplete("feed_grateful") and 1 or 0)
+    title = "Feed some people",
+    -- hide_in_overlay = true,
+    -- on_activate = function(quest)
+    --     quest:Activate("feed_grateful")
+    --     quest:Activate("feed_pan")
+    --     quest:Activate("feed_ungrate")
+    --     quest:Activate("feed_politic")
+    -- end,
+    -- events =
+    -- {
+    --     quests_changed = function(quest, event_quest)
+    --         if event_quest == quest then
+    --             local num_complete = (quest:IsComplete("feed_pan") and 1 or 0) +
+    --                                     (quest:IsComplete("feed_ungrate") and 1 or 0) +
+    --                                     (quest:IsComplete("feed_politic") and 1 or 0) +
+    --                                     (quest:IsComplete("feed_grateful") and 1 or 0)
 
-                if num_complete >= 3 then
-                    quest:Complete("dole_out_three")
-                    quest:Activate("go_to_advisor")
-                end
-            end
-        end,
-    },
+    --             if num_complete >= 3 then
+    --                 quest:Complete("dole_out_three")
+    --                 quest:Activate("go_to_advisor")
+    --             end
+    --         end
+    --     end,
+    -- },
     mark = function(quest, t, in_location)
         if in_location then
             local location = TheGame:GetGameState():GetPlayerAgent():GetLocation()
@@ -100,35 +102,45 @@ local QDEF = QuestDef.Define{
         end
     end,
 }
-:AddObjective{
-    id = "feed_people",
-    title = "Find and Feed some people",
-    desc = "Go around and find some impoverished to feed.",
+:AddFreeTimeObjective{
+    desc = "Use this time to find people to feed with your dole loaves",
+    action_multiplier = 1.5,
+    on_complete = function(quest)
+        if quest:IsActive("dole_out_three") then
+            quest:Complete("dole_out_three")
+        end
+        quest:Activate("go_to_advisor")
+    end,
 }
-:AddObjective{
-    id = "feed_grateful",
-    mark = { "grateful" },
-    title = "Feed some people",
-    desc = "Find someone and give them some bread",
-}
-:AddObjective{
-    id = "feed_pan",
-    --mark = { "pan" },
-    title = "Feed some people",
-    desc = "Find someone and give them some bread",
-}
-:AddObjective{
-    id = "feed_politic",
-    mark = { "political" },
-    title = "Feed some people",
-    desc = "Find someone and give them some bread",
-}
-:AddObjective{
-    id = "feed_ungrate",
-    mark = { "ungrateful" },
-    title = "Feed some people",
-    desc = "Find someone and give them some bread",
-}
+-- :AddObjective{
+--     id = "feed_people",
+--     title = "Find and Feed some people",
+--     desc = "Go around and find some impoverished to feed.",
+-- }
+-- :AddObjective{
+--     id = "feed_grateful",
+--     mark = { "grateful" },
+--     title = "Feed some people",
+--     desc = "Find someone and give them some bread",
+-- }
+-- :AddObjective{
+--     id = "feed_pan",
+--     --mark = { "pan" },
+--     title = "Feed some people",
+--     desc = "Find someone and give them some bread",
+-- }
+-- :AddObjective{
+--     id = "feed_politic",
+--     mark = { "political" },
+--     title = "Feed some people",
+--     desc = "Find someone and give them some bread",
+-- }
+-- :AddObjective{
+--     id = "feed_ungrate",
+--     mark = { "ungrateful" },
+--     title = "Feed some people",
+--     desc = "Find someone and give them some bread",
+-- }
 :AddOpinionEvents{
     politic = {
         delta = OPINION_DELTAS.LIKE,
@@ -237,85 +249,79 @@ QDEF:AddConvo("dole_out_three")
                 :Dialog("DIALOG_SATISFIES_CONDITIONS")
                 :SetQuestMark()
                 :Fn(function(cxt, who)
-                    local castroles = {"pan", "ungrateful", "grateful", "political"}
-                    table.shuffle(castroles)
-                    cxt.quest:AssignCastMember(castroles[1], cxt:GetAgent())
-                    table.remove(castroles, 1)
-                    if who == cxt:GetCastMember("pan") then
-                        cxt:GoTo("STATE_PANHANDLER")
-                    end
-                    if who == cxt:GetCastMember("grateful") then
-                        cxt:GoTo("STATE_GRATEFUL")
-                    end
-                    if who == cxt:GetCastMember("ungrateful") then
-                        cxt:GoTo("STATE_UNGRATEFUL")
-                    end
-                    if who == cxt:GetCastMember("political") then
-                        cxt:GoTo("STATE_POLITICAL")
-                    end
+                    local weight = {
+                        STATE_PANHANDLER = 1,
+                        STATE_GRATEFUL = 1,
+                        STATE_UNGRATEFUL = 1,
+                        STATE_POLITICAL = 1,
+                    }
+                    local state = weightedpick(weight)
+                    cxt:GoTo(state)
                 end)
         end
     end)
     :State("STATE_PANHANDLER")
-    :Loc{
-        DIALOG_PAN_HANDLE = [[
-            * [p] You find {agent} sitting on the side of the road, sullen.
+        :Loc{
+            DIALOG_PAN_HANDLE = [[
+                * [p] You find {agent} sitting on the side of the road, sullen.
+                player:
+                    Hey there friend. You want a loaf of Dole Bread?
+                agent:
+                    I wouldn't say no to free bread.
+                    although...this isn't really covering rent.
+                player:
+                    What do you mean? Do you need money?
+                agent:
+                    Well, yes. I wouldn't force you to not give me money.
+                    But i'm also not NOT forcing you to give me money.
+            ]],
+            OPT_GIVE = "Give them some Shills",
+            DIALOG_GIVE = [[
+                player:
+                    Well, I suppose I'll have a lot more money when i'm in office.
+                    Here's a bit of cash. Hope it sees you through to tommorrow.
+                agent:
+                    Wow. I'll be honest, I did not expect that to work.
+                    Thank you so much!
+            ]],
+            OPT_NO_MONEY = "Give them the bread...then a wide berth",
+            DIALOG_NO_MONEY = [[
             player:
-                Hey there friend. You want a loaf of Dole Bread?
+                My sympathies, but I am not the most flush as well.
+                When i get into office, I will make sure this kind of thing doesn't happen again.
             agent:
-                I wouldn't say no to free bread.
-                although...this isn't really covering rent.
-            player:
-                What do you mean? Do you need money?
-            agent:
-                Well, yes. I wouldn't force you to not give me money.
-                But i'm also not NOT forcing you to give me money.
-        ]],
-        OPT_GIVE = "Give them some Shills",
-        DIALOG_GIVE = [[
-            player:
-                Well, I suppose I'll have a lot more money when i'm in office.
-                Here's a bit of cash. Hope it sees you through to tommorrow.
-            agent:
-                Wow. I'll be honest, I did not expect that to work.
-                Thank you so much!
-        ]],
-        OPT_NO_MONEY = "Give them the bread...then a wide berth",
-        DIALOG_NO_MONEY = [[
-        player:
-            My sympathies, but I am not the most flush as well.
-            When i get into office, I will make sure this kind of thing doesn't happen again.
-        agent:
-            sure...
-        ]]
-    }
-    :Fn(function(cxt)
-        --these bricks of code here and the other parts are not needed. the main function/thing/rig-a-ma-jig does this work for it without multiple cast roles on one character
-        --if who and not AgentUtil.HasPlotArmour(who) and (who:GetFactionID() == "FEUD_CITIZEN" and who:GetRenown() >= 2) or (who:GetFactionID() == "RISE" and who:GetRenown() >= 2)
-            --and not (who:GetProprietor()) then
-        --cxt:Opt("OPT_GIVE_BREAD")
-        --cxt.quest:AssignCastMember("pan", cxt:GetAgent())
-        cxt:Dialog("DIALOG_PAN_HANDLE")
-        cxt:Opt("OPT_GIVE")
+                sure...
+            ]],
+        }
+        :Fn(function(cxt)
+            --these bricks of code here and the other parts are not needed. the main function/thing/rig-a-ma-jig does this work for it without multiple cast roles on one character
+            --if who and not AgentUtil.HasPlotArmour(who) and (who:GetFactionID() == "FEUD_CITIZEN" and who:GetRenown() >= 2) or (who:GetFactionID() == "RISE" and who:GetRenown() >= 2)
+                --and not (who:GetProprietor()) then
+            --cxt:Opt("OPT_GIVE_BREAD")
+            --cxt.quest:AssignCastMember("pan", cxt:GetAgent())
+            cxt:Dialog("DIALOG_PAN_HANDLE")
+            cxt:Opt("OPT_GIVE")
                 :Dialog("DIALOG_GIVE")
                 :DeliverMoney(100)
                 --because video game no like be nice.
                 --just...sometimes you have to wonder if code just...got up on the wrong side of the bed whenever it want to run.
                 :ReceiveOpinion("paid")
-                :CompleteQuest("feed_pan")
-        cxt:Opt("OPT_NO_MONEY")
-            :Dialog("DIALOG_NO_MONEY")
-            :CompleteQuest("feed_pan")
-    end)
+                :DoneConvo()
+                    -- :CompleteQuest("feed_pan")
+            cxt:Opt("OPT_NO_MONEY")
+                :Dialog("DIALOG_NO_MONEY")
+                :DoneConvo()
+                -- :CompleteQuest("feed_pan")
+        end)
     --I have probably gotten needlessly fancy with this section. At least compared to the others.
     :State("STATE_POLITICAL")
         :Loc{
             OPT_GIVE_BREAD = "[p] give bread",
             DIALOG_POLITICAL = [[
-                * You find {political} staring at a poster for the Rise.
+                * You find {agent} staring at a poster for the Rise.
                 player:
                     This oughta be easy support.
-                    Hello {political}. Care for some Dole Bread?
+                    Hello {agent}. Care for some Dole Bread?
                 agent:
                     Sure. Say, this is rather helpful to the cause
                     Are you in support of a UBI? So this kind of thing doesn't have to happen anymore?
@@ -373,7 +379,7 @@ QDEF:AddConvo("dole_out_three")
                 :UpdatePoliticalStance("LABOR_LAW", 2, false, true)--random stance. might change once I get a minute to look.
                 :RecieveOpinion("political_waffle")
                 :Dialog("DIALOG_AGREE_2")
-                :CompleteQuest("feed_politic")
+                -- :CompleteQuest("feed_politic")
                 :DoneConvo()
             cxt:Opt("OPT_DISAGREE_2")
                 :Dialog("DIALOG_DISAGREE_2")
@@ -415,7 +421,7 @@ QDEF:AddConvo("dole_out_three")
             DIALOG_IGNORE = [[
                 * You put on the best poker face you can manage.
                 * It doesn't help.
-                Agent:
+                agent:
                     What? Not going to defend yourself?
                     Try to excuse yourself from hearing the truth?
             ]],
@@ -426,20 +432,21 @@ QDEF:AddConvo("dole_out_three")
                 :Negotiation{
                     on_success = function(cxt)
                         cxt:Dialog("DIALOG_CALM_DOWN_SUCCESS")
-                        cxt.quest:Complete("feed_politic")
-                        StateGraphUtil.AddLeaveLocation(cxt)
+                        -- cxt.quest:Complete("feed_politic")
+                        StateGraphUtil.AddEndOption(cxt)
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_CALM_DOWN_FAIL")
-                        cxt:ReceiveOpinion("political_angry")
-                        cxt.quest:Complete("feed_politic")
-                        StateGraphUtil.AddLeaveLocation(cxt)
+                        -- cxt:ReceiveOpinion("political_angry")
+                        -- cxt.quest:Complete("feed_politic")
+                        StateGraphUtil.AddEndOption(cxt)
                     end
                 }
             cxt:Opt("OPT_IGNORE")
                 :Dialog("DIALOG_IGNORE")
                 :ReceiveOpinion("political_angry")
-                :CompleteQuest("feed_politic")
+                -- :CompleteQuest("feed_politic")
+                :DoneConvo()
         end)
     :State("STATE_DISAGREE_2")
         :Loc{
@@ -465,20 +472,21 @@ QDEF:AddConvo("dole_out_three")
                 :Negotiation{
                     on_success = function(cxt)
                         cxt:Dialog("DIALOG_CALM_DOWN_2_SUCCESS")
-                        cxt.quest:Complete("feed_politic")
-                        StateGraphUtil.AddLeaveLocation(cxt)
+                        -- cxt.quest:Complete("feed_politic")
+                        StateGraphUtil.AddEndOption(cxt)
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_CALM_DOWN_2_FAIL")
-                        cxt:ReceiveOpinion("political_angry")
-                        cxt.quest:Complete("feed_politic")
-                        StateGraphUtil.AddLeaveLocation(cxt)
+                        -- cxt:ReceiveOpinion("political_angry")
+                        -- cxt.quest:Complete("feed_politic")
+                        StateGraphUtil.AddEndOption(cxt)
                     end
                 }
             cxt:Opt("OPT_IGNORE_2")
                 :Dialog("DIALOG_IGNORE_2")
                 :ReceiveOpinion("political_angry")
-                :CompleteQuest("feed_politic")
+                -- :CompleteQuest("feed_politic")
+                :DoneConvo()
         end)
     :State("STATE_UNGRATEFUL")
         :Loc{
@@ -521,19 +529,20 @@ QDEF:AddConvo("dole_out_three")
                 :Negotiation{
                     on_success = function(cxt)
                         cxt:Dialog("DIALOG_CONVINCE_SUCCESS")
-                        cxt.quest:Complete("feed_ungrate")
-                        StateGraphUtil.AddLeaveLocation(cxt)
+                        -- cxt.quest:Complete("feed_ungrate")
+                        StateGraphUtil.AddEndOption(cxt)
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_CONVINCE_FAIL")
-                        cxt:ReceiveOpinion("peeved")
-                        StateGraphUtil.AddLeaveLocation(cxt)
+                        -- cxt:ReceiveOpinion("peeved")
+                        StateGraphUtil.AddEndOption(cxt)
                     end,
                 }
             cxt:Opt("OPT_IGNORE")
                 :Dialog("DIALOG_IGNORE")
                 :ReceiveOpinion("peeved")
-                :CompleteQuest("feed_ungrate")
+                -- :CompleteQuest("feed_ungrate")
+                :DoneConvo()
             end)
     :State("STATE_GRATEFUL")
         :Loc{
@@ -569,11 +578,11 @@ QDEF:AddConvo("dole_out_three")
                 :RecruitMember( PARTY_MEMBER_TYPE.HIRED )
                 :Dialog("DIALOG_BRING_ALONG")
                 :ReceiveOpinion("gratitude")
-                :CompleteQuest("feed_grateful")
+                -- :CompleteQuest("feed_grateful")
                 :Travel()
             cxt:Opt("OPT_DONT")
                 :Dialog("DIALOG_DONT_BRING")
-                :CompleteQuest("feed_grateful")
+                -- :CompleteQuest("feed_grateful")
                 :Travel()
             --end
         end)
