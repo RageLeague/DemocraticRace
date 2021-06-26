@@ -104,6 +104,7 @@ local QDEF = QuestDef.Define
     title = "Talk to {primary_advisor} about the plan.",
     on_complete = function(quest)
         quest:Activate("get_job")
+        DemocracyUtil.StartFreeTime()
     end,
 }
 :AddObjective{
@@ -500,13 +501,16 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
 
                 ConvoUtil.DoSleep(cxt, "DIALOG_WAKE")
 
+                DemocracyUtil.DoAlphaMessage()
+
+                return
+
                 cxt.quest:Complete()
 
                 cxt:Opt("OPT_LEAVE")
                     :MakeUnder()
                     :Fn(function()
                         cxt.encounter:DoLocationTransition( cxt.quest:GetCastMember("home") )
-                        DemocracyUtil.DoAlphaMessage()
                         cxt:End()
                     end)
 

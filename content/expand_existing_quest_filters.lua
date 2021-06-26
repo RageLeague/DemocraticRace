@@ -13,7 +13,8 @@ local QUEST_IDS = {
     "THE_TOTEM",
     "WANDERING_CHEF",
     "ANIMAL_CONTROL",
-    "EVENT_SAL_GETS_AN_ENVELOPE",
+    -- Yeah this doesn't work as you get to fight a monster
+    -- "EVENT_SAL_GETS_AN_ENVELOPE",
     "PET_RESCUE",
     "PET_SELLER",
 
@@ -25,7 +26,8 @@ local QUEST_IDS = {
     "EVENT_DEEP_BOGGER_01",
     "EVENT_FILTHY_GRAFT",
     "EVENT_FOUND_BY_LUMICYTE",
-    "EVENT_HESHIAN_MEDITATION",
+    -- This doesn't help
+    -- "EVENT_HESHIAN_MEDITATION",
     "EVENT_ROOK_POINTS_A_FINGER",
     "EVENT_SCRAP_COLLECTOR",
 
