@@ -2144,7 +2144,7 @@ local MODIFIERS =
             "If this reaches {2} stacks, deal {3} damage to the opponent's core argument and reset the stacks to 1.\n\n" ..
             "At the end of {1}'s turn, half the number of stacks on this, rounded up.",
         desc_fn = function(self, fmt_str)
-            return loc.format(self:GetOwnerName(), self.threshold, self.explode_damage)
+            return loc.format(fmt_str, self:GetOwnerName(), self.threshold, self.explode_damage)
         end,
 
         modifier_type = MODIFIER_TYPE.PERMANENT,
@@ -2154,7 +2154,7 @@ local MODIFIERS =
         explode_damage = 15,
 
         OnEndTurn = function( self, minigame )
-            self.negotiator:DeltaModifier(self, -Math.floor(self.stacks / 2))
+            self.negotiator:DeltaModifier(self, -math.floor(self.stacks / 2))
         end,
         event_handlers =
         {

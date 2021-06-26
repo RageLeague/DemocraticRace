@@ -177,7 +177,7 @@ QDEF:AddIntro(
 		To prove it, run along and find me a good player when you find the time.
     ]],
 	--Wumpus;I think the game was not so much chess as more...coin flip poker.
-	--Every card that mentions it just makes the joke that the game is confusing and that's how Rook befuddles his opponents 
+	--Every card that mentions it just makes the joke that the game is confusing and that's how Rook befuddles his opponents
     --on accept
     [[
         player:
@@ -193,8 +193,7 @@ QDEF:AddConvo("find_challenger")
         DIALOG_ASK = [[
             player:
                 I've got a sucker, {giver}, just ready to give up his shills to whoever plays him. Want in?
-		|
-		You play Chess(?). I've got someone who wants to play, if you're interested.
+        		You play Chess(?). I've got someone who wants to play, if you're interested.
             agent:
                 Why tho?
             {good_player?
@@ -365,7 +364,7 @@ QDEF:AddConvo("go_to_game")
 		    !angrypoint
 		    Wait, woah! I know you fudged the scoring bracket somewhere along the lines
 		giver:
-		    !hips		
+		    !hips
 		    You can hand-inspect it, if you'd like. I made no such adjustments.
                 player:
                     !left
@@ -471,7 +470,7 @@ QDEF:AddConvo("go_to_game")
 		   !angry
 		   All in.
 		challenger:
-		   Your loss. 
+		   Your loss.
                    !coinflip
 	        * In a matter of seconds after the coin lands on the table, a bellow of anger erupts from {giver}.
                 challenger:
@@ -488,7 +487,7 @@ QDEF:AddConvo("go_to_game")
 		   {player}. Please, <i> escort </> {challenger} away from the table.
 		   !angry
 		   Forcefully, I must mandate.
-            ]],        
+            ]],
 
             OPT_ATTACK = "Attack {challenger}, as requested",
 

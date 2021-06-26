@@ -195,7 +195,7 @@ local QDEF = QuestDef.Define
             end
         end
 
-        DBG(population_count)
+        -- DBG(population_count)
 
         QuestUtil.DoNextDay(DAY_SCHEDULE, quest, quest.param.start_on_day )
         quest:DefFn("on_post_load")
