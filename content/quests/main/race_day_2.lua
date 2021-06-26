@@ -19,9 +19,9 @@ local QDEF = QuestDef.Define
 :AddSubQuest{
     id = "meet_opposition",
     quest_id = "RACE_INTRODUCE_OPPOSITION",
-    on_activate = function(quest)
-        DemocracyUtil.SetSubdayProgress(2)
-    end,
+    -- on_activate = function(quest)
+    --     DemocracyUtil.SetSubdayProgress(2)
+    -- end,
     on_complete = function(quest)
         DemocracyUtil.StartFreeTime()
         quest:Activate("get_job")
@@ -33,7 +33,7 @@ local QDEF = QuestDef.Define
     mark = {"primary_advisor"},
     on_activate = function(quest)
         UIHelpers.PassTime(DAY_PHASE.NIGHT)
-        DemocracyUtil.SetSubdayProgress(3)
+        DemocracyUtil.SetSubdayProgress(2)
         -- gives you enough time to go to a bar and drink
         DemocracyUtil.StartFreeTime(0.5)
     end,
@@ -45,7 +45,7 @@ local QDEF = QuestDef.Define
     id = "do_summary",
     quest_id = "RACE_DAY_END_SUMMARY",
     on_activate = function(quest)
-        DemocracyUtil.SetSubdayProgress(4)
+        DemocracyUtil.SetSubdayProgress(3)
     end,
     on_complete = function(quest)
         quest:Activate("go_to_sleep")
@@ -66,7 +66,7 @@ local QDEF = QuestDef.Define
     id = "starting_out",
     title = "Talk to {primary_advisor} about the plan.",
     on_complete = function(quest)
-        quest:Activate("get_job")
+        quest:Activate("meet_opposition")
     end,
 }
 :AddObjective{
@@ -112,9 +112,7 @@ local QDEF = QuestDef.Define
         quest.param.recent_job = quest.param.current_job
         quest.param.current_job = nil
 
-        if (#quest.param.job_history == 1) then
-            quest:Activate("meet_opposition")
-        elseif (#quest.param.job_history >= 2) then
+        if (#quest.param.job_history >= 1) then
             quest:Activate("do_interview")
         else
             quest:Activate("get_job")
@@ -197,41 +195,9 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             primary_advisor:
                 Well yeah! Voting day is in a matter of days, and people are only looking up from their work now.
                 The image you have now is a lot more impactful than it was before.
-                Hey! Wake up!
-            * You suddenly snap awake, realizing you we're drifting off.
-            primary_advisor:
-                What's got you running on fumes today?
-            player:
-                Well it might have to do with how I was awoken by the gentle touch of a hired assasain.
-            primary_advisor:
-            {not dead_body?
-                Hesh, really? How did I not know?
-            player:
-                Well, you were in your office, setting up this oh-so important interview.
-            primary_advisor:
-                Impossible, I am the advisor. I see ALL.
-            }
-            {dead_body?
-                Yeah, that's kind of a problem, huh?
-                Still, can't believe you managed to survive and kill someone with much better training than you.
-                {1:
-                    |
-                    And still have the energy to kill a patrol leader right after that.
-                }
-            player:
-                !happy
-                That's a compliment, right?
-            primary_advisor:
-            }
-                I can get a few contractors to fix up the office, maybe keep the building safer.
-                But you, on your daily jaunts, won't be so lucky.
-                How about you hire a bodyguard? Some'll do it for cheap, especially if you promise them job security and such.
-            player:
-                That actually sounds like a good idea. There's a first for everything.
-            primary_advisor:
-                Yes, yes, laud me later. Now get in the bathroom, you smell like a puss-matted vroc.
-            * With {primary_advisor} yelling to you about details with the interview, you clean yourself up and get ready for another stressful day.
-            ** You can now hire bodyguards!
+                Speaking of which, there is someone who wants to speak with you.
+            * [p] Oh look, there they are.
+            * Better greet them.
         ]],
     }
     :Fn(function(cxt)
@@ -241,9 +207,9 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         cxt:Dialog("DIALOG_INTRO", dead_bodies and #dead_bodies)
         DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 2)
         cxt:Dialog("DIALOG_INTRO_PST")
-        QuestUtil.SpawnQuest("CAMPAIGN_BODYGUARD")
         cxt:GetCastMember("player_room"):Forget("HAS_DEAD_BODY")
         cxt.quest:Complete("starting_out")
+        StateGraphUtil.AddEndOption(cxt)
     end)
 
 QDEF:AddConvo("get_job")

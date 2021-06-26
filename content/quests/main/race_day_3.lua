@@ -23,65 +23,54 @@ local QDEF = QuestDef.Define
     GET_JOB_ALONE = "Think of a way to gain support.",
     GET_JOB_ADVISOR = "Discuss with {primary_advisor} about how to gain support.",
 }
--- :AddSubQuest{
---     id = "meet_opposition",
---     quest_id = "RACE_INTRODUCE_OPPOSITION",
+-- :AddObjective{
+--     -- we want to branch out during the noon now that new mechanics are all introduced.
+--     -- If the advisor likes you, you can start a request quest with them.
+--     -- If your ideal align with an existing candidate, you can talk about alliances.
+--     -- Otherwise, do something else, idk.
+--     id = "noon_event",
 --     on_activate = function(quest)
 --         DemocracyUtil.SetSubdayProgress(2)
+--         local potential_subquests = copykeys(NOON_QUEST_PRIORITY)
+--         table.shuffle(potential_subquests)
+
+--         table.stable_sort(potential_subquests, function(a, b)
+--             return (NOON_QUEST_PRIORITY[a] or 0) > (NOON_QUEST_PRIORITY[b] or 0)
+--         end)
+--         for i, id in ipairs(potential_subquests) do
+--             quest.param.noon_subquest = QuestUtil.SpawnQuest( id )
+--             if quest.param.noon_subquest then
+--                 quest.param.noon_subquest.param.parent_quest = quest
+--                 return
+--             end
+--         end
+--         assert_warning(quest.param.noon_subquest, "No noon subquest spawned.")
+--         if not quest.param.noon_subquest then
+--             quest:Complete("noon_event")
+--         end
 --     end,
+--     events = {
+--         quests_changed = function(quest, event_quest)
+
+--             if quest.param.noon_subquest == event_quest then
+--                 if event_quest:IsDone() then
+--                     quest:Complete("noon_event")
+--                 end
+--             end
+--         end
+--     },
 --     on_complete = function(quest)
 --         DemocracyUtil.StartFreeTime()
 --         quest:Activate("get_job")
 --     end,
 -- }
-:AddObjective{
-    -- we want to branch out during the noon now that new mechanics are all introduced.
-    -- If the advisor likes you, you can start a request quest with them.
-    -- If your ideal align with an existing candidate, you can talk about alliances.
-    -- Otherwise, do something else, idk.
-    id = "noon_event",
-    on_activate = function(quest)
-        DemocracyUtil.SetSubdayProgress(2)
-        local potential_subquests = copykeys(NOON_QUEST_PRIORITY)
-        table.shuffle(potential_subquests)
-
-        table.stable_sort(potential_subquests, function(a, b)
-            return (NOON_QUEST_PRIORITY[a] or 0) > (NOON_QUEST_PRIORITY[b] or 0)
-        end)
-        for i, id in ipairs(potential_subquests) do
-            quest.param.noon_subquest = QuestUtil.SpawnQuest( id )
-            if quest.param.noon_subquest then
-                quest.param.noon_subquest.param.parent_quest = quest
-                return
-            end
-        end
-        assert_warning(quest.param.noon_subquest, "No noon subquest spawned.")
-        if not quest.param.noon_subquest then
-            quest:Complete("noon_event")
-        end
-    end,
-    events = {
-        quests_changed = function(quest, event_quest)
-
-            if quest.param.noon_subquest == event_quest then
-                if event_quest:IsDone() then
-                    quest:Complete("noon_event")
-                end
-            end
-        end
-    },
-    on_complete = function(quest)
-        DemocracyUtil.StartFreeTime()
-        quest:Activate("get_job")
-    end,
-}
 :AddSubQuest{
     id = "do_debate",
     quest_id = "RACE_DEBATE_SCRUM",
     -- mark = {"primary_advisor"},
     on_activate = function(quest)
         UIHelpers.PassTime(DAY_PHASE.NIGHT)
-        DemocracyUtil.SetSubdayProgress(3)
+        DemocracyUtil.SetSubdayProgress(2)
         -- gives you enough time to go to a bar and drink
         DemocracyUtil.StartFreeTime(0.5)
     end,
@@ -93,7 +82,7 @@ local QDEF = QuestDef.Define
     id = "do_summary",
     quest_id = "RACE_DAY_END_SUMMARY",
     on_activate = function(quest)
-        DemocracyUtil.SetSubdayProgress(4)
+        DemocracyUtil.SetSubdayProgress(3)
     end,
     on_complete = function(quest)
         quest:Activate("go_to_sleep")
@@ -115,6 +104,7 @@ local QDEF = QuestDef.Define
     title = "Talk to {primary_advisor} about the plan.",
     on_complete = function(quest)
         quest:Activate("get_job")
+        DemocracyUtil.StartFreeTime()
     end,
 }
 :AddObjective{
@@ -160,9 +150,7 @@ local QDEF = QuestDef.Define
         quest.param.recent_job = quest.param.current_job
         quest.param.current_job = nil
 
-        if (#quest.param.job_history == 1) then
-            quest:Activate("noon_event")
-        elseif (#quest.param.job_history >= 2) then
+        if (#quest.param.job_history >= 1) then
             quest:Activate("do_debate")
         else
             quest:Activate("get_job")
@@ -191,15 +179,253 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 Also, do you know there's a debate coming?
                 It's a good way to ally with other candidates. And a good way to gain support.
                 In other words, it's very important.
+            {has_potential_ally?
+                {advisor_favor?
+                    Oh, that reminds me.
+                    There is something I want to ask of you...
+                    |
+                    Well, get to work...
+                }
+                * Before {agent} finishes {agent.hisher} sentence, you are interrupted by someone visiting.
+            }
+            {not has_potential_ally and advisor_favor?
+                Oh, that reminds me.
+                There is something I want to ask of you.
+            player:
+                Oh, what is it?
+            }
+            {not has_potential_ally and not advisor_favor?
+                Well, get to work.
+                The support is not going to gain itself.
+            * {agent} leaves you to your own accord.
+            }
         ]],
     }
     :Fn(function(cxt)
 
+        -- Generate advisor favor
+        do
+            cxt.enc.scratch.advisor_favor = cxt:GetCastMember("primary_advisor")
+                and cxt:GetCastMember("primary_advisor"):GetRelationship() == RELATIONSHIP.LIKED
+                and not DemocracyUtil.HasRequestQuest(cxt:GetCastMember("primary_advisor"))
+            if cxt.enc.scratch.advisor_favor then
+                cxt.enc.scratch.favor_request = DemocracyUtil.SpawnRequestQuest(cxt:GetCastMember("primary_advisor"))
+                if not cxt.enc.scratch.favor_request then
+                    cxt.enc.scratch.advisor_favor = nil
+                end
+            end
+        end
+        -- Generate opposition alliance
+        do
+            local best_characters = {}
+            local best_score = RELATIONSHIP.LIKED
+            for id, data in pairs(DemocracyConstants.opposition_data) do
+                local main_faction = data.main_supporter or "FEUD_CITIZEN"
+                local val, reason = DemocracyUtil.GetAlliancePotential(id)
+                -- quest:Trace("[%s] Val=%d, Reason=%s", id, val, reason)
+                if val then
+                    local endorsement = DemocracyUtil.GetEndorsement(val)
+                    if endorsement >= best_score then
+
+                        if endorsement > best_score then
+                            best_score = endorsement
+                            best_characters = {}
+                        end
+
+                        table.insert(best_characters, data)
+                    end
+                end
+            end
+            if #best_characters > 0 then
+                local data = table.arraypick(best_characters)
+                local agent = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
+                cxt.enc.scratch.potential_ally = agent
+                cxt.enc.scratch.ally_work_pos = data.workplace
+                cxt.enc.scratch.ally_platform = data.platform
+                cxt.enc.scratch.has_potential_ally = true
+
+                if cxt.enc.scratch.ally_platform then
+                    cxt.enc.scratch.stance_index = data.stances[cxt.enc.scratch.ally_platform]
+                    if cxt.enc.scratch.ally_platform and cxt.enc.scratch.stance_index then
+                        cxt.enc.scratch.ally_stance = cxt.enc.scratch.ally_platform .. "_" .. cxt.enc.scratch.stance_index
+                    end
+                end
+            end
+        end
+        -- Actual stuff
         cxt:Dialog("DIALOG_INTRO")
         DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 3)
         cxt:Dialog("DIALOG_INTRO_PST")
-        cxt.quest:Complete("starting_out")
+        if cxt.quest.param.has_potential_ally then
+
+        elseif cxt.enc.scratch.advisor_favor then
+
+        else
+            cxt.quest:Complete("starting_out")
+            StateGraphUtil.AddLeaveLocation(cxt)
+        end
     end)
+    :State("STATE_ALLIANCE")
+        :Loc{
+            DIALOG_INTRO = [[
+                agent:
+                    !right
+                    [p] 'Sup.
+                    Our platforms are very similar to each other.
+                    Perhaps it's a good time to strike an alliance?
+                primary_advisor:
+                    !right
+                    I'll leave you to it.
+            ]],
+            OPT_ACCEPT = "Accept",
+
+            DIALOG_ACCEPT = [[
+                player:
+                    [p] You know what, I agree.
+                    If we can work together, we will surely win!
+                agent:
+                    Excellent! That's the kind of stuff I like to hear!
+                * You've agreed to ally with {agent}.
+                agent:
+                    Feel free to visit me at {ally_work_pos#location}.
+                player:
+                    Thanks.
+                agent:
+                    !exit
+                * {agent} leaves, leaving you with {primary_advisor}.
+            ]],
+            OPT_DECLINE = "Decline",
+
+            DIALOG_DECLINE = [[
+                player:
+                    [p] While that is a great offer, I have to decline, unfortunately.
+                    Sorry if I offended you, but I want to keep my options open.
+                agent:
+                    I see.
+                    It is a real shame.
+                    Well, if you ever change your mind, visit me at {ally_work_pos#location}.
+                player:
+                    I'll keep that in mind, thanks.
+                agent:
+                    !exit
+                * {agent} leaves, leaving you with {primary_advisor}.
+            ]],
+
+            DIALOG_CHOOSE_PST = [[
+                agent:
+                    !right
+                * Your advisor comes to you.
+                agent:
+                {allied?
+                    So you decided to ally with {potential_ally}?
+                    Good for you.
+                player:
+                    I think it is the best course of action right now.
+                agent:
+                    I think so too.
+                    Just beware that other candidates might not like this, and will never ally with you.
+                player:
+                    Well, let's see what happens.
+                }
+                {not allied?
+                    So you decided to not ally with {potential_ally}?
+                player:
+                    I'm looking into more options before I make a decision.
+                agent:
+                    Perhaps that is the correct decision.
+                    You can always find {potential_ally} later, although it will take up some of your time.
+                player:
+                    True.
+                }
+                agent:
+                    Anyway, just keep gathering support and prepare for the debate tonight.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:TalkTo(cxt.enc.scratch.potential_ally)
+            cxt:Dialog("DIALOG_INTRO")
+
+            cxt:Opt("OPT_ACCEPT")
+                :PreIcon(global_images.accept)
+                :Dialog("DIALOG_ACCEPT")
+                :ReceiveOpinion(OPINION.ALLIED_WITH)
+                :UpdatePoliticalStance(cxt.enc.scratch.ally_platform, cxt.enc.scratch.stance_index)
+                :Fn(function(cxt)
+                    cxt.enc.scratch.allied = true
+                    DemocracyUtil.DoLocationUnlock(cxt, cxt.enc.scratch.ally_work_pos)
+                    cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
+                end)
+                :Dialog("DIALOG_CHOOSE_PST")
+                :CompleteQuest("starting_out")
+                :Travel()
+
+            cxt:Opt("OPT_DECLINE")
+                :PreIcon(global_images.reject)
+                :Dialog("DIALOG_DECLINE")
+                :Fn(function(cxt)
+                    DemocracyUtil.DoLocationUnlock(cxt, cxt.enc.scratch.ally_work_pos)
+                    cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
+                end)
+                :Dialog("DIALOG_CHOOSE_PST")
+                :CompleteQuest("starting_out")
+                :Travel()
+        end)
+    :State("STATE_FAVOR")
+        :Loc{
+            DIALOG_INTRO = [[
+                agent:
+                    I know you're working hard to campaign, but I want you to do something for me.
+                    Of course, you don't have to accept it.
+                    I want you to focus on the campaign if you need to, but if you think you have time to spare, maybe you can help me.
+                player:
+                    What do I get out of this?
+                agent:
+                    I will love you, and will help you as much as I can.
+                player:
+                    Sounds appealing.
+                    Tell me what you want me to do, then.
+            ]],
+            DIALOG_REJECT = [[
+                player:
+                    I'm sorry, but I need to focus on the campaign.
+                    I believe the campaign is surely more important than whatever you're doing.
+                agent:
+                    You're right, of course.
+                    Forget I ever asked anything.
+                    Anyway, get back to gaining support.
+                    They aren't going to gain themselves.
+            ]],
+            DIALOG_ACCEPT = [[
+                agent:
+                    Anyway, if you want to do it with your free time, that is okay.
+                    I don't want you to abandon the campaign for me.
+                player:
+                    Sure thing.
+                agent:
+                    Anyway, get back to gaining support.
+                    They aren't going to gain themselves.
+            ]],
+        }
+        :RunLoopingFn(function(cxt)
+            if cxt:FirstLoop() then
+                cxt:Dialog("DIALOG_INTRO")
+            end
+            cxt:QuestOpt( cxt.enc.scratch.request_quest )
+                :Fn(function(cxt)
+                    cxt:PlayQuestConvo(cxt.enc.scratch.request_quest, QUEST_CONVO_HOOK.INTRO)
+                    DemocracyUtil.PresentRequestQuest(cxt, cxt.enc.scratch.request_quest, function(cxt,quest)
+                        cxt:PlayQuestConvo(quest, QUEST_CONVO_HOOK.ACCEPTED)
+                        cxt:Dialog("DIALOG_ACCEPT")
+                        cxt.quest:Complete("starting_out")
+                        StateGraphUtil.AddLeaveLocation(cxt)
+                    end, function(cxt, quest)
+                        cxt:Dialog("DIALOG_REJECT")
+                        cxt.quest:Complete("starting_out")
+                        StateGraphUtil.AddLeaveLocation(cxt)
+                    end)
+
+                end)
+        end)
 
 QDEF:AddConvo("get_job")
     :ConfrontState("STATE_CONFRONT", function(cxt)
@@ -275,13 +501,16 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
 
                 ConvoUtil.DoSleep(cxt, "DIALOG_WAKE")
 
+                DemocracyUtil.DoAlphaMessage()
+
+                return
+
                 cxt.quest:Complete()
 
                 cxt:Opt("OPT_LEAVE")
                     :MakeUnder()
                     :Fn(function()
                         cxt.encounter:DoLocationTransition( cxt.quest:GetCastMember("home") )
-                        DemocracyUtil.DoAlphaMessage()
                         cxt:End()
                     end)
 
