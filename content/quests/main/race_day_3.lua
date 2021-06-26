@@ -503,7 +503,9 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
 
                 DemocracyUtil.DoAlphaMessage()
 
-                return
+                if true then
+                    return
+                end
 
                 cxt.quest:Complete()
 
