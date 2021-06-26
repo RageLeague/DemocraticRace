@@ -93,8 +93,10 @@ local COMMON_LOC = {
 
 local function GetAdvisorFn(advisor_id)
     return function(cxt)
-        cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember(advisor_id))
-        cxt:Dialog("DIALOG_INTRO")
+        if cxt:FirstLoop() then
+            cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember(advisor_id))
+            cxt:Dialog("DIALOG_INTRO")
+        end
         cxt:Question("OPT_QUESTION", "DIALOG_QUESTION")
         cxt:Opt("OPT_PICK")
             :PreIcon(global_images.accept)
@@ -271,6 +273,7 @@ QDEF:AddConvo("choose_advisor", "advisor_diplomacy")
                     Oh well. Take your time.
             ]],
         }
+        :SetLooping()
         :Fn(GetAdvisorFn("advisor_diplomacy"))
 QDEF:AddConvo("choose_advisor", "advisor_hostile")
     :AttractState("STATE_TALK")
@@ -312,6 +315,7 @@ QDEF:AddConvo("choose_advisor", "advisor_hostile")
                     Do you not want to win?
             ]],
         }
+        :SetLooping()
         :Fn(GetAdvisorFn("advisor_hostile"))
 QDEF:AddConvo("choose_advisor", "advisor_manipulate")
     :AttractState("STATE_TALK")
@@ -353,6 +357,7 @@ QDEF:AddConvo("choose_advisor", "advisor_manipulate")
                     Not everyone can understand logic instantly. Take your time to figure out the logical course of action.
             ]],
         }
+        :SetLooping()
         :Fn(GetAdvisorFn("advisor_manipulate"))
 QDEF:AddConvo("discuss_plan", "primary_advisor")
     :AttractState("STATE_TALK")
