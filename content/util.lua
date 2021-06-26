@@ -165,16 +165,28 @@ function DemocracyUtil.StartFreeTime(actions)
     end
     return quest
 end
+
+function DemocracyUtil.GetFreeTimeQuests()
+    local result = {}
+    for i, quest in TheGame:GetGameState():ActiveQuests() do
+        local objective_id = quest:GetQuestDef().free_time_objective_id
+        if objective_id and quest:IsActive(objective_id) then
+            table.insert(result, quest)
+        end
+    end
+    return result
+end
+
 function DemocracyUtil.EndFreeTime()
     -- TheGame:GetGameState():ClearOpportunities()
-    local events = TheGame:GetGameState():GetActiveQuestWithContentID( "FREE_TIME_EVENT" )
+    local events = DemocracyUtil.GetFreeTimeQuests()
     for i, event in ipairs(events) do
         print("End quest: " .. tostring(event))
         event:Complete()
     end
 end
 function DemocracyUtil.IsFreeTimeActive()
-    return #(TheGame:GetGameState():GetActiveQuestWithContentID( "FREE_TIME_EVENT" )) > 0
+    return #(DemocracyUtil.GetFreeTimeQuests()) > 0
 end
 local SUPPORT_DELTA = {
     [RELATIONSHIP.HATED] = -60,
@@ -1229,7 +1241,6 @@ function QuestDef:AddFreeTimeObjective( child )
         on_activate = function(quest)
             quest.param.free_time_actions = math.round(DemocracyUtil.GetBaseFreeTimeActions() * (quest:GetQuestDef().action_multiplier or 1))
         end,
-        is_free_time = true,
         events =
         {
             resolve_negotiation = function(quest, minigame)
@@ -1259,6 +1270,7 @@ function QuestDef:AddFreeTimeObjective( child )
         end
         quest:NotifyChanged()
     end
+    self.free_time_objective_id = new_child.id
 
     self:AddObjective(new_child)
 
