@@ -90,13 +90,13 @@ local QDEF = QuestDef.Define
 }
 :AddCast{
     cast_id = "host",
-    cast_fn = function(quest, t) 
+    cast_fn = function(quest, t)
         if quest:GetCastMember("theater"):GetProprietor() then
             table.insert(t, quest:GetCastMember("theater"):GetProprietor())
         end
     end,
     when = QWHEN.MANUAL,
-    events = 
+    events =
     {
         agent_retired = function( quest, agent )
             -- if quest:IsActive( "get_snail" ) then
@@ -191,7 +191,7 @@ local QDEF = QuestDef.Define
 -- }
 
 -- :AddLocationDefs{
-    
+
 -- }
 
 :AddOpinionEvents{
@@ -276,7 +276,7 @@ QDEF:AddConvo("do_interview")
             Have a seat, {player}.
                 player:
                     !left
-                * Some clapped, others booed your arrival.  
+                * Some clapped, others booed your arrival.
                 agent:
                     A little background for the audience, {player} is actually a retired Grifter, hanging up {player.hisher} weapons to join Havaria's First Election.
                 {liked?
@@ -336,7 +336,7 @@ QDEF:AddConvo("do_interview")
             ]],
         }
         :Fn(function(cxt)
-            
+
             cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("host"))
             cxt:Dialog("DIALOG_INTRO")
             cxt:GetAgent():SetTempNegotiationBehaviour(INTERVIEWER_BEHAVIOR)
@@ -353,7 +353,7 @@ QDEF:AddConvo("do_interview")
                 cxt.quest.param.num_dislikes = 0
                 for i, data in ipairs(agent_supports) do
                     local current_support = DemocracyUtil.TryMainQuestFn("GetSupportForAgent", data[1])
-                    local support_delta = current_support - data[2] + RELATION_OFFSET[data[1]:GetRelationship()] + math.random(-35, 15)
+                    local support_delta = current_support - data[2] + RELATION_OFFSET[data[1]:GetRelationship()] + math.random(-30, 20)
                     if support_delta > 20 then
                         table.insert(agent_response, {data[1], "likes_interview"})
                         cxt.quest.param.num_likes = cxt.quest.param.num_likes + 1
