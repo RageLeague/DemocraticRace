@@ -1,3 +1,7 @@
+local function CanFeed(agent)
+    return DemocracyUtil.RandomBystanderCondition(agent)
+end
+
 local QDEF = QuestDef.Define{
     title = "Dole out",
     desc = "Give Bread to the poor to gain support",
@@ -6,10 +10,22 @@ local QDEF = QuestDef.Define{
     act_filter = DemocracyUtil.DemocracyActFilter,
     focus = QUEST_FOCUS.NEGOTIATION,
     tags = {"RALLY_JOB"},
+    reward_mod = 0,
+
     on_start = function(quest)
         quest:Activate("dole_out_three")
         quest:Activate("time_countdown")
     end,
+
+    on_complete = function(quest)
+        -- if quest.param.poor_performance then
+        --     DemocracyUtil.DeltaGeneralSupport(2 * #quest.param.posted_location, "POOR_QUEST")
+        -- else
+        local score = 3 * (quest.param.feed_people or 0)
+        DemocracyUtil.DeltaGeneralSupport(score, "COMPLETED_QUEST")
+        -- end
+    end,
+
     precondition = function(quest)
         return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")
     end,
@@ -31,7 +47,7 @@ local QDEF = QuestDef.Define{
         if in_location then
             local location = TheGame:GetGameState():GetPlayerAgent():GetLocation()
             for i, agent in location:Agents() do
-                if DemocracyUtil.RandomBystanderCondition(agent) then
+                if CanFeed(agent) then
                     table.insert(t, agent)
                 end
             end
@@ -176,14 +192,13 @@ QDEF:AddConvo("dole_out_three")
     }
         --this is the randomizer. for some reason the option part doesn't work for some reason, but i'll fix that at some point
     :Hub(function(cxt, who)
-        if who and not AgentUtil.HasPlotArmour(who) and (who:GetFactionID() == "FEUD_CITIZEN" and who:GetRenown() <= 2)
-            or (who:GetFactionID() == "RISE" and who:GetRenown() <= 2) and not (who:GetProprietor()) then
+        if who and CanFeed(who) then
 
             cxt:Opt("OPT_GIVE_BREAD")
                 :Dialog("DIALOG_SATISFIES_CONDITIONS")
                 :SetQuestMark()
                 :RequireFreeTimeAction(1)
-                :Fn(function(cxt, who)
+                :Fn(function(cxt)
                     local weight = {
                         STATE_PANHANDLER = 1,
                         STATE_GRATEFUL = 3,
@@ -494,7 +509,7 @@ QDEF:AddConvo("dole_out_three")
                     [p] Hey. Want some bread?
                 agent:
                     Sure. Y'know, you're alright.
-                    What can I do to repay you?
+                    Thanks!
             ]],
             -- Bringing someone just for gifting them is extremely op, so we just repurpose this to be the default response.
             -- OPT_BRING_ALONG = "Let them tag along for a while.",

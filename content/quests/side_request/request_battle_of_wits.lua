@@ -766,6 +766,18 @@ FOLLOW_UP = QDEF:AddFollowup({
         base_difficulty_change = function(quest, new_diff, old_diff)
             quest:SetRank(new_diff)
         end,
+        agent_location_changed = function(quest, agent, old_loc, new_loc)
+            if agent == TheGame:GetGameState():GetPlayerAgent() and new_loc and new_loc:HasTag("tavern")
+                and quest:IsActive("comfort") then
+                local giver = quest:GetCastMember("giver")
+                if not giver then
+                    return
+                end
+                if (giver:InLimbo() or giver:GetLocation() == giver:GetHomeLocation()) and not AgentUtil.IsInHiding(giver) then
+                    giver:GetBrain():SendToPatronize(new_loc)
+                end
+            end
+        end,
     }
 })
 
