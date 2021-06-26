@@ -89,12 +89,8 @@ local QDEF = QuestDef.Define{
         txt = "Gave them money and bread.",
     },
     peeved = {
-        delta = OPINION_DELTAS.MAJOR_BAD,
+        delta = OPINION_DELTAS.BAD,
         txt = "Called a populist.",
-    },
-    gratitude = {
-        delta = OPINION_DELTAS.MAJOR_GOOD,
-        txt = "Let them tag along.",
     },
     political_waffle = {
         delta = OPINION_DELTAS.MAJOR_GOOD,
@@ -190,12 +186,12 @@ QDEF:AddConvo("dole_out_three")
                 :Fn(function(cxt, who)
                     local weight = {
                         STATE_PANHANDLER = 1,
-                        STATE_GRATEFUL = 1,
-                        STATE_UNGRATEFUL = who:GetRenown() * (who:GetRenown() + 1) / 2,
+                        STATE_GRATEFUL = 3,
+                        STATE_UNGRATEFUL = who:GetRenown() * who:GetRenown(),
                         STATE_POLITICAL = 1,
                     }
                     if who:GetFactionID() == "RISE" then
-                        weight.STATE_POLITICAL = weight.STATE_POLITICAL + 2
+                        weight.STATE_POLITICAL = weight.STATE_POLITICAL + 1
                     end
                     local state = weightedpick(weight)
                     cxt:GoTo(state)
@@ -500,39 +496,30 @@ QDEF:AddConvo("dole_out_three")
                     Sure. Y'know, you're alright.
                     What can I do to repay you?
             ]],
-            OPT_BRING_ALONG = "Let them tag along for a while.",
-            DIALOG_BRING_ALONG = [[
-                player:
-                    Come with me. I shall take you to the promised land.
-                agent:
-                    Wait...are you jesus?
-                player:
-                    Don't know who jesus is...come on now.
-            ]],
-            OPT_DONT = "Don't bring them along.",
-            DIALOG_DONT_BRING = [[
-                player:
-                    [p] I don't like the fact ' break code.
-                agent:
-                    how did you say apostrophe without saying it?
-                player:
-                    I don't know. thanks for the offer.
-            ]]
+            -- Bringing someone just for gifting them is extremely op, so we just repurpose this to be the default response.
+            -- OPT_BRING_ALONG = "Let them tag along for a while.",
+            -- DIALOG_BRING_ALONG = [[
+            --     player:
+            --         Come with me. I shall take you to the promised land.
+            --     agent:
+            --         Wait...are you jesus?
+            --     player:
+            --         Don't know who jesus is...come on now.
+            -- ]],
+            -- OPT_DONT = "Don't bring them along.",
+            -- DIALOG_DONT_BRING = [[
+            --     player:
+            --         [p] I don't like the fact ' break code.
+            --     agent:
+            --         how did you say apostrophe without saying it?
+            --     player:
+            --         I don't know. thanks for the offer.
+            -- ]]
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_GRATE")
             cxt.quest.param.people_fed = (cxt.quest.param.people_fed or 0) + 1
-            cxt:Opt("OPT_BRING_ALONG")
-                :RecruitMember( PARTY_MEMBER_TYPE.HIRED )
-                :Dialog("DIALOG_BRING_ALONG")
-                :ReceiveOpinion("gratitude")
-                -- :CompleteQuest("feed_grateful")
-                :Travel()
-            cxt:Opt("OPT_DONT")
-                :Dialog("DIALOG_DONT_BRING")
-                -- :CompleteQuest("feed_grateful")
-                :Travel()
-            --end
+            StateGraphUtil.AddEndOption(cxt)
         end)
 QDEF:AddConvo("dole_out_three", "primary_advisor")
     :Loc{
