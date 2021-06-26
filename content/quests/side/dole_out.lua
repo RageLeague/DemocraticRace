@@ -1,7 +1,7 @@
 local function CanFeed(agent, quest)
     return DemocracyUtil.RandomBystanderCondition(agent)
-        and quest.param.gifted_people and not table.arraycontains(quest.param.gifted_people, agent)
-        and quest.param.rejected_people and not table.arraycontains(quest.param.rejected_people, agent)
+        and not (quest.param.gifted_people and table.arraycontains(quest.param.gifted_people, agent))
+        and not (quest.param.rejected_people and table.arraycontains(quest.param.rejected_people, agent))
 end
 
 local QDEF = QuestDef.Define{
