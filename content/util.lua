@@ -1213,7 +1213,7 @@ function ConvoOption:RequireFreeTimeAction(actions)
     if actions then
         self:PostText("TT_FREE_TIME_ACTION_COST", actions)
     end
-    local freetimeevents = TheGame:GetGameState():GetActiveQuestWithContentID( "FREE_TIME_EVENT" )
+    local freetimeevents = DemocracyUtil.GetFreeTimeQuests()
     -- local q = freetimeevents[1]
     self:ReqCondition(freetimeevents and #freetimeevents > 0, "REQ_FREE_TIME")
     if freetimeevents and #freetimeevents > 0 and actions then
