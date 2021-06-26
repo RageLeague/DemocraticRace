@@ -1,5 +1,7 @@
 local function CanFeed(agent, quest)
-    return DemocracyUtil.RandomBystanderCondition(agent) and quest.param.gifted_people and table.arraycontains(quest.param.gifted_people, agent)
+    return DemocracyUtil.RandomBystanderCondition(agent)
+        and quest.param.gifted_people and not table.arraycontains(quest.param.gifted_people, agent)
+        and quest.param.rejected_people and not table.arraycontains(quest.param.rejected_people, agent)
 end
 
 local QDEF = QuestDef.Define{
@@ -194,6 +196,7 @@ QDEF:AddConvo("dole_out_three")
     :Hub(function(cxt, who)
         if who and CanFeed(who, cxt.quest) then
             cxt.quest.param.gifted_people = cxt.quest.param.gifted_people or {}
+            cxt.quest.param.rejected_people = cxt.quest.param.rejected_people or {}
             cxt:Opt("OPT_GIVE_BREAD")
                 :Dialog("DIALOG_SATISFIES_CONDITIONS")
                 :SetQuestMark()
@@ -394,8 +397,7 @@ QDEF:AddConvo("dole_out_three")
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_CALM_DOWN_FAIL")
-                        -- cxt:ReceiveOpinion("political_angry")
-                        -- cxt.quest:Complete("feed_politic")
+                        cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("political_angry"))
                         StateGraphUtil.AddEndOption(cxt)
                     end
                 }
@@ -434,15 +436,13 @@ QDEF:AddConvo("dole_out_three")
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_CALM_DOWN_2_FAIL")
-                        -- cxt:ReceiveOpinion("political_angry")
-                        -- cxt.quest:Complete("feed_politic")
+                        cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("political_angry"))
                         StateGraphUtil.AddEndOption(cxt)
                     end
                 }
             cxt:Opt("OPT_IGNORE_2")
                 :Dialog("DIALOG_IGNORE_2")
                 :ReceiveOpinion("political_angry")
-                -- :CompleteQuest("feed_politic")
                 :DoneConvo()
         end)
     :State("STATE_UNGRATEFUL")
@@ -493,13 +493,17 @@ QDEF:AddConvo("dole_out_three")
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_CONVINCE_FAIL")
                         -- cxt:ReceiveOpinion("peeved")
+                        cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("peeved"))
+                        table.insert(cxt.quest.param.rejected_people, cxt:GetAgent())
                         StateGraphUtil.AddEndOption(cxt)
                     end,
                 }
             cxt:Opt("OPT_IGNORE")
                 :Dialog("DIALOG_IGNORE")
                 :ReceiveOpinion("peeved")
-                -- :CompleteQuest("feed_ungrate")
+                :Fn(function(cxt)
+                    table.insert(cxt.quest.param.rejected_people, cxt:GetAgent())
+                end)
                 :DoneConvo()
             end)
     :State("STATE_GRATEFUL")
