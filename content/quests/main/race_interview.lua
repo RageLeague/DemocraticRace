@@ -321,6 +321,7 @@ QDEF:AddConvo("do_interview")
             ]],
 
             DIALOG_INTERVIEW = [[
+                * You are here to impress all these people with your interview skills, and convince them to join your side.
                 * Standing in the middle of the stage is {host}, keeping the crowd excited for your entrance.
                 agent:
                     !right
