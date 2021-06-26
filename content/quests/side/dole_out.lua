@@ -15,21 +15,21 @@ local QDEF = QuestDef.Define{
 }
 --now it won't choose the proprietor as a possible cast member.
 :AddCast{
-        cast_id = "pan",
-        when = QWHEN.MANUAL,
-    }
+    cast_id = "pan",
+    when = QWHEN.MANUAL,
+}
 :AddCast{
-        cast_id = "political",
-        when = QWHEN.MANUAL,
-    }
+    cast_id = "political",
+    when = QWHEN.MANUAL,
+}
 :AddCast{
-        cast_id = "grateful",
-        when = QWHEN.MANUAL,
-    }
+    cast_id = "grateful",
+    when = QWHEN.MANUAL,
+}
 :AddCast{
-        cast_id = "ungrateful",
-        when = QWHEN.MANUAL,
-    }
+    cast_id = "ungrateful",
+    when = QWHEN.MANUAL,
+}
 --:AddDefCastSpawn("political", "HEAVY_LABORER")
 --:AddDefCastSpawn("pan", "POOR_MERCHANT")
 --:AddDefCastSpawn("grateful", "LABORER")
@@ -243,19 +243,15 @@ QDEF:AddConvo("dole_out_three")
                     table.remove(castroles, 1)
                     if who == cxt:GetCastMember("pan") then
                         cxt:GoTo("STATE_PANHANDLER")
-                            --table.remove(castroles, 1)
                     end
                     if who == cxt:GetCastMember("grateful") then
-                            cxt:GoTo("STATE_GRATEFUL")
-                            --table.remove(castroles, 3)
+                        cxt:GoTo("STATE_GRATEFUL")
                     end
                     if who == cxt:GetCastMember("ungrateful") then
-                            cxt:GoTo("STATE_UNGRATEFUL")
-                            --table.remove(castroles, 2)
+                        cxt:GoTo("STATE_UNGRATEFUL")
                     end
                     if who == cxt:GetCastMember("political") then
-                            cxt:GoTo("STATE_POLITICAL")
-                            --table.remove(castroles, 4)
+                        cxt:GoTo("STATE_POLITICAL")
                     end
                 end)
         end
@@ -388,40 +384,40 @@ QDEF:AddConvo("dole_out_three")
         :Loc{
             OPT_CALM_DOWN = "Tell them how wrong they are.",
             DIALOG_CALM_DOWN = [[
-            player:
-            Now that isn't what I meant by it and you know it.
+                player:
+                    Now that isn't what I meant by it and you know it.
             ]],
             DIALOG_CALM_DOWN_SUCCESS = [[
-            player:
-            Do my actions not demonstrate my beliefs?
-            I risked my neck by nabbing bags of these for the people of Havaria.
-            agent:
-            I geuss that's true.
-            Pardon, I'm not great at taking rejection for my ideas.
-            player:
-            Well, follow the debates. People'll talk all day long about different ideas.
-            agent:
-            Can't. I got to get to my next shift.
-            player:
-            Well good luck for you, and enjoy the bread
+                player:
+                    Do my actions not demonstrate my beliefs?
+                    I risked my neck by nabbing bags of these for the people of Havaria.
+                agent:
+                    I geuss that's true.
+                    Pardon, I'm not great at taking rejection for my ideas.
+                player:
+                    Well, follow the debates. People'll talk all day long about different ideas.
+                agent:
+                    Can't. I got to get to my next shift.
+                player:
+                    Well good luck for you, and enjoy the bread
             ]],
             DIALOG_CALM_DOWN_FAIL = [[
-            agent:
-            Oh, I get it.
-            You're just trying to butter up the Rise so we'd lay down our arms.
-            You're working with the Barons, aren't you?
-            player:
-            No, No, you've got it all-
-            agent:
-            Get out of my face, you filthy capitalist. You'll profit no longer from this mere worker.
+                agent:
+                    Oh, I get it.
+                    You're just trying to butter up the Rise so we'd lay down our arms.
+                    You're working with the Barons, aren't you?
+                player:
+                    No, No, you've got it all-
+                agent:
+                    Get out of my face, you filthy capitalist. You'll profit no longer from this mere worker.
             ]],
             OPT_IGNORE = "Ignore their complaints, part 1.",
             DIALOG_IGNORE = [[
-            * You put on the best poker face you can manage.
-            * It doesn't help.
-            Agent:
-            What? Not going to defend yourself?
-            Try to excuse yourself from hearing the truth?
+                * You put on the best poker face you can manage.
+                * It doesn't help.
+                Agent:
+                    What? Not going to defend yourself?
+                    Try to excuse yourself from hearing the truth?
             ]],
         }
         :Fn(function(cxt)
