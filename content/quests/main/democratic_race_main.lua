@@ -213,6 +213,12 @@ local QDEF = QuestDef.Define
                 quest.param.local_file_settings[id] = DemocracyUtil.GetModSetting(id)
             end
         end
+        -- For backwards compatibility. Transfer the appropriate fields.
+        local change_fields = {"stances", "stance_change", "stance_change_freebie"}
+        for i, field in ipairs(change_fields) do
+            quest.param[field].RELIGIOUS_POLICY = quest.param[field].ARTIFACT_TREATMENT
+            quest.param[field].ARTIFACT_TREATMENT = nil
+        end
     end,
     fill_out_quip_tags = function(quest, tags, agent)
         table.insert_unique(tags, "democratic_race")

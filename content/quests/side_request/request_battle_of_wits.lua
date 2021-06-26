@@ -434,7 +434,7 @@ QDEF:AddConvo("go_to_game")
             cxt.enc.scratch.impatient = cxt.quest.param.failed_challengers >= 3
             cxt:Dialog("DIALOG_INTRO")
             if cxt.enc.scratch.impatient then
-                cxt:UnassignCastMember("challenger")
+                cxt.quest:UnassignCastMember("challenger")
 
                 cxt:BasicNegotiation("CONVINCE", {
                     situation_modifiers = (cxt.quest.param.bad_challengers or 0) >= 1 and

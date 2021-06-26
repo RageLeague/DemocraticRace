@@ -372,6 +372,10 @@ QDEF:AddConvo("do_debate")
             if not cxt.quest.param.candidate_opinion then
                 cxt.quest.param.candidate_opinion = {}
             end
+            if #cxt.quest.param.questions < 5 then
+                cxt:GoTo("STATE_QUESTION")
+                return
+            end
             for i, agent in cxt.location:Agents() do
                 if agent:GetRoleAtLocation( cxt.location ) == CHARACTER_ROLES.PATRON then
                     if agent:GetRelationship() > RELATIONSHIP.NEUTRAL then
@@ -619,6 +623,7 @@ QDEF:AddConvo("do_debate")
                 cxt:Dialog("DIALOG_POST")
                 ConvoUtil.DoResolveDelta(cxt, 15)
                 cxt.quest.param.fatigued = false
+                DoAutoSave()
             end
             cxt:Opt("OPT_CONTINUE")
                 :GoTo("STATE_QUESTION")
@@ -749,6 +754,7 @@ QDEF:AddConvo("do_debate")
                 end
                 cxt:Dialog("DIALOG_END")
                 cxt.quest.param.fatigued = true
+                DoAutoSave()
             end
             -- DBG(cxt.quest.param.popularity)
             cxt:Opt("OPT_CONTINUE")

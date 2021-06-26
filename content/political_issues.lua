@@ -77,7 +77,7 @@ function IssueLocDef:GetAgentStanceIndex(agent)
         end
 
         if stance_score[id] > 0 then has_vals = true end
-        
+
     end
     -- print(loc.format("Score for {1#agent}: {2},{3},{4},{5},{6}", agent, stance_score[-2], stance_score[-1], stance_score[0], stance_score[1], stance_score[2] ))
     if has_vals then
@@ -551,7 +551,7 @@ local val =  {
             },
         },
     },
-    ARTIFACT_TREATMENT = {
+    RELIGIOUS_POLICY = {
         name = "Artifact Treatment",
         desc = "There are a plenty of artifacts in Havaria, left over from the Vagrant Age. There are dividing opinions on what should we do about them. The Cult thinks that they should be preserved, while the Barons think they should be researched and used.",
         importance = 6,

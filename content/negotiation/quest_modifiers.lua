@@ -1617,6 +1617,7 @@ local MODIFIERS =
                         if modifier.negotiator == self.negotiator then
 
                         else
+                            print("Check if self game over")
                             for i, mod in self.anti_negotiator:Modifiers() do
                                 if mod.modifier_type == MODIFIER_TYPE.CORE and not mod.candidate_agent then
                                     return

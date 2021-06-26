@@ -566,13 +566,13 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             {not cult_of_hesh?
                 It's the cult. They always want more power.
                 But they dont really have anything that jives with the public voting blocks.
-                Well, everything except <!pol_stance_artifact_treatment_2>preserve artifacts</>.
+                Well, everything except <!pol_stance_religious_policy_2>preserve artifacts</>.
                 They'll likely just start preaching about Hesh declaring them the president.
                 Their supporters are going to be rigidly pro-cult unless you stoop to their level.
                 If you do though, watch your back from those who want the artifacts for profit.
             }
             {cult_of_hesh?
-                To <!pol_stance_artifact_treatment_2>preserve artifacts</>, obviously.
+                To <!pol_stance_religious_policy_2>preserve artifacts</>, obviously.
                 He's probably going to claim that Hesh itself supports him to be the president.
                 You know how it is.
             player:

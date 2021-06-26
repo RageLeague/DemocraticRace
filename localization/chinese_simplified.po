@@ -10337,7 +10337,7 @@ msgid ""
 "It's the cult. They always want more power.\n"
 "But they dont really have anything that jives with the public voting "
 "blocks.\n"
-"Well, everything except <!pol_stance_artifact_treatment_2>preserve "
+"Well, everything except <!pol_stance_religious_policy_2>preserve "
 "artifacts</>.\n"
 "They'll likely just start preaching about Hesh declaring them the "
 "president.\n"
@@ -10347,7 +10347,7 @@ msgid ""
 "profit.\n"
 "}\n"
 "{cult_of_hesh?\n"
-"To <!pol_stance_artifact_treatment_2>preserve artifacts</>, obviously.\n"
+"To <!pol_stance_religious_policy_2>preserve artifacts</>, obviously.\n"
 "He's probably going to claim that Hesh itself supports him to be the "
 "president.\n"
 "You know how it is.\n"
@@ -14243,8 +14243,8 @@ msgctxt "NEGOTIATION_FEATURE.TIME_CONSTRAINT.NAME"
 msgid "Time Is Money"
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.DESC
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.DESC"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.DESC
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.DESC"
 msgid ""
 "There are a plenty of artifacts in Havaria, left over from the Vagrant Age. "
 "There are dividing opinions on what should we do about them. The Cult thinks "
@@ -14252,13 +14252,13 @@ msgid ""
 "researched and used."
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.NAME
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.NAME"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.NAME
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.NAME"
 msgid "Artifact Treatment"
 msgstr "神器处理方案"
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-1.DESC
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-1.DESC"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_-1.DESC
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_-1.DESC"
 msgid ""
 "It might be too costly to extensively research all the artifacts, but it "
 "would be a waste if the artifacts just sat there. By encouraging commercial "
@@ -14266,59 +14266,59 @@ msgid ""
 "it will strengthen the economy."
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-1.NAME
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-1.NAME"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_-1.NAME
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_-1.NAME"
 msgid "Commercial Use"
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-2.DESC
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-2.DESC"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_-2.DESC
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_-2.DESC"
 msgid ""
 "The Vagrant Age has left us lots of powerful tools, and it would be a shame "
 "if they are not used. That's why we need to extensively research and use all "
 "the artifacts we dig up, and we need to dig up more artifacts for us to use."
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-2.NAME
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-2.NAME"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_-2.NAME
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_-2.NAME"
 msgid "Extensive Research & Use"
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_0.DESC
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_0.DESC"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_0.DESC
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_0.DESC"
 msgid ""
 "The government shouldn't decide what to do with the artifact. It is not "
 "their job. The people can figure out what to do on their own."
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_0.NAME
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_0.NAME"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_0.NAME
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_0.NAME"
 msgid "Do Nothing"
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_1.DESC
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_1.DESC"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_1.DESC
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_1.DESC"
 msgid ""
 "The artifacts shouldn't be touched by just anyone. They are dangerous, and "
 "we don't want to lose any artifacts because they are important to Havarian "
 "history. That's why the research and use of artifacts must be approved first."
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_1.NAME
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_1.NAME"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_1.NAME
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_1.NAME"
 msgid "Restrict Research & Use"
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_2.DESC
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_2.DESC"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_2.DESC
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_2.DESC"
 msgid ""
 "The artifacts are holy, and should not be used by anyone. Ever. They should "
 "be preserved and displayed in a museum, not used as weapons or other tools. "
 "Any research into the uses of the artifacts should be forbidden."
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_2.NAME
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_2.NAME"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_2.NAME
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_2.NAME"
 msgid "Artifact Preservation"
 msgstr ""
 
