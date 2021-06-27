@@ -1,6 +1,6 @@
 local function GetELO(agent)
     return agent:CalculateProperty("CHESS_ELO", function(agent)
-        return math.round(900 + 150 * (agent:GetRenown() - agent:GetCombatStrength()) + 10 * (agent:GetRenown() ^ 2) + math.random(0, 200))
+        return math.round(900 + 100 * (agent:GetRenown() - agent:GetCombatStrength()) + 10 * (agent:GetRenown() ^ 2) + math.random(0, 200))
     end)
 end
 -- Calculate the chance of A winning given eloa and elob, using the elo system.
@@ -220,6 +220,9 @@ QDEF:AddConvo("find_challenger")
     }
     :Hub(function(cxt, who)
         if who and not AgentUtil.HasPlotArmour(who) then
+            if cxt.quest.param.failed_challengers and table.arraycontains(cxt.quest.param.failed_challengers, who) then
+                return
+            end
             local ELO = GetELO(who)
             cxt.enc.scratch.good_player = ELO >= GOOD_PLAYER_THRESHOLD
             cxt:Opt("OPT_ASK")
@@ -427,11 +430,14 @@ QDEF:AddConvo("go_to_game")
         }
         :Fn(function(cxt)
             cxt:TalkTo(cxt:GetCastMember("giver"))
-            cxt.quest.param.failed_challengers = (cxt.quest.param.failed_challengers or 0) + 1
+            if type (cxt.quest.param.failed_challengers) ~= "table" then
+                cxt.quest.param.failed_challengers = {}
+            end
+            table.insert(cxt.quest.param.failed_challengers, cxt:GetCastMember("challenger"))
             if not cxt.enc.scratch.good_player then
                 cxt.quest.param.bad_challengers = (cxt.quest.param.bad_challengers or 0) + 1
             end
-            cxt.enc.scratch.impatient = cxt.quest.param.failed_challengers >= 3
+            cxt.enc.scratch.impatient = #cxt.quest.param.failed_challengers >= 3
             cxt:Dialog("DIALOG_INTRO")
             if cxt.enc.scratch.impatient then
                 cxt.quest:UnassignCastMember("challenger")
