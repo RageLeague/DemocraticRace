@@ -257,9 +257,9 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 3)
         cxt:Dialog("DIALOG_INTRO_PST")
         if cxt.quest.param.has_potential_ally then
-
+            cxt:GoTo("STATE_ALLIANCE")
         elseif cxt.enc.scratch.advisor_favor then
-
+            cxt:GoTo("STATE_FAVOR")
         else
             cxt.quest:Complete("starting_out")
             StateGraphUtil.AddLeaveLocation(cxt)
@@ -342,6 +342,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             ]],
         }
         :Fn(function(cxt)
+            cxt.enc.scratch.potential_ally:MoveToLocation(cxt.location)
             cxt:TalkTo(cxt.enc.scratch.potential_ally)
             cxt:Dialog("DIALOG_INTRO")
 

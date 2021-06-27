@@ -25,6 +25,9 @@ local QDEF = QuestDef.Define
         if quest:GetCastMember("primary_advisor") then
             quest:GetCastMember("primary_advisor"):GetBrain():SendToWork()
         end
+        if quest:GetCastMember("opposition") then
+            quest:GetCastMember("opposition"):MoveToLimbo()
+        end
     end,
     -- on_start = function(quest)
 
