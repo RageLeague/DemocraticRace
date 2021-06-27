@@ -221,9 +221,10 @@ local function OnPreLoad( mod )
         -- I guess we are loading it synchronously. Too complicated to do async
         AUDIO:MountModdedAudioBank("DEMOCRATICRACE", "DEMOCRATICRACE:assets/audio/Master.bank")
 
+        print("Load bank?")
         -- AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", false)
         -- bank_loading_handle = AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", true)
-        Content.SetModSetting(mod, "enable_audio_debug", true)
+        Content.SetModSetting(mod, "enable_audio_debug", false)
     end
 end
 local MOD_OPTIONS =
