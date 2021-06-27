@@ -552,13 +552,13 @@ local val =  {
         },
     },
     RELIGIOUS_POLICY = {
-        name = "Artifact Treatment",
-        desc = "There are a plenty of artifacts in Havaria, left over from the Vagrant Age. There are dividing opinions on what should we do about them. The Cult thinks that they should be preserved, while the Barons think they should be researched and used.",
-        importance = 6,
+        name = "Religious Policy",
+        desc = "The Cult of Hesh is the dominant religion in Havaria, and naturally, policy maker need to be aware of it when making policies. Making policies around the religion can make those religious happy, but it can obstruct activities that are otherwise not a problem like free trade.",
+        importance = 8,
         stances = {
             [-2] = {
-                name = "Extensive Research & Use",
-                desc = "The Vagrant Age has left us lots of powerful tools, and it would be a shame if they are not used. That's why we need to extensively research and use all the artifacts we dig up, and we need to dig up more artifacts for us to use.",
+                name = "Atheism",
+                desc = "There is no proof that Hesh really exist, and if it does, it shouldn't be worshipped. When making policies, we should not worry about what the Cult or Hesh thinks, and do whatever we want.",
                 faction_support = {
                     SPARK_BARONS = 5,
                     BILEBROKERS = 3,
@@ -575,8 +575,8 @@ local val =  {
                 },
             },
             [-1] = {
-                name = "Commercial Use",
-                desc = "It might be too costly to extensively research all the artifacts, but it would be a waste if the artifacts just sat there. By encouraging commercial use of the artifacts, we encourage people to look for useful artifacts, and it will strengthen the economy.",
+                name = "Secular Focus",
+                desc = "While we need to worry about Hesh when making policies, we cannot let it interfere with normal activities. Small transgressions against Hesh should be tolerated, if it gives more benefits in the long run.",
                 faction_support = {
                     SPARK_BARONS = 3,
                     BILEBROKERS = 1,
@@ -592,8 +592,8 @@ local val =  {
                 },
             },
             [0] = {
-                name = "Do Nothing",
-                desc = "The government shouldn't decide what to do with the artifact. It is not their job. The people can figure out what to do on their own.",
+                name = "Balanced",
+                desc = "While making policies, we need to find a balance between religion and practicality, as such, the policies needs to be balanced around that.",
                 faction_support = {
                     BILEBROKERS = -1,
                     CULT_OF_HESH = -1,
@@ -604,8 +604,8 @@ local val =  {
                 },
             },
             [1] = {
-                name = "Restrict Research & Use",
-                desc = "The artifacts shouldn't be touched by just anyone. They are dangerous, and we don't want to lose any artifacts because they are important to Havarian history. That's why the research and use of artifacts must be approved first.",
+                name = "Religious Focus",
+                desc = "While we don't have to follow the religion of Hesh to the exact point, we need to focus on policy on it. Doing so will appeal to the religious.",
                 faction_support = {
                     SPARK_BARONS = -3,
                     BILEBROKERS = -2,
@@ -621,8 +621,8 @@ local val =  {
                 },
             },
             [2] = {
-                name = "Artifact Preservation",
-                desc = "The artifacts are holy, and should not be used by anyone. Ever. They should be preserved and displayed in a museum, not used as weapons or other tools. Any research into the uses of the artifacts should be forbidden.",
+                name = "Fanaticism",
+                desc = "Hesh is to be feared, and its will must be exercised. Any heretical activities shall not be tolerated.",
                 faction_support = {
                     SPARK_BARONS = -5,
                     BILEBROKERS = -4,
