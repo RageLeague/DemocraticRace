@@ -1106,7 +1106,6 @@ local MODIFIERS =
             return loc.format(fmt_str, self:GetOwnerName(), self:GetPrideCount(self.engine and self.engine:GetDifficulty() or 1))
         end,
 
-        icon = "negotiation/modifiers/bidder.tex",
         modifier_type = MODIFIER_TYPE.CORE,
         max_stacks = 1,
 
@@ -1137,7 +1136,7 @@ local MODIFIERS =
         max_stacks = 1,
         max_resolve = 2,
         OnInit = function(self)
-            self:SetResolve(self.max_resolve, MODIFIER_SCALING.LOW)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
         end,
         composure_gain = 2,
         OnBeginTurn = function( self, minigame )
