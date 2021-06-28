@@ -7,7 +7,7 @@ local function GetHeshBelief(agent)
         return HeshBelief.ANTI
     end
     return agent:CalculateProperty("HESH_BELIEF", function(agent)
-        local omni_hesh_chance = agent:GetRenown() * .15
+        local omni_hesh_chance = agent:GetRenown() * .12
         if agent:GetFactionID() ~= "CULT_OF_HESH" then
             if agent:GetFactionID() == "ADMIRALTY" then
                 omni_hesh_chance = omni_hesh_chance - .15
@@ -613,6 +613,7 @@ QDEF:AddConvo("bad_event")
                 :Dialog("DIALOG_DEFEND")
                 :Battle{
                     enemies = cxt.enc.scratch.opfor,
+                    on_runaway = StateGraphUtil.DoRunAwayNoFail,
                 }
                     :OnWin()
                         :Dialog("DIALOG_DEFEND_WIN")

@@ -19,7 +19,7 @@ local COIN_RARITY = {
 }
 local RATES = {
     [CARD_RARITY.RARE] = 2000,
-    [CARD_RARITY.UNCOMMON] = 750,
+    [CARD_RARITY.UNCOMMON] = 600,
     [CARD_RARITY.COMMON] = 150,
 }
 

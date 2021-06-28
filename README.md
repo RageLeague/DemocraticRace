@@ -15,15 +15,9 @@ Load order:
 * Loads After: Cross Character Campaign (https://steamcommunity.com/sharedfiles/filedetails/?id=2219176890)
 * Loads After: Shel's Adventure (https://steamcommunity.com/sharedfiles/filedetails/?id=2217590179) or Shel's Adventure Expansion (https://steamcommunity.com/sharedfiles/filedetails/?id=2245060394)
 * Loads After: Rise of Kashio (https://steamcommunity.com/sharedfiles/filedetails/?id=2266976421)
+* Loads After: Arint's Last Day (https://steamcommunity.com/sharedfiles/filedetails/?id=2256085147)
 
 (The load order is specified for certain other mods because these modify the game's code, or add new characters to the game.)
-
-Special thanks to:
-
-* JuniorElder(For helping with side quests)
-* WumpusThe19th(For helping with dialogs)
-* Minespatch(For helping with drawing some slides and card art)
-* Playr10(For helping with side quests)
 
 This mod is based on this post that is now archived: https://forums.kleientertainment.com/forums/topic/120281-democracy-mode/.
 
@@ -89,6 +83,21 @@ With the new official workshop support, you can directly install mods from steam
 3. Volia!
 
 Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues, or a major feature update. As such, it will be more stable.
+
+## Credits
+
+### The Coders
+
+* RageLeague
+* JuniorElder
+* WumpusThe19th
+* Playr10
+* SpicyNiceCream
+
+### The Artists
+
+* Minespatch
+* Sei Bellissima
 
 ## Changelog
 
