@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.2.1(Alpha)
+Version: 0.3.0(Alpha)
 
 Author: RageLeague
 
@@ -100,6 +100,19 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Sei Bellissima
 
 ## Changelog
+
+### 0.3.0 (Advisor request update)
+
+This is a major update that introduces a request quest for each of the three advisors. Each advisor has something unique that
+they want you to help them with, and helping them complete their goal makes them love you. Generic characters can also get
+these requests sometimes, although certain dialogs and options can change.
+
+This update also shortens the number of rally quests on day 2 and 3 to one per day, in order to speed up the campaign
+and slow down the speed the player develop their deck.
+
+Major changes:
+
+
 
 ### 0.2.1
 
