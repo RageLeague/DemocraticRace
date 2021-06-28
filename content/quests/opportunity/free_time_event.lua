@@ -199,8 +199,9 @@ local convo = QDEF:AddConvo()
                     -- cxt.quest:DefFn("DeltaActions", -action_cost)
                     cxt:GetAgent():Remember("OFFERED_BOON")
                     cxt:Dialog("DIALOG_SOCIALIZE")
+                    -- Don't spawn request for oppositions, because there might be issues with them dying.
                     if who:GetRelationship() == RELATIONSHIP.LIKED and not DemocracyUtil.HasRequestQuest(who)
-                        and math.random() < 0.5 then
+                        and not DemocracyUtil.GetOppositionData(who) and math.random() < 0.5 then
 
                         -- Try spawning a request quest
                         local request_quest = DemocracyUtil.SpawnRequestQuest(who)
