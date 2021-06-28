@@ -110,9 +110,33 @@ these requests sometimes, although certain dialogs and options can change.
 This update also shortens the number of rally quests on day 2 and 3 to one per day, in order to speed up the campaign
 and slow down the speed the player develop their deck.
 
+Note: This update might cause old save files to not work anymore, due to removed quests and renamed issue. To access the old
+update, visit the GitHub page.
+
 Major changes:
 
+* 3 new request quests, each with different quirks. With these quests comes with new negotiations, new cards, and new characters.
+* Unique negotiation behaviour for each advisor.
+* Added advisor changing logic. If your advisor is unavailable, either because they hate you or they retired (death is retirement)
+you are given a chance to change your advisor. Unless all living advisors at least dislikes you, in which case you lose.
+* Day 2 and onward are shortened, and comes with it a reduced support requirement at the end of each day.
 
+Minor changes:
+
+* Added theme for Benni. (Feature not complete, and causes the game to crash on restart. Disabled on default)
+* No longer able to convince bosses to fire automechs or other non-sentient agents.
+* Destroying demand bounties also adds impatience.
+* Adding events from the base game to the campaign. (Some events might get replaced with a custom one in the future)
+* Rework "Artifact Treatment" to "Religious Policy" to cover a broader topic.
+* Rework agent initialization. Now agents from each faction should be present in a more normalized way.
+* States on day 3's debate are saved after each question.
+* Balance day 2's interview and added questions explaining the interview.
+* Chance of spawning request quest on socializing.
+* Add a new rally quest: Dole Out.
+* More quests are counted as "free time", such as Information Warfare.
+* Added custom quip tag per campaign. More dialogs are available.
+* Added new characters to the region. Change custom home generation logic.
+* Lots of dialog update and fixes.
 
 ### 0.2.1
 
