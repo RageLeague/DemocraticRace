@@ -28,8 +28,6 @@ local SPAWN_NAMED_CHAR = {
 }
 local function InitNamedChars()
     for id, data in pairs(SPAWN_NAMED_CHAR) do
-
-
         local agent = TheGame:GetGameState():GetAgentOrMemento( id )
         if not agent then
             print("Initializing: " .. id)

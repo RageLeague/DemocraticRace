@@ -455,24 +455,29 @@ QDEF:AddConvo("get_job")
         cxt:Dialog("DIALOG_INTRO")
         DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB")
     end)
-QDEF:AddConvo("get_job", "primary_advisor")
+QDEF:AddConvo("get_job")
     :Loc{
-        OPT_GET_JOB = "Discuss Job...",
+        OPT_GET_JOB = "Find a way to gather support...",
         DIALOG_GET_JOB = [[
-            agent:
+            player:
+                !left
                 !thought
                 $neutralThoughtful
-                Here's what we can do...
+                Here's what I can do...
         ]],
     }
-    :Hub(function(cxt)
-        cxt:Opt("OPT_GET_JOB")
-            :SetQuestMark( cxt.quest )
-            :PostText("TT_SKIP_FREE_TIME")
-            :Dialog("DIALOG_GET_JOB")
-            :LoopingFn(function(cxt)
-                DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB", true)
-            end)
+    :Hub_Location(function(cxt)
+        if not cxt.quest:GetCastMember("primary_advisor") then
+            cxt.quest:AssignCastMember("primary_advisor")
+        end
+        if not cxt.quest:GetCastMember("primary_advisor") then
+            cxt:Opt("OPT_GET_JOB")
+                :SetQuestMark()
+                :Dialog("DIALOG_GET_JOB")
+                :LoopingFn(function(cxt)
+                    DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB")
+                end)
+        end
     end)
 QDEF:AddConvo("go_to_sleep", "primary_advisor")
     :Loc{
@@ -481,15 +486,18 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                 Okay, I did all I can do.
                 I'll go to bed.
             agent:
-                I promise there won't be another assassin.
+                Alright. Good luck tomorrow.
+                Tomorrow is going to be a big day, I can feel it.
             player:
-                Yeah that would be too repetitive.
+                !shrug
+                If you say so.
             agent:
                 Well then, good night.
                 !exit
         ]],
         DIALOG_WAKE = [[
-            * Another day, another battle.
+            * According to {primary_advisor}, today is going to be a big day.
+            * You are not sure if you are excited or nervous.
         ]],
     }
     :Hub(function(cxt)

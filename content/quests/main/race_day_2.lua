@@ -213,25 +213,28 @@ QDEF:AddConvo("starting_out", "primary_advisor")
     end)
 
 QDEF:AddConvo("get_job")
-    :ConfrontState("STATE_CONFRONT", function(cxt)
-        if not cxt.quest:GetCastMember("primary_advisor") then
-            cxt.quest:AssignCastMember("primary_advisor")
-        end
-        return not (cxt.quest:GetCastMember("primary_advisor") and true or false)
-    end)
     :Loc{
-        DIALOG_INTRO = [[
+        OPT_GET_JOB = "Find a way to gather support...",
+        DIALOG_GET_JOB = [[
             player:
                 !left
                 !thought
                 $neutralThoughtful
                 Here's what I can do...
-            ]],
-
+        ]],
     }
-    :RunLoopingFn(function(cxt)
-        cxt:Dialog("DIALOG_INTRO")
-        DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB")
+    :Hub_Location(function(cxt)
+        if not cxt.quest:GetCastMember("primary_advisor") then
+            cxt.quest:AssignCastMember("primary_advisor")
+        end
+        if not cxt.quest:GetCastMember("primary_advisor") then
+            cxt:Opt("OPT_GET_JOB")
+                :SetQuestMark()
+                :Dialog("DIALOG_GET_JOB")
+                :LoopingFn(function(cxt)
+                    DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB")
+                end)
+        end
     end)
 QDEF:AddConvo("get_job", "primary_advisor")
     :Loc{
@@ -267,7 +270,8 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                 !exit
         ]],
         DIALOG_WAKE = [[
-            * Another day, another battle.
+            * You are starting to miss your grifting days.
+            * Although, you are glad that you don't have to fight for your life every day anymore.
         ]],
     }
     :Hub(function(cxt)

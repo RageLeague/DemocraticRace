@@ -116,26 +116,38 @@ local QDEF = QuestDef.Define
 -- }
 DemocracyUtil.AddPrimaryAdvisor(QDEF)
 QDEF:AddConvo("get_job")
-    :ConfrontState("STATE_CONFRONT", function(cxt)
+    :Loc{
+        OPT_GET_JOB = "Find a way to gather support...",
+
+    }
+    :Hub_Location(function(cxt)
         if not cxt.quest:GetCastMember("primary_advisor") then
             cxt.quest:AssignCastMember("primary_advisor")
         end
-        return not (cxt.quest:GetCastMember("primary_advisor") and true or false)
+        if not cxt.quest:GetCastMember("primary_advisor") then
+            cxt:Opt("OPT_GET_JOB")
+                :SetQuestMark()
+                :Fn( function(cxt)
+                    UIHelpers.DoSpecificConvo( cxt.quest:GetCastMember("oshnu"), cxt.convodef.id, "STATE_GET_JOB" ,nil,nil,cxt.quest)
+                end )
+        end
     end)
-    :Loc{
-        DIALOG_INTRO = [[
-            player:
-                !left
-                !thought
-                $neutralThoughtful
-                Here's what I can do...
+    :State("STATE_GET_JOB")
+        :Loc{
+            DIALOG_GET_JOB = [[
+                player:
+                    !left
+                    !thought
+                    $neutralThoughtful
+                    Here's what I can do...
             ]],
-
-    }
-    :RunLoopingFn(function(cxt)
-        cxt:Dialog("DIALOG_INTRO")
-        DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB")
-    end)
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_GET_JOB")
+            cxt:RunLoopingFn(function(cxt)
+                DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB")
+            end)
+        end)
 QDEF:AddConvo("get_job", "primary_advisor")
     :Loc{
         OPT_GET_JOB = "Discuss Job...",

@@ -19,7 +19,7 @@ local QDEF = QuestDef.Define
     desc = [[{opponent} is hosting a public debate, you might be able to make use of the large audience by swaying them to your side.]],
     rank = {1, 5},
     icon = engine.asset.Texture("icons/quests/handler_admiralty_find_bandit_informant.tex"),
-    
+
     reward_mod = 0,
     tags = {"RALLY_JOB"},
     act_filter = DemocracyUtil.DemocracyActFilter,
@@ -28,9 +28,9 @@ local QDEF = QuestDef.Define
     collect_agent_locations = function(quest, t)
         table.insert(t, { agent = quest:GetCastMember("opponent"), location = quest:GetCastMember('junction'), role = CHARACTER_ROLES.VISITOR})
         table.insert(t, { agent = quest:GetCastMember("laughing_stock"), location = quest:GetCastMember('junction'), role = CHARACTER_ROLES.VISITOR})
-        
+
     end,
-    
+
     on_start = function(quest)
         local location = Location( LOCATION_DEF.id )
         assert(location)
@@ -141,7 +141,7 @@ local QDEF = QuestDef.Define
         txt = "Was impressed by your debate",
     },
 }
-        
+
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :Loc{
         DIALOG_INTRO = [[
@@ -188,7 +188,6 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-            -- cxt.quest:Activate("go_to_junction")
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{
@@ -206,10 +205,14 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
             }
         ]],
     }
+    :State("START")
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+        end)
 
 --DemocracyUtil.AddPrimaryAdvisor(QDEF)
 QDEF:AddConvo("meet_opponent")
-    
+
     :Confront(function(cxt)
         if cxt.location == cxt.quest:GetCastMember("junction") then
             return "STATE_INTRO"
@@ -245,9 +248,9 @@ QDEF:AddConvo("meet_opponent")
                     * Such aim.
                     * This is clearly going to be an uphill battle.
             ]],
-            
+
             OPT_DEBATE = "Try to win over the audience",
-            
+
             DIALOG_DEBATE = [[
                 player:
                     !point
@@ -307,7 +310,7 @@ QDEF:AddConvo("meet_opponent")
                     !scared
                     * The audience is eating it up, best to get out of here.
             ]],
-    
+
             DIALOG_HOSTILE = [[
                 player:
                     !left
@@ -326,7 +329,7 @@ QDEF:AddConvo("meet_opponent")
                     !scared
                     * The audience is eating it up. Clearly you tried your best, but it wasn't enough to win the audience.
             ]],
-            
+
             DIALOG_SKEPTICAL = [[
                 player:
                     !left
@@ -346,7 +349,7 @@ QDEF:AddConvo("meet_opponent")
                     !scared
                     * The audience is eating it up. Clearly you tried your best, but it wasn't enough to win the audience.
             ]],
-            
+
             DIALOG_NEUTRAL = [[
                 player:
                     !left
@@ -366,7 +369,7 @@ QDEF:AddConvo("meet_opponent")
                     !happy
                     * Even if not everyone is satisfied with your performance, it could have gone worse.
             ]],
-            
+
             DIALOG_FRIENDLY = [[
                 player:
                     !left
@@ -386,7 +389,7 @@ QDEF:AddConvo("meet_opponent")
                     !happy
                     * Even if not everyone is satisfied with your performance, it could have gone worse.
             ]],
-            
+
             DIALOG_SYMPATHETIC = [[
                 player:
                     !left
@@ -397,7 +400,7 @@ QDEF:AddConvo("meet_opponent")
                     * {opponent} knows when to cut {opponent.hisher} losses, and subsequently finds the quickest way to leave.
                     I've got a doctor's appointment with my laundry- I mean I-
                     !exit
-                    * {opponent} leaves, being as subtle as a vroc in heat. 
+                    * {opponent} leaves, being as subtle as a vroc in heat.
                 player:
                     !happy
                     * The audience is on your side. Clearly, this is a huge win.
@@ -446,17 +449,17 @@ QDEF:AddConvo("meet_opponent")
             StateGraphUtil.AddLeaveLocation(cxt)
             -- ConvoUtil.GiveQuestRewards(cxt)
         end)
-            
+
 --[[
 Public Debate - “{opponent} is hosting a public debate, you might be able to make use of the large audience by swaying them to your side.”
 
-When the player arrives at the location, the opponent finishes debating and verbally smacking down someone else. The opponent then calls out to the audience if anyone else will debate them before they wrap it up. 
+When the player arrives at the location, the opponent finishes debating and verbally smacking down someone else. The opponent then calls out to the audience if anyone else will debate them before they wrap it up.
 The player steps up and takes the mic, and then the negotiation starts.
 
-The negotiation plays around a special mechanic: Audience Reception. This comes in the form of a core argument on the opponent, and has 5 stages. 
-Hostile Audience, Skeptical Audience, Neutral Audience, Friendly Audience, and Sympathetic Audience. 
+The negotiation plays around a special mechanic: Audience Reception. This comes in the form of a core argument on the opponent, and has 5 stages.
+Hostile Audience, Skeptical Audience, Neutral Audience, Friendly Audience, and Sympathetic Audience.
 
-The negotiation always starts with a Hostile Audience, and can be upgraded through destroying bounties that occasionally pop up as well as with an incepted 2 cost card, Wisecrack. The audience will also be degraded by enemy 
+The negotiation always starts with a Hostile Audience, and can be upgraded through destroying bounties that occasionally pop up as well as with an incepted 2 cost card, Wisecrack. The audience will also be degraded by enemy
 arguments that are not destroyed in time.
 
 A Hostile Audience and Skeptical Audience will incept 1 Heckler to your opponent each turn. A Friendly Audience and Sympathetic Audience will incept 1 Vulnerability to your opponent each turn.

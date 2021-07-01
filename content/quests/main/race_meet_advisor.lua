@@ -15,16 +15,17 @@ local QDEF = QuestDef.Define
 
     qtype = QTYPE.STORY,
 
-    -- on_start = function(quest)
-
-    -- end,
+    on_start = function(quest)
+        -- Remove the patrons when the quest starts so that the location don't get overfull
+        LocationUtil.SendPatronsAway( quest:GetCastMember("noodle_shop") )
+    end,
     collect_agent_locations = function(quest, t)
         if quest:IsActive("go_to_bar") or quest:IsActive("choose_advisor") then
-            table.insert (t, { agent = quest:GetCastMember("advisor_diplomacy"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.VISITOR} )
-            table.insert (t, { agent = quest:GetCastMember("advisor_hostile"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.VISITOR} )
-            table.insert (t, { agent = quest:GetCastMember("advisor_manipulate"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.VISITOR} )
+            table.insert (t, { agent = quest:GetCastMember("advisor_diplomacy"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.PATRON} )
+            table.insert (t, { agent = quest:GetCastMember("advisor_hostile"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.PATRON} )
+            table.insert (t, { agent = quest:GetCastMember("advisor_manipulate"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.PATRON} )
         elseif quest:IsActive("discuss_plan") then
-            table.insert (t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.VISITOR} )
+            table.insert (t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.PATRON} )
         end
 
     end,
@@ -142,6 +143,9 @@ end
 QDEF:AddConvo("go_to_bar")
     :Confront(function(cxt)
         if cxt.location == cxt.quest:GetCastMember("noodle_shop") then
+            -- Reset patron capacities
+            cxt.quest:GetCastMember("noodle_shop"):SetCurrentPatronCapacity()
+            LocationUtil.PopulateLocation( cxt.quest:GetCastMember("noodle_shop") )
             if cxt.quest.param.parent_quest.param.recent_job:IsComplete() then
                 return "STATE_CONFRONT"
             else

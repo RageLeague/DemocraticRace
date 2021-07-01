@@ -6,12 +6,12 @@ local QDEF = QuestDef.Define
     qtype = QTYPE.STORY,
     home = true,
     on_start = function(quest)
-        quest:AssignCastMember("primary_advisor" )
-        if quest:GetCastMember("primary_advisor") then
-            quest:AssignCastMember("home")
-            quest:AssignCastMember("player_room")
-            print(quest:GetCastMember("player_room"))
-        end
+        -- quest:AssignCastMember("primary_advisor" )
+        -- if quest:GetCastMember("primary_advisor") then
+        --     quest:AssignCastMember("home")
+        --     quest:AssignCastMember("player_room")
+        --     print(quest:GetCastMember("player_room"))
+        -- end
     end,
 }
 -- :AddCast{
