@@ -152,9 +152,10 @@ QDEF:AddConvo("ask_info")
         cxt.quest.param.people_asked = cxt.quest.param.people_asked or {}
         if cxt:GetAgent() and cxt:GetAgent() ~= cxt:GetCastMember("giver") and
             not table.arraycontains(cxt.quest.param.people_asked, cxt:GetAgent())
-            and cxt:GetAgent():GetFactionID() == "CULT_OF_HESH" then
+            and (cxt:GetAgent():GetFactionID() == "CULT_OF_HESH" or cxt:GetAgent():GetFactionID() == "FEUD_CITIZEN") then
 
             cxt:Opt("OPT_ASK_HESH")
+                :SetQuestMark()
                 :Fn(function(cxt)
                     table.insert(cxt.quest.param.people_asked, cxt:GetAgent())
                     local belief = GetHeshBelief(cxt:GetAgent())
@@ -259,23 +260,23 @@ QDEF:AddConvo("ask_info")
             ]],
             DIALOG_ENDURE_FAILURE_3 = [[
                 agent:
-                  So in conclusion, Hesh is a-
+                    So in conclusion, Hesh is a-
                 player:
-                  !drunk
-                  Hey, wait a minute...Hesh is a wha...?
+                    !drunk
+                    Hey, wait a minute...Hesh is a wha...?
                 agent:
-                  !question
-                  Did you fall asleep?
+                    !question
+                    Did you fall asleep?
                 player:
-                  Hrm? Yeah...I'm uh, sorry.
+                    Hrm? Yeah...I'm uh, sorry.
                 agent:
-                  !angry
-                  How could you fall asleep? This is the classification of Hesh we're talking about!
+                    !angry
+                    How could you fall asleep? This is the classification of Hesh we're talking about!
                 player:
-                  Maybe you could make the lecture a bit more entertaining, professor.
+                    Maybe you could make the lecture a bit more entertaining, professor.
                 agent:
-                  Unbelievable. Unbelievable!
-                  !exit
+                    Unbelievable. Unbelievable!
+                    !exit
                 * {agent} storms off in a huff, leaving you with a few new questions that you slept through the answers to.
             ]],
         }
@@ -576,7 +577,7 @@ QDEF:AddConvo("bad_event")
                 if #cxt.quest.param.overheard > 0 then
                     leader = table.arraypick(cxt.quest.param.overheard)
 
-                    if AgentUtil.HasPlotArmour(leader) or not AgentUtil.CanAct(leader) then
+                    if AgentUtil.HasPlotArmour(leader) or not AgentUtil.CanAct(leader) or leader:GetFactionID() ~= "CULT_OF_HESH" then
                         cxt.enc.scratch.leader_absent = true
                     end
                     cxt:ReassignCastMember("leader", leader)

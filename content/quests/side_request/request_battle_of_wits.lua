@@ -245,6 +245,7 @@ QDEF:AddConvo("find_challenger")
             local ELO = GetELO(who)
             cxt.enc.scratch.good_player = ELO >= GOOD_PLAYER_THRESHOLD
             cxt:Opt("OPT_ASK")
+                :SetQuestMark()
                 :Dialog("DIALOG_ASK")
                 :LoopingFn(function(cxt)
                     cxt:BasicNegotiation("CONVINCE", {
