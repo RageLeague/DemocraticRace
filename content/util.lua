@@ -1162,35 +1162,40 @@ function DemocracyUtil.DeployMod(experimental)
         print("Epic bad lol")
         return
     end
-    local mod_id = experimental and test_branch_id or main_branch_id
-    local mod = DemocracyUtil.GetModData()
-    mod.workshop_id = mod_id
-    local function OnSubmitted(item, msg)
-        print( "OnSubmitted", msg, tostr(item))
-        if item.workshop_id and item.workshop_id ~= 0 then
-            print("Workshop ID:", item.workshop_id)
-        end
-        if item.lastResult == engine.steam.EResultOK then
-            print( msg or "Submit succeeded!")
-        else
-            -- From the workshop docs:
-            -- k_EResultFail (2) - Generic failure.
-            -- k_EResultInvalidParam (8) - Either the provided app ID is invalid or doesn't match the consumer app ID of the item or, you have not enabled ISteamUGC for the provided app ID on the Steam Workshop Configuration App Admin page.
-            -- The preview file is smaller than 16 bytes.
-            -- k_EResultAccessDenied (15) - The user doesn't own a license for the provided app ID.
-            -- k_EResultFileNotFound (9) - Failed to get the workshop info for the item or failed to read the preview file.
-            -- k_EResultFileNotFound (9) - The provided content folder is not valid. (eg. this workshop_id has previously been deleted)
-            -- k_EResultLockingFailed (33) - Failed to aquire UGC Lock.
-            -- k_EResultLimitExceeded (25) - The preview image is too large, it must be less than 1 Megabyte; or there is not enough space available on the users Steam Cloud.
+    local function ConfirmFunction()
+        rawset(_G, "ConfirmUpload", nil)
+        local mod_id = experimental and test_branch_id or main_branch_id
+        local mod = DemocracyUtil.GetModData()
+        mod.workshop_id = mod_id
+        local function OnSubmitted(item, msg)
+            print( "OnSubmitted", msg, tostr(item))
+            if item.workshop_id and item.workshop_id ~= 0 then
+                print("Workshop ID:", item.workshop_id)
+            end
+            if item.lastResult == engine.steam.EResultOK then
+                print( msg or "Submit succeeded!")
+            else
+                -- From the workshop docs:
+                -- k_EResultFail (2) - Generic failure.
+                -- k_EResultInvalidParam (8) - Either the provided app ID is invalid or doesn't match the consumer app ID of the item or, you have not enabled ISteamUGC for the provided app ID on the Steam Workshop Configuration App Admin page.
+                -- The preview file is smaller than 16 bytes.
+                -- k_EResultAccessDenied (15) - The user doesn't own a license for the provided app ID.
+                -- k_EResultFileNotFound (9) - Failed to get the workshop info for the item or failed to read the preview file.
+                -- k_EResultFileNotFound (9) - The provided content folder is not valid. (eg. this workshop_id has previously been deleted)
+                -- k_EResultLockingFailed (33) - Failed to aquire UGC Lock.
+                -- k_EResultLimitExceeded (25) - The preview image is too large, it must be less than 1 Megabyte; or there is not enough space available on the users Steam Cloud.
 
-            msg = msg or "Submit failed!"
-            msg = msg .. string.format( " (error=%s)", tostring(item.lastResult))
-            print(msg)
+                msg = msg or "Submit failed!"
+                msg = msg .. string.format( " (error=%s)", tostring(item.lastResult))
+                print(msg)
+            end
         end
+        print("Submitting to workshop:", tostr(mod))
+        print("Experimental =", experimental)
+        engine.steam:SubmitItem( mod, OnSubmitted )
     end
-    print("Submitting to workshop:", tostr(mod))
-    print("Experimental =", experimental)
-    engine.steam:SubmitItem( mod, OnSubmitted )
+    print(loc.format("Are you sure? Enter ConfirmUpload() in the console to confirm. (Experimental={1})", experimental))
+    rawset(_G, "ConfirmUpload", ConfirmFunction)
 end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"

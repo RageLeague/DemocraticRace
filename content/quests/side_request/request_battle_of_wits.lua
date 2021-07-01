@@ -470,29 +470,29 @@ QDEF:AddConvo("go_to_game")
             DIALOG_INTRO = [[
                 * The game drones on, but just when your eyes start to flap shut from boredom, you hear quite possibly the loudest stack of shills hit the table.
                 challenger:
-		   !left
-		giver:
-		   !right
-		   !angry
-		   All in.
-		challenger:
-		   Your loss.
-                   !coinflip
-	        * In a matter of seconds after the coin lands on the table, a bellow of anger erupts from {giver}.
+                    !left
+                giver:
+                    !right
+                    !angry
+                    All in.
                 challenger:
-                   Hey, hey! I win the whole kit!
-		* {giver} steams with anger, but quickly {giver.heshe} regains some composure as {giver.heshe} sits straighter in {giver.hisher} chair.
-		giver:
-		   Well, it seems I have been outsmarted...
-		   !angrypoint
-		   By a cheater!
-		challenger:
-		   Woah, you lost and you know it.
-		giver:
-		   Silence, lesser player. You should have lost, fair and square, it is only natural to assume you are a cheat.
-		   {player}. Please, <i> escort </> {challenger} away from the table.
-		   !angry
-		   Forcefully, I must mandate.
+                    Your loss.
+                    !coinflip
+                * In a matter of seconds after the coin lands on the table, a bellow of anger erupts from {giver}.
+                challenger:
+                    Hey, hey! I win the whole kit!
+                * {giver} steams with anger, but quickly {giver.heshe} regains some composure as {giver.heshe} sits straighter in {giver.hisher} chair.
+                giver:
+                    Well, it seems I have been outsmarted...
+                    !angrypoint
+                    By a cheater!
+                challenger:
+                    Woah, you lost and you know it.
+                giver:
+                    Silence, lesser player. You should have lost, fair and square, it is only natural to assume you are a cheat.
+                    {player}. Please, <i>escort</> {challenger} away from the table.
+                    !angry
+                    Forcefully, I must mandate.
             ]],
 
             OPT_ATTACK = "Attack {challenger}, as requested",
@@ -508,13 +508,13 @@ QDEF:AddConvo("go_to_game")
 
             DIALOG_ATTACK_WIN = [[
                 {dead?
-                * {giver} gives one last mean spirited kick to the stomach of {challenger}'s body before facing you.
-		    giver:
-			Well, that was certainly vindicating.
-		    player:
-			For you, maybe.
-		    giver:
-			Well, regardless of how you feel, I am indebted for your aid in the test of my mental faculties against others.
+                    * {giver} gives one last mean spirited kick to the stomach of {challenger}'s body before facing you.
+                    giver:
+                        Well, that was certainly vindicating.
+                    player:
+                        For you, maybe.
+                    giver:
+                        Well, regardless of how you feel, I am indebted for your aid in the test of my mental faculties against others.
                 }
                 {not dead?
                     player:
@@ -596,11 +596,13 @@ QDEF:AddConvo("go_to_game")
             cxt:Dialog("DIALOG_INTRO")
             local hireling = TheGame:GetGameState():GetCaravan():GetHireling()
             cxt:Opt("OPT_ATTACK")
+                :Fn(function(cxt)
+                    cxt:TalkTo(cxt:GetCastMember("challenger"))
+                end)
                 :Dialog("DIALOG_ATTACK")
                 :Battle{
                     enemies = {"challenger"},
                     on_win = function(cxt)
-                        cxt:TalkTo(cxt:GetCastMember("challenger"))
                         cxt:Dialog("DIALOG_ATTACK_WIN")
                         if cxt:GetAgent():IsDead() then
                         else
