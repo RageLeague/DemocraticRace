@@ -52,7 +52,7 @@ local FOLLOW_UP
 local QDEF = QuestDef.Define
 {
     title = "Battle of Wits",
-    desc = "To prove that nobody is smarter than {giver}, {giver} asks you to find someone who can defeat {giver.himher} in a battle of Chess(?).",
+    desc = "To prove that nobody is smarter than {giver}, {giver} asks you to find someone who can defeat {giver.himher} in a battle of Grout Bog Flip 'Em.",
     -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/revenge_starving_worker.png"),
 
     qtype = QTYPE.SIDE,
@@ -148,7 +148,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "find_challenger",
     title = "Find potential challengers.",
-    desc = "Find someone who can potentially beat {giver} in Chess(?).",
+    desc = "Find someone who can potentially beat {giver} in Grout Bog Flip 'Em.",
 }
 :AddObjective{
     id = "go_to_game",
@@ -170,30 +170,49 @@ QDEF:AddIntro(
     --attract spiel
     [[
         agent:
-		Do you know how to win 5 points in an opening gambit with just a single coin flip?
-	* You open your mouth to tell him that's an illegal move, but your stopped expression is all {giver} needs to continue.
-	agent:
-		Of course you don't! Because no one's better at the game than I.
-		To prove it, run along and find me a good player when you find the time.
+        {advisor_hostile?
+            Nobody knows more than me.
+        player:
+            !crossed
+            I think you've said that enough. What do you possibly want me to do?
+        agent:
+            In order to prove this, I want you to find someone who can beat me at Grout Bog Flip 'Em.
+        player:
+            The what?
+            !dubious
+            Is that what they call the game where you flip a coin and guess heads or snails?
+        agent:
+            !crossed
+            That is a gross oversimplification, and frankly I'm insulted that you think so little of this game.
+            It is the ultimate battle of wits and test of talents.
+        player:
+            !shrug
+            If you say so.
+        }
+        {not advisor_hostile?
+		    Do you know how to win 5 points in an opening gambit with just a single coin flip?
+        * You open your mouth to tell him that's an illegal move, but your stopped expression is all {giver} needs to continue.
+        agent:
+            Of course you don't! Because no one's better at the game than me.
+            To prove it, run along and find me a good player when you find the time.
+        }
     ]],
-	--Wumpus;I think the game was not so much chess as more...coin flip poker.
-	--Every card that mentions it just makes the joke that the game is confusing and that's how Rook befuddles his opponents
     --on accept
     [[
         player:
-            	How am I supposed to find someone good at Chess(?)
-	agent:
-		!hips
-		Well, you're a talkative sort. I'm sure you'll find someone if you just bustle up and ask.
+            How am I supposed to find someone good at Grout Bog Flip 'Em?
+        agent:
+            !hips
+            Well, you're a talkative sort. I'm sure you'll find someone if you just bustle up and ask.
     ]])
 
 QDEF:AddConvo("find_challenger")
     :Loc{
-        OPT_ASK = "Ask {agent} to play Chess(?) with {giver}",
+        OPT_ASK = "Ask {agent} to play Grout Bog Flip 'Em with {giver}",
         DIALOG_ASK = [[
             player:
                 I've got a sucker, {giver}, just ready to give up his shills to whoever plays him. Want in?
-        		You play Chess(?). I've got someone who wants to play, if you're interested.
+        		You play Grout Bog Flip 'Em. I've got someone who wants to play, if you're interested.
             agent:
                 Why tho?
             {good_player?
@@ -216,7 +235,7 @@ QDEF:AddConvo("find_challenger")
             agent:
                 [p] Nah, I don't think I will.
         ]],
-        SIT_MOD = "Bad at chess(?)",
+        SIT_MOD = "Bad at Grout Bog Flip 'Em",
     }
     :Hub(function(cxt, who)
         if who and not AgentUtil.HasPlotArmour(who) then
@@ -290,42 +309,41 @@ QDEF:AddConvo("go_to_game")
         :Loc{
             DIALOG_INTRO = [[
                 * The room fills with a tense silence as {challenger} and {giver} sit down at the table.
-		player:
-		!left
-		giver:
-		!right
-		Ah, {player}. You've got some mighty fine timing.
+                player:
+                    !left
+                giver:
+                    !right
+                    Ah, {player}. You've got some mighty fine timing.
                 {good_player?
-                I need you to stand watch and
-		!crossed
-		Make sure {challenger} isn't up to any shenanigans.
-		challenger:
-		!left
-		!angrypoint
-		Shenanigans? Are you implying I'm a cheat?
-		giver:
-		!placate
-		Not a cheat, per se. Just...in the spirit of fairness, yes?
-		challenger:
-		!crossed
-		Alright. Then how about {player} makes sure you aren't up to anything underhanded.
-		giver:
-		{player.heshe} will see to it that no funny business occurs.
-		From <i>either </> of us.
+                    !crossed
+                    I need you to stand watch and make sure {challenger} isn't up to any shenanigans.
+                challenger:
+                    !left
+                    !angrypoint
+                    Shenanigans? Are you implying I'm a cheat?
+                giver:
+                    !placate
+                    Not a cheat, per se. Just...in the spirit of fairness, yes?
+                challenger:
+                    !crossed
+                    Alright. Then how about {player} makes sure you aren't up to anything underhanded.
+                giver:
+                    {player.heshe} will see to it that no funny business occurs.
+                    From <i>either</> of us.
                 }
                 {not good_player?
-                I need you to explain why you brought this simpleton to the board.
-		challenger:
-		!left
-		Hey! I at least know how to play!
-		giver:
-		A child knows how to play as well. An adult knows how to win.
-		I, of course, belong to neither of those brackets.
-		!hips
-		<i>I </> dominate this game.
-		challenger:
-		!fight
-		Oh it's on!
+                    I need you to explain why you brought this simpleton to the board.
+                challenger:
+                !left
+                    Hey! I at least know how to play!
+                giver:
+                    A child knows how to play as well. An adult knows how to win.
+                    I, of course, belong to neither of those brackets.
+                    !hips
+                    <i>I</> dominate this game.
+                challenger:
+                    !fight
+                    Oh it's on!
                 }
                 * You seat yourself across from the table, just as the first few moves are made, calculated, and occasionally blundered.
             ]],
@@ -348,27 +366,27 @@ QDEF:AddConvo("go_to_game")
     :State("STATE_WIN")
         :Loc{
             DIALOG_INTRO = [[
-                * The game slouches on, and your crude understanding of the rules, along with just eyeing {challenger.hisher} wallet tells you that {challenger.heshe}'s losing desparately
+                * The game slouches on, and your crude understanding of the rules, along with just eyeing {challenger.hisher} wallet tells you that {challenger.heshe}'s losing desparately.
                 challenger:
-		    !left
+                    !left
                     I double the ante.
                 giver:
-		    !right
-		    Triple. You have to go all in.
-		challenger:
-		    !scared
-		    Wait, what?!
-		giver:
-		    !coinflip
-		* A coin flips through the air, and {challenger} looks at with fear one can only muster when knee deep into a game.
+                    !right
+                    Triple. You have to go all in.
+                challenger:
+                    !scared
+                    Wait, what?!
                 giver:
-		    I win.
-		challenger:
-		    !angrypoint
-		    Wait, woah! I know you fudged the scoring bracket somewhere along the lines
-		giver:
-		    !hips
-		    You can hand-inspect it, if you'd like. I made no such adjustments.
+                    !coinflip
+                * A coin flips through the air, and {challenger} looks at with fear one can only muster when knee deep into a game.
+                giver:
+                    I win.
+                challenger:
+                    !angrypoint
+                    Wait, woah! I know you fudged the scoring bracket somewhere along the lines!
+                giver:
+                    !hips
+                    You can hand-inspect it, if you'd like. I made no such adjustments.
                 player:
                     !left
                 giver:
@@ -491,8 +509,8 @@ QDEF:AddConvo("go_to_game")
                 giver:
                     Silence, lesser player. You should have lost, fair and square, it is only natural to assume you are a cheat.
                     {player}. Please, <i>escort</> {challenger} away from the table.
-                    !angry
-                    Forcefully, I must mandate.
+                    !throatcut
+                    A cheater such has {challenger.himher} shall not be tolerated in this house.
             ]],
 
             OPT_ATTACK = "Attack {challenger}, as requested",
@@ -508,8 +526,9 @@ QDEF:AddConvo("go_to_game")
 
             DIALOG_ATTACK_WIN = [[
                 {dead?
-                    * {giver} gives one last mean spirited kick to the stomach of {challenger}'s body before facing you.
+                    * {giver} gives one last mean spirited kick to the stomach of {agent}'s body before facing you.
                     giver:
+                        !right
                         Well, that was certainly vindicating.
                     player:
                         For you, maybe.
@@ -608,7 +627,7 @@ QDEF:AddConvo("go_to_game")
                         else
                             cxt.quest.param.sub_optimal = true
                         end
-                        cxt.quest.Complete()
+                        cxt.quest:Complete()
                         ConvoUtil.GiveQuestRewards(cxt)
                         StateGraphUtil.AddEndOption(cxt)
                     end,
@@ -761,8 +780,10 @@ QDEF:AddConvo("go_to_game")
                     end,
                     on_win = function(cxt)
                         cxt:Dialog("DIALOG_DEFEND_WIN")
-                        cxt.quest:Fail()
-                        cxt.quest:SpawnFollowQuest(FOLLOW_UP.id)
+                        if cxt:GetCastMember("giver"):IsAlive() then
+                            cxt.quest:Fail()
+                            cxt.quest:SpawnFollowQuest(FOLLOW_UP.id)
+                        end
                         StateGraphUtil.AddEndOption(cxt)
                     end,
                 }

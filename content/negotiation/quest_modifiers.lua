@@ -1965,7 +1965,7 @@ local MODIFIERS =
         damage_bonus = { 1, 1, 1, 2 },
         modifier_type = MODIFIER_TYPE.CORE,
         max_stacks = 1,
-        icon = "negotiation/modifiers/recall.tex",
+        icon = "DEMOCRATICRACE:assets/modifiers/facts.png",
         bonus_count = 1,
         --okay this definitely needs to be made better but for now, from what I can tell...it does it's job enough.
         event_handlers =
@@ -1999,7 +1999,7 @@ local MODIFIERS =
         max_resolve = 3,
         bounty_resolve = 6,
         smarts_amount = 2,
-        icon = "negotiation/modifiers/wary.tex",
+        icon = "DEMOCRATICRACE:assets/modifiers/flawed_logic.png",
         OnBounty = function( self )
             self.anti_negotiator:AddModifier("SMARTS", 2, self)
             self.negotiator:ModifyResolve( -self.bounty_resolve * self.stacks, self )
@@ -2013,7 +2013,7 @@ local MODIFIERS =
         max_stacks = 1,
         max_resolve = 4,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
-        icon = "negotiation/modifiers/strategy.tex",
+        icon = "DEMOCRATICRACE:assets/modifiers/logic.png",
         max_persuasion = 3,
         min_persuasion = 2,
     },

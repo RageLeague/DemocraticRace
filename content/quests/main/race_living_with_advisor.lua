@@ -14,28 +14,28 @@ local QDEF = QuestDef.Define
         end
     end,
 }
-:AddCast{
-    cast_id = "primary_advisor",
-    when = QWHEN.MANUAL,
-    cast_fn = function(quest, t)
-        table.insert(t, TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor"))
-    end,
-    no_validation = true,
-}
-:AddLocationCast{
-    cast_id = "home",
-    when = QWHEN.MANUAL,
-    cast_fn = function(quest, t)
-        table.insert(t, quest:GetCastMember("primary_advisor"):GetHomeLocation())
-    end,
-}
-:AddLocationCast{
-    cast_id = "player_room",
-    when = QWHEN.MANUAL,
-    cast_fn = function(quest, t)
-        table.insert(t, TheGame:GetGameState():GetLocation(quest:GetCastMember("home").content_id .. ".inn_room"))
-    end,
-}
+-- :AddCast{
+--     cast_id = "primary_advisor",
+--     when = QWHEN.MANUAL,
+--     cast_fn = function(quest, t)
+--         table.insert(t, TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor"))
+--     end,
+--     no_validation = true,
+-- }
+-- :AddLocationCast{
+--     cast_id = "home",
+--     when = QWHEN.MANUAL,
+--     cast_fn = function(quest, t)
+--         table.insert(t, quest:GetCastMember("primary_advisor"):GetHomeLocation())
+--     end,
+-- }
+-- :AddLocationCast{
+--     cast_id = "player_room",
+--     when = QWHEN.MANUAL,
+--     cast_fn = function(quest, t)
+--         table.insert(t, TheGame:GetGameState():GetLocation(quest:GetCastMember("home").content_id .. ".inn_room"))
+--     end,
+-- }
 :AddObjective{
     id = "visit",
     title = "Visit {primary_advisor}",
@@ -46,6 +46,9 @@ local QDEF = QuestDef.Define
     mark = {"home"},
 }
 DemocracyUtil.AddAdvisors(QDEF)
+DemocracyUtil.AddPrimaryAdvisor(QDEF)
+DemocracyUtil.AddHomeCasts(QDEF)
+
 QDEF:AddConvo(nil, "primary_advisor")
     :Priority(CONVO_PRIORITY_LOW)
     :Loc{
@@ -65,7 +68,7 @@ QDEF:AddConvo(nil, "primary_advisor")
         TT_PETS = "Play with your pets.",
         TT_OUTFITPET = "Change into another of {player}'s outfits or play with {1#agent}.",
         TT_OUTFITPETS = "Change into another of {player}'s outfits or play with your pets.",
-        
+
         DIALOG_CHANGE_OUTFIT = [[
             player:
                 I need to access my room.
@@ -86,14 +89,14 @@ QDEF:AddConvo(nil, "primary_advisor")
                 end) )
                 cxt.enc:YieldEncounter()
             end)
-            
+
         if not cxt:GetAgent():GetBrain():IsOnDuty() then
             return
         end
 
         StateGraphUtil.AddRemoveNegotiationCardOption( cxt, "DIALOG_REMOVE" )
-        
-        
+
+
         local unlocked_outfits = 1
         for k,v in ipairs( Content.GetOutfitsForCharacter(cxt.player.id) ) do
             if v.unlocked or TheGame:GetGameProfile():HasUnlock( v.id ) then
