@@ -136,6 +136,7 @@ Minor changes:
 * More quests are counted as "free time", such as Information Warfare.
 * Added custom quip tag per campaign. More dialogs are available.
 * Added new characters to the region. Change custom home generation logic.
+* Benni has three fingers now, like other kra'deshi.
 * Lots of dialog update and fixes.
 
 ### 0.2.1

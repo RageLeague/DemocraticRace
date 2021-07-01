@@ -93,6 +93,7 @@ local function OnLoad( mod )
     -- rawset(_G, "DemocracyUtil", )
 
     -- require "DEMOCRATICRACE:content/wealth_level"
+    require "DEMOCRATICRACE:content/builds"
     require "DEMOCRATICRACE:content/load_quips"
     require "DEMOCRATICRACE:content/load_codex"
     require "DEMOCRATICRACE:content/shop_defs"

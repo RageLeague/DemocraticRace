@@ -64,7 +64,7 @@ local chars =
         theme_music = "DEMOCRATICRACE|event:/democratic_race/music/story/benni_theme",
         -- theme_music = "event:/democratic_race/music/story/benni_theme",
 
-        build = "female_tei_utaro_build",
+        build = "female_benni_build",
         head = "head_female_kradeshi_13",
 
         skin_colour = 0xBEC867FF,

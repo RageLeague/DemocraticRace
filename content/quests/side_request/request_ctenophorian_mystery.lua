@@ -324,7 +324,12 @@ QDEF:AddConvo("ask_info")
                     Thanks.
                 agent:
                     You'll welcome.
-                    Just promise me you won't ask around this kind of question again.
+                    If you must know, Hesh cannot be classified.
+                    Hesh is a multi-faceted being, and to classify it is to waste what precious time we have before being consumed.
+                    Now you know the answer, just promise me you won't ask around this kind of question again.
+                player:
+                    Sure.
+                    It's already confusing enough.
             ]],
             OPT_BRUSH = "Brush off {agent}'s concern",
             DIALOG_BRUSH = [[
@@ -341,7 +346,12 @@ QDEF:AddConvo("ask_info")
             DIALOG_EXCUSE_SUCCESS = [[
                 agent:
                     [p] I get your point.
-                    Just promise me you won't ask around this kind of question again.
+                    If you must know, Hesh cannot be classified.
+                    Hesh is a multi-faceted being, and to classify it is to waste what precious time we have before being consumed.
+                    Now you know the answer, just promise me you won't ask around this kind of question again.
+                player:
+                    Sure.
+                    It's already confusing enough.
             ]],
             DIALOG_EXCUSE_FAILURE = [[
                 agent:
@@ -350,29 +360,74 @@ QDEF:AddConvo("ask_info")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_TALK")
+            cxt.enc.scratch.hesh_identity = 3
+            cxt.quest.param.hesh_id = cxt.quest.param.hesh_id or {}
             if cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL then
                 cxt:Opt("OPT_THANK")
                     :Dialog("DIALOG_THANK")
+                    :Fn(function(cxt)
+                        cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] = (cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] or 0) + 1
+                    end)
             else
                 cxt:BasicNegotiation("EXCUSE", {})
+                    :OnSuccess()
+                        :Fn(function(cxt)
+                            cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] = (cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] or 0) + 1
+                        end)
                     :OnFailure()
-                    :ReceiveOpinion("suspicious")
+                        :ReceiveOpinion("suspicious")
             end
         end)
     :State("STATE_SUCCESS")
         :Loc{
             DIALOG_ANSWER = [[
-            agent:
+                agent:
                 {1:
                     Hesh is a ctenophore.
+                player:
+                    !surprised
+                    The what-a-what-phore?
+                agent:
+                    $miscMocking
+                    C-te-no-phore.
+                    They basically have these comb-like cilia that are used for swimming, from what I can tell.
+                player:
+                    !dubious
+                    Sounds... Cute?
+                agent:
+                    I assure you, it's anything but cute.
+                    Most ctenophores are very capable predators.
+                    !hesh_greeting
+                    And Hesh is the most fearful predator of them all.
+                player:
+                    I'll... Keep that in mind.
                     |
                     Hesh is a cnidarian.
+                player:
+                    !surprised
+                    The what-a-what-rian?
+                agent:
+                    $miscMocking
+                    C-ni-da-rian.
+                    They basically have these nettle cells that allows them to harpoon their preys, from what I can tell.
+                player:
+                    !wince
+                    $scaredFearful
+                    That sounds... Terrifying.
+                    And you worship that thing?
+                agent:
+                    !hesh_greeting
+                    Hesh consumes all eventually. We simply wish to prevent unnecessary suffering.
                     |
                     Hesh is not ctenophorian, nor is it cnidarian.
                     Hesh is a multi-faceted being, and to classify it is to waste what precious time we have before being consumed.
+                player:
+                    Yeah that definitely make sense and not at all confusing.
+                agent:
+                    !shrug
+                    It is what it is.
                 }
-            player:
-                Yeah that definitely make sense and not at all confusing.
+                * You seem to understand Hesh a bit more from this conversation.
             ]],
         }
         :Fn(function(cxt)
