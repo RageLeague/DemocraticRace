@@ -488,8 +488,10 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
             ]],
             DIALOG_UNDERSTAND_SUCCESS = [[
                 * Finally, it closes it's gaping jaw. You step out of your trance and stare at what you've deciphered.
-                * It still blurs the lines between cnidarian, or ctenophorian, or something else entirely, but it doesn't have to have clarity.
-                * You internalize that Hesh is a creature of unknowable definition. Of a size and shape undefined.
+                * It changes its form based on what you believe Hesh looks like at the moment.
+                * Then it occured to you: no one has actually seen Hesh personally, to your knowledge.
+                * How come everyone are confident about what Hesh looks like? And how come you can see Hesh's form?
+                * You realized that reality is in the eye of the beholder, and whatever you believe is real, is real.
                 * And you accept this, just as much as you accept the saltwater around you, which drains as your fascination dwindles as well.
                 * When the space around you returns to dry land, sleep leaves, peacefully as it came, and dropping you into your room, refreshed.
             ]],
@@ -501,13 +503,13 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 !exit
                 * it is the sand of the beach you are confined to, the sand that you cannot go beyond, as the creature of your dreams slips further into the murky blue.
                 * It's face still shifts between identities, but you were so close to understanding, if only you could reach beyond the sand, if only you could see, IF ONLY-
-                * You wake with a start, your mind racing between visions, logic, and the crumbling walls between them.
+                * Yet you cannot, and you are plagued with those thoughts for the rest of the night, unable to decipher anything.
             ]],
         }
         :Fn(function(cxt)
-            cxt:Dialog("DIALOG_INTRO")
-
             cxt:TalkTo(TheGame:GetGameState():AddSkinnedAgent("COGNITIVE_HESH"))
+
+            cxt:Dialog("DIALOG_INTRO")
 
             cxt:BasicNegotiation("UNDERSTAND", {
             })
@@ -561,7 +563,10 @@ QDEF:AddConvo("bad_event")
         :Loc{
             DIALOG_INTRO = [[
                 * [p] You are interrupted by {agent}.
+                player:
+                    !left
                 agent:
+                    !right
                 {liked?
                     I can't believe it.
                     You out of all people are having heretic thoughts.
@@ -640,11 +645,13 @@ QDEF:AddConvo("bad_event")
 
                 if leader and not cxt.enc.scratch.leader_absent then
                     leader:MoveToLocation(cxt.location)
-                    cxt.enc.scratch.opfor = CreateCombatBackup(leader, "HESH_PATROL", cxt.quest:GetRank())
+                    CreateCombatBackup(leader, "HESH_PATROL", cxt.quest:GetRank())
+                    cxt:TalkTo(leader)
                 else
                     cxt.enc.scratch.opfor = CreateCombatParty("HESH_PATROL", cxt.quest:GetRank(), cxt.location, true)
+                    cxt:TalkTo(cxt.enc.scratch.opfor[1])
                 end
-                cxt:TalkTo(cxt.enc.scratch.opfor[1])
+
                 cxt:Dialog("DIALOG_INTRO")
             end
             cxt:BasicNegotiation("GASLIGHT", {
@@ -668,7 +675,7 @@ QDEF:AddConvo("bad_event")
             cxt:Opt("OPT_DEFEND")
                 :Dialog("DIALOG_DEFEND")
                 :Battle{
-                    enemies = cxt.enc.scratch.opfor,
+                    -- enemies = cxt.enc.scratch.opfor,
                     on_runaway = StateGraphUtil.DoRunAwayNoFail,
                 }
                     :OnWin()

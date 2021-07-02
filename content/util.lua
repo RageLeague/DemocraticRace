@@ -1130,7 +1130,7 @@ function DemocracyUtil.GetPerFileSettings()
     return data
 end
 function DemocracyUtil.GetBodyguards()
-    candidates = {}
+    local candidates = {}
     for i, agent in ipairs(TheGame:GetGameState():GetCaravan():GetParty():GetMembers()) do
         if agent:IsHiredMember() or agent:IsPet() then
             table.insert(candidates, agent)
