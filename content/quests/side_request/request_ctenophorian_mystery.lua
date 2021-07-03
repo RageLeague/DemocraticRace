@@ -614,11 +614,48 @@ QDEF:AddConvo("bad_event")
                 * Uh oh.
             ]],
 
+            OPT_LET_GO = "Convince {agent} to let you go",
+
+            DIALOG_LET_GO = [[
+                player:
+                    I know you don't like me, but I helped you get what you want.
+                    Would you at least let me go?
+            ]],
+
+            DIALOG_LET_GO_SUCCESS = [[
+                agent:
+                    !facepalm
+                    Uh, fine. We have the real source of this heresy.
+                    Easier to find {giver} than staying here arguing with you.
+                player:
+                    !hips
+                    That's the spirit.
+                * {agent} let you go, but you are sure that this is not over.
+            ]],
+
+            OPT_BRIBE = "Bribe {agent}",
+            DIALOG_BRIBE = [[
+                player:
+                    !happy
+                    Look, I'm just asking some questions.
+                    It's not hurting anyone for being curious, right?
+                    !give
+                    And it's certainly not hurting you.
+                agent:
+                    !take
+                    Ah, yes, of course.
+                    Considering you don't know any better, this transgression can be overlooked.
+                    Just... Make sure you don't ask questions that you shouldn't ask again.
+                player:
+                    Yes, of course.
+                * It's probably a lie, but {agent} is not going to question it.
+            ]],
+
             OPT_USE_BODYGUARD = "Send your guard to distract",
             DIALOG_USE_BODYGUARD = [[
                 player:
                     [p] Go, {guard}!
-                * {guard} deals with the Heshians while you tactically retreat.
+                * {guard} deals with the Heshians while you "tactically retreat".
             ]],
 
             DIALOG_DEFEND = [[
@@ -628,6 +665,41 @@ QDEF:AddConvo("bad_event")
             DIALOG_DEFEND_WIN = [[
                 * [p] You win. Now what.
             ]],
+
+            OPT_RAT_OUT = "Tell {agent} about {giver}'s involvement",
+            DIALOG_RAT_OUT = [[
+                player:
+                    !bashful
+                    Oh, I wasn't aware that there is a problem.
+                    {giver} told me to find out about what type of jellyfish Hesh is, and so I just ask around.
+                    Didn't realize that it was heretical.
+                agent:
+                {disliked?
+                    !crossed
+                    Hmm. A likely excuse.
+                    We will look into {giver} later, but as far as I'm concerned, you are the one asking the questions.
+                player:
+                    !angry_shrug
+                    Oh come on! I give you the real reason. You should just let me go.
+                }
+                {not disliked?
+                    !dubious
+                    {giver}, are you sure?
+                player:
+                    Yeah, why else would I say {giver.hisher} name?
+                agent:
+                    !shrug
+                    Fair enough.
+                    Well, since you didn't know that it is problematic, and you are very cooperative, I'm going to let you go this time.
+                    There will be questionings for {giver} of course, but it's not your problem.
+                player:
+                    !scared_shrug
+                    Sure, I guess...?
+                * {agent} let you go, but you are sure that this is not over.
+                }
+            ]],
+
+            SIT_MOD = "There are other witnesses of your heresy",
         }
         :SetLooping(true)
         :Fn(function(cxt)
@@ -654,12 +726,30 @@ QDEF:AddConvo("bad_event")
 
                 cxt:Dialog("DIALOG_INTRO")
             end
-            cxt:BasicNegotiation("GASLIGHT", {
-                -- Opponent gains bonus resolve for other witnesses.
-            })
-                :OnSuccess()
-                    :CompleteQuest("bad_event")
-                    :Travel()
+            if not cxt.quest.param.rat_out_giver then
+                local bonus = #cxt.quest.param.overheard > 0 and (#cxt.quest.param.overheard - 1) * 10 or 0
+                cxt:BasicNegotiation("GASLIGHT", {
+                    -- Opponent gains bonus resolve for other witnesses.
+                    situation_modifiers = bonus > 0 and {
+                        { value = bonus, text = cxt:GetLocString("SIT_MOD") }
+                    } or nil,
+                })
+                    :OnSuccess()
+                        :CompleteQuest("bad_event")
+                        :Travel()
+            else
+                cxt:BasicNegotiation("LET_GO", {
+                })
+                    :OnSuccess()
+                        :CompleteQuest("bad_event")
+                        :Travel()
+            end
+
+            cxt:Opt("OPT_BRIBE")
+                :Dialog("DIALOG_BRIBE")
+                :DeliverMoney(100)
+                :CompleteQuest("bad_event")
+                :Travel()
 
             DemocracyUtil.AddBodyguardOpt(cxt, function(cxt, agent)
                 cxt:ReassignCastMember("guard", agent)
@@ -681,5 +771,14 @@ QDEF:AddConvo("bad_event")
                     :OnWin()
                         :Dialog("DIALOG_DEFEND_WIN")
                         :CompleteQuest("bad_event")
-                        :DoneConvo()
+                        :Travel()
+            cxt:Opt("OPT_RAT_OUT")
+                :Dialog("DIALOG_RAT_OUT")
+                :Fn(function(cxt)
+                    cxt.quest.param.rat_out_giver = true
+                    if cxt:GetAgent():GetRelationship() >= RELATIONSHIP.NEUTRAL then
+                        cxt.quest:Complete("bad_event")
+                        StateGraphUtil.AddLeaveLocation(cxt)
+                    end
+                end)
         end)
