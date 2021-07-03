@@ -109,7 +109,19 @@ local QDEF = QuestDef.Define
     mark = {"giver"},
 }
 :AddObjective{
-    id = "bad_event"
+    id = "bad_event",
+}
+:AddObjective{
+    id = "rat_out_aftermath",
+    on_activate = function(quest)
+        quest.time_left = math.random(3, 10)
+    end,
+    events =
+    {
+        action_clock_advance = function(quest, location)
+            quest.time_left = (quest.time_left or 0) - 1
+        end,
+    },
 }
 :AddOpinionEvents{
     suspicious =
@@ -726,7 +738,7 @@ QDEF:AddConvo("bad_event")
 
                 cxt:Dialog("DIALOG_INTRO")
             end
-            if not cxt.quest.param.rat_out_giver then
+            if not cxt.quest:IsActive("rat_out_aftermath") then
                 local bonus = #cxt.quest.param.overheard > 0 and (#cxt.quest.param.overheard - 1) * 10 or 0
                 cxt:BasicNegotiation("GASLIGHT", {
                     -- Opponent gains bonus resolve for other witnesses.
@@ -775,10 +787,118 @@ QDEF:AddConvo("bad_event")
             cxt:Opt("OPT_RAT_OUT")
                 :Dialog("DIALOG_RAT_OUT")
                 :Fn(function(cxt)
-                    cxt.quest.param.rat_out_giver = true
+                    if not cxt.quest:IsActive("rat_out_aftermath") then
+                        cxt.quest:Activate("rat_out_aftermath")
+                    end
                     if cxt:GetAgent():GetRelationship() >= RELATIONSHIP.NEUTRAL then
                         cxt.quest:Complete("bad_event")
                         StateGraphUtil.AddLeaveLocation(cxt)
                     end
                 end)
+        end)
+
+QDEF:AddConvo("rat_out_aftermath")
+    :Confront(function(cxt)
+        if cxt:GetCastMember("giver") and cxt:GetCastMember("giver"):GetContentID() == "ADVISOR_MANIPULATE" then
+            local tei = AgentUtil.GetOrSpawnAgentbyAlias("TEI")
+            if tei and tei:IsAlive() then
+                if cxt.location == cxt:GetCastMember("giver"):GetHomeLocation() and
+                    cxt.location == cxt:GetCastMember("giver"):GetLocation() then
+
+                    return "STATE_BENNI_TEI_DIALOG"
+                else
+                    return "STATE_ARREST"
+                end
+            end
+        end
+        if (quest.time_left or 0) <= 0 and cxt.location:HasTag("in_transit") then
+            return "STATE_ARREST"
+        end
+    end)
+    :State("STATE_BENNI_TEI_DIALOG")
+        :Loc{
+            DIALOG_INTRO = [[
+                * You arrive here seeing {giver} and {tei} talking.
+                giver:
+                    !left
+                    !scared
+                tei:
+                    !right
+                    !angry_shrug
+                    {giver}! As a priest of the Cult, you should know better!
+                giver:
+                    !bashful
+                    I thought the Cult was just saying that because they themselves don't even know what Hesh is!
+                    I didn't know that trying to classify it was strictly forbidden by the Cult!
+                tei:
+                    That is because Hesh cannot be classified under normal classification!
+                giver:
+                    Right, of course.
+                    !placate
+                    Look, I learned my lessons, alright?
+                    No more trying to classify Hesh.
+                    !point
+                    That's a promise.
+                tei:
+                    !facepalm
+                    Just be glad that it was me who confronted you about this instead of someone else.
+                    I can't promise that anyone else would be as forgiving as me.
+                giver:
+                    !bashful
+                    Thank you.
+                tei:
+                    !exit
+                * {tei} leaves.
+                * You walk up to {giver}.
+                giver:
+                    !right
+                player:
+                    !left
+                    What's going on?
+                giver:
+                    I was just talking to {tei}.
+                    [p] Don't bother trying to classify Hesh anymore.
+                    It makes {tei} sad.
+                player:
+                    Oh, okay.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:ReassignCastMember("tei", AgentUtil.GetOrSpawnAgentbyAlias("TEI"))
+            cxt:GetCastMember("tei"):MoveToLocation(cxt.location)
+            cxt:Dialog("DIALOG_INTRO")
+            cxt.quest:Cancel()
+            StateGraphUtil.AddEndOption(cxt)
+        end)
+    :State("STATE_ARREST")
+        :Loc{
+            DIALOG_INTRO = [[
+                * [p] You saw {giver} getting taken away by {priest}.
+                giver:
+                    !left
+                    !scared
+                priest:
+                    !right
+                    Alright, just come with me.
+                    Makes it easier for both of us.
+                giver:
+                    What did I even do?
+                priest:
+                    I have reasonable intel that you are the one that is asking around questions you shouldn't ask.
+                    You can come with me.
+                giver:
+                    !thought
+                    {player} must have rat me out.
+                    Know I shouldn't have trusted a grifter.
+                * Oh no, {giver} is getting taken away by the cult!
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:ReassignCastMember("priest", AgentUtil.GetFreeAgent("PRIEST"))
+            cxt:Dialog("DIALOG_INTRO")
+            cxt.quest:Fail()
+            cxt:GetCastMember("giver"):GainAspect("stripped_influence", 5)
+            cxt:GetCastMember("giver"):OpinionEvent(OPINION.BETRAYED)
+            cxt:GetCastMember("giver"):Retire()
+            StateGraphUtil.AddLeaveLocation(cxt)
         end)
