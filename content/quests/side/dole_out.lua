@@ -35,7 +35,7 @@ local QDEF = QuestDef.Define{
 :AddObjective{
     id = "go_to_advisor",
     title = "Wait for the votes to roll in",
-    desc = "You've given your last bit of bread. Report back to {primary_advisor} for a reward.",
+    desc = "You've run out of time. Time to check in with your advisor.",
     mark = {"primary_advisor"},
 
     on_activate = function(quest)
@@ -68,35 +68,6 @@ local QDEF = QuestDef.Define{
         quest:Activate("go_to_advisor")
     end,
 }
--- :AddObjective{
---     id = "feed_people",
---     title = "Find and Feed some people",
---     desc = "Go around and find some impoverished to feed.",
--- }
--- :AddObjective{
---     id = "feed_grateful",
---     mark = { "grateful" },
---     title = "Feed some people",
---     desc = "Find someone and give them some bread",
--- }
--- :AddObjective{
---     id = "feed_pan",
---     --mark = { "pan" },
---     title = "Feed some people",
---     desc = "Find someone and give them some bread",
--- }
--- :AddObjective{
---     id = "feed_politic",
---     mark = { "political" },
---     title = "Feed some people",
---     desc = "Find someone and give them some bread",
--- }
--- :AddObjective{
---     id = "feed_ungrate",
---     mark = { "ungrateful" },
---     title = "Feed some people",
---     desc = "Find someone and give them some bread",
--- }
 :AddOpinionEvents{
     politic = {
         delta = OPINION_DELTAS.LIKE,
@@ -127,22 +98,14 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :Loc{
         DIALOG_INTRO = [[
             {has_primary_advisor?
-                *{primary_advisor} heaves a large bag onto the table.
                 agent:
-                    This. Is a bag.
+                    Here's an idea for what you can do.
+                    You gift out people dole loaves.
                 player:
-                    Dear hesh.
+                    You think this is going to help gather support?
                 agent:
-                    There's more.
-                player:
-                    No...
-                agent:
-                    It's filled with dole loaves. Despite them being the poor man's food, I had to sneak some out of the distribution offices.
-                player:
-                    So why'd you bring it? I'd assume we're not eating any of it.
-                agent:
-                    No we're not. You're going to distribute these loaves of bread around the Foam.
-                    With any luck, the word'll be spread that you're a benevolent politician.
+                    Yeah.
+                    Plenty of people only care about what is in front of them, and if you give them something to eat, they will just support you.
             }
             {not has_primary_advisor?
                 player:
@@ -158,10 +121,13 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :Loc{
         DIALOG_INTRO = [[
             player:
-                !left
+                !thought
                 Well you make a sound case.
-                If nothing else we can eat 'em later
-                * You pick up the bag. The smell alone rushes you to the door.
+                Where am I getting them, anyway?
+                I can't help but notice that you have nothing on you.
+            agent:
+                I know some people who are willing to bulk sell them to you.
+                You can visit them to buy some loaves.
         ]],
     }
     :State("START")
@@ -172,12 +138,13 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{
         DIALOG_INTRO = [[
             player:
-                !left
-                Won't this make me seem a communist?
+                !thought
+                I don't know. People are going to be suspicious of random handouts.
+                That also just sounds like bribing the voter base.
             agent:
-                Half the workers are in support of communism. This'd be a slam dunk for PR.
-            player:
-                Lets just keep our options open. What else do you have?
+                !crossed
+                There is never any rules saying you can't, is there?
+                You are just giving yourself arbitrary disadvantages.
         ]],
     }
     :State("START")
