@@ -2150,8 +2150,8 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.PERMANENT,
         icon = "negotiation/modifiers/heated.tex",
 
-        threshold = 10,
-        explode_damage = 15,
+        threshold = 8,
+        explode_damage = 12,
 
         OnEndTurn = function( self, minigame )
             self.negotiator:DeltaModifier(self, -math.floor(self.stacks / 2))

@@ -513,6 +513,9 @@ QDEF:AddConvo("dole_out_three")
             cxt:Opt("OPT_CONVINCE")
                 :Dialog("DIALOG_CONVINCE")
                 :Negotiation{
+                    on_start_negotiation = function(minigame)
+                        minigame.opponent_negotiator:CreateModifier( "SHORT_TEMPERED" )
+                    end,
                     on_success = function(cxt)
                         cxt:Dialog("DIALOG_CONVINCE_SUCCESS")
                         -- cxt.quest:Complete("feed_ungrate")
