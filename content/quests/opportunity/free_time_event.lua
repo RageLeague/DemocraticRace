@@ -1,7 +1,7 @@
 local unlocks = require "DEMOCRATICRACE:content/get_location_unlock"
 
 local function PickBoonForAgent( agent )
-    --[[    do 
+    --[[    do
             local service_id = "SPECIAL_NOODLES"
             local service = BOON_SERVICES[ service_id ]
             if service and (service.can_offer == nil or service.can_offer( agent )) then
@@ -15,6 +15,9 @@ local function PickBoonForAgent( agent )
     for i = relationship, RELATIONSHIP.HATED, -1 do
         if services[ i ] then
             local t = shallowcopy( services[ i ] )
+            if relationship == RELATIONSHIP.LIKED then
+                t.SOCIALIZE = (t.SOCIALIZE or 1)
+            end
             while next(t) ~= nil do
                 local service_id = weightedpick( t )
                 local service = BOON_SERVICES[ service_id ]
@@ -37,7 +40,7 @@ local function PickLocationUnlockForAgent(agent, unlock_type)
     -- comment this part out because we want to test whether having duplicate unlock works or not.
     -- while #all_locations > 0 do
     --     local location = weightedpick(all_locations)
-        
+
     --     if table.arraycontains(TheGame:GetGameState():GetMainQuest().param.unlocked_locations, location) then
     --         all_locations[location] = nil
     --     else
@@ -50,58 +53,61 @@ local QDEF = QuestDef.Define{
     desc = "You have free time! Spend this time at your favorite location!",
     -- icon = engine.asset.Texture("icons/quests/oppo_battle_aftermath.tex"),
     icon = function(self, obj)
-    
+
     end,
     qtype = QTYPE.STORY,--QTYPE.OPPORTUNITY,
     act_filter = DemocracyUtil.DemocracyActFilter,
-    on_init = function(quest)
-        quest.param.free_time_actions = DemocracyUtil.GetBaseFreeTimeActions()
-    end,
-    events = 
-    {
-        resolve_negotiation = function(quest, minigame)
-            for i, modifier in minigame:GetPlayerNegotiator():Modifiers() do
-                if modifier.id == "NO_PLAY_FROM_HAND" then
-                    return
-                end
-            end
-            quest:DefFn("DeltaActions", -1)
-        end,
-        resolve_battle = function(quest, battle)
-            quest:DefFn("DeltaActions", -2)
-        end,
-        caravan_move_location = function(quest, location)
-            if location:HasTag("road") then
-                quest:DefFn("DeltaActions", -1)
-            end
-        end,
-    },
-    DeltaActions = function(quest, delta)
-        quest.param.free_time_actions = quest.param.free_time_actions + delta
-        print("New action count: "..quest.param.free_time_actions)
-        if quest.param.free_time_actions <= 0 then
-            quest:Complete()
-        end
-        quest:NotifyChanged()
-    end
+    -- on_init = function(quest)
+    --     quest.param.free_time_actions = DemocracyUtil.GetBaseFreeTimeActions()
+    -- end,
+    -- events =
+    -- {
+    --     resolve_negotiation = function(quest, minigame)
+    --         for i, modifier in minigame:GetPlayerNegotiator():Modifiers() do
+    --             if modifier.id == "NO_PLAY_FROM_HAND" then
+    --                 return
+    --             end
+    --         end
+    --         quest:DefFn("DeltaActions", -1)
+    --     end,
+    --     resolve_battle = function(quest, battle)
+    --         quest:DefFn("DeltaActions", -2)
+    --     end,
+    --     caravan_move_location = function(quest, location)
+    --         if location:HasTag("road") then
+    --             quest:DefFn("DeltaActions", -1)
+    --         end
+    --     end,
+    -- },
+    -- DeltaActions = function(quest, delta)
+    --     quest.param.free_time_actions = quest.param.free_time_actions + delta
+    --     print("New action count: "..quest.param.free_time_actions)
+    --     if quest.param.free_time_actions <= 0 then
+    --         quest:Complete()
+    --     end
+    --     quest:NotifyChanged()
+    -- end
 }
-:AddObjective{
-    id = "action_tracker",
-    title = "You have {1} {1*action|actions} left",
-    title_fn = function(quest, str)
-        return loc.format(str, quest.param.free_time_actions or 0)
-    end,
-    desc = "You can choose to visit a location during your free time.",
+-- :AddObjective{
+--     id = "action_tracker",
+--     title = "You have {1} {1*action|actions} left",
+--     title_fn = function(quest, str)
+--         return loc.format(str, quest.param.free_time_actions or 0)
+--     end,
+--     desc = "You can choose to visit a location during your free time.",
 
+--     state = QSTATUS.ACTIVE,
+--     mark = function(quest, t, in_location)
+--         DemocracyUtil.AddUnlockedLocationMarks(t)
+--     end,
+--     -- terminal = true,
+-- }
+:AddFreeTimeObjective{
+    id = "action_tracker",
     state = QSTATUS.ACTIVE,
-    mark = function(quest, t, in_location)
-        print("free time mark evaluated")
-        -- for i, id in ipairs(TheGame:GetGameState():GetMainQuest().param.unlocked_locations) do
-        --     table.insert(t, TheGame:GetGameState():GetLocation(id))
-        -- end
-        DemocracyUtil.AddUnlockedLocationMarks(t)
+    on_complete = function(quest)
+        quest:Complete()
     end,
-    -- terminal = true,
 }
 :AddCast{
     cast_id = "friend",
@@ -179,7 +185,7 @@ local convo = QDEF:AddConvo()
     :Hub(function(cxt, who)
         if cxt.quest.param.free_time_actions ~= nil  and who
             and who:GetRelationship() > RELATIONSHIP.NEUTRAL then
-            
+
             local action_cost = 3
             -- print("lo yes!")
             cxt:Opt("OPT_SOCIALIZE", who)
@@ -193,8 +199,20 @@ local convo = QDEF:AddConvo()
                     -- cxt.quest:DefFn("DeltaActions", -action_cost)
                     cxt:GetAgent():Remember("OFFERED_BOON")
                     cxt:Dialog("DIALOG_SOCIALIZE")
+                    -- Don't spawn request for oppositions, because there might be issues with them dying.
+                    if who:GetRelationship() == RELATIONSHIP.LIKED and not DemocracyUtil.HasRequestQuest(who)
+                        and not DemocracyUtil.GetOppositionData(who) and math.random() < 0.5 then
+
+                        -- Try spawning a request quest
+                        local request_quest = DemocracyUtil.SpawnRequestQuest(who)
+                        if request_quest then
+                            cxt.enc.scratch.request_quest = request_quest
+                            cxt:GoTo("STATE_REQUEST")
+                            return
+                        end
+                    end
                     local chosen_boon = PickBoonForAgent(who) or "SOCIALIZE"
-                    
+
                     if chosen_boon == "SOCIALIZE" and AgentUtil.HasPlotArmour(cxt:GetAgent()) then
                         -- we want to be able to socialize with plot armor characters, but we don't want them
                         -- to love us if we socialize.
@@ -209,13 +227,13 @@ local convo = QDEF:AddConvo()
                     end
                     -- DBG(cxt.quest:GetCastMember("friend"))
                     cxt.quest:AssignCastMember("friend", who)
-                    
+
                     local service = BOON_SERVICES[chosen_boon]
                     if service.on_init then
                         service.on_init(cxt.quest)
                     end
                     cxt:GoTo(chosen_boon)
-                        
+
                     -- end
                     -- doboon(cxt, chosen_boon)
                     -- if unlock_location then
@@ -229,7 +247,7 @@ local convo = QDEF:AddConvo()
                     --     print("no more locations to unlock!")
                     --     doboon(cxt, chosen_boon)
                     -- end
-                    
+
                 end)
             cxt:Opt("OPT_ASK_ABOUT_LOCATION")
                 :ReqCondition(not who:HasMemoryFromToday("OFFERED_BOON"), "REQ_NOT_SOCIALIZED")
@@ -250,7 +268,7 @@ local convo = QDEF:AddConvo()
                         opt:Fn(function(cxt)
                             who:Remember("ASKED_OPT_" .. opt_id)
                             cxt.quest.param.loc_to_unlock = PickLocationUnlockForAgent(who, unlock_type)
-                            
+
                             if cxt.quest.param.loc_to_unlock then
                                 if DemocracyUtil.LocationUnlocked(cxt.quest.param.loc_to_unlock) then
                                     cxt:Dialog("DIALOG_ALREADY_UNLOCKED")
@@ -290,6 +308,25 @@ local convo = QDEF:AddConvo()
         end
 
     end)
+    :State("STATE_REQUEST")
+        :Loc{
+            DIALOG_REJECT = [[
+                player:
+                    [p] Yeah, sorry I couldn't help.
+                    Glad you let me know, though.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:PlayQuestConvo(cxt.enc.scratch.request_quest, QUEST_CONVO_HOOK.INTRO)
+            DemocracyUtil.PresentRequestQuest(cxt, cxt.enc.scratch.request_quest, function(cxt,quest)
+                cxt:PlayQuestConvo(quest, QUEST_CONVO_HOOK.ACCEPTED)
+                StateGraphUtil.AddEndOption(cxt)
+            end, function(cxt, quest)
+                cxt:Dialog("DIALOG_REJECT")
+                ConvoUtil.DoResolveDelta(cxt, 5)
+                StateGraphUtil.AddEndOption(cxt)
+            end)
+        end)
 for k,v in pairs(BOON_SERVICES) do
     assert(v.fn)
     local state = convo:State(k):Fn(v.fn)
@@ -303,5 +340,5 @@ end
 --         -- TT_NEW_LOCATION = "You can now visit this location during your free time.",
 --     }
 --     :Fn(function(cxt)
-        
+
 --     end)

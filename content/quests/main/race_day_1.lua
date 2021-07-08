@@ -33,16 +33,16 @@ local QDEF = QuestDef.Define
             and quest:GetLocalizedStr( "GET_JOB_ADVISOR" )
             or quest:GetLocalizedStr( "GET_JOB_ALONE" )
     end,
-    
-    on_complete = function(quest) 
+
+    on_complete = function(quest)
         quest:Activate("do_job")
     end,
-    
+
 }
 :AddObjective{
     id = "do_job",
     hide_in_overlay = true,
-    events = 
+    events =
     {
         quests_changed = function(quest, event_quest)
             if quest.param.current_job == event_quest and event_quest:IsDone() then
@@ -51,18 +51,18 @@ local QDEF = QuestDef.Define
         end
     },
     on_activate = function(quest)
-        DemocracyUtil.EndFreeTime()
+        DemocracyUtil.EndFreeTime(true)
         if quest.param.current_job == "FREE_TIME" then
             quest.param.current_job = DemocracyUtil.StartFreeTime(1.5)
         end
     end,
-    on_complete = function(quest) 
+    on_complete = function(quest)
         quest.param.job_history = quest.param.job_history or {}
         table.insert(quest.param.job_history, quest.param.current_job)
         quest.param.recent_job = quest.param.current_job
         quest.param.current_job = nil
 
-        if (#quest.param.job_history == 1) then 
+        if (#quest.param.job_history == 1) then
             quest:Activate("meet_advisor")
         elseif (#quest.param.job_history >= 2) then
             quest:Activate("do_summary")
@@ -86,7 +86,7 @@ local QDEF = QuestDef.Define
 :AddSubQuest{
     id = "do_summary",
     quest_id = "RACE_DAY_END_SUMMARY",
-    on_activate = function(quest) 
+    on_activate = function(quest)
         UIHelpers.PassTime(DAY_PHASE.NIGHT)
         DemocracyUtil.SetSubdayProgress(3)
     end,
@@ -106,35 +106,48 @@ local QDEF = QuestDef.Define
         quest:Complete()
     end,
 }
-:AddCast{
-    cast_id = "primary_advisor",
-    when = QWHEN.MANUAL,
-    cast_fn = function(quest, t)
-        table.insert(t, TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor"))
-    end,
-    no_validation = true,
-}
+-- :AddCast{
+--     cast_id = "primary_advisor",
+--     when = QWHEN.MANUAL,
+--     cast_fn = function(quest, t)
+--         table.insert(t, TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor"))
+--     end,
+--     no_validation = true,
+-- }
+DemocracyUtil.AddPrimaryAdvisor(QDEF)
 QDEF:AddConvo("get_job")
-    :ConfrontState("STATE_CONFRONT", function(cxt)
+    :Loc{
+        OPT_GET_JOB = "Find a way to gather support...",
+
+    }
+    :Hub_Location(function(cxt)
         if not cxt.quest:GetCastMember("primary_advisor") then
             cxt.quest:AssignCastMember("primary_advisor")
         end
-        return not (cxt.quest:GetCastMember("primary_advisor") and true or false)
+        if not cxt.quest:GetCastMember("primary_advisor") then
+            cxt:Opt("OPT_GET_JOB")
+                :SetQuestMark()
+                :Fn( function(cxt)
+                    UIHelpers.DoSpecificConvo( cxt.quest:GetCastMember("oshnu"), cxt.convodef.id, "STATE_GET_JOB" ,nil,nil,cxt.quest)
+                end )
+        end
     end)
-    :Loc{
-        DIALOG_INTRO = [[
-            player:
-                !left
-                !thought
-                $neutralThoughtful
-                Here's what I can do...
+    :State("STATE_GET_JOB")
+        :Loc{
+            DIALOG_GET_JOB = [[
+                player:
+                    !left
+                    !thought
+                    $neutralThoughtful
+                    Here's what I can do...
             ]],
-        
-    }
-    :RunLoopingFn(function(cxt)
-        cxt:Dialog("DIALOG_INTRO")
-        DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB")
-    end)
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_GET_JOB")
+            cxt:RunLoopingFn(function(cxt)
+                DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB")
+            end)
+        end)
 QDEF:AddConvo("get_job", "primary_advisor")
     :Loc{
         OPT_GET_JOB = "Discuss Job...",
@@ -148,6 +161,7 @@ QDEF:AddConvo("get_job", "primary_advisor")
     :Hub(function(cxt)
         cxt:Opt("OPT_GET_JOB")
             :SetQuestMark( cxt.quest )
+            :PostText("TT_SKIP_FREE_TIME")
             :Dialog("DIALOG_GET_JOB")
             :LoopingFn(function(cxt)
                 DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB", true)

@@ -235,7 +235,8 @@ function SupportScreen:Refresh(new_mode)
     self.mode_button:SetToolTip(loc.format(
         LOC"DEMOCRACY.SUPPORT_SCREEN.SWITCH_MODE_TT",
         LOC("DEMOCRACY.SUPPORT_SCREEN.MODE."..mode_name.."_TITLE"),
-        LOC("DEMOCRACY.SUPPORT_SCREEN.MODE."..mode_name.."_DESC")
+        LOC("DEMOCRACY.SUPPORT_SCREEN.MODE."..mode_name.."_DESC"),
+        Controls.Digital.SKIP
     ))
 
     self:Layout()

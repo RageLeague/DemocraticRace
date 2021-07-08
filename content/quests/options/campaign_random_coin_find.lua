@@ -2,13 +2,13 @@ local function FindCoinGrafts( number, rarity )
     local owner = TheGame:GetGameState():GetPlayerAgent()
     local collection = GraftCollection.RewardableCoin(owner):Rarity(rarity)
     local grafts = collection:Generate(number)
-    
+
     if grafts then
         for k,graft in ipairs(grafts) do
             TheGame:GetGameProfile():SetSeenGraft( graft.id )
         end
     end
-    
+
     return grafts
 end
 
@@ -19,7 +19,7 @@ local COIN_RARITY = {
 }
 local RATES = {
     [CARD_RARITY.RARE] = 2000,
-    [CARD_RARITY.UNCOMMON] = 750,
+    [CARD_RARITY.UNCOMMON] = 600,
     [CARD_RARITY.COMMON] = 150,
 }
 
@@ -27,7 +27,7 @@ local QDEF = QuestDef.Define
 {
     qtype = QTYPE.STORY,
 
-    events = 
+    events =
     {
         player_money_change = function(quest, old_money, new_money)
             local delta = new_money - old_money
@@ -42,7 +42,7 @@ local QDEF = QuestDef.Define
                 end
 
                 for i, rarity in ipairs(COIN_RARITY) do
-                    local coin_count = 0                
+                    local coin_count = 0
                     local temp_coins = delta
                     while temp_coins > 0 do
                         temp_coins = temp_coins - math.random(1, RATES[rarity])
@@ -66,7 +66,9 @@ local QDEF = QuestDef.Define
 
 QDEF:AddConvo()
     :Priority(CONVO_PRIORITY_LOWEST)
-    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.quest.param.candidate_coins and #cxt.quest.param.candidate_coins > 0 end)
+    :ConfrontState("STATE_CONFRONT", function(cxt)
+            return not cxt.location:HasTag("in_transit") and cxt.quest.param.candidate_coins and #cxt.quest.param.candidate_coins > 0
+        end)
         :Loc{
             DIALOG_INTRO = [[
                 * You look through the coins you got.

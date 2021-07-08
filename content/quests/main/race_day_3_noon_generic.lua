@@ -46,7 +46,7 @@ local QDEF = QuestDef.Define
 DemocracyUtil.AddPrimaryAdvisor(QDEF)
 
 QDEF:AddConvo("go_to_bar")
-    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("noodle_shop") end)
+    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("noodle_shop") end)
         :Loc{
             DIALOG_INTRO = [[
                 * [p] you arrived at the shop.

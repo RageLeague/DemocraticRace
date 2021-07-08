@@ -2,7 +2,7 @@ Convo("DEM_CONVINCE_FIRE")
     :Loc{
         OPT_CONVINCE_FIRE = "Convince {agent} to fire an employee...",
         TT_CONVINCE_FIRE = "Firing someone will cause them to hate you, but it will strip them of their influence temporarily.",
-        
+
         REQ_ALREADY_FIRED = "Already fired someone today.",
 
         DIALOG_CONVINCE_FIRE = [[
@@ -104,7 +104,7 @@ Convo("DEM_CONVINCE_FIRE")
         SIT_MOD_FRIENDLY = "{1#agent} is a friend of {agent}.",
         SIT_MOD_ENEMY = "{1#agent} is an enemy of {agent}.",
         SIT_MOD_SLACK_OFF = "{1#agent} is currently slacking off.",
-        
+
     }
     :Hub(function(cxt, who)
         if not DemocracyUtil.IsDemocracyCampaign(cxt.act_id) then
@@ -115,7 +115,7 @@ Convo("DEM_CONVINCE_FIRE")
             local workplace = who:GetBrain():GetWorkplace()
             for i, work in workplace:WorkPositions() do
                 local worker = work:GetAgent()
-                if worker and worker ~= who and not AgentUtil.HasPlotArmour(worker) then
+                if worker and worker ~= who and not AgentUtil.HasPlotArmour(worker) and worker:IsSentient() then
                     local t = worker
                     table.insert(fire_targets, t)
                 end
@@ -133,7 +133,7 @@ Convo("DEM_CONVINCE_FIRE")
                         for i, agent in ipairs(fire_targets) do
                             local sit_mod = {}
                             table.insert(sit_mod, {value = 5 * (agent:GetRenown() - 1), text = loc.format(cxt:GetLocString("SIT_MOD_PRESTIGEOUS", agent, agent:GetRenown()))})
-                            
+
                             if who:HasMemory("CONVINCED_FIRE_EMPLOYEE") then
                                 table.insert(sit_mod, {value = 10, text = cxt:GetLocString("SIT_MOD_TRIED_FIRE_BEFORE")})
                             end
@@ -152,7 +152,7 @@ Convo("DEM_CONVINCE_FIRE")
                             if IsSlacking(agent) then
                                 table.insert(sit_mod, {value = -10, text = loc.format(cxt:GetLocString("SIT_MOD_SLACK_OFF", agent))})
                             end
-                            
+
                             cxt:Opt("OPT_FIRE_TARGET", agent)
                                 :SetPortrait(agent)
                                 :ReqCondition(agent:GetRenown() <= who:GetRenown(), "REQ_HIGH_RENOWN", agent)

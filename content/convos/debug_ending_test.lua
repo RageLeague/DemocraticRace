@@ -44,5 +44,5 @@ Convo("DEBUG_ENDING_TEST")
         --         cxt.player.negotiator:AddCard(card)
         --         -- DemocracyUtil.DoEnding(cxt, "arrested")
         --     end)
-        
+
     end)

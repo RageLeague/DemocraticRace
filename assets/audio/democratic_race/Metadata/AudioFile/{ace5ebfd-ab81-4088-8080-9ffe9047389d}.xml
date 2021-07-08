@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="AudioFile" id="{ace5ebfd-ab81-4088-8080-9ffe9047389d}">
+		<property name="assetPath">
+			<value>benni_theme.wav</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>25.600000000000001</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{4e154651-c224-48a7-a036-02e9486586fd}</destination>
+		</relationship>
+	</object>
+</objects>

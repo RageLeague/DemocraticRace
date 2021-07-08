@@ -4860,7 +4860,7 @@ msgstr ""
 
 #: CONVO.RACE_INTRODUCE_OPPOSITION_3.STATE_OPPOSITION_QUESTIONS.DIALOG_5
 msgctxt "CONVO.RACE_INTRODUCE_OPPOSITION_3.STATE_OPPOSITION_QUESTIONS.DIALOG_5"
-msgid "player:\nSo who's representing the Cult of Hesh?\nagent:\nIt's Vixmalli Banquod.\n{player_smith?\nHe's a member of one of the most prestegious-\nplayer:\nYeah, I know who he is.\n!thought\nDamn it, Vix. You are not going to make it easy for me, huh?\nAnyway, what does he want?\n}\n{not player_smith?\nHe's a member of one of the most prestegious families in Havaria.\nHe basically bought his way to the top of the Cult's Hierarchy.\nplayer:\nWell, that sounds good and all, but what does he want?\n}\n{not cult_of_hesh?\nIt's the cult. They always want more power.\nBut they dont really have anything that jives with the public voting blocks.\nWell, everything except <!pol_stance_artifact_treatment_2>preserve artifacts</>.\nThey'll likely just start preaching about Hesh declaring them the president.\nTheir supporters are going to be rigidly pro-cult unless you stoop to their level.\nIf you do though, watch your back from those who want the artifacts for profit.\n}\n{cult_of_hesh?\nTo <!pol_stance_artifact_treatment_2>preserve artifacts</>, obviously.\nHe's probably going to claim that Hesh itself supports him to be the president.\nYou know how it is.\nplayer:\nWhat a surprise.\nagent:\nHis supporters are probably those who believe in the holiness of those artifacts.\nBut you know how it is in Havaria. Some heathens probably wants to sell them for profits.\n}"
+msgid "player:\nSo who's representing the Cult of Hesh?\nagent:\nIt's Vixmalli Banquod.\n{player_smith?\nHe's a member of one of the most prestegious-\nplayer:\nYeah, I know who he is.\n!thought\nDamn it, Vix. You are not going to make it easy for me, huh?\nAnyway, what does he want?\n}\n{not player_smith?\nHe's a member of one of the most prestegious families in Havaria.\nHe basically bought his way to the top of the Cult's Hierarchy.\nplayer:\nWell, that sounds good and all, but what does he want?\n}\n{not cult_of_hesh?\nIt's the cult. They always want more power.\nBut they dont really have anything that jives with the public voting blocks.\nWell, everything except <!pol_stance_religious_policy_2>preserve artifacts</>.\nThey'll likely just start preaching about Hesh declaring them the president.\nTheir supporters are going to be rigidly pro-cult unless you stoop to their level.\nIf you do though, watch your back from those who want the artifacts for profit.\n}\n{cult_of_hesh?\nTo <!pol_stance_religious_policy_2>preserve artifacts</>, obviously.\nHe's probably going to claim that Hesh itself supports him to be the president.\nYou know how it is.\nplayer:\nWhat a surprise.\nagent:\nHis supporters are probably those who believe in the holiness of those artifacts.\nBut you know how it is in Havaria. Some heathens probably wants to sell them for profits.\n}"
 msgstr ""
 
 #: CONVO.RACE_INTRODUCE_OPPOSITION_3.STATE_OPPOSITION_QUESTIONS.DIALOG_6
@@ -7448,63 +7448,63 @@ msgctxt "NEGOTIATION_FEATURE.TIME_CONSTRAINT.NAME"
 msgid "Time Is Money"
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.DESC
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.DESC"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.DESC
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.DESC"
 msgid "There are a plenty of artifacts in Havaria, left over from the Vagrant Age. There are dividing opinions on what should we do about them. The Cult thinks that they should be preserved, while the Barons think they should be researched and used."
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.NAME
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.NAME"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.NAME
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.NAME"
 msgid "Artifact Treatment"
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-1.DESC
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-1.DESC"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_-1.DESC
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_-1.DESC"
 msgid "It might be too costly to extensively research all the artifacts, but it would be a waste if the artifacts just sat there. By encouraging commercial use of the artifacts, we encourage people to look for useful artifacts, and it will strengthen the economy."
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-1.NAME
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-1.NAME"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_-1.NAME
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_-1.NAME"
 msgid "Commercial Use"
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-2.DESC
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-2.DESC"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_-2.DESC
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_-2.DESC"
 msgid "The Vagrant Age has left us lots of powerful tools, and it would be a shame if they are not used. That's why we need to extensively research and use all the artifacts we dig up, and we need to dig up more artifacts for us to use."
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-2.NAME
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_-2.NAME"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_-2.NAME
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_-2.NAME"
 msgid "Extensive Research & Use"
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_0.DESC
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_0.DESC"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_0.DESC
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_0.DESC"
 msgid "The government shouldn't decide what to do with the artifact. It is not their job. The people can figure out what to do on their own."
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_0.NAME
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_0.NAME"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_0.NAME
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_0.NAME"
 msgid "Do Nothing"
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_1.DESC
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_1.DESC"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_1.DESC
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_1.DESC"
 msgid "The artifacts shouldn't be touched by just anyone. They are dangerous, and we don't want to lose any artifacts because they are important to Havarian history. That's why the research and use of artifacts must be approved first."
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_1.NAME
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_1.NAME"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_1.NAME
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_1.NAME"
 msgid "Restrict Research & Use"
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_2.DESC
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_2.DESC"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_2.DESC
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_2.DESC"
 msgid "The artifacts are holy, and should not be used by anyone. Ever. They should be preserved and displayed in a museum, not used as weapons or other tools. Any research into the uses of the artifacts should be forbidden."
 msgstr ""
 
-#: POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_2.NAME
-msgctxt "POLITICAL_ISSUE.ARTIFACT_TREATMENT.STANCE_2.NAME"
+#: POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_2.NAME
+msgctxt "POLITICAL_ISSUE.RELIGIOUS_POLICY.STANCE_2.NAME"
 msgid "Artifact Preservation"
 msgstr ""
 
