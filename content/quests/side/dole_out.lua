@@ -486,24 +486,24 @@ QDEF:AddConvo("dole_out_three")
             OPT_CONVINCE = "Try to calm them down",
             DIALOG_CONVINCE = [[
                 player:
-                    Have you considered not doing that, hm?
+                    [p] Have you considered not doing that, hm?
             ]],
             DIALOG_CONVINCE_SUCCESS = [[
                 player:
-                    LaserDisk.
+                    [p] LaserDisk.
                 agent:
                     I'm sold.
                     Have a great day.
             ]],
             DIALOG_CONVINCE_FAIL = [[
                 agent:
-                    Your deck could be better.
+                    [p] Your deck could be better.
                     Allow me to remind you of this failure for the rest of the run.
             ]],
             OPT_IGNORE = "Ignore their complaints",
             DIALOG_IGNORE = [[
                 player:
-                    Belt Buckles and globs of bandaids
+                    [p] Belt Buckles and globs of bandaids
                 agent:
                     POPULIST!
             ]],
