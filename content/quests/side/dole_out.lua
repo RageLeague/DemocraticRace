@@ -16,6 +16,7 @@ local QDEF = QuestDef.Define{
 
     on_start = function(quest)
         quest:Activate("dole_out_three")
+        quest:Activate("buy_loaves")
         quest:Activate("time_countdown")
     end,
 
@@ -43,6 +44,12 @@ local QDEF = QuestDef.Define{
     end,
 }
 :AddObjective{
+    id = "buy_loaves",
+    title = "Purchase some dole loaves",
+    desc = "{dealer} can sell you some dole loaves, given that you can pay.",
+    mark = {"dealer"},
+}
+:AddObjective{
     id = "dole_out_three",
     title = "Feed some people",
     mark = function(quest, t, in_location)
@@ -59,13 +66,34 @@ local QDEF = QuestDef.Define{
     end,
 }
 :AddFreeTimeObjective{
-    desc = "Use this time to find people to feed with your dole loaves",
+    desc = "Use this time to find people to feed with your dole loaves.",
     action_multiplier = 1.5,
     on_complete = function(quest)
         if quest:IsActive("dole_out_three") then
             quest:Complete("dole_out_three")
         end
+        if quest:IsActive("buy_loaves") then
+            quest:Complete("buy_loaves")
+        end
         quest:Activate("go_to_advisor")
+    end,
+}
+:AddLocationCast{
+    cast_id = "dealer_workplace",
+    cast_fn = function(quest, t)
+        table.insert( t, TheGame:GetGameState():GetLocation("MURDER_BAY_HARBOUR"))
+        table.insert( t, TheGame:GetGameState():GetLocation("GB_CAFFY"))
+    end,
+    on_assign = function(quest, location)
+        quest:AssignCastMember("dealer")
+    end,
+}
+:AddCast{
+    cast_id = "dealer",
+    when = QWHEN.MANUAL,
+    no_validation = true,
+    cast_fn = function(quest, t)
+        table.insert( t, quest:GetCastMember("dealer_workplace"):GetProprietor())
     end,
 }
 :AddOpinionEvents{
@@ -157,29 +185,63 @@ QDEF:AddConvo("dole_out_three")
             agent:
                 What do you want? why do you have bread?
         ]],
-        OPT_GIVE_BREAD = "[p] give bread",
+        OPT_GIVE_BREAD = "Give bread",
+        REQ_HAVE_BREAD = "You don't have any dole loaves",
+
+        SELECT_TITLE = "Select a card",
+        SELECT_DESC = "Choose a dole loaf to gift to this person, consuming 1 use on it.",
     }
         --this is the randomizer. for some reason the option part doesn't work for some reason, but i'll fix that at some point
     :Hub(function(cxt, who)
         if who and CanFeed(who, cxt.quest) then
             cxt.quest.param.gifted_people = cxt.quest.param.gifted_people or {}
             cxt.quest.param.rejected_people = cxt.quest.param.rejected_people or {}
+            local cards = {}
+            for i, card in ipairs(cxt.player.battler.cards.cards) do
+                print(card.id)
+                if card.id == "dole_loaves" then
+                    table.insert(cards, card)
+                end
+            end
             cxt:Opt("OPT_GIVE_BREAD")
-                :Dialog("DIALOG_SATISFIES_CONDITIONS")
+                :ReqCondition(#cards > 0, "REQ_HAVE_BREAD")
                 :SetQuestMark()
-                :RequireFreeTimeAction(1)
+                :RequireFreeTimeAction(1, true)
                 :Fn(function(cxt)
-                    local weight = {
-                        STATE_PANHANDLER = 1,
-                        STATE_GRATEFUL = 3,
-                        STATE_UNGRATEFUL = who:GetRenown() * who:GetRenown(),
-                        STATE_POLITICAL = 1,
-                    }
-                    if who:GetFactionID() == "RISE" then
-                        weight.STATE_POLITICAL = weight.STATE_POLITICAL + 1
+                    cxt:Wait()
+                    DemocracyUtil.InsertSelectCardScreen(
+                        cards,
+                        cxt:GetLocString("SELECT_TITLE"),
+                        cxt:GetLocString("SELECT_DESC"),
+                        Widget.BattleCard,
+                        function(card)
+                            cxt.enc:ResumeEncounter( card )
+                        end
+                    )
+                    local card = cxt.enc:YieldEncounter()
+                    if card then
+                        cxt.quest:DefFn("DeltaActions", -1)
+
+                        cxt:Dialog("DIALOG_SATISFIES_CONDITIONS")
+
+                        card:ConsumeCharge()
+                        if card:IsSpent() then
+                            cxt.player.battler:RemoveCard( card )
+                        end
+
+                        local weight = {
+                            STATE_PANHANDLER = 1,
+                            STATE_GRATEFUL = 3,
+                            STATE_UNGRATEFUL = who:GetRenown() * who:GetRenown(),
+                            STATE_POLITICAL = 1,
+                        }
+                        if who:GetFactionID() == "RISE" then
+                            weight.STATE_POLITICAL = weight.STATE_POLITICAL + 1
+                        end
+                        local state = weightedpick(weight)
+                        cxt:GoTo(state)
                     end
-                    local state = weightedpick(weight)
-                    cxt:GoTo(state)
+
                 end)
         end
     end)
@@ -521,6 +583,19 @@ QDEF:AddConvo("dole_out_three", "primary_advisor")
             agent:
                 Suit yourself, I guess.
         ]],
+        OPT_ASK_MONEY = "Ask for funds for buying the loaves",
+        DIALOG_ASK_MONEY = [[
+            player:
+                [p] You can't expect me to pay using my own money.
+        ]],
+        DIALOG_ASK_MONEY_SUCCESS = [[
+            agent:
+                [p] Fine. Take it.
+        ]],
+        DIALOG_ASK_MONEY_FAILURE = [[
+            agent:
+                [p] You have campaign funds specifically for this purpose.
+        ]],
     }
     :Hub(function(cxt, who)
         cxt:Opt("OPT_END_EARLY")
@@ -529,13 +604,20 @@ QDEF:AddConvo("dole_out_three", "primary_advisor")
             :Fn(function(cxt)
                 cxt.quest:Complete("time_countdown")
             end)
-        cxt:Opt("OPT_ADMIT_DEFEAT")
-            :Fn(function(cxt)
-                if not cxt.quest:IsComplete("dole_out_three") then
-                    cxt:Dialog("DIALOG_ADMIT_DEFEAT")
-                    cxt.quest:Fail()
-                end
-            end)
+        if not cxt.quest.param.ask_funds then
+            cxt:BasicNegotiation("ASK_MONEY", {
+
+            })
+                :OnSuccess()
+                    :ReceiveMoney(80)
+                    :Fn(function(cxt)
+                        cxt.quest.param.ask_funds = true
+                    end)
+                :OnFailure()
+                    :Fn(function(cxt)
+                        cxt.quest.param.ask_funds = true
+                    end)
+        end
     end)
 QDEF:AddConvo("go_to_advisor", "primary_advisor")
     :Loc{
@@ -595,3 +677,33 @@ QDEF:AddConvo("go_to_advisor", "primary_advisor")
             end)
             :DoneConvo()
     end)
+QDEF:AddConvo("buy_loaves", "dealer")
+    :Loc{
+        OPT_BUY = "Buy loaves",
+        DIALOG_BUY = [[
+            player:
+                [p] I will buy a bundle.
+            agent:
+                Good choice.
+        ]],
+    }
+    :Hub(function(cxt)
+        cxt:Opt("OPT_BUY")
+            :SetQuestMark()
+            :Dialog("DIALOG_BUY")
+            :PostCard("dole_loaves")
+            :DeliverMoney(80)
+            :GainCards{"dole_loaves"}
+    end)
+    :AttractState("STATE_ATTRACT")
+        :Loc{
+            DIALOG_INTRO = [[
+                player:
+                    [p] I heard you sell dole loaves.
+                agent:
+                    Oh yeah? Are you willing to buy?
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+        end)

@@ -5,14 +5,11 @@ local region = {
     plax = "REGION_DEM_CAPITAL",
     desc = "The largest city in Havaria, now it is a battleground for political campaigns.",
 
-    default_outdoor_location = "MURDER_BAY_ROAD",
+    default_outdoor_location = "PEARL_STREET",
 
     outdoor_locations =
     {
-        "MURDER_BAY_SHORE",
-        "MURDER_BAY_ROAD",
-        "MURDER_BAY_FOREST",
-        "MURDER_BAY_CITY",
+        "PEARL_STREET",
     },
 
     locations = {

@@ -412,15 +412,6 @@ QDEF:AddConvo("post")
                                                     cxt.enc:ResumeEncounter( card )
                                                 end
                                             )
-                                            -- local function OnSelectCard(screen, widget, card)
-                                            --     screen:ShowRemoval(widget)
-                                            --     cxt.enc:ResumeEncounter( card )
-                                            -- end
-
-                                            -- local screen = Screen.DeckScreen( posters, OnSelectCard, Widget.NegotiationCard )
-                                            -- screen:SetMusicEvent( TheGame:LookupPlayerMusic( "deck_music" ))
-                                            -- screen:SetTitles( LOC"UI.SHOW_DECK_SCREEN.NEGOTIATION_DECK_UPPERCASE", LOC"UI.CARDS.REMOVE_NEGOTIATION_CARD" )
-                                            -- TheGame:FE():InsertScreen( screen )
                                             local card = cxt.enc:YieldEncounter()
                                             if card then
                                                 cxt:Dialog("DIALOG_SELECT")

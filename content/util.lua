@@ -1217,7 +1217,7 @@ function ConvoOption:DeltaSupport(amt, target, ignore_notification)
     return self
 end
 
-function ConvoOption:RequireFreeTimeAction(actions)
+function ConvoOption:RequireFreeTimeAction(actions, display_only)
     if actions then
         self:PostText("TT_FREE_TIME_ACTION_COST", actions)
     end
@@ -1227,9 +1227,11 @@ function ConvoOption:RequireFreeTimeAction(actions)
     if freetimeevents and #freetimeevents > 0 and actions then
         local q = freetimeevents[1]
         self:ReqCondition(q.param.free_time_actions >= actions, "REQ_FREE_TIME_ACTIONS")
-        self:Fn(function(cxt)
-            q:DefFn("DeltaActions", -actions)
-        end)
+        if not display_only then
+            self:Fn(function(cxt)
+                q:DefFn("DeltaActions", -actions)
+            end)
+        end
     end
 
     return self
