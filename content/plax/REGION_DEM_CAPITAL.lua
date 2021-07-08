@@ -113,7 +113,7 @@ return {
           anim_speed = 100.0,
           animfile = "anim/map_SMITH_water_creatures_fx.zip",
           bloom = 0.13199999928474,
-          hidden_in_editor = false,
+          hidden_in_editor = true,
           id = 5,
           name = "ANIM",
           node_type = "ANIMATION",
@@ -2087,7 +2087,7 @@ return {
           y = 1
         },
         {
-          hidden_in_editor = false,
+          hidden_in_editor = true,
           id = 90,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_MONSTER_01.tex",
           node_type = "IMAGE",
@@ -2099,7 +2099,7 @@ return {
         {
           blend_mode = 8,
           bloom = 0.20000000298023,
-          hidden_in_editor = false,
+          hidden_in_editor = true,
           id = 91,
           img = "plax/REGION_PEARL_ON_FOAM/REGION_POTF_MONSTER_LIGHTS__01.tex",
           night_colour = {
@@ -2215,7 +2215,7 @@ return {
         },
         {
           bloom = 1.0,
-          hidden_in_editor = false,
+          hidden_in_editor = true,
           id = 96,
           name = "PARTICLES",
           node_type = "PARTICLES",
@@ -4205,17 +4205,6 @@ return {
     },
     {
       elements = {
-        {
-          enter_x = 0,
-          enter_y = 0,
-          id = 226,
-          location_name = "SMITH_HOME",
-          location_tags = "",
-          node_type = "LOCATION",
-          plax_flags = 119,
-          x = 210,
-          y = -239
-        },
         {
           enter_x = 0,
           enter_y = 0,
@@ -7209,28 +7198,6 @@ return {
         {
           enter_x = 0,
           enter_y = 0,
-          id = 251,
-          location_name = "PEARL_ADMIRALTY_STATION",
-          location_tags = "",
-          node_type = "LOCATION",
-          plax_flags = 119,
-          x = -696,
-          y = -227
-        },
-        {
-          enter_x = 0,
-          enter_y = 0,
-          id = 252,
-          location_name = "PEARL_JAIL",
-          location_tags = "",
-          node_type = "LOCATION",
-          plax_flags = 119,
-          x = 625,
-          y = 236
-        },
-        {
-          enter_x = 0,
-          enter_y = 0,
           id = 253,
           location_tags = "quarters",
           node_type = "LOCATION",
@@ -7364,8 +7331,8 @@ return {
           location_tags = "",
           node_type = "LOCATION",
           plax_flags = 119,
-          x = -584,
-          y = 270
+          x = -638,
+          y = 267
         },
         {
           enter_x = 0,
