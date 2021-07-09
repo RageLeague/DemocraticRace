@@ -100,10 +100,11 @@ Convo("PROPAGANDA_POSTER_CONVO")
                     cxt:Opt("OPT_WATCH")
                         :Negotiation{
                             cooldown = 0,
+                            no_free_time_cost = true,
                             flags = NEGOTIATION_FLAGS.NO_LOOT,
                             -- target_agent = cxt:GetCastMember("agent"),
                             on_start_negotiation = function(minigame)
-                                propaganda_mod = Negotiation.Modifier("PROPAGANDA_POSTER_MODIFIER", minigame:GetPlayerNegotiator()) 
+                                propaganda_mod = Negotiation.Modifier("PROPAGANDA_POSTER_MODIFIER", minigame:GetPlayerNegotiator())
                                 -- propaganda_mod.play_per_turn = 3
                                 propaganda_mod:SetData(propaganda_data.imprints, propaganda_data.prop_mod, 5 + 5 * minigame:GetDifficulty())
                                 minigame:GetPlayerNegotiator():CreateModifier(propaganda_mod)
@@ -118,7 +119,7 @@ Convo("PROPAGANDA_POSTER_CONVO")
                                 -- end
                                 -- table.clear(minigame.start_params.cards)
                                 minigame:GetPlayerNegotiator():CreateModifier("NO_PLAY_FROM_HAND", 1)
-                                
+
                             end,
                             on_success = function(cxt, minigame)
                                 cxt:Dialog("DIALOG_WIN")
@@ -174,7 +175,7 @@ Convo("PROPAGANDA_POSTER_CONVO")
                     if math.random() < 0.33 then
                         table.insert(cxt.enc.scratch.readers, agent)
                     end
-                    
+
                 end
                 if #cxt.enc.scratch.readers > 0 then
                     cxt:Dialog("DIALOG_INTRO", cxt.location, #cxt.enc.scratch.readers)
@@ -183,7 +184,7 @@ Convo("PROPAGANDA_POSTER_CONVO")
             end
         end)
     -- :Hub(function(cxt,who)
-    
+
     --     cxt:Opt("DEFAULT_NEGOTIATION_REASON", who)
     --         -- :Fn(function(cxt)
     --         --     cxt:ReassignCastMember('agent', who)

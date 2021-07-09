@@ -1256,15 +1256,13 @@ function QuestDef:AddFreeTimeObjective( child )
         events =
         {
             resolve_negotiation = function(quest, minigame)
-                for i, modifier in minigame:GetPlayerNegotiator():Modifiers() do
-                    if modifier.id == "NO_PLAY_FROM_HAND" then
-                        return
-                    end
+                if minigame.start_params.no_free_time_cost then
+                    return
                 end
                 quest:DefFn("DeltaActions", -1)
             end,
             resolve_battle = function(quest, battle)
-                quest:DefFn("DeltaActions", -2)
+                quest:DefFn("DeltaActions", -1)
             end,
             caravan_move_location = function(quest, location)
                 if location:HasTag("road") then

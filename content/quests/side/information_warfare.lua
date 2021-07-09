@@ -650,7 +650,7 @@ QDEF:AddConvo("commission")
                     cxt:RunLoop(function(cxt)
                         local dat = cxt.quest.param.artist_demands[who:GetID()]
                         local payed_all = DemocracyUtil.AddDemandConvo(cxt, dat.demand_list, dat.demands, function(opt)
-                            opt:RequireFreeTimeAction(2)
+                            -- opt:RequireFreeTimeAction(2)
                                 -- :PostText("TT_FREE_TIME_ACTION_COST", 2)
                                 -- :ReqCondition((cxt.quest.param.actions or 0) >= 2, "REQ_FREE_TIME_ACTIONS")
                                 -- :Fn(function(cxt)
@@ -817,7 +817,8 @@ QDEF:AddConvo("commission")
             cxt:Opt("OPT_START")
                 :Dialog("DIALOG_START")
                 :Negotiation{
-                    flags = NEGOTIATION_FLAGS.NO_BYSTANDERS,
+                    no_free_time_cost = true,
+                    flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.NO_BACKUP,
                     on_start_negotiation = function(minigame)
                         local negotiation_defs = require "negotiation/negotiation_defs"
                         local CARD_FLAGS = negotiation_defs.CARD_FLAGS
