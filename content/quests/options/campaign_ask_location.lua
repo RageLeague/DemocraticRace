@@ -23,7 +23,16 @@ local function PickLocationUnlockForAgent(agent, unlock_type)
 
     return knows_location[1]
 end
-Convo("ASL_LOCATION_CONVO")
+
+local QDEF = QuestDef.Define
+{
+    qtype = QTYPE.STORY,
+}
+:AddObjective{
+    id = "start",
+    state = QSTATUS.ACTIVE,
+}
+:AddConvo()
     :Loc{
         OPT_ASK_ABOUT_LOCATION = "Ask for a place to visit...",
         TT_REDUCED_ACTION_COST = "<#BONUS>This option has reduced action cost because you asked for an invalid location today.</>",
