@@ -164,6 +164,7 @@ local QDEF = QuestDef.Define
         end
         QuestUtil.SpawnQuest("CAMPAIGN_SHILLING")
         QuestUtil.SpawnQuest("CAMPAIGN_RANDOM_COIN_FIND")
+        QuestUtil.SpawnQuest("CAMPAIGN_ASK_LOCATION")
 
         QuestUtil.SpawnQuest("SAL_STORY_MERCHANTS")
         -- populate all locations.
@@ -216,6 +217,9 @@ local QDEF = QuestDef.Define
         for i, field in ipairs(change_fields) do
             quest.param[field].RELIGIOUS_POLICY = quest.param[field].ARTIFACT_TREATMENT
             quest.param[field].ARTIFACT_TREATMENT = nil
+        end
+        if #TheGame:GetGameState():GetActiveQuestWithContentID("CAMPAIGN_ASK_LOCATION") == 0 then
+            QuestUtil.SpawnQuest("CAMPAIGN_ASK_LOCATION")
         end
     end,
     fill_out_quip_tags = function(quest, tags, agent)
