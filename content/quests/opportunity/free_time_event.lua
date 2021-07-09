@@ -1,5 +1,3 @@
-local unlocks = require "DEMOCRATICRACE:content/get_location_unlock"
-
 local function PickBoonForAgent( agent )
     --[[    do
             local service_id = "SPECIAL_NOODLES"

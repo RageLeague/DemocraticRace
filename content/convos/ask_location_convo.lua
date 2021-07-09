@@ -1,3 +1,5 @@
+local unlocks = require "DEMOCRATICRACE:content/get_location_unlock"
+
 local function PickLocationUnlockForAgent(agent, unlock_type)
     if not TheGame:GetGameState():GetMainQuest().param.unlocked_locations then
         return
@@ -25,6 +27,9 @@ Convo("ASL_LOCATION_CONVO")
     :Loc{
         OPT_ASK_ABOUT_LOCATION = "Ask for a place to visit...",
         TT_REDUCED_ACTION_COST = "<#BONUS>This option has reduced action cost because you asked for an invalid location today.</>",
+
+        REQ_NOT_SOCIALIZED = "You can only socialize with a person once per day.",
+
         OPT_BAR = "Ask for a restaurant or bar",
         DIALOG_BAR = [[
             player:
@@ -75,8 +80,8 @@ Convo("ASL_LOCATION_CONVO")
                 Well, thanks anyway.
         ]],
     }
-    :Hub(function(cxt)
-        if DemocracyUtil.IsDemocracyCampaign(act_id) and who and who:GetRelationship() > RELATIONSHIP.NEUTRAL then
+    :Hub(function(cxt, who)
+        if DemocracyUtil.IsDemocracyCampaign() and who and who:GetRelationship() > RELATIONSHIP.NEUTRAL then
             cxt:Opt("OPT_ASK_ABOUT_LOCATION")
                 :ReqCondition(not who:HasMemoryFromToday("OFFERED_BOON"), "REQ_NOT_SOCIALIZED")
                 :RequireFreeTimeAction(2, true)

@@ -1265,7 +1265,10 @@ function QuestDef:AddFreeTimeObjective( child )
                 quest:DefFn("DeltaActions", -1)
             end,
             caravan_move_location = function(quest, location)
-                if location:HasTag("road") then
+                print("Caravan moved, remove one action")
+                -- DBG(location)
+                if location:HasTag("in_transit") then
+                    print("Caravan moved, remove one action")
                     quest:DefFn("DeltaActions", -1)
                 end
             end,
