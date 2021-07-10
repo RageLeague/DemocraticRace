@@ -1,6 +1,7 @@
 local RISE_CANDIDATES = {
     LABORER = {"RISE_REBEL", "RISE_PAMPHLETEER"},
     HEAVY_LABORER = {"RISE_RADICAL"},
+    PEARLIE = {"RISE_VALET"},
 }
 
 local old_fn = WorkPosition.TryHire
