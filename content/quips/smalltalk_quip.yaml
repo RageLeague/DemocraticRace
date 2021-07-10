@@ -38,7 +38,6 @@ lines:
       !happy
       Anyway, thanks for listening to my rambling. It has really lighten up my day.
 - tags: [poor_merchant, democratic_race]
-  notags: [primary_advisor_hostile]
   dialog:
   - |
     agent:
