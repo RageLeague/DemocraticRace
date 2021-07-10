@@ -75,3 +75,24 @@ lines:
     player:
       !shrug
       Yeah... Good luck with that.
+- tags: [priest, democratic_race]
+  notags: [primary_advisor_manipulate]
+  dialog:
+  - |
+    player:
+      [p] How hard it is to pass the priest school?
+    agent:
+      You would imagine it's pretty hard.
+      You gotta pay a lot of tithes to get in, and even after that, it is extremely hard to pass.
+      !angry_shrug
+      One of the criteria to pass is "demonstrate a strong belief in Hesh", which is very vague.
+      There's this one priest who clearly is not devoted, yet she managed to convince the teacher to let her pass.
+      How is that fair?
+    player:
+      !shrug
+      Well, different people have different way of showing devotion, I guess?
+    agent:
+      !sigh
+      You are right.
+      Hesh's will is unpredictable, and I shouldn't let my prejudice to cloud my judgement.
+      I'm just a bit salty that I need to attempt the test multiple times to pass, that is all.
