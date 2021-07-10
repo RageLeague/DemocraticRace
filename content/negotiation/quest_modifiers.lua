@@ -1956,8 +1956,8 @@ local MODIFIERS =
             end,
         },
     },
-    FACTS = {
-        name = "Facts",
+    LOGICAL = {
+        name = "Logical",
         desc = "If {1}'s opponent has no {SMARTS}, {1} deals +{2} damage.",
         desc_fn = function( self, fmt_str )
                     return loc.format(fmt_str, self:GetOwnerName(), self.damage_bonus[math.min(GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1, #self.damage_bonus)])
@@ -1965,7 +1965,7 @@ local MODIFIERS =
         damage_bonus = { 1, 1, 1, 2 },
         modifier_type = MODIFIER_TYPE.CORE,
         max_stacks = 1,
-        icon = "DEMOCRATICRACE:assets/modifiers/facts.png",
+        icon = "DEMOCRATICRACE:assets/modifiers/logic.png",
         bonus_count = 1,
         --okay this definitely needs to be made better but for now, from what I can tell...it does it's job enough.
         event_handlers =
@@ -2005,15 +2005,14 @@ local MODIFIERS =
             self.negotiator:ModifyResolve( -self.bounty_resolve * self.stacks, self )
         end,
     },
-    --Wumpus; logic can have something unique made later on. for now, this is more of a test of form.
-    LOGIC =
+    FACTS =
     {
-        name = "Logic",
+        name = "Facts",
         target_enemy = TARGET_ANY_RESOLVE,
         max_stacks = 1,
         max_resolve = 4,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
-        icon = "DEMOCRATICRACE:assets/modifiers/logic.png",
+        icon = "DEMOCRATICRACE:assets/modifiers/facts.png",
         max_persuasion = 3,
         min_persuasion = 2,
     },

@@ -77,8 +77,8 @@ local chars =
                 behaviour =
                 {
                     OnInit = function( self )
-                        self.negotiator:AddModifier("FACTS")
-                        self.logic = self:AddArgument( "LOGIC" )
+                        self.negotiator:AddModifier("LOGICAL")
+                        self.facts = self:AddArgument( "FACTS" )
                         self.flawed_logic = self:AddArgument( "FLAWED_LOGIC" )
                         self:SetPattern( self.BasicCycle )
                     end,
@@ -98,7 +98,7 @@ local chars =
                         end
 
                         if turns % 2 == 0 then
-                            self:ChooseCard( self.logic )
+                            self:ChooseCard( self.facts )
                         end
                     end,
                 }
