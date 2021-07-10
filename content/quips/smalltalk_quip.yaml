@@ -37,3 +37,41 @@ lines:
       True.
       !happy
       Anyway, thanks for listening to my rambling. It has really lighten up my day.
+- tags: [poor_merchant, democratic_race]
+  notags: [primary_advisor_hostile]
+  dialog:
+  - |
+    agent:
+      !sigh
+      [p] Starting a business from the ground up is hard.
+      Born to the wrong person, and you have to work ten times as hard. Often you don't even get any results.
+    player:
+      !shrug
+      Same here to be honest. It's really hard competing against renowned members of prominent factions as a nameless grifter.
+    agent:
+      !agree
+      Guess we are really in the same boat, huh?
+    player:
+      Yeah.
+      Hope one day you can find your fortunes.
+    agent:
+      Same thing can be said to you, my friend.
+  - |
+    agent:
+      [p] Have you heard of the tale of Tronos Anodolp?
+    player:
+      !thought
+      Can't say I have, no.
+    agent:
+      He's like a small legend among us poor merchants.
+      As a jarackle who owns nothing, he built up his business empire from the ground up.
+    player:
+      Sounds pretty impressive.
+      I mean, I never dealt with the business side of things, but it seems virtually impossible for someone to make that much without a substantial starting funds.
+    agent:
+      !agree
+      Yeah, which is precisely why he is impressive.
+      I want to be as successful as him one day.
+    player:
+      !shrug
+      Yeah... Good luck with that.
