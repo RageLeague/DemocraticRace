@@ -574,27 +574,56 @@ QDEF:AddConvo("go_to_game")
 
             OPT_CALM = "Calm {giver} down",
             DIALOG_CALM = [[
-                giver:
+                agent:
                     !right
                 player:
                     !left
-                    [p] WTF, {giver}?
+                    [p] WTF, {agent}?
             ]],
             DIALOG_CALM_SUCCESS = [[
                 player:
                     [p] Is it how your treat your guests?
-                giver:
+                agent:
                     Guess not.
                 challenger:
                     !left
-                giver:
+                agent:
                     You can go now.
                 challenger:
                     !exit
                 * {challenger} left.
+                {advisor_hostile?
+                agent:
+                    Did I just lose? Fair and square?
+                player:
+                    !shrug
+                    From what I can tell, seems like it.
+                agent:
+                    !scared
+                    But... I can't lose.
+                    The Anodolp family didn't come this far by losing.
+                    So... Why...?
+                    I... Need to think.
+                player:
+                    Okay...?
+                * You left {agent} alone to contemplate {agent.hisher} life choices.
+                }
+                {not advisor_hostile?
+                agent:
+                    Well, seems like I lost fair and square.
+                player:
+                    From what I can tell, seems like it.
+                agent:
+                    Well, you did what I asked you to, so that's good.
+                    Now, what I would do with this information, on the other hand, is another thing.
+                    Anyway, thank you for all your troubles.
+                player:
+                    You are welcome.
+                * You did what you are asked to do and resolved the situation peacefully! That's good.
+                }
             ]],
             DIALOG_CALM_FAILURE = [[
-                giver:
+                agent:
                     [p] Et tu, {player}?
                     Guess I can't rely on a grifter for everything, eh?
                     I have to do it myself!
@@ -648,30 +677,44 @@ QDEF:AddConvo("go_to_game")
                     :CompleteQuest()
                     :DoneConvo()
             end
-            cxt:BasicNegotiation("CALM", {
-                target_agent = cxt:GetCastMember("giver"),
-                helpers = {"challenger"},
-                -- Some special effect for this negotiation.
-                -- For this negotiation, giver will gain a permanent argument that increases stacks when you play hostile cards.
-                -- It decreases stacks each turn or by playing diplomacy.
-                -- If it reaches a certain threshold, you insta-lose.
-                situation_modifiers =
-                {
-                    { value = 10, text = cxt:GetLocString("SIT_MOD") }
-                },
+            cxt:Opt("OPT_CALM")
+                :Fn(function(cxt)
+                    cxt:TalkTo(cxt:GetCastMember("giver"))
+                end)
+                :Dialog("DIALOG_CALM")
+                :Negotiation{
+                    target_agent = cxt:GetCastMember("giver"),
+                    helpers = {"challenger"},
+                    -- Some special effect for this negotiation.
+                    -- For this negotiation, giver will gain a permanent argument that increases stacks when you play hostile cards.
+                    -- It decreases stacks each turn or by playing diplomacy.
+                    -- If it reaches a certain threshold, you insta-lose.
+                    situation_modifiers =
+                    {
+                        { value = 10, text = cxt:GetLocString("SIT_MOD") }
+                    },
 
-                on_start_negotiation = function(minigame)
-                    minigame.opponent_negotiator:CreateModifier( "SHORT_TEMPERED" )
-                end,
-            })
+                    on_start_negotiation = function(minigame)
+                        minigame.opponent_negotiator:CreateModifier( "SHORT_TEMPERED" )
+                    end,
+                }
                 :OnSuccess()
+                    :Dialog("DIALOG_CALM_SUCCESS")
                     :Fn(function(cxt)
                         -- Spawn a followup.
-                        cxt.quest:SpawnFollowQuest(FOLLOW_UP.id)
+                        if cxt:GetCastMember("giver"):GetContentID() == "ADVISOR_HOSTILE" then
+                            cxt.quest:SpawnFollowQuest(FOLLOW_UP.id)
+                            cxt.quest:Cancel()
+                        else
+                            cxt.quest:Complete()
+                            ConvoUtil.GiveQuestRewards(cxt)
+                        end
+                        StateGraphUtil.AddEndOption(cxt)
                     end)
-                    :CancelQuest()
-                    :DoneConvo()
+                    -- :CancelQuest()
+                    -- :DoneConvo()
                 :OnFailure()
+                    :Dialog("DIALOG_CALM_FAILURE")
                     :GoTo("STATE_AGGRO")
             cxt:Opt("OPT_REFUSE")
                 :Dialog("DIALOG_REFUSE")
