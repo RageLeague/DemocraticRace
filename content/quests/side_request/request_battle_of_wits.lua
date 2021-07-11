@@ -601,7 +601,7 @@ QDEF:AddConvo("go_to_game")
                 agent:
                     !scared
                     But... I can't lose.
-                    The Anodolp family didn't come this far by losing.
+                    The Trunoomiel family didn't come this far by losing.
                     So... Why...?
                     I... Need to think.
                 player:
