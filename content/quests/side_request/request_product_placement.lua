@@ -18,7 +18,7 @@ local QDEF = QuestDef.Define
         base_difficulty_change = function(quest, new_diff, old_diff)
             quest:SetRank(new_diff)
         end,
-        
+
     },
 
     on_start = function(quest)
@@ -96,7 +96,7 @@ local QDEF = QuestDef.Define
     end,
     events =
     {
-        
+
     },
 }
 :AddObjective{
@@ -143,7 +143,6 @@ QDEF:AddIntro(
         agent:
             That's the name of the product. <b>S.T.O.N.K.S.</>.
             It stands for "Synthetic Transform Of Neural-Kinesis System".
-            (IDFK, haven't figured out the acronym yet)
         player:
             That's a very...odd naming convention.
         agent:
@@ -169,7 +168,7 @@ QDEF:AddIntro(
             You're a smart lumicyte. I'm sure you can figure out a good segue into my line of products.
         }
     ]],
-    
+
     --on accept
     [[
         player:
@@ -180,7 +179,7 @@ QDEF:AddIntro(
         player:
             But I am a Banquod.
         agent:
-            well then you're already halfway there. Don't stop now!
+            Well then you're already halfway there. Don't stop now!
         }
     ]])
 QDEF:AddConvo("sell", "giver")
@@ -221,7 +220,7 @@ QDEF:AddConvo("sell", "giver")
                 cxt.enc:GetScreen():ShowGainCards({card}, function() cxt.enc:ResumeEncounter() end)
                 cxt.enc:YieldEncounter()
             end)
-        
+
     end)
     :AttractState("STATE_ATTRACT")
         :Loc{
@@ -243,10 +242,10 @@ QDEF:AddConvo("sell", "giver")
                 agent:
                     It's rising. Just need a few more sales.
             ]],
-            
+
         }
         :Fn(function(cxt)
-            
+
             local score = cxt.quest.param.people_advertised or 0
             if score > 16 then
                 cxt:Dialog("DIALOG_INTRO_LOT")
@@ -255,7 +254,7 @@ QDEF:AddConvo("sell", "giver")
             else
                 cxt:Dialog("DIALOG_INTRO_FEW")
             end
-            
+
         end)
 QDEF:AddConvo("advertise_poster")
     :Loc{
@@ -291,7 +290,7 @@ QDEF:AddConvo("advertise_poster")
                     cxt.quest:DefFn("VerifyCount")
                 end)
         end
-    
+
     end)
 QDEF:AddConvo("tell_giver")
     :TravelConfront("STATE_ENC", function(cxt)
@@ -327,7 +326,7 @@ QDEF:AddConvo("tell_giver")
                     You can still control the operation. We just get a cut.
                     And you get a lot of funding, so it's a win-win situation.
                     There's literally no downsides to doing this, trust me bro.
-                * Don't trust {agent.himher}, bro.
+                *** Don't trust {agent.himher}, bro.
             ]],
             OPT_SELL_THIRD = "Sell a third of the share",
             DIALOG_SELL_THIRD = [[
@@ -350,9 +349,9 @@ QDEF:AddConvo("tell_giver")
                     Really?
                     I mean, excellent!
                     Glad to do business with you.
-                * It was probably for the best, right?
-                * Big surprise, it's an allegory to the recent news regarding Klei and Tencent.
-                * So of course it will go wrong.
+                * That was a golden opportunity, and you saw it and took it.
+                * Now you own a load of cash, and some Heshian owns the finantial decision power of {giver}'s product.
+                * You wonder how {giver} would react given that you basically sold the majority of {giver.hisher} business without {giver.hisher} permission.
             ]],
             OPT_SELL_ALL = "Sell ALL of the share",
             DIALOG_SELL_ALL = [[
@@ -364,7 +363,8 @@ QDEF:AddConvo("tell_giver")
                     Really?
                     I mean, excellent!
                     Glad to do business with you.
-                * Literally nothing can go wrong in this scenario.
+                * Wow, you actually sold out {giver}'s entire business to some Heshian.
+                * Now {giver} worked hard for the product and now {giver.heshe} owns nothing, finantially speaking.
                 * What are you, crazy?
             ]],
             OPT_SELL_NOTHING = "Sell nothing",
@@ -373,8 +373,8 @@ QDEF:AddConvo("tell_giver")
                     [p] I'm not giving you Heshian anything!
                 agent:
                     Fine. At least I tried.
-                * This is obviously the correct choice.
-                * Your advisor will love you for that.
+                * You are wondering if you protected your integrity, or you just passed up a golden opportunity.
+                * Either way, you did what {giver} asked you to do. Time to tell them what you did.
             ]],
 
             OPT_NEGOTIATE_TERMS = "Negotiate share price...",
@@ -408,14 +408,14 @@ QDEF:AddConvo("tell_giver")
                 local won_bonuses = {10}
                 cxt:BasicNegotiation("NEGOTIATE_TERMS", {
                     on_start_negotiation = function(minigame)
-                            
+
                         local amounts = {80, 50, 30}
 
                         local haggle_count = cxt.player.graft_owner:CountGraftsByID( "haggle_badge" )
                         for i = 1, haggle_count do
                             table.insert(amount, 80)
                         end
-                        
+
                         for k,amt in ipairs(amounts) do
                             local mod = minigame.opponent_negotiator:CreateModifier( "bonus_payment", amt )
                             mod.result_table = won_bonuses
@@ -433,7 +433,7 @@ QDEF:AddConvo("tell_giver")
                 }):OnSuccess()
                     :Fn(function(cxt)
                         local total_bonus = 0
-                        for k,v in ipairs(won_bonuses) do 
+                        for k,v in ipairs(won_bonuses) do
                             total_bonus = total_bonus + v
                         end
                         cxt.quest.param.share_price = cxt.quest.param.share_price + total_bonus
@@ -576,7 +576,7 @@ QDEF:AddConvo("tell_giver")
                         But don't expect me to do you any favors!
                 }
             ]],
-            
+
             DIALOG_INTRO_SELL_ALL = [[
                 * In an almost harmonic fashion, the click of the door as you enter syncs up spectacularly with the angry stomping down the hallway from {agent}.
                 player:
@@ -597,8 +597,14 @@ QDEF:AddConvo("tell_giver")
                     Vagrant age?!
                 agent:
                     !angrypoint
+                {advisor?
                     Grab your damn things, and get out of my damn office!
+                }
+                {not advisor?
+                    Get out of my sight!
+                }
                 * Then {agent} rants, {agent} hates you, blah blah blah.
+                * The shills sure are worth it, though, right?
             ]],
         }
         :Fn(function(cxt)
@@ -662,15 +668,31 @@ QDEF:AddConvo("tell_giver")
                 player:
                     Just look at all the money you have now!
                 agent:
-                    You mean money <i>you </>have now.
+                    You mean money <i>you</> have now.
                     Money that I didn't get a say in how you obtained.
-                player:
-                    Because you take half the campaign funding from me and put it in your own pockets!
-                agent:
-                    That doesn't mean you get to shoot my hopes and dreams in the foot!
-                    !angrypoint
-                    Look, you better work like a vroc once you get in office to make up for this.
-            ]], 
+                {advisor?
+                    player:
+                        Because you take half the campaign funding from me and put it in your own pockets!
+                    agent:
+                        That doesn't mean you get to shoot my hopes and dreams in the foot!
+                        !angrypoint
+                        Look, you better work like a vroc once you get in office to make up for this.
+                }
+                {not advisor?
+                    player:
+                        Well-
+                    agent:
+                        I know I shouldn't rely on a grifter to handle my business.
+                    {not majority_share?
+                        At least I still have the finantial autonomy, so maybe I can still work with this.
+                        But don't expect me to do you any favors in the future!
+                    }
+                    {majority_share?
+                        And great! Now some Heshian controls my business, and knowing them, they will probably ruin it to the ground.
+                        Now get out, and don't expect me to do you any favors.
+                    }
+                }
+            ]],
 
             SIT_MOD = "Angry at you selling a majority share to someone they don't like",
 
