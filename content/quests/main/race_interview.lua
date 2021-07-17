@@ -2,7 +2,7 @@ local INTERVIEWER_BEHAVIOR = {
     OnInit = function( self, difficulty )
         -- self.bog_boil = self:AddCard("bog_boil")
         local relationship_delta = self.agent and (self.agent:GetRelationship() - RELATIONSHIP.NEUTRAL) or 0
-		self:SetPattern( self.BasicCycle )
+        self:SetPattern( self.BasicCycle )
         local modifier = self.negotiator:AddModifier("INTERVIEWER")
         -- modifier.agents = shallowcopy(self.agents)
         -- modifier:InitModifiers()
@@ -17,14 +17,14 @@ local INTERVIEWER_BEHAVIOR = {
     end,
     available_issues = copyvalues(DemocracyConstants.issue_data),
     params = {},
-	BasicCycle = function( self, turns )
-		-- Double attack every 2 rounds; Single attack otherwise.
-		if self.difficulty >= 4 and turns % 2 == 0 then
-			self:ChooseGrowingNumbers( 3, -1 )
-		elseif turns % 2 == 0 then
-			self:ChooseGrowingNumbers( 2, 0 )
-		else
-			self:ChooseGrowingNumbers( 1, 1 )
+    BasicCycle = function( self, turns )
+        -- Double attack every 2 rounds; Single attack otherwise.
+        if self.difficulty >= 4 and turns % 2 == 0 then
+            self:ChooseGrowingNumbers( 3, -1 )
+        elseif turns % 2 == 0 then
+            self:ChooseGrowingNumbers( 2, 0 )
+        else
+            self:ChooseGrowingNumbers( 1, 1 )
         end
         -- if turns == 1 then
         --     self:ChooseGrowingNumbers( 1, 2 )
@@ -46,15 +46,15 @@ local INTERVIEWER_BEHAVIOR = {
             -- self:ChooseGrowingNumbers( 1, 1 )
             self.modifier_picker:ChooseCards(question_count < 4 and 2 or 1)
         end
-	end,
+    end,
 }
 
 local RELATION_OFFSET = {
-    [RELATIONSHIP.HATED] = -20,
-    [RELATIONSHIP.DISLIKED] = -10,
+    [RELATIONSHIP.HATED] = -16,
+    [RELATIONSHIP.DISLIKED] = -8,
     [RELATIONSHIP.NEUTRAL] = 0,
-    [RELATIONSHIP.LIKED] = 10,
-    [RELATIONSHIP.LOVED] = 20,
+    [RELATIONSHIP.LIKED] = 8,
+    [RELATIONSHIP.LOVED] = 16,
 }
 
 
@@ -90,13 +90,13 @@ local QDEF = QuestDef.Define
 }
 :AddCast{
     cast_id = "host",
-    cast_fn = function(quest, t) 
+    cast_fn = function(quest, t)
         if quest:GetCastMember("theater"):GetProprietor() then
             table.insert(t, quest:GetCastMember("theater"):GetProprietor())
         end
     end,
     when = QWHEN.MANUAL,
-    events = 
+    events =
     {
         agent_retired = function( quest, agent )
             -- if quest:IsActive( "get_snail" ) then
@@ -191,7 +191,7 @@ local QDEF = QuestDef.Define
 -- }
 
 -- :AddLocationDefs{
-    
+
 -- }
 
 :AddOpinionEvents{
@@ -208,7 +208,7 @@ local QDEF = QuestDef.Define
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 DemocracyUtil.AddHomeCasts(QDEF)
 QDEF:AddConvo("go_to_interview")
-    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("backroom") end)
+    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("backroom") end)
         :Loc{
             DIALOG_INTRO = [[
                 * You arrive at the Grand Theater, and are ushered into a back room. You barely make it into the room before you're ambushed by {primary_advisor}.
@@ -232,34 +232,74 @@ QDEF:AddConvo("go_to_interview")
                     Okay now that's just insulting.
                 primary_advisor:
                     Well get ready for a lot more of that once you're on stage.
-                    Think about it, kid. You're no longer a passer-by with a big mouth and big opinions.
-                    This ain't little league anymore. This interview is being broadcasted to all of Havaria.
+                    Think about it. You're no longer a passer-by with a big mouth and big opinions.
+                    This ain't little league anymore. Many people from all sides are watching your interview, eager to hear if you are a capable candidate.
                 player:
                     !suprised
                     Really?
                 primary_advisor:
+                    !facepalm
                     Yes really! I can't believe you didn't realize the importance of such interview.
+                    Anyway, you have a few minutes before the interview starts. Try compose yourself before you go.
+            ]],
+            OPT_ASK_INTERVIEW = "Ask about the interview",
+            DIALOG_ASK_INTERVIEW = [[
                 player:
+                    [p] I'm not sure what this interview is about.
+                agent:
+                    !dubious
+                    Seriously? You are about to do it, and you don't even know how it works?
+                    Unbelievable.
+                player:
+                    !crossed
+                    I'm busy. Gathering support.
+                agent:
                     !placate
-                    Let's focus on our inter-personal relationship AFTER I survive this.
-                primary_advisor:
-		    !point
-                    IF you survive, at this point, but true. Let's me give you the once over about the interview.
-                * You and {primary_advisor} chatter about the interview, with them giving you pointers that make no sense to the task at hand.
-                * Eventually, a worker calls for you, and you steel your nerves.
+                    Alright.
+                    The interviewer will ask you a bunch of questions, and you want to answer as much question as possible.
+                    You can address each question directly, or you can spend some time tailor your answers.
                 player:
-                    Moment of truth. Let's see how I do.
+                    Sounds complicated.
+                    I think I will just improvise.
+            ]],
+            OPT_ASK_AUDIENCE = "Ask about the audience",
+            DIALOG_ASK_AUDIENCE = [[
+                player:
+                    [p] There sure are a lot of people, huh?
+                agent:
+                    Yeah.
+                    They are all eager to hear from you and what you have to say.
+                    Some are here to confirm beliefs about you, while others are here to listen to what you have to say before making a decision.
+                    Try to tailor your answers based on your audience.
+                player:
+                    Alright.
+                agent:
+                    Of course, you can always just say something generic that appeals to everyone.
+                    But that would take a lot of skills, and sometimes you might want to appeal to a more generic audience.
+            ]],
+            DIALOG_LEAVE = [[
+                player:
+                    Alright, I'm ready.
+                    Moment of truth, here I go.
             ]],
         }
+        :SetLooping()
         :Fn(function(cxt)
-            DemocracyUtil.PopulateTheater(cxt.quest, cxt.quest:GetCastMember("theater"), 8)
-            cxt:Dialog("DIALOG_INTRO")
-            cxt.quest:Complete("go_to_interview")
-            cxt.quest:Activate("do_interview")
+            if cxt:FirstLoop() then
+                DemocracyUtil.PopulateTheater(cxt.quest, cxt.quest:GetCastMember("theater"), 8)
+                cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
+                cxt:Dialog("DIALOG_INTRO")
+                cxt.quest:Complete("go_to_interview")
+                cxt.quest:Activate("do_interview")
+            end
+            cxt:Question("OPT_ASK_INTERVIEW", "DIALOG_ASK_INTERVIEW")
+            cxt:Question("OPT_ASK_AUDIENCE", "DIALOG_ASK_AUDIENCE")
             cxt:Opt("OPT_LEAVE_LOCATION")
+                :Dialog("DIALOG_LEAVE")
                 :Fn(function(cxt)
                     cxt.encounter:DoLocationTransition(cxt.quest:GetCastMember("theater"))
                 end)
+                :Pop()
                 :MakeUnder()
         end)
 QDEF:AddConvo("do_interview")
@@ -267,16 +307,30 @@ QDEF:AddConvo("do_interview")
         :Loc{
             DIALOG_INTRO = [[
                 * Stepping on stage, the bright Lumin lights threaten to blind you before you reach your seat.
-                * Looking out to the crowd, you see quite a few faces you know, for better or for worse.
+            ]],
+
+            DIALOG_RECOGNIZE_PEOPLE = [[
+                * Looking out to the crowd, you see quite a few faces you know:
+                * {1#agent_list}, wanting to see how you perform.
+            ]],
+
+            DIALOG_UNRECOGNIZE_PEOPLE = [[
+                * There are some people you don't recognize though.
+                * You see {1#listing}.
+                * No doubt to see who you are about and what you bring to the table before choosing a candidate.
+            ]],
+
+            DIALOG_INTERVIEW = [[
+                * You are here to impress all these people with your interview skills, and convince them to join your side.
                 * Standing in the middle of the stage is {host}, keeping the crowd excited for your entrance.
                 agent:
                     !right
                     Alright people, tonight's guest is an up and coming political upstart, making a name for themselves on the Havarian stage TONIGHT!
-		    Everyone, give a round of applause for our guest, {player}!
-		    Have a seat, {player}.
+                    Everyone, give a round of applause for our guest, {player}!
+                    Have a seat, {player}.
                 player:
                     !left
-                * Some clapped, others booed your arrival.  
+                * Some clapped, others booed your arrival.
                 agent:
                     A little background for the audience, {player} is actually a retired Grifter, hanging up {player.hisher} weapons to join Havaria's First Election.
                 {liked?
@@ -296,6 +350,7 @@ QDEF:AddConvo("do_interview")
                     Let's start this show with a few questions...
                 * Try to survive the interview, I guess?
             ]],
+
             OPT_DO_INTERVIEW = "Do the interview",
             SIT_MOD = "Has a lot of questions prepared for you.",
             NEGOTIATION_REASON = "Survive the interview while answering as many questions as you can!({1} {1*question|questions} answered)",
@@ -303,11 +358,11 @@ QDEF:AddConvo("do_interview")
             DIALOG_INTERVIEW_SUCCESS = [[
                 agent:
                     Spectacular, {player}. You are quite savvy at interviews.
-		    Once again, thank you for coming on the show.
+                    Once again, thank you for coming on the show.
                 player:
                     No problems.
-		agent:
-		    One last round of applause for our guest, {player}!
+                agent:
+                    One last round of applause for our guest, {player}!
                 * This time, you hear a few less boos than before. You survived the interview.
             ]],
             DIALOG_INTERVIEW_FAIL = [[
@@ -336,16 +391,32 @@ QDEF:AddConvo("do_interview")
             ]],
         }
         :Fn(function(cxt)
-            
+
             cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("host"))
             cxt:Dialog("DIALOG_INTRO")
-            cxt:GetAgent():SetTempNegotiationBehaviour(INTERVIEWER_BEHAVIOR)
+
+            local recognized_people = {}
+            local unrecognized_descs = {}
             local agent_supports = {}
+
             for i, agent in cxt.quest:GetCastMember("theater"):Agents() do
                 if agent:GetBrain():IsPatronizing() then
                     table.insert(agent_supports, {agent, DemocracyUtil.TryMainQuestFn("GetSupportForAgent", agent)})
+                    if agent:KnowsPlayer() then
+                        table.insert(recognized_people, agent)
+                    else
+                        agent:GenerateLocTable()
+                        table.insert(unrecognized_descs, agent.loc_table.a_desc)
+                    end
                 end
             end
+
+            cxt:Dialog("DIALOG_RECOGNIZE_PEOPLE", recognized_people)
+
+            cxt:Dialog("DIALOG_UNRECOGNIZE_PEOPLE", unrecognized_descs)
+
+            cxt:Dialog("DIALOG_INTERVIEW")
+            cxt:GetAgent():SetTempNegotiationBehaviour(INTERVIEWER_BEHAVIOR)
 
             local function ResolvePostInterview()
                 local agent_response = {}
@@ -353,11 +424,11 @@ QDEF:AddConvo("do_interview")
                 cxt.quest.param.num_dislikes = 0
                 for i, data in ipairs(agent_supports) do
                     local current_support = DemocracyUtil.TryMainQuestFn("GetSupportForAgent", data[1])
-                    local support_delta = current_support - data[2] + RELATION_OFFSET[data[1]:GetRelationship()] + math.random(-35, 15)
-                    if support_delta > 20 then
+                    local support_delta = current_support - data[2] + RELATION_OFFSET[data[1]:GetRelationship()] + math.random(-40, 30)
+                    if support_delta > 25 then
                         table.insert(agent_response, {data[1], "likes_interview"})
                         cxt.quest.param.num_likes = cxt.quest.param.num_likes + 1
-                    elseif support_delta < -20 then
+                    elseif support_delta < -25 then
                         table.insert(agent_response, {data[1], "dislikes_interview"})
                         cxt.quest.param.num_dislikes = cxt.quest.param.num_dislikes + 1
                     end

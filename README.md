@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.2.0(Alpha)
+Version: 0.3.0(Alpha)
 
 Author: RageLeague
 
@@ -15,15 +15,9 @@ Load order:
 * Loads After: Cross Character Campaign (https://steamcommunity.com/sharedfiles/filedetails/?id=2219176890)
 * Loads After: Shel's Adventure (https://steamcommunity.com/sharedfiles/filedetails/?id=2217590179) or Shel's Adventure Expansion (https://steamcommunity.com/sharedfiles/filedetails/?id=2245060394)
 * Loads After: Rise of Kashio (https://steamcommunity.com/sharedfiles/filedetails/?id=2266976421)
+* Loads After: Arint's Last Day (https://steamcommunity.com/sharedfiles/filedetails/?id=2256085147)
 
 (The load order is specified for certain other mods because these modify the game's code, or add new characters to the game.)
-
-Special thanks to:
-
-* JuniorElder(For helping with side quests)
-* WumpusThe19th(For helping with dialogs)
-* Minespatch(For helping with drawing some slides and card art)
-* Playr10(For helping with side quests)
 
 This mod is based on this post that is now archived: https://forums.kleientertainment.com/forums/topic/120281-democracy-mode/.
 
@@ -44,7 +38,7 @@ Supported Languages: English (Right now Simplified/Traditional Chinese is not su
 
 ## Alpha Notice
 
-At the current stage, the mod is far from finished. You can play 2 days out of 5 right now, and many mechanics are planned to be added. Some of these mechanics are:
+At the current stage, the mod is far from finished. You can play **3** days out of 5 right now, and many mechanics are planned to be added. Some of these mechanics are:
 
 * More side quests and events.
 * More things to do at each locations, and more ways to "deal" with your enemies.
@@ -90,7 +84,65 @@ With the new official workshop support, you can directly install mods from steam
 
 Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues, or a major feature update. As such, it will be more stable.
 
+## Credits
+
+### The Coders
+
+* RageLeague
+* JuniorElder
+* WumpusThe19th
+* Playr10
+* SpicyNiceCream
+
+### The Artists
+
+* Minespatch
+* Sei Bellissima
+
 ## Changelog
+
+### 0.3.0 (Advisor request update)
+
+This is a major update that introduces a request quest for each of the three advisors. Each advisor has something unique that
+they want you to help them with, and helping them complete their goal makes them love you. Generic characters can also get
+these requests sometimes, although certain dialogs and options can change.
+
+This update also shortens the number of rally quests on day 2 and 3 to one per day, in order to speed up the campaign
+and slow down the speed the player develop their deck.
+
+Note: This update might cause old save files to not work anymore, due to removed quests and renamed issue. To access the old
+update, visit the GitHub page.
+
+Major changes:
+
+* 3 new request quests, each with different quirks. With these quests comes with new negotiations, new cards, and new characters.
+* Unique negotiation behaviour for each advisor.
+* Added advisor changing logic. If your advisor is unavailable, either because they hate you or they retired (death is retirement)
+you are given a chance to change your advisor. Unless all living advisors at least dislikes you, in which case you lose.
+* Day 2 and onward are shortened, and comes with it a reduced support requirement at the end of each day.
+
+Minor changes:
+
+* Added theme for Benni. (Feature not complete, and causes the game to crash on restart. Disabled on default)
+* No longer able to convince bosses to fire automechs or other non-sentient agents.
+* Destroying demand bounties also adds impatience.
+* Adding events from the base game to the campaign. (Some events might get replaced with a custom one in the future)
+* Rework "Artifact Treatment" to "Religious Policy" to cover a broader topic.
+* Rework agent initialization. Now agents from each faction should be present in a more normalized way.
+* States on day 3's debate are saved after each question.
+* Balance day 2's interview and added questions explaining the interview.
+* Chance of spawning request quest on socializing.
+* Add a new rally quest: Dole Out.
+* More quests are counted as "free time", such as Information Warfare.
+* Added custom quip tag per campaign. More dialogs are available.
+* Added new characters to the region. Change custom home generation logic.
+* Benni has three fingers now, like other kra'deshi.
+* Lots of dialog update and fixes.
+
+### 0.2.1
+
+* Allow you to look at the next rally job without accepting it. Added tooltip warning you that selecting a rally job will cause free time to end.
+* Added haggle negotiation for your daily fundings, if you have haggle badge.
 
 ### 0.2.0 (Day 3 update)
 

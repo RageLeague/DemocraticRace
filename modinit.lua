@@ -2,6 +2,8 @@
 
 local filepath = require "util/filepath"
 
+local bank_loading_handle
+
 local function OnNewGame( mod, game_state )
     -- Require this Mod to be installed to launch this save game.
     if DemocracyUtil.IsDemocracyCampaign(game_state:GetCurrentActID()) then
@@ -83,7 +85,15 @@ local function OnLoad( mod )
             require(name)
         end
     end
+
+    require "DEMOCRATICRACE:content/string_table"
+
+    rawset(_G, "DemocracyConstants", require("DEMOCRATICRACE:content/constants"))
+    require "DEMOCRATICRACE:content/util"
+    -- rawset(_G, "DemocracyUtil", )
+
     -- require "DEMOCRATICRACE:content/wealth_level"
+    require "DEMOCRATICRACE:content/builds"
     require "DEMOCRATICRACE:content/load_quips"
     require "DEMOCRATICRACE:content/load_codex"
     require "DEMOCRATICRACE:content/shop_defs"
@@ -140,6 +150,13 @@ local function OnLoad( mod )
             require(name)
         end
     end
+    for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:content/battle/", "*.lua", true )) do
+        local name = filepath:match( "(.+)[.]lua$" )
+        -- print(name)
+        if name then
+            require(name)
+        end
+    end
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:content/negotiation/", "*.lua", true )) do
         local name = filepath:match( "(.+)[.]lua$" )
         -- print(name)
@@ -186,6 +203,17 @@ local function OnLoad( mod )
     -- print(string.match("DemRace:lalala", "^.+[:]([^/\\].+)$"))
 end
 local function OnPreLoad( mod )
+
+    -- Patch existing files first
+    for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:preload_patches/", "*.lua", true )) do
+        local name = filepath:match( "(.+)[.]lua$" )
+        -- print(name)
+        if name then
+            require(name)
+        end
+    end
+
+    -- Add localization
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:localization", "*.po", true )) do
         local name = filepath:match( "(.+)[.]po$" )
         print(name)
@@ -193,6 +221,19 @@ local function OnPreLoad( mod )
             local id = filepath:match("([^/]+)[.]po$")
             print(id)
             Content.AddPOFileToLocalization(id, filepath)
+        end
+    end
+    if (Content.GetModSetting(mod, "enable_audio_debug") or 0) > 0 then
+        AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.strings.bank", false)
+        -- local audiobank = AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", false)
+        -- I guess we are loading it synchronously. Too complicated to do async
+        AUDIO:MountModdedAudioBank("DEMOCRATICRACE", "DEMOCRATICRACE:assets/audio/Master.bank")
+
+        print("Load bank?")
+        -- AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", false)
+        -- bank_loading_handle = AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", true)
+        if (Content.GetModSetting(mod, "enable_audio_debug") or 0) == 1 then
+            Content.SetModSetting(mod, "enable_audio_debug", 0)
         end
     end
 end
@@ -222,11 +263,23 @@ local MOD_OPTIONS =
             local fn = require "DEMOCRATICRACE:content/collect_deck_script"
             fn()
         end,
-    }
+    },
+    {
+        title = "[Debug] Enable Audio For the Next Game",
+        spinner = true,
+        key = "enable_audio_debug",
+        default_value = 0,
+        values =
+        {
+            { name="Disable", desc="Disable custom audio loading. You will be unable to hear custom audio, but fast reloading is safe.", data = 0 },
+            { name="Enable Once", desc="Only load custom audio the next time the game is loaded. Reset to disabled after the next load.", data = 1 },
+            { name="Enable (Not Recommended)", desc="Always load custom audio. WARNING: Loading custom audio can sometimes cause the game to hard crash on fast reload. Enable at your own risk.", data = 2 },
+        }
+    },
 }
 -- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {
-    version = "0.2.0",
+    version = "0.3.0",
     alias = "DEMOCRATICRACE",
 
     OnLoad = OnLoad,
@@ -253,5 +306,7 @@ return {
         "LOSTPASSAGE",
         -- For rise of kashio
         "RISE", -- ffs, can you use a more unique alias?
+        -- Arint mod
+        "ARINTMOD",
     },
 }

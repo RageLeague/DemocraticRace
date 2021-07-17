@@ -213,6 +213,17 @@ Content.AddStringTable( "DEM_CONVO", {
                 Take it, or leave it.
         ]],
 
+        DIALOG_NO_JOB_YET = [[
+            player:
+                I need to think about it more.
+            agent:
+                Take your time.
+        ]],
+
+        OPT_SELECT_AGENT = "Select {1#agent}",
+
+        TT_SKIP_FREE_TIME = "Selecting a job will cause you to skip all your unspent free time.",
+
         OFFER_TRINKET_GRAFT = "<b>Souvenir Trinket</>: Install {1#graft}",
 
         OPT_UNLOCK_NEW_LOCATION = "Unlock new location: {1#location}",
@@ -225,6 +236,8 @@ Content.AddStringTable( "DEM_CONVO", {
         TT_UPDATE_STANCE_SAME = "You stance regarding <b>{1#pol_issue}</> will be reinforced.(<b>{2#pol_stance}</>)",
 
         TT_UPDATE_STANCE_WARNING = "<#PENALTY>Warning: Frequent change of stance might cause you to lose support!</>",
-        TT_UPDATE_STANCE_BONUS = "<#BONUS>Having a consistent stance boosts your support.</>"
+        TT_UPDATE_STANCE_BONUS = "<#BONUS>Having a consistent stance boosts your support.</>",
+
+        OPT_USE_BODYGUARD = "Use your bodyguard...",
     }
 } )

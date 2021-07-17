@@ -1,0 +1,97 @@
+tag_scores:
+  democratic_race: 0
+lines:
+- push: [smalltalk]
+
+- tags: [laborer, democratic_race, pro_labor_law]
+  notags: [primary_advisor_diplomacy]
+  dialog:
+  - |
+    agent:
+      !sigh
+      [p] Another day of toil.
+      The rich just gets richer, and the poor stays poor.
+    player:
+      That's rough, buddy.
+      You know, I plan to change that once I'm in office.
+    agent:
+      !happy
+      Thanks.
+      Glad someone considers the common folks.
+  - |
+    agent:
+      [p] Have I told you before that I worked for this Spark Baron.
+      Always rambling about wanting to be relatable to the common folks.
+      His idea of "being relatable" seems way different from how everyone else thinks.
+    player:
+      Really? How so?
+    agent:
+      He seems to think using obscure and confusing words somehow makes him relatable.
+      First off, nobody talks like that.
+      Second, he isn't actually concerned with the common folks' well-being.
+      He wouldn't give a second thought to giving demerits to workers who miss their quota for something that is not their fault.
+    player:
+      !shrug
+      What can you expect from a Spark Baron, though.
+    agent:
+      True.
+      !happy
+      Anyway, thanks for listening to my rambling. It has really lighten up my day.
+- tags: [poor_merchant, democratic_race]
+  dialog:
+  - |
+    agent:
+      !sigh
+      [p] Starting a business from the ground up is hard.
+      Born to the wrong person, and you have to work ten times as hard. Often you don't even get any results.
+    player:
+      !shrug
+      Same here to be honest. It's really hard competing against renowned members of prominent factions as a nameless grifter.
+    agent:
+      !agree
+      Guess we are really in the same boat, huh?
+    player:
+      Yeah.
+      Hope one day you can find your fortunes.
+    agent:
+      Same thing can be said to you, my friend.
+  - |
+    agent:
+      [p] Have you heard of the tale of Gunter Trunoomiel?
+    player:
+      !thought
+      Can't say I have, no.
+    agent:
+      He's like a small legend among us poor merchants.
+      As a jarackle who owns nothing, he built up his business empire from the ground up.
+    player:
+      Sounds pretty impressive.
+      I mean, I never dealt with the business side of things, but it seems virtually impossible for someone to make that much without a substantial starting funds.
+    agent:
+      !agree
+      Yeah, which is precisely why he is impressive.
+      I want to be as successful as him one day.
+    player:
+      !shrug
+      Yeah... Good luck with that.
+- tags: [priest, democratic_race]
+  notags: [primary_advisor_manipulate]
+  dialog:
+  - |
+    player:
+      [p] How hard it is to pass the priest school?
+    agent:
+      You would imagine it's pretty hard.
+      You gotta pay a lot of tithes to get in, and even after that, it is extremely hard to pass.
+      !angry_shrug
+      One of the criteria to pass is "demonstrate a strong belief in Hesh", which is very vague.
+      There's this one priest who clearly is not devoted, yet she managed to convince the teacher to let her pass.
+      How is that fair?
+    player:
+      !shrug
+      Well, different people have different way of showing devotion, I guess?
+    agent:
+      !sigh
+      You are right.
+      Hesh's will is unpredictable, and I shouldn't let my prejudice to cloud my judgement.
+      I'm just a bit salty that I need to attempt the test multiple times to pass, that is all.

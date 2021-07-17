@@ -7,6 +7,8 @@ tag_scores:
   advisor_diplomacy: 0
   advisor_manipulate: 0
   advisor: 5
+  democratic_race: 0
+  fssh: 5
 
 lines:
 - push: [greeting]
@@ -26,13 +28,14 @@ lines:
 - tags: [advisor, advisor_hostile]
   dialog:
   - Make Havaria Great Again!
-  
+
 - tags: [advisor, met]
   notags: [liked]
   # score: 100
   dialog:
   - Don't just stand around here! Work on the campaign or something!
 - tags: [player_sal, fssh, democratic_race]
+  notags: [met]
   dialog:
   - |
     player:

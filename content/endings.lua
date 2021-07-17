@@ -3,6 +3,10 @@ local FAIL_ENDINGS = {
         slides = "democracy_fail_arrested",
         name = "Arrested",
     },
+    no_more_advisors = {
+        slides = "democracy_fail_no_more_advisors",
+        name = "No more advisors",
+    },
 }
 local SUCCESS_ENDING = {
 

@@ -5,7 +5,7 @@ local t = {
         workplace = "ADMIRALTY_BARRACKS",
         main_supporter = "ADMIRALTY",
         mini_negotiator = "ADMIRALTY_MINI_NEGOTIATOR",
-        
+
         -- main = "Security for all",
         -- desc = "Oolo plans to improve the safety of Havaria by improving the security. Powered by the Admiralty, of course. Popular among middle class who cannot afford private security, not popular among upper class(because of increased tax rate) and lower class.",
         platform = "SECURITY",
@@ -14,7 +14,7 @@ local t = {
             INDEPENDENCE = -2,
             TAX_POLICY = 2,
             LABOR_LAW = -1,
-            ARTIFACT_TREATMENT = 0,
+            RELIGIOUS_POLICY = 0,
             SUBSTANCE_REGULATION = 1,
             WELFARE = 0,
         },
@@ -50,7 +50,7 @@ local t = {
             INDEPENDENCE = 2,
             TAX_POLICY = 0,
             LABOR_LAW = 0,
-            ARTIFACT_TREATMENT = 0,
+            RELIGIOUS_POLICY = 0,
             SUBSTANCE_REGULATION = -2,
             WELFARE = 1,
         },
@@ -90,11 +90,11 @@ local t = {
             INDEPENDENCE = 0,
             TAX_POLICY = -2,
             LABOR_LAW = -2,
-            ARTIFACT_TREATMENT = -2,
+            RELIGIOUS_POLICY = -2,
             SUBSTANCE_REGULATION = 0,
             WELFARE = -1,
         },
-        
+
         faction_support = {
             ADMIRALTY = -10,
             FEUD_CITIZEN = 3,
@@ -128,7 +128,7 @@ local t = {
             INDEPENDENCE = 0,
             TAX_POLICY = 1,
             LABOR_LAW = 2,
-            ARTIFACT_TREATMENT = 0,
+            RELIGIOUS_POLICY = 0,
             SUBSTANCE_REGULATION = 0,
             WELFARE = 2,
         },
@@ -158,14 +158,14 @@ local t = {
         main_supporter = "CULT_OF_HESH",
         mini_negotiator = "CULT_MINI_NEGOTIATOR",
 
-        platform = "ARTIFACT_TREATMENT",
+        platform = "RELIGIOUS_POLICY",
 
         stances = {
             SECURITY = 1,
             INDEPENDENCE = -1,
             TAX_POLICY = 0,
             LABOR_LAW = -2,
-            ARTIFACT_TREATMENT = 2,
+            RELIGIOUS_POLICY = 2,
             SUBSTANCE_REGULATION = 2,
             WELFARE = 0,
         },
@@ -204,7 +204,7 @@ local t = {
             INDEPENDENCE = 1,
             TAX_POLICY = -2,
             LABOR_LAW = 1,
-            ARTIFACT_TREATMENT = -1,
+            RELIGIOUS_POLICY = -1,
             SUBSTANCE_REGULATION = -2,
             WELFARE = 0,
         },

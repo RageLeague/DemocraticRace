@@ -1,4 +1,4 @@
-local chars = 
+local chars =
 {
     CharacterDef("ADVISOR_DIPLOMACY",
     {
@@ -23,6 +23,28 @@ local chars =
         -- renown = 4,
 
         -- social_boons = table.empty,
+            negotiation_data =
+            {
+                behaviour =
+                {
+                    OnInit = function( self )
+                        self.negotiator:AddModifier("RELATABLE")
+                        self:SetPattern( self.BasicCycle )
+                    end,
+                    --this can be tweaked later, but for now I just copied it from dronumph because I am wumpus, and I don't understand half of this.
+                    BasicCycle = function( self, turns )
+
+                        if (turns-1) % 3 == 0 then
+                            -- Double attack.
+                            self:ChooseGrowingNumbers( 2, 0 )
+
+                        else
+                            -- Single attack.
+                            self:ChooseGrowingNumbers( 1, 1 )
+                        end
+                    end,
+                }
+            },
     }),
     CharacterDef("ADVISOR_MANIPULATE",
     {
@@ -39,7 +61,10 @@ local chars =
         gender = "FEMALE",
         species = "KRADESHI",
 
-        build = "female_tei_utaro_build",
+        theme_music = "DEMOCRATICRACE|event:/democratic_race/music/story/benni_theme",
+        -- theme_music = "event:/democratic_race/music/story/benni_theme",
+
+        build = "female_benni_build",
         head = "head_female_kradeshi_13",
 
         skin_colour = 0xBEC867FF,
@@ -47,6 +72,37 @@ local chars =
         -- renown = 4,
 
         -- social_boons = table.empty,
+            negotiation_data =
+            {
+                behaviour =
+                {
+                    OnInit = function( self )
+                        self.negotiator:AddModifier("LOGICAL")
+                        self.facts = self:AddArgument( "FACTS" )
+                        self.flawed_logic = self:AddArgument( "FLAWED_LOGIC" )
+                        self:SetPattern( self.BasicCycle )
+                    end,
+                    BasicCycle = function( self, turns )
+
+                        if (turns-1) % 3 == 0 then
+                            -- Double attack.
+                            self:ChooseGrowingNumbers( 2, 0, 1 )
+
+                        else
+                            -- Single attack.
+                            self:ChooseGrowingNumbers( 1, 1, 1 )
+                        end
+
+                        if turns % 3 == 0 then
+                            self:ChooseCard( self.flawed_logic )
+                        end
+
+                        if turns % 2 == 0 then
+                            self:ChooseCard( self.facts )
+                        end
+                    end,
+                }
+            },
     }),
     CharacterDef("ADVISOR_HOSTILE",
     {
@@ -70,7 +126,7 @@ local chars =
         -- renown = 4,
 
         -- We'll work on a proper negotiation later.
-        negotiation_data = 
+        negotiation_data =
         {
             behaviour =
             {
@@ -83,15 +139,15 @@ local chars =
                     self.negotiator:AddModifier("NARCISSISM")
                     self:SetPattern( self.BasicCycle )
                     -- if self.difficulty <= 2 then
-                        
+
                     -- else
                     --     self:SetPattern( self.Cycle )
                     -- end
-                        
-                        
+
+
                 end,
                 BasicCycle = function( self, turns )
-                    
+
                     if (turns-1) % 3 == 0 then
                         -- Double attack.
                         self:ChooseGrowingNumbers( 2, 0 )

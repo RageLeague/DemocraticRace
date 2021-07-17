@@ -253,7 +253,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     !hips
                     $happyCocky
                     If only it were that simple for you.
-                    But I'm afraid our time is going to be cut short. 
+                    But I'm afraid our time is going to be cut short.
                 * As if on cue, the Admiralty responder enters your room.
                 responder:
                     !left
@@ -399,6 +399,9 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
             TheGame:GetGameState():GetPlayerAgent():MoveToLocation( location )
             cxt.enc:GetScreen():ClearHistory()
             cxt.enc:GetScreen():SetBlur(false)
+
+            TheGame:FE():FindScreen( Screen.ConversationScreen ).character_music = nil
+            TheGame:GetMusic():StopCharacterMusic()
 
             local assassin = cxt.quest:GetCastMember("assassin")
             assassin.in_hiding = false
@@ -591,7 +594,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     DemocracyUtil.GiveBossRewards(cxt)
                 end)
                 :GoTo("STATE_RESUME_SLEEP")
-            
+
             cxt:Opt("OPT_RESIST_ARREST")
                 :Dialog("DIALOG_RESIST_ARREST")
                 :Battle{}
@@ -626,7 +629,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
         :Fn(function(cxt)
             if cxt.quest.param.dead_body then
                 cxt.location:Remember("HAS_DEAD_BODY",
-                    {cxt:GetCastMember("assassin"):IsDead() and cxt:GetCastMember("assassin") or nil, 
+                    {cxt:GetCastMember("assassin"):IsDead() and cxt:GetCastMember("assassin") or nil,
                     cxt:GetCastMember("responder"):IsDead() and cxt:GetCastMember("responder") or nil})
             end
 
@@ -638,12 +641,12 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     -- cxt.encounter:DoLocationTransition( cxt.quest:GetCastMember("player_room") )
                     -- grog:SetPlax()
                     ConvoUtil.DoSleep(cxt, "DIALOG_WAKE")
-                    
+
                     cxt.quest:Complete()
 
                     cxt:Opt("OPT_LEAVE")
                         :MakeUnder()
-                        :Fn(function() 
+                        :Fn(function()
                             cxt.encounter:DoLocationTransition( cxt.quest:GetCastMember("home") )
                             cxt:End()
                         end)

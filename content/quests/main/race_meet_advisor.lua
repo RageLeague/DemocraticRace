@@ -2,7 +2,7 @@ local OPPO_COUNT = 1
 local ADVISOR_ID = {
     "advisor_diplomacy", "advisor_hostile", "advisor_manipulate"
 }
-local CleanUpFn = function(quest) 
+local CleanUpFn = function(quest)
     if quest:GetCastMember("primary_advisor"):IsInPlayerParty() then
         quest:GetCastMember("primary_advisor"):Dismiss()
     end
@@ -15,16 +15,17 @@ local QDEF = QuestDef.Define
 
     qtype = QTYPE.STORY,
 
-    -- on_start = function(quest)
-        
-    -- end,
+    on_start = function(quest)
+        -- Remove the patrons when the quest starts so that the location don't get overfull
+        LocationUtil.SendPatronsAway( quest:GetCastMember("noodle_shop") )
+    end,
     collect_agent_locations = function(quest, t)
         if quest:IsActive("go_to_bar") or quest:IsActive("choose_advisor") then
-            table.insert (t, { agent = quest:GetCastMember("advisor_diplomacy"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.VISITOR} )
-            table.insert (t, { agent = quest:GetCastMember("advisor_hostile"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.VISITOR} )
-            table.insert (t, { agent = quest:GetCastMember("advisor_manipulate"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.VISITOR} )
+            table.insert (t, { agent = quest:GetCastMember("advisor_diplomacy"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.PATRON} )
+            table.insert (t, { agent = quest:GetCastMember("advisor_hostile"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.PATRON} )
+            table.insert (t, { agent = quest:GetCastMember("advisor_manipulate"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.PATRON} )
         elseif quest:IsActive("discuss_plan") then
-            table.insert (t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.VISITOR} )
+            table.insert (t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('noodle_shop'), role = CHARACTER_ROLES.PATRON} )
         end
 
     end,
@@ -38,7 +39,7 @@ local QDEF = QuestDef.Define
     desc = "It's noon. Time to go to your favorite noodle shop!",
     mark = {"noodle_shop"},
     state = QSTATUS.ACTIVE,
-    
+
 }
 :AddObjective{
     id = "choose_advisor",
@@ -70,7 +71,7 @@ local QDEF = QuestDef.Define
 :AddCast{
     cast_id = "primary_advisor",
     when = QWHEN.MANUAL,
-    -- no_validation = true,
+    no_validation = true,
 }
 :AddLocationCast{
     cast_id = "home",
@@ -93,8 +94,10 @@ local COMMON_LOC = {
 
 local function GetAdvisorFn(advisor_id)
     return function(cxt)
-        cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember(advisor_id))
-        cxt:Dialog("DIALOG_INTRO")
+        if cxt:FirstLoop() then
+            cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember(advisor_id))
+            cxt:Dialog("DIALOG_INTRO")
+        end
         cxt:Question("OPT_QUESTION", "DIALOG_QUESTION")
         cxt:Opt("OPT_PICK")
             :PreIcon(global_images.accept)
@@ -108,8 +111,11 @@ local function GetAdvisorFn(advisor_id)
                     end
                 end
                 cxt.quest.param.bad_advisor = table.arraypick(not_chosen_advisor)
-                TheGame:GetGameState():GetMainQuest():AssignCastMember("primary_advisor", cxt:GetAgent())
+
+                DemocracyUtil.UpdateAdvisor(cxt:GetAgent(), "NEW_ADVISOR")
+                -- TheGame:GetGameState():GetMainQuest():AssignCastMember("primary_advisor", cxt:GetAgent())
                 cxt.quest:AssignCastMember("primary_advisor", cxt:GetAgent())
+
                 for i, val in ipairs(not_chosen_advisor) do
                     cxt:Quip(
                         cxt.quest:GetCastMember(val),
@@ -125,6 +131,7 @@ local function GetAdvisorFn(advisor_id)
                 cxt:Dialog("DIALOG_PICK_PST")
                 cxt.quest:Complete("choose_advisor")
                 cxt.quest:Activate("discuss_plan")
+                StateGraphUtil.AddEndOption(cxt)
             end)
         cxt:Opt("OPT_LATER")
             :PreIcon(global_images.reject)
@@ -136,6 +143,9 @@ end
 QDEF:AddConvo("go_to_bar")
     :Confront(function(cxt)
         if cxt.location == cxt.quest:GetCastMember("noodle_shop") then
+            -- Reset patron capacities
+            cxt.quest:GetCastMember("noodle_shop"):SetCurrentPatronCapacity()
+            LocationUtil.PopulateLocation( cxt.quest:GetCastMember("noodle_shop") )
             if cxt.quest.param.parent_quest.param.recent_job:IsComplete() then
                 return "STATE_CONFRONT"
             else
@@ -219,6 +229,7 @@ QDEF:AddConvo("go_to_bar")
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Complete("go_to_bar")
             cxt.quest:Activate("choose_advisor")
+            StateGraphUtil.AddEndOption(cxt)
         end)
 QDEF:AddConvo("choose_advisor", "advisor_diplomacy")
     :AttractState("STATE_TALK")
@@ -266,6 +277,7 @@ QDEF:AddConvo("choose_advisor", "advisor_diplomacy")
                     Oh well. Take your time.
             ]],
         }
+        :SetLooping()
         :Fn(GetAdvisorFn("advisor_diplomacy"))
 QDEF:AddConvo("choose_advisor", "advisor_hostile")
     :AttractState("STATE_TALK")
@@ -293,7 +305,7 @@ QDEF:AddConvo("choose_advisor", "advisor_hostile")
                     And you win by default.
                 ** {agent} will provide more hostile cards in {agent.hisher} card shop, is what {agent.heshe}'s saying.
             ]],
-            
+
             DIALOG_PICK = [[
                 player:
                     I guess I'll pick you.
@@ -307,6 +319,7 @@ QDEF:AddConvo("choose_advisor", "advisor_hostile")
                     Do you not want to win?
             ]],
         }
+        :SetLooping()
         :Fn(GetAdvisorFn("advisor_hostile"))
 QDEF:AddConvo("choose_advisor", "advisor_manipulate")
     :AttractState("STATE_TALK")
@@ -348,6 +361,7 @@ QDEF:AddConvo("choose_advisor", "advisor_manipulate")
                     Not everyone can understand logic instantly. Take your time to figure out the logical course of action.
             ]],
         }
+        :SetLooping()
         :Fn(GetAdvisorFn("advisor_manipulate"))
 QDEF:AddConvo("discuss_plan", "primary_advisor")
     :AttractState("STATE_TALK")
@@ -407,7 +421,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 -- :Fn(function()DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 2)end)
                 -- :Dialog("DIALOG_NO_CONT")
             -- StateGraphUtil.AddEndOption(cxt.hub)
-            
+
             -- cxt:GetAgent():GetBrain():MoveToHome()
             -- QuestUtil.SpawnQuest("RACE_LIVING_WITH_ADVISOR")
         end)
@@ -514,7 +528,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                         DemocracyUtil.TryMainQuestFn("DoRandomOpposition", OPPO_COUNT)
                         cxt.quest.param.did_opposition = true
                         cxt:Dialog("DIALOG_SKIP_OPPOSITION")
-                        
+
                     end
                     cxt:GoTo("STATE_COMPLETE_DIALOG")
                 end)

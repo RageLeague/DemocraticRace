@@ -49,20 +49,20 @@ local QDEF = QuestDef.Define
     extra_reward = false,
     on_start = function(quest)
         quest:Activate("commission")
-        quest.param.actions = math.round(DemocracyUtil.GetBaseFreeTimeActions() * 1.5)
+        -- quest.param.actions = math.round(DemocracyUtil.GetBaseFreeTimeActions() * 1.5)
         quest:Activate("time_left")
     end,
-    events = 
-    {
-        caravan_move_location = function(quest, location)
-            if location:HasTag("road") then
-                if quest.param.actions then
-                    quest.param.actions = quest.param.actions - 1
-                    quest:NotifyChanged()
-                end
-            end
-        end,
-    },
+    -- events =
+    -- {
+    --     caravan_move_location = function(quest, location)
+    --         if location:HasTag("road") then
+    --             if quest.param.actions then
+    --                 quest.param.actions = quest.param.actions - 1
+    --                 quest:NotifyChanged()
+    --             end
+    --         end
+    --     end,
+    -- },
     on_complete = function(quest)
         -- if quest.param.poor_performance then
         --     DemocracyUtil.DeltaGeneralSupport(2 * #quest.param.posted_location, "POOR_QUEST")
@@ -125,9 +125,23 @@ local QDEF = QuestDef.Define
         end
     end,
 }
-:AddObjective{
+-- :AddObjective{
+--     id = "time_left",
+--     title = "Actions left: {actions}",
+-- }
+:AddFreeTimeObjective{
     id = "time_left",
-    title = "Actions left: {actions}",
+    desc = "Use this time to write a propaganda poster and post it to as many locations as possible.",
+    action_multiplier = 1.5,
+    on_complete = function(quest)
+        if quest:IsActive("commission") then
+            quest:Fail("commission")
+        end
+        if quest:IsActive("post") then
+            quest:Cancel("post")
+        end
+        quest:Activate("out_of_time")
+    end,
 }
 :AddObjective{
     id = "out_of_time",
@@ -179,31 +193,6 @@ local QDEF = QuestDef.Define
     end,
 }
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
-QDEF:AddConvo()
-    :ConfrontState("STATE_OUT_OF_TIME", function(cxt)
-        if cxt.quest.param.actions and cxt.quest.param.actions <= 0 and not cxt.quest:IsActive("out_of_time")
-            and not cxt.location:HasTag("in_transit") then
-            return true
-        end
-        return false
-    end)
-        :Loc{
-            DIALOG_INTRO = [[
-                * Unfortunately, you ran out of time.
-                * Time to check in with {primary_advisor} and see how you did.
-            ]],
-        }
-        :Fn(function(cxt)
-            cxt:Dialog("DIALOG_INTRO")
-            if cxt.quest:IsActive("commission") then
-                cxt.quest:Fail("commission")
-            end
-            if cxt.quest:IsActive("post") then
-                cxt.quest:Cancel("post")
-            end
-            cxt.quest:Activate("out_of_time")
-            StateGraphUtil.AddLeaveLocation(cxt)
-        end)
 QDEF:AddConvo("out_of_time", "primary_advisor")
     :Loc{
         OPT_TALK_PROGRESS = "Talk about your progress",
@@ -297,7 +286,7 @@ QDEF:AddConvo("out_of_time", "primary_advisor")
                     elseif (cxt.quest.param.liked_people or 0) == 0 or (cxt.quest.param.disliked_people or 0) - (cxt.quest.param.liked_people or 0) >= 2 then
                         cxt:Dialog("DIALOG_BAD")
                         cxt.quest.param.poor_performance = true
-                        
+
                     elseif (cxt.quest.param.disliked_people or 0) - (cxt.quest.param.liked_people or 0) <= -2 then
                         cxt:Dialog("DIALOG_GOOD")
                         -- cxt.quest.param.good_performance = true
@@ -309,7 +298,7 @@ QDEF:AddConvo("out_of_time", "primary_advisor")
                 end
                 StateGraphUtil.AddEndOption(cxt)
             end)
-        
+
     end)
 QDEF:AddConvo("post")
     :Loc{
@@ -380,13 +369,7 @@ QDEF:AddConvo("post")
                 :SetQuestMark(cxt.quest)
                 :Dialog("DIALOG_END_EARLY")
                 :Fn(function(cxt)
-                    if cxt.quest:IsActive("commission") then
-                        cxt.quest:Fail("commission")
-                    end
-                    if cxt.quest:IsActive("post") then
-                        cxt.quest:Cancel("post")
-                    end
-                    cxt.quest:Activate("out_of_time")
+                    cxt.quest:Complete("time_left")
                 end)
             return
         end
@@ -395,11 +378,12 @@ QDEF:AddConvo("post")
             if not (cxt.quest.param.posted_location and table.arraycontains(cxt.quest.param.posted_location, location:GetContentID())) then
                 cxt:Opt("OPT_ASK")
                     :Dialog("DIALOG_ASK")
-                    :ReqCondition((cxt.quest.param.actions or 0) >= 1, "REQ_FREE_TIME_ACTIONS")
-                    :Fn(function(cxt)
-                        cxt.quest.param.actions = (cxt.quest.param.actions or 0) - 1
-                        cxt.quest:NotifyChanged()
-                    end)
+                    -- :ReqCondition((cxt.quest.param.actions or 0) >= 1, "REQ_FREE_TIME_ACTIONS")
+                    -- :Fn(function(cxt)
+                    --     cxt.quest.param.actions = (cxt.quest.param.actions or 0) - 1
+                    --     cxt.quest:NotifyChanged()
+                    -- end)
+                    -- :RequireFreeTimeAction(1)
                     :Negotiation{
                         on_success = function(cxt)
                             cxt:Dialog("DIALOG_ASK_SUCCESS")
@@ -421,22 +405,13 @@ QDEF:AddConvo("post")
                                             cxt:Wait()
                                             DemocracyUtil.InsertSelectCardScreen(
                                                 posters,
-                                                cxt:GetLocString("SELECT_TITLE"), 
-                                                cxt:GetLocString("SELECT_DESC"), 
+                                                cxt:GetLocString("SELECT_TITLE"),
+                                                cxt:GetLocString("SELECT_DESC"),
                                                 nil,
                                                 function(card)
                                                     cxt.enc:ResumeEncounter( card )
                                                 end
                                             )
-                                            -- local function OnSelectCard(screen, widget, card)
-                                            --     screen:ShowRemoval(widget)
-                                            --     cxt.enc:ResumeEncounter( card )
-                                            -- end
-                                            
-                                            -- local screen = Screen.DeckScreen( posters, OnSelectCard, Widget.NegotiationCard )
-                                            -- screen:SetMusicEvent( TheGame:LookupPlayerMusic( "deck_music" ))
-                                            -- screen:SetTitles( LOC"UI.SHOW_DECK_SCREEN.NEGOTIATION_DECK_UPPERCASE", LOC"UI.CARDS.REMOVE_NEGOTIATION_CARD" )
-                                            -- TheGame:FE():InsertScreen( screen )
                                             local card = cxt.enc:YieldEncounter()
                                             if card then
                                                 cxt:Dialog("DIALOG_SELECT")
@@ -480,7 +455,7 @@ QDEF:AddConvo("post")
                     }
             end
         end
-        
+
     end)
     :State("STATE_READ")
         :Loc{
@@ -516,7 +491,7 @@ QDEF:AddConvo("post")
                         return
                     end
                 end
-                
+
             end
             cxt.location:Remember("DID_PROPAGANDA_TODAY")
             cxt:Dialog("DIALOG_NO_READER")
@@ -637,12 +612,14 @@ QDEF:AddConvo("commission")
                 :ReqCondition(cxt.quest.param.artist_demands[who:GetID()] ~= false,"REQ_NOT_ARTIST")
                 -- :ReqCondition(not who:HasMemoryFromToday("ASKED_FOR_COMMISSION"), "REQ_ALREADY_ASKED")
             if not cxt.enc.scratch.asked then
-                opt:PostText("TT_FREE_TIME_ACTION_COST", 1)
-                    :ReqCondition((cxt.quest.param.actions or 0) >= 1, "REQ_FREE_TIME_ACTIONS")
-                    :Fn(function(cxt)
-                        cxt.quest.param.actions = (cxt.quest.param.actions or 0) - 1
-                        cxt.quest:NotifyChanged()
-                    end)
+                opt:RequireFreeTimeAction(1)
+                    -- :PostText("TT_FREE_TIME_ACTION_COST", 1)
+                    -- :ReqCondition((cxt.quest.param.actions or 0) >= 1, "REQ_FREE_TIME_ACTIONS")
+                    -- :Fn(function(cxt)
+                    --     cxt.quest.param.actions = (cxt.quest.param.actions or 0) - 1
+                    --     cxt.quest:NotifyChanged()
+                    -- end)
+
             end
             opt:Fn(function(cxt)
                 if cxt.quest.param.artist_demands[who:GetID()] == nil then
@@ -651,7 +628,7 @@ QDEF:AddConvo("commission")
                         if cxt.enc.scratch.is_artist then
                             rawcost = rawcost * 2
                         end
-                        
+
                         local demands, demand_list = DemocracyUtil.GenerateDemandList(rawcost, who, nil, {
                             auto_scale = true,
                         })
@@ -664,7 +641,7 @@ QDEF:AddConvo("commission")
                     end
                 end
 
-                
+
                 -- DBG(cxt.enc.scratch.demand_list)
                 -- cxt.enc.scratch.testlol = true
                 if IsPotentiallyArtist(who) then
@@ -673,14 +650,15 @@ QDEF:AddConvo("commission")
                     cxt:RunLoop(function(cxt)
                         local dat = cxt.quest.param.artist_demands[who:GetID()]
                         local payed_all = DemocracyUtil.AddDemandConvo(cxt, dat.demand_list, dat.demands, function(opt)
-                            opt:PostText("TT_FREE_TIME_ACTION_COST", 2)
-                                :ReqCondition((cxt.quest.param.actions or 0) >= 2, "REQ_FREE_TIME_ACTIONS")
-                                :Fn(function(cxt)
-                                    cxt.quest.param.actions = (cxt.quest.param.actions or 0) - 2
-                                    cxt.quest:NotifyChanged()
-                                end)
+                            -- opt:RequireFreeTimeAction(2)
+                                -- :PostText("TT_FREE_TIME_ACTION_COST", 2)
+                                -- :ReqCondition((cxt.quest.param.actions or 0) >= 2, "REQ_FREE_TIME_ACTIONS")
+                                -- :Fn(function(cxt)
+                                --     cxt.quest.param.actions = (cxt.quest.param.actions or 0) - 2
+                                --     cxt.quest:NotifyChanged()
+                                -- end)
                         end)
-    
+
                         if payed_all then
                             cxt:Dialog("DIALOG_PAYED_COMMISSION")
                             cxt.quest.param.artist = who
@@ -692,9 +670,9 @@ QDEF:AddConvo("commission")
                         end
                     end)
                 else
-                    if cxt:GetAgent():GetRelationship() >= RELATIONSHIP.NEUTRAL and 
+                    if cxt:GetAgent():GetRelationship() >= RELATIONSHIP.NEUTRAL and
                         not cxt:GetCastMember("known_artist") and math.random() < 0.5 then
-                    
+
                         cxt.quest.param.artist_faction = cxt:GetAgent():GetFactionID()
                         cxt.quest:AssignCastMember("known_artist")
                         local known_artist = cxt:GetCastMember("known_artist")
@@ -712,7 +690,7 @@ QDEF:AddConvo("commission")
                     end
                 end
             end)
-                
+
         elseif who == cxt.quest:GetCastMember("primary_advisor") then
             cxt:Opt("OPT_MAKE")
                 :SetQuestMark(cxt.quest)
@@ -802,7 +780,7 @@ QDEF:AddConvo("commission")
             -- yeah havent figured out what to do with it.
             local function ProcessFn(cxt, minigame)
                 local stacks = minigame:GetPlayerNegotiator():GetModifierStacks("TIME_CONSTRAINT")
-                cxt.quest.param.actions = stacks
+                cxt.quest.param.free_time_actions = stacks
                 cxt.quest:NotifyChanged()
                 if #recorded_cards >= 3 then
                     cxt:Dialog("DIALOG_FINISH")
@@ -821,7 +799,7 @@ QDEF:AddConvo("commission")
                     end
                 elseif cxt.quest.param.is_artist then
                     cards[1].userdata.prop_mod = table.arraypick(GOOD_ART)
-                    
+
                 else
                     local val = math.random()
                     if val < 0.3 then
@@ -839,7 +817,8 @@ QDEF:AddConvo("commission")
             cxt:Opt("OPT_START")
                 :Dialog("DIALOG_START")
                 :Negotiation{
-                    flags = NEGOTIATION_FLAGS.NO_BYSTANDERS,
+                    no_free_time_cost = true,
+                    flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.NO_BACKUP,
                     on_start_negotiation = function(minigame)
                         local negotiation_defs = require "negotiation/negotiation_defs"
                         local CARD_FLAGS = negotiation_defs.CARD_FLAGS
@@ -854,7 +833,7 @@ QDEF:AddConvo("commission")
                             minigame:GetOpponentNegotiator():CreateModifier( "SIMULATION_ARGUMENT", 1 )
                         end
                         minigame:GetOpponentNegotiator():FindCoreArgument().cards_played = recorded_cards
-                        minigame:GetPlayerNegotiator():CreateModifier( "TIME_CONSTRAINT", math.max(cxt.quest.param.actions or 1, 1) )
+                        minigame:GetPlayerNegotiator():CreateModifier( "TIME_CONSTRAINT", math.max(cxt.quest.param.free_time_actions or 1, 1) )
                     end,
                     finish_negotiation_anytime = true,
                     on_success = ProcessFn,

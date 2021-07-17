@@ -22,7 +22,7 @@ local QDEF = QuestDef.Define
             table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('backroom'), role = CHARACTER_ROLES.VISITOR})
         end
         table.insert(t, { agent = quest:GetCastMember("host"), location = quest:GetCastMember('theater')})
-        for id, data in pairs(DemocracyConstants.opposition_data) do 
+        for id, data in pairs(DemocracyConstants.opposition_data) do
             table.insert(t, { agent = quest:GetCastMember(id), location = quest:GetCastMember('theater'), role = CHARACTER_ROLES.VISITOR})
         end
     end,
@@ -64,13 +64,13 @@ local QDEF = QuestDef.Define
 }
 :AddCast{
     cast_id = "host",
-    cast_fn = function(quest, t) 
+    cast_fn = function(quest, t)
         if quest:GetCastMember("theater"):GetProprietor() then
             table.insert(t, quest:GetCastMember("theater"):GetProprietor())
         end
     end,
     when = QWHEN.MANUAL,
-    events = 
+    events =
     {
         agent_retired = function( quest, agent )
             -- if quest:IsActive( "get_snail" ) then
@@ -314,7 +314,7 @@ local function DeltaPopularity(table, agent, delta)
     table[agent:GetID()] = (table[agent:GetID()] or 0) + delta
 end
 QDEF:AddConvo("go_to_debate")
-    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("backroom") end)
+    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("backroom") end)
         :Loc{
             DIALOG_INTRO = [[
                 * [p] You arrive at the grand theater backroom, where {agent} awaits you.
@@ -372,6 +372,10 @@ QDEF:AddConvo("do_debate")
             if not cxt.quest.param.candidate_opinion then
                 cxt.quest.param.candidate_opinion = {}
             end
+            if #cxt.quest.param.questions < 5 then
+                cxt:GoTo("STATE_QUESTION")
+                return
+            end
             for i, agent in cxt.location:Agents() do
                 if agent:GetRoleAtLocation( cxt.location ) == CHARACTER_ROLES.PATRON then
                     if agent:GetRelationship() > RELATIONSHIP.NEUTRAL then
@@ -418,6 +422,7 @@ QDEF:AddConvo("do_debate")
             OPT_SIDE = "Argue for {1#pol_stance}",
             DIALOG_SIDE = [[
                 player:
+                    !left
                     This is my answer!
                 * A debate is about to go down!
             ]],
@@ -457,7 +462,7 @@ QDEF:AddConvo("do_debate")
                         table.insert(neg_neut, agent)
                     end
                 end
-                
+
                 if stance_index < -shift then
                     table.insert(pos_hinder, agent)
                 elseif stance_index > -shift then
@@ -614,10 +619,11 @@ QDEF:AddConvo("do_debate")
 
                 cxt:TalkTo(mvp)
                 cxt:Quip( mvp, "debate_mvp")
-                
+
                 cxt:Dialog("DIALOG_POST")
                 ConvoUtil.DoResolveDelta(cxt, 15)
                 cxt.quest.param.fatigued = false
+                DoAutoSave()
             end
             cxt:Opt("OPT_CONTINUE")
                 :GoTo("STATE_QUESTION")
@@ -697,7 +703,7 @@ QDEF:AddConvo("do_debate")
                     cxt:Dialog("DIALOG_WIN_LANDSLIDE")
                     winner_delta = 8
                 end
-                for i, agent in ipairs(cxt.quest.param.debate_result.won_game and 
+                for i, agent in ipairs(cxt.quest.param.debate_result.won_game and
                     cxt.quest.param.allies or cxt.quest.param.opponents) do
 
                     DeltaPopularity(cxt.quest.param.popularity, agent, winner_delta)
@@ -748,6 +754,7 @@ QDEF:AddConvo("do_debate")
                 end
                 cxt:Dialog("DIALOG_END")
                 cxt.quest.param.fatigued = true
+                DoAutoSave()
             end
             -- DBG(cxt.quest.param.popularity)
             cxt:Opt("OPT_CONTINUE")
@@ -824,7 +831,7 @@ QDEF:AddConvo("do_debate")
                     if agent:GetRelationship() >= RELATIONSHIP.LIKED then
                         table.insert(betrayed_friends, agent)
                         agent:OpinionEvent(OPINION.DISLIKE_IDEOLOGY)
-                    end 
+                    end
                 end
             end
             if #betrayed_friends > 0 then
@@ -889,7 +896,7 @@ QDEF:AddConvo("report_to_advisor", "primary_advisor")
     }
     :Fn(function(cxt)
         cxt:Dialog("DIALOG_REVIEW")
-        
+
         cxt.quest:Complete()
         StateGraphUtil.AddEndOption(cxt)
     end)

@@ -90,15 +90,33 @@ function DemocracyUtil.AddPrimaryAdvisor(qdef, mandatory)
                 quest:AssignCastMember("home")
             end
         end,
+        global_events = {
+            primary_advisor_changed = function(quest, old_advisor, new_advisor, change_reason)
+                if quest:GetCastMember("primary_advisor") then
+                    quest:UnassignCastMember("primary_advisor")
+                end
+                if quest:GetQuestDef():GetCast("home") and quest:GetCastMember("home") then
+                    quest:UnassignCastMember("home")
+                end
+                if quest:GetQuestDef():GetCast("player_room") and quest:GetCastMember("home") then
+                    quest:UnassignCastMember("player_room")
+                end
+                if new_advisor then
+                    quest:AssignCastMember("primary_advisor", new_advisor)
+                else
+                    quest.param.has_primary_advisor = false
+                end
+            end,
+        },
         no_validation = true,
     }
     if mandatory then
         -- for debugging purpose to not crash game
         qdef:AddCastFallback{
             cast_fn = function( quest, t )
-        
+
                 local alias = "ADVISOR_DIPLOMACY"
-        
+
                 local agent = TheGame:GetGameState():GetAgentOrMemento( alias )
                 if agent == nil then
                     local def = Content.GetCharacterDef( alias )
@@ -110,7 +128,7 @@ function DemocracyUtil.AddPrimaryAdvisor(qdef, mandatory)
                             -- If there's a singular skin, use it automatically.
                             skin_table = skins[1]
                         end
-        
+
                     else
                         content_id, skin_table = Content.GetCharacterSkinByAlias( alias )
                         if not TheGame:GetGameState():IsSkinAvailable( skin_table.uuid ) then
@@ -147,16 +165,31 @@ function DemocracyUtil.StartFreeTime(actions)
     end
     return quest
 end
-function DemocracyUtil.EndFreeTime()
+
+function DemocracyUtil.GetFreeTimeQuests(exact)
+    if exact then
+        return TheGame:GetGameState():GetActiveQuestWithContentID("FREE_TIME_EVENT")
+    end
+    local result = {}
+    for i, quest in TheGame:GetGameState():ActiveQuests() do
+        local objective_id = quest:GetQuestDef().free_time_objective_id
+        if objective_id and quest:IsActive(objective_id) then
+            table.insert(result, quest)
+        end
+    end
+    return result
+end
+
+function DemocracyUtil.EndFreeTime(exact)
     -- TheGame:GetGameState():ClearOpportunities()
-    local events = TheGame:GetGameState():GetActiveQuestWithContentID( "FREE_TIME_EVENT" )
+    local events = DemocracyUtil.GetFreeTimeQuests(exact)
     for i, event in ipairs(events) do
         print("End quest: " .. tostring(event))
         event:Complete()
     end
 end
-function DemocracyUtil.IsFreeTimeActive()
-    return #(TheGame:GetGameState():GetActiveQuestWithContentID( "FREE_TIME_EVENT" )) > 0
+function DemocracyUtil.IsFreeTimeActive(exact)
+    return #(DemocracyUtil.GetFreeTimeQuests(exact)) > 0
 end
 local SUPPORT_DELTA = {
     [RELATIONSHIP.HATED] = -60,
@@ -168,7 +201,7 @@ local SUPPORT_DELTA = {
 
 -- Calculate the score for an agent's support. Used as score_fn in agent casts.
 -- Has a built-in randomizer. Generally speaking, an agent that likes you more, whose
--- faction supports you more, and whose wealth class supports you more, will be more 
+-- faction supports you more, and whose wealth class supports you more, will be more
 -- likely to be casted.
 function DemocracyUtil.SupportScore(agent)
     return DemocracyUtil.TryMainQuestFn("GetSupportForAgent", agent)
@@ -195,7 +228,7 @@ end
 function DemocracyUtil.CanVote(agent)
     -- non-citizens can't vote
     -- for casting purposes, player can't vote.
-    return agent and not agent:IsPlayer() and not agent:IsRetired() 
+    return agent and not agent:IsPlayer() and not agent:IsRetired()
         and agent:IsSentient() and agent:GetFactionID() ~= "RENTORIAN" and agent:GetFactionID() ~= "DELTREAN"
 end
 
@@ -221,7 +254,7 @@ function DemocracyUtil.DoLocationUnlock(cxt, id)
     end
 end
 function DemocracyUtil.LocationUnlocked(id)
-    if not TheGame:GetGameState():GetMainQuest().param.unlocked_locations then 
+    if not TheGame:GetGameState():GetMainQuest().param.unlocked_locations then
         return false
     end
     return table.arraycontains(TheGame:GetGameState():GetMainQuest().param.unlocked_locations, id)
@@ -385,7 +418,7 @@ function DemocracyUtil.PresentRequestQuest(cxt, quest, accept_fn, decline_fn, ob
     end
     -- local quest = QuestUtil.SpawnInactiveQuest(quest_id, spawn_override)
     -- StateGraphUtil.PresentQuestOffer(
-    --     cxt, quest, objective_id, 
+    --     cxt, quest, objective_id,
     --     function(cxt)
     --         cxt:PlayQuestConvo(quest, QUEST_CONVO_HOOK.ACCEPTED)
     --         if accept_fn then
@@ -408,7 +441,7 @@ end
 
 function DemocracyUtil.CheckHeavyHanded(modifier, card, minigame)
     -- destroying an argument without dropping resolve down to zero can only be done thru heavy handed
-    if modifier.resolve and modifier.resolve > 0 then 
+    if modifier.resolve and modifier.resolve > 0 then
         if card and card.id then
             print("uh oh, stinky")
             minigame.nuke_card = minigame.nuke_card or {}
@@ -476,7 +509,7 @@ function DemocracyUtil.AddDemandConvo(cxt, demand_list, demand_modifiers, haggle
 
                 cxt:GetAgent():Remember(ask_demand_param_id)
             end,
-            on_fail = function(cxt) 
+            on_fail = function(cxt)
                 cxt:Dialog("DIALOG_NEGOTIATE_TERMS_FAIL")
                 cxt:GetAgent():Remember(ask_demand_param_id)
             end,
@@ -489,7 +522,7 @@ function DemocracyUtil.AddDemandConvo(cxt, demand_list, demand_modifiers, haggle
             local opt = cxt:RawOpt(loc.cap(loc.format("{1#one_demand}", demand_data)), demand_data.id)
             -- ConvoOption()
             -- cxt.enc:AddOption(opt)
-            
+
             -- they have seperate secondary tags because i want to make the tagscores different for complying and accepting
 
             local modifier = Content.GetNegotiationModifier(demand_data.id)
@@ -574,11 +607,11 @@ function DemocracyUtil.DoAlphaMessage()
 
     local player = TheGame:GetGameState() and TheGame:GetGameState():GetPlayerAgent()
     -- local rook = player and player:GetContentID() == "ROOK"
-    
+
     local img = engine.asset.Texture( "large/smith_end_screen.tex" )
     local popup = Screen.WIPpopup(
-        LOC"DEMOCRACY.WIP_SCREEN.TITLE", 
-        LOC"DEMOCRACY.WIP_SCREEN.BODY", 
+        LOC"DEMOCRACY.WIP_SCREEN.TITLE",
+        LOC"DEMOCRACY.WIP_SCREEN.BODY",
         LOC"DEMOCRACY.WIP_SCREEN.BUTTON", img, function()
             TheGame:Win( GAMEOVER.ALPHA_VICTORY )
             TheGame:AddGameplayStat( "democracy_day_2", 1 )
@@ -603,7 +636,7 @@ function DemocracyUtil.InsertSelectCardScreen(cards, title, desc, class, on_sele
             on_select(card_selected)
         end
     end
-    
+
     local screen = Screen.DeckScreen( cards, OnSelectCard, class or Widget.NegotiationCard, OnEndFn )
     screen:SetMusicEvent( TheGame:LookupPlayerMusic( "deck_music" ))
     screen:SetTitles( title, desc )
@@ -664,15 +697,15 @@ function DemocracyUtil.PresentJobChoice(cxt, quest_options, additional_opt, on_p
         v:SetHideInOverlay(true)
     end
 
-    if #quest_options > 0 then 
+    if #quest_options > 0 then
         cxt:RunLoopingFn( function(cxt)
             for k,job in ipairs(quest_options) do
-                
+
                 cxt:QuestOpt( job )
                     :ShowQuestAsInactive()
-                    :Fn(function(cxt) 
-                        StateGraphUtil.PresentQuestOffer(cxt, job, nil, 
-                            function() 
+                    :Fn(function(cxt)
+                        StateGraphUtil.PresentQuestOffer(cxt, job, nil,
+                            function()
 
                                 for k,v in pairs(quest_options) do
                                     if v ~= job then
@@ -685,6 +718,7 @@ function DemocracyUtil.PresentJobChoice(cxt, quest_options, additional_opt, on_p
                                 if on_picked_fn then
                                     on_picked_fn(cxt, quest_options, job)
                                 end
+                                cxt.quest.param.job_pool = nil
                             end,
                             function()
                                 if not cxt:PlayQuestConvo(job, QUEST_CONVO_HOOK.DECLINED) then
@@ -721,9 +755,9 @@ function DemocracyUtil.GetBossGrafts(num_boss, num_total, owner)
     local used_graft_ids = {}
     local grafts = {}
     owner = owner or TheGame:GetGameState():GetPlayerAgent()
-    
+
     for k = 1, num_total do
-        
+
         local collection
         if k <= num_boss then
             local rarity = CARD_RARITY.BOSS
@@ -740,7 +774,7 @@ function DemocracyUtil.GetBossGrafts(num_boss, num_total, owner)
             end):Rarity(rarity)
         end
         local graft = collection:Generate(1)[1]
-        
+
         if graft then
             table.insert(grafts, graft)
             table.insert(used_graft_ids, graft.id)
@@ -750,14 +784,14 @@ function DemocracyUtil.GetBossGrafts(num_boss, num_total, owner)
     return grafts
 end
 function DemocracyUtil.GiveBossRewards(cxt)
-    cxt:Run(function() 
+    cxt:Run(function()
         cxt.enc:WaitOnLine()
 
         local grafts = DemocracyUtil.GetBossGrafts(2, TheGame:GetGameState():GetGraftDraftDetails().count)
         if #grafts > 0 then
             cxt:Opt("OPT_GET_GRAFT")
                 :PreIcon( global_images.receiving )
-                :Fn(function() 
+                :Fn(function()
                     local popup = Screen.PickGraftScreen(grafts, false, function(...) cxt.enc:ResumeEncounter(...) end)
                     TheGame:FE():InsertScreen( popup )
                     local chosen_graft = cxt.enc:YieldEncounter()
@@ -869,7 +903,7 @@ function DemocracyUtil.GetAlliancePotential(candidate_id)
             local candidate = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
             if candidate then
                 local rel_with_player = candidate:GetRelationship()
-                local faction_rel = TheGame:GetGameState():GetFactions():GetFactionRelationship( 
+                local faction_rel = TheGame:GetGameState():GetFactions():GetFactionRelationship(
                     data.main_supporter, candidate_data.main_supporter )
                 -- Positive when friend with friend, enemy of enemy
                 -- Negative when enemy of friend, enemy of enemy
@@ -882,7 +916,7 @@ function DemocracyUtil.GetAlliancePotential(candidate_id)
                 elseif fof == -1 then
                     score = score - 25
                 else
-                    score = score + 10 * fof 
+                    score = score + 10 * fof
                 end
             end
         end
@@ -896,7 +930,7 @@ function QuestDef:GetProviderCast()
         end
     end
 end
-function DemocracyUtil.SpawnRequestQuest(agent, spawn_param)
+function DemocracyUtil.SpawnRequestQuest(agent, allow_placeholder, spawn_param)
     if not spawn_param then
         spawn_param = {}
     end
@@ -907,12 +941,12 @@ function DemocracyUtil.SpawnRequestQuest(agent, spawn_param)
         end
     end
     table.shuffle(potential_jobs)
-    table.insert(potential_jobs, Content.GetQuestDef( "PLACEHOLDER_REQUEST_QUEST" ))
+    -- table.insert(potential_jobs, Content.GetQuestDef( "PLACEHOLDER_REQUEST_QUEST" ))
     -- DBG(potential_jobs)
     for i, def in ipairs(potential_jobs) do
         local provider_cast = def:GetProviderCast()
         local params = deepcopy(spawn_param)
-        
+
         if provider_cast then
             if not params.cast then
                 params.cast = {}
@@ -929,7 +963,27 @@ function DemocracyUtil.SpawnRequestQuest(agent, spawn_param)
             end
         end
     end
-    assert(false, loc.format("No request quest spawned for {1#agent}", agent))
+    if allow_placeholder then
+        local spawned_quest = QuestUtil.SpawnInactiveQuest("PLACEHOLDER_REQUEST_QUEST", params)
+        if spawned_quest then
+            -- DBG(spawned_quest)
+            if params.debug_test then
+                TheGame:GetGameState():AddActiveQuest( spawned_quest )
+                spawned_quest:Activate()
+            end
+            return spawned_quest
+        end
+    end
+    return nil
+    -- assert(false, loc.format("No request quest spawned for {1#agent}", agent))
+end
+function DemocracyUtil.HasRequestQuest(agent)
+    for k,quest in TheGame:GetGameState():ActiveQuests() do
+        if quest:GetProvider() == agent then
+            return true
+        end
+    end
+    return false
 end
 function DemocracyUtil.DebugSetRandomDeck(seed)
     local DECKS = require "content/quests/experiments/sal_day_4_decks"
@@ -960,7 +1014,7 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
                     :UpdatePoliticalStance(platform, oppo_main_stance)
                     :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
                     :DoneConvo()
-                
+
             else
                 cxt:Opt("OPT_ALLIANCE_TALK_ACCEPT")
                     :Dialog("DIALOG_ALLIANCE_TALK_ACCEPT")
@@ -1075,6 +1129,74 @@ function DemocracyUtil.GetPerFileSettings()
     end
     return data
 end
+function DemocracyUtil.GetBodyguards()
+    local candidates = {}
+    for i, agent in ipairs(TheGame:GetGameState():GetCaravan():GetParty():GetMembers()) do
+        if agent:IsHiredMember() or agent:IsPet() then
+            table.insert(candidates, agent)
+        end
+    end
+    return candidates
+end
+function DemocracyUtil.AddBodyguardOpt(cxt, fn, opt_id)
+    local candidates = DemocracyUtil.GetBodyguards()
+    if candidates and #candidates > 0 then
+        cxt:Opt(opt_id or "OPT_USE_BODYGUARD")
+            :LoopingFn(function(cxt)
+                for i, agent in ipairs(candidates) do
+                    cxt:Opt("OPT_SELECT_AGENT", agent)
+                        :Fn(function(cxt)
+                            fn(cxt, agent)
+                        end)
+                end
+            end)
+        StateGraphUtil.AddBackButton(cxt)
+    end
+end
+
+local main_branch_id = 2291214111
+local test_branch_id = 2503106782
+
+function DemocracyUtil.DeployMod(experimental)
+    if not engine and engine.steam then
+        print("Epic bad lol")
+        return
+    end
+    local function ConfirmFunction()
+        rawset(_G, "ConfirmUpload", nil)
+        local mod_id = experimental and test_branch_id or main_branch_id
+        local mod = DemocracyUtil.GetModData()
+        mod.workshop_id = mod_id
+        local function OnSubmitted(item, msg)
+            print( "OnSubmitted", msg, tostr(item))
+            if item.workshop_id and item.workshop_id ~= 0 then
+                print("Workshop ID:", item.workshop_id)
+            end
+            if item.lastResult == engine.steam.EResultOK then
+                print( msg or "Submit succeeded!")
+            else
+                -- From the workshop docs:
+                -- k_EResultFail (2) - Generic failure.
+                -- k_EResultInvalidParam (8) - Either the provided app ID is invalid or doesn't match the consumer app ID of the item or, you have not enabled ISteamUGC for the provided app ID on the Steam Workshop Configuration App Admin page.
+                -- The preview file is smaller than 16 bytes.
+                -- k_EResultAccessDenied (15) - The user doesn't own a license for the provided app ID.
+                -- k_EResultFileNotFound (9) - Failed to get the workshop info for the item or failed to read the preview file.
+                -- k_EResultFileNotFound (9) - The provided content folder is not valid. (eg. this workshop_id has previously been deleted)
+                -- k_EResultLockingFailed (33) - Failed to aquire UGC Lock.
+                -- k_EResultLimitExceeded (25) - The preview image is too large, it must be less than 1 Megabyte; or there is not enough space available on the users Steam Cloud.
+
+                msg = msg or "Submit failed!"
+                msg = msg .. string.format( " (error=%s)", tostring(item.lastResult))
+                print(msg)
+            end
+        end
+        print("Submitting to workshop:", tostr(mod))
+        print("Experimental =", experimental)
+        engine.steam:SubmitItem( mod, OnSubmitted )
+    end
+    print(loc.format("Are you sure? Enter ConfirmUpload() in the console to confirm. (Experimental={1})", experimental))
+    rawset(_G, "ConfirmUpload", ConfirmFunction)
+end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator
@@ -1094,20 +1216,76 @@ function ConvoOption:DeltaSupport(amt, target, ignore_notification)
     end)
     return self
 end
-function ConvoOption:RequireFreeTimeAction(actions)
+
+function ConvoOption:RequireFreeTimeAction(actions, display_only)
     if actions then
         self:PostText("TT_FREE_TIME_ACTION_COST", actions)
     end
-    local freetimeevents = TheGame:GetGameState():GetActiveQuestWithContentID( "FREE_TIME_EVENT" )
+    local freetimeevents = DemocracyUtil.GetFreeTimeQuests()
     -- local q = freetimeevents[1]
     self:ReqCondition(freetimeevents and #freetimeevents > 0, "REQ_FREE_TIME")
     if freetimeevents and #freetimeevents > 0 and actions then
         local q = freetimeevents[1]
         self:ReqCondition(q.param.free_time_actions >= actions, "REQ_FREE_TIME_ACTIONS")
-        self:Fn(function(cxt)
-            q:DefFn("DeltaActions", -actions)
-        end)
+        if not display_only then
+            self:Fn(function(cxt)
+                q:DefFn("DeltaActions", -actions)
+            end)
+        end
     end
+
+    return self
+end
+
+function QuestDef:AddFreeTimeObjective( child )
+    local new_child = table.extend{
+        id = "time_countdown",
+        title = "You have {1} {1*action|actions} left",
+        title_fn = function(quest, str)
+            return loc.format(str, quest.param.free_time_actions or 0)
+        end,
+        desc = "You can choose to visit a location during your free time.",
+        mark = function(quest, t, in_location)
+            DemocracyUtil.AddUnlockedLocationMarks(t)
+        end,
+        on_activate = function(quest)
+            local questdef = quest:GetQuestDef()
+            local multiplier = questdef:GetObjective(questdef.free_time_objective_id).action_multiplier or 1
+            quest.param.free_time_actions = math.round(DemocracyUtil.GetBaseFreeTimeActions() * multiplier)
+        end,
+        events =
+        {
+            resolve_negotiation = function(quest, minigame)
+                if minigame.start_params.no_free_time_cost then
+                    return
+                end
+                quest:DefFn("DeltaActions", -1)
+            end,
+            resolve_battle = function(quest, battle)
+                quest:DefFn("DeltaActions", -1)
+            end,
+            caravan_move_location = function(quest, location)
+                print("Caravan moved, remove one action")
+                -- DBG(location)
+                if location:HasTag("in_transit") then
+                    print("Caravan moved, remove one action")
+                    quest:DefFn("DeltaActions", -1)
+                end
+            end,
+        },
+    }(child)
+
+    self.DeltaActions = function(quest, delta)
+        quest.param.free_time_actions = quest.param.free_time_actions + delta
+        print("New action count: "..quest.param.free_time_actions)
+        if quest.param.free_time_actions <= 0 then
+            quest:Complete(new_child.id)
+        end
+        quest:NotifyChanged()
+    end
+    self.free_time_objective_id = new_child.id
+
+    self:AddObjective(new_child)
 
     return self
 end
@@ -1137,41 +1315,3 @@ function AutoUpgradeText(self, field, invert, preprocess)
         return preprocess(self[field])
     end
 end
--- return {
---     ADVISOR_IDS = ADVISOR_IDS,
---     ADVISOR_HOME = ADVISOR_HOME,
---     AddAdvisors = AddAdvisors,
---     AddHomeCasts = AddHomeCasts,
---     AddPrimaryAdvisor = AddPrimaryAdvisor,
---     StartFreeTime = StartFreeTime,
---     EndFreeTime = EndFreeTime,
---     IsFreeTimeActive = IsFreeTimeActive,
---     SupportScore = SupportScore,
---     OppositionScore = OppositionScore,
---     RandomBystanderCondition = RandomBystanderCondition,
---     CanVote = CanVote,
---     DoLocationUnlock = DoLocationUnlock,
---     GetWealth = GetWealth,
---     GetWealthString = GetWealthString,
---     GetWealthIcon = GetWealthIcon,
---     AddOppositionCast = AddOppositionCast,
---     GetWealthColor = GetWealthColor,
---     TryMainQuestFn = TryMainQuestFn,
---     DebugSupportScreen = DebugSupportScreen,
---     AddDebugBypass = AddDebugBypass,
---     AddAutofail = AddAutofail,
---     DetermineSupportTarget = DetermineSupportTarget,
---     ToFactionID = ToFactionID,
---     IsDemocracyCampaign = IsDemocracyCampaign,
---     DemocracyActFilter= DemocracyActFilter,
---     PresentRequestQuest = PresentRequestQuest,
---     CollectIssueImportance = CollectIssueImportance,
---     CheckHeavyHanded = CheckHeavyHanded,
---     AddDemandConvo = AddDemandConvo,
-
---     -- Demand generator stuff
---     demand_generator = demand_generator,
---     AddDemandModifier = demand_generator.AddDemandModifier,
---     GenerateDemands = demand_generator.GenerateDemands,
---     ParseDemandList = demand_generator.ParseDemandList,
--- }
