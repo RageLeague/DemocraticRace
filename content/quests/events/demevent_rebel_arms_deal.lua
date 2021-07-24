@@ -141,22 +141,20 @@ QDEF:AddConvo()
                 jakes:
                     Oh yeah? Screw you too for ruining my business.
             ]],
-            OPT_ARREST = "Ask {guard} to arrest them both for dealing with contrabands",
+            OPT_ARREST = "Confront them about dealing with contraband...",
             DIALOG_ARREST = [[
-                guard:
+                jakes:
                     !right
                 player:
                     !left
-                    [p] Look at those guys.
-                    Take them to the station, will ya?
-                guard:
-                    Thought you wouldn't ask.
-                    !left
-                rise:
-                    !right
-                guard:
-                    Aight, just come with me and we will make this simpler for both of us.
-                rise:
-                    Dang it!
+                    [p] Say, buddy chum friend pal amigo buddy.
+                    Selling weapons seems very illegal, don't you agree?
+                jakes:
+                {high_admiralty_support?
+                    And I suppose our friend of the switches doesn't like it?
+                }
+                {not high_admiralty_support?
+                    Oh yeah? What's it to you?
+                }
             ]],
         }
