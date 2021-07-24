@@ -1138,6 +1138,7 @@ function DemocracyUtil.GetBodyguards()
     end
     return candidates
 end
+
 function DemocracyUtil.AddBodyguardOpt(cxt, fn, opt_id)
     local candidates = DemocracyUtil.GetBodyguards()
     if candidates and #candidates > 0 then
@@ -1152,6 +1153,20 @@ function DemocracyUtil.AddBodyguardOpt(cxt, fn, opt_id)
             end)
         StateGraphUtil.AddBackButton(cxt)
     end
+end
+
+DemocracyUtil.EXCLUDED_WEAPONS = {
+    "makeshift_dagger", "makeshift_dagger_plus"
+}
+
+function DemocracyUtil.IsWeapon(card)
+    if not is_instance(card, Battle.Card) then
+        return false
+    end
+    if table.arraycontains(DemocracyUtil.EXCLUDED_WEAPONS, card.id) then
+        return false
+    end
+    return card:IsItemCard() card.min_damage and card.max_damage
 end
 
 local main_branch_id = 2291214111
