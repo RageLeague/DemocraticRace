@@ -201,6 +201,7 @@ QDEF:AddConvo()
                 if cxt.quest.param.no_money == nil then
                     cxt.quest.param.no_money = math.random() < 0.5
                 end
+                cxt.quest.param.high_admiralty_support = DemocracyUtil.GetFactionEndorsement("ADMIRALTY") > RELATIONSHIP.NEUTRAL
 
                 cxt:Dialog("DIALOG_INTRO")
             end
@@ -394,9 +395,16 @@ QDEF:AddConvo()
         :Loc{
             DIALOG_BACK = [[
                 player:
+                {tried_intimidate?
+                    I'm just kidding, of course.
+                jakes:
+                    Your terrible sense of humor is not appreciated.
+                }
+                {not tried_intimidate?
                     I'm just saying. You don't want the wrong person to see you do this stuff.
                 jakes:
                     Tell me something I didn't know already.
+                }
             ]],
             OPT_INTIMIDATE = "Intimidate them",
             DIALOG_INTIMIDATE = [[
@@ -470,6 +478,19 @@ QDEF:AddConvo()
                     }
                 }
             ]],
+            OPT_USE_BODYGUARD = "Let a bodyguard arrest them...",
+            DIALOG_USE_BODYGUARD = [[
+                player:
+                    [p] Well, you see...
+                * You gesture {guard}?
+                jakes:
+                    What? Where did that switch came from?
+                guard:
+                    !left
+                    You are really unobservant, are you?
+                    Anyway, you are coming with me!
+                * {guard} took them away.
+            ]],
         }
         :SetLooping(true)
         :Fn(function(cxt)
@@ -488,6 +509,8 @@ QDEF:AddConvo()
                     cxt:GetCastMember("jakes"):OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY, nil, hate_target)
                     cxt:GetCastMember("jakes"):Retire()
                 end
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10)
+                DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 10, "ADMIRALTY")
             end
 
             cxt:Opt("OPT_INTIMIDATE")
@@ -510,6 +533,7 @@ QDEF:AddConvo()
                         end)
 
             cxt:Opt("OPT_ARREST")
+                :UpdatePoliticalStance("SECURITY", 2)
                 :Dialog("DIALOG_ARREST")
                 :Battle{
                     enemies = {cxt:GetCastMember("jakes"), cxt:GetCastMember("rise")},
@@ -522,6 +546,14 @@ QDEF:AddConvo()
                             DoArrest(cxt)
                         end)
                         :Travel()
+
+            DemocracyUtil.AddBodyguardOpt(cxt, function(cxt, agent)
+                cxt:ReassignCastMember("guard", agent)
+                cxt:Dialog("DIALOG_USE_BODYGUARD")
+                agent:Dismiss()
+                DoArrest(cxt, agent)
+                StateGraphUtil.AddLeaveLocation(cxt)
+            end, nil, function(agent) return agent:GetFactionID() == "ADMIRALTY" end)
 
             cxt:Opt("OPT_BACK_BUTTON")
                 :Dialog("DIALOG_BACK")
