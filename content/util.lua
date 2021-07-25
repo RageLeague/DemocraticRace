@@ -1166,7 +1166,7 @@ function DemocracyUtil.IsWeapon(card)
     if table.arraycontains(DemocracyUtil.EXCLUDED_WEAPONS, card.id) then
         return false
     end
-    return card:IsItemCard() card.min_damage and card.max_damage
+    return card:IsItemCard() and card.min_damage and card.max_damage
 end
 
 local main_branch_id = 2291214111

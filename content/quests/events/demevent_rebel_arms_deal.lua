@@ -390,3 +390,141 @@ QDEF:AddConvo()
                 :ReceiveOpinion(OPINION.RID_ANNOYING_CUSTOMER, nil, "jakes")
                 :Travel()
         end)
+    :State("STATE_ARREST")
+        :Loc{
+            DIALOG_BACK = [[
+                player:
+                    I'm just saying. You don't want the wrong person to see you do this stuff.
+                jakes:
+                    Tell me something I didn't know already.
+            ]],
+            OPT_INTIMIDATE = "Intimidate them",
+            DIALOG_INTIMIDATE = [[
+                player:
+                    [p] You are both under arrest!
+                    It would be easier for all of us if you just submit quietly.
+            ]],
+            DIALOG_INTIMIDATE_SUCCESS = [[
+                jakes:
+                    [p] Fine! I'll take my chances with the Admiralty.
+                * You send them both to the nearest Admiralty patrol.
+            ]],
+            DIALOG_INTIMIDATE_FAILURE = [[
+                jakes:
+                    [p] Yeah? What are you going to do about it?
+                    Your whining doesn't give you power to arrest people, you know?
+                * {jakes.HeShe}'s right, you know.
+            ]],
+            OPT_ARREST = "Arrest them with force",
+            DIALOG_ARREST = [[
+                player:
+                {tried_intimidate?
+                    [p] Well, I tried using words and it didn't work.
+                    Well I will just...
+                }
+                {not tried_intimidate?
+                    [p] You are both under arrest!
+                jakes:
+                    Oh we are doing this, huh?
+                }
+            ]],
+            DIALOG_ARREST_WIN = [[
+                {jakes_dead?
+                    {rise_dead?
+                        * [p] Knowing that you killed two criminals makes you proud.
+                        * Their friends are not going to like you, and it puts the legitimacy of your campaign into question.
+                        * You left the scene.
+                    }
+                    {not rise_dead?
+                        rise:
+                            !right
+                            !injured
+                            [p] Look at what you've done! Where can I get my weapons now?
+                        player:
+                            You don't have to worry about that anymore.
+                            As I said, you are under arrest.
+                            Come quietly or you will suffer the same fate.
+                        * You send the rise to the nearest Admiralty patrol.
+                    }
+                }
+                {not jakes_dead?
+                    {rise_dead?
+                        jakes:
+                            !injured
+                            [p] You bastard!
+                            Look at what you've done!
+                        player:
+                            This one resisted arrest.
+                            It's not my fault.
+                            Come quietly or you will suffer the same fate.
+                        * You send the jakes to the nearest Admiralty patrol.
+                    }
+                    {not rise_dead?
+                        jakes:
+                            !injured
+                        player:
+                            [p] So? Are you going to come quietly? Or do you want some more?
+                        jakes:
+                            Fine! I'll take my chances with the Admiralty.
+                        * You send them both to the nearest Admiralty patrol.
+                    }
+                }
+            ]],
+        }
+        :SetLooping(true)
+        :Fn(function(cxt)
+            if cxt:FirstLoop() then
+                cxt.quest.param.did_confront = true
+            end
+
+            local function DoArrest(cxt, hate_target)
+                if cxt:GetCastMember("rise"):IsAlive() then
+                    cxt:GetCastMember("rise"):GainAspect("stripped_influence", 5)
+                    cxt:GetCastMember("rise"):OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY, nil, hate_target)
+                    cxt:GetCastMember("rise"):Retire()
+                end
+                if cxt:GetCastMember("jakes"):IsAlive() then
+                    cxt:GetCastMember("jakes"):GainAspect("stripped_influence", 5)
+                    cxt:GetCastMember("jakes"):OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY, nil, hate_target)
+                    cxt:GetCastMember("jakes"):Retire()
+                end
+            end
+
+            cxt:Opt("OPT_INTIMIDATE")
+                :Dialog("DIALOG_INTIMIDATE")
+                :UpdatePoliticalStance("SECURITY", 2)
+                :Negotiation{
+                    flags = NEGOTIATION_FLAGS.ALLY_SCARE | NEGOTIATION_FLAGS.INTIMIDATION,
+                    fight_allies = {cxt:GetCastMember("rise")},
+                }
+                    :OnSuccess()
+                        :Dialog("DIALOG_INTIMIDATE_SUCCESS")
+                        :Fn(function(cxt)
+                            DoArrest(cxt)
+                        end)
+                        :Travel()
+                    :OnSuccess()
+                        :Dialog("DIALOG_INTIMIDATE_FAILURE")
+                        :Fn(function(cxt)
+                            cxt.quest.param.tried_intimidate = true
+                        end)
+
+            cxt:Opt("OPT_ARREST")
+                :Dialog("DIALOG_ARREST")
+                :Battle{
+                    enemies = {cxt:GetCastMember("jakes"), cxt:GetCastMember("rise")},
+                }
+                    :OnWin()
+                        :Fn(function(cxt)
+                            cxt.quest.param.jakes_dead = cxt:GetCastMember("jakes"):IsDead()
+                            cxt.quest.param.rise_dead = cxt:GetCastMember("rise"):IsDead()
+                            cxt:Dialog("DIALOG_ARREST_WIN")
+                            DoArrest(cxt)
+                        end)
+                        :Travel()
+
+            cxt:Opt("OPT_BACK_BUTTON")
+                :Dialog("DIALOG_BACK")
+                :Pop()
+                :MakeUnder()
+        end)
