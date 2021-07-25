@@ -245,7 +245,7 @@ QDEF:AddConvo()
                         end)
                         :Travel()
                     :OnFailure()
-                        :Dialog("DIALOG_CONVINCE_PAY_FAILURE")
+                        :Dialog("DIALOG_CONVINCE_DONATE_FAILURE")
                         :Fn(function(cxt)
                             cxt:GetCastMember("jakes"):OpinionEvent(OPINION.SUGGEST_UNREASONABLE_REQUEST)
                         end)
@@ -262,9 +262,11 @@ QDEF:AddConvo()
                         cxt:GetCastMember("jakes"):OpinionEvent(OPINION.ATTEMPT_TO_RUIN_BUSINESS)
                     end)
 
-            cxt:Opt("OPT_ARREST")
-                :Dialog("DIALOG_ARREST")
-                :GoTo("STATE_ARREST")
+            if not cxt.quest.param.did_confront then
+                cxt:Opt("OPT_ARREST")
+                    :Dialog("DIALOG_ARREST")
+                    :GoTo("STATE_ARREST")
+            end
 
             cxt:Opt("OPT_LEAVE")
                 :Dialog("DIALOG_LEAVE")
@@ -517,6 +519,7 @@ QDEF:AddConvo()
                 :Dialog("DIALOG_INTIMIDATE")
                 :UpdatePoliticalStance("SECURITY", 2)
                 :Negotiation{
+                    target_agent = cxt:GetCastMember("jakes"),
                     flags = NEGOTIATION_FLAGS.ALLY_SCARE | NEGOTIATION_FLAGS.INTIMIDATION,
                     fight_allies = {cxt:GetCastMember("rise")},
                 }
@@ -526,7 +529,7 @@ QDEF:AddConvo()
                             DoArrest(cxt)
                         end)
                         :Travel()
-                    :OnSuccess()
+                    :OnFailure()
                         :Dialog("DIALOG_INTIMIDATE_FAILURE")
                         :Fn(function(cxt)
                             cxt.quest.param.tried_intimidate = true
