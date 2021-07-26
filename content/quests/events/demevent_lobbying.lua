@@ -72,5 +72,7 @@ QDEF:AddConvo()
                     weightings[id] = data.importance
                 end
                 local chosen = weightedpick(weightings)
+                cxt.quest.param.chosen_issue = chosen
+                cxt.quest.param.chosen_stance = DemocracyConstants.issue_data[chosen]:GetAgentStanceIndex(cxt:GetCastMember("merchant"))
             end
         end)
