@@ -728,10 +728,10 @@ QDEF:AddConvo("tell_giver")
                 :OnFailure()
                     :Fn(function(cxt)
                         if cxt.enc.scratch.majority_share then
-                            cxt.quest.Fail()
+                            cxt.quest:Fail()
                         else
                             cxt.quest.param.poor_performance = true
-                            cxt.quest.Complete()
+                            cxt.quest:Complete()
                             ConvoUtil.GiveQuestRewards(cxt)
                         end
                     end)
@@ -740,10 +740,10 @@ QDEF:AddConvo("tell_giver")
                 :Dialog("DIALOG_BRUSH_OFF")
                 :Fn(function(cxt)
                     if cxt.enc.scratch.majority_share then
-                        cxt.quest.Fail()
+                        cxt.quest:Fail()
                     else
                         cxt.quest.param.poor_performance = true
-                        cxt.quest.Complete()
+                        cxt.quest:Complete()
                         ConvoUtil.GiveQuestRewards(cxt)
                     end
                 end)
