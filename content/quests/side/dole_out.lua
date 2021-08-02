@@ -135,10 +135,6 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
                     Yeah.
                     Plenty of people only care about what is in front of them, and if you give them something to eat, they will just support you.
             }
-            {not has_primary_advisor?
-                player:
-                    [p] I say thing.
-            }
         ]],
     }
     :State("START")
@@ -182,8 +178,9 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
 QDEF:AddConvo("dole_out_three")
     :Loc{
         DIALOG_SATISFIES_CONDITIONS = [[
-            agent:
-                What do you want? why do you have bread?
+            player:
+                Hey there, friend. I have something to give you.
+            * You hand them some of the bread.
         ]],
         OPT_GIVE_BREAD = "Give bread",
         REQ_HAVE_BREAD = "You don't have any dole loaves",
@@ -191,7 +188,6 @@ QDEF:AddConvo("dole_out_three")
         SELECT_TITLE = "Select a card",
         SELECT_DESC = "Choose a dole loaf to gift to this person, consuming 1 use on it.",
     }
-        --this is the randomizer. for some reason the option part doesn't work for some reason, but i'll fix that at some point
     :Hub(function(cxt, who)
         if who and CanFeed(who, cxt.quest) then
             cxt.quest.param.gifted_people = cxt.quest.param.gifted_people or {}
@@ -228,7 +224,7 @@ QDEF:AddConvo("dole_out_three")
                         if card:IsSpent() then
                             cxt.player.battler:RemoveCard( card )
                         end
-
+                        -- Wumpus; Huh. Didn't know Weighted Pick was an option for the code. That shrank a lot of the code bloat that I had...hopefully I keep that in mind when the need arises. 
                         local weight = {
                             STATE_PANHANDLER = 1,
                             STATE_GRATEFUL = 3,
@@ -248,42 +244,34 @@ QDEF:AddConvo("dole_out_three")
     :State("STATE_PANHANDLER")
         :Loc{
             DIALOG_PAN_HANDLE = [[
-                * [p] You find {agent} sitting on the side of the road, sullen.
-                player:
-                    Hey there friend. You want a loaf of Dole Bread?
                 agent:
-                    I wouldn't say no to free bread.
-                    although...this isn't really covering rent.
+                    Ah, some of this...
                 player:
-                    What do you mean? Do you need money?
+                    Is something the matter?
                 agent:
-                    Well, yes. I wouldn't force you to not give me money.
-                    But i'm also not NOT forcing you to give me money.
+                    Just...i've been eating this for the past...how long?
+                    Wish I could have something else...
             ]],
             OPT_GIVE = "Give them some Shills",
             DIALOG_GIVE = [[
                 player:
-                    Well, I suppose I'll have a lot more money when i'm in office.
-                    Here's a bit of cash. Hope it sees you through to tommorrow.
+                    Well, let them never say I'm not benevolent.
+                    !give
                 agent:
-                    Wow. I'll be honest, I did not expect that to work.
-                    Thank you so much!
+                    !take
+                    Oh wow! This is more than I make in a week!
+                    Thanks, {player}!
             ]],
             OPT_NO_MONEY = "Give them the bread...then a wide berth",
             DIALOG_NO_MONEY = [[
-            player:
-                My sympathies, but I am not the most flush as well.
-                When i get into office, I will make sure this kind of thing doesn't happen again.
-            agent:
-                sure...
+                player:
+                    My sympathies, I have been in the same position as you before.
+                agent:
+                    I mean...it's fine, it's fine. Thank you for the food, regardless.
             ]],
         }
         :Fn(function(cxt)
-            --these bricks of code here and the other parts are not needed. the main function/thing/rig-a-ma-jig does this work for it without multiple cast roles on one character
-            --if who and not AgentUtil.HasPlotArmour(who) and (who:GetFactionID() == "FEUD_CITIZEN" and who:GetRenown() >= 2) or (who:GetFactionID() == "RISE" and who:GetRenown() >= 2)
-                --and not (who:GetProprietor()) then
-            --cxt:Opt("OPT_GIVE_BREAD")
-            --cxt.quest:AssignCastMember("pan", cxt:GetAgent())
+            
             cxt:Dialog("DIALOG_PAN_HANDLE")
             table.insert(cxt.quest.param.gifted_people, cxt:GetAgent())
             cxt:Opt("OPT_GIVE")
@@ -297,38 +285,35 @@ QDEF:AddConvo("dole_out_three")
                 :DoneConvo()
                 -- :CompleteQuest("feed_pan")
         end)
-    --I have probably gotten needlessly fancy with this section. At least compared to the others.
+    --Wumpus; I have probably gotten needlessly fancy with this section. At least compared to the others.
     :State("STATE_POLITICAL")
         :Loc{
-            OPT_GIVE_BREAD = "[p] give bread",
             DIALOG_POLITICAL = [[
-                * You find {agent} staring at a poster for the Rise.
-                player:
-                    This oughta be easy support.
-                    Hello {agent}. Care for some Dole Bread?
-                agent:
-                    Sure. Say, this is rather helpful to the cause
+                    agent:
+                    Some of the poor man's food, sure i'll take it.
+                    Though...I wish people would not have to rely on the admiralty's food like this.
+                    !question
                     Are you in support of a UBI? So this kind of thing doesn't have to happen anymore?
             ]],
-            OPT_AGREE = "Agree to their ideas.",
+            OPT_AGREE = "Agree to {agent.hisher} ideas.",
             DIALOG_AGREE = [[
                 player:
                     Viva la Rise, am I right?
                 agent:
+                    !happy
                     Right you are!
                     It's been so long since I met a like-minded politician since Kalandra.
-                    And what about those taxes? They bleed the common man dry and keep on draining.
-                    You agree, right?
+                    And what about the working conditions of those who need it!
+                    We're told to work, work, work and barely make it out with our equipment and plunder.
             ]],
 
             OPT_DISAGREE = "Respectfully disagree with their opinions.",
             DIALOG_DISAGREE = [[
                 player:
-                    I don't believe my opinion on the topic is of import to this conversation.
+                    I don't think my opinion matters here.
                 agent:
-                    What are you saying?
-                    Do you mean you HATE welfare in all forms?
-                    Is that what you mean?
+                    What's so wrong about agreeing with this?
+                    Are you saying welfare is bad? Hm?
             ]],
         }
         :Fn(function(cxt)
@@ -348,8 +333,10 @@ QDEF:AddConvo("dole_out_three")
         :Loc{
             OPT_AGREE_2 = "Agree to their second stance.",
             DIALOG_AGREE_2 = [[
-                * You agree with their second issue.
-                * They absolutely love you. You don't know if anyone else will.
+                player:
+                    It makes no sense to have people work, work, work like they do now.
+                agent:
+                    Thank you! 
             ]],
             OPT_DISAGREE_2 = "Tell them you don't agree with the second stance.",
             DIALOG_DISAGREE_2 = [[
@@ -380,12 +367,13 @@ QDEF:AddConvo("dole_out_three")
             OPT_CALM_DOWN = "Tell them how wrong they are.",
             DIALOG_CALM_DOWN = [[
                 player:
+                    !crossed
                     Now that isn't what I meant by it and you know it.
             ]],
             DIALOG_CALM_DOWN_SUCCESS = [[
                 player:
                     Do my actions not demonstrate my beliefs?
-                    I risked my neck by nabbing bags of these for the people of Havaria.
+                    I came to you to help you the people of Havaria who need help.
                 agent:
                     I geuss that's true.
                     Pardon, I'm not great at taking rejection for my ideas.
@@ -394,7 +382,7 @@ QDEF:AddConvo("dole_out_three")
                 agent:
                     Can't. I got to get to my next shift.
                 player:
-                    Well good luck for you, and enjoy the bread
+                    Well good luck for you, and enjoy the bread.
             ]],
             DIALOG_CALM_DOWN_FAIL = [[
                 agent:
@@ -406,7 +394,7 @@ QDEF:AddConvo("dole_out_three")
                 agent:
                     Get out of my face, you filthy capitalist. You'll profit no longer from this mere worker.
             ]],
-            OPT_IGNORE = "Ignore their complaints, part 1.",
+            OPT_IGNORE = "Ignore their complaints",
             DIALOG_IGNORE = [[
                 * You put on the best poker face you can manage.
                 * It doesn't help.
@@ -443,15 +431,41 @@ QDEF:AddConvo("dole_out_three")
                 * You start telling them exactly how wrong they are, to put it bluntly.
             ]],
             DIALOG_CALM_DOWN_2_SUCCESS = [[
-                * You successfully defuse their arguments.
+                player:
+                    How do you think elections are won?
+                agent:
+                    !angrypoint
+                    With strong morals and vigor!
+                player:
+                    And look at how much the Rise has gotten done with just "strong morals" and "vigor".
+                    My opinions are not made public because I wish to reach office, and that requires the support of the enemy as well.
+                agent:
+                    !question
+                    So...You're trying to use guile?
+                player:
+                    !point
+                    Yes! And if you go around telling people not to vote for your allies-
+                agent:
+                    !placate
+                    The point was made a while ago. Didn't realize I was talking to an Ally.
+                    If that's what you want, I suppose. But I will have my eye on you.
             ]],
             DIALOG_CALM_DOWN_2_FAIL = [[
-                * You unsuccessfully defuse their arguments. If anything you gave them more ammo.
+                player:
+                    I can't exactly change the business practices of an entire corporation.
+                agent:
+                    !angryshrug
+                    Of course you can! You would be the President!
+                    Emphasis on the "would", because I am certainly not voting for <i> you</> now!
             ]],
             OPT_IGNORE_2 = "Ignore their complaints.",
             DIALOG_IGNORE_2 = [[
-                * You ignore their verbal bashing.
-                * You don't know if they have any influence, because what influence they do have is now against you.
+                player:
+                    !crossed
+                    You are jumping to conclusions quite quickly.
+                agent:
+                    Am I? Or am I pointing out your hypocrisy to the voters?
+                    * You turn your heel and walk away.
             ]],
         }
         :Fn(function(cxt)
@@ -477,16 +491,15 @@ QDEF:AddConvo("dole_out_three")
     :State("STATE_UNGRATEFUL")
         :Loc{
             DIALOG_UNGRATE = [[
-                * You approach {agent} and hand them a loaf of bread
-                * They look down at it and scowl
                 agent:
-                    [p] yeah no i'm way too tired for this.
-                    blah blah blah screw you.
+                    Do you believe I can't afford my own food?
+                    I'll have you know I don't stand for this kind of pandering.
             ]],
             OPT_CONVINCE = "Try to calm them down",
             DIALOG_CONVINCE = [[
                 player:
-                    [p] Have you considered not doing that, hm?
+                    Well, you don't have to stand to this kind of "pandering".
+                    What you could stand for is someone showing you decency.
             ]],
             DIALOG_CONVINCE_SUCCESS = [[
                 player:
@@ -548,6 +561,7 @@ QDEF:AddConvo("dole_out_three")
                     Thanks!
             ]],
             -- Bringing someone just for gifting them is extremely op, so we just repurpose this to be the default response.
+            -- I really should've worked on this more...My idea was they would come with you and you'd have a harder encounter with admiralty later on because they're with you.
             -- OPT_BRING_ALONG = "Let them tag along for a while.",
             -- DIALOG_BRING_ALONG = [[
             --     player:
@@ -589,11 +603,16 @@ QDEF:AddConvo("dole_out_three", "primary_advisor")
         OPT_ASK_MONEY = "Ask for funds for buying the loaves",
         DIALOG_ASK_MONEY = [[
             player:
-                [p] You can't expect me to pay using my own money.
+                I'm a bit short on cash, {primary_advisor}.
+            agent:
+                Is that my problem?
+            player:
+                It's just that you did suggest this...can't exactly do anything if I don't have the proper funds...
         ]],
         DIALOG_ASK_MONEY_SUCCESS = [[
-            agent:
-                [p] Fine. Take it.
+            agent:  
+                Hmph. Take a few shills.
+                I expect results, though. You'd better deliver.
         ]],
         DIALOG_ASK_MONEY_FAILURE = [[
             agent:
@@ -631,9 +650,14 @@ QDEF:AddConvo("go_to_advisor", "primary_advisor")
         ]],
         DIALOG_NO_GIFT = [[
             player:
-                [p] I gifted no one.
+                Well...I kind of got scoffed at when I tried.
             agent:
-                Wow you suck.
+                !question
+                Tried? Or did you just putz around and waste all of our time?
+            player:
+                Er...it's more complicated than that.
+            agent:
+                No. No it's not.
         ]],
         DIALOG_ONE_GIFT = [[
             player:
