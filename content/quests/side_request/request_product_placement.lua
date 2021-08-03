@@ -437,6 +437,11 @@ QDEF:AddConvo("tell_giver")
                             total_bonus = total_bonus + v
                         end
                         cxt.quest.param.share_price = cxt.quest.param.share_price + total_bonus
+                        cxt.quest.param.haggled_price = true
+                    end)
+                    :OnFailure()
+                    :Fn(function(cxt)
+                        cxt.quest.param.haggled_price = true
                     end)
             end
             cxt:Opt("OPT_SELL_THIRD")
