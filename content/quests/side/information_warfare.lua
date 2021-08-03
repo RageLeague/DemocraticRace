@@ -67,7 +67,7 @@ local QDEF = QuestDef.Define
         -- if quest.param.poor_performance then
         --     DemocracyUtil.DeltaGeneralSupport(2 * #quest.param.posted_location, "POOR_QUEST")
         -- else
-        local score = 3 * #quest.param.posted_location + 2 * quest.param.liked_people + quest.param.ignored_people
+        local score = 3 * (quest.param.posted_location and #quest.param.posted_location or 0) + 2 * (quest.param.liked_people or 0) + (quest.param.ignored_people or 0)
         DemocracyUtil.DeltaGeneralSupport(score, "COMPLETED_QUEST")
         -- end
     end,
