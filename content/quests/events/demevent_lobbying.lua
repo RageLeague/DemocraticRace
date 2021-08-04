@@ -84,42 +84,46 @@ QDEF:AddConvo()
 
             if haggle_count > 0 and not cxt.quest.param.haggled_money then
                 local won_bonuses = {10}
-                cxt:BasicNegotiation("ASK_FOR_MORE", {
-                    on_start_negotiation = function(minigame)
+                cxt:Opt("OPT_ASK_FOR_MORE")
+                    :Dialog("DIALOG_ASK_FOR_MORE")
+                    :Negotiation{
+                        on_start_negotiation = function(minigame)
 
-                        local amounts = {50, 20}
+                            local amounts = {50, 20}
 
-                        for i = 2, haggle_count do
-                            table.insert(amount, 60)
-                        end
+                            for i = 2, haggle_count do
+                                table.insert(amount, 60)
+                            end
 
-                        for k,amt in ipairs(amounts) do
-                            local mod = minigame.opponent_negotiator:CreateModifier( "bonus_payment", amt )
-                            mod.result_table = won_bonuses
-                        end
-                    end,
-                    reason_fn = function(minigame)
-                        local total_amt = 0
-                        for k,v in pairs(won_bonuses) do
-                            total_amt = total_amt + v
-                        end
-                        return loc.format(cxt:GetLocString("NEGOTIATION_REASON"), total_amt )
-                    end,
+                            for k,amt in ipairs(amounts) do
+                                local mod = minigame.opponent_negotiator:CreateModifier( "bonus_payment", amt )
+                                mod.result_table = won_bonuses
+                            end
+                        end,
+                        reason_fn = function(minigame)
+                            local total_amt = 0
+                            for k,v in pairs(won_bonuses) do
+                                total_amt = total_amt + v
+                            end
+                            return loc.format(cxt:GetLocString("NEGOTIATION_REASON"), total_amt )
+                        end,
 
-                    enemy_resolve_required = 10 * cxt.quest:GetRank(),
-                }):OnSuccess()
-                    :Fn(function(cxt)
-                        local total_bonus = 0
-                        for k,v in ipairs(won_bonuses) do
-                            total_bonus = total_bonus + v
-                        end
-                        cxt.quest.param.lobby_money = cxt.quest.param.lobby_money + total_bonus
-                        cxt.quest.param.haggled_money = true
-                    end)
+                        enemy_resolve_required = 10 * cxt.quest:GetRank(),
+                    }:OnSuccess()
+                        :Fn(function(cxt)
+                            local total_bonus = 0
+                            for k,v in ipairs(won_bonuses) do
+                                total_bonus = total_bonus + v
+                            end
+                            cxt.quest.param.lobby_money = cxt.quest.param.lobby_money + total_bonus
+                            cxt.quest.param.haggled_money = true
+                        end)
+                        :Dialog("DIALOG_ASK_FOR_MORE_SUCCESS")
                     :OnFailure()
-                    :Fn(function(cxt)
-                        cxt.quest.param.haggled_money = true
-                    end)
+                        :Fn(function(cxt)
+                            cxt.quest.param.haggled_money = true
+                        end)
+                        :Dialog("DIALOG_ASK_FOR_MORE_FAILURE")
             end
 
             cxt:Opt("OPT_ACCEPT")
