@@ -69,7 +69,18 @@ QDEF:AddConvo()
         }
         :SetLooping(true)
         :Fn(function(cxt)
-            cxt.quest:Complete()
+            if cxt:FirstLoop() then
+                cxt.quest:Complete()
+                cxt:TalkTo(cxt:GetCastMember("supporter"))
+                local questions = math.random(1, 3)
+                local weightings = {}
+                for id, data in pairs(DemocracyConstants.issue_data) do
+                    weightings[id] = data.importance
+                end
+                cxt.quest.param.issue_list = {}
+                while #cxt.quest.param.issue_list < questions do
+                end
+            end
         end)
     :State("STATE_EVADE")
         :Loc{
