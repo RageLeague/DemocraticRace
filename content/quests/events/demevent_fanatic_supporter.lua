@@ -16,6 +16,12 @@ local QDEF = QuestDef.Define
         table.insert( t, quest:CreateSkinnedAgent()
     end,
 }
+:AddOpinionEvents{
+    agree_full = {
+        delta = OPINION_DELTAS.MAJOR_GOOD,
+        txt = "Agree with them on every major issue",
+    },
+}
 QDEF:AddConvo()
     :ConfrontState("CONF")
         :Loc{
@@ -78,9 +84,38 @@ QDEF:AddConvo()
                     weightings[id] = data.importance
                 end
                 cxt.quest.param.issue_list = {}
-                while #cxt.quest.param.issue_list < questions do
+                cxt.quest.param.stance_list = {}
+                while #cxt.quest.param.issue_list < questions and table.count(weightings) > 0 do
+                    local chosen = weightedpick(weightings)
+                    local stance = DemocracyConstants.issue_data[chosen]:GetAgentStanceIndex(cxt:GetCastMember("supporter"))
+                    if stance != 0 then
+                        table.insert(cxt.quest.param.issue_list, chosen)
+                        table.insert(cxt.quest.param.stance_list, stance)
+                    end
+                    weightings[chosen] = nil
                 end
+                cxt.quest.param.current_issue_number = 1
+                cxt:Dialog("DIALOG_INTRO")
             end
+            if cxt.quest.param.current_issue_number > #cxt.quest.param.issue_list then
+                cxt:Dialog("DIALOG_FULL_AGREE")
+                cxt:GetCastMember("supporter"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("agree_full"))
+                StateGraphUtil.AddLeaveLocation(cxt)
+                return
+            end
+            cxt.quest.param.topic = cxt.quest.param.issue_list[cxt.quest.param.current_issue_number]
+            cxt.quest.param.stance = cxt.quest.param.topic .. "_" .. cxt.quest.param.stance_list[cxt.quest.param.current_issue_number]
+            cxt:Dialog("DIALOG_QUESTION", cxt.quest.param.current_issue_number)
+
+            cxt:Opt("OPT_AGREE")
+                :Dialog("DIALOG_AGREE")
+                :UpdatePoliticalStance(cxt.quest.param.topic, cxt.quest.param.stance_list[cxt.quest.param.current_issue_number])
+                :Fn(function(cxt)
+                    cxt.quest.param.current_issue_number = cxt.quest.param.current_issue_number + 1
+                end)
+
+            cxt:Opt("OPT_EVADE")
+                :GoTo("STATE_EVADE")
         end)
     :State("STATE_EVADE")
         :Loc{
@@ -124,3 +159,11 @@ QDEF:AddConvo()
                     There is no hiding of your hatred of the Havarian people.
             ]],
         }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_EVADE")
+
+            cxt:Opt("OPT_DISAGREE")
+                :Dialog("DIALOG_DISAGREE")
+                :OpinionEvent(OPINION.DISLIKE_IDEOLOGY)
+                :Travel()
+        end)
