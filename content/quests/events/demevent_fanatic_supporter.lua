@@ -93,4 +93,23 @@ QDEF:AddConvo()
                     Wow that's a straightforward answer.
                     And my straightforward is that I dislike you now.
             ]],
+            OPT_JUSTIFY = "Justify the silence",
+            DIALOG_JUSTIFY = [[
+                player:
+                    [p] Agree or not, there is one thing for certain...
+            ]],
+            DIALOG_JUSTIFY_SUCCESS = [[
+                player:
+                    [p] Everyone is entitled to their own opinion.
+                    But one thing everyone wants: to unite Havaria.
+                supporter:
+                    Okay, those are a lot of words, but it sounds like you have good reasons.
+                    Well, I can continue support you!
+            ]],
+            DIALOG_JUSTIFY_FAILURE = [[
+                supporter:
+                    [p] Say no more.
+                    I know how it really is.
+                    There is no hiding of your hatred of the Havarian people.
+            ]],
         }
