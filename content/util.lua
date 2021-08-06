@@ -883,6 +883,9 @@ end
 function DemocracyUtil.GetWealthEndorsement(wealth)
     return DemocracyUtil.GetEndorsement(DemocracyUtil.GetVoterIntentionIndex{wealth = wealth})
 end
+function DemocracyUtil.GetAgentEndorsement(agent)
+    return DemocracyUtil.GetEndorsement(DemocracyUtil.GetVoterIntentionIndex{agent = agent})
+end
 function DemocracyUtil.CalculatePartyStrength(members)
     if is_instance(members, Party) then
         members = members:GetMembers()
