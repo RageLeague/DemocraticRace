@@ -814,7 +814,7 @@ function DemocracyUtil.GetVoterIntentionIndex(data)
     local faction, wealth
     if data.agent then
         faction = data.agent:GetFactionID()
-        wealth = DemocracyUtil.GetWealth(agent)
+        wealth = DemocracyUtil.GetWealth(data.agent)
     end
     if data.faction then
         faction = type(data.faction) == "string" and data.faction or data.faction.id

@@ -13,7 +13,7 @@ local QDEF = QuestDef.Define
 }
 :AddCastFallback{
     cast_fn = function(quest, t)
-        table.insert( t, quest:CreateSkinnedAgent()
+        table.insert( t, quest:CreateSkinnedAgent())
     end,
 }
 :AddOpinionEvents{
@@ -88,7 +88,7 @@ QDEF:AddConvo()
                 while #cxt.quest.param.issue_list < questions and table.count(weightings) > 0 do
                     local chosen = weightedpick(weightings)
                     local stance = DemocracyConstants.issue_data[chosen]:GetAgentStanceIndex(cxt:GetCastMember("supporter"))
-                    if stance != 0 then
+                    if stance ~= 0 then
                         table.insert(cxt.quest.param.issue_list, chosen)
                         table.insert(cxt.quest.param.stance_list, stance)
                     end
