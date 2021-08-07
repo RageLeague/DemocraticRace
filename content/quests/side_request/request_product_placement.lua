@@ -437,6 +437,11 @@ QDEF:AddConvo("tell_giver")
                             total_bonus = total_bonus + v
                         end
                         cxt.quest.param.share_price = cxt.quest.param.share_price + total_bonus
+                        cxt.quest.param.haggled_price = true
+                    end)
+                    :OnFailure()
+                    :Fn(function(cxt)
+                        cxt.quest.param.haggled_price = true
                     end)
             end
             cxt:Opt("OPT_SELL_THIRD")
@@ -624,6 +629,9 @@ QDEF:AddConvo("tell_giver")
                 if cxt.quest.param.sell_share >= 3 then
                     cxt:GetAgent():OpinionEvent(OPINION.BETRAYED)
                     cxt.quest:Fail()
+                    if cxt:GetAgent() == TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") then
+                        DemocracyUtil.UpdateAdvisor(nil, "ADVISOR_REJECTED")
+                    end
                     StateGraphUtil.AddEndOption(cxt)
                 elseif cxt.quest.param.sell_share == 2 and cxt:GetAgent():GetContentID() == "ADVISOR_DIPLOMACY" then
                     cxt.quest:Fail()

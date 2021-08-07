@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.3.1(Alpha)
+Version: 0.3.2(Alpha)
 
 Author: RageLeague
 
@@ -100,6 +100,12 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Sei Bellissima
 
 ## Changelog
+
+### 0.3.2
+
+* The advisor now kicks you out if you do something really bad in a certain request.
+* After haggling during said request, the option now disappears.
+* Fix softlock where the game is unable to progress on day 3 while you have an advisor.
 
 ### 0.3.1
 
