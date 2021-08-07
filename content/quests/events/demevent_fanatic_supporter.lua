@@ -8,7 +8,7 @@ local QDEF = QuestDef.Define
     cast_id = "supporter",
     condition = function(agent, quest)
         return agent:GetRelationship() >= RELATIONSHIP.NEUTRAL and agent:GetRelationship() < RELATIONSHIP.LOVED
-            and DemocracyUtil.GetAgentEndorsement(agent) >= RELATIONSHIP.NEUTRAL
+            and DemocracyUtil.GetAgentEndorsement(agent) > RELATIONSHIP.NEUTRAL
     end,
 }
 :AddCastFallback{
