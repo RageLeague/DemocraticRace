@@ -166,4 +166,11 @@ QDEF:AddConvo()
                 :Dialog("DIALOG_DISAGREE")
                 :OpinionEvent(OPINION.DISLIKE_IDEOLOGY)
                 :Travel()
+            cxt:BasicNegotiation("JUSTIFY", {
+
+            }):OnSuccess()
+                :Travel()
+            :OnFailure()
+                :OpinionEvent(OPINION.DISLIKE_IDEOLOGY)
+                :Travel()
         end)
