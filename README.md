@@ -8,8 +8,6 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 Version: 0.3.0(Alpha)
 
-(Experimental version can be found here: https://steamcommunity.com/sharedfiles/filedetails/?id=2503106782)
-
 Author: RageLeague
 
 Load order:
