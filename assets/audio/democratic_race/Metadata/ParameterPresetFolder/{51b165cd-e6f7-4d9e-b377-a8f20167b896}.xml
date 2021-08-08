@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="ParameterPresetFolder" id="{51b165cd-e6f7-4d9e-b377-a8f20167b896}">
+        <property name="name">
+            <value>adaptive_battle</value>
+        </property>
+        <relationship name="folder">
+            <destination>{f525c01e-2134-4ef9-95ab-d428b7332220}</destination>
+        </relationship>
+    </object>
+</objects>

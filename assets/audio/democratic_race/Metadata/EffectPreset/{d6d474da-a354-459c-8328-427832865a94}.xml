@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="EffectPreset" id="{d6d474da-a354-459c-8328-427832865a94}">
+		<property name="name">
+			<value>Assassin2_Delay</value>
+		</property>
+		<relationship name="folder">
+			<destination>{9ed6b965-4e1e-0fc1-26bf-d4f5cb3e1c10}</destination>
+		</relationship>
+		<relationship name="effect">
+			<destination>{72e3be0b-7768-4c4d-88b7-8b0283417125}</destination>
+		</relationship>
+	</object>
+	<object class="DelayEffect" id="{72e3be0b-7768-4c4d-88b7-8b0283417125}">
+		<property name="delay">
+			<value>26</value>
+		</property>
+		<property name="feedback">
+			<value>29.5</value>
+		</property>
+	</object>
+</objects>

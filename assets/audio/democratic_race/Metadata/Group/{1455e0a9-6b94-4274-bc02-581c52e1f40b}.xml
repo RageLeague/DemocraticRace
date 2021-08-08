@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="MixerGroup" id="{1455e0a9-6b94-4274-bc02-581c52e1f40b}">
+		<property name="name">
+			<value>spreeLowClassFemale01</value>
+		</property>
+		<relationship name="masters">
+			<destination>{97f4f4f6-909c-40a4-8eef-d72dca9bc4e0}</destination>
+		</relationship>
+		<relationship name="effectChain">
+			<destination>{5a174ee1-8ba9-4c8c-8722-dcbb9ad201b0}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{9ccdaf25-be43-42a7-8b7e-aa4da2a8d367}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{d4554cde-635f-4777-921b-5ef4fea94819}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{5a174ee1-8ba9-4c8c-8722-dcbb9ad201b0}">
+		<relationship name="effects">
+			<destination>{52bb06c5-c680-403f-98d9-2cf89788c4b5}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{9ccdaf25-be43-42a7-8b7e-aa4da2a8d367}" />
+	<object class="MixerBusFader" id="{52bb06c5-c680-403f-98d9-2cf89788c4b5}" />
+</objects>

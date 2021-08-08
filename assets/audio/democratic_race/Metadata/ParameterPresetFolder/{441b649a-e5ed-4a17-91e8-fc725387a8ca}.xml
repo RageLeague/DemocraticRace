@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="ParameterPresetFolder" id="{441b649a-e5ed-4a17-91e8-fc725387a8ca}">
+        <property name="name">
+            <value>Migration Name Conflict (2)</value>
+        </property>
+        <relationship name="folder">
+            <destination>{9669a4ac-c0f7-06ed-26f9-151e7b74837a}</destination>
+        </relationship>
+    </object>
+</objects>

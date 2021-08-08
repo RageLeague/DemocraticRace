@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="ParameterPreset" id="{6da8540c-ea8e-45d7-9538-d79485eeb05f}">
+		<property name="name">
+			<value>perk_level</value>
+		</property>
+		<relationship name="folder">
+			<destination>{9669a4ac-c0f7-06ed-26f9-151e7b74837a}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{5a364719-0e0d-42aa-955c-f4db78ab5de0}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{5a364719-0e0d-42aa-955c-f4db78ab5de0}">
+		<property name="maximum">
+			<value>6</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="ParameterPreset" id="{7336cc5e-915e-0312-2442-cfbf963b3578}">
+		<property name="name">
+			<value>time_of_day</value>
+		</property>
+		<relationship name="folder">
+			<destination>{9669a4ac-c0f7-06ed-26f9-151e7b74837a}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{33320afe-19d4-4015-93e1-0c0564b0f6d9}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{33320afe-19d4-4015-93e1-0c0564b0f6d9}">
+		<property name="minimum">
+			<value>1</value>
+		</property>
+		<property name="maximum">
+			<value>3</value>
+		</property>
+		<property name="initialValue">
+			<value>1</value>
+		</property>
+		<property name="isExposedRecursively">
+			<value>false</value>
+		</property>
+	</object>
+</objects>

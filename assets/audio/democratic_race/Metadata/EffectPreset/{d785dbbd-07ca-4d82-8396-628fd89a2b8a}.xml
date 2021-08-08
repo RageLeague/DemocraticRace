@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="EffectPreset" id="{d785dbbd-07ca-4d82-8396-628fd89a2b8a}">
+		<property name="name">
+			<value>Mask Delay</value>
+		</property>
+		<relationship name="folder">
+			<destination>{9ed6b965-4e1e-0fc1-26bf-d4f5cb3e1c10}</destination>
+		</relationship>
+		<relationship name="effect">
+			<destination>{5a6aed24-c51d-418c-b2b7-26ff1e8edd1a}</destination>
+		</relationship>
+	</object>
+	<object class="DelayEffect" id="{5a6aed24-c51d-418c-b2b7-26ff1e8edd1a}">
+		<property name="delay">
+			<value>30</value>
+		</property>
+		<property name="feedback">
+			<value>54</value>
+		</property>
+		<property name="level">
+			<value>-20</value>
+		</property>
+	</object>
+</objects>

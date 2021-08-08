@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="ParameterPresetFolder" id="{453738ed-a2aa-48e6-a713-3495a472104b}">
+        <property name="name">
+            <value>gen_zoomedout</value>
+        </property>
+        <relationship name="folder">
+            <destination>{eeed431a-cd7b-4ac8-a64c-89192243cb70}</destination>
+        </relationship>
+    </object>
+</objects>

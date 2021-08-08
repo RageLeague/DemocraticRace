@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="EffectPreset" id="{3735eaa3-4981-49a3-bdde-55f0cb7a8814}">
+		<property name="name">
+			<value>Jarackles_Distortion</value>
+		</property>
+		<relationship name="folder">
+			<destination>{9ed6b965-4e1e-0fc1-26bf-d4f5cb3e1c10}</destination>
+		</relationship>
+		<relationship name="effect">
+			<destination>{837c1b5a-e205-4fb6-92f8-1e28b1a68e04}</destination>
+		</relationship>
+	</object>
+	<object class="DistortionEffect" id="{837c1b5a-e205-4fb6-92f8-1e28b1a68e04}">
+		<property name="level">
+			<value>0.305000007</value>
+		</property>
+		<relationship name="automators">
+			<destination>{1a851915-15f8-42ba-9fcf-163827e08440}</destination>
+		</relationship>
+	</object>
+	<object class="Automator" id="{1a851915-15f8-42ba-9fcf-163827e08440}">
+		<property name="nameOfPropertyBeingAutomated">
+			<value>level</value>
+		</property>
+		<relationship name="automationCurves">
+			<destination>{8430a132-7dac-478e-9fb3-08bf67d237ae}</destination>
+		</relationship>
+	</object>
+	<object class="AutomationCurve" id="{8430a132-7dac-478e-9fb3-08bf67d237ae}">
+		<relationship name="parameter">
+			<destination>{1f94b512-d2fa-406a-a9cb-e759bd78707a}</destination>
+		</relationship>
+		<relationship name="automationPoints">
+			<destination>{7cf3c329-cd09-4349-9bb7-3c107c9b97bb}</destination>
+			<destination>{538748c5-c197-48dd-b1c4-7161c38992cb}</destination>
+			<destination>{a58bfb78-890d-4a8d-a590-5d561df0ac1a}</destination>
+			<destination>{0659c119-434e-4a03-a5b4-46b0cb430bb8}</destination>
+			<destination>{d40346cb-be7f-4688-b8e8-d038d1fb9d05}</destination>
+		</relationship>
+	</object>
+	<object class="AutomationPoint" id="{7cf3c329-cd09-4349-9bb7-3c107c9b97bb}">
+		<property name="position">
+			<value>2.5551537070524413</value>
+		</property>
+		<property name="value">
+			<value>0</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{538748c5-c197-48dd-b1c4-7161c38992cb}">
+		<property name="position">
+			<value>4.5515370705244127</value>
+		</property>
+		<property name="value">
+			<value>0</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{a58bfb78-890d-4a8d-a590-5d561df0ac1a}">
+		<property name="position">
+			<value>3.5045207956600364</value>
+		</property>
+		<property name="value">
+			<value>0</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{0659c119-434e-4a03-a5b4-46b0cb430bb8}">
+		<property name="position">
+			<value>4.0036166365280286</value>
+		</property>
+		<property name="value">
+			<value>0.199054867</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{d40346cb-be7f-4688-b8e8-d038d1fb9d05}">
+		<property name="position">
+			<value>3.0705244122965643</value>
+		</property>
+		<property name="value">
+			<value>0</value>
+		</property>
+	</object>
+</objects>

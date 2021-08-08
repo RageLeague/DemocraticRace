@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="MixerGroup" id="{a0491c49-fa9b-4feb-a20d-7ae2016460eb}">
+		<property name="volume">
+			<value>-6</value>
+		</property>
+		<property name="name">
+			<value>narration</value>
+		</property>
+		<relationship name="effectChain">
+			<destination>{c7450000-2d65-4a18-a46b-5d62f15c92b6}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{e8b2f366-cca1-4838-b3da-42abce9a48c2}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{e59fca29-36f5-485c-89f7-b9d99dc36c98}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{c7450000-2d65-4a18-a46b-5d62f15c92b6}">
+		<relationship name="effects">
+			<destination>{0fa72e84-e26d-4040-92c5-f1245a8e0d0f}</destination>
+			<destination>{cddec637-46b5-4b26-b563-c0f36cd74951}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{e8b2f366-cca1-4838-b3da-42abce9a48c2}" />
+	<object class="MixerBusFader" id="{0fa72e84-e26d-4040-92c5-f1245a8e0d0f}" />
+	<object class="Sidechain" id="{cddec637-46b5-4b26-b563-c0f36cd74951}" />
+</objects>

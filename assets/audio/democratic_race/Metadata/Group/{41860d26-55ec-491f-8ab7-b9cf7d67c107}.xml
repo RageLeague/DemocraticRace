@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="MixerGroup" id="{41860d26-55ec-491f-8ab7-b9cf7d67c107}">
+		<property name="name">
+			<value>lellynfellemo</value>
+		</property>
+		<relationship name="effectChain">
+			<destination>{76293014-cc5b-4d65-ae28-4ab6f3328f24}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{181dcbf4-b8d2-4167-904f-23f08061ee4c}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{4d383eb2-1f41-41b0-89c6-a441e4ae2f84}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{76293014-cc5b-4d65-ae28-4ab6f3328f24}">
+		<relationship name="effects">
+			<destination>{21b2928b-8cf2-4c00-a427-5c0ed7000037}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{181dcbf4-b8d2-4167-904f-23f08061ee4c}" />
+	<object class="MixerBusFader" id="{21b2928b-8cf2-4c00-a427-5c0ed7000037}" />
+</objects>

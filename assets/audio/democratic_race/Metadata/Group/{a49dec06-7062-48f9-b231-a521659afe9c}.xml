@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="MixerGroup" id="{a49dec06-7062-48f9-b231-a521659afe9c}">
+		<property name="name">
+			<value>spreeLowClassMale01</value>
+		</property>
+		<relationship name="effectChain">
+			<destination>{edd77edc-e259-417b-8319-87e89da56342}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{967848b2-81ed-4f3d-a24d-ca758bf97847}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{4d383eb2-1f41-41b0-89c6-a441e4ae2f84}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{edd77edc-e259-417b-8319-87e89da56342}">
+		<relationship name="effects">
+			<destination>{77323a07-c78d-44dc-95ff-904dd3c3bd60}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{967848b2-81ed-4f3d-a24d-ca758bf97847}" />
+	<object class="MixerBusFader" id="{77323a07-c78d-44dc-95ff-904dd3c3bd60}" />
+</objects>
