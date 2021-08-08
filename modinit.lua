@@ -224,10 +224,10 @@ local function OnPreLoad( mod )
         end
     end
     if (Content.GetModSetting(mod, "enable_audio_debug") or 0) > 0 then
-        AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.strings.bank", false)
+        AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Democratic Race.strings.bank", false)
         -- local audiobank = AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", false)
         -- I guess we are loading it synchronously. Too complicated to do async
-        AUDIO:MountModdedAudioBank("DEMOCRATICRACE", "DEMOCRATICRACE:assets/audio/Master.bank")
+        AUDIO:MountModdedAudioBank("DEMOCRATICRACE", "DEMOCRATICRACE:assets/audio/Democratic Race.bank")
 
         print("Load bank?")
         -- AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", false)
