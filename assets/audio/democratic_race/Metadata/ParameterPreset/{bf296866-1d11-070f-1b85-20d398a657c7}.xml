@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="ParameterPreset" id="{bf296866-1d11-070f-1b85-20d398a657c7}">
+		<property name="name">
+			<value>time_of_day</value>
+		</property>
+		<relationship name="folder">
+			<destination>{f2ce9361-8036-4740-a638-7514d7921ea7}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{ff2daec6-959b-4408-ac26-e3696a2d9466}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{ff2daec6-959b-4408-ac26-e3696a2d9466}">
+		<property name="seekSpeed">
+			<value>0.20000000298023224</value>
+		</property>
+		<property name="isExposedRecursively">
+			<value>false</value>
+		</property>
+	</object>
+</objects>

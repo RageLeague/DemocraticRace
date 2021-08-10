@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="MixerGroup" id="{a2b1b294-cea2-4020-a905-5b4aa6e0c2ac}">
+		<property name="name">
+			<value>composure_destroy_enemy</value>
+		</property>
+		<relationship name="effectChain">
+			<destination>{4460b969-3cb6-4624-b61f-88981ae16c6a}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{32646efc-4651-4264-8789-c8f0b2a9ae0a}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{49414ffd-e266-409c-870c-f8b736234a79}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{4460b969-3cb6-4624-b61f-88981ae16c6a}">
+		<relationship name="effects">
+			<destination>{6c390e3c-6a0b-40c3-9356-4a2aa3e95e9a}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{32646efc-4651-4264-8789-c8f0b2a9ae0a}" />
+	<object class="MixerBusFader" id="{6c390e3c-6a0b-40c3-9356-4a2aa3e95e9a}" />
+</objects>

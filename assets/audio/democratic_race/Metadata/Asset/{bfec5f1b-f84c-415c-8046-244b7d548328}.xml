@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="EncodableAsset" id="{bfec5f1b-f84c-415c-8046-244b7d548328}">
+		<property name="assetPath">
+			<value>IRs/</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{17cadd5c-cea2-4d50-8772-d61ad4bcd422}</destination>
+		</relationship>
+	</object>
+</objects>

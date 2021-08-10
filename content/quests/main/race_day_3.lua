@@ -435,27 +435,6 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         end)
 
 QDEF:AddConvo("get_job")
-    :ConfrontState("STATE_CONFRONT", function(cxt)
-        if not cxt.quest:GetCastMember("primary_advisor") then
-            cxt.quest:AssignCastMember("primary_advisor")
-        end
-        return not (cxt.quest:GetCastMember("primary_advisor") and true or false)
-    end)
-    :Loc{
-        DIALOG_INTRO = [[
-            player:
-                !left
-                !thought
-                $neutralThoughtful
-                Here's what I can do...
-            ]],
-
-    }
-    :RunLoopingFn(function(cxt)
-        cxt:Dialog("DIALOG_INTRO")
-        DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB")
-    end)
-QDEF:AddConvo("get_job")
     :Loc{
         OPT_GET_JOB = "Find a way to gather support...",
         DIALOG_GET_JOB = [[
@@ -478,6 +457,25 @@ QDEF:AddConvo("get_job")
                     DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB")
                 end)
         end
+    end)
+QDEF:AddConvo("get_job", "primary_advisor")
+    :Loc{
+        OPT_GET_JOB = "Discuss Job...",
+        DIALOG_GET_JOB = [[
+            agent:
+                !thought
+                $neutralThoughtful
+                Here's what we can do...
+        ]],
+    }
+    :Hub(function(cxt)
+        cxt:Opt("OPT_GET_JOB")
+            :SetQuestMark( cxt.quest )
+            :PostText("TT_SKIP_FREE_TIME")
+            :Dialog("DIALOG_GET_JOB")
+            :LoopingFn(function(cxt)
+                DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB", true)
+            end)
     end)
 QDEF:AddConvo("go_to_sleep", "primary_advisor")
     :Loc{

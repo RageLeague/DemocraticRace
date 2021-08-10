@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="MixerGroup" id="{4d7bd604-64ff-4bc9-82f6-9daf37e3366a}">
+		<property name="name">
+			<value>kashio</value>
+		</property>
+		<relationship name="masters">
+			<destination>{97f4f4f6-909c-40a4-8eef-d72dca9bc4e0}</destination>
+		</relationship>
+		<relationship name="effectChain">
+			<destination>{cb593448-4ddc-4033-bb08-217086354d0e}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{c29c4874-a241-42b3-93a3-ee3609e02560}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{d4554cde-635f-4777-921b-5ef4fea94819}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{cb593448-4ddc-4033-bb08-217086354d0e}">
+		<relationship name="effects">
+			<destination>{e35c06fe-a9a2-4f34-b5a1-6376230cbf6c}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{c29c4874-a241-42b3-93a3-ee3609e02560}" />
+	<object class="MixerBusFader" id="{e35c06fe-a9a2-4f34-b5a1-6376230cbf6c}" />
+</objects>

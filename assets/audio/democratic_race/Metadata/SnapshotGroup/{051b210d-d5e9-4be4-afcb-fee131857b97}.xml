@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="SnapshotList" id="{051b210d-d5e9-4be4-afcb-fee131857b97}">
+		<relationship name="items">
+			<destination>{c381a53e-e519-483b-80d9-c205300331d0}</destination>
+			<destination>{d37552d8-43d9-4db0-9309-6b5093554514}</destination>
+			<destination>{6f40f4ed-ee2b-4e51-a0d5-94decdc571f1}</destination>
+			<destination>{21d26ff5-d043-4e37-878a-d4b93b6cafa4}</destination>
+			<destination>{c60ebf72-30b6-498a-b9a0-75678ebce9d3}</destination>
+			<destination>{efd26a7b-790c-4f38-9fbb-d93f21ea8b36}</destination>
+			<destination>{203f2fec-82aa-489f-bf3c-1c3fd7ae2a58}</destination>
+			<destination>{045a934f-0540-495d-951b-b72565664de5}</destination>
+			<destination>{cb5c4c9c-17fe-44fb-a0c8-1686d96e1f28}</destination>
+			<destination>{d3999713-e058-4e1b-86e2-c3d96db8beb2}</destination>
+			<destination>{9069192f-5069-4f20-ae96-505f1cdf0066}</destination>
+			<destination>{36715583-9cd5-4fa3-8199-098a55f65f77}</destination>
+			<destination>{d0417af4-5a99-4600-b61a-367346e75868}</destination>
+			<destination>{f5bcce5e-79e2-4425-9938-aa136504c312}</destination>
+			<destination>{19b49398-7457-4182-8f01-6511f4d1a653}</destination>
+			<destination>{678fc721-43ed-4241-bdf1-a85a8ac55507}</destination>
+			<destination>{fdcb1f29-5773-4e35-a472-51a995837aeb}</destination>
+			<destination>{5bd198d7-6a85-45c0-b035-ebc32aaa8e8b}</destination>
+			<destination>{c802d9e0-affe-46b0-a674-978e50badfb6}</destination>
+			<destination>{00bfd2a1-6465-4e96-a1a1-b23d7bb0ca29}</destination>
+			<destination>{db683c0b-4a0e-45d2-ad47-88739b28fe4c}</destination>
+			<destination>{4f9fe2b3-7f0a-4359-ac60-8a5af441c10c}</destination>
+			<destination>{d4ecb782-0eed-4471-beeb-6350a8d3af6b}</destination>
+			<destination>{7941a5ed-3697-4aab-863c-c45cbe8e360b}</destination>
+			<destination>{65b5312c-989c-435e-852f-079100ebee1b}</destination>
+		</relationship>
+		<relationship name="mixer">
+			<destination>{1306fe9d-558f-4939-8f5c-f5b0d2733c1a}</destination>
+		</relationship>
+	</object>
+</objects>

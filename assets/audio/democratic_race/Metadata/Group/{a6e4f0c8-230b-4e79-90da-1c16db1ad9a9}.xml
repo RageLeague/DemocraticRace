@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="MixerGroup" id="{a6e4f0c8-230b-4e79-90da-1c16db1ad9a9}">
+		<property name="name">
+			<value>mysteriousstranger</value>
+		</property>
+		<relationship name="effectChain">
+			<destination>{583e13a5-7726-43e9-bca8-9957bd455b50}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{8709f0c6-91f8-4f7d-bf5d-6989b144eaed}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{4d383eb2-1f41-41b0-89c6-a441e4ae2f84}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{583e13a5-7726-43e9-bca8-9957bd455b50}">
+		<relationship name="effects">
+			<destination>{3572cd79-db07-4efc-80d8-10ba90184ba8}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{8709f0c6-91f8-4f7d-bf5d-6989b144eaed}" />
+	<object class="MixerBusFader" id="{3572cd79-db07-4efc-80d8-10ba90184ba8}" />
+</objects>

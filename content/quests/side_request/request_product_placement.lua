@@ -437,6 +437,11 @@ QDEF:AddConvo("tell_giver")
                             total_bonus = total_bonus + v
                         end
                         cxt.quest.param.share_price = cxt.quest.param.share_price + total_bonus
+                        cxt.quest.param.haggled_price = true
+                    end)
+                    :OnFailure()
+                    :Fn(function(cxt)
+                        cxt.quest.param.haggled_price = true
                     end)
             end
             cxt:Opt("OPT_SELL_THIRD")
@@ -624,6 +629,9 @@ QDEF:AddConvo("tell_giver")
                 if cxt.quest.param.sell_share >= 3 then
                     cxt:GetAgent():OpinionEvent(OPINION.BETRAYED)
                     cxt.quest:Fail()
+                    if cxt:GetAgent() == TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") then
+                        DemocracyUtil.UpdateAdvisor(nil, "ADVISOR_REJECTED")
+                    end
                     StateGraphUtil.AddEndOption(cxt)
                 elseif cxt.quest.param.sell_share == 2 and cxt:GetAgent():GetContentID() == "ADVISOR_DIPLOMACY" then
                     cxt.quest:Fail()
@@ -728,10 +736,10 @@ QDEF:AddConvo("tell_giver")
                 :OnFailure()
                     :Fn(function(cxt)
                         if cxt.enc.scratch.majority_share then
-                            cxt.quest.Fail()
+                            cxt.quest:Fail()
                         else
                             cxt.quest.param.poor_performance = true
-                            cxt.quest.Complete()
+                            cxt.quest:Complete()
                             ConvoUtil.GiveQuestRewards(cxt)
                         end
                     end)
@@ -740,10 +748,10 @@ QDEF:AddConvo("tell_giver")
                 :Dialog("DIALOG_BRUSH_OFF")
                 :Fn(function(cxt)
                     if cxt.enc.scratch.majority_share then
-                        cxt.quest.Fail()
+                        cxt.quest:Fail()
                     else
                         cxt.quest.param.poor_performance = true
-                        cxt.quest.Complete()
+                        cxt.quest:Complete()
                         ConvoUtil.GiveQuestRewards(cxt)
                     end
                 end)

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="MixerGroup" id="{a0651007-8476-4558-af2f-270c6234f99f}">
+		<property name="name">
+			<value>sleepytime</value>
+		</property>
+		<relationship name="effectChain">
+			<destination>{ffa5e9fc-54de-4db5-8107-bf7ab1685632}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{36676040-b55f-414d-b27e-3d4800e99e36}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{a0491c49-fa9b-4feb-a20d-7ae2016460eb}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{ffa5e9fc-54de-4db5-8107-bf7ab1685632}">
+		<relationship name="effects">
+			<destination>{7d3aa05b-ac22-4c4e-9188-b85610f3b9f7}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{36676040-b55f-414d-b27e-3d4800e99e36}" />
+	<object class="MixerBusFader" id="{7d3aa05b-ac22-4c4e-9188-b85610f3b9f7}" />
+</objects>

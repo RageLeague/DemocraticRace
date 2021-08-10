@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="MixerGroup" id="{f2e8c69f-9df7-4796-bf2a-07937d38da20}">
+		<property name="name">
+			<value>robot2_broken</value>
+		</property>
+		<relationship name="effectChain">
+			<destination>{f7692084-fd36-4d5e-bcb8-29b1c71b790d}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{5ea22a35-2907-4def-9ad7-4dfce381e93d}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{4d383eb2-1f41-41b0-89c6-a441e4ae2f84}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{f7692084-fd36-4d5e-bcb8-29b1c71b790d}">
+		<relationship name="effects">
+			<destination>{ea21a78a-125a-4d7a-a6ce-eeaa1522da28}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{5ea22a35-2907-4def-9ad7-4dfce381e93d}" />
+	<object class="MixerBusFader" id="{ea21a78a-125a-4d7a-a6ce-eeaa1522da28}" />
+</objects>

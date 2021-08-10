@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="MixerGroup" id="{b1a6d163-37df-4b82-817f-aaeb3a75ac9d}">
+		<property name="name">
+			<value>sparkbaronHighClassFemale01</value>
+		</property>
+		<relationship name="effectChain">
+			<destination>{88934a58-ffe2-4bf0-bcd0-2070f61a50ea}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{9a61279a-3467-466e-af14-7500cd4154df}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{4d383eb2-1f41-41b0-89c6-a441e4ae2f84}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{88934a58-ffe2-4bf0-bcd0-2070f61a50ea}">
+		<relationship name="effects">
+			<destination>{b423f0f7-c281-4f11-804f-acb3ac3bc1a8}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{9a61279a-3467-466e-af14-7500cd4154df}" />
+	<object class="MixerBusFader" id="{b423f0f7-c281-4f11-804f-acb3ac3bc1a8}" />
+</objects>

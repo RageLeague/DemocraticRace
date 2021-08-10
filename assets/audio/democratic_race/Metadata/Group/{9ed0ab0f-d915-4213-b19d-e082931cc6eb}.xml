@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="MixerGroup" id="{9ed0ab0f-d915-4213-b19d-e082931cc6eb}">
+		<property name="name">
+			<value>fssh</value>
+		</property>
+		<relationship name="effectChain">
+			<destination>{d129ac5d-78eb-489f-ad6b-30292ed1ef3d}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{d3e458dc-f405-424b-a522-21fb426adadf}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{4d383eb2-1f41-41b0-89c6-a441e4ae2f84}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{d129ac5d-78eb-489f-ad6b-30292ed1ef3d}">
+		<relationship name="effects">
+			<destination>{be886a7c-88ec-447d-8e38-3bbad33bf6cc}</destination>
+			<destination>{8cfe70ca-2498-43f3-a42d-2aceb011e18e}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{d3e458dc-f405-424b-a522-21fb426adadf}" />
+	<object class="MixerBusFader" id="{be886a7c-88ec-447d-8e38-3bbad33bf6cc}" />
+	<object class="MultibandEqEffect" id="{8cfe70ca-2498-43f3-a42d-2aceb011e18e}">
+		<property name="filterTypeA">
+			<value>4</value>
+		</property>
+		<property name="frequencyA">
+			<value>100</value>
+		</property>
+		<property name="qualityA">
+			<value>0.439999998</value>
+		</property>
+	</object>
+</objects>

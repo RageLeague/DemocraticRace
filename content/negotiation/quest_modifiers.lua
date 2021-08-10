@@ -2173,6 +2173,7 @@ local MODIFIERS =
     {
         name = "Eldritch Existence",
         desc = "At the end of the player turn, for each card remaining in their hand, target argument takes {1} damage.",
+        icon = "DEMOCRATICRACE:assets/modifiers/eldritch_existence.png",
 
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetDamageMultiplier())
@@ -2184,7 +2185,7 @@ local MODIFIERS =
             return self.multiplier_scale[math.min(#self.multiplier_scale, GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1)]
         end,
 
-        multiplier_scale = {1, 1, 1, 2},
+        multiplier_scale = {1, 1, 2, 2},
 
         target_enemy = TARGET_ANY_RESOLVE,
         min_persuasion = 0,
@@ -2219,6 +2220,7 @@ local MODIFIERS =
     {
         name = "Comb Bearer",
         desc = "At the start of the player's turn, after drawing, a random card in their hand costs 1 extra action and gains {STICKY} until this argument is removed.",
+        icon = "DEMOCRATICRACE:assets/modifiers/comb_bearer.png",
 
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
@@ -2291,6 +2293,9 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.retaliate_damage, self:GetOwnerName(), self.sting_bonus)
         end,
+
+        icon = "DEMOCRATICRACE:assets/modifiers/stinging_nettle.png",
+
         retaliate_damage = 1,
         sting_bonus = 2,
 

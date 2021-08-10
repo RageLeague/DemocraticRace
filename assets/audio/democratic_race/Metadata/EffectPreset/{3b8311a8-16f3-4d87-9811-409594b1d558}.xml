@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="EffectPreset" id="{3b8311a8-16f3-4d87-9811-409594b1d558}">
+		<property name="name">
+			<value>Mask EQ</value>
+		</property>
+		<relationship name="folder">
+			<destination>{9ed6b965-4e1e-0fc1-26bf-d4f5cb3e1c10}</destination>
+		</relationship>
+		<relationship name="effect">
+			<destination>{33638036-4cde-4a1c-952e-22c40463eea4}</destination>
+		</relationship>
+	</object>
+	<object class="MultibandEqEffect" id="{33638036-4cde-4a1c-952e-22c40463eea4}">
+		<property name="filterTypeA">
+			<value>2</value>
+		</property>
+		<property name="frequencyA">
+			<value>1720.45605</value>
+		</property>
+		<property name="qualityA">
+			<value>3.86206889</value>
+		</property>
+	</object>
+</objects>

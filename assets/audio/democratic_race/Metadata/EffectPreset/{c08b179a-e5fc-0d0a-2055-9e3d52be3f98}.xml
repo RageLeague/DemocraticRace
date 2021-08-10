@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="EffectPreset" id="{c08b179a-e5fc-0d0a-2055-9e3d52be3f98}">
+		<property name="name">
+			<value>FMOD 3-EQ</value>
+		</property>
+		<relationship name="folder">
+			<destination>{9ed6b965-4e1e-0fc1-26bf-d4f5cb3e1c10}</destination>
+		</relationship>
+		<relationship name="effect">
+			<destination>{ffedd863-ead8-4fc9-a185-9fca5e22e697}</destination>
+		</relationship>
+	</object>
+	<object class="ThreeEQEffect" id="{ffedd863-ead8-4fc9-a185-9fca5e22e697}">
+		<property name="lowGain">
+			<value>-7</value>
+		</property>
+		<property name="midGain">
+			<value>6.5</value>
+		</property>
+	</object>
+</objects>

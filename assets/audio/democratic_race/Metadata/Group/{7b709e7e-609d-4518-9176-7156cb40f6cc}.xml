@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="MixerGroup" id="{7b709e7e-609d-4518-9176-7156cb40f6cc}">
+		<property name="name">
+			<value>riseTurncoatBoss</value>
+		</property>
+		<relationship name="effectChain">
+			<destination>{28306986-63e6-46ce-8ca7-5ceb0f97244b}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{bdb8a284-16fb-49eb-b233-aacd893b553c}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{d4554cde-635f-4777-921b-5ef4fea94819}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{28306986-63e6-46ce-8ca7-5ceb0f97244b}">
+		<relationship name="effects">
+			<destination>{0d51a515-0d79-46ef-ac4e-450a0300b650}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{bdb8a284-16fb-49eb-b233-aacd893b553c}" />
+	<object class="MixerBusFader" id="{0d51a515-0d79-46ef-ac4e-450a0300b650}" />
+</objects>

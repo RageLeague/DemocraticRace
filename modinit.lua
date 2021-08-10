@@ -223,11 +223,11 @@ local function OnPreLoad( mod )
             Content.AddPOFileToLocalization(id, filepath)
         end
     end
-    if (Content.GetModSetting(mod, "enable_audio_debug") or 0) > 0 then
-        AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.strings.bank", false)
+    if true then
+        AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Democratic Race.strings.bank", false)
         -- local audiobank = AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", false)
         -- I guess we are loading it synchronously. Too complicated to do async
-        AUDIO:MountModdedAudioBank("DEMOCRATICRACE", "DEMOCRATICRACE:assets/audio/Master.bank")
+        AUDIO:MountModdedAudioBank("DEMOCRATICRACE", "DEMOCRATICRACE:assets/audio/Democratic Race.bank")
 
         print("Load bank?")
         -- AUDIO:LoadBank("DEMOCRATICRACE:assets/audio/Master.bank", false)
@@ -264,22 +264,22 @@ local MOD_OPTIONS =
             fn()
         end,
     },
-    {
-        title = "[Debug] Enable Audio For the Next Game",
-        spinner = true,
-        key = "enable_audio_debug",
-        default_value = 0,
-        values =
-        {
-            { name="Disable", desc="Disable custom audio loading. You will be unable to hear custom audio, but fast reloading is safe.", data = 0 },
-            { name="Enable Once", desc="Only load custom audio the next time the game is loaded. Reset to disabled after the next load.", data = 1 },
-            { name="Enable (Not Recommended)", desc="Always load custom audio. WARNING: Loading custom audio can sometimes cause the game to hard crash on fast reload. Enable at your own risk.", data = 2 },
-        }
-    },
+    -- {
+    --     title = "[Debug] Enable Audio For the Next Game",
+    --     spinner = true,
+    --     key = "enable_audio_debug",
+    --     default_value = 0,
+    --     values =
+    --     {
+    --         { name="Disable", desc="Disable custom audio loading. You will be unable to hear custom audio, but fast reloading is safe.", data = 0 },
+    --         { name="Enable Once", desc="Only load custom audio the next time the game is loaded. Reset to disabled after the next load.", data = 1 },
+    --         { name="Enable (Not Recommended)", desc="Always load custom audio. WARNING: Loading custom audio can sometimes cause the game to hard crash on fast reload. Enable at your own risk.", data = 2 },
+    --     }
+    -- },
 }
 -- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {
-    version = "0.3.0",
+    version = "0.3.2",
     alias = "DEMOCRATICRACE",
 
     OnLoad = OnLoad,
