@@ -1,5 +1,5 @@
 OPINION_DELTAS.TO_HATED = {
-    relationship_delta = 
+    relationship_delta =
     {
         [RELATIONSHIP.LOVED] = RELATIONSHIP.NEUTRAL,
         [RELATIONSHIP.LIKED] = RELATIONSHIP.NEUTRAL,
@@ -33,9 +33,25 @@ local OPINIONS = {
         delta = OPINION_DELTAS.BAD,
         txt = "Tried to provoke them into a fight",
     },
+    SUGGEST_UNREASONABLE_REQUEST = {
+        delta = OPINION_DELTAS.DIMINISH,
+        txt = "Suggested an unreasonable request",
+    },
+    ATTEMPT_TO_RUIN_BUSINESS = {
+        delta = OPINION_DELTAS.DISLIKE,
+        txt = "Attempted to ruin their business",
+    },
+    HELP_COMPLETE_DEAL = {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Help them complete a deal",
+    },
+    RID_ANNOYING_CUSTOMER = {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Got rid of an annoying customer",
+    },
     SUPPORT_EXPECTATION_S = {
         delta = {
-            relationship_delta = 
+            relationship_delta =
             {
                 [RELATIONSHIP.NEUTRAL] = RELATIONSHIP.LIKED,
                 [RELATIONSHIP.DISLIKED] = RELATIONSHIP.LIKED,
