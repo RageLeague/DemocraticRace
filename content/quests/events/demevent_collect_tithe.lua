@@ -60,11 +60,12 @@ QDEF:AddConvo()
                 agent:
                 {not paid_all?
                     [p] Nah, everyone pays tithes.
+                    Now pay up!
                 }
                 {paid_all?
                     [p] That's not enough.
+                    Looks like I'm gonna teach you a lesson!
                 }
-                    Now pay up!
             ]],
             OPT_NO_PAY = "Refuse to pay",
             DIALOG_NO_PAY = [[
@@ -83,7 +84,80 @@ QDEF:AddConvo()
                     Seems we will teach you a lesson here.
             ]],
 
+            SIT_MOD_BAD = "You have evaded paying tithes for a ridiculously long time",
+            SIT_MOD_PARTIAL = "You paid partial tithes",
         }
+        :SetLooping(true)
         :Fn(function(cxt)
-
+            if cxt:FirstLoop() then
+                cxt.quest:Complete()
+                cxt.enc.scratch.opfor = CreateCombatParty("ADMIRALTY_PATROL", cxt.quest:GetRank() + 1, cxt.location, true)
+                cxt:TalkTo(cxt.enc.scratch.opfor[1])
+                cxt:Dialog("DIALOG_INTRO")
+                cxt.quest.param.tithe = 200
+            end
+            local cost, modifier = CalculatePayment( cxt:GetAgent(), cxt.quest.param.tithe)
+            if not cxt.quest.param.paid_all then
+                if cost <= cxt.caravan:GetMoney() then
+                    cxt:Opt("OPT_PAY")
+                        :Dialog("DIALOG_PAY")
+                        :DeliverMoney(cxt.quest.param.tithe)
+                        :Travel()
+                else
+                    cxt:Opt("OPT_PAY_ALL")
+                        :Dialog("DIALOG_PAY_ALL")
+                        :DeliverMoney(cxt.caravan:GetMoney(), {no_scale = true})
+                        :Fn(function(cxt)
+                            cxt.quest.param.paid_all = true
+                            if cxt.quest.param.tried_negotiate then
+                                cxt:GoTo("STATE_DEFEND")
+                            end
+                        end)
+                end
+            end
+            if not cxt.quest.param.tried_negotiate then
+                cxt:BasicNegotiation("CONVINCE_EXEMPT", {
+                    situation_modifiers =
+                    {
+                        { value = 20, text = cxt:GetLocString("SIT_MOD_BAD") },
+                        cxt.quest.param.paid_all and { value = -30, text = cxt:GetLocString("SIT_MOD_PARTIAL") } or nil
+                    },
+                })
+                    :OnSuccess()
+                        :Travel()
+                    :OnFailure()
+                        :Fn(function(cxt)
+                            cxt.quest.param.tried_negotiate = true
+                            if cxt.quest.param.paid_all then
+                                cxt:GoTo("STATE_DEFEND")
+                            end
+                        end)
+            end
+            if not cxt.quest.param.paid_all then
+                cxt:Opt("OPT_NO_PAY")
+                    :Dialog("DIALOG_NO_PAY")
+                    :GoTo("STATE_DEFEND")
+            end
         end)
+    :State("STATE_DEFEND")
+        :Loc{
+            OPT_DEFEND = "Defend yourself!",
+            DIALOG_DEFEND = [[
+                player:
+                    [p] Let's dance!
+            ]],
+            DIALOG_DEFEND_WIN = [[
+                {dead?
+                    * [p] Well, I guess you are exempt after all.
+                }
+                {not dead?
+                    player:
+                        [p] Well? Do you still want my tithe?
+                    agent:
+                        Fine! You can keep your money.
+                        Know this: you made a grave enemy.
+                    player:
+                        Sure.
+                }
+            ]],
+        }
