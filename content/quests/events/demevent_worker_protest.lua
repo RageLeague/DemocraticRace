@@ -4,6 +4,18 @@ local QDEF = QuestDef.Define
     act_filter = DemocracyUtil.DemocracyActFilter,
     spawn_event_mask = QEVENT_TRIGGER.TRAVEL,
 }
+:AddOpinionEvents{
+    help_workers_go_back_to_work =
+    {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Help their workers get back to work",
+    },
+    get_better_conditions =
+    {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Help them get better working conditions",
+    },
+}
 
 -- Steal the code for food fight because the two events are very similar.
 QDEF:AddConvo()
@@ -37,7 +49,7 @@ QDEF:AddConvo()
             cxt.quest.param.barons =  CreateCombatParty("SPARK_BARON_PATROL", cxt.quest:GetRank(), cxt.location, true)
 
             -- Replace it with something else here
-            cxt.quest.param.workers =  CreateCombatParty("RISE_PATROL", cxt.quest:GetRank(), cxt.location, true)
+            cxt.quest.param.workers =  CreateCombatParty("DEMOCRACY_LABORERS", cxt.quest:GetRank(), cxt.location, true)
 
             cxt:ReassignCastMember("worker", cxt.quest.param.workers[1])
             cxt:ReassignCastMember("baron", cxt.quest.param.barons[1])
@@ -150,6 +162,7 @@ QDEF:AddConvo()
             cxt:Opt("OPT_THREATEN")
                 :Dialog("DIALOG_THREATEN")
                 :ReqCondition(not cxt.quest.param.convince_worker_compromise or cxt.quest.param.compromise_failed, "REQ_READY_TO_COMPROMISE" )
+                :UpdatePoliticalStance("LABOR_LAW", -2)
                 :Negotiation{
                     suppressed = {cxt.quest.param.barons[1] },
                     flags = NEGOTIATION_FLAGS.INTIMIDATION,
@@ -159,7 +172,7 @@ QDEF:AddConvo()
                             v:MoveToLimbo()
                         end
 
-                        cxt.quest.param.barons[1]:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("help_them_keep_skimming"))
+                        cxt.quest.param.barons[1]:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("help_workers_go_back_to_work"))
 
 
                         StateGraphUtil.AddLeaveLocation(cxt)
@@ -302,13 +315,14 @@ QDEF:AddConvo()
             cxt:Opt("OPT_THREATEN")
                 :ReqCondition(not cxt.quest.param.convince_baron_compromise or cxt.quest.param.compromise_failed, "REQ_READY_TO_COMPROMISE" )
                 :Dialog("DIALOG_THREATEN")
+                :UpdatePoliticalStance("LABOR_LAW", 2)
                 :Negotiation{
                     flags = NEGOTIATION_FLAGS.INTIMIDATION,
                     subject = cxt.quest.param.workers[1],
                     on_success = function()
                         cxt:Dialog("DIALOG_THREATEN_SUCCESS")
                         cxt.quest:Complete("deal_with_caffy")
-                        cxt.quest.param.workers[1]:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("got_them_extra_food"))
+                        cxt.quest.param.workers[1]:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("get_better_conditions"))
                         StateGraphUtil.AddLeaveLocation(cxt)
                     end,
 
@@ -367,5 +381,6 @@ QDEF:AddConvo()
         :Fn(function(cxt)
             cxt:Dialog( cxt:GetCastMember("right") == cxt.quest.param.workers[1] and "DIALOG_INTRO_WORKER" or "DIALOG_INTRO_BARON" )
             cxt:Dialog("DIALOG_INTRO_COMMON")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 4)
             StateGraphUtil.AddLeaveLocation(cxt)
         end)
