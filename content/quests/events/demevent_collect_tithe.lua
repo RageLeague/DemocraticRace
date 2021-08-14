@@ -14,6 +14,12 @@ local QDEF = QuestDef.Define
         return canspawn
     end,
 }
+:AddOpinionEvents{
+    refused_tithe = {
+        delta = OPINION_DELTAS.BAD,
+        txt = "Refused to pay the tithe",
+    },
+}
 QDEF:AddConvo()
     :ConfrontState("STATE_CONFRONT")
         :Loc{
@@ -26,7 +32,7 @@ QDEF:AddConvo()
                     Yo, you haven't been paying your tithe for about eleven years.
                     Pay up or face the wrath of Hesh.
             ]],
-            OPT_PAY = "Pay the tithe".
+            OPT_PAY = "Pay the tithe",
             DIALOG_PAY = [[
                 player:
                     [p] Alright, here is your tithe.
@@ -91,7 +97,7 @@ QDEF:AddConvo()
         :Fn(function(cxt)
             if cxt:FirstLoop() then
                 cxt.quest:Complete()
-                cxt.enc.scratch.opfor = CreateCombatParty("ADMIRALTY_PATROL", cxt.quest:GetRank() + 1, cxt.location, true)
+                cxt.enc.scratch.opfor = CreateCombatParty("HESH_PATROL", cxt.quest:GetRank() + 1, cxt.location, true)
                 cxt:TalkTo(cxt.enc.scratch.opfor[1])
                 cxt:Dialog("DIALOG_INTRO")
                 cxt.quest.param.tithe = 200
@@ -136,6 +142,7 @@ QDEF:AddConvo()
             if not cxt.quest.param.paid_all then
                 cxt:Opt("OPT_NO_PAY")
                     :Dialog("DIALOG_NO_PAY")
+                    :UpdatePoliticalStance("RELIGIOUS_POLICY", -2)
                     :GoTo("STATE_DEFEND")
             end
         end)
@@ -149,6 +156,7 @@ QDEF:AddConvo()
             DIALOG_DEFEND_WIN = [[
                 {dead?
                     * [p] Well, I guess you are exempt after all.
+                    * From this tithe. Not the consequences of your actions.
                 }
                 {not dead?
                     player:
@@ -161,3 +169,19 @@ QDEF:AddConvo()
                 }
             ]],
         }
+        :Fn(function(cxt)
+            cxt:Opt("OPT_DEFEND")
+                :Dialog("DIALOG_DEFEND")
+                :Battle{
+                    enemies = cxt.quest.param.opfor,
+                    flags = BATTLE_FLAGS.SELF_DEFENCE,
+                }
+                :OnWin()
+                    :Dialog("DIALOG_DEFEND_WIN")
+                    :Fn(function(cxt)
+                        if cxt:GetAgent():IsAlive() then
+                            cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("refused_tithe"))
+                        end
+                    end)
+                    :Travel()
+        end)

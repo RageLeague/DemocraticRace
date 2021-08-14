@@ -9,7 +9,7 @@ local QDEF = QuestDef.Define
         quest.param.assaulted_officer = TheGame:GetGameState():GetPlayerAgent():HasMemory("ASSAULTED_ADMIRALTY")
         if quest.param.assaulted_officer then
             quest.param.assaulted = true
-            
+
             canspawn = true
         end
         if DemocracyUtil.GetFactionEndorsement("ADMIRALTY") < RELATIONSHIP.NEUTRAL then
@@ -21,7 +21,7 @@ local QDEF = QuestDef.Define
 }
 :AddOpinionEvents{
 
-    resist_arrest =  
+    resist_arrest =
     {
         delta = OPINION_DELTAS.DISLIKE,
         txt = "Resisted Arrest",
