@@ -186,6 +186,7 @@ QDEF:AddConvo()
                 :Dialog("DIALOG_ACCEPT_PST")
                 :Fn(function(cxt)
                     -- Gain a special perk or something
+                    cxt.player.graft_owner:AddGraft( GraftInstance("perk_vaccinated") )
                 end)
                 :Travel()
             if not cxt.quest.param.asked_info then
