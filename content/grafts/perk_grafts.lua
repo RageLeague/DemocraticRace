@@ -11,11 +11,10 @@ local PERKS =
         name = "Vaccinated",
         desc = "You cannot gain parasite cards.",
         tier = 6,
-        unlock_cost = math.huge,
     }
 }
 
-local unlock_per_tier = { 1, 2, 3, 4, 5}
+local unlock_per_tier = { 1, 2, 3, 4, 5, math.huge }
 
 for id, graft in pairs( PERKS ) do
     graft.hidden = true
