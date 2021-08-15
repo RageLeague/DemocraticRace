@@ -96,6 +96,16 @@ QDEF:AddConvo()
                     Anyway, where it comes from doesn't matter.
                     What matters is that you take the vaccine, lest you get infected by the bog.
             ]],
+            DIALOG_CONVINCE_NO_INTEL = [[
+                agent:
+                    [p] Hesh has an unnatural ability to find a solution to deal with the threat.
+                    Is it that hard to believe?
+                player:
+                    Well...
+                agent:
+                    There you have it.
+                    That is the answer to where this vaccine comes from.
+            ]],
             DIALOG_CONVINCE_FAILURE = [[
                 player:
                     [p] Look, I'm just asking the questions.
@@ -144,6 +154,30 @@ QDEF:AddConvo()
             cxt:QST("ASK_INFESTATION")
             cxt:QST("ASK_VACCINE")
 
+            if cxt.enc.scratch.asked_questions["ASK_VACCINE"] then
+                cxt:Opt("OPT_CONVINCE")
+                    :Dialog("DIALOG_CONVINCE")
+                    :Negotiation{
+                        on_start_negotiation = function(minigame)
+                            -- for i = 1, 3 do
+                            minigame:GetOpponentNegotiator():CreateModifier( "secret_intel", 1 )
+                            -- end
+                        end,
+                        on_success = function(cxt, minigame)
+                            local count = minigame:GetPlayerNegotiator():GetModifierStacks( "secret_intel" )
+                            if count > 0 then
+                                cxt:Dialog("DIALOG_CONVINCE_SUCCESS")
+                                cxt.quest.param.asked_info = true
+                            else
+                                cxt:Dialog("DIALOG_CONVINCE_NO_INTEL")
+                            end
+                        end,
+                        on_fail = function(cxt, minigame)
+                            cxt:Dialog("DIALOG_CONVINCE_FAILURE")
+                        end,
+                    }
+            end
+
             local current_health, max_health = TheGame:GetGameState():GetPlayerAgent():GetHealth()
 
             cxt:Opt("OPT_ACCEPT")
@@ -154,10 +188,17 @@ QDEF:AddConvo()
                     -- Gain a special perk or something
                 end)
                 :Travel()
-
-            cxt:Opt("OPT_REFUSE")
-                :Dialog("DIALOG_REFUSE")
-                :UpdatePoliticalStance("RELIGIOUS_POLICY", -2)
-                :ReceiveOpinion("refused_vaccine")
-                :Travel()
+            if not cxt.quest.param.asked_info then
+                cxt:Opt("OPT_REFUSE")
+                    :Dialog("DIALOG_REFUSE")
+                    :UpdatePoliticalStance("RELIGIOUS_POLICY", -2)
+                    :ReceiveOpinion("refused_vaccine")
+                    :Travel()
+            else
+                cxt:Opt("OPT_REFUSE")
+                    :Dialog("DIALOG_REFUSE")
+                    -- :UpdatePoliticalStance("RELIGIOUS_POLICY", -2)
+                    -- :ReceiveOpinion("refused_vaccine")
+                    :Travel()
+            end
         end)
