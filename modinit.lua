@@ -106,7 +106,7 @@ local function OnLoad( mod )
     require "DEMOCRATICRACE:content/opinion_events"
     require "DEMOCRATICRACE:content/grifts"
     require "DEMOCRATICRACE:content/more_boon_services"
-
+    require "DEMOCRATICRACE:content/combat_parties"
     -- we load slides before we load act data. who knows what would happen if we didn't?
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:content/slides/", "*.lua", true )) do
         local name = filepath:match( "(.+)[.]lua$" )

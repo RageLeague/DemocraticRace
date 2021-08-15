@@ -43,6 +43,10 @@ QDEF:AddConvo()
             ]],
             OPT_TALK_TO_WORKER = "Talk to the lead worker",
             OPT_TALK_TO_BARON = "Talk to the Spark Baron",
+            OPT_LEAVE = "Leave before anyone sees you",
+            DIALOG_LEAVE = [[
+                * You've decided that you have better things to do.
+            ]],
         }
         :Fn(function(cxt)
             cxt.quest:Complete()
@@ -61,6 +65,10 @@ QDEF:AddConvo()
 
             cxt:Opt("OPT_TALK_TO_BARON")
                 :GoTo("STATE_TALK_TO_BARON")
+
+            cxt:Opt("OPT_LEAVE")
+                :Dialog("DIALOG_LEAVE")
+                :Travel()
         end)
 
 
@@ -146,6 +154,7 @@ QDEF:AddConvo()
                 player:
                     Hold that thought.
             ]],
+
             REQ_ALREADY_CONVINCED_TO_FIGHT = "{baron} is ready to fight",
             REQ_READY_TO_COMPROMISE = "{agent} is ready to compromise",
             REQ_COMPROMISE_FAILED = "Compromise is no longer an option",

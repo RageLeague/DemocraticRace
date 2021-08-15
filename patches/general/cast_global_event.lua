@@ -12,14 +12,14 @@ function QuestState:OnGlobalEvent(event_name, ...)
     for i, cast_def in ipairs(self:GetQuestDef():GetCastDefs()) do
         if cast_def.global_events then
             -- DBG(cast_def.global_events)
-            print("Cast", cast_def.cast_id, "of quest", self:GetContentID(), "has global event defined")
+            -- print("Cast", cast_def.cast_id, "of quest", self:GetContentID(), "has global event defined")
         end
         if cast_def.global_events and cast_def.global_events[event_name] then
-            print("Found global event:", event_name, "for:", cast_def.cast_id)
+            -- print("Found global event:", event_name, "for:", cast_def.cast_id)
             self:RunScriptHandler( cast_def.global_events[event_name], ... )
             return
         end
-        
+
     end
 end
 

@@ -120,7 +120,10 @@ local GENERATORS =
         return {"BOGGER_CULTIVATOR"}
     end,
 }
-
+local combat_parties = require "content/combat_parties"
 for id, generator in pairs(GENERATORS) do
+    print("Adding new combat party", id)
+
+    combat_parties[id] = generator
     AddCombatPartyDef(id, generator)
 end
