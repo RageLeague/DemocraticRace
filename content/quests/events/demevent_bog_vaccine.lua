@@ -154,7 +154,7 @@ QDEF:AddConvo()
             cxt:QST("ASK_INFESTATION")
             cxt:QST("ASK_VACCINE")
 
-            if cxt.enc.scratch.asked_questions["ASK_VACCINE"] then
+            if cxt.enc.scratch.asked_questions["OPT_ASK_VACCINE"] then
                 cxt:Opt("OPT_CONVINCE")
                     :Dialog("DIALOG_CONVINCE")
                     :Negotiation{
@@ -187,6 +187,9 @@ QDEF:AddConvo()
                 :Fn(function(cxt)
                     -- Gain a special perk or something
                     cxt.player.graft_owner:AddGraft( GraftInstance("perk_vaccinated") )
+
+                    -- Unlocks vaccinated perk for future runs
+                    TheGame:GetGameProfile():UnlockPerkWithoutPaying("perk_vaccinated")
                 end)
                 :Travel()
             if not cxt.quest.param.asked_info then
