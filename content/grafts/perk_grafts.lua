@@ -9,8 +9,25 @@ local PERKS =
     perk_vaccinated =
     {
         name = "Vaccinated",
-        desc = "You cannot gain parasite cards.",
+        desc = "When you gain a new parasite card, immediately remove it without health penalty.",
         tier = 6,
+
+        event_handlers =
+        {
+            [ "card_added" ] = function( self, card )
+                if is_instance(card, Negotiation.Card) then
+                    if CheckBits( card.flags, negotiation_defs.CARD_FLAGS.PARASITE ) then
+                        card.userdata.removed_safely = true
+                        self.owner.negotiator:RemoveCard(card)
+                    end
+                elseif is_instance(card, Battle.Card) then
+                    if CheckBits( card.flags, battle_defs.CARD_FLAGS.PARASITE ) then
+                        card.userdata.removed_safely = true
+                        self.owner.battler:RemoveCard(card)
+                    end
+                end
+            end,
+        },
     }
 }
 
