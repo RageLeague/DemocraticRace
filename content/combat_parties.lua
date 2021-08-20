@@ -117,7 +117,7 @@ local GENERATORS =
         if #candidates > 0 then
             return table.arraypick(candidates)
         end
-        return {"BOGGER_CULTIVATOR"}
+        return {"LABORER"}
     end,
 }
 local combat_parties = require "content/combat_parties"
@@ -125,5 +125,5 @@ for id, generator in pairs(GENERATORS) do
     print("Adding new combat party", id)
 
     combat_parties[id] = generator
-    AddCombatPartyDef(id, generator)
+    -- AddCombatPartyDef(id, generator)
 end

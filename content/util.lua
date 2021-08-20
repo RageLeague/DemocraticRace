@@ -1174,6 +1174,15 @@ function DemocracyUtil.IsWeapon(card)
     return card:IsItemCard() and card.min_damage and card.max_damage
 end
 
+DemocracyUtil.FIRST_AID_CARDS = {"combat_gauze", "salve", "healing_vapors", "bandage", "triage"}
+
+function DemocracyUtil.IsFirstAid(card)
+    if not is_instance(card, Battle.Card) then
+        return false
+    end
+    return table.arraycontains(DemocracyUtil.FIRST_AID_CARDS, card.id)
+end
+
 local main_branch_id = 2291214111
 local test_branch_id = 2503106782
 
