@@ -155,7 +155,13 @@ QDEF:AddConvo()
                     Hold that thought.
             ]],
 
-            REQ_ALREADY_CONVINCED_TO_FIGHT = "{baron} is ready to fight",
+            OPT_LEAVE = "Leave",
+            DIALOG_LEAVE = [[
+                player:
+                    Well, you guys have fun.
+                * You leave them to figure this among themselves.
+            ]],
+
             REQ_READY_TO_COMPROMISE = "{agent} is ready to compromise",
             REQ_COMPROMISE_FAILED = "Compromise is no longer an option",
         }
@@ -194,7 +200,6 @@ QDEF:AddConvo()
             cxt:Opt("OPT_COMPROMISE")
                 :PostText("TT_COMPROMISE")
                 :Dialog("DIALOG_COMPROMISE")
-                :ReqCondition(not cxt.quest.param.baron_convinced_fight, "REQ_ALREADY_CONVINCED_TO_FIGHT")
                 :ReqCondition(not cxt.quest.param.compromise_failed, "REQ_COMPROMISE_FAILED" )
                 :Negotiation{
                     suppressed = {cxt.quest.param.barons[1] },
@@ -214,6 +219,12 @@ QDEF:AddConvo()
             cxt:Opt("OPT_TALK_TO_BARON")
                 :Dialog("DIALOG_TALK_TO_BARON")
                 :GoTo("STATE_TALK_TO_BARON")
+
+            cxt:Opt("OPT_LEAVE")
+                :Dialog("DIALOG_LEAVE")
+                :ReceiveOpinion(OPINION.DID_NOT_HELP, cxt.quest.param.workers[1])
+                :ReceiveOpinion(OPINION.DID_NOT_HELP, cxt.quest.param.barons[1])
+                :Travel()
         end)
 
 
@@ -309,9 +320,16 @@ QDEF:AddConvo()
                 player:
                     Excuse me.
             ]],
+
+            OPT_LEAVE = "Leave",
+            DIALOG_LEAVE = [[
+                player:
+                    Well, you guys have fun.
+                * You leave them to figure this among themselves.
+            ]],
+
             REQ_READY_TO_COMPROMISE = "{baron} is ready to compromise",
             REQ_COMPROMISE_FAILED = "Compromise is no longer an option",
-
         }
         :SetLooping()
         :Fn(function(cxt)
@@ -343,7 +361,6 @@ QDEF:AddConvo()
             cxt:Opt("OPT_CONVINCE_COMPROMISE")
                 :Dialog("DIALOG_CONVINCE_COMPROMISE")
                 :PostText("TT_COMPROMISE")
-                :ReqCondition(not cxt.quest.param.baron_convinced_fight, "REQ_ALREADY_CONVINCED_TO_FIGHT")
                 :ReqCondition(not cxt.quest.param.compromise_failed, "REQ_COMPROMISE_FAILED" )
                 :Negotiation{
                     subject = cxt.quest.param.workers[1],
@@ -363,6 +380,12 @@ QDEF:AddConvo()
             cxt:Opt("OPT_TALK_TO_WORKER")
                 :Dialog("DIALOG_TALK_TO_WORKER")
                 :GoTo("STATE_TALK_TO_WORKER")
+
+            cxt:Opt("OPT_LEAVE")
+                :Dialog("DIALOG_LEAVE")
+                :ReceiveOpinion(OPINION.DID_NOT_HELP, cxt.quest.param.workers[1])
+                :ReceiveOpinion(OPINION.DID_NOT_HELP, cxt.quest.param.barons[1])
+                :Travel()
         end)
 
     :State("STATE_COMPROMISE")
