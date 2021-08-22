@@ -24,10 +24,16 @@ local CARDS = {
 
         hatch_fn = function( self, minigame )
             self:TransferCard( minigame.trash_deck )
-            self:Consume()
+
             local chosen_id = table.arraypick(self.available_hatch)
-            local card = Negotiation.Card( chosen_id, self.owner )
+            local card = self.owner.negotiator:LearnCard( chosen_id )
+            if self.userdata.linked_quest then
+                card.userdata.linked_quest = self.userdata.linked_quest
+                self.userdata.linked_quest.artifact_card = card
+            end
             minigame:DealCard( card, minigame:GetHandDeck( ) )
+
+            self:Consume()
         end,
 
         OnPostResolve = function( self, minigame )
