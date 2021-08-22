@@ -1,3 +1,5 @@
+local FOLLOW_QUEST
+
 local CURIO_CARD = "curious_curio"
 
 local QDEF = QuestDef.Define
@@ -36,6 +38,13 @@ QDEF:AddConvo()
                 :Dialog("DIALOG_TAKE")
                 :Fn(function(cxt)
                     local cards = cxt:GainCards{CURIO_CARD}
+                    if cards[1] then
+                        local follow_quest = cxt.quest:SpawnFollowQuest(FOLLOW_QUEST.id)
+                        if follow_quest then
+                            cards[1].userdata.linked_quest = follow_quest
+                            follow_quest.param.artifact_card = cards[1]
+                        end
+                    end
                 end)
                 :Travel()
 
@@ -43,3 +52,14 @@ QDEF:AddConvo()
                 :Dialog("DIALOG_LEAVE")
                 :Travel()
         end)
+
+FOLLOW_QUEST = QDEF:AddFollowup({
+    events =
+    {
+        card_removed = function(quest, card)
+            if quest.param.artifact_card and quest.param.artifact_card == card then
+                quest:Cancel()
+            end
+        end,
+    }
+})
