@@ -18,6 +18,18 @@ local CARDS = {
 
         rarity = CARD_RARITY.UNIQUE,
 
+        available_hatch = {"royal_relic", "mesmerizing_charm"},
+
+        is_artifact = true,
+
+        hatch_fn = function( self, minigame )
+            self:TransferCard( minigame.trash_deck )
+            self:Consume()
+            local chosen_id = table.arraypick(self.available_hatch)
+            local card = Negotiation.Card( chosen_id, self.owner )
+            minigame:DealCard( card, minigame:GetHandDeck( ) )
+        end,
+
         OnPostResolve = function( self, minigame )
             minigame:DrawCards( 1 )
         end,
@@ -34,6 +46,8 @@ local CARDS = {
         cost = 1,
         flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
         rarity = CARD_RARITY.UNIQUE,
+
+        is_artifact = true,
 
         renown_stacks = 5,
 
@@ -52,6 +66,8 @@ local CARDS = {
         flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
         rarity = CARD_RARITY.UNIQUE,
         target_self = TARGET_ANY_RESOLVE,
+
+        is_artifact = true,
 
         OnPostResolve = function( self, minigame, targets )
             for i,intent in ipairs(minigame:GetOtherNegotiator(self.negotiator):GetIntents()) do
