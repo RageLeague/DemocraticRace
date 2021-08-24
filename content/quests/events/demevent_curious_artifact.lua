@@ -63,3 +63,40 @@ FOLLOW_QUEST = QDEF:AddFollowup({
         end,
     }
 })
+:AddObjective{
+    id = "ask",
+    state = QSTATUS.ACTIVE,
+    title = "Ask about the artifact",
+    desc = "Perhaps people who often deal with artifacts can tell you all about it.",
+}
+
+FOLLOW_QUEST:AddConvo()
+    :Loc{
+        OPT_ASK = "Ask {agent} to identify {1#card}",
+        DIALOG_ASK = [[
+            player:
+                What is this?
+            agent:
+            {royal_relic?
+                [p] It's decorative.
+            }
+            {mesmerizing_charm?
+                [p] It looks cool.
+            }
+        ]],
+    }
+    :Hub(function(cxt)
+
+    end)
+    :State("STATE_CULT_ACQUIRE")
+        :Loc{
+
+        }
+    :State("STATE_BARON_ACQUIRE")
+        :Loc{
+
+        }
+    :State("STATE_BARON_DECORATION")
+        :Loc{
+
+        }
