@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.3.2(Alpha)
+Version: 0.3.3(Alpha)
 
 Author: RageLeague
 
@@ -100,6 +100,11 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Sei Bellissima
 
 ## Changelog
+
+### 0.3.3
+
+* Fix crash when talking about alliance with candidates with opposite opinion of yours when it comes to their main issue.
+* Propaganda making negotiation no longer gives rewards.
 
 ### 0.3.2
 
