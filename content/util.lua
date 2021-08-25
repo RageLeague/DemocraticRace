@@ -1030,7 +1030,7 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
                 :DoneConvo()
         elseif potential and DemocracyUtil.GetEndorsement(potential + potential_offset) == RELATIONSHIP.NEUTRAL then
             potential = potential + potential_offset
-            cxt:Dialog("DIALOG_ALLIANCE_TALK_CONDITIONAL")
+            cxt:Dialog("DIALOG_ALLIANCE_TALK_CONDITIONAL", cxt.enc.scratch.opposite_spectrum and (platform .. "_" .. oppo_main_stance) or nil)
             if cxt.enc.scratch.opposite_spectrum then
                 cxt:RunLoop(function(cxt)
                     cxt:Opt("OPT_ALLIANCE_TALK_AGREE_STANCE")
