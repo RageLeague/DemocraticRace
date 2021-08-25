@@ -90,13 +90,24 @@ FOLLOW_QUEST:AddConvo()
     end)
     :State("STATE_CULT_ACQUIRE")
         :Loc{
-
+            DIALOG_INTRO = [[
+                agent:
+                    [p] The cult would be taking that for preserving artifacts.
+            ]],
         }
     :State("STATE_BARON_ACQUIRE")
         :Loc{
-
+            DIALOG_INTRO = [[
+                agent:
+                    [p] The baron could use this tech.
+                    I'll take it off you for some money.
+            ]],
         }
     :State("STATE_BARON_DECORATION")
         :Loc{
-
+            DIALOG_INTRO = [[
+                agent:
+                    [p] It's basically decoration.
+                    You can keep it.
+            ]],
         }
