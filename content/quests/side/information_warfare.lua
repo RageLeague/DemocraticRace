@@ -818,7 +818,7 @@ QDEF:AddConvo("commission")
                 :Dialog("DIALOG_START")
                 :Negotiation{
                     no_free_time_cost = true,
-                    flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.NO_BACKUP,
+                    flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.NO_BACKUP | NEGOTIATION_FLAGS.NO_LOOT,
                     on_start_negotiation = function(minigame)
                         local negotiation_defs = require "negotiation/negotiation_defs"
                         local CARD_FLAGS = negotiation_defs.CARD_FLAGS
