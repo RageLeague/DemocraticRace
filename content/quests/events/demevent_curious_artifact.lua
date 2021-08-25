@@ -94,6 +94,20 @@ FOLLOW_QUEST:AddConvo()
                 agent:
                     [p] The cult would be taking that for preserving artifacts.
             ]],
+            OPT_ACCEPT = "Accept the deal",
+            DIALOG_ACCEPT = [[
+                player:
+                    [p] Here you go.
+                agent:
+                    Hesh thank you for your service.
+            ]],
+            OPT_REJECT = "Reject the deal",
+            DIALOG_REJECT = [[
+                player:
+                    [p] I'm having second thoughts on this.
+                agent:
+                    Understandable. My offer is still here if you want.
+            ]],
         }
     :State("STATE_BARON_ACQUIRE")
         :Loc{
@@ -102,7 +116,31 @@ FOLLOW_QUEST:AddConvo()
                     [p] The baron could use this tech.
                     I'll take it off you for some money.
             ]],
+            OPT_ACCEPT = "Accept the deal",
+            DIALOG_ACCEPT = [[
+                player:
+                    [p] You've got yourself a deal.
+                agent:
+                    Excellent.
+            ]],
+            OPT_REJECT = "Reject the deal",
+            DIALOG_REJECT = [[
+                player:
+                    [p] I'm having second thoughts on this.
+                agent:
+                    Understandable. My offer is still here if you want.
+            ]],
         }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+
+            cxt:Opt("OPT_ACCEPT")
+                :Dialog("DIALOG_ACCEPT")
+                :CompleteQuest()
+
+            cxt:Opt("OPT_REJECT")
+                :Dialog("DIALOG_REJECT")
+        end)
     :State("STATE_BARON_DECORATION")
         :Loc{
             DIALOG_INTRO = [[
@@ -111,3 +149,7 @@ FOLLOW_QUEST:AddConvo()
                     You can keep it.
             ]],
         }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+            cxt.quest:Complete()
+        end)
