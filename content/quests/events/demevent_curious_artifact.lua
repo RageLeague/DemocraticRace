@@ -58,7 +58,9 @@ FOLLOW_QUEST = QDEF:AddFollowup({
     {
         card_removed = function(quest, card)
             if quest.param.artifact_card and quest.param.artifact_card == card then
-                quest:Cancel()
+                if quest:IsActive() then
+                    quest:Complete()
+                end
             end
         end,
     }
@@ -68,6 +70,13 @@ FOLLOW_QUEST = QDEF:AddFollowup({
     state = QSTATUS.ACTIVE,
     title = "Ask about the artifact",
     desc = "Perhaps people who often deal with artifacts can tell you all about it.",
+}
+:AddOpinionEvents{
+    donated_artifact =
+    {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Donated an artifact to the cult",
+    },
 }
 
 FOLLOW_QUEST:AddConvo()
@@ -84,6 +93,9 @@ FOLLOW_QUEST:AddConvo()
             {mesmerizing_charm?
                 [p] It looks cool.
             }
+            {intimidating_blaster?
+                [p] It's an ancient weapon.
+            }
         ]],
     }
     :Hub(function(cxt, who)
@@ -96,7 +108,7 @@ FOLLOW_QUEST:AddConvo()
                 :Fn(function(cxt)
                     if cxt.quest.param.artifact_card.hatch then
                         local chosen = table.arraypick(cxt.quest.param.artifact_card.available_hatch)
-                        local card = cxt.player.negotiator:LearnCard( chosen_id )
+                        local card = cxt.player.negotiator:LearnCard( chosen )
                         local card_to_remove = cxt.quest.param.artifact_card
                         cxt.quest.param.artifact_card = card
                         card.userdata.linked_quest = cxt.quest
@@ -104,6 +116,7 @@ FOLLOW_QUEST:AddConvo()
                     end
                     cxt.enc.scratch[cxt.quest.param.artifact_card.id] = true
                     cxt:Dialog("DIALOG_ASK")
+                    cxt.enc.scratch[cxt.quest.param.artifact_card.id] = false
                     if who:GetFactionID() == "CULT_OF_HESH" then
                         cxt:GoTo("STATE_CULT_ACQUIRE")
                     elseif cxt.quest.param.artifact_card.practical then
@@ -140,7 +153,12 @@ FOLLOW_QUEST:AddConvo()
 
             cxt:Opt("OPT_ACCEPT")
                 :Dialog("DIALOG_ACCEPT")
+                :ReceiveOpinion("donated_artifact")
+                :Fn(function(cxt)
+                    cxt.player.negotiator:RemoveCard(cxt.quest.param.artifact_card)
+                end)
                 :CompleteQuest()
+                :DoneConvo()
 
             cxt:Opt("OPT_REJECT")
                 :Dialog("DIALOG_REJECT")
@@ -172,7 +190,12 @@ FOLLOW_QUEST:AddConvo()
 
             cxt:Opt("OPT_ACCEPT")
                 :Dialog("DIALOG_ACCEPT")
+                :ReceiveMoney(Util.GetCardPrice(cxt.quest.param.artifact_card.id))
+                :Fn(function(cxt)
+                    cxt.player.negotiator:RemoveCard(cxt.quest.param.artifact_card)
+                end)
                 :CompleteQuest()
+                :DoneConvo()
 
             cxt:Opt("OPT_REJECT")
                 :Dialog("DIALOG_REJECT")
@@ -188,4 +211,6 @@ FOLLOW_QUEST:AddConvo()
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Complete()
+
+            StateGraphUtil.AddEndOption(cxt)
         end)

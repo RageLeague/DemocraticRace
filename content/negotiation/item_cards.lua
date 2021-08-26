@@ -21,6 +21,7 @@ local CARDS = {
         available_hatch = {"royal_relic", "mesmerizing_charm", "intimidating_blaster"},
 
         is_artifact = true,
+        shop_price = 80,
 
         hatch_fn = function( self, minigame )
             self:TransferCard( minigame.trash_deck )
@@ -54,6 +55,7 @@ local CARDS = {
         rarity = CARD_RARITY.UNIQUE,
 
         is_artifact = true,
+        shop_price = 120,
 
         renown_stacks = 5,
 
@@ -74,6 +76,7 @@ local CARDS = {
         target_self = TARGET_ANY_RESOLVE,
 
         is_artifact = true,
+        shop_price = 135,
 
         OnPostResolve = function( self, minigame, targets )
             for i,intent in ipairs(minigame:GetOtherNegotiator(self.negotiator):GetIntents()) do
@@ -107,6 +110,7 @@ local CARDS = {
 
         is_artifact = true,
         practical = true,
+        shop_price = 150,
 
         intimidated_stack = 3,
 
