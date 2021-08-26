@@ -18,7 +18,7 @@ local CARDS = {
 
         rarity = CARD_RARITY.UNIQUE,
 
-        available_hatch = {"royal_relic", "mesmerizing_charm"},
+        available_hatch = {"royal_relic", "mesmerizing_charm", "intimidating_blaster"},
 
         is_artifact = true,
 
@@ -91,6 +91,29 @@ local CARDS = {
 
             minigame:DrawCards( 1 )
         end
+    },
+    intimidating_blaster =
+    {
+        name = "Intimidating Blaster",
+        flavour = "'I have no idea how to use this, but I can test it on you if you'd like.'",
+        desc = "Gain {1} {intimidated}.\nDraw a card.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.intimidated_stack)
+        end,
+
+        cost = 1,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
+        rarity = CARD_RARITY.UNIQUE,
+
+        is_artifact = true,
+        practical = true,
+
+        intimidated_stack = 3,
+
+        OnPostResolve = function( self, minigame )
+            self.anti_negotiator:AddModifier("intimidated", self.intimidated_stack, self )
+            minigame:DrawCards( 1 )
+        end,
     },
 }
 for i, id, def in sorted_pairs( CARDS ) do

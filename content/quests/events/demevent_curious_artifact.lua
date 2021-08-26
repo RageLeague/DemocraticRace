@@ -73,9 +73,10 @@ FOLLOW_QUEST = QDEF:AddFollowup({
 FOLLOW_QUEST:AddConvo()
     :Loc{
         OPT_ASK = "Ask {agent} to identify {1#card}",
+        OPT_SHOW = "Show {agent} {1#card}",
         DIALOG_ASK = [[
             player:
-                What is this?
+                Can you take a look at this?
             agent:
             {royal_relic?
                 [p] It's decorative.
@@ -85,8 +86,33 @@ FOLLOW_QUEST:AddConvo()
             }
         ]],
     }
-    :Hub(function(cxt)
-
+    :Hub(function(cxt, who)
+        if who and (who:GetFactionID() == "CULT_OF_HESH" or who:GetFactionID() == "SPARK_BARONS") and not AgentUtil.HasPlotArmour(who) then
+            if not cxt.quest.param.artifact_card then
+                cxt.quest:Complete()
+                return
+            end
+            cxt:Opt(cxt.quest.param.artifact_card.hatch and "OPT_ASK" or "OPT_SHOW", cxt.quest.param.artifact_card)
+                :Fn(function(cxt)
+                    if cxt.quest.param.artifact_card.hatch then
+                        local chosen = table.arraypick(cxt.quest.param.artifact_card.available_hatch)
+                        local card = cxt.player.negotiator:LearnCard( chosen_id )
+                        local card_to_remove = cxt.quest.param.artifact_card
+                        cxt.quest.param.artifact_card = card
+                        card.userdata.linked_quest = cxt.quest
+                        cxt.player.negotiator:RemoveCard(card_to_remove)
+                    end
+                    cxt.enc.scratch[cxt.quest.param.artifact_card.id] = true
+                    cxt:Dialog("DIALOG_ASK")
+                    if who:GetFactionID() == "CULT_OF_HESH" then
+                        cxt:GoTo("STATE_CULT_ACQUIRE")
+                    elseif cxt.quest.param.artifact_card.practical then
+                        cxt:GoTo("STATE_BARON_ACQUIRE")
+                    else
+                        cxt:GoTo("STATE_BARON_DECORATION")
+                    end
+                end)
+        end
     end)
     :State("STATE_CULT_ACQUIRE")
         :Loc{
@@ -109,6 +135,16 @@ FOLLOW_QUEST:AddConvo()
                     Understandable. My offer is still here if you want.
             ]],
         }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+
+            cxt:Opt("OPT_ACCEPT")
+                :Dialog("DIALOG_ACCEPT")
+                :CompleteQuest()
+
+            cxt:Opt("OPT_REJECT")
+                :Dialog("DIALOG_REJECT")
+        end)
     :State("STATE_BARON_ACQUIRE")
         :Loc{
             DIALOG_INTRO = [[
