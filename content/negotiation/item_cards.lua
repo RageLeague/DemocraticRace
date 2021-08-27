@@ -14,7 +14,7 @@ local CARDS = {
         cost = 1,
         max_xp = 6,
         hatch = true,
-        flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND | CARD_FLAGS.HATCH,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.HATCH,
 
         rarity = CARD_RARITY.UNIQUE,
 
@@ -51,13 +51,13 @@ local CARDS = {
         end,
 
         cost = 1,
-        flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
+        flags = CARD_FLAGS.ITEM,
         rarity = CARD_RARITY.UNIQUE,
 
         is_artifact = true,
-        shop_price = 120,
+        shop_price = 135,
 
-        renown_stacks = 5,
+        renown_stacks = 3,
 
         OnPostResolve = function( self, minigame )
             self.negotiator:AddModifier("RENOWN", self.renown_stacks, self)
@@ -68,10 +68,10 @@ local CARDS = {
     {
         name = "Mesmerizing Charm",
         flavour = "'Wow this charm is really mesmerizing!'",
-        desc = "Force all enemy intents and arguments to target it.\nIncept 1 {FLUSTERED} and draw a card.",
+        desc = "Force all enemy intents and arguments to target it.\nDraw a card.",
 
         cost = 1,
-        flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
+        flags = CARD_FLAGS.ITEM,
         rarity = CARD_RARITY.UNIQUE,
         target_self = TARGET_ANY_RESOLVE,
 
@@ -90,8 +90,6 @@ local CARDS = {
                 end
             end
 
-            self.anti_negotiator:InceptModifier("FLUSTERED", 1, self)
-
             minigame:DrawCards( 1 )
         end
     },
@@ -99,13 +97,13 @@ local CARDS = {
     {
         name = "Intimidating Blaster",
         flavour = "'I have no idea how to use this, but I can test it on you if you'd like.'",
-        desc = "Gain {1} {intimidated}.\nDraw a card.",
+        desc = "{INCEPT} {1} {intimidated}.\nDraw a card.",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.intimidated_stack)
         end,
 
         cost = 1,
-        flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
+        flags = CARD_FLAGS.ITEM,
         rarity = CARD_RARITY.UNIQUE,
 
         is_artifact = true,
