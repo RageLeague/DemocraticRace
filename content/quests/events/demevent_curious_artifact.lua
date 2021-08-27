@@ -167,7 +167,7 @@ FOLLOW_QUEST:AddConvo()
         :Loc{
             DIALOG_INTRO = [[
                 agent:
-                    [p] The baron could use this tech.
+                    [p] We could use this tech.
                     I'll take it off you for some money.
             ]],
             OPT_ACCEPT = "Accept the deal",
