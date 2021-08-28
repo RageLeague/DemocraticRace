@@ -2162,7 +2162,7 @@ local MODIFIERS =
                     self.negotiator:AddModifier( self, 1 )
                     if self.stacks >= self.threshold then
                         self.anti_negotiator:AttackResolve( self.explode_damage, self )
-                        self:SetStacks()
+                        self:SetStacks(1)
                         self.negotiator:DeltaModifier(self, -self.stacks + 1)
                     end
                 end
