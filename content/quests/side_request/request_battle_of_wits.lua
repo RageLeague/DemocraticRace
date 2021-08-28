@@ -592,6 +592,8 @@ QDEF:AddConvo("go_to_game")
                 challenger:
                     !exit
                 * {challenger} left.
+                player:
+                    !left
                 {advisor_hostile?
                 agent:
                     Did I just lose? Fair and square?
