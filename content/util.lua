@@ -1223,7 +1223,7 @@ function DemocracyUtil.DeployMod(experimental)
         print("Experimental =", experimental)
         engine.steam:SubmitItem( mod, OnSubmitted )
     end
-    print(loc.format("Are you sure? Enter ConfirmUpload() in the console to confirm. (Experimental={1})", experimental and true or false))
+    print(loc.format("Are you sure? Enter ConfirmUpload() in the console to confirm. (Experimental={1})", experimental and "true" or "false"))
     rawset(_G, "ConfirmUpload", ConfirmFunction)
 end
 
