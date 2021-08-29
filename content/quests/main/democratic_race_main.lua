@@ -336,6 +336,19 @@ local QDEF = QuestDef.Define
                 QuestUtil.DoNextDay(DAY_SCHEDULE, quest)
             end
         end,
+        GAME_OVER = function( quest, gamestate, result )
+            local METRIC_DATA =
+            {
+                result = result,
+                support_level = quest.param.support_level,
+                faction_support = quest.param.faction_support,
+                wealth_support = quest.param.wealth_support,
+                stances = quest.param.wealth_support,
+                player_data = TheGame:GetGameState():GetPlayerState(),
+            }
+
+            DemocracyUtil.SendMetricsData("GAME_OVER", METRIC_DATA)
+        end,
     },
     SpawnPoolJob = function(quest, pool_name, excluded_ids, spawn_as_inactive, spawn_as_challenge)
         local event_id = pool_name
