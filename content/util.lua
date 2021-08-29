@@ -1,3 +1,5 @@
+local url_lib = require "lib/url"
+
 local DemocracyUtil = class("DemocracyUtil")
 
 local MODID = CURRENT_MOD_ID
@@ -1225,6 +1227,97 @@ function DemocracyUtil.DeployMod(experimental)
     end
     print(loc.format("Are you sure? Enter ConfirmUpload() in the console to confirm. (Experimental={1})", experimental and "true" or "false"))
     rawset(_G, "ConfirmUpload", ConfirmFunction)
+end
+
+function DemocracyUtil.SendMetricData(event_id, event_data)
+    -- Initialize fields
+    local payload_fields =
+    {
+        -- Branch
+        ["entry.1174125527"] = "",
+        -- Version
+        ["entry.1846367179"] = "",
+        -- Run ID
+        ["entry.1200902253"] = "",
+        -- Character
+        ["entry.1738061935"] = "",
+        -- Prestige
+        ["entry.992848941"] = "",
+        -- Day Segment
+        ["entry.422634254"] = "",
+        -- Event ID
+        ["entry.169203787"] = event_id or "",
+        -- Event Data
+        ["entry.541892026"] = type(event_data) == "table" and json.encode( event_data ) or event_data or "",
+    }
+
+    -- Set the field for "Branch"
+    if MODID == "DemocraticRace" then
+        payload_fields["entry.1174125527"] = "GitHub"
+    elseif MODID == tostring(main_branch_id) then
+        payload_fields["entry.1174125527"] = "SteamMain"
+    elseif MODID == tostring(test_branch_id) then
+        payload_fields["entry.1174125527"] = "SteamTest"
+    else
+        payload_fields["entry.1174125527"] = "Other(" .. MODID .. ")"
+    end
+
+    -- Set the field for "Version"
+    local mod_data = DemocracyUtil.GetModData()
+    payload_fields["entry.1846367179"] = mod_data.version
+
+    local game_state = TheGame:GetGameState()
+    if game_state then
+        -- Set the field for "Run ID"
+        payload_fields["entry.1200902253"] = game_state.uuid
+        -- Set the field for "Character"
+        payload_fields["entry.1738061935"] = game_state.player_agent and game_state.player_agent:GetContentID()
+        -- Set the field for "Prestige"
+        -- "Story" or "P0", "P1", ...
+        if game_state.options.story_mode then
+            payload_fields["entry.992848941"] = "Story"
+        else
+            payload_fields["entry.992848941"] = "P" .. (game_state.options.advancement_level or 0)
+        end
+        -- Set the field for "Day Segment"
+        local main_quest = game_state:GetMainQuest()
+        if main_quest and main_quest:GetContentID() == "DEMOCRATIC_RACE_MAIN" then
+            payload_fields["entry.422634254"] = (main_quest.param.day or 1) .. "/" .. (main_quest.param.sub_day_progress or 1)
+        else
+            payload_fields["entry.422634254"] = tostring(game_state.datetime)
+        end
+    end
+
+    -- Assemble the URL
+    local query_strings = {}
+    for id, data in pairs(payload_fields) do
+        if data and data ~= "" then
+            assert(type(data) == "string")
+            table.insert(query_strings, loc.format("{1}={2}", id, url_lib.escape(data)))
+        end
+    end
+    local url = "https://docs.google.com/forms/d/e/1FAIpQLSe3KWUoJQsLqyMAspjQRHowazaXEMR0rxiqKNyFqwwpVB0hWw/formResponse"
+    if #query_strings > 0 then
+        url = url .. "?"
+        for i, query in ipairs(query_strings) do
+            if i == 1 then
+                url = url .. query
+            else
+                url = url .. "&" .. query
+            end
+        end
+    end
+    -- Actually send the payload
+    engine.inst:GetURL(url, nil,
+        function( success, code, response )
+            print("ID:", event_id)
+            print(event_data)
+            print("Access Code:", code)
+            print("URL:", url)
+            if success then
+                print("Metric successfully sent")
+            end
+        end)
 end
 
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
