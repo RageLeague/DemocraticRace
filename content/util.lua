@@ -814,7 +814,7 @@ function DemocracyUtil.GetVoterIntentionIndex(data)
     local faction, wealth
     if data.agent then
         faction = data.agent:GetFactionID()
-        wealth = DemocracyUtil.GetWealth(agent)
+        wealth = DemocracyUtil.GetWealth(data.agent)
     end
     if data.faction then
         faction = type(data.faction) == "string" and data.faction or data.faction.id
@@ -882,6 +882,9 @@ function DemocracyUtil.GetFactionEndorsement(faction)
 end
 function DemocracyUtil.GetWealthEndorsement(wealth)
     return DemocracyUtil.GetEndorsement(DemocracyUtil.GetVoterIntentionIndex{wealth = wealth})
+end
+function DemocracyUtil.GetAgentEndorsement(agent)
+    return DemocracyUtil.GetEndorsement(DemocracyUtil.GetVoterIntentionIndex{agent = agent})
 end
 function DemocracyUtil.CalculatePartyStrength(members)
     if is_instance(members, Party) then
@@ -1129,17 +1132,20 @@ function DemocracyUtil.GetPerFileSettings()
     end
     return data
 end
-function DemocracyUtil.GetBodyguards()
+function DemocracyUtil.GetBodyguards(filter_fn)
     local candidates = {}
     for i, agent in ipairs(TheGame:GetGameState():GetCaravan():GetParty():GetMembers()) do
         if agent:IsHiredMember() or agent:IsPet() then
-            table.insert(candidates, agent)
+            if not filter_fn or filter_fn(agent) then
+                table.insert(candidates, agent)
+            end
         end
     end
     return candidates
 end
-function DemocracyUtil.AddBodyguardOpt(cxt, fn, opt_id)
-    local candidates = DemocracyUtil.GetBodyguards()
+
+function DemocracyUtil.AddBodyguardOpt(cxt, fn, opt_id, filter_fn)
+    local candidates = DemocracyUtil.GetBodyguards(filter_fn)
     if candidates and #candidates > 0 then
         cxt:Opt(opt_id or "OPT_USE_BODYGUARD")
             :LoopingFn(function(cxt)
@@ -1149,9 +1155,32 @@ function DemocracyUtil.AddBodyguardOpt(cxt, fn, opt_id)
                             fn(cxt, agent)
                         end)
                 end
+                StateGraphUtil.AddBackButton(cxt)
             end)
-        StateGraphUtil.AddBackButton(cxt)
     end
+end
+
+DemocracyUtil.EXCLUDED_WEAPONS = {
+    "makeshift_dagger", "makeshift_dagger_plus"
+}
+
+function DemocracyUtil.IsWeapon(card)
+    if not is_instance(card, Battle.Card) then
+        return false
+    end
+    if table.arraycontains(DemocracyUtil.EXCLUDED_WEAPONS, card.id) then
+        return false
+    end
+    return card:IsItemCard() and card.min_damage and card.max_damage
+end
+
+DemocracyUtil.FIRST_AID_CARDS = {"combat_gauze", "salve", "healing_vapors", "bandage", "triage"}
+
+function DemocracyUtil.IsFirstAid(card)
+    if not is_instance(card, Battle.Card) then
+        return false
+    end
+    return table.arraycontains(DemocracyUtil.FIRST_AID_CARDS, card.id)
 end
 
 local main_branch_id = 2291214111
@@ -1194,7 +1223,7 @@ function DemocracyUtil.DeployMod(experimental)
         print("Experimental =", experimental)
         engine.steam:SubmitItem( mod, OnSubmitted )
     end
-    print(loc.format("Are you sure? Enter ConfirmUpload() in the console to confirm. (Experimental={1})", experimental))
+    print(loc.format("Are you sure? Enter ConfirmUpload() in the console to confirm. (Experimental={1})", experimental and "true" or "false"))
     rawset(_G, "ConfirmUpload", ConfirmFunction)
 end
 

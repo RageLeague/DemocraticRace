@@ -489,6 +489,8 @@ local CARDS = {
 
         flavour = "Knowledge is a gift that keeps on giving.",
 
+        icon = "DEMOCRATICRACE:assets/cards/fracturing_mind.png",
+
         desc_fn = function(self, fmt_str)
             if (self.userdata and self.userdata.count or 0) > 1 then
                 return loc.format(fmt_str, self.userdata.count ) .. "\n" .. (self.def or self):GetLocalizedString("ALT_DESC")

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.08.00">
+    <object class="EventFolder" id="{99af9920-6fe3-4567-9bed-78d13ca35939}">
+        <property name="name">
+            <value>debuff</value>
+        </property>
+        <relationship name="folder">
+            <destination>{69a21db9-82cf-4ae3-9635-a4492db4206d}</destination>
+        </relationship>
+    </object>
+</objects>

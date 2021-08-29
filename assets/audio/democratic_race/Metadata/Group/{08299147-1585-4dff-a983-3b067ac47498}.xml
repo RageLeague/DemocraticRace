@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="MixerGroup" id="{08299147-1585-4dff-a983-3b067ac47498}">
+		<property name="name">
+			<value>assassin2Male01</value>
+		</property>
+		<relationship name="masters">
+			<destination>{97f4f4f6-909c-40a4-8eef-d72dca9bc4e0}</destination>
+		</relationship>
+		<relationship name="effectChain">
+			<destination>{1a1c13cd-115f-4730-9ff7-36357b6878d5}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{bb62bbde-d9cc-4004-a3a7-3c2debf39863}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{d4554cde-635f-4777-921b-5ef4fea94819}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{1a1c13cd-115f-4730-9ff7-36357b6878d5}">
+		<relationship name="effects">
+			<destination>{64a6d782-9eb3-4c4f-8ce8-36424d179f60}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{bb62bbde-d9cc-4004-a3a7-3c2debf39863}" />
+	<object class="MixerBusFader" id="{64a6d782-9eb3-4c4f-8ce8-36424d179f60}" />
+</objects>

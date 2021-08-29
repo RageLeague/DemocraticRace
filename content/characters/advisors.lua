@@ -117,6 +117,8 @@ local chars =
         gender = "MALE",
         species = "JARACKLE",
 
+        theme_music = "DEMOCRATICRACE|event:/democratic_race/music/story/dronumph_theme",
+
         build = "male_phicket",
         head = "head_male_jarackle_bandit_02",
 

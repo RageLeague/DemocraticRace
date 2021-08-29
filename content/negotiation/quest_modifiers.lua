@@ -2,28 +2,28 @@ local negotiation_defs = require "negotiation/negotiation_defs"
 local CARD_FLAGS = negotiation_defs.CARD_FLAGS
 local EVENT = negotiation_defs.EVENT
 
-local ALLY_IMAGES = {
-    RISE_AUTOMECH = engine.asset.Texture( "negotiation/modifiers/recruit_rise_cobblebot.tex"),
-    RISE_AUTODOG = engine.asset.Texture( "negotiation/modifiers/recruit_rise_cobbledog.tex"),
-    RISE_RADICAL = engine.asset.Texture( "negotiation/modifiers/recruit_rise_radical.tex"),
-    RISE_REBEL = engine.asset.Texture( "negotiation/modifiers/recruit_rise_rebel.tex"),
-    RISE_PAMPLETEER = engine.asset.Texture( "negotiation/modifiers/recruit_rise_pamphleteer.tex"),
-    SPARK_BARON_AUTOMECH = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_automech.tex"),
-    AUTODOG = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_autodog.tex"),
-    SPARK_BARON_PROFESSIONAL = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_professional.tex"),
-    SPARK_BARON_GOON = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_goon.tex"),
-    SPARK_BARON_TASKMASTER = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_taskmaster.tex"),
-    COMBAT_DRONE = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_drone.tex"),
+-- local ALLY_IMAGES = {
+--     RISE_AUTOMECH = engine.asset.Texture( "negotiation/modifiers/recruit_rise_cobblebot.tex"),
+--     RISE_AUTODOG = engine.asset.Texture( "negotiation/modifiers/recruit_rise_cobbledog.tex"),
+--     RISE_RADICAL = engine.asset.Texture( "negotiation/modifiers/recruit_rise_radical.tex"),
+--     RISE_REBEL = engine.asset.Texture( "negotiation/modifiers/recruit_rise_rebel.tex"),
+--     RISE_PAMPLETEER = engine.asset.Texture( "negotiation/modifiers/recruit_rise_pamphleteer.tex"),
+--     SPARK_BARON_AUTOMECH = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_automech.tex"),
+--     AUTODOG = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_autodog.tex"),
+--     SPARK_BARON_PROFESSIONAL = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_professional.tex"),
+--     SPARK_BARON_GOON = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_goon.tex"),
+--     SPARK_BARON_TASKMASTER = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_taskmaster.tex"),
+--     COMBAT_DRONE = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_drone.tex"),
 
-    VROC = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_vroc.tex"),
-    ADMIRALTY_CLERK = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_clerk.tex"),
-    ADMIRALTY_GOON = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_goon.tex"),
-    ADMIRALTY_GUARD = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_guard.tex"),
-    ADMIRALTY_PATROL_LEADER = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_patrol_leader.tex"),
-    JAKES_RUNNER = engine.asset.Texture( "negotiation/modifiers/recruit_jake_runner.tex"),
-    WEALTHY_MERCHANT = engine.asset.Texture( "negotiation/modifiers/recruit_civilian_wealthy_merchant.tex"),
-    HEAVY_LABORER = engine.asset.Texture( "negotiation/modifiers/recruit_civilian_heavy_laborer.tex"),
-}
+--     VROC = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_vroc.tex"),
+--     ADMIRALTY_CLERK = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_clerk.tex"),
+--     ADMIRALTY_GOON = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_goon.tex"),
+--     ADMIRALTY_GUARD = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_guard.tex"),
+--     ADMIRALTY_PATROL_LEADER = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_patrol_leader.tex"),
+--     JAKES_RUNNER = engine.asset.Texture( "negotiation/modifiers/recruit_jake_runner.tex"),
+--     WEALTHY_MERCHANT = engine.asset.Texture( "negotiation/modifiers/recruit_civilian_wealthy_merchant.tex"),
+--     HEAVY_LABORER = engine.asset.Texture( "negotiation/modifiers/recruit_civilian_heavy_laborer.tex"),
+-- }
 
 local function CreateNewSelfMod(self)
     local newmod = self.negotiator:CreateModifier(self.id, self.stacks, self)
@@ -217,8 +217,8 @@ local MODIFIERS =
             -- ensures max_persuasion is greater than min_persuasion
             self.max_persuasion = math.max(self.min_persuasion, self.max_persuasion)
 
-            if ALLY_IMAGES[agent:GetContentID()] then
-                self.icon = ALLY_IMAGES[agent:GetContentID()]
+            if agent.negotiation_ally_image then
+                self.icon = agent.negotiation_ally_image
                 self.engine:BroadcastEvent( EVENT.UPDATE_MODIFIER_ICON, self)
                 -- self:NotifyTriggered()
             end
@@ -307,8 +307,8 @@ local MODIFIERS =
             if agent:HasAspect("bribed") then
                 self.max_persuasion = self.max_persuasion + 1
             end
-            if ALLY_IMAGES[agent:GetContentID()] then
-                self.icon = ALLY_IMAGES[agent:GetContentID()]
+            if agent.negotiation_ally_image then
+                self.icon = agent.negotiation_ally_image
                 self.engine:BroadcastEvent( EVENT.UPDATE_MODIFIER_ICON, self)
                 -- self:NotifyTriggered()
             end
@@ -2162,7 +2162,7 @@ local MODIFIERS =
                     self.negotiator:AddModifier( self, 1 )
                     if self.stacks >= self.threshold then
                         self.anti_negotiator:AttackResolve( self.explode_damage, self )
-                        self:SetStacks()
+                        self:SetStacks(1)
                         self.negotiator:DeltaModifier(self, -self.stacks + 1)
                     end
                 end
@@ -2173,6 +2173,7 @@ local MODIFIERS =
     {
         name = "Eldritch Existence",
         desc = "At the end of the player turn, for each card remaining in their hand, target argument takes {1} damage.",
+        icon = "DEMOCRATICRACE:assets/modifiers/eldritch_existence.png",
 
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetDamageMultiplier())
@@ -2184,7 +2185,7 @@ local MODIFIERS =
             return self.multiplier_scale[math.min(#self.multiplier_scale, GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1)]
         end,
 
-        multiplier_scale = {1, 1, 1, 2},
+        multiplier_scale = {1, 1, 2, 2},
 
         target_enemy = TARGET_ANY_RESOLVE,
         min_persuasion = 0,
@@ -2219,6 +2220,7 @@ local MODIFIERS =
     {
         name = "Comb Bearer",
         desc = "At the start of the player's turn, after drawing, a random card in their hand costs 1 extra action and gains {STICKY} until this argument is removed.",
+        icon = "DEMOCRATICRACE:assets/modifiers/comb_bearer.png",
 
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
@@ -2291,6 +2293,9 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.retaliate_damage, self:GetOwnerName(), self.sting_bonus)
         end,
+
+        icon = "DEMOCRATICRACE:assets/modifiers/stinging_nettle.png",
+
         retaliate_damage = 1,
         sting_bonus = 2,
 

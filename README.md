@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.3.3(Alpha)
+Version: 0.4.0(Alpha)
 
 Author: RageLeague
 
@@ -100,6 +100,24 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Sei Bellissima
 
 ## Changelog
+
+### 0.4.0 (Events & Music update)
+
+This is a minor major update that adds more event to the game. More importantly, with the release of the official audio bank,
+there are now custom music in the game for some advisors. As a plus, it doesn't crash.
+
+Major Changes:
+
+* Add 8 new events.
+* Add a brand new perk that is only unlockable via a special event.
+* Added custom character theme for Benni and Dronumph. Removed option for enabling audio (since the audio no longer crashes).
+
+Minor Changes:
+
+* Preach target modifiers now actually uses the new formatting, so there will be more icons for additional characters.
+* Fix bug of short temper crashing when triggered.
+* Added custom negotiation icons for a secret boss.
+* Adjusted difficulty of said secret boss.
 
 ### 0.3.3
 

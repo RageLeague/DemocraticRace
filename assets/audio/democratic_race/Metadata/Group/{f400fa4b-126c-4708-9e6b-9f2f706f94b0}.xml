@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="MixerGroup" id="{f400fa4b-126c-4708-9e6b-9f2f706f94b0}">
+		<property name="name">
+			<value>overworld_zoomed_out</value>
+		</property>
+		<relationship name="effectChain">
+			<destination>{a65b7a4d-b399-4110-96a5-25d868b6b51c}</destination>
+		</relationship>
+		<relationship name="panner">
+			<destination>{749137b3-205b-4bb1-b295-9b3b9a40d237}</destination>
+		</relationship>
+		<relationship name="output">
+			<destination>{0ba04f56-a181-4eb2-93c2-2bb54159ac92}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusEffectChain" id="{a65b7a4d-b399-4110-96a5-25d868b6b51c}">
+		<relationship name="effects">
+			<destination>{c3715164-6bdf-433f-bf2d-94deb97e68bd}</destination>
+			<destination>{9d4e3c09-a259-4e48-adbc-2f8334e067cd}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusPanner" id="{749137b3-205b-4bb1-b295-9b3b9a40d237}" />
+	<object class="MixerSend" id="{c3715164-6bdf-433f-bf2d-94deb97e68bd}">
+		<property name="inputFormat">
+			<value>1</value>
+		</property>
+		<relationship name="mixerReturn">
+			<destination>{ea7d65a7-71fe-4126-be1e-68926606ac42}</destination>
+		</relationship>
+	</object>
+	<object class="MixerBusFader" id="{9d4e3c09-a259-4e48-adbc-2f8334e067cd}" />
+</objects>
