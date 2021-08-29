@@ -812,6 +812,17 @@ local QDEF = QuestDef.Define
 
     SetSubdayProgress = function(quest, progress)
         quest.param.sub_day_progress = progress
+
+        -- Send Metric
+        local METRIC_DATA =
+        {
+            support_level = quest.param.support_level,
+            faction_support = quest.param.faction_support,
+            wealth_support = quest.param.wealth_support,
+            stances = quest.param.wealth_support,
+        }
+
+        DemocracyUtil.SendMetricsData("STORY_PROGRESS", METRIC_DATA)
     end,
     GetCurrentExpectationArray = function(quest)
         return DAY_SCHEDULE[math.min(#DAY_SCHEDULE, quest.param.day or 1)].support_expectation

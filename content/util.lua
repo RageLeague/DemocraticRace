@@ -1229,7 +1229,7 @@ function DemocracyUtil.DeployMod(experimental)
     rawset(_G, "ConfirmUpload", ConfirmFunction)
 end
 
-function DemocracyUtil.SendMetricData(event_id, event_data)
+function DemocracyUtil.SendMetricsData(event_id, event_data)
     -- Initialize fields
     local payload_fields =
     {
