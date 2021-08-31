@@ -437,8 +437,24 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                         card:TransferCard(minigame:GetDrawDeck())
 
                         minigame.help_turns = SURVIVAL_TURNS
+
+                        local METRIC_DATA =
+                        {
+                            boss = cxt:GetAgent():GetContentID(),
+                            player_data = TheGame:GetGameState():GetPlayerState(),
+                        }
+
+                        DemocracyUtil.SendMetricsData("DAY_1_BOSS_START", METRIC_DATA)
                     end,
                     on_success = function(cxt, minigame)
+                        local METRIC_DATA =
+                        {
+                            boss = cxt:GetAgent():GetContentID(),
+                            result = "WIN",
+                            player_data = TheGame:GetGameState():GetPlayerState(),
+                        }
+                        DemocracyUtil.SendMetricsData("DAY_1_BOSS_END", METRIC_DATA)
+
                         cxt:Dialog("DIALOG_HELP_ARRIVE")
                         cxt.quest:GetCastMember("assassin"):MoveToLimbo()
                         DemocracyUtil.GiveBossRewards(cxt)
@@ -452,6 +468,15 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                         else
                             cxt.quest.param.help_arrive_time = 99
                         end
+
+                        local METRIC_DATA =
+                        {
+                            boss = cxt:GetAgent():GetContentID(),
+                            result = "LOSE_NEGOTIATION",
+                            time_left = cxt.quest.param.help_arrive_time,
+                            player_data = TheGame:GetGameState():GetPlayerState(),
+                        }
+                        DemocracyUtil.SendMetricsData("DAY_1_BOSS_END", METRIC_DATA)
 
                         cxt:Dialog("DIALOG_FIGHT_PHRASE")
                         local battle_def = {
