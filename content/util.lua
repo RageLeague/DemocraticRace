@@ -1230,6 +1230,9 @@ function DemocracyUtil.DeployMod(experimental)
 end
 
 function DemocracyUtil.SendMetricsData(event_id, event_data)
+    if TheGame:GetLocalSettings().ROBOTICS then
+        return
+    end
     -- Initialize fields
     local payload_fields =
     {

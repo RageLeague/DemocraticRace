@@ -456,6 +456,14 @@ QDEF:AddConvo("do_interview")
                 end
             end
             cxt:Opt("OPT_DO_INTERVIEW")
+                :Fn(function(cxt)
+                    local METRIC_DATA =
+                    {
+                        player_data = TheGame:GetGameState():GetPlayerState(),
+                    }
+
+                    DemocracyUtil.SendMetricsData("DAY_2_BOSS_START", METRIC_DATA)
+                end)
                 :Negotiation{
                     flags = NEGOTIATION_FLAGS.WORDSMITH,
                     situation_modifiers = {
@@ -466,6 +474,9 @@ QDEF:AddConvo("do_interview")
                         return loc.format(cxt:GetLocString("NEGOTIATION_REASON"), INTERVIEWER_BEHAVIOR.params.questions_answered or 0 )
                     end,
                     on_success = function(cxt, minigame)
+
+
+                        DemocracyUtil.SendMetricsData("DAY_2_BOSS_START", METRIC_DATA)
                         cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
                         -- TheGame:GetDebug():CreatePanel(DebugTable(INTERVIEWER_BEHAVIOR))
                         DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", (INTERVIEWER_BEHAVIOR.params.questions_answered or 0), "COMPLETED_QUEST")
@@ -474,6 +485,13 @@ QDEF:AddConvo("do_interview")
                         cxt.quest:Complete()
                         -- cxt.quest:Complete("do_interview")
                         -- cxt.quest:Activate("return_to_advisor")
+                        local METRIC_DATA =
+                        {
+                            player_data = TheGame:GetGameState():GetPlayerState(),
+                            questions_answered = INTERVIEWER_BEHAVIOR.params.questions_answered,
+                            num_likes = cxt.quest.param.num_likes,
+                            num_dislikes = cxt.quest.param.num_dislikes,
+                        }
                         StateGraphUtil.AddEndOption(cxt)
                     end,
                     on_fail = function(cxt)
