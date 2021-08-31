@@ -450,7 +450,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                         local METRIC_DATA =
                         {
                             boss = cxt:GetAgent():GetContentID(),
-                            result = "WIN",
+                            result = "WIN_NEGOTIATION",
                             player_data = TheGame:GetGameState():GetPlayerState(),
                         }
                         DemocracyUtil.SendMetricsData("DAY_1_BOSS_END", METRIC_DATA)
@@ -492,6 +492,14 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                                 cxt.quest.param.help_arrived = cxt.quest.param.help_arrive_time <= 0
                                 cxt.quest.param.assassin_dead = cxt:GetAgent():IsDead()
                                 cxt.quest.param.responder_liked = cxt:GetCastMember("responder"):GetRelationship() > RELATIONSHIP.NEUTRAL
+
+                                local METRIC_DATA =
+                                {
+                                    boss = cxt:GetAgent():GetContentID(),
+                                    result = "WIN_FIGHT",
+                                    player_data = TheGame:GetGameState():GetPlayerState(),
+                                }
+                                DemocracyUtil.SendMetricsData("DAY_1_BOSS_END", METRIC_DATA)
                                 if cxt.quest.param.assassin_dead then
                                     cxt:Dialog("DIALOG_PST_FIGHT_DEAD")
                                     if cxt.quest.param.help_called then
