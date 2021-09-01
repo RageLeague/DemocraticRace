@@ -882,6 +882,22 @@ QDEF:AddConvo("do_debate")
             else
                 DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.35))
             end
+
+            local METRIC_DATA =
+            {
+                player_score = your_score,
+                ranking = cxt.quest.param.player_rank,
+                popularity = {},
+                player_data = TheGame:GetGameState():GetPlayerState(),
+            }
+            for id, data in pairs(cxt.quest.param.popularity) do
+                local agent = TheGame:GetGameState():GetAgent(id)
+                if agent then
+                    popularity[agent:GetContentID()] = data
+                end
+            end
+            DemocracyUtil.SendMetricsData("DAY_3_BOSS_SUMMARY", METRIC_DATA)
+
             StateGraphUtil.AddEndOption(cxt)
         end)
 QDEF:AddConvo("report_to_advisor", "primary_advisor")
