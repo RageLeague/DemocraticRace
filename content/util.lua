@@ -1271,6 +1271,16 @@ function DemocracyUtil.SendMetricsData(event_id, event_data)
 
     local game_state = TheGame:GetGameState()
     if game_state then
+        -- Set the field for "Day Segment"
+        local main_quest = game_state:GetMainQuest()
+        if main_quest and main_quest:GetContentID() == "DEMOCRATIC_RACE_MAIN" then
+            if main_quest.param.debug_mode then
+                return
+            end
+            payload_fields["entry.422634254"] = (main_quest.param.day or 1) .. "/" .. (main_quest.param.sub_day_progress or 1)
+        else
+            payload_fields["entry.422634254"] = tostring(game_state.datetime)
+        end
         -- Set the field for "Run ID"
         payload_fields["entry.1200902253"] = game_state.uuid
         -- Set the field for "Character"
@@ -1281,13 +1291,6 @@ function DemocracyUtil.SendMetricsData(event_id, event_data)
             payload_fields["entry.992848941"] = "Story"
         else
             payload_fields["entry.992848941"] = "P" .. (game_state.options.advancement_level or 0)
-        end
-        -- Set the field for "Day Segment"
-        local main_quest = game_state:GetMainQuest()
-        if main_quest and main_quest:GetContentID() == "DEMOCRATIC_RACE_MAIN" then
-            payload_fields["entry.422634254"] = (main_quest.param.day or 1) .. "/" .. (main_quest.param.sub_day_progress or 1)
-        else
-            payload_fields["entry.422634254"] = tostring(game_state.datetime)
         end
     end
 
