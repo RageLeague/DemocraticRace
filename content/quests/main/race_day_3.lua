@@ -16,7 +16,7 @@ local QDEF = QuestDef.Define
     on_start = function(quest)
         quest:Activate("starting_out")
         DemocracyUtil.SetSubdayProgress(1)
-        TheGame:GetGameState():GetPlayerAgent():MoveToLocation( quest:GetCastMember("home") )
+        -- TheGame:GetGameState():GetPlayerAgent():MoveToLocation( quest:GetCastMember("home") )
     end,
 }
 :Loc{
