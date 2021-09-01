@@ -102,6 +102,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "starting_out",
     title = "Talk to {primary_advisor} about the plan.",
+    mark = {"primary_advisor"},
     on_complete = function(quest)
         quest:Activate("get_job")
         DemocracyUtil.StartFreeTime()
