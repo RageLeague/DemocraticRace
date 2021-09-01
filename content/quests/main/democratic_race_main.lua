@@ -337,6 +337,11 @@ local QDEF = QuestDef.Define
             end
         end,
         GAME_OVER = function( quest, gamestate, result )
+            for i = 1, 4 do
+                if not quest.param.wealth_support[i] then
+                    quest.param.wealth_support[i] = 0
+                end
+            end
             local METRIC_DATA =
             {
                 result = result,
