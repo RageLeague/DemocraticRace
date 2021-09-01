@@ -830,7 +830,11 @@ local QDEF = QuestDef.Define
 
     SetSubdayProgress = function(quest, progress)
         quest.param.sub_day_progress = progress
-
+        for i = 1, 4 do
+            if not quest.param.wealth_support[i] then
+                quest.param.wealth_support[i] = 0
+            end
+        end
         -- Send Metric
         local METRIC_DATA =
         {
