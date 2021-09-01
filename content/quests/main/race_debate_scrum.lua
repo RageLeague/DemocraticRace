@@ -255,6 +255,16 @@ local function ProcessMinigame(minigame, win_minigame)
             end
         end
     end
+
+    local METRIC_DATA =
+    {
+        player_data = TheGame:GetGameState():GetPlayerState(),
+        result = win_minigame and "WIN" or "LOSE",
+        topic = cxt.quest.param.topic,
+        player_mvp = table.arraycontains(data.mvp, TheGame:GetGameState():GetPlayerAgent()),
+    }
+    DemocracyUtil.SendMetricsData("DAY_3_BOSS_END", METRIC_DATA)
+
     return data
 end
 local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
