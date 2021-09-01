@@ -262,14 +262,27 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
         :UpdatePoliticalStance(topic, stance, false)
         :Dialog("DIALOG_SIDE")
         :Fn(function(cxt)
+            local METRIC_DATA =
+            {
+                player_data = TheGame:GetGameState():GetPlayerState(),
+                allies = {},
+                opponents = {},
+                topic = topic,
+                stance = stance,
+            }
+
             cxt.quest.param.allies = helpers
             cxt.quest.param.opponents = hinders
             for i, agent in ipairs(helpers) do
                 cxt.quest.param.candidate_opinion[agent:GetID()] = (cxt.quest.param.candidate_opinion[agent:GetID()] or 0) + 1
+                table.insert(METRIC_DATA.allies, agent:GetContentID())
             end
             for i, agent in ipairs(hinders) do
                 cxt.quest.param.candidate_opinion[agent:GetID()] = (cxt.quest.param.candidate_opinion[agent:GetID()] or 0) - 1
+                table.insert(METRIC_DATA.opponents, agent:GetContentID())
             end
+
+            DemocracyUtil.SendMetricsData("DAY_3_BOSS_START", METRIC_DATA)
         end)
         :Negotiation{
             flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.WORDSMITH | NEGOTIATION_FLAGS.NO_CORE_RESOLVE | NEGOTIATION_FLAGS.NO_LOOT,
@@ -491,6 +504,16 @@ QDEF:AddConvo("do_debate")
             CreateDebateOption(cxt, pos_helper, pos_hinder, cxt.quest.param.topic, 1)
             cxt:Opt("OPT_SIT_OUT")
                 :PostText("TT_SIT_OUT")
+                :Fn(function(cxt)
+                    local METRIC_DATA =
+                    {
+                        player_data = TheGame:GetGameState():GetPlayerState(),
+                        topic = cxt.quest.param.topic,
+                        stance = 0,
+                    }
+
+                    DemocracyUtil.SendMetricsData("DAY_3_BOSS_START", METRIC_DATA)
+                end)
                 :GoTo("STATE_AUTO_DEBATE")
         end)
     :State("STATE_AUTO_DEBATE")
