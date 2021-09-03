@@ -9,30 +9,30 @@ QDEF:AddConvo()
     :ConfrontState("CONF")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] You are walking down the road normally until you suddenly tripped!
-                player:
-                    !left
-                    !injured
-                    Hesh spit!
-                * Just like the forced rook event, you are now infected by the bog!
-                * Unlike that event, you can treat it before it's too late!
-                * ...Can you?
+                * You can't deny it anymore. That odd prick on your arm wasn't just a mosquito.
+                * Something is in you. <i>Coursing</> through you. An infection flowing through your veins.
+                * You still have precious minutes left before it truly takes hold.
             ]],
             OPT_TREAT = "Use a first-aid item...",
             DIALOG_TREAT = [[
-                * [p] You use the {1#card} to treat your infection.
-                * [p] You thought battle items are useless.
-                * Who's laughing now?
+                * You open {1#card} and use it's contents however you can.
+                * Eventually, you feel the pain subside, then fade.
+                * ...
+                * You're not protected forever. You could say no one is.
+                * But for now, the infection has been smothered. You won't feel the effects of it.
             ]],
             OPT_USE_FIRST_AID = "[{1#graft}] Use your first aid knowledge",
             DIALOG_USE_FIRST_AID = [[
-                * [p] You use your boon to treat the infection.
-                * Finally, some purpose to that boon!
+                * A little impromptu triage. It's not the safest, but it's the best you can do.
+                * Eventually, you feel the pain subside, then fade.
+                * ...
+                * You're not protected forever. You could say no one is.
+                * But for now, the infection has been smothered. You won't feel the effects of it.
             ]],
             OPT_IGNORE = "Ignore the infection",
             DIALOG_IGNORE = [[
-                * [p] Or you can ignore it like a champ.
-                * Hope you've got your vaccine.
+                * You don't have any options at the moment. The closest you can do is run to the nearest medic.
+                * But you already know there's no way you could run fast enough. The infection is already showing...
             ]],
 
             SELECT_TITLE = "Select a card",
