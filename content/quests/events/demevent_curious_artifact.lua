@@ -13,19 +13,22 @@ QDEF:AddConvo()
     :ConfrontState("STATE_CONFRONT")
         :Loc{
             DIALOG_INTRO = [[
-                * [P] You stumbled across a curious looking object.
-                * It has the most curious design.
-                * Should you take it?
+                player:
+                    !left
+                * It's the odd glint that caught you off guard, flickering in the middle of the mud.
+                * A small bit of investigation, and you uncover a small trinket.
             ]],
             OPT_TAKE = "Take it",
             TT_TAKE = "Gain {1#card_list}",
             DIALOG_TAKE = [[
-                * [p] Finders keepers.
-                * You don't understand it much, but you can hopefully ask someone else about it.
+                player:
+                    !take
+                * Fortune favors the bold, or the one with the weirdest tchotchkes.
+                * It might be more valuable than the untrained eye can tell, but only someone who dabbles in this kind of research could tell.
             ]],
             OPT_LEAVE = "Leave it",
             DIALOG_LEAVE = [[
-                * [P] It doesn't look like something you want to touch, so you leave it alone.
+                * You unceremoniously drop it back into the muck and continue on.
             ]],
         }
         :Fn(function(cxt)
@@ -85,16 +88,44 @@ FOLLOW_QUEST:AddConvo()
         OPT_SHOW = "Show {agent} {1#card}",
         DIALOG_ASK = [[
             player:
+                !give
                 Can you take a look at this?
             agent:
+                !take
+                Sure. Let me take a look-see.
+                !question
+                ...
             {royal_relic?
-                [p] It's decorative.
+                Oh. It appears this one's a bit out of fashion.
+            player:
+                Excuse me?
+            agent:
+                !placate
+                It's nothing personal. It's just a bit of jewelry worn more by the middle class than the nobles.
+                !question
+                Although the age on it is authentic, i'll give you that.
             }
             {mesmerizing_charm?
-                [p] It looks cool.
+                A superstitious sort, aren't we?
+            player:
+                Superstitious?
+            agent:
+                It's a talisman of some sort. If I remember my notes right, this one was meant to be noticed "above all else".
+            player:
+                And above all else means...what?
+            agent:
+                !shrug
+                Above the riff-raff, I suppose. It's eyecatching, if nothing else.
             }
             {intimidating_blaster?
-                [p] It's an ancient weapon.
+                It's a small firearm.
+                Pocket sized, really. I can't figure out how they fit the skull decal on it as well.
+            player:
+                Skull?
+            agent:
+                Yes, right around here. It's a bit smudged, but if you can notice the-
+            player:
+                Ah, now I see it. 
             }
         ]],
     }
@@ -131,21 +162,25 @@ FOLLOW_QUEST:AddConvo()
         :Loc{
             DIALOG_INTRO = [[
                 agent:
-                    [p] The cult would be taking that for preserving artifacts.
+                    If you found this, it may have washed up at your feet by Hesh's command.
+                    If one truly appreciates this gift, it would be through donation to the Cult.
             ]],
-            OPT_ACCEPT = "Accept the deal",
+            OPT_ACCEPT = "Donate the Artifact",
             DIALOG_ACCEPT = [[
                 player:
-                    [p] Here you go.
+                    !give
+                    Don't know how I can appreciate it if i'm giving it for free, but here.
                 agent:
-                    Hesh thank you for your service.
+                    !take
+                    It's a small token, but i'm sure Hesh will favor you someday, in exchange for this.
             ]],
             OPT_REJECT = "Reject the deal",
             DIALOG_REJECT = [[
                 player:
-                    [p] I'm having second thoughts on this.
+                    I'm not really prepared for nothing from something as a trade.
                 agent:
-                    Understandable. My offer is still here if you want.
+                    !hesh_greeting
+                    Hesh may differ, but he does not interfere. If you wish to donate it at anytime, I will help.
             ]],
         }
         :Fn(function(cxt)
@@ -168,22 +203,25 @@ FOLLOW_QUEST:AddConvo()
         :Loc{
             DIALOG_INTRO = [[
                 agent:
-                    [p] We could use this tech.
-                    I'll take it off you for some money.
+                    I'd give that bit of tech a fair bit of value.
+                    Tell you what? Market price for that doo-dad, right here.
             ]],
             OPT_ACCEPT = "Accept the deal",
             DIALOG_ACCEPT = [[
                 player:
-                    [p] You've got yourself a deal.
+                    !give
+                    If you put it to better use than I can, i'll take those shills off your hands.
                 agent:
-                    Excellent.
+                    !take
+                    I'm sure we'll find a way to weaponize it.
             ]],
             OPT_REJECT = "Reject the deal",
             DIALOG_REJECT = [[
                 player:
-                    [p] I'm having second thoughts on this.
+                    I think i'll test it out a little, see if it's worth that market value.
                 agent:
-                    Understandable. My offer is still here if you want.
+                    !placate
+                    Hey friend, no skin off my nose. If you ever want to pawn it off, though, i'll always be here. 
             ]],
         }
         :Fn(function(cxt)
@@ -206,8 +244,8 @@ FOLLOW_QUEST:AddConvo()
         :Loc{
             DIALOG_INTRO = [[
                 agent:
-                    [p] It's basically decoration.
-                    You can keep it.
+                    It's pretty, but I don't think the barons would find much use from it.
+                    You can keep it. I think the cult might care about it, though more under a "preserve all artifacts" doctrine.
             ]],
         }
         :Fn(function(cxt)
