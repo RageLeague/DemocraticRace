@@ -123,6 +123,7 @@ local CARDS = {
         desc = "Choose a card in your hand and give it {STICKY} for the rest of this negotiation.",
 
         cost = 0,
+        item_tags = ITEM_TAGS.UTILITY,
         flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND | CARD_FLAGS.STICKY,
         rarity = CARD_RARITY.UNCOMMON,
 
