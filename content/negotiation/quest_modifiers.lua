@@ -2051,7 +2051,7 @@ local MODIFIERS =
 
             return loc.format(fmt_str, self:GetOwnerName())
         end,
-        -- icon = "negotiation/modifiers/heckler.tex",
+        icon = "DEMOCRATICRACE:assets/modifiers/pessimist.png",
         modifier_type = MODIFIER_TYPE.CORE,
 
         OnBeginTurn = function( self, minigame )
