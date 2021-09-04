@@ -200,7 +200,7 @@ local QDEF = QuestDef.Define
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 DemocracyUtil.AddHomeCasts(QDEF)
 DemocracyUtil.AddOppositionCast(QDEF)
-local function ProcessMinigame(minigame, win_minigame)
+local function ProcessMinigame(minigame, win_minigame, cxt)
     local data = {
         won_game = win_minigame,
         ally_survivors = {},
@@ -322,12 +322,12 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
                 end
             end,
             on_success = function(cxt, minigame)
-                cxt.quest.param.debate_result = ProcessMinigame(minigame, true)
+                cxt.quest.param.debate_result = ProcessMinigame(minigame, true, cxt)
                 cxt.quest.param.winner_pov = topic .. "_" .. stance
                 cxt:GoTo("STATE_DEBATE_SUMMARY")
             end,
             on_fail = function(cxt, minigame)
-                cxt.quest.param.debate_result = ProcessMinigame(minigame, false)
+                cxt.quest.param.debate_result = ProcessMinigame(minigame, false, cxt)
                 cxt.quest.param.winner_pov = topic .. "_" .. (-stance)
                 cxt:GoTo("STATE_DEBATE_SUMMARY")
             end,
@@ -893,7 +893,7 @@ QDEF:AddConvo("do_debate")
             for id, data in pairs(cxt.quest.param.popularity) do
                 local agent = TheGame:GetGameState():GetAgent(id)
                 if agent then
-                    popularity[agent:GetContentID()] = data
+                    METRIC_DATA.popularity[agent:GetContentID()] = data
                 end
             end
             DemocracyUtil.SendMetricsData("DAY_3_BOSS_SUMMARY", METRIC_DATA)
