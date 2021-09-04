@@ -141,6 +141,47 @@ local CARDS = {
             end
         end,
     },
+    gift_packaging =
+    {
+        name = "Gift Packaging",
+        desc = "{IMPROVISE} a card from the draw pile and let the opponent {APPROPRIATED|appropriate} it.",
+        flavour = "'I have something for you!'",
+
+        cost = 1,
+        item_tags = ITEM_TAGS.UTILITY,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND | CARD_FLAGS.REPLENISH,
+        rarity = CARD_RARITY.COMMON,
+
+        max_charges = 3,
+
+        pool_size = 3,
+
+        OnPostResolve = function( self, minigame, targets )
+            local cards = {}
+            for i, card in minigame:GetDrawDeck():Cards() do
+                table.insert(cards, card)
+            end
+
+            cards = table.multipick(cards, self.pool_size)
+            local improvised = minigame:ImproviseCards( cards, self.num_cards, nil, "ad_lib", nil, self )
+
+            -- Do card appropriation
+            local approp
+            if #improvised <= 0 then
+                return
+            elseif #improvised > 1 then
+                approp = self.anti_negotiator:CreateModifier("APPROPRIATED_plus", 1, self )
+            else
+                approp = self.anti_negotiator:CreateModifier("APPROPRIATED", 1, self )
+            end
+            for i, card in ipairs( improvised ) do
+                if approp:IsApplied() then -- veryify that it still exists
+                    print( self.anti_negotiator, "appropriated", card, "from", card.deck )
+                    approp:AppropriateCard( card )
+                end
+            end
+        end,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     def.item_tags = (def.item_tags or 0) | ITEM_TAGS.NEGOTIATION
