@@ -16,7 +16,7 @@ local CARDS = {
         hatch = true,
         flags = CARD_FLAGS.ITEM | CARD_FLAGS.HATCH,
 
-        rarity = CARD_RARITY.UNIQUE,
+        rarity = CARD_RARITY.UNCOMMON,
 
         available_hatch = {"royal_relic", "mesmerizing_charm", "intimidating_blaster"},
 
@@ -52,7 +52,7 @@ local CARDS = {
 
         cost = 1,
         flags = CARD_FLAGS.ITEM,
-        rarity = CARD_RARITY.UNIQUE,
+        rarity = CARD_RARITY.RARE,
 
         is_artifact = true,
         shop_price = 135,
@@ -72,7 +72,7 @@ local CARDS = {
 
         cost = 1,
         flags = CARD_FLAGS.ITEM,
-        rarity = CARD_RARITY.UNIQUE,
+        rarity = CARD_RARITY.RARE,
         target_self = TARGET_ANY_RESOLVE,
 
         is_artifact = true,
@@ -104,7 +104,7 @@ local CARDS = {
 
         cost = 1,
         flags = CARD_FLAGS.ITEM,
-        rarity = CARD_RARITY.UNIQUE,
+        rarity = CARD_RARITY.RARE,
 
         is_artifact = true,
         practical = true,
@@ -123,6 +123,10 @@ for i, id, def in sorted_pairs( CARDS ) do
     def.flags = (def.flags or 0) | CARD_FLAGS.ITEM
     def.rarity = def.rarity or CARD_RARITY.UNIQUE
     def.series = def.series or CARD_SERIES.GENERAL
+
+    if def.is_democratic_race == nil then
+        def.is_democratic_race = true
+    end
 
     Content.AddNegotiationCard( id, def )
 end
