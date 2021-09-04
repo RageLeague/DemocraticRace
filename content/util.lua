@@ -617,6 +617,7 @@ function DemocracyUtil.DoAlphaMessage()
             TheGame:AddGameplayStat( "democracy_day_2", 1 )
         end )
     TheGame:FE():PushScreen(popup)
+    popup:Layout()
 end
 function DemocracyUtil.InsertSelectCardScreen(cards, title, desc, class, on_select)
     local card_selected
