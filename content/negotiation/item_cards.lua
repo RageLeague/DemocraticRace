@@ -21,7 +21,7 @@ local CARDS = {
         available_hatch = {"royal_relic", "mesmerizing_charm", "intimidating_blaster"},
 
         is_artifact = true,
-        shop_price = 80,
+        -- shop_price = 80,
 
         hatch_fn = function( self, minigame )
             self:TransferCard( minigame.trash_deck )
@@ -55,7 +55,7 @@ local CARDS = {
         rarity = CARD_RARITY.RARE,
 
         is_artifact = true,
-        shop_price = 135,
+        -- shop_price = 135,
 
         renown_stacks = 3,
 
@@ -76,7 +76,7 @@ local CARDS = {
         target_self = TARGET_ANY_RESOLVE,
 
         is_artifact = true,
-        shop_price = 135,
+        -- shop_price = 135,
 
         OnPostResolve = function( self, minigame, targets )
             for i,intent in ipairs(minigame:GetOtherNegotiator(self.negotiator):GetIntents()) do
@@ -108,13 +108,36 @@ local CARDS = {
 
         is_artifact = true,
         practical = true,
-        shop_price = 150,
+        -- shop_price = 150,
 
         intimidated_stack = 3,
 
         OnPostResolve = function( self, minigame )
             self.anti_negotiator:AddModifier("intimidated", self.intimidated_stack, self )
             minigame:DrawCards( 1 )
+        end,
+    },
+    paperweight =
+    {
+        name = "Paperweight",
+        desc = "Choose a card in your hand and give it {STICKY} for the rest of this negotiation.",
+
+        cost = 0,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND | CARD_FLAGS.STICKY,
+        rarity = CARD_RARITY.UNCOMMON,
+
+        max_charges = 2,
+
+        loc_strings =
+        {
+            CHOOSE_STICKY = "Choose a card and give it <b>Sticky</>"
+        },
+
+        OnPostResolve = function( self, minigame, targets )
+            local chosen_card = minigame:ChooseCard( nil, self.def:GetLocalizedString("CHOOSE_STICKY") )
+            if chosen_card then
+                chosen_card:SetFlags(CARD_FLAGS.STICKY)
+            end
         end,
     },
 }
