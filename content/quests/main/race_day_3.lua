@@ -516,6 +516,8 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
 
                 DemocracyUtil.DoAlphaMessage()
 
+                cxt:End()
+
                 if true then
                     return
                 end
