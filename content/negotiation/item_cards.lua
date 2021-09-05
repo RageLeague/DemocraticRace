@@ -238,6 +238,12 @@ local CARDS = {
             },
         },
     },
+    business_card =
+    {
+        name = "Business Card",
+        desc = "Gain {1} {RENOWN}.\n{STACKING}: Increase the stacks gained by 1.",
+
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     def.item_tags = (def.item_tags or 0) | ITEM_TAGS.NEGOTIATION
