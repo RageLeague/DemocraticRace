@@ -182,6 +182,62 @@ local CARDS = {
             end
         end,
     },
+    havarian_thesaurus =
+    {
+        name = "Havarian Thesaurus",
+        desc = "For the rest of the turn, for each other unique card played, gain 1 {SMARTS}.",
+
+        cost = 1,
+        item_tags = ITEM_TAGS.UTILITY,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
+        rarity = CARD_RARITY.RARE,
+
+        max_charges = 3,
+
+        OnPostResolve = function( self, minigame, targets )
+            self.negotiator:AddModifier( self.id, 1, self )
+        end,
+
+        modifier =
+        {
+            alt_desc = "(Cards played: {1#comma_listing})",
+            desc_fn = function(self, fmt_str)
+                if self.cards_played and #self.cards_played > 0 then
+                    local txt = {}
+                    for i, card in ipairs(self.cards_played) do
+                        table.insert(txt, loc.format("{1#card}", card))
+                    end
+                    return fmt_str .. "\n\n" .. loc.format((self.def or self):GetLocalizedString("ALT_DESC"), txt)
+                end
+                return fmt_str
+            end,
+
+            modifier_type = MODIFIER_TYPE.PERMANENT,
+
+            OnInit = function(self)
+                if not self.cards_played then
+                    self.cards_played = {}
+                end
+            end,
+
+            OnEndTurn = function( self, minigame )
+                self.negotiator:RemoveModifier( self )
+            end,
+
+            event_handlers =
+            {
+                [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
+                    if not self.cards_played then
+                        self.cards_played = {}
+                    end
+                    if card.id ~= self.id and not table.arraycontains(self.cards_played, card.id) then
+                        table.insert(self.cards_played, card.id)
+                        self.negotiator:AddModifier( "SMARTS", 1, self )
+                    end
+                end,
+            },
+        },
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     def.item_tags = (def.item_tags or 0) | ITEM_TAGS.NEGOTIATION
