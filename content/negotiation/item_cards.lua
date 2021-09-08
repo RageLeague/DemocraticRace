@@ -298,6 +298,16 @@ local CARDS = {
             end
         end,
     },
+    pleasant_perfume =
+    {
+        name = "Pleasant Perfume",
+        desc = "Create: If you would gain one or more stacks of {INFLUENCE} or {RENOWN}, gain that much stacks plus 1 instead.",
+
+        cost = 1,
+        item_tags = ITEM_TAGS.SUPPORT,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.REPLENISH,
+        rarity = CARD_RARITY.UNCOMMON,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     def.item_tags = (def.item_tags or 0) | ITEM_TAGS.NEGOTIATION
