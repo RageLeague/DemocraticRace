@@ -242,11 +242,35 @@ local CARDS = {
         name = "Business Card",
         desc = "Gain {1} {RENOWN}.\n{STACKING}: Increase the stacks gained by 1.",
 
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.userdata and self.userdata.stacks or 1)
+        end,
+
         cost = 0,
         item_tags = ITEM_TAGS.UTILITY,
         flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
         rarity = CARD_RARITY.COMMON,
 
+        PostLoad = function( self, game_state )
+            self._base.PostLoad( self, game_state )
+            if self.userdata and self.userdata.stacks ~= nil then
+                self:SetStacks( self.userdata.stacks )
+            end
+        end,
+
+        SetStacks = function( self, stacks )
+            self.userdata.stacks = math.min( 99, stacks or 1 )
+        end,
+
+        global_event_handlers =
+        {
+            [ "card_added" ] = function( self, card )
+                if card.id == self.id and card ~= self then
+                    self:SetStacks( (self.userdata.stacks or 1) + (card.userdata.stacks or 1) )
+                    self.owner.negotiator:RemoveCard(card)
+                end
+            end,
+        },
     },
 }
 for i, id, def in sorted_pairs( CARDS ) do
