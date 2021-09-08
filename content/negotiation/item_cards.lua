@@ -301,12 +301,48 @@ local CARDS = {
     pleasant_perfume =
     {
         name = "Pleasant Perfume",
-        desc = "Create: If you would gain one or more stacks of {INFLUENCE} or {RENOWN}, gain that much stacks plus 1 instead.",
+        desc = "{pleasant_perfume|}Gain: Whenever you would gain {INFLUENCE} or {RENOWN}, gain 1 additional stack.",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
-        flags = CARD_FLAGS.ITEM | CARD_FLAGS.REPLENISH,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.REPLENISH | CARD_FLAGS.EXPEND,
         rarity = CARD_RARITY.UNCOMMON,
+
+        max_charges = 3,
+
+        OnPostResolve = function( self, minigame, targets )
+            self.negotiator:AddModifier( self.id, 1, self )
+        end,
+
+        modifier =
+        {
+            desc = "If you would gain one or more stacks of {INFLUENCE} or {RENOWN}, gain <#HILITE>{1}</> additional {1*stack|stacks}.",
+            desc_fn = function(self, fmt_str)
+                return loc.format(fmt_str, self.stacks or 1)
+            end,
+
+            modifier_type = MODIFIER_TYPE.ARGUMENT,
+            max_resolve = 6,
+
+            event_priorities =
+            {
+                [ EVENT.CALC_DELTA_MODIFIER ] = EVENT_PRIORITY_ADDITIVE,
+            },
+
+            event_handlers =
+            {
+                [ EVENT.CALC_DELTA_MODIFIER ] = function( self, acc, negotiator, modifier, source )
+                    if negotiator == self.negotiator and acc.value > 0 then
+                        if type(modifier) == "string" and (modifier == "RENOWN" or modifier == "INFLUENCE") then
+                        elseif type(modifier) == "table" and (modifier.id == "RENOWN" or modifier.id == "INFLUENCE") then
+                        else
+                            return
+                        end
+                        acc:AddValue(1, self)
+                    end
+                end,
+            },
+        },
     },
 }
 for i, id, def in sorted_pairs( CARDS ) do
