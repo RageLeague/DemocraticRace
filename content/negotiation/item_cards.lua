@@ -157,12 +157,11 @@ local CARDS = {
         pool_size = 3,
 
         OnPostResolve = function( self, minigame, targets )
-            local cards = {}
-            for i, card in minigame:GetDrawDeck():Cards() do
-                table.insert(cards, card)
+            if minigame:GetDrawDeck():CountCards() == 0 then
+                minigame:ShuffleDiscardToDraw()
             end
 
-            cards = table.multipick(cards, self.pool_size)
+            local cards = table.multipick(minigame:GetDrawDeck().cards, self.pool_size)
             local improvised = minigame:ImproviseCards( cards, self.num_cards, nil, "ad_lib", nil, self )
 
             -- Do card appropriation
@@ -242,6 +241,11 @@ local CARDS = {
     {
         name = "Business Card",
         desc = "Gain {1} {RENOWN}.\n{STACKING}: Increase the stacks gained by 1.",
+
+        cost = 0,
+        item_tags = ITEM_TAGS.UTILITY,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
+        rarity = CARD_RARITY.COMMON,
 
     },
 }
