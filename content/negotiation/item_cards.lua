@@ -272,6 +272,32 @@ local CARDS = {
             end,
         },
     },
+    vroc_whistle_negotiation =
+    {
+        name = "Vroc Whistle",
+        desc = "Create {1} separate {goon}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.goon_count)
+        end,
+
+        flavour = "'Wait, hold on. I thought this is used to summon vrocs.'",
+        icon = "battle/vroc_whistle.tex",
+
+        cost = 0,
+        item_tags = ITEM_TAGS.SUPPORT,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.REPLENISH,
+        rarity = CARD_RARITY.RARE,
+
+        max_charges = 3,
+
+        goon_count = 2,
+
+        OnPostResolve = function( self, minigame, targets )
+            for i=1, self.goon_count do
+                self.negotiator:CreateModifier("goon", 1, self)
+            end
+        end,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     def.item_tags = (def.item_tags or 0) | ITEM_TAGS.NEGOTIATION
