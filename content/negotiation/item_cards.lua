@@ -344,6 +344,47 @@ local CARDS = {
             },
         },
     },
+    mask_of_anonymity =
+    {
+        name = "Mask of Anonymity",
+        desc = "Remove all inceptions you control.\nWhile in your hand, you cannot gain {VULNERABILITY} or {FLUSTERED}.",
+
+        cost = 1,
+        item_tags = ITEM_TAGS.SUPPORT,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
+        rarity = CARD_RARITY.UNCOMMON,
+
+        OnPostResolve = function( self, minigame, targets )
+            local to_remove = {}
+            for i, mod in self.negotiator:ModifierSlots() do
+                if mod.modifier_type == MODIFIER_TYPE.INCEPTION then
+                    table.insert(to_remove, mod)
+                end
+            end
+            for i, mod in ipairs(to_remove) do
+                mod:GetNegotiator():RemoveModifier(mod, nil, self)
+            end
+        end,
+
+        event_priorities =
+        {
+            [ EVENT.CALC_DELTA_MODIFIER ] = EVENT_PRIORITY_SETTOR,
+        },
+
+        event_handlers =
+        {
+            [ EVENT.CALC_DELTA_MODIFIER ] = function( self, acc, negotiator, modifier, source )
+                if negotiator == self.negotiator and acc.value > 0 then
+                    if type(modifier) == "string" and (modifier == "VULNERABILITY" or modifier == "FLUSTERED") then
+                    elseif type(modifier) == "table" and (modifier.id == "VULNERABILITY" or modifier.id == "FLUSTERED") then
+                    else
+                        return
+                    end
+                    acc:ClearValue(self)
+                end
+            end,
+        },
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     def.item_tags = (def.item_tags or 0) | ITEM_TAGS.NEGOTIATION
