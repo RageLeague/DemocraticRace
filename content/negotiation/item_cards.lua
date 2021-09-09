@@ -305,7 +305,7 @@ local CARDS = {
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
-        flags = CARD_FLAGS.ITEM | CARD_FLAGS.REPLENISH | CARD_FLAGS.EXPEND,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
         rarity = CARD_RARITY.UNCOMMON,
 
         max_charges = 3,
@@ -384,6 +384,30 @@ local CARDS = {
                 end
             end,
         },
+    },
+    index_card =
+    {
+        name = "Index Card",
+        desc = "Restore {1} resolve to a non-core argument.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.resolve_heal)
+        end,
+
+        cost = 0,
+        item_tags = ITEM_TAGS.SUPPORT,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.REPLENISH,
+        rarity = CARD_RARITY.COMMON,
+
+        max_charges = 3,
+        target_self = TARGET_ANY_RESOLVE,
+
+        resolve_heal = 4,
+
+        OnPostResolve = function( self, minigame, targets )
+            for i, target in ipairs(targets) do
+                target:RestoreResolve(self.resolve_heal, self)
+            end
+        end,
     },
 }
 for i, id, def in sorted_pairs( CARDS ) do
