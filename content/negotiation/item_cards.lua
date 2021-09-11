@@ -347,7 +347,7 @@ local CARDS = {
     mask_of_anonymity =
     {
         name = "Mask of Anonymity",
-        desc = "Remove all inceptions you control.\nWhile in your hand, you cannot gain {VULNERABILITY} or {FLUSTERED}.",
+        desc = "Remove all inceptions you control.\nWhile in your hand, you cannot gain inceptions.",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
@@ -375,8 +375,8 @@ local CARDS = {
         {
             [ EVENT.CALC_DELTA_MODIFIER ] = function( self, acc, negotiator, modifier, source )
                 if negotiator == self.negotiator and acc.value > 0 then
-                    if type(modifier) == "string" and (modifier == "VULNERABILITY" or modifier == "FLUSTERED") then
-                    elseif type(modifier) == "table" and (modifier.id == "VULNERABILITY" or modifier.id == "FLUSTERED") then
+                    if type(modifier) == "string" and Content.GetNegotiationModifier( modifier ).modifier_type == MODIFIER_TYPE.INCEPTION then
+                    elseif type(modifier) == "table" and modifier.modifier_type == MODIFIER_TYPE.INCEPTION then
                     else
                         return
                     end
