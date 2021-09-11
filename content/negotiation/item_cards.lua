@@ -403,7 +403,7 @@ local CARDS = {
         rarity = CARD_RARITY.COMMON,
 
         max_charges = 3,
-        target_self = TARGET_ANY_RESOLVE,
+        target_self = ClearBits(TARGET_ANY_RESOLVE, TARGET_FLAG.CORE),
 
         resolve_heal = 4,
 
@@ -413,9 +413,9 @@ local CARDS = {
             end
         end,
     },
-    WIP_alcohol =
+    party_spirit =
     {
-        name = "Alcohol Euphemism (TBD)",
+        name = "Party Spirit",
         desc = "If you control target argument, restore {1} resolve to it and add a {drunk_player} to your draw. Otherwise, deal {2} damage to it and incept {DRUNK}.",
         -- desc = "Target friendly: Restore {1} resolve and add a {drunk_player} to your draw.\nTarget opponent: Deal {2} damage and incept {DRUNK}.",
         desc_fn = function(self, fmt_str)
@@ -433,6 +433,24 @@ local CARDS = {
 
         heal_amount = 4,
         damage_amount = 4,
+
+        OnPostResolve = function( self, minigame, targets )
+            local friendly_targets = 0
+            for i, target in ipairs(targets) do
+                if target.negotiator == self.negotiator then
+                    target:RestoreResolve(self.heal_amount, self)
+                    friendly_targets = friendly_targets + 1
+                else
+                    minigame:ApplyPersuasion(self, target, self.damage_amount, self.damage_amount)
+                    target.negotiator:CreateModifier("DRUNK", 1, self)
+                end
+            end
+            local cards = {}
+            for i = 1, friendly_targets do
+                table.insert( cards, Negotiation.Card( "drunk_player", self.engine:GetPlayer() ))
+            end
+            self.engine:DealCards( cards )
+        end,
     },
 }
 for i, id, def in sorted_pairs( CARDS ) do
