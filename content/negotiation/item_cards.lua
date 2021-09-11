@@ -385,10 +385,37 @@ local CARDS = {
             end,
         },
     },
-    -- mask_of_intimidation =
-    -- {
+    mask_of_intimidation =
+    {
+        name = "Mask of Intimidation",
+        desc = "Remove all {DOMINANCE} you control and {INCEPT} that much {intimidated}.\nWhile in your hand, when you gain {DOMINANCE}, {INCEPT} that much {intimidated}.",
 
-    -- },
+        cost = 1,
+        item_tags = ITEM_TAGS.SUPPORT,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
+        rarity = CARD_RARITY.UNCOMMON,
+
+        OnPostResolve = function( self, minigame, targets )
+            local count = self.negotiator:GetModifierStacks("DOMINANCE")
+            self.negotiator:RemoveModifier("DOMINANCE", count, self)
+            self.anti_negotiator:InceptModifier( "intimidated", count, self )
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
+                if modifier.id == "DOMINANCE" then
+                    self.anti_negotiator:InceptModifier( "intimidated", modifier.stacks, self )
+                end
+            end,
+
+            [ EVENT.MODIFIER_CHANGED ] = function( self, modifier, delta, clone )
+                if delta and delta > 0 and modifier.id == "DOMINANCE" then
+                    self.anti_negotiator:InceptModifier( "intimidated", delta, self )
+                end
+            end,
+        },
+    },
     index_card =
     {
         name = "Index Card",
