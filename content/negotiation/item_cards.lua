@@ -385,6 +385,10 @@ local CARDS = {
             end,
         },
     },
+    -- mask_of_intimidation =
+    -- {
+
+    -- },
     index_card =
     {
         name = "Index Card",
@@ -408,6 +412,27 @@ local CARDS = {
                 target:RestoreResolve(self.resolve_heal, self)
             end
         end,
+    },
+    WIP_alcohol =
+    {
+        name = "Alcohol Euphemism (TBD)",
+        desc = "If you control target argument, restore {1} resolve to it and add a {drunk_player} to your draw. Otherwise, deal {2} damage to it and incept {DRUNK}.",
+        -- desc = "Target friendly: Restore {1} resolve and add a {drunk_player} to your draw.\nTarget opponent: Deal {2} damage and incept {DRUNK}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.heal_amount, self.damage_amount)
+        end,
+
+        cost = 1,
+        item_tags = ITEM_TAGS.SUPPORT,
+        flags = CARD_FLAGS.ITEM,
+        rarity = CARD_RARITY.COMMON,
+
+        max_charges = 2,
+        target_self = TARGET_ANY_RESOLVE,
+        target_enemy = TARGET_ANY_RESOLVE,
+
+        heal_amount = 4,
+        damage_amount = 4,
     },
 }
 for i, id, def in sorted_pairs( CARDS ) do
