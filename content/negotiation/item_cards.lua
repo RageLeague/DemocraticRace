@@ -570,6 +570,26 @@ local CARDS = {
         target_enemy = TARGET_ANY_RESOLVE,
         target_mod = TARGET_MOD.TEAM,
     },
+    forgetinator_TBD =
+    {
+        name = "Forgetinator TBD",
+        desc = "Remove target intent.",
+
+        cost = 1,
+        item_tags = ITEM_TAGS.SUPPORT,
+        flags = CARD_FLAGS.ITEM,
+        rarity = CARD_RARITY.UNCOMMON,
+
+        max_charges = 2,
+
+        target_enemy = TARGET_FLAG.INTENT,
+
+        OnPostResolve = function( self, minigame, targets )
+            for i, target in ipairs(targets) do
+                target.negotiator:DismissIntent(target)
+            end
+        end,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     def.item_tags = (def.item_tags or 0) | ITEM_TAGS.NEGOTIATION
