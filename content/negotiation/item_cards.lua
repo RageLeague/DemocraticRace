@@ -479,6 +479,22 @@ local CARDS = {
             self.engine:DealCards( cards )
         end,
     },
+    pearl_grey =
+    {
+        name = "Pearl Grey (TBD)",
+        desc = "Create 1 {stoic}",
+
+        cost = 0,
+        item_tags = ITEM_TAGS.SUPPORT,
+        flags = CARD_FLAGS.ITEM,
+        rarity = CARD_RARITY.COMMON,
+
+        max_charges = 2,
+
+        OnPostResolve = function( self, minigame, targets )
+            self.negotiator:CreateModifier("stoic", 1, self)
+        end,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     def.item_tags = (def.item_tags or 0) | ITEM_TAGS.NEGOTIATION
