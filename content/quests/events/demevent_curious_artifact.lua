@@ -103,7 +103,7 @@ FOLLOW_QUEST:AddConvo()
                 !placate
                 It's nothing personal. It's just a bit of jewelry worn more by the middle class than the nobles.
                 !question
-                Although the age on it is authentic, i'll give you that.
+                Although the age on it is authentic, I'll give you that.
             }
             {mesmerizing_charm?
                 A superstitious sort, aren't we?
