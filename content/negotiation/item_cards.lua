@@ -495,6 +495,81 @@ local CARDS = {
             self.negotiator:CreateModifier("stoic", 1, self)
         end,
     },
+    -- Report cycle
+    work_report =
+    {
+        name = "Work Report",
+        desc = "Insert a {baffled} into your draw pile.",
+
+        cost = 1,
+        item_tags = ITEM_TAGS.SUPPORT,
+        flags = CARD_FLAGS.ITEM,
+        rarity = CARD_RARITY.COMMON,
+
+        max_charges = 1,
+
+        min_persuasion = 9,
+        max_persuasion = 12,
+        target_enemy = TARGET_ANY_RESOLVE,
+
+        OnPostResolve = function( self, minigame, targets )
+            local cards = {}
+            for i = 1, 1 do
+                table.insert( cards, Negotiation.Card( "baffled", self.engine:GetPlayer() ))
+            end
+            self.engine:DealCards( cards )
+        end,
+    },
+    research_report =
+    {
+        name = "Research Report",
+        desc = "If this attack destroys an argument, gain {SMARTS {1}}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.smarts_bonus)
+        end,
+
+        cost = 1,
+        item_tags = ITEM_TAGS.SUPPORT,
+        flags = CARD_FLAGS.ITEM,
+        rarity = CARD_RARITY.UNCOMMON,
+
+        max_charges = 1,
+
+        min_persuasion = 6,
+        max_persuasion = 9,
+        target_enemy = TARGET_ANY_RESOLVE,
+
+        smarts_bonus = 2,
+
+        event_handlers =
+        {
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, card )
+                if card == self then
+                    self.negotiator:AddModifier( "SMARTS", self.smarts_bonus, self )
+                end
+            end,
+        },
+    },
+    executive_report =
+    {
+        name = "Executive Report",
+        desc = "Targets all opponent argument.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.smarts_bonus)
+        end,
+
+        cost = 1,
+        item_tags = ITEM_TAGS.SUPPORT,
+        flags = CARD_FLAGS.ITEM,
+        rarity = CARD_RARITY.RARE,
+
+        max_charges = 1,
+
+        min_persuasion = 4,
+        max_persuasion = 6,
+        target_enemy = TARGET_ANY_RESOLVE,
+        target_mod = TARGET_MOD.TEAM,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     def.item_tags = (def.item_tags or 0) | ITEM_TAGS.NEGOTIATION
