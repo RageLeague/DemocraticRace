@@ -570,10 +570,11 @@ local CARDS = {
         target_enemy = TARGET_ANY_RESOLVE,
         target_mod = TARGET_MOD.TEAM,
     },
-    forgetinator_TBD =
+    neural_disrupter_negotiation =
     {
-        name = "Forgetinator TBD",
+        name = "Neural Disrupter",
         desc = "Remove target intent.",
+        flavour = "Neural disrupters replace a person's thoughts with sparkly lights for a limited time - wait a second.",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
