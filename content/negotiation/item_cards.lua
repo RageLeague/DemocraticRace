@@ -481,7 +481,7 @@ local CARDS = {
     },
     pearl_grey =
     {
-        name = "Pearl Grey (TBD)",
+        name = "Pearl Grey",
         desc = "Create 1 {stoic}",
 
         cost = 0,
