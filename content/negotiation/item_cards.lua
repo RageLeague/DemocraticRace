@@ -8,7 +8,7 @@ local CARDS = {
     curious_curio =
     {
         name = "Curious Curio",
-        flavour = "'I have no idea what it does, but it looks cool.'",
+        flavour = "'One of those baubles you can't tell the value of without a professional's eye. Brute Force does work as well.'",
         desc = "Draw a card.",
 
         cost = 1,
@@ -44,7 +44,7 @@ local CARDS = {
     royal_relic =
     {
         name = "Royal Relic",
-        flavour = "'This relic used to belong to kradeshi monarchs of old to symbolize their power. It doesn't really do much else.'",
+        flavour = "'A gleaming relic, yes, but not a particularly valuable one.'",
         desc = "Gain {1} {RENOWN}.\nDraw a card.",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.renown_stacks)
@@ -67,7 +67,7 @@ local CARDS = {
     mesmerizing_charm =
     {
         name = "Mesmerizing Charm",
-        flavour = "'Wow this charm is really mesmerizing!'",
+        flavour = "'An old knick-knack the Vagrants wore when they needed to be the center of attention.'",
         desc = "Force all enemy intents and arguments to target it.\nDraw a card.",
 
         cost = 1,
@@ -96,7 +96,7 @@ local CARDS = {
     intimidating_blaster =
     {
         name = "Intimidating Blaster",
-        flavour = "'I have no idea how to use this, but I can test it on you if you'd like.'",
+        flavour = "'A weak firearm, used more for self-defense than active violence. Whoever you point this at may not know that, though.'",
         desc = "{INCEPT} {1} {intimidated}.\nDraw a card.",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.intimidated_stack)
@@ -121,7 +121,7 @@ local CARDS = {
     {
         name = "Paperweight",
         desc = "Choose a card in your hand and give it {STICKY} for the rest of this negotiation.",
-
+        flavour = "I'll just keep that here for now.",
         cost = 0,
         item_tags = ITEM_TAGS.UTILITY,
         flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND | CARD_FLAGS.STICKY,
@@ -527,7 +527,7 @@ local CARDS = {
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.smarts_bonus)
         end,
-
+        flavour = "Numerous in-depth Baron Studies prove that Rise Activity in worksites is a bad thing for productivity.", 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
         flags = CARD_FLAGS.ITEM,
