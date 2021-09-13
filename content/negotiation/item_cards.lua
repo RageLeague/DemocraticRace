@@ -316,7 +316,7 @@ local CARDS = {
 
         modifier =
         {
-            desc = "If you would gain one or more stacks of {INFLUENCE} or {RENOWN}, gain <#HILITE>{1}</> additional {1*stack|stacks}.",
+            desc = "Whenever you would gain {INFLUENCE} or {RENOWN}, gain <#HILITE>{1}</> additional {1*stack|stacks}.",
             desc_fn = function(self, fmt_str)
                 return loc.format(fmt_str, self.stacks or 1)
             end,
