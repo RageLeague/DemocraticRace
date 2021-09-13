@@ -130,13 +130,21 @@ QDEF:AddConvo()
                 }
             ]],
             DIALOG_CONVINCE_PAY_FAILURE = [[
+                player:
+                    I would hope you understand that these kinds of covert trades should be a little bit quieter.
                 rise:
-                    [p] You are both enemies of the cause!
-                    !exit
-                * {rise} left, leaving you with {jakes}.
+                    But then how will people not know of our valor?
+                    The Rise need to be heard of by all, not just by those we surround ourselves with!
+                    And if that isn't reason enough to aide us in whatever way you can, then the revolution will take it's business elsewhere.
+                * {rise} turns heel and walks away, head held high like all those higher ups {rise.heshe} vows to destroy.
                 jakes:
-                    !right
-                    Great, just as I thought I get a potential customer.
+                    !sigh
+                    Well, unless you're buying all these weapons, I can't really do much with this merchandise.
+                player:
+                    !shrug
+                    Sell it to a more appreciable client, I guess.
+                jakes:
+                    Pardon my rookie mistake for thinking the armed revolution would be appreciable to a box full of guns.
             ]],
             OPT_CONVINCE_DONATE = "Convince {jakes} to donate weapons to the cause",
             SIT_MOD_NO_DONATE = "That's not how business works.",
@@ -188,6 +196,7 @@ QDEF:AddConvo()
                     !right
                 player:
                     !left
+                    !over_there
                     This the one hassling your haggle?
                 rise:
                     Yeah! All I want are some authentic weaponry and a bit of enthusiasm for the cause.
@@ -200,8 +209,10 @@ QDEF:AddConvo()
                 rise:
                     Really? 
                 player:
+                    !eureka
                     For sure! And that oughta lead to a competitive price from {jakes} later on, if you still want to use {jakes.himher}.
                 rise:
+                    !think
                     You make a bit of sense, yeah.
                     Well, I guess I can go see some of these other options
                     !exit
@@ -215,6 +226,12 @@ QDEF:AddConvo()
                 player:
                     A nobody. They'll be lucky if they could mug the weapon off of this "esteemed weapons dealer".
                     The Rise'll be eating out of the palm of your hand soon enough.
+                jakes:
+                    That does get the Rise off my back for the now, although I still have these weapons.
+                    I suppose I could call a few favors, get these weapons sold on such short notice.
+                player:
+                    !salute
+                    For that, I wish you luck. 
             ]],
             DIALOG_CONVINCE_CALL_OFF_FAILURE = [[
                 player:
@@ -222,8 +239,24 @@ QDEF:AddConvo()
                 rise:
                     Well, I guess that-
                 jakes:
+                    !left
                     !point
                     Wait, you guys need to protect Democracy or something.
+                rise:
+                    Y-yeah! We just got Democracy, we need to keep it safe from outside influences!
+                jakes:
+                    That's the spirit.
+                player:
+                    !right
+                jakes:
+                    !angry_point
+                    What in Hesh's name are you trying to pull, grifter?
+                player:
+                    !placate
+                    I just saw you were having some business conflicts and I was hoping-
+                jakes:
+                    You should hope I don't use any of these weapons on you.
+                    This is still a sale i'd like to make. I don't need grifters butting into other's good business.
             ]],
             OPT_ARREST = "Confront them about dealing with contraband...",
             DIALOG_ARREST = [[
@@ -232,7 +265,7 @@ QDEF:AddConvo()
                 player:
                     !left
                 * You tut into the middle of them with a gait you learned from watching out for admiralty patrols back in your bounty hunting days.
-                * Ironic the same trick works on the correct side of the law as well.
+                * Ironic how the same trick works on the correct side of the law as well.
                 player:
                     Big box of weapons you got there, {jakes}.
                 jakes:
@@ -240,12 +273,13 @@ QDEF:AddConvo()
                 {high_admiralty_support?
                 player:
                     Hm. I happen to know a few people who'd want these going through the proper customs.
-                jakes:
-                    Hey, I paid my customs fees! The admiralty got their cut of this deal already.
                 }
                 {not high_admiralty_support?
-                    Oh yeah? What's it to you?
+                player:
+                    Doesn't sound like something the Admiralty would particularly care for.
                 }
+                jakes:
+                    Hey, I paid my customs fees! The admiralty got their cut of this deal already.
             ]],
         }
         :SetLooping(true)
@@ -335,15 +369,15 @@ QDEF:AddConvo()
                 rise:
                     !right
                 player:
-                    [p] Well, maybe before you want to buy weapons, get the money for it.
+                    What kind of long con were you trying to pull on {jakes}?
                 rise:
-                    I suppose you are right.
-                    Now where am I going to find the weapons now?
-                    !exit
-                * {rise} leaves, leaving you with {jakes}.
-                jakes:
-                    !right
-                    Wow, that was something.
+                    !bashful
+                    Ah jeez, two of you getting on my case.
+                    The revolution has...had weapons.
+                    We discarded quite a few of them when the election was pronounced. Bit of symbolism, laying down our arms, y'know?
+                    Unfortunately we needed to pick up those weapons again to help protect the election from being completely rigged.
+                    !shrug
+                    And you can probably guess the amount of money we also threw away when we threw away those weapons.
             ]],
             OPT_PAY = "Pay for {rise}",
             DIALOG_PAY = [[
@@ -353,6 +387,22 @@ QDEF:AddConvo()
                     !left
                     !sigh
                     The Rise really are in dire straits, I see.
+                * You put a separate wad of bills right next to the ones that {rise} placed.
+                * {jakes} quickly scoops them up and counts them all up.
+                rise:
+                    You'd actually spend your own money to help the cause?
+                player:
+                    What politician wouldn't want to be on the right side of history, right?
+                rise:
+                    Wow! You're a true help, y'know that?
+                jakes:
+                    !left
+                    Just tallied it. This'll cover the entire transaction.
+                    Though I expect to be told upfront if you can't pay next time.
+                    Word gets around, y'know.
+                rise:
+                    !salute
+                    Er, yes. I promise that we won't try to cheap you out anymore.
             ]],
             OPT_DONATE = "Donate some weapons",
             DIALOG_DONATE = [[
@@ -360,18 +410,17 @@ QDEF:AddConvo()
                     !right
                 player:
                     !left
-                    [p] Here, have some weapons for your cause.
-                    rise:
-                    Really?
+                    !give
+                    Well, if you need something to use, I could give you this.
+                rise:
+                    !take
+                    Well, that's appreciated. Something is always better than nothing for the revolution.
+                    Nice to see <i>someone<\> can contribute to the cause.
                 player:
-                    Don't question it.
-                jakes:
-                    !right
-                    Wait, you are letting {rise.heshe} get what {rise.heshe} wants without paying?
-                player:
-                    {rise.HeShe} isn't paying anything either way, right? There is no loss to you.
-                jakes:
-                    I suppose.
+                    Don't start squabbling again. I can always take that weapon back, y'know.
+                rise:
+                    !salute
+                    You're right. Safe travels.
             ]],
 
             SELECT_TITLE = "Select a card",
@@ -441,9 +490,10 @@ QDEF:AddConvo()
             DIALOG_BACK = [[
                 player:
                 {tried_intimidate?
-                    I'm just kidding, of course.
+                    Okay, y'know what. You got me.
+                    I was just trying to spook you two.
                 jakes:
-                    Your terrible sense of humor is not appreciated.
+                    Right. Because the cherry on top of this exchange is a nobody coming in to mock good business.
                 }
                 {not tried_intimidate?
                     I'm just saying. You don't want the wrong person to see you do this stuff.
@@ -451,7 +501,7 @@ QDEF:AddConvo()
                     Tell me something I didn't know already.
                 }
             ]],
-            OPT_INTIMIDATE = "Intimidate them",
+            OPT_INTIMIDATE = "Intimidate them to come willingly",
             DIALOG_INTIMIDATE = [[
                 player:
                     Well, you see. The Admiralty just called.
@@ -472,9 +522,8 @@ QDEF:AddConvo()
             ]],
             DIALOG_INTIMIDATE_FAILURE = [[
                 jakes:
-                    [p] Yeah? What are you going to do about it?
-                    Your whining doesn't give you power to arrest people, you know?
-                * {jakes.HeShe}'s right, you know.
+                    Hey, last I checked, the Admiralty don't send hunters to do grunt work.
+                    Unless you've got your switch friends backing you up, you don't have the authority to do anything.
             ]],
             OPT_ARREST = "Arrest them with force",
             DIALOG_ARREST = [[
@@ -485,29 +534,31 @@ QDEF:AddConvo()
                     Criminals. Can't live with them, can't live without them.
                 rise:
                     !right
+                    !fight
                     You're the real criminal here! Viva la Rise!
                 }
                 {not tried_intimidate?
-                    [p] You are both under arrest!
+                player:
+                    I tell ya. Knocking skulls is the best part of this job.
                 jakes:
-                    Oh we are doing this, huh?
+                    !fight
+                    Yeah, yours specifically.
                 }
             ]],
             DIALOG_ARREST_WIN = [[
                 {jakes_dead?
                     {rise_dead?
-                        * [p] Knowing that you killed two criminals makes you proud.
-                        * Their friends are not going to like you, and it puts the legitimacy of your campaign into question.
-                        * You left the scene.
+                        * It does feel good to shake off the rust from your weapons, even if you got a bit overzealous.
+                        * Overzealoutry, however, might affect your campaign in the long run.
                     }
                     {not rise_dead?
                         rise:
                             !right
                             !injured
                         * {rise} scrambles for the boxes, prying one open with the deftness of a safe cracker.
-                        *{rise.HisHer} awareness, however, could use some work. You grab {rise.hisher} arms before clapping {agent.hisher} fists in a pair of restraints.
+                        * {rise.HisHer} awareness, however, could use some work. You grab {rise.hisher} arms before clapping {agent.hisher} fists in a pair of restraints.
                         rise:
-                            So i'm leading a life of Martyrdom, now? It'll be a great way to go out, y'know.
+                            So i'm leading a life of Martyrdom, now? It'll be a great way to be remembered, y'know.
                         player:
                             Reason it out however you want. If it helps you sleep tonight, hey, i'm fine with you babbling into thin air.
                             But just remember you signed up for this.
@@ -518,13 +569,15 @@ QDEF:AddConvo()
                     {rise_dead?
                         jakes:
                             !injured
-                            [p] You bastard!
-                            Look at what you've done!
+                            Ugh...the rest of the Rise are gonna kill me for this.
                         player:
-                            This one resisted arrest.
-                            It's not my fault.
-                            Come quietly or you will suffer the same fate.
-                        * You send the jakes to the nearest Admiralty patrol.
+                            Would you like me to finish the job, then? Would that make you feel better?
+                        jakes:
+                            Not from a switch, no. If i'm dying, i'm gonna die for something honorable.
+                        player:
+                            !crossed
+                            Hmph. Maybe you and that Rise member had more in common than you thought.
+                        * {jakes} spends the rest of your quaint time together grumbling, all the way to the patrol that passes through these parts.
                     }
                     {not rise_dead?
                         jakes:
@@ -539,6 +592,7 @@ QDEF:AddConvo()
                         rise:
                             But-but I planned-
                         player:
+                            !question
                             "Plans rarely survive contact with the enemy". Did you know that quote, or did you not know how to read the fine print before tonight?
                         * With both your prisoners in tow, the orbitting Admiralty Patrol that passes these parts quickly becomes two criminals fuller.
                     }
@@ -547,15 +601,21 @@ QDEF:AddConvo()
             OPT_USE_BODYGUARD = "Let a bodyguard arrest them...",
             DIALOG_USE_BODYGUARD = [[
                 player:
-                    [p] Well, you see...
-                * You gesture {guard}?
+                    !wink
+                * You signal for {guard} to restrain one of them.
                 jakes:
-                    What? Where did that switch came from?
-                guard:
+                    !taken_aback
+                    Wh-hey!
+                rise:
                     !left
-                    You are really unobservant, are you?
-                    Anyway, you are coming with me!
-                * {guard} took them away.
+                    Wait, what's going-
+                * You quickly grab {rise}'s arms behind {rise.himher}, and with {guard} holding back {jakes}, you have 2 new prisoners.
+                jakes:
+                    I bet you like this kind of grunt work, switch.
+                guard:
+                    !shrug
+                    Pays the bills, what can I say.
+                * You and {guard} hold both of your new friends down while waiting for the authorities to come and see you both doing your civic duty.
             ]],
         }
         :SetLooping(true)
