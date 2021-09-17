@@ -17,129 +17,169 @@ QDEF:AddConvo()
     :ConfrontState("CONF")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] You are interrupted by a priest.
+                * You find a priest sitting by the side of the road, organizing an assortment of vials, syringes, and medical supplies.
                 player:
                     !left
                 agent:
                     !right
-                    Stop right there!
-                    There is a bog infestation in the Pearl, and all citizens of the Pearl must get vaccinated against it.
+                    !hesh_greeting
+                    Greetings, {player}. I have grave news to tell you.
+                player:
+                    !question
+                agent:
+                    A new type of plague has gone around Pearl-on-the-Foam, infecting those who walk through the shallows.
+                    But you're in luck! We have prepared a cure to this infection!
+                    Simply allow me to give it to you, and I promise you will be painlessly innoculated against this new plague.
             ]],
             OPT_ASK_INFESTATION = "Ask about the infestation",
             DIALOG_ASK_INFESTATION = [[
                 player:
-                    How did the bog parasites get in the Pearl?
+                    How did Squeaky Clean Pearl get this infestation?
                 agent:
-                    As part of the truce deal, every heretic is allowed in the Pearl apparently.
-                    And some boggers brought their filth into the Pearl.
-                    We plan to stop the infestation at its root before it becomes an epidemic.
+                    Well, with the new election system, we had signed a truce deal allowing most willing to vote into the Pearl.
+                    Unfortunately, that opened Hesh's flood gates for a breed of heretics we normally kept in Grout Bog.
+                    These, er, <i>people<\> brought their own ideas, and those ideas brought sickness to Hesh's Pious.
                 player:
-                    What are the consequences of catching the parasite?
+                    !question
+                    Is this infection as bad as you're doomsaying it to be?
                 agent:
-                    It would be a disgrace to Hesh itself.
-                    And you will probably die horribly. But that is less important than the insult to Hesh.
+                    Hesh's wrath is harsh to those unfit for consumption.
+                    Should you be infected without proper treatment, your death will be slow, and your soul damned.
+                player:
+                    Let's focus on the harsh and painful death part first.
+                agent:
+                    That's what most people care about more, short-sighted though it may be.
             ]],
             OPT_ASK_VACCINE = "Ask about the vaccine",
             DIALOG_ASK_VACCINE = [[
                 player:
-                    What is this vaccine you speak of?
+                    So what's in all those vials that you'd be stabbing me with?
                 agent:
-                    It is a preemptive measure to the bog infestation.
-                    Once you are innoculated, you are guaranteed to never get infected by the parasite.
-                    It is 100% reliable.
-                    Although it has a temporary side effect that won't be pleasant.
-                    But that is a small price to pay for salvation.
+                    Uncouthly put, {player}. I assure you, this is a completely safe preventative measure.
+                    You may feel some minor aches and I wouldn't reccommend you exert yourself.
+                    But that is just your body crafting it's shield of faith against this heretical poison. 
+                    You'll shrug away the pains quickly, and your soul will be prepared for Consumption by Hesh, as all who walk in the shallows deserve.
             ]],
             OPT_ACCEPT = "Accept the vaccine",
             DIALOG_ACCEPT = [[
                 player:
-                    [p] Alright, let me have it.
+                    It better be as painless as you make it sound like.
                 agent:
-                    Hesh thank you for your cooperation.
-                * You roll up your sleeve and let the priest innoculate you.
-                * The process is kind of painful.
+                    A small prick, just through the skin. You won't feel a thing during the procedure.
+                    Now if you just show me your arm...
+                player:
+                    !exit
+                * ...
             ]],
             DIALOG_ACCEPT_PST = [[
                 player:
-                    Ow.
+                    !left
+                    !injured
+                    "Painless", I believe I can quote you as.
+                    "Painless" is not anything close to what that felt like.
                 agent:
-                    Don't be such a crybaby. It's nothing compared to the eternal damnation if you refuse.
-                    Anyway, just take some rest, and try not to work yourself too hard.
-                    You should be immune to bog parasites very soon.
-                    Anyway, see you!
+                    Bite your tounge. Whatever you feel now is leagues better than the eternal damnation at the hands of Hesh itelf.
+                    It will take it's toll, yes, but your body and soul will be fit for Consumption.
+                player:
+                    And how long will I be paying the fare for this mistake?
+                agent:
+                    !hesh_greeting
+                    As long as you keep fighting it.
                     !exit
-                * The priest leaves you be.
+                * You roll your sleeve back up and trudge on, feeling a noticable limp, but also a notable strength you can't quite place.
             ]],
             OPT_CONVINCE = "Question {agent} about the source of the vaccine",
             DIALOG_CONVINCE = [[
                 player:
-                    [p] Where did you find the vaccine?
-                agent:
-                    Excuse me?
-                player:
-                    This infestation wasn't in the pearl for long, but there is already a vaccine for it.
-                    Surely you don't find that suspicious?
+                    !crossed
+                    Pardon if a strange cocktail of chemicals being injected into me puts me on edge.
+                    I'd like to know what you put into this thing if you're going to give it to me.
             ]],
             DIALOG_CONVINCE_SUCCESS = [[
                 agent:
-                    [p] Will you shut up if I tell you?
+                    If it will help prevent the disease from spreading...
+                    Very well. We hadn't made the vaccine as immediately as we tell people.
+                    It was...supplied to us.
                 player:
-                    Let's hear it.
+                    !question
+                    Supplied from where?
                 agent:
-                    !sigh
-                    When we found out about the infestation, the cult starts to panic.
-                    Then, one of us noted that the Barons have worked in the bog for a long time, and surely they have a solution.
-                    So we "acquired" the vaccine from them.
-                player:
-                    Uh huh.
-                agent:
-                    Anyway, where it comes from doesn't matter.
-                    What matters is that you take the vaccine, lest you get infected by the bog.
+                    The Spark Barons had prepared an innoculative agent against it, although they hadn't made it particularly consumer friendly.
+                    !over_there
+                    But we had no choice. We had to protect the pious masses, so we purchased them and helped as many as we could.
             ]],
+            --[[
+            player:
+                    Oddly generous for the Cult to turn heel on their MO like that.
+                    Are you sure it's not just to keep the Cult vote safe?
+                agent:
+                    Blashphemer! We are more charitable than you make us out to be, hence why we wish to vaccinate and help those who walk in the shallows.
+                player:
+                    So that's a yes?
+            ]]
             DIALOG_CONVINCE_NO_INTEL = [[
                 agent:
-                    [p] Hesh has an unnatural ability to find a solution to deal with the threat.
-                    Is it that hard to believe?
+                    Surely you know of Hesh's miracles?
+                    We have derived this from a sacred formula passed down by priests for generations to combat illness of all kinds!
                 player:
-                    Well...
+                    It can't be a cure-all. You would've cured a lot more things with it if you had some magic salt-water disease killer.
                 agent:
-                    There you have it.
-                    That is the answer to where this vaccine comes from.
+                    !hesh_greeting
+                    Ah, as the Waterlogged Tomes decreed, it was to be kept secret from the public, as it could eventually cause the heretics to destroy it.
+                player:
+                    Heretics wouldn't have any reason to destroy it, though.
+                agent:
+                    !angrypoint
+                    Someone who questions the Waterlogged Tomes! Have you no shame?
+                player:
+                    My shame's perfectly intact, but fine. Don't tell me how it works, then.
             ]],
             DIALOG_CONVINCE_FAILURE = [[
-                player:
-                    [p] Look, I'm just asking the questions.
                 agent:
-                    Do you doubt Hesh's ability to produce a countermeasure to its threat quickly?
+                    Well, it's a mixture of Salt Water, Lumin, some grains of sand and a whole heaping lot of "none of your business".
                 player:
-                    Well, I-
+                    !crossed
+                    I believe this is my business if you're going to inject something into my veins.
                 agent:
-                    I suggest you ask no further if you don't wish to insult Hesh itself.
+                    And I believe in Hesh, and it's wrath will come down on you if you keep questioning this.
+                player:
+                    Ah, fine. Forget I asked.
             ]],
             OPT_REFUSE = "Refuse the vaccine",
             DIALOG_REFUSE = [[
                 {asked_info?
                     player:
-                        [p] You call yourself a priest, yet you use the tools of the spark.
-                        Have you no honor? No faith in the Cult?
+                        !hips
+                        I don't think i'll be getting shot up with this vaccine you called "not consumer-friendly".
                     agent:
-                        I- I assure you, my faith perfectly fine.
+                        !angry_point
+                        Do you wish for eternal damnation?
                     player:
-                        Then you should know not to inject the heretic's product into someone's body.
+                        Tough words for the Priest using deemed heretical tools to do holy work.
                     agent:
-                        Alright then. Have it your way.
-                        Just be careful not to get infected by the bog.
+                        It's out of necces-
+                    player:
+                        Neccessity to keep the voter base alive. Neccessity to keep <i>your<\> voter base alive.
+                    agent:
+                        !point
+                        I-
+                        Fine! Let that damned bog drag your soul down with it!
                         !exit
                 }
                 {not asked_info?
                     player:
-                        [p] I am not going to take the vaccine!
-                        You have no right to force it upon me!
+                        Put yourself in an official clinic instead of a side road and i'd do it.
+                        BUt i'm not going to take the vaccine from a random priest.
                     agent:
-                        You and your rights!
-                        You are willing to risk eternal damnation to defend it?
-                        Fine, have it your way then.
-                        Watch your back, grifter.
+                        And risk eternal damnation? What if you become infected?
+                    player:
+                        !shrug
+                        Mind over matter, what can I say?
+                    agent:
+                        !angry
+                        You'd better watch yourself, Grifter. Wouldn't want to go out at night without a scarf.
+                        And not just because of the cold.
+                        !exit
                 }
                 * {agent} leaves, leaving you contemplating if you made the right decision.
             ]],
