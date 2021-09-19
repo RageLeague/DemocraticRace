@@ -124,3 +124,24 @@ function Aspect.Battler:AddCard( card, ... )
     end
     return res
 end
+
+local old_create_fighter_fn = Fighter.CreateFromAgent
+
+function Fighter.CreateFromAgent(agent, ...)
+    local fighter = old_create_fighter_fn(agent, ...)
+    if agent.battler and (fighter.behaviour == nil or player_controlled) then
+        if agent.negotiator then
+            for i, card in ipairs(agent.negotiator:GetCards()) do
+                if card.battle_counterpart then
+                    local battle_card = Battle.Card(card.battle_counterpart, card.owner, card.userdata)
+                    battle_card.show_dealt = false
+                    battle_card:MakeTemporary(false)
+                    battle_card.owner = fighter
+                    battle_card.linked_negotiation_counterpart = card
+                    table.insert( fighter.cards, battle_card )
+                end
+            end
+        end
+    end
+    return fighter
+end
