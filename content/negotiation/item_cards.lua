@@ -697,6 +697,26 @@ local CARDS = {
             minigame:ModifyActionCount( 1 )
         end,
     },
+
+    admiralty_requisition_negotiation =
+    {
+        name = "Admiralty Requisition",
+        flavour = "'Hey I'm just the messenger.'",
+        desc = "Draw 3 cards.",
+        icon = "battle/admiralty_requisition.tex",
+
+        cost = 0,
+        max_charges = 1,
+
+        rarity = CARD_RARITY.UNCOMMON,
+        item_tags = ITEM_TAGS.UTILITY | ITEM_TAGS.ADMIRALTY,
+
+        battle_counterpart = "admiralty_requisition",
+
+        OnPostResolve = function( self, minigame, targets )
+            minigame:DrawCards( 3 )
+        end,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     def.item_tags = (def.item_tags or 0) | ITEM_TAGS.NEGOTIATION
