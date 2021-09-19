@@ -289,6 +289,7 @@ local CARDS = {
         rarity = CARD_RARITY.RARE,
 
         max_charges = 3,
+        battle_counterpart = "vroc_whistle",
 
         goon_count = 2,
 
@@ -527,7 +528,7 @@ local CARDS = {
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.smarts_bonus)
         end,
-        flavour = "Numerous in-depth Baron Studies prove that Rise Activity in worksites is a bad thing for productivity.", 
+        flavour = "Numerous in-depth Baron Studies prove that Rise Activity in worksites is a bad thing for productivity.",
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
         flags = CARD_FLAGS.ITEM,
