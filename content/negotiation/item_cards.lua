@@ -649,6 +649,7 @@ local CARDS = {
         name = "Speed Tonic",
         desc = "2 random cards in hand cost 0 until played.",
         flavour = "'Who needs sleep?'",
+        icon = "battle/speed_tonic.tex",
 
         cost = 1,
         max_charges = 1,
@@ -676,6 +677,26 @@ local CARDS = {
         end,
     },
 
+    vial_of_slurry_negotiation =
+    {
+        name = "Vial of Slurry",
+        desc = "Gain an action.",
+        flavour = "'I love this stuff! I can just keep on drinking!'",
+        icon = "battle/vial_of_slurry.tex",
+
+        item_tags = ITEM_TAGS.CHEMICAL | ITEM_TAGS.ILLICIT,
+        rarity = CARD_RARITY.UNCOMMON,
+        flags = CARD_FLAGS.REPLENISH,
+
+        cost = 0,
+        max_charges = 3,
+
+        battle_counterpart = "vial_of_slurry",
+
+        OnPostResolve = function( self, minigame, targets )
+            minigame:ModifyActionCount( 1 )
+        end,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     def.item_tags = (def.item_tags or 0) | ITEM_TAGS.NEGOTIATION
