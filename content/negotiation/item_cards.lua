@@ -289,6 +289,7 @@ local CARDS = {
         rarity = CARD_RARITY.RARE,
 
         max_charges = 3,
+        battle_counterpart = "vroc_whistle",
 
         goon_count = 2,
 
@@ -527,7 +528,7 @@ local CARDS = {
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.smarts_bonus)
         end,
-        flavour = "Numerous in-depth Baron Studies prove that Rise Activity in worksites is a bad thing for productivity.", 
+        flavour = "Numerous in-depth Baron Studies prove that Rise Activity in worksites is a bad thing for productivity.",
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
         flags = CARD_FLAGS.ITEM,
@@ -589,6 +590,131 @@ local CARDS = {
             for i, target in ipairs(targets) do
                 target.negotiator:DismissIntent(target)
             end
+        end,
+    },
+
+    -- These cards are the negotiation counterpart of existing battle cards
+    sequencer_negotiation =
+    {
+        name = "Sequencer",
+        flavour = "'Universal energy my friend, that's what the blue is all about.'",
+        desc = "Restore all uses to an item card in your hand.",
+        icon = "battle/sequencer.tex",
+
+        item_tags = ITEM_TAGS.UTILITY,
+        rarity = CARD_RARITY.UNCOMMON,
+
+        cost = 1,
+        max_charges = 3,
+
+        battle_counterpart = "sequencer",
+
+        flags = CARD_FLAGS.REPLENISH | CARD_FLAGS.EXPEND,
+
+        GetCardsOwnedBySelf = function(self)
+            -- if self.negotiator:IsPlayer() and self.engine then
+            --     return table.merge( self.engine.hand_deck.cards, self.engine.discard_deck.cards, self.engine.draw_deck.cards )
+            -- end
+            return self.engine:GetHandDeck()
+        end,
+
+        CanPlayCard = function( self, card, engine, target )
+            if not self:GetCardsOwnedBySelf() then
+                return false, CARD_PLAY_REASONS.NO_VALID_TARGETS
+            end
+            for i, card in ipairs(self:GetCardsOwnedBySelf().cards) do
+                if card:IsPartiallySpent() then
+                    return true
+                end
+            end
+            return false, CARD_PLAY_REASONS.NO_VALID_TARGETS
+        end,
+
+        OnPostResolve = function( self, minigame, targets )
+            local card = minigame:ChooseCardsFromTable( self:GetCardsOwnedBySelf(), 1, 1, Negotiation.Card.IsPartiallySpent, LOC "CARD_ENGINE.CHOOSE_SPENT_CARD", self )[1]
+            if card then
+                local original_deck = card.deck
+                -- card:TransferCard(minigame.trash_deck)
+                -- minigame:GetTrashDeck():InsertCard( card )
+                card:RestoreCharges()
+                -- card.show_dealt = false
+                -- minigame:DealCard( card, original_deck )
+                -- card:TransferCard(original_deck)
+                -- card:NotifyChanged()
+            end
+        end,
+    },
+    speed_tonic_negotiation =
+    {
+        name = "Speed Tonic",
+        desc = "2 random cards in hand cost 0 until played.",
+        flavour = "'Who needs sleep?'",
+        icon = "battle/speed_tonic.tex",
+
+        cost = 1,
+        max_charges = 1,
+        flags = CARD_FLAGS.REPLENISH,
+
+        item_tags = ITEM_TAGS.CHEMICAL,
+        rarity = CARD_RARITY.COMMON,
+
+        battle_counterpart = "speed_tonic",
+
+        OnPostResolve = function( self, minigame, targets )
+            local hand = minigame:GetHandDeck()
+
+            local freebies = {}
+            for i = 1, 2 do
+                local freebie_card = hand:PeekRandom( function( x )
+                    local cost = minigame:CalculateActionCost( x )
+                    return x ~= self and table.find( freebies, x ) == nil and cost > 0
+                end )
+                if freebie_card then
+                    table.insert(freebies, freebie_card)
+                    freebie_card.flags = SetBits( freebie_card.flags, CARD_FLAGS.FREEBIE )
+                end
+            end
+        end,
+    },
+
+    vial_of_slurry_negotiation =
+    {
+        name = "Vial of Slurry",
+        desc = "Gain an action.",
+        flavour = "'I love this stuff! I can just keep on drinking!'",
+        icon = "battle/vial_of_slurry.tex",
+
+        item_tags = ITEM_TAGS.CHEMICAL | ITEM_TAGS.ILLICIT,
+        rarity = CARD_RARITY.UNCOMMON,
+        flags = CARD_FLAGS.REPLENISH,
+
+        cost = 0,
+        max_charges = 3,
+
+        battle_counterpart = "vial_of_slurry",
+
+        OnPostResolve = function( self, minigame, targets )
+            minigame:ModifyActionCount( 1 )
+        end,
+    },
+
+    admiralty_requisition_negotiation =
+    {
+        name = "Admiralty Requisition",
+        flavour = "'Hey I'm just the messenger.'",
+        desc = "Draw 3 cards.",
+        icon = "battle/admiralty_requisition.tex",
+
+        cost = 0,
+        max_charges = 1,
+
+        rarity = CARD_RARITY.UNCOMMON,
+        item_tags = ITEM_TAGS.UTILITY | ITEM_TAGS.ADMIRALTY,
+
+        battle_counterpart = "admiralty_requisition",
+
+        OnPostResolve = function( self, minigame, targets )
+            minigame:DrawCards( 3 )
         end,
     },
 }

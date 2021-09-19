@@ -4,5 +4,5 @@ Convo("DEBUG_ENDING_TEST")
     }
     :Hub(function(cxt)
         cxt:Opt("OPT_TEST")
-            :GainCards{"business_card"}
+            :GainCards{"vroc_whistle"}
     end)

@@ -354,6 +354,9 @@ local QDEF = QuestDef.Define
 
             DemocracyUtil.SendMetricsData("GAME_OVER", METRIC_DATA)
         end,
+        allow_dual_purpose_cards = function( quest, param )
+            param.val = true
+        end,
     },
     SpawnPoolJob = function(quest, pool_name, excluded_ids, spawn_as_inactive, spawn_as_challenge)
         local event_id = pool_name
