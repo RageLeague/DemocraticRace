@@ -592,6 +592,58 @@ local CARDS = {
             end
         end,
     },
+
+    -- These cards are the negotiation counterpart of existing battle cards
+    sequencer_negotiation =
+    {
+        name = "Sequencer",
+        flavour = "'Universal energy my friend, that's what the blue is all about.'",
+        desc = "Restore all uses to an item card in your hand.",
+        icon = "battle/sequencer.tex",
+
+        item_tags = ITEM_TAGS.UTILITY,
+        rarity = CARD_RARITY.UNCOMMON,
+
+        cost = 1,
+        max_charges = 3,
+
+        battle_counterpart = "sequencer",
+
+        flags = CARD_FLAGS.REPLENISH | CARD_FLAGS.EXPEND,
+
+        GetCardsOwnedBySelf = function(self)
+            -- if self.negotiator:IsPlayer() and self.engine then
+            --     return table.merge( self.engine.hand_deck.cards, self.engine.discard_deck.cards, self.engine.draw_deck.cards )
+            -- end
+            return self.engine:GetHandDeck()
+        end,
+
+        CanPlayCard = function( self, card, engine, target )
+            if not self:GetCardsOwnedBySelf() then
+                return false, CARD_PLAY_REASONS.NO_VALID_TARGETS
+            end
+            for i, card in ipairs(self:GetCardsOwnedBySelf().cards) do
+                if card:IsPartiallySpent() then
+                    return true
+                end
+            end
+            return false, CARD_PLAY_REASONS.NO_VALID_TARGETS
+        end,
+
+        OnPostResolve = function( self, minigame, targets )
+            local card = minigame:ChooseCardsFromTable( self:GetCardsOwnedBySelf(), 1, 1, Negotiation.Card.IsPartiallySpent, LOC "CARD_ENGINE.CHOOSE_SPENT_CARD", self )[1]
+            if card then
+                local original_deck = card.deck
+                -- card:TransferCard(minigame.trash_deck)
+                -- minigame:GetTrashDeck():InsertCard( card )
+                card:RestoreCharges()
+                -- card.show_dealt = false
+                -- minigame:DealCard( card, original_deck )
+                -- card:TransferCard(original_deck)
+                -- card:NotifyChanged()
+            end
+        end,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     def.item_tags = (def.item_tags or 0) | ITEM_TAGS.NEGOTIATION
