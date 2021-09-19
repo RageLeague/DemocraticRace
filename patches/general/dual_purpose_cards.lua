@@ -95,7 +95,7 @@ end
 local old_desc_fn = CardEngine.GenerateCardDesc
 
 function CardEngine.GenerateCardDesc( card, ... )
-    local allow_dual_purpose_cards = AllowsDualPurposeCards()
+    local allow_dual_purpose_cards = (card.negotiation_counterpart or card.battle_counterpart) and AllowsDualPurposeCards()
     local feature_id = (is_instance( card, BattleCardDef ) or is_instance( card, Battle.Card )) and "DUAL_PURPOSE_BATTLE" or "DUAL_PURPOSE_NEGOTIATION"
     if allow_dual_purpose_cards then
         card.features = card.features or {}
@@ -107,4 +107,20 @@ function CardEngine.GenerateCardDesc( card, ... )
         card.features[feature_id] = nil
     end
     return result
+end
+
+local old_battler_add_card = Aspect.Battler.AddCard
+
+function Aspect.Battler:AddCard( card, ... )
+    local res
+    if old_battler_add_card then
+        res = old_battler_add_card( self, card, ... )
+    else
+        res = Aspect.Battler._base.RemoveCard( self, card, ... )
+    end
+    if card.negotiation_counterpart and self.agent and self.agent.negotiator and AllowsDualPurposeCards() then
+        self:RemoveCard(card)
+        self.agent.negotiator:LearnCard(card.negotiation_counterpart)
+    end
+    return res
 end
