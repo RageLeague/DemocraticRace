@@ -644,6 +644,38 @@ local CARDS = {
             end
         end,
     },
+    speed_tonic_negotiation =
+    {
+        name = "Speed Tonic",
+        desc = "2 random cards in hand cost 0 until played.",
+        flavour = "'Who needs sleep?'",
+
+        cost = 1,
+        max_charges = 1,
+        flags = CARD_FLAGS.REPLENISH,
+
+        item_tags = ITEM_TAGS.CHEMICAL,
+        rarity = CARD_RARITY.COMMON,
+
+        battle_counterpart = "speed_tonic",
+
+        OnPostResolve = function( self, minigame, targets )
+            local hand = minigame:GetHandDeck()
+
+            local freebies = {}
+            for i = 1, 2 do
+                local freebie_card = hand:PeekRandom( function( x )
+                    local cost = minigame:CalculateActionCost( x )
+                    return x ~= self and table.find( freebies, x ) == nil and cost > 0
+                end )
+                if freebie_card then
+                    table.insert(freebies, freebie_card)
+                    freebie_card.flags = SetBits( freebie_card.flags, CARD_FLAGS.FREEBIE )
+                end
+            end
+        end,
+    },
+
 }
 for i, id, def in sorted_pairs( CARDS ) do
     def.item_tags = (def.item_tags or 0) | ITEM_TAGS.NEGOTIATION
