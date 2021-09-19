@@ -135,7 +135,6 @@ function Fighter.CreateFromAgent(agent, ...)
                 if card.battle_counterpart then
                     local battle_card = Battle.Card(card.battle_counterpart, card.owner, card.userdata)
                     battle_card.show_dealt = false
-                    battle_card:MakeTemporary(false)
                     battle_card.owner = fighter
                     battle_card.linked_negotiation_counterpart = card
                     table.insert( fighter.cards, battle_card )
@@ -144,4 +143,32 @@ function Fighter.CreateFromAgent(agent, ...)
         end
     end
     return fighter
+end
+
+local old_consume_battle_card_fn = Battle.Card.Consume
+
+function Battle.Card:Consume(...)
+    old_consume_battle_card_fn(self, ...)
+
+    local agent
+    if is_instance( self.owner, Agent ) then
+        agent = self.owner
+    elseif is_instance( self.owner, Fighter ) then
+        agent = self.owner.agent
+    else
+       print( self, "NO OWNER TO CONSUME:", self.owner )
+    end
+
+    if agent and agent.negotiator and self.linked_negotiation_counterpart then
+        agent.negotiator:RemoveCard( self.linked_negotiation_counterpart )
+    end
+end
+
+local old_on_added = Battle.Card.OnAdded
+
+function Battle.Card:OnAdded(...)
+    old_on_added(self, ...)
+    if self.linked_negotiation_counterpart then
+        self:MakeTemporary(false)
+    end
 end
