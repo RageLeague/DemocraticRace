@@ -256,16 +256,16 @@ local MOD_OPTIONS =
         },
         per_save_file = true,
     },
-    {
-        title = "Collect Deck (Voluntary Deck Collection Program)",
-        button = true,
-        key = "collect_deck",
-        desc = "Copy the current deck information onto your clipboard.",
-        on_click = function()
-            local fn = require "DEMOCRATICRACE:content/collect_deck_script"
-            fn()
-        end,
-    },
+    -- {
+    --     title = "Collect Deck (Voluntary Deck Collection Program)",
+    --     button = true,
+    --     key = "collect_deck",
+    --     desc = "Copy the current deck information onto your clipboard.",
+    --     on_click = function()
+    --         local fn = require "DEMOCRATICRACE:content/collect_deck_script"
+    --         fn()
+    --     end,
+    -- },
     {
         title = "Enable Metrics Collection",
         spinner = true,
