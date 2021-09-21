@@ -266,18 +266,17 @@ local MOD_OPTIONS =
             fn()
         end,
     },
-    -- {
-    --     title = "[Debug] Enable Audio For the Next Game",
-    --     spinner = true,
-    --     key = "enable_audio_debug",
-    --     default_value = 0,
-    --     values =
-    --     {
-    --         { name="Disable", desc="Disable custom audio loading. You will be unable to hear custom audio, but fast reloading is safe.", data = 0 },
-    --         { name="Enable Once", desc="Only load custom audio the next time the game is loaded. Reset to disabled after the next load.", data = 1 },
-    --         { name="Enable (Not Recommended)", desc="Always load custom audio. WARNING: Loading custom audio can sometimes cause the game to hard crash on fast reload. Enable at your own risk.", data = 2 },
-    --     }
-    -- },
+    {
+        title = "Enable Metrics Collection",
+        spinner = true,
+        key = "enable_metrics_collection",
+        default_value = true,
+        values =
+        {
+            { name="Disable", desc="All metrics collection is disabled.", data = false },
+            { name="Enable", desc="Run information during the Democratic Race campaign can be collected to improve the mod. See mod description for more info.", data = true },
+        }
+    },
 }
 -- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {
