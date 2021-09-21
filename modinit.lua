@@ -204,6 +204,7 @@ local function OnLoad( mod )
     -- print(string.match("C:/Users/adfafaf", "^.+[:]([^/\\].+)$"))
     -- print(string.match("DemRace:lalala", "^.+[:]([^/\\].+)$"))
 end
+
 local function OnPreLoad( mod )
 
     -- Patch existing files first
@@ -239,6 +240,11 @@ local function OnPreLoad( mod )
         end
     end
 end
+
+local function OnGameStart( mod )
+
+end
+
 local MOD_OPTIONS =
 {
     -- Access this value from the user's settings by calling:
@@ -286,6 +292,7 @@ return {
     OnLoad = OnLoad,
     OnPreLoad = OnPreLoad,
     OnNewGame = OnNewGame,
+    OnGameStart = OnGameStart,
 
     mod_options = MOD_OPTIONS,
 
