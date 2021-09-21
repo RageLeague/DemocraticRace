@@ -1234,6 +1234,9 @@ function DemocracyUtil.SendMetricsData(event_id, event_data)
     if TheGame:GetLocalSettings().ROBOTICS then
         return
     end
+    if not DemocracyUtil.GetModSetting("enable_metrics_collection") then
+        return
+    end
     -- Initialize fields
     local payload_fields =
     {
