@@ -63,7 +63,7 @@ Content.AddStringTable("DEMOCRACY", {
         METRICS =
         {
             TITLE = "Metric Collection Enabled",
-            DESC = "Since the last update, the Democratic Race mod now has a metrics collection system in place. It helps us imrpove the mod. You may choose to continue with metrics collecction enabled, or, if you don't want to, you can disable it in the mod options menu.",
+            DESC = "Since the last update, the Democratic Race mod now has a metrics collection system in place. It helps us imrpove the mod. You may choose to continue with metrics collecction enabled, or, if you don't want to, you can disable it in the mod options menu.\nOh yeah we figured out how to do metrics collection in mods, I guess that is important.",
         },
         NOTIFICATION =
         {

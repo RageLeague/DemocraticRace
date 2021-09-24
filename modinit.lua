@@ -285,6 +285,28 @@ local MOD_OPTIONS =
             { name="Enable", desc="Run information during the Democratic Race campaign can be collected to improve the mod. See mod description for more info.", data = true },
         }
     },
+    {
+        title = "Enable Custom Items",
+        spinner = true,
+        key = "enable_custom_items",
+        default_value = false,
+        values =
+        {
+            { name="Disable", desc="Custom non-unique items will only show up in a Democratic Race campaign.", data = false },
+            { name="Enable", desc="Custom non-unique items is added to the general item pool, allowing you to get them even outside of a Democratic Race campaign.", data = true },
+        }
+    },
+    {
+        title = "Enable Dual Purpose",
+        spinner = true,
+        key = "enable_dual_purpose",
+        default_value = false,
+        values =
+        {
+            { name="Disable", desc="Dual purpose functionality is only enabled in the Democratic Race campaign.", data = false },
+            { name="Enable", desc="Dual purpose functionality is enabled everywhere, allowing you to get them even outside of a Democratic Race campaign.", data = true },
+        }
+    },
 }
 -- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {
