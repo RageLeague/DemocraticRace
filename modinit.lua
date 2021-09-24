@@ -249,11 +249,19 @@ local function OnGlobalEvent(mod, event_name, ...)
         if DemocracyUtil.GetModSetting("allow_dual_purpose_cards") then
             param.val = true
         end
+    elseif event_name == "card_added" then
+        local card = ...
+        if card.mod_id == mod.id then
+            local game_state = TheGame:GetGameState()
+            if not table.findif( game_state.options.required_mods, function(data) return data.id == mod.id end ) then
+                game_state:RequireMod( mod )
+            end
+        end
     end
 end
 
 local function OnGameStart( mod )
-    TheGame:GetEvents():ListenForEvents( mod, "allow_dual_purpose_cards" )
+    TheGame:GetEvents():ListenForEvents( mod, "allow_dual_purpose_cards", "card_added" )
 end
 
 local MOD_OPTIONS =
