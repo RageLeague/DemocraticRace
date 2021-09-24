@@ -243,8 +243,17 @@ local function OnPreLoad( mod )
     end
 end
 
-local function OnGameStart( mod )
+local function OnGlobalEvent(mod, event_name, ...)
+    if event_name == "allow_dual_purpose_cards" then
+        local card, param = ...
+        if DemocracyUtil.GetModSetting("allow_dual_purpose_cards") then
+            param.val = true
+        end
+    end
+end
 
+local function OnGameStart( mod )
+    TheGame:GetEvents():ListenForEvents( mod, "allow_dual_purpose_cards" )
 end
 
 local MOD_OPTIONS =
@@ -317,6 +326,7 @@ return {
     OnPreLoad = OnPreLoad,
     OnNewGame = OnNewGame,
     OnGameStart = OnGameStart,
+    OnGlobalEvent = OnGlobalEvent,
 
     mod_options = MOD_OPTIONS,
 
