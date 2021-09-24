@@ -60,6 +60,11 @@ Content.AddStringTable("DEMOCRACY", {
             CONSISTENT_STANCE = "Consistent Stance",
             INCONSISTENT_STANCE = "Hypocrisy",
         },
+        METRICS =
+        {
+            TITLE = "Metric Collection Enabled",
+            DESC = "Since the last update, the Democratic Race mod now has a metrics collection system in place. It helps us imrpove the mod. You may choose to continue with metrics collecction enabled, or, if you don't want to, you can disable it in the mod options menu.",
+        },
         NOTIFICATION =
         {
             AGENT_SUPPORT =

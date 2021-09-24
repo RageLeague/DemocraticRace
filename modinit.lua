@@ -207,6 +207,8 @@ end
 
 local function OnPreLoad( mod )
 
+    rawset(_G, "CURRENT_MOD_ID", mod.id)
+
     -- Patch existing files first
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:preload_patches/", "*.lua", true )) do
         local name = filepath:match( "(.+)[.]lua$" )
