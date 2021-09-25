@@ -75,3 +75,18 @@ CARD_SHOP_DEFS.BARON_HQ_SHOP_DEMOCRACY = function(stock)
     -- Weapon...?
     AddShopItems(stock, 1, {"intimidating_blaster", "sequencer_negotiation", "paperweight", "robodex", "nano_lattice", "oshnu_glue", "targeting_core"})
 end
+
+local old_ad_def = CARD_SHOP_DEFS.ADMIRALTY_CLERK_SHOP
+
+CARD_SHOP_DEFS.ADMIRALTY_CLERK_SHOP = function(stock)
+    if DemocracyUtil.IsDemocracyCampaign() then
+        -- General negotiation
+        AddShopItems(stock, 2, {"business_card", "business_card", "paperweight", "havarian_thesaurus", "vroc_whistle_negotiation"})
+        -- Admiralty special
+        AddShopItems(stock, 2, {"admiralty_intel", "admiralty_intel", "admiralty_orders", "admiralty_orders", "admiralty_requisition_negotiation", "admiralty_requisition_negotiation"})
+        -- Random weapon just because
+        AddShopItems(stock, 1, {"lumin_grenade", "shrapnel_grenade"})
+    else
+        old_ad_def(stock)
+    end
+end
