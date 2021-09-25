@@ -17,7 +17,7 @@ function MainMenu:doStart(...)
         print("Did the metrics warning popup?")
         has_shown_message = true
         UIHelpers.ShowBetaMessage( LOC"DEMOCRACY.METRICS.TITLE", LOC"DEMOCRACY.METRICS.DESC", LOC"UI.MAINMENU.BETA_BUTTON", function()
-            -- Content.SetModSetting(MODID, "enable_metrics_collection", true)
+            Content.SetModSetting(MODID, "enable_metrics_collection", true)
             old_dostart(self, table.unpack(params))
         end )
 
