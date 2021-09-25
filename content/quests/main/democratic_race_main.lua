@@ -354,7 +354,7 @@ local QDEF = QuestDef.Define
 
             DemocracyUtil.SendMetricsData("GAME_OVER", METRIC_DATA)
         end,
-        allow_dual_purpose_cards = function( quest, param )
+        allow_dual_purpose_cards = function( quest, card, param )
             param.val = true
         end,
     },

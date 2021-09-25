@@ -204,7 +204,10 @@ local function OnLoad( mod )
     -- print(string.match("C:/Users/adfafaf", "^.+[:]([^/\\].+)$"))
     -- print(string.match("DemRace:lalala", "^.+[:]([^/\\].+)$"))
 end
+
 local function OnPreLoad( mod )
+
+    rawset(_G, "CURRENT_MOD_ID", mod.id)
 
     -- Patch existing files first
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:preload_patches/", "*.lua", true )) do
@@ -239,6 +242,28 @@ local function OnPreLoad( mod )
         end
     end
 end
+
+local function OnGlobalEvent(mod, event_name, ...)
+    if event_name == "allow_dual_purpose_cards" then
+        local card, param = ...
+        if DemocracyUtil.GetModSetting("allow_dual_purpose_cards") then
+            param.val = true
+        end
+    elseif event_name == "card_added" then
+        local card = ...
+        if card.mod_id == mod.id then
+            local game_state = TheGame:GetGameState()
+            if not table.findif( game_state.options.required_mods, function(data) return data.id == mod.id end ) then
+                game_state:RequireMod( mod )
+            end
+        end
+    end
+end
+
+local function OnGameStart( mod )
+    TheGame:GetEvents():ListenForEvents( mod, "allow_dual_purpose_cards", "card_added" )
+end
+
 local MOD_OPTIONS =
 {
     -- Access this value from the user's settings by calling:
@@ -256,28 +281,49 @@ local MOD_OPTIONS =
         },
         per_save_file = true,
     },
-    {
-        title = "Collect Deck (Voluntary Deck Collection Program)",
-        button = true,
-        key = "collect_deck",
-        desc = "Copy the current deck information onto your clipboard.",
-        on_click = function()
-            local fn = require "DEMOCRATICRACE:content/collect_deck_script"
-            fn()
-        end,
-    },
     -- {
-    --     title = "[Debug] Enable Audio For the Next Game",
-    --     spinner = true,
-    --     key = "enable_audio_debug",
-    --     default_value = 0,
-    --     values =
-    --     {
-    --         { name="Disable", desc="Disable custom audio loading. You will be unable to hear custom audio, but fast reloading is safe.", data = 0 },
-    --         { name="Enable Once", desc="Only load custom audio the next time the game is loaded. Reset to disabled after the next load.", data = 1 },
-    --         { name="Enable (Not Recommended)", desc="Always load custom audio. WARNING: Loading custom audio can sometimes cause the game to hard crash on fast reload. Enable at your own risk.", data = 2 },
-    --     }
+    --     title = "Collect Deck (Voluntary Deck Collection Program)",
+    --     button = true,
+    --     key = "collect_deck",
+    --     desc = "Copy the current deck information onto your clipboard.",
+    --     on_click = function()
+    --         local fn = require "DEMOCRATICRACE:content/collect_deck_script"
+    --         fn()
+    --     end,
     -- },
+    {
+        title = "Enable Metrics Collection",
+        spinner = true,
+        key = "enable_metrics_collection",
+        default_value = true,
+        values =
+        {
+            { name="Disable", desc="All metrics collection is disabled.", data = false },
+            { name="Enable", desc="Run information during the Democratic Race campaign can be collected to improve the mod. See mod description for more info.", data = true },
+        }
+    },
+    {
+        title = "Enable Custom Items",
+        spinner = true,
+        key = "enable_custom_items",
+        default_value = false,
+        values =
+        {
+            { name="Disable", desc="Custom non-unique items will only show up in a Democratic Race campaign.", data = false },
+            { name="Enable", desc="Custom non-unique items is added to the general item pool, allowing you to get them even outside of a Democratic Race campaign.", data = true },
+        }
+    },
+    {
+        title = "Enable Dual Purpose",
+        spinner = true,
+        key = "enable_dual_purpose",
+        default_value = false,
+        values =
+        {
+            { name="Disable", desc="Dual purpose functionality is only enabled in the Democratic Race campaign.", data = false },
+            { name="Enable", desc="Dual purpose functionality is enabled everywhere, allowing you to get them even outside of a Democratic Race campaign.", data = true },
+        }
+    },
 }
 -- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {
@@ -287,6 +333,8 @@ return {
     OnLoad = OnLoad,
     OnPreLoad = OnPreLoad,
     OnNewGame = OnNewGame,
+    OnGameStart = OnGameStart,
+    OnGlobalEvent = OnGlobalEvent,
 
     mod_options = MOD_OPTIONS,
 

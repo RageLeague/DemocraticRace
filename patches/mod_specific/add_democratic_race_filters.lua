@@ -1,6 +1,6 @@
 local function FilterDemocraticRace(card_def)
     if card_def.is_democratic_race then
-        return DemocracyUtil.IsDemocracyCampaign()
+        return DemocracyUtil.GetModSetting("enable_custom_items") or DemocracyUtil.IsDemocracyCampaign()
     end
     return true
 end
