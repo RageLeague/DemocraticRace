@@ -9,9 +9,9 @@ local function GenerateCardShop(card_type, signature_id)
         local cards = {}
         table.arrayadd( cards, NegotiationCardCollection.AllRewardableCards(
             function(cd) return cd.rarity == CARD_RARITY.COMMON end
-        ):Pick(2) )
+        ):Pick(1) )
         table.arrayadd( cards, NegotiationCardCollection.AllRewardableCards(
-            function(cd) return cd.rarity == CARD_RARITY.UNCOMMON end
+            function(cd) return cd.rarity ~= CARD_RARITY.COMMON end
         ):Pick(1) )
         table.arrayadd( cards, NegotiationCardCollection.AllRewardableCards(
             function(cd) return CheckBits(cd.flags, card_type) and cd.rarity == CARD_RARITY.COMMON end
@@ -22,7 +22,7 @@ local function GenerateCardShop(card_type, signature_id)
             return card.advisor == signature_id
         end)
 
-        if signature_id and math.random() < 0.5 then
+        if signature_id then
             table.arrayadd( cards, NegotiationCardCollection(
                 function(cd)
                     return cd.advisor == signature_id and not CheckBits(cd.flags, CARD_FLAGS.UPGRADED)
