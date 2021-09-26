@@ -17,9 +17,7 @@ end
 local old_menu_fn,set = seek_upvalue_setter(Screen.MainMenu.init, "TutorialsMenu", "@scripts/ui/screens/mainmenu.lua")
 set(function (screen)
 	local t = old_menu_fn(screen)
-    if TheGame:GetDebug() or true then
-		table.insert(t, #t, {txt = LOC"UI.MAINMENU.RACE_TUTORIAL", fn = function() TheGame:FE():PushScreen( Screen.SlideshowScreen( "democracy_race_tutorial") ) end, icon = engine.asset.Texture("large/tutorial_negotiation.tex"), colour = UICOLOURS.NEGOTIATION, buttonclass = Widget.TutorialsButton } )
-	end
+	table.insert(t, #t, {txt = LOC"UI.MAINMENU.RACE_TUTORIAL", fn = function() TheGame:FE():PushScreen( Screen.SlideshowScreen( "democracy_race_tutorial") ) end, icon = engine.asset.Texture("large/tutorial_negotiation.tex"), colour = UICOLOURS.NEGOTIATION, buttonclass = Widget.TutorialsButton } )
 	return t
 end)
 
@@ -27,9 +25,7 @@ local old_pause_fn = Screen.PauseMenu.OnTutorials
 function Screen.PauseMenu:OnTutorials()
 	local old_options_fn = self.menu.SetOptions
 	function self.menu:SetOptions( options )
-		if TheGame:GetDebug() or TheGame:GetGameProfile():HasSeenMessage('democracy_race_tutorial') then
-			table.insert(options, #options, {txt=TheGame:Str"UI.PAUSEMENU.RACE_TUTORIAL", fn = function() TheGame:FE():PushScreen( Screen.SlideshowScreen( "democracy_race_tutorial") ) end } )
-		end
+		table.insert(options, #options, {txt=TheGame:Str"UI.PAUSEMENU.RACE_TUTORIAL", fn = function() TheGame:FE():PushScreen( Screen.SlideshowScreen( "democracy_race_tutorial") ) end } )
 		old_options_fn(self, options)
 		self.SetOptions = old_options_fn
 	end
