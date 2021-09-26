@@ -28,16 +28,18 @@ QDEF:AddConvo()
                     !question
                 agent:
                     A new type of plague has gone around Pearl-on-the-Foam, infecting those who walk through the shallows.
-                    But you're in luck! We have prepared a cure to this infection!
+                    But you're in luck! We have prepared a vaccine to this infection!
                     Simply allow me to give it to you, and I promise you will be painlessly innoculated against this new plague.
             ]],
             OPT_ASK_INFESTATION = "Ask about the infestation",
             DIALOG_ASK_INFESTATION = [[
                 player:
-                    How did Squeaky Clean Pearl get this infestation?
+                    How did the Squeaky Clean Pearl get this infestation?
                 agent:
                     Well, with the new election system, we had signed a truce deal allowing most willing to vote into the Pearl.
+                    !overthere
                     Unfortunately, that opened Hesh's flood gates for a breed of heretics we normally kept in Grout Bog.
+                    !flinch
                     These, er, <i>people<\> brought their own ideas, and those ideas brought sickness to Hesh's Pious.
                 player:
                     !question
@@ -58,7 +60,8 @@ QDEF:AddConvo()
                     Uncouthly put, {player}. I assure you, this is a completely safe preventative measure.
                     You may feel some minor aches and I wouldn't reccommend you exert yourself.
                     But that is just your body crafting it's shield of faith against this heretical poison. 
-                    You'll shrug away the pains quickly, and your soul will be prepared for Consumption by Hesh, as all who walk in the shallows deserve.
+                    !hesh_greeting
+                    You'll shrug away the pains quickly, and your soul will be prepared for consumption by Hesh, as all who walk in the shallows deserve.
             ]],
             OPT_ACCEPT = "Accept the vaccine",
             DIALOG_ACCEPT = [[
@@ -78,8 +81,9 @@ QDEF:AddConvo()
                     "Painless", I believe I can quote you as.
                     "Painless" is not anything close to what that felt like.
                 agent:
+                    !angrypoint
                     Bite your tounge. Whatever you feel now is leagues better than the eternal damnation at the hands of Hesh itelf.
-                    It will take it's toll, yes, but your body and soul will be fit for Consumption.
+                    It will take it's toll, yes, but your body and soul will be fit for consumption.
                 player:
                     And how long will I be paying the fare for this mistake?
                 agent:
@@ -98,7 +102,8 @@ QDEF:AddConvo()
             DIALOG_CONVINCE_SUCCESS = [[
                 agent:
                     If it will help prevent the disease from spreading...
-                    Very well. We hadn't made the vaccine as immediately as we tell people.
+                    Very well. We hadn't made the vaccine as quickly as we tell people.
+                    !bashful
                     It was...supplied to us.
                 player:
                     !question
@@ -106,8 +111,13 @@ QDEF:AddConvo()
                 agent:
                     The Spark Barons had prepared an innoculative agent against it, although they hadn't made it particularly consumer friendly.
                     !over_there
-                    But we had no choice. We had to protect the pious masses, so we purchased them and helped as many as we could.
+                    But we had no choice. We had to protect the pious masses, so we "aquired" some and helped as many as we could.
+                player:
+                    And i'm assuming that "many as you could" is your voters?
+                agent:
+                    They were...the most receptive to the vaccine. They understood the importance of preparing the soul for consumption, you see.
             ]],
+            --I was going to use this bit but felt it was a bit too upfront or just mean spirited
             --[[
             player:
                     Oddly generous for the Cult to turn heel on their MO like that.
@@ -122,11 +132,13 @@ QDEF:AddConvo()
                     Surely you know of Hesh's miracles?
                     We have derived this from a sacred formula passed down by priests for generations to combat illness of all kinds!
                 player:
+                    !point
                     It can't be a cure-all. You would've cured a lot more things with it if you had some magic salt-water disease killer.
                 agent:
                     !hesh_greeting
                     Ah, as the Waterlogged Tomes decreed, it was to be kept secret from the public, as it could eventually cause the heretics to destroy it.
                 player:
+                    !question
                     Heretics wouldn't have any reason to destroy it, though.
                 agent:
                     !angrypoint
@@ -163,12 +175,14 @@ QDEF:AddConvo()
                     agent:
                         !point
                         I-
-                        Fine! Let that damned bog drag your soul down with it!
+                        !sigh
+                        I guess you're right. These are the tools of the enemies we're using.
+                        Still, I wish you luck in not being infected. 
                         !exit
                 }
                 {not asked_info?
                     player:
-                        Put yourself in an official clinic instead of a side road and i'd do it.
+                        Put yourself in an official clinic instead of a side road and I'd do it.
                         BUt i'm not going to take the vaccine from a random priest.
                     agent:
                         And risk eternal damnation? What if you become infected?
