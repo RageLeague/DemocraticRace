@@ -19,10 +19,10 @@ local QDEF = QuestDef.Define
 QDEF:AddConvo()
     :ConfrontState("CONF")
         :Loc{
-           --Wumpus: TODO: Find the quote from the lonely merchant event and reference that with this dialog.
             DIALOG_INTRO = [[
                 * You notice the jingling of shills before you notice the person holding them.
-                * This person likely has some deep pockets, and deep pockets mean-
+                * {agent}'s clothing is rich—and rich clothing has deep pockets. 
+                * And the roads are deserted, 'cept for you and your new fri-
                 merchant:
                     !right
                     !point
@@ -63,13 +63,13 @@ QDEF:AddConvo()
             OPT_ASK_FOR_MORE = "Ask for more money",
             DIALOG_ASK_FOR_MORE = [[
                 player:
-                    Listen, i'm flattered, but you understand the impact this will have on my voting base, correct?
+                    Listen, I'm flattered, but you understand the impact this will have on my voting base, correct?
                     I'll need a bit more to help keep my campaign afloat.
             ]],
             DIALOG_ASK_FOR_MORE_SUCCESS = [[
                 player:
                     !eureka
-                    If I end up losing, this'll be a wasted investment. If I have enough money, i'll be able to stay in the race longer.
+                    If I end up losing, this would be a wasted investment. If I have enough money, I'll be able to stay in the race longer.
                 merchant:
                     !question
                     A fine point. How about {1#money}? 
