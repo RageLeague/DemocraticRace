@@ -463,6 +463,7 @@ local CARDS = {
     {
         name = "Console",
         desc = "Transfer all composure on target argument you control to your opponent's core argument.",
+        icon = "negotiation/empathy.tex",
 
         cost = 1,
         flags = CARD_FLAGS.DIPLOMACY | CARD_FLAGS.REPLENISH,

@@ -10,6 +10,7 @@ local CARDS = {
         name = "Curious Curio",
         flavour = "'One of those baubles you can't tell the value of without a professional's eye. Brute Force does work as well.'",
         desc = "Draw a card.",
+        icon = "DEMOCRATICRACE:assets/cards/curious_curio.png",
 
         cost = 1,
         max_xp = 6,
@@ -49,6 +50,7 @@ local CARDS = {
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.renown_stacks)
         end,
+        icon = "DEMOCRATICRACE:assets/cards/royal_relic.png",
 
         cost = 1,
         flags = CARD_FLAGS.ITEM,
@@ -69,6 +71,7 @@ local CARDS = {
         name = "Mesmerizing Charm",
         flavour = "'An old knick-knack the Vagrants wore when they needed to be the center of attention.'",
         desc = "Force all enemy intents and arguments to target it.\nDraw a card.",
+        icon = "DEMOCRATICRACE:assets/cards/mesmerizing_charm.png",
 
         cost = 1,
         flags = CARD_FLAGS.ITEM,
@@ -101,6 +104,7 @@ local CARDS = {
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.intimidated_stack)
         end,
+        icon = "DEMOCRATICRACE:assets/cards/intimidating_blaster.png",
 
         cost = 1,
         flags = CARD_FLAGS.ITEM,

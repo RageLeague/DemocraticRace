@@ -2023,6 +2023,7 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName(), CalculateBonusScale(self), self.resolve_gain)
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/encouragement.png",
 
         modifier_type = MODIFIER_TYPE.BOUNTY,
 
@@ -2101,6 +2102,8 @@ local MODIFIERS =
     SELF_LOATHE =
     {
         name = "Self-Loathe",
+        icon = "DEMOCRATICRACE:assets/modifiers/self_loathe.png",
+
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
         OnInit = function( self )
