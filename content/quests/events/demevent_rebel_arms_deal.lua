@@ -51,7 +51,7 @@ QDEF:AddConvo()
                     !left
                     Are you against Democracy itself? We need the weaponry to protect our revolution!
                 jakes:
-                    Democracy isn't going to pay the customs fees! This is still a capitalist society, and you still need to pay!
+                    Democracy isn't going to pay the customs fees! I still need to get paid for these weapons!
                 rise:
                     !spit
                     Bah! That's just bougeroise rhetoric.
@@ -65,7 +65,7 @@ QDEF:AddConvo()
             OPT_LEAVE = "Leave them figure this out themselves",
             DIALOG_LEAVE = [[
                 * You pace a bit faster.
-                * The last sound you hear of their squabble is the discharge of a lumin blaster.
+                * The last sound you hear of their squabble is the telltale sounds of a scuffle.
             ]],
             OPT_CONVINCE_PAY = "Convince {rise} to pay up",
             DIALOG_CONVINCE_PAY = [[
@@ -175,20 +175,29 @@ QDEF:AddConvo()
                     {rise}, {jakes.honorific}.
                 jakes:
                     Right, right. Listen, the next time I need a favor from the Rise, i'm gonna name drop you.
-                    And if I don't get what i'm asking for, i'll be cutting a few of your strings, got it?
+                    And if I don't get what i'm asking for, I'll be cutting a few of your strings, got it?
                 rise:
                     Er, yes. In the calmer sense of the phrase.
                 jakes:
                     !crossed
                     I guess we have a deal, then.
+                    !exit
                 * With that barbed experience, {jakes} slides a few boxes of weaponry into the hands of {rise} before stomping away.
                 rise:
+                    !shrug
                     Not how I would've liked the deal to go by, but the weapons seem good.
+                    Thanks for the help, {player}. 
+                player:
+                    !left
+                    Anything to be on the right side of history, right?
+                rise:
+                    !happy
+                    Right you are, {player}.
             ]],
             DIALOG_CONVINCE_DONATE_FAILURE = [[
                 jakes:
                     Well, the problem is all those weapons cost a lot more than any quick favors can pay for.
-                    So unless these Rise favors comes in cash or debit, i'm going to retract from the deal.
+                    So unless these Rise favors comes in cash or debit, I'm going to retract from the deal.
             ]],
             OPT_CONVINCE_CALL_OFF = "Convince {rise} to call off the deal",
             DIALOG_CONVINCE_CALL_OFF = [[
@@ -256,7 +265,7 @@ QDEF:AddConvo()
                     I just saw you were having some business conflicts and I was hoping-
                 jakes:
                     You should hope I don't use any of these weapons on you.
-                    This is still a sale i'd like to make. I don't need grifters butting into other's good business.
+                    This is still a sale I'd like to make. I don't need grifters butting into other's good business.
             ]],
             OPT_ARREST = "Confront them about dealing with contraband...",
             DIALOG_ARREST = [[
@@ -264,7 +273,7 @@ QDEF:AddConvo()
                     !right
                 player:
                     !left
-                * You tut into the middle of them with a gait you learned from watching out for admiralty patrols back in your bounty hunting days.
+                * You tut into the middle of them with a gait you learned from watching out for Admiralty patrols back in your grifting days.
                 * Ironic how the same trick works on the correct side of the law as well.
                 player:
                     Big box of weapons you got there, {jakes}.
