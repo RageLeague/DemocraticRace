@@ -111,9 +111,9 @@ QDEF:AddConvo()
                 agent:
                     The Spark Barons had prepared an innoculative agent against it, although they hadn't made it particularly consumer friendly.
                     !over_there
-                    But we had no choice. We had to protect the pious masses, so we "aquired" some and helped as many as we could.
+                    But we had no choice. We had to protect the pious masses, so we "acquired" some and helped as many as we could.
                 player:
-                    And i'm assuming that "many as you could" is your voters?
+                    And I'm assuming that "many as you could" is your voters?
                 agent:
                     They were...the most receptive to the vaccine. They understood the importance of preparing the soul for consumption, you see.
             ]],
@@ -183,7 +183,7 @@ QDEF:AddConvo()
                 {not asked_info?
                     player:
                         Put yourself in an official clinic instead of a side road and I'd do it.
-                        BUt i'm not going to take the vaccine from a random priest.
+                        But I'm not going to take the vaccine from a random priest.
                     agent:
                         And risk eternal damnation? What if you become infected?
                     player:
