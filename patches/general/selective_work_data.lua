@@ -18,3 +18,15 @@ function Location:GetWorkData( id, ... )
     end
     return oldres
 end
+
+local old_populate = Location.PopulateGameState
+
+function Location:PopulateGameState(...)
+    if self.location_data and self.location_data.work and not self.location_data.work_data then
+        self.location_data.work_data = self.location_data.work
+        self.location_data.work = shallowcopy(self.location_data.work)
+    end
+    print("Broadcasting event... get_work_availability")
+    TheGame:BroadcastEvent("get_work_availability", self, self.location_data and self.location_data.work or {})
+    return old_populate(self, ...)
+end

@@ -17,6 +17,7 @@ for id, data in pairs(ADDITIONAL_WORK) do
         location_data.work = {}
     end
     for work_id, work_data in pairs(data) do
+        work_data.is_democracy_job = true
         location_data.work[work_id] = work_data
     end
     -- DBG(location_data)

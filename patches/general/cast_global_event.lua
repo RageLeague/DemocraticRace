@@ -26,7 +26,7 @@ end
 local old_listen_event = QuestState.ListenForEvents
 function QuestState:ListenForEvents()
     old_listen_event(self)
-    print(self:GetContentID(), "listens for more events")
+    -- print(self:GetContentID(), "listens for more events")
     for i, cast_def in ipairs(self:GetQuestDef():GetCastDefs()) do
         if cast_def.global_events then
             for event_name, fn in pairs(cast_def.global_events) do
