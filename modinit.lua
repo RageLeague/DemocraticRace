@@ -263,11 +263,12 @@ local function OnGlobalEvent(mod, event_name, ...)
         local location, work_data = ...
         if location and work_data then
             for id, data in pairs(work_data) do
+                print(id, data)
                 if type(data) == "table" and data.is_democracy_job then
                     print("Found job for democracy", id)
                     if not DemocracyUtil.IsDemocracyCampaign() then
                         print("Not in democracy. Disable job", id)
-                        data[id] = nil
+                        work_data[id] = nil
                     end
                 end
             end
@@ -350,6 +351,7 @@ return {
     OnPreLoad = OnPreLoad,
     OnNewGame = OnNewGame,
     OnGameStart = OnGameStart,
+    OnGameReset = OnGameStart,
     OnGlobalEvent = OnGlobalEvent,
 
     mod_options = MOD_OPTIONS,
