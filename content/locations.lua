@@ -4,26 +4,26 @@ local WEALTHY_PATRON_DEFS = {
 
     ZEALOT = 0.5,
     PRIEST = 1,
-    
+
     FOREMAN = 1,
     BARTENDER = 0.5,
-    
+
     JAKES_SMUGGLER = 1,
-    
+
     PEARLIE = 1,
     WEALTHY_MERCHANT = 1,
-    
+
     ADMIRALTY_PATROL_LEADER = 0.5,
     ADMIRALTY_CLERK = 1,
 
     RISE_RADICAL = 0.5,
     RISE_PAMPHLETEER = 1,
-    
+
     SPARK_BARON_PROFESSIONAL = 0.75,
     SPARK_BARON_TASKMASTER = 0.75,
 }
 
-local faction_weights = 
+local faction_weights =
 {
     [RELATIONSHIP.HATED] = 0,
     [RELATIONSHIP.DISLIKED] = .5,
@@ -43,10 +43,10 @@ local function GetGeneratePatronFunction(patron_defs)
             if w > 0 then
                 candidates[def_id] = w
             end
-            
+
         end
         if next(candidates) then
-            
+
             local def = weightedpick(candidates)
             TheGame:GetGameState():AddSkinnedAgent(def):GetBrain():SendToPatronize(location)
         end
@@ -72,9 +72,9 @@ Content.AddLocationContent{
         advisor = CreateClosedJob(  PHASE_MASK_ALL, "Advisor", CHARACTER_ROLES.VENDOR, "RACE_DIPLOMACY_CARD_SHOP"),
     },
 
-    sublocations = 
+    sublocations =
     {
-        inn_room = 
+        inn_room =
         {
             id = "DIPL_OFFICE_ROOM",
             show_player = true,
@@ -107,9 +107,9 @@ Content.AddLocationContent{
         advisor = CreateClosedJob(  PHASE_MASK_ALL, "Advisor", CHARACTER_ROLES.VENDOR, "RACE_MANIPULATE_CARD_SHOP"),
     },
 
-    sublocations = 
+    sublocations =
     {
-        inn_room = 
+        inn_room =
         {
             id = "MANI_OFFICE_ROOM",
             show_player = true,
@@ -142,9 +142,9 @@ Content.AddLocationContent{
         advisor = CreateClosedJob(  PHASE_MASK_ALL, "Advisor", CHARACTER_ROLES.VENDOR, "RACE_HOSTILE_CARD_SHOP"),
     },
 
-    sublocations = 
+    sublocations =
     {
-        inn_room = 
+        inn_room =
         {
             id = "HOST_OFFICE_ROOM",
             show_player = true,
@@ -177,7 +177,7 @@ Content.AddLocationContent{
 
     patron_data = {
         patron_generator = GetGeneratePatronFunction(WEALTHY_PATRON_DEFS),
-        num_patrons = 
+        num_patrons =
         {
             [DAY_PHASE.DAY] = 3,
             [DAY_PHASE.NIGHT] = 7,
@@ -194,4 +194,4 @@ Content.AddLocationContent{
     }
 }
 Content.GetLocationContent("PEARL_PARK").entry_scenario = "DEMOCRACY_PARK_ENTRY"
-Content.GetLocationContent("GB_NEUTRAL_BAR").faction_id = "NEUTRAL"
+-- Content.GetLocationContent("GB_NEUTRAL_BAR").faction_id = "NEUTRAL"

@@ -244,6 +244,7 @@ local function OnPreLoad( mod )
 end
 
 local function OnGlobalEvent(mod, event_name, ...)
+    print("I'm listening...")
     if event_name == "allow_dual_purpose_cards" then
         local card, param = ...
         if DemocracyUtil.GetModSetting("allow_dual_purpose_cards") then
@@ -257,11 +258,33 @@ local function OnGlobalEvent(mod, event_name, ...)
                 game_state:RequireMod( mod )
             end
         end
+    elseif event_name == "get_work_availability" then
+        print("Found event")
+        local location, work_data = ...
+        if location and work_data then
+            for id, data in pairs(work_data) do
+                print(id, data)
+                if type(data) == "table" and data.is_democracy_job then
+                    print("Found job for democracy", id)
+                    if not DemocracyUtil.IsDemocracyCampaign() then
+                        print("Not in democracy. Disable job", id)
+                        work_data[id] = nil
+                    end
+                elseif type(data) == "table" and data.disable_for_democracy then
+                    print("Found job disabled for democracy", id)
+                    if DemocracyUtil.IsDemocracyCampaign() then
+                        print("In democracy. Disable job", id)
+                        work_data[id] = nil
+                    end
+                end
+            end
+        end
     end
 end
 
 local function OnGameStart( mod )
-    TheGame:GetEvents():ListenForEvents( mod, "allow_dual_purpose_cards", "card_added" )
+    print("I am actually listening")
+    TheGame:GetEvents():ListenForEvents( mod, "allow_dual_purpose_cards", "card_added", "get_work_availability" )
 end
 
 local MOD_OPTIONS =
@@ -334,6 +357,7 @@ return {
     OnPreLoad = OnPreLoad,
     OnNewGame = OnNewGame,
     OnGameStart = OnGameStart,
+    OnGameReset = OnGameStart,
     OnGlobalEvent = OnGlobalEvent,
 
     mod_options = MOD_OPTIONS,
