@@ -58,8 +58,9 @@ CARD_SHOP_DEFS.RACE_MANIPULATE_CARD_SHOP = GenerateCardShop(CARD_FLAGS.MANIPULAT
 CARD_SHOP_DEFS.RACE_HOSTILE_CARD_SHOP = GenerateCardShop(CARD_FLAGS.HOSTILE, "ADVISOR_HOSTILE")
 
 CARD_SHOP_DEFS.RISE_PROPAGANDA_SHOP = function(stock)
+    AddShopItems(stock, 1, {"business_card", "business_card", "paperweight", "havarian_thesaurus"})
     -- there's not nearly enough items to make this shop work
-    AddShopItems(stock, 2, {"rise_manifesto", "rise_manifesto", "havarian_thesaurus"})
+    AddShopItems(stock, 2, {"rise_manifesto", "rise_manifesto"})
 end
 
 CARD_SHOP_DEFS.PARTY_SUPPLY_SHOP = function(stock)
