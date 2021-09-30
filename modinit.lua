@@ -270,6 +270,12 @@ local function OnGlobalEvent(mod, event_name, ...)
                         print("Not in democracy. Disable job", id)
                         work_data[id] = nil
                     end
+                elseif type(data) == "table" and data.disable_for_democracy then
+                    print("Found job disabled for democracy", id)
+                    if DemocracyUtil.IsDemocracyCampaign() then
+                        print("In democracy. Disable job", id)
+                        work_data[id] = nil
+                    end
                 end
             end
         end
