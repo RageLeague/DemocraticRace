@@ -5,13 +5,14 @@ local ADDITIONAL_WORK = {
     },
     PEARL_CULT_COMPOUND = {
         archbishop = CreateClosedJob( PHASE_MASK_ALL, "Archbishop", CHARACTER_ROLES.CONTACT ),
+        priest_seller = CreateMerchantJob( DAY_PHASE.DAY, "Head Priest", CHARACTER_ROLES.VENDOR, "PRIEST", "CULT_SHOP_DEMOCRACY"),
     },
     PEARL_PARTY_STORE = {
         coproprietor = CreateClosedJob( PHASE_MASK_ALL, "Co-proprietor", CHARACTER_ROLES.CONTACT ),
         proprietor_democracy = CreateMerchantJob( PHASE_MASK_ALL, "Proprietor", CHARACTER_ROLES.PROPRIETOR, "POOR_MERCHANT", "PARTY_SUPPLY_SHOP"),
     },
     GB_BARON_HQ = {
-        baron_seller = CreateMerchantJob( DAY_PHASE.DAY, "Baron Seller", CHARACTER_ROLES.VENDOR, "SPARK_BARON_TASKMASTER", "SPARK_BARON_SHOP_ITEMS"),
+        baron_seller = CreateMerchantJob( DAY_PHASE.DAY, "Baron Seller", CHARACTER_ROLES.VENDOR, "SPARK_BARON_TASKMASTER", "BARON_HQ_SHOP_DEMOCRACY"),
     },
 }
 

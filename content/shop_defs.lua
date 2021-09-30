@@ -58,9 +58,10 @@ CARD_SHOP_DEFS.RACE_MANIPULATE_CARD_SHOP = GenerateCardShop(CARD_FLAGS.MANIPULAT
 CARD_SHOP_DEFS.RACE_HOSTILE_CARD_SHOP = GenerateCardShop(CARD_FLAGS.HOSTILE, "ADVISOR_HOSTILE")
 
 CARD_SHOP_DEFS.RISE_PROPAGANDA_SHOP = function(stock)
-    AddShopItems(stock, 1, {"business_card", "business_card", "paperweight", "havarian_thesaurus"})
-    -- there's not nearly enough items to make this shop work
-    AddShopItems(stock, 2, {"rise_manifesto", "rise_manifesto"})
+    -- Front. Sell general negotiation stuff
+    AddShopItems(stock, 1, {"business_card", "business_card", "index_card", "paperweight", "havarian_thesaurus", "work_report"})
+    -- Spell special "rise" stuff
+    AddShopItems(stock, 2, {"rise_manifesto", "rise_manifesto", "executive_report", "research_report", "neural_disrupter"})
 end
 
 CARD_SHOP_DEFS.PARTY_SUPPLY_SHOP = function(stock)
@@ -74,7 +75,7 @@ CARD_SHOP_DEFS.BARON_HQ_SHOP_DEMOCRACY = function(stock)
     -- A report
     AddShopItems(stock, 2, {"business_card", "business_card", "spark_baron_permit", "spark_baron_permit", "work_report", "work_report", "research_report", "research_report", "executive_report"})
     -- Weapon...?
-    AddShopItems(stock, 1, {"intimidating_blaster", "sequencer_negotiation", "paperweight", "robodex", "nano_lattice", "oshnu_glue", "targeting_core"})
+    AddShopItems(stock, 1, {"intimidating_blaster", "sequencer_negotiation", "paperweight", "robodex", "nano_lattice", "oshnu_glue", "targeting_core", "amnesiator"})
 end
 
 local old_ad_def = CARD_SHOP_DEFS.ADMIRALTY_CLERK_SHOP
@@ -82,12 +83,19 @@ local old_ad_def = CARD_SHOP_DEFS.ADMIRALTY_CLERK_SHOP
 CARD_SHOP_DEFS.ADMIRALTY_CLERK_SHOP = function(stock)
     if DemocracyUtil.IsDemocracyCampaign() then
         -- General negotiation
-        AddShopItems(stock, 2, {"business_card", "business_card", "paperweight", "havarian_thesaurus", "vroc_whistle_negotiation"})
+        AddShopItems(stock, 2, {"business_card", "business_card", "index_card", "paperweight", "havarian_thesaurus", "vroc_whistle_negotiation"})
         -- Admiralty special
         AddShopItems(stock, 2, {"admiralty_intel", "admiralty_intel", "admiralty_orders", "admiralty_orders", "admiralty_requisition_negotiation", "admiralty_requisition_negotiation"})
         -- Random weapon just because
-        AddShopItems(stock, 1, {"lumin_grenade", "shrapnel_grenade"})
+        AddShopItems(stock, 1, {"lumin_grenade", "shrapnel_grenade", "intimidating_blaster"})
     else
         old_ad_def(stock)
     end
+end
+
+CARD_SHOP_DEFS.CULT_SHOP_DEMOCRACY = function(stock)
+    -- A report
+    AddShopItems(stock, 2, {"business_card", "business_card", "paperweight", "pearl_grey", "pleasant_perfume"})
+    -- Cult special
+    AddShopItems(stock, 1, {"mask_of_anonymity", "mask_of_intimidation", "token_of_hesh", "brain_gills", "lumin_wine"})
 end
