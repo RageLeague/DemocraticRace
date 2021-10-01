@@ -127,8 +127,8 @@ end
 
 local old_create_fighter_fn = Fighter.CreateFromAgent
 
-function Fighter.CreateFromAgent(agent, ...)
-    local fighter = old_create_fighter_fn(agent, ...)
+function Fighter.CreateFromAgent(agent, scale, player_controlled, ...)
+    local fighter = old_create_fighter_fn(agent, scale, player_controlled, ...)
     if agent.battler and (fighter.behaviour == nil or player_controlled) then
         if agent.negotiator then
             for i, card in ipairs(agent.negotiator:GetCards()) do
