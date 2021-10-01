@@ -3,6 +3,6 @@ Convo("DEBUG_ENDING_TEST")
         OPT_TEST = "[Debug] Get Business card"
     }
     :Hub(function(cxt)
-        cxt:Opt("OPT_TEST")
-            :GainCards{"vroc_whistle"}
+        -- cxt:Opt("OPT_TEST")
+        --     :GainCards{"vroc_whistle"}
     end)

@@ -7,7 +7,7 @@ local MODID = CURRENT_MOD_ID
 getmetatable(DemocracyUtil).__index = function(self, k)
     if TheGame:GetGameState() and TheGame:GetGameState():GetMainQuest() then
         local quest = TheGame:GetGameState():GetMainQuest():GetQuestDef()
-        print(quest)
+        -- print(quest)
         if quest and quest[k] and type(quest[k]) == "function" then
             return function(...)
                 return DemocracyUtil.TryMainQuestFn(k, ...)
