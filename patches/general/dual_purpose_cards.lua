@@ -9,7 +9,7 @@ local FEATURES = {
     DUAL_PURPOSE_NEGOTIATION =
     {
         name = "Dual Purpose",
-        desc = "At the beginning of a battle, insert the battle counterpart of this card into your deck, and they share uses unless indicated otherwise.",
+        desc = "At the beginning of a battle, insert the battle counterpart of this card into your deck, except they share uses, and this card is destroyed if the battle counterpart is destroyed.",
         feature_desc = "{DUAL_PURPOSE_NEGOTIATION}",
         feature_desc_fn = function(self, fmt_str, num, engine, card)
             if card.battle_counterpart then
