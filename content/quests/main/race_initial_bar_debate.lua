@@ -23,7 +23,7 @@ local BONUSES = {
                 AgentUtil.UpgradeBattleCard( function( card )
                     cxt.enc:ResumeEncounter( card )
                 end )
-                
+
                 local card = cxt.enc:YieldEncounter()
                 if card then
                     -- cxt:Pop()
@@ -168,6 +168,7 @@ local QDEF = QuestDef.Define
 QDEF:AddConvo("win_argument")
     :Confront(function(cxt)
         if TheGame:GetLocalSettings().FAST_STARTUP then
+            TheGame:GetGameState():GetMainQuest().param.debug_mode = true
             cxt.quest:Complete()
         else
             return "STATE_START"
@@ -230,7 +231,7 @@ QDEF:AddConvo("win_argument")
                 MũSt cŌnSųMe
                 I ŕEqŮiRe ThÍnE sAcRïFicË
                 cŌmE Tŏ mE, mØrTaĽ
-                
+
             ]],
 
             DIALOG_INTRO_BG = [[
@@ -247,7 +248,7 @@ QDEF:AddConvo("win_argument")
                 agent:
                     !right
                     !angry
-                
+
             ]],
             DIALOG_INTRO_PST = [[
                 * You feel like it's your moral obligation to correct {agent.hisher} opinion.
@@ -362,7 +363,7 @@ QDEF:AddConvo("win_argument")
                             card:TransferCard(minigame:GetDrawDeck())
                         end
                     end,
-                    on_success = function(cxt) 
+                    on_success = function(cxt)
                         cxt:Dialog("DIALOG_DEBATE_WIN")
                         cxt.quest:GetCastMember("heckler"):OpinionEvent(OPINION.INSULT)
                         cxt.enc:GetPrimaryCast():GetBrain():MoveToHome()

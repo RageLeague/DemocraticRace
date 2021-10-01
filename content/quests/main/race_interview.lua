@@ -456,6 +456,14 @@ QDEF:AddConvo("do_interview")
                 end
             end
             cxt:Opt("OPT_DO_INTERVIEW")
+                :Fn(function(cxt)
+                    local METRIC_DATA =
+                    {
+                        player_data = TheGame:GetGameState():GetPlayerState(),
+                    }
+
+                    DemocracyUtil.SendMetricsData("DAY_2_BOSS_START", METRIC_DATA)
+                end)
                 :Negotiation{
                     flags = NEGOTIATION_FLAGS.WORDSMITH,
                     situation_modifiers = {
@@ -474,12 +482,31 @@ QDEF:AddConvo("do_interview")
                         cxt.quest:Complete()
                         -- cxt.quest:Complete("do_interview")
                         -- cxt.quest:Activate("return_to_advisor")
+                        local METRIC_DATA =
+                        {
+                            player_data = TheGame:GetGameState():GetPlayerState(),
+                            questions_answered = INTERVIEWER_BEHAVIOR.params.questions_answered,
+                            num_likes = cxt.quest.param.num_likes,
+                            num_dislikes = cxt.quest.param.num_dislikes,
+                            result = "WIN",
+                        }
+                        DemocracyUtil.SendMetricsData("DAY_2_BOSS_END", METRIC_DATA)
+
                         StateGraphUtil.AddEndOption(cxt)
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_INTERVIEW_FAIL")
                         DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -20)
                         ResolvePostInterview()
+                        local METRIC_DATA =
+                        {
+                            player_data = TheGame:GetGameState():GetPlayerState(),
+                            questions_answered = INTERVIEWER_BEHAVIOR.params.questions_answered,
+                            num_likes = cxt.quest.param.num_likes,
+                            num_dislikes = cxt.quest.param.num_dislikes,
+                            result = "LOSE",
+                        }
+                        DemocracyUtil.SendMetricsData("DAY_2_BOSS_END", METRIC_DATA)
                         -- you can't recover from a failed interview. it's instant lose.
                         cxt:Dialog("DIALOG_FAIL")
                         DemocracyUtil.AddAutofail(cxt, false)

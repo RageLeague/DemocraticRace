@@ -31,11 +31,11 @@ local BENEFACTOR_BEHAVIOR = {
         if SIGNATURE_ARGUMENT[self.agent:GetContentID()] then
             self.signature = self:AddArgument(SIGNATURE_ARGUMENT[self.agent:GetContentID()])
         end
-        
+
         self:SetPattern( self.BasicCycle )
-        
+
         self.negotiator:AddModifier(BENEFACTOR_DEFS[self.agent:GetContentID()])
-        
+
     end,
     agents = {},
 
@@ -108,7 +108,7 @@ local QDEF = QuestDef.Define
     -- when = QWHEN.MANUAL,
     -- no_validation = true,
     condition = function(location, quest)
-        local allowed_locations = {"PEARL_FANCY_EATS"}
+        local allowed_locations = {"PEARL_FANCY_EATS", "MOREEF_BAR"}
         return table.arraycontains(allowed_locations, location:GetContentID())
     end,
 }
@@ -118,7 +118,7 @@ local QDEF = QuestDef.Define
     desc = "Go to {diner#location} to meet the benefactor.",
     mark = { "benefactor" },
     state = QSTATUS.ACTIVE,
-    
+
     on_activate = function( quest)
         -- local location = Location( LOCATION_DEF.id )
         -- assert(location)
@@ -145,10 +145,10 @@ local QDEF = QuestDef.Define
     --     table.insert(options, "WEALTHY_MERCHANT")
     --     table.insert(options, "SPARK_BARON_TASKMASTER")
     --     table.insert(options, "PRIEST")
-    
+
     --     local def = options[math.random(#options)]
     --     table.insert( t, quest:CreateSkinnedAgent( def ) )
- 
+
     --     if main_negotiator_limiter == 0 then
     --         main_negotiator = def
     --         main_negotiator_limiter = 1
@@ -165,7 +165,7 @@ local QDEF = QuestDef.Define
     end,
 }
 :AddOpinionEvents{
-    convinced_benefactor =  
+    convinced_benefactor =
     {
         delta = OPINION_DELTAS.LIKE,
         txt = "Confident in your leadership abilities.",
@@ -178,7 +178,7 @@ local QDEF = QuestDef.Define
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true) -- make primary advisor mandatory because that's how you get that info
 
 QDEF:AddConvo("go_to_diner")
-    
+
     :Confront(function(cxt)
         if cxt.location == cxt.quest:GetCastMember("diner") and not cxt.quest.param.visited_diner then
             return "STATE_INTRO"
@@ -190,13 +190,13 @@ QDEF:AddConvo("go_to_diner")
                 * You arrive at the diner looking for the benefactor.
                 * One person watches you intensly and points to an empty chair.
             ]],
-            
+
         }
         :Fn(function(cxt)
 
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest.param.visited_diner = true
-            
+
         end)
 QDEF:AddConvo("go_to_diner", "benefactor")
     :Loc{
@@ -213,7 +213,7 @@ QDEF:AddConvo("go_to_diner", "benefactor")
         ]],
 
         REASON_TALK = "Secure as much shills as you can!",
-            
+
         DIALOG_BENEFACTOR_CONVINCED = [[
             * {agent} pauses for a moment, taking one last taste of {agent.hisher} tea.
             agent:
@@ -356,7 +356,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-            
+
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{

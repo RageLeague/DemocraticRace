@@ -16,7 +16,7 @@ local QDEF = QuestDef.Define
     on_start = function(quest)
         quest:Activate("starting_out")
         DemocracyUtil.SetSubdayProgress(1)
-        TheGame:GetGameState():GetPlayerAgent():MoveToLocation( quest:GetCastMember("home") )
+        -- TheGame:GetGameState():GetPlayerAgent():MoveToLocation( quest:GetCastMember("home") )
     end,
 }
 :Loc{
@@ -102,6 +102,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "starting_out",
     title = "Talk to {primary_advisor} about the plan.",
+    mark = {"primary_advisor"},
     on_complete = function(quest)
         quest:Activate("get_job")
         DemocracyUtil.StartFreeTime()

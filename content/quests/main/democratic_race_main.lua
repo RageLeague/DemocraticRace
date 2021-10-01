@@ -336,6 +336,27 @@ local QDEF = QuestDef.Define
                 QuestUtil.DoNextDay(DAY_SCHEDULE, quest)
             end
         end,
+        GAME_OVER = function( quest, gamestate, result )
+            for i = 1, 4 do
+                if not quest.param.wealth_support[i] then
+                    quest.param.wealth_support[i] = 0
+                end
+            end
+            local METRIC_DATA =
+            {
+                result = result,
+                support_level = quest.param.support_level,
+                faction_support = quest.param.faction_support,
+                wealth_support = quest.param.wealth_support,
+                stances = quest.param.wealth_support,
+                player_data = TheGame:GetGameState():GetPlayerState(),
+            }
+
+            DemocracyUtil.SendMetricsData("GAME_OVER", METRIC_DATA)
+        end,
+        allow_dual_purpose_cards = function( quest, card, param )
+            param.val = true
+        end,
     },
     SpawnPoolJob = function(quest, pool_name, excluded_ids, spawn_as_inactive, spawn_as_challenge)
         local event_id = pool_name
@@ -812,6 +833,21 @@ local QDEF = QuestDef.Define
 
     SetSubdayProgress = function(quest, progress)
         quest.param.sub_day_progress = progress
+        for i = 1, 4 do
+            if not quest.param.wealth_support[i] then
+                quest.param.wealth_support[i] = 0
+            end
+        end
+        -- Send Metric
+        local METRIC_DATA =
+        {
+            support_level = quest.param.support_level,
+            faction_support = quest.param.faction_support,
+            wealth_support = quest.param.wealth_support,
+            stances = quest.param.wealth_support,
+        }
+
+        DemocracyUtil.SendMetricsData("STORY_PROGRESS", METRIC_DATA)
     end,
     GetCurrentExpectationArray = function(quest)
         return DAY_SCHEDULE[math.min(#DAY_SCHEDULE, quest.param.day or 1)].support_expectation

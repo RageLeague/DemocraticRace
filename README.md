@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.4.0(Alpha)
+Version: 0.5.0(Alpha)
 
 Author: RageLeague
 
@@ -100,6 +100,32 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Sei Bellissima
 
 ## Changelog
+
+### 0.5.0 (Improvise & Adapt Update)
+
+This is a minor major update that mainly adds more items into the game. Hopefully, this will make it so that there are more varieties to items during your run.
+
+Additionally, this update introduces a (rudimentary) metrics collection system. This will hopefully give us data to improve the mod. When you start up the game in the new update, there will be a popup telling you about the metrics collection system, and you may keep it on or disable it in the mod options menu.
+
+Major Changes:
+
+* Added 6 new commons, 7 new uncommons, and 5 new rares items each.
+* Added 5 negotiation cards that is the counterpart of existing battle items. When you get the battle version, you will get the negotiation version instead, but you can still use it in battle.
+* Add 3 new mod options: enable metric collection, enable custom items, and enable dual purpose items.
+* Remove the voluntary deck collection option, as it is basically obsolete.
+* Added card shops to many locations.
+
+Minor Changes:
+
+* Fixed issue with targeting intents.
+* Added an item filter that only enables items in the campaign.
+* Added a trigger for calculating delta stacks.
+* Fix issue with leaving player room prematurely at the start of day.
+* Added more icons for negotiation modifiers, cards.
+* Replacing some placeholder dialogs.
+* Certain work positions are disabled for non-democratic-race campaigns.
+* Add Moreef's Bar as a possible location for the Tea with Benefactor quest.
+* Change the shop content of Rise Propaganda Shop, Admiralty Clerk Shop(during the democratic race), and advisor shops.
 
 ### 0.4.0 (Events & Music update)
 

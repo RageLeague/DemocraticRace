@@ -2023,6 +2023,7 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName(), CalculateBonusScale(self), self.resolve_gain)
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/encouragement.png",
 
         modifier_type = MODIFIER_TYPE.BOUNTY,
 
@@ -2051,7 +2052,7 @@ local MODIFIERS =
 
             return loc.format(fmt_str, self:GetOwnerName())
         end,
-        -- icon = "negotiation/modifiers/heckler.tex",
+        icon = "DEMOCRATICRACE:assets/modifiers/pessimist.png",
         modifier_type = MODIFIER_TYPE.CORE,
 
         OnBeginTurn = function( self, minigame )
@@ -2101,6 +2102,8 @@ local MODIFIERS =
     SELF_LOATHE =
     {
         name = "Self-Loathe",
+        icon = "DEMOCRATICRACE:assets/modifiers/self_loathe.png",
+
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
         OnInit = function( self )
