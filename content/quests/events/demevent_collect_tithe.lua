@@ -24,49 +24,85 @@ QDEF:AddConvo()
     :ConfrontState("STATE_CONFRONT")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] You are interrupted by some guy in the Cult.
-                player:
-                    !left
+                * The bright blue of their robes somehow stand out against the neons of the Pearl.
                 agent:
-                    !right
-                    Yo, you haven't been paying your tithe for about eleven years.
-                    Pay up or face the wrath of Hesh.
+                    !hesh_greeting
+                    Greetings, {player}. It's been long since you've paid your tithes.
+                {player_sal?
+                player:
+                    !crossed
+                    I paid plenty of tithes back on the derricks. 
+                agent:
+                    Well there's always plenty more work to do for Hesh, so the tithes need to keep flowing.
+                }
+                {player_rook?
+                player:
+                    !question
+                    Are you sure those tithe records are under a "{player}"?
+                agent:
+                    As it stands, those records say you've never paid tithes.
+                    Always a good time to start paying.
+                }
+                {player_smith?
+                player:
+                    !angry_shrug
+                    Aw, come on! Vix's schooling fees practically pay for my tithes already!
+                agent:
+                    This isn't about your family's tithes. This is about <i>your</> personal tithes.
+                }
+                {not player_sal? and not player_rook? and not player_smith?
+                player:
+                    !angry_point
+                    I've paid all my tithes on time, just like the rest of us.
+                agent:
+                    Well, that's before you became a politician.
+                    But now you have to pay extra if you decide to run for office.
+                }
             ]],
             OPT_PAY = "Pay the tithe",
             DIALOG_PAY = [[
                 player:
-                    [p] Alright, here is your tithe.
+                    !give
+                    Here's your ounce of sea salted flesh.
                 agent:
-                    Wow, that was easy.
+                    !hesh_greeting
+                    Hesh thanks you. May you walk in the shallows.
             ]],
             OPT_CONVINCE_EXEMPT = "Convince {agent} to leave you alone",
             DIALOG_CONVINCE_EXEMPT = [[
                 player:
                 {not paid_all?
-                    [p] You see, I am exempt.
+                    !hips
+                    Your records must be wrong. I was told that I was exempt from the next round of tithes?
                 agent:
-                    You what?
+                    The "next round"?
                 }
                 {paid_all?
-                    [p] Come on I already give you everything.
+                    !bashful
+                    Look, that's all i've got. I promise i'll come up with the money next time, okay?
                 }
             ]],
             DIALOG_CONVINCE_EXEMPT_SUCCESS = [[
-                agent:
                 {not paid_all?
-                    [p] If you say so.
-                    Too lazy to bother to check.
+                player:
+                    {player_smith?
+                    Vix gave me an exemption 
+                    }
                 }
                 {paid_all?
-                    [p] You are right this convo is pointless.
+                agent:
+                    !sigh
+                    I suppose hesh does not bless us all with good fortune.
+                    Very well. If you need time, we shall take what we already have and leave you be.
+                    !exit
+                        * As {agent} leaves, you make sure to remember {agent.hisher} face, so you know who to avoid for a very long time.
                 }
-                    Have a nice day.
             ]],
             DIALOG_CONVINCE_EXEMPT_FAILURE = [[
                 agent:
                 {not paid_all?
-                    [p] Nah, everyone pays tithes.
-                    Now pay up!
+                    No one is exempt from tithes to hesh!
+                    Pay for protection from Hesh's wrath.
                 }
                 {paid_all?
                     [p] That's not enough.
@@ -82,12 +118,14 @@ QDEF:AddConvo()
             ]],
             OPT_PAY_ALL = "Pay all you have",
             DIALOG_PAY_ALL = [[
+                * You turn your pockets inside out, and scour every place you've kept money on your person.
                 player:
-                    [p] Here, this is all I have.
-                    I physically can't give you more.
+                    !give
+                * But you already know it's not enough, {agent} snatches it out of your hands, but the counting is more of a courtesy.
                 agent:
-                    Yeah that's not enough.
-                    Seems we will teach you a lesson here.
+                    !angry
+                    Hesh grows tired each day of those who fail to pay their tithes.
+                    Each day, it's sea grows deeper, and only those who actively walk in the shallows are to survive.
             ]],
 
             SIT_MOD_BAD = "You have evaded paying tithes for a ridiculously long time",
@@ -155,8 +193,8 @@ QDEF:AddConvo()
             ]],
             DIALOG_DEFEND_WIN = [[
                 {dead?
-                    * [p] Well, I guess you are exempt after all.
-                    * From this tithe. Not the consequences of your actions.
+                    * It's a take from the poor, give to the rich world around here.
+                    * However, by the rustling of your hands through the newly dead's pockets, it can sometimes be the other way around.
                 }
                 {not dead?
                     player:
