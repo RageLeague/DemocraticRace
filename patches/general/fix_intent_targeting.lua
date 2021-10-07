@@ -12,7 +12,7 @@ local old_fn = Negotiation.MiniGame.CanPlayCard
 function Negotiation.MiniGame:CanPlayCard( card, target )
     local ok, result = old_fn(self, card, target)
     if not ok and result == CARD_PLAY_REASONS.INVALID_TARGET then
-        if target and is_instance( target, Negotiation.Card ) and CheckAnyBits( card.target_enemy, TARGET_FLAG.INTENT ) then
+        if target and is_instance( target, Negotiation.Card ) and card.target_enemy and CheckAnyBits( card.target_enemy, TARGET_FLAG.INTENT ) then
             -- Issue happens and we need fixing
             if card.CanPlayCard then
                 local ok, reason = card:CanPlayCard( card, self, target )
