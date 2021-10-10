@@ -1,4 +1,10 @@
-local url_lib = require "lib/url"
+-- local url_lib = require "lib/url"
+
+local function url_escape(s)
+    return (string.gsub(s, "([^A-Za-z0-9_])", function(c)
+        return string.format("%%%02x", string.byte(c))
+    end))
+end
 
 local DemocracyUtil = class("DemocracyUtil")
 
@@ -1303,7 +1309,7 @@ function DemocracyUtil.SendMetricsData(event_id, event_data)
     for id, data in pairs(payload_fields) do
         if data and data ~= "" then
             assert(type(data) == "string")
-            table.insert(query_strings, loc.format("{1}={2}", id, url_lib.escape(data)))
+            table.insert(query_strings, loc.format("{1}={2}", id, url_escape(data)))
         end
     end
     local url = "https://docs.google.com/forms/d/e/1FAIpQLSe3KWUoJQsLqyMAspjQRHowazaXEMR0rxiqKNyFqwwpVB0hWw/formResponse"
