@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.5.1(Alpha)
+Version: 0.5.2(Alpha)
 
 Author: RageLeague
 
@@ -100,6 +100,11 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Sei Bellissima
 
 ## Changelog
+
+### 0.5.2
+
+* Remove dependency of "lib/url". Now, this mod should properly work on Mac. Hopefully.
+* Expanded item filters for the Democratic Race.
 
 ### 0.5.1
 
