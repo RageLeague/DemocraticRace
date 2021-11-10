@@ -67,7 +67,7 @@ end
 Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
     name = "Propaganda Poster",
     --Wumpus; I saw the issue to clarify the argument's description. What's commented is the old description. I don't know if it's clearer, but it's more concise at least.
-    desc = "{{1}}, {IMPRINT}\At the start of your turn, this argument plays {2} cards in this list, in order.\nWhen it plays all cards in the list, remove a random card from the list and restart the order.\nIf there are no more cards in this list when it tries to play a card, remove this argument.", 
+    desc = "{{1}}, {IMPRINT}\nAt the start of your turn, this argument plays {2} cards in this list, in order.\nWhen it plays all cards in the list, remove a random card from the list and restart the order.\nIf there are no more cards in this list when it tries to play a card, remove this argument.", 
     --desc = "{{1}}, {IMPRINT}\nAt the beginning of each turn, play {2} cards from the imprinted cards in order.\nIf it reaches the end of the list and a card is to be played, remove a random card from the imprinted list and restart from the beginning.\nIf this argument tries to play a card, but no card remains on the imprinted list, remove this argument.",
     alt_desc = "Imprinted cards:\n{1}",
     desc_fn = function( self, fmt_str, minigame, widget )
