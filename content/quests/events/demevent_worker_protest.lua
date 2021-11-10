@@ -22,17 +22,19 @@ QDEF:AddConvo()
     :ConfrontState("CONF")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] You see a bunch of people arguing.
+                * You notice a few picket signs and a handful of loud voices, and the booming voice of a baron trying to quell them all.
                 baron:
                     !right
                     !angry
-                    Get back to work!
+                    We'd listen to you better if you didn't try to protest during the election.
+                    These are very important times we're in.
                 worker:
                     !left
                     !angry
-                    We will do that when you improve the working condition!
+                    Protesting now is the only way you Spark lovers will listen to us. 
                 baron:
-                    Don't force me to use force!
+                    !angrypoint
+                    I am authorized under the Barons to use force to disperse this violent assembly, and I will if I have to!
                     !exit
                 worker:
                     !exit
@@ -75,9 +77,11 @@ QDEF:AddConvo()
     :State("STATE_TALK_TO_WORKER")
         :Loc{
             DIALOG_INTRO_FIRST = [[
-                * You turn to the leader of the unhappy laborers.
+                worker:
+                    We have rights, Hesh damn it! The election promi-
                 player:
-                    Hello. What's going on here, if I might ask?
+                    !right
+                    Excuse me, but i'd like to have a discussion with the leader here.
                 worker:
                     !right
                     {liked?
@@ -123,20 +127,17 @@ QDEF:AddConvo()
             DIALOG_COMPROMISE = [[
                 player:
                     $miscPersausive
-                    I can't promise you everything you're asking for, but what if I could get you a little more?
-                    Would you go back to work then?
+                    How about you accept a smaller concession now instead of being blasted away by the Barons?
             ]],
             DIALOG_COMPROMISE_SUCCESS = [[
                 player:
                     $miscPersuasive
-                    After all, if you can reach an agreement, then the Barons won't be so quick to dismiss your concerns.
-                    !overthere
-                    Not when you've shown them how reasonable you can be.
+                    They're willing to give you something for now, but if you push it you'll just get tossed away with the trash.
                 worker:
-                    !palm
-                    Something <b>is</> better than nothing.
-                    And I would like to keep my current job if it means it pays enough.
-                    We'll listen to their offer.
+                    !crossed
+                    They'd better be willing to give up something. 
+                    Get that dog to sing and we'll hash it out gentle. Otherwise, we didn't come out here for nothing.
+               * The workers huddle together, discussing some of the finer points of what they want from this compromise.
             ]],
             DIALOG_COMPROMISE_FAIL = [[
                 player:
@@ -231,7 +232,8 @@ QDEF:AddConvo()
     :State("STATE_TALK_TO_BARON")
         :Loc{
             DIALOG_INTRO_FIRST = [[
-                * You turn to the leader of the Spark Barons.
+                baron:
+                    Furthermore, I can have all of your contracts-
                 player:
                     Hello. What's going on here, if I might ask?
                 baron:
@@ -241,10 +243,10 @@ QDEF:AddConvo()
                 {liked?
                     Oh thank the Spark you showed up.
                 }
-                    These lawless laborers wants to rebel against me.
-                    Something about wanting better rights.
-                    I need them get back to work.
-                    Can you help me do that?
+                    These workers are trying to start a protest just days before the voting starts.
+                    I've tried to talk sense into them, and I'd be willing to listen if they could just take a damn raincheck on this.
+                    !shrug
+                    So, I've got nothing. If you can make them shut down for a while, i'd be in your debt. 
             ]],
             DIALOG_INTRO_NOT_FIRST = [[
                 baron:
@@ -289,30 +291,29 @@ QDEF:AddConvo()
 
             OPT_CONVINCE_COMPROMISE = "Convince {baron} to compromise",
             TT_COMPROMISE = "You will have to convince both sides to accept the compromise.",
+            --Wumpus; I thought of saying "Arkcross" in the same way you'd say "Country" mile. Liable to change.
             DIALOG_CONVINCE_COMPROMISE = [[
                 player:
-                    Look, they just want better working condition. Is it that hard to ask?
-                    You could meet them half-way, couldn't you?
+                    How about this? You give them an inch, and i'll make sure they don't take an Arkcross mile.
             ]],
             DIALOG_CONVINCE_COMPROMISE_FAIL = [[
                 player:
-                    Surely you see the benefit in a content workforce.
+                    I've been able to talk to them and-
                 baron:
-                    !angry
-                    $angryPatienceLost
-                    Give them an inch, and they'll cut my throat. I'm not negotiating with these rats.
+                    !angryshrug
+                    So what, they put you up to this?
+                    Is this just one of those political appeals you're doing?
+                    Forget it! Dealing with them by force is a lot easier than giving them an inch.
             ]],
             DIALOG_CONVINCE_COMPROMISE_SUCCESS = [[
                 player:
                     $miscPersuasive
-                    Look, they are just unhappy with the current working condition.
-                    !interest
-                    Even just improving it a little bit, they will probably be content and go back to work.
-                    Way easier than resorting to violence.
+                    You said it yourself, you'd be willing to listen if not for when they're doing this.
+                    So give them a small concession, and they'll back off for long enough.
                 baron:
-                    !shrug
-                    $neutralResigned
-                    Ach, fine. I guess I can listen to what they have to say.
+                    !point
+                    Deal, but only if they'll actually cool their jets if I do.
+                    Weasel a half genuine compromise out of them and I'll hold up my end.
             ]],
 
             OPT_TALK_TO_WORKER = "Talk to {worker} instead",
