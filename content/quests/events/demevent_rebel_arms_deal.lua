@@ -43,21 +43,29 @@ QDEF:AddConvo()
     :ConfrontState("CONFRONT", function() return true end)
         :Loc{
             DIALOG_INTRO = [[
-                * [p] You encountered two people arguing.
-                rise:
-                    !left
+                * You would think trying to sell contraband requires you be quiet. Hush Hush. Generally not try to draw attention.
+                * Either the Jake is new at the job or the Professional Rabble Rouser wants {jakes.hisher} manager.
                 jakes:
                     !right
-                    No! You can't have those weapons unless you pay for them!
                 rise:
-                    But this is for the cause!
+                    !left
+                    Are you against Democracy itself? We need the weaponry to protect our revolution!
                 jakes:
-                    Your cause doesn't pay the bills!
-                * Wow, a conflict. Looks like a good time to intervene.
+                    Democracy isn't going to pay the customs fees! I still need to get paid for these weapons!
+                rise:
+                    !spit
+                    Bah! That's just bougeroise rhetoric.
+                jakes:
+                    !angryshrug
+                    Bougeroise? I'm just as poor as the lot of you. Should <i>I<\> starve just so your little revolution has a few more playthings?
+                rise:
+                    This isn't a game, {jake}. This is real life, and real sacrifice needs to be made for real change!
+                * You have a sneaking suspicion the next logical step for this conflict would involve someone getting shot.  
             ]],
             OPT_LEAVE = "Leave them figure this out themselves",
             DIALOG_LEAVE = [[
-                * [p] Or not. You do you.
+                * You pace a bit faster.
+                * The last sound you hear of their squabble is the telltale sounds of a scuffle.
             ]],
             OPT_CONVINCE_PAY = "Convince {rise} to pay up",
             DIALOG_CONVINCE_PAY = [[
@@ -65,19 +73,35 @@ QDEF:AddConvo()
                     !right
                 player:
                     !left
-                    [p] Yo, pay the Jake.
+                    This is unorderly and you know it.
             ]],
             DIALOG_CONVINCE_PAY_SUCCESS = [[
                 player:
-                    [p] Surely you are not actually a Spree?
+                    Well now, I never knew the Rise started hiring from Spree.
                 rise:
-                    Perish the thought!
-                    Okay, I will pay.
+                    !taken_aback
+                    Spree?
+                player:
+                    Well, this appears to be the Spree's general MO. 
+                    I bet you have an entire crew just waiting for their chance, just like-
+                rise:
+                    !placate
+                    Alright, alright, I get the memo and then some.
                 {no_money?
-                    Actually I won't, because I don't actually have money.
+                * {rise} hands {jakes} a paltry sum of bills, who keeps a firm hand on top of the merchandise.
+                * What {jakes} returns to {rise} isn't a box of weapons, but an irritated glare.
                 jakes:
                     !left
-                    You serious?
+                    This doesn't even cover half of the cost. What kind of scam are you pulling on me?
+                rise:
+                    !placate
+                    Well, look. We hoped that you'd be willing to trade-
+                jakes:
+                    "We"? Whose this "We" in this?
+                    How accurate was that Grifter about you being a former Spree?
+                rise:
+                    !palm
+                    Look, I just don't have the cash on hand.
                 }
                 {not no_money?
                 jakes:
@@ -85,54 +109,95 @@ QDEF:AddConvo()
                 rise:
                     !left
                     !give
-                    Here you go. Money for your weapons.
+                * {rise} coughs out a wad of shills larger than some bounties you've bagged and placed it in {jake}'s hand.
                 jakes:
-                    Glad we can do business.
+                    !take
+                    Now why couldn't we have started with this, hm?
                 rise:
+                    Because for a second I thought you Jakes could care about something bigger than yourselves.
                     !exit
-                * {rise} leaves with the weapons.
+                jakes:
+                    Ha! No bigger business than contraband.
                 player:
                     !left
                 jakes:
-                    Thank you grifter for helping me conduct the sale.
+                    Say, thank you {player}. Getting hassled like that doesn't get any easier with the job.
+                player:
+                    Just gets louder, doesn't it.
+                jakes:
+                    !chuckle
+                    Yeah, but anyone smart enough to play this game has a strong arm.
                 }
             ]],
             DIALOG_CONVINCE_PAY_FAILURE = [[
+                player:
+                    I would hope you understand that these kinds of covert trades should be a little bit quieter.
                 rise:
-                    [p] You are both enemies of the cause!
-                    !exit
-                * {rise} left, leaving you with {jakes}.
+                    But then how will people not know of our valor?
+                    The Rise need to be heard of by all, not just by those we surround ourselves with!
+                    And if that isn't reason enough to aide us in whatever way you can, then the revolution will take it's business elsewhere.
+                * {rise} turns heel and walks away, head held high like all those higher ups {rise.heshe} vows to destroy.
                 jakes:
-                    !right
-                    Great, just as I thought I get a potential customer.
+                    !sigh
+                    Well, unless you're buying all these weapons, I can't really do much with this merchandise.
+                player:
+                    !shrug
+                    Sell it to a more appreciable client, I guess.
+                jakes:
+                    Pardon my rookie mistake for thinking the armed revolution would be appreciable to a box full of guns.
             ]],
             OPT_CONVINCE_DONATE = "Convince {jakes} to donate weapons to the cause",
-            SIT_MOD_NO_DONATE = "That's now how business works.",
+            SIT_MOD_NO_DONATE = "That's not how business works.",
             DIALOG_CONVINCE_DONATE = [[
                 jakes:
                     !right
                 player:
                     !left
-                    [p] Consider the favors you are going to earn from the Rise.
+                    You know, I shifted some contraband once as a Grifter. Believe me, favors with others goes a long way.
             ]],
             DIALOG_CONVINCE_DONATE_SUCCESS = [[
-                jakes:
-                    [p] Wow, didn't realize I'm dealing with two annoying people here.
-                    Just take these weapons.
-                    I expect you to owe me some favors.
-                rise:
-                    !left
-                    Of course. The Rise helps all its allies.
                 player:
-                    !left
+                    Don't know if you're aware, but this is a democractic Havaria now.
+                    !over_there
+                    And these guys? They've got "Democracy" tattooed across their foreheads.
+                rise:
+                    It's true, actually! I have a big tattoo that says-
+                jakes:
+                    !flinch
+                    Ah, alright, I get it.
                 rise:
                     !right
-                    Thanks you, grifter.
+                jakes:
+                    !point
+                    You. What's your name again?
+                rise:
+                    !salute
+                    {rise}, {jakes.honorific}.
+                jakes:
+                    Right, right. Listen, the next time I need a favor from the Rise, i'm gonna name drop you.
+                    And if I don't get what i'm asking for, I'll be cutting a few of your strings, got it?
+                rise:
+                    Er, yes. In the calmer sense of the phrase.
+                jakes:
+                    !crossed
+                    I guess we have a deal, then.
+                    !exit
+                * With that barbed experience, {jakes} slides a few boxes of weaponry into the hands of {rise} before stomping away.
+                rise:
+                    !shrug
+                    Not how I would've liked the deal to go by, but the weapons seem good.
+                    Thanks for the help, {player}. 
+                player:
+                    !left
+                    Anything to be on the right side of history, right?
+                rise:
+                    !happy
+                    Right you are, {player}.
             ]],
             DIALOG_CONVINCE_DONATE_FAILURE = [[
                 jakes:
-                    [p] This isn't a charity, you know.
-                    I'm insulted to think that you think that would work.
+                    Well, the problem is all those weapons cost a lot more than any quick favors can pay for.
+                    So unless these Rise favors comes in cash or debit, I'm going to retract from the deal.
             ]],
             OPT_CONVINCE_CALL_OFF = "Convince {rise} to call off the deal",
             DIALOG_CONVINCE_CALL_OFF = [[
@@ -140,41 +205,67 @@ QDEF:AddConvo()
                     !right
                 player:
                     !left
-                    [p] You should not do that.
+                    !over_there
+                    This the one hassling your haggle?
+                rise:
+                    Yeah! All I want are some authentic weaponry and a bit of enthusiasm for the cause.
+                player:
+                    Well, stick-in-the-mud here might leave you barking up the wrong tree.
             ]],
             DIALOG_CONVINCE_CALL_OFF_SUCCESS = [[
                 player:
-                    [p] We literally have the truce deal for this.
-                    Just vote, bro.
-                    Weapons aren't necessary.
+                    I could list off several other smugglers who'll charge you a dime on the dollar {jakes} is charging you.
                 rise:
-                    Oh wow you're right!
-                    Imma vote now!
-                    !exit
-                * {rise} left.
-                jakes:
-                    !right
-                    Well, the freeloader left.
-                    Although what you said reminds me how I'm not going to make money of weapons now.
+                    Really? 
                 player:
-                    Yeah that might be a problem.
+                    !eureka
+                    For sure! And that oughta lead to a competitive price from {jakes} later on, if you still want to use {jakes.himher}.
+                rise:
+                    !think
+                    You make a bit of sense, yeah.
+                    Well, I guess I can go see some of these other options
+                    !exit
+                * With that, {rise} walks off, leaving {jakes} in a state of irritation and awe.
+                jakes:
+                    Now what was that all about, scaring off good business?
+                player:
+                    Ah, calm down. Do you really think they'll be chasing their tails for those "other options" for long?
+                jakes:
+                    Who did you refer them to, exactly?
+                player:
+                    A nobody. They'll be lucky if they could mug the weapon off of this "esteemed weapons dealer".
+                    The Rise'll be eating out of the palm of your hand soon enough.
+                jakes:
+                    That does get the Rise off my back for the now, although I still have these weapons.
+                    I suppose I could call a few favors, get these weapons sold on such short notice.
+                player:
+                    !salute
+                    For that, I wish you luck. 
             ]],
             DIALOG_CONVINCE_CALL_OFF_FAILURE = [[
-                rise:
-                    [p] No! Revolution needs weapons!
-                    !left
-                jakes:
-                    !right
-                rise:
-                    And we must all work together to overthrow this corrupt system!
-                    Wouldn't you agree?
-                jakes:
-                    Uh, we are back to square one.
                 player:
-                    !left
+                    We don't need weapons anymore. You can put them down, because we're entering a democracy now.
+                rise:
+                    Well, I guess that-
                 jakes:
-                    What are you trying to pull here, grifter?
-                    Trying to put me out of business?
+                    !left
+                    !point
+                    Wait, you guys need to protect Democracy or something.
+                rise:
+                    Y-yeah! We just got Democracy, we need to keep it safe from outside influences!
+                jakes:
+                    That's the spirit.
+                player:
+                    !right
+                jakes:
+                    !angry_point
+                    What in Hesh's name are you trying to pull, grifter?
+                player:
+                    !placate
+                    I just saw you were having some business conflicts and I was hoping-
+                jakes:
+                    You should hope I don't use any of these weapons on you.
+                    This is still a sale I'd like to make. I don't need grifters butting into other's good business.
             ]],
             OPT_ARREST = "Confront them about dealing with contraband...",
             DIALOG_ARREST = [[
@@ -182,15 +273,22 @@ QDEF:AddConvo()
                     !right
                 player:
                     !left
-                    [p] Say, buddy chum friend pal amigo buddy.
-                    Selling weapons seems very illegal, don't you agree?
+                * You tut into the middle of them with a gait you learned from watching out for Admiralty patrols back in your grifting days.
+                * Ironic how the same trick works on the correct side of the law as well.
+                player:
+                    Big box of weapons you got there, {jakes}.
                 jakes:
+                    Yeah it is. And this schlep's trying to get them for pennies on the dollar.
                 {high_admiralty_support?
-                    And I suppose our friend of the switches doesn't like it?
+                player:
+                    Hm. I happen to know a few people who'd want these going through the proper customs.
                 }
                 {not high_admiralty_support?
-                    Oh yeah? What's it to you?
+                player:
+                    Doesn't sound like something the Admiralty would particularly care for.
                 }
+                jakes:
+                    Hey, I paid my customs fees! The admiralty got their cut of this deal already.
             ]],
         }
         :SetLooping(true)
@@ -280,15 +378,15 @@ QDEF:AddConvo()
                 rise:
                     !right
                 player:
-                    [p] Well, maybe before you want to buy weapons, get the money for it.
+                    What kind of long con were you trying to pull on {jakes}?
                 rise:
-                    I suppose you are right.
-                    Now where am I going to find the weapons now?
-                    !exit
-                * {rise} leaves, leaving you with {jakes}.
-                jakes:
-                    !right
-                    Wow, that was something.
+                    !bashful
+                    Ah jeez, two of you getting on my case.
+                    The revolution has...had weapons.
+                    We discarded quite a few of them when the election was pronounced. Bit of symbolism, laying down our arms, y'know?
+                    Unfortunately we needed to pick up those weapons again to help protect the election from being completely rigged.
+                    !shrug
+                    And you can probably guess the amount of money we also threw away when we threw away those weapons.
             ]],
             OPT_PAY = "Pay for {rise}",
             DIALOG_PAY = [[
@@ -296,20 +394,24 @@ QDEF:AddConvo()
                     !right
                 player:
                     !left
-                    [p] You know what, I'll spot for you.
+                    !sigh
+                    The Rise really are in dire straits, I see.
+                * You put a separate wad of bills right next to the ones that {rise} placed.
+                * {jakes} quickly scoops them up and counts them all up.
                 rise:
-                    Really?
+                    You'd actually spend your own money to help the cause?
                 player:
-                    Don't question it.
+                    What politician wouldn't want to be on the right side of history, right?
+                rise:
+                    Wow! You're a true help, y'know that?
                 jakes:
-                    !right
-                    Wait, you are letting {rise.heshe} get what {rise.heshe} wants without paying?
-                player:
-                    !give
-                    You get the money either way, right? Don't question it.
-                jakes:
-                    !take
-                    Ah, sure. Thank you for your business.
+                    !left
+                    Just tallied it. This'll cover the entire transaction.
+                    Though I expect to be told upfront if you can't pay next time.
+                    Word gets around, y'know.
+                rise:
+                    !salute
+                    Er, yes. I promise that we won't try to cheap you out anymore.
             ]],
             OPT_DONATE = "Donate some weapons",
             DIALOG_DONATE = [[
@@ -317,18 +419,17 @@ QDEF:AddConvo()
                     !right
                 player:
                     !left
-                    [p] Here, have some weapons for your cause.
-                    rise:
-                    Really?
+                    !give
+                    Well, if you need something to use, I could give you this.
+                rise:
+                    !take
+                    Well, that's appreciated. Something is always better than nothing for the revolution.
+                    Nice to see <i>someone<\> can contribute to the cause.
                 player:
-                    Don't question it.
-                jakes:
-                    !right
-                    Wait, you are letting {rise.heshe} get what {rise.heshe} wants without paying?
-                player:
-                    {rise.HeShe} isn't paying anything either way, right? There is no loss to you.
-                jakes:
-                    I suppose.
+                    Don't start squabbling again. I can always take that weapon back, y'know.
+                rise:
+                    !salute
+                    You're right. Safe travels.
             ]],
 
             SELECT_TITLE = "Select a card",
@@ -398,9 +499,10 @@ QDEF:AddConvo()
             DIALOG_BACK = [[
                 player:
                 {tried_intimidate?
-                    I'm just kidding, of course.
+                    Okay, y'know what. You got me.
+                    I was just trying to spook you two.
                 jakes:
-                    Your terrible sense of humor is not appreciated.
+                    Right. Because the cherry on top of this exchange is a nobody coming in to mock good business.
                 }
                 {not tried_intimidate?
                     I'm just saying. You don't want the wrong person to see you do this stuff.
@@ -408,90 +510,121 @@ QDEF:AddConvo()
                     Tell me something I didn't know already.
                 }
             ]],
-            OPT_INTIMIDATE = "Intimidate them",
+            OPT_INTIMIDATE = "Intimidate them to come willingly",
             DIALOG_INTIMIDATE = [[
                 player:
-                    [p] You are both under arrest!
-                    It would be easier for all of us if you just submit quietly.
+                    Well, you see. The Admiralty just called.
+                    They want just a bit bigger of a cut.
             ]],
             DIALOG_INTIMIDATE_SUCCESS = [[
+                player:
+                    It's a few days in the bin, nothing you can't handle.
+                    And who knows? Maybe you and {rise} will get a bit closer that way.
                 jakes:
-                    [p] Fine! I'll take my chances with the Admiralty.
-                * You send them both to the nearest Admiralty patrol.
+                    You're right on one thing, Switch. It'll be a few days in the bin for me. Got the contacts to get out.
+                    !over_there
+                    You though. Maybe this'll teach you some manners on how to conduct business.
+                rise:
+                    But...but the elect-
+                player:
+                    The election is specifcally so we don't need radicals like you with weapons like those.
             ]],
             DIALOG_INTIMIDATE_FAILURE = [[
                 jakes:
-                    [p] Yeah? What are you going to do about it?
-                    Your whining doesn't give you power to arrest people, you know?
-                * {jakes.HeShe}'s right, you know.
+                    Hey, last I checked, the Admiralty don't send hunters to do grunt work.
+                    Unless you've got your switch friends backing you up, you don't have the authority to do anything.
             ]],
             OPT_ARREST = "Arrest them with force",
             DIALOG_ARREST = [[
-                player:
                 {tried_intimidate?
-                    [p] Well, I tried using words and it didn't work.
-                    Well I will just...
+                    * You brandish your weapon with a gleam.
+                player:
+                    !sigh
+                    Criminals. Can't live with them, can't live without them.
+                rise:
+                    !right
+                    !fight
+                    You're the real criminal here! Viva la Rise!
                 }
                 {not tried_intimidate?
-                    [p] You are both under arrest!
+                player:
+                    I tell ya. Knocking skulls is the best part of this job.
                 jakes:
-                    Oh we are doing this, huh?
+                    !fight
+                    Yeah, yours specifically.
                 }
             ]],
             DIALOG_ARREST_WIN = [[
                 {jakes_dead?
                     {rise_dead?
-                        * [p] Knowing that you killed two criminals makes you proud.
-                        * Their friends are not going to like you, and it puts the legitimacy of your campaign into question.
-                        * You left the scene.
+                        * It does feel good to shake off the rust from your weapons, even if you got a bit overzealous.
+                        * Overzealoutry, however, might affect your campaign in the long run.
                     }
                     {not rise_dead?
                         rise:
                             !right
                             !injured
-                            [p] Look at what you've done! Where can I get my weapons now?
+                        * {rise} scrambles for the boxes, prying one open with the deftness of a safe cracker.
+                        * {rise.HisHer} awareness, however, could use some work. You grab {rise.hisher} arms before clapping {agent.hisher} fists in a pair of restraints.
+                        rise:
+                            So i'm leading a life of Martyrdom, now? It'll be a great way to be remembered, y'know.
                         player:
-                            You don't have to worry about that anymore.
-                            As I said, you are under arrest.
-                            Come quietly or you will suffer the same fate.
-                        * You send the rise to the nearest Admiralty patrol.
+                            Reason it out however you want. If it helps you sleep tonight, hey, i'm fine with you babbling into thin air.
+                            But just remember you signed up for this.
+                        * It doesn't take long for the next Admiralty Patrol to round the corner. You shove {rise} into the hands of an oncoming guard before treking right behind them.
                     }
                 }
                 {not jakes_dead?
                     {rise_dead?
                         jakes:
                             !injured
-                            [p] You bastard!
-                            Look at what you've done!
+                            Ugh...the rest of the Rise are gonna kill me for this.
                         player:
-                            This one resisted arrest.
-                            It's not my fault.
-                            Come quietly or you will suffer the same fate.
-                        * You send the jakes to the nearest Admiralty patrol.
+                            Would you like me to finish the job, then? Would that make you feel better?
+                        jakes:
+                            Not from a switch, no. If i'm dying, i'm gonna die for something honorable.
+                        player:
+                            !crossed
+                            Hmph. Maybe you and that Rise member had more in common than you thought.
+                        * {jakes} spends the rest of your quaint time together grumbling, all the way to the patrol that passes through these parts.
                     }
                     {not rise_dead?
                         jakes:
                             !injured
                         player:
-                            [p] So? Are you going to come quietly? Or do you want some more?
+                            It's going to be a long night behind bars for you this evening.
+                        * {jakes} casts an ire filled glance at {rise}.
+                        rise:
+                            !left
                         jakes:
-                            Fine! I'll take my chances with the Admiralty.
-                        * You send them both to the nearest Admiralty patrol.
+                            Yeah, same goes for you. You're going to remember this and pass on what happens when you make business difficult to the rest of your friends.
+                        rise:
+                            But-but I planned-
+                        player:
+                            !question
+                            "Plans rarely survive contact with the enemy". Did you know that quote, or did you not know how to read the fine print before tonight?
+                        * With both your prisoners in tow, the orbitting Admiralty Patrol that passes these parts quickly becomes two criminals fuller.
                     }
                 }
             ]],
             OPT_USE_BODYGUARD = "Let a bodyguard arrest them...",
             DIALOG_USE_BODYGUARD = [[
                 player:
-                    [p] Well, you see...
-                * You gesture {guard}?
+                    !wink
+                * You signal for {guard} to restrain one of them.
                 jakes:
-                    What? Where did that switch came from?
-                guard:
+                    !taken_aback
+                    Wh-hey!
+                rise:
                     !left
-                    You are really unobservant, are you?
-                    Anyway, you are coming with me!
-                * {guard} took them away.
+                    Wait, what's going-
+                * You quickly grab {rise}'s arms behind {rise.himher}, and with {guard} holding back {jakes}, you have 2 new prisoners.
+                jakes:
+                    I bet you like this kind of grunt work, switch.
+                guard:
+                    !shrug
+                    Pays the bills, what can I say.
+                * You and {guard} hold both of your new friends down while waiting for the authorities to come and see you both doing your civic duty.
             ]],
         }
         :SetLooping(true)
