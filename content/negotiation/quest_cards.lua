@@ -406,6 +406,7 @@ local CARDS = {
         end,
 
         flavour = "This sounds extremely unethical. Then again, if you are ethical, you wouldn't be a grifter.",
+        icon = "DEMOCRATICRACE:assets/cards/promote_product.png",
 
         cost = 1,
         flags = CARD_FLAGS.MANIPULATE | CARD_FLAGS.EXPEND,

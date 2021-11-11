@@ -150,6 +150,7 @@ local CARDS = {
         name = "Gift Packaging",
         desc = "{IMPROVISE} a card from the draw pile and let the opponent {APPROPRIATED|appropriate} it.",
         flavour = "'I have something for you!'",
+        icon = "DEMOCRATICRACE:assets/cards/gift_packaging.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.UTILITY,
@@ -245,6 +246,7 @@ local CARDS = {
     {
         name = "Business Card",
         desc = "Gain {1} {RENOWN}.\n{STACKING}: Increase the stacks gained by 1.",
+        icon = "DEMOCRATICRACE:assets/cards/business_card.png",
 
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.userdata and self.userdata.stacks or 1)
@@ -428,6 +430,7 @@ local CARDS = {
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.resolve_heal)
         end,
+        icon = "DEMOCRATICRACE:assets/cards/index_card.png",
 
         cost = 0,
         item_tags = ITEM_TAGS.SUPPORT,
@@ -453,6 +456,7 @@ local CARDS = {
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.heal_amount, self.damage_amount)
         end,
+        icon = "DEMOCRATICRACE:assets/cards/party_spirit.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
@@ -488,6 +492,7 @@ local CARDS = {
     {
         name = "Pearl Grey",
         desc = "Create 1 {stoic}",
+        icon = "DEMOCRATICRACE:assets/cards/pearl_grey.png",
 
         cost = 0,
         item_tags = ITEM_TAGS.SUPPORT,
@@ -505,6 +510,7 @@ local CARDS = {
     {
         name = "Work Report",
         desc = "Insert a {baffled} into your draw pile.",
+        icon = "DEMOCRATICRACE:assets/cards/work_report.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
