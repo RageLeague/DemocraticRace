@@ -104,6 +104,19 @@ Content.AddStringTable("DEMOCRACY", {
                 DETAIL_DECREASE = "Your support among {1#wealth_name_list} are decreased.",
                 DETAIL_BOTH = "Your support among {1#wealth_name_list} are increased, while your support among {2#wealth_name_list} are decreased.",
             },
+            TIME_PASSED =
+            {
+                TITLE = "{1} {1*Action|Actions} Spent",
+                DETAIL = "You have spent {1} {1*action|actions} on {2}. You have {3} {3*action|actions} left for this free time.",
+                DETAIL_NO_FREE = "You have spent {1} {1*action|actions} on {2}. You have no more free time.",
+                REASON =
+                {
+                    ACTION = "performing a task",
+                    NEGOTIATION = "negotiation",
+                    BATTLE = "battle",
+                    TRAVEL = "travelling",
+                },
+            },
             UPDATE_STANCE =
             {
                 TITLE = "Stance Updated",

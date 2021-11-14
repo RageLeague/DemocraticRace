@@ -2,7 +2,7 @@ local function GetReason(txt)
     return LOC("DEMOCRACY.DELTA_SUPPORT_REASON." .. txt)
 end
 
-AddNotification("DELTA_GENERAL_SUPPORT",{
+AddNotification("DEM_DELTA_GENERAL_SUPPORT",{
     sfx = SoundEvents.notification_relationship_new,
     img = DemocracyConstants.icons.support,
     FormatNotification = function( self, notification, delta, current, reason )
@@ -17,7 +17,7 @@ AddNotification("DELTA_GENERAL_SUPPORT",{
 
     end,
 })
-AddNotification("DELTA_FACTION_SUPPORT",{
+AddNotification("DEM_DELTA_FACTION_SUPPORT",{
     sfx = SoundEvents.notification_relationship_new,
     -- img = DemocracyConstants.icons.support,
     FormatNotification = function( self, notification, delta, current, faction, reason )
@@ -26,14 +26,14 @@ AddNotification("DELTA_FACTION_SUPPORT",{
         end
         local addendum = delta >= 0 and "INCREASE" or "DECREASE"
         current = current or DemocracyUtil.TryMainQuestFn("GetFactionSupport", faction)
-        
+
         notification.banner_txt = loc.format(LOC("DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.TITLE_"..addendum), math.abs(delta), faction)
         notification.details = loc.format(LOC("DEMOCRACY.NOTIFICATION.FACTION_SUPPORT.DETAIL_"..addendum), current, faction, GetReason(reason))
-        
+
         notification.img = faction:GetIcon()
     end,
 })
-AddNotification("DELTA_WEALTH_SUPPORT",{
+AddNotification("DEM_DELTA_WEALTH_SUPPORT",{
     sfx = SoundEvents.notification_relationship_new,
     -- img = DemocracyConstants.icons.support,
     FormatNotification = function( self, notification, delta, current, wealth, reason )
@@ -44,29 +44,29 @@ AddNotification("DELTA_WEALTH_SUPPORT",{
         current = current or DemocracyUtil.TryMainQuestFn("GetWealthSupport", wealth)
         notification.banner_txt = loc.format(LOC("DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.TITLE_"..addendum), math.abs(delta), wealth )
         notification.details = loc.format(LOC("DEMOCRACY.NOTIFICATION.WEALTH_SUPPORT.DETAIL_"..addendum), current, wealth, GetReason(reason))
-        
+
         notification.img = DemocracyUtil.GetWealthIcon(wealth)
     end,
 })
-AddNotification("DELTA_AGENT_SUPPORT",{
+AddNotification("DEM_DELTA_AGENT_SUPPORT",{
     sfx = SoundEvents.notification_relationship_new,
     -- img = DemocracyConstants.icons.support,
     FormatNotification = function( self, notification, delta, agent, reason )
         if type(reason) ~= "string" then
             reason = delta >= 0 and "DEFAULT_UP" or "DEFAULT_DOWN"
         end
-        
+
         local mainquest = TheGame:GetGameState():GetMainQuest()
         local addendum = delta >= 0 and "INCREASE" or "DECREASE"
 
         notification.banner_txt = loc.format(LOC("DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.TITLE_"..addendum), math.abs(delta), agent)
         notification.details = loc.format(LOC("DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.DETAIL_"..addendum), math.abs(delta),
             GetReason(reason), agent:GetFaction(), agent)
-        
+
         notification.img = agent
     end,
 })
-AddNotification("DELTA_GROUP_FACTION_SUPPORT", {
+AddNotification("DEM_DELTA_GROUP_FACTION_SUPPORT", {
     sfx = SoundEvents.notification_relationship_new,
     img = DemocracyConstants.icons.support,
     FormatNotification = function( self, notification, group_deltas )
@@ -85,10 +85,10 @@ AddNotification("DELTA_GROUP_FACTION_SUPPORT", {
         table.sort(disliked)
         if #liked + #disliked == 1 then
             local solokey = #liked > 0 and liked[1] or disliked[1]
-            return NOTIFY.DELTA_FACTION_SUPPORT.FormatNotification(self, notification, group_deltas[solokey], nil, solokey)
+            return NOTIFY.DEM_DELTA_FACTION_SUPPORT.FormatNotification(self, notification, group_deltas[solokey], nil, solokey)
         end
         if #liked + #disliked == 0 then
-            return NOTIFY.DELTA_GENERAL_SUPPORT.FormatNotification(self, notification, 0)
+            return NOTIFY.DEM_DELTA_GENERAL_SUPPORT.FormatNotification(self, notification, 0)
         end
         notification.banner_txt = LOC"DEMOCRACY.NOTIFICATION.GROUP_FACTION_SUPPORT.TITLE"
         if #liked > 0 then
@@ -102,7 +102,7 @@ AddNotification("DELTA_GROUP_FACTION_SUPPORT", {
         end
     end,
 })
-AddNotification("DELTA_GROUP_WEALTH_SUPPORT", {
+AddNotification("DEM_DELTA_GROUP_WEALTH_SUPPORT", {
     sfx = SoundEvents.notification_relationship_new,
     img = DemocracyConstants.icons.support,
     FormatNotification = function( self, notification, group_deltas )
@@ -121,10 +121,10 @@ AddNotification("DELTA_GROUP_WEALTH_SUPPORT", {
         table.sort(disliked)
         if #liked + #disliked == 1 then
             local solokey = #liked > 0 and liked[1] or disliked[1]
-            return NOTIFY.DELTA_WEALTH_SUPPORT.FormatNotification(self, notification, group_deltas[solokey], nil, solokey)
+            return NOTIFY.DEM_DELTA_WEALTH_SUPPORT.FormatNotification(self, notification, group_deltas[solokey], nil, solokey)
         end
         if #liked + #disliked == 0 then
-            return NOTIFY.DELTA_GENERAL_SUPPORT.FormatNotification(self, notification, 0)
+            return NOTIFY.DEM_DELTA_GENERAL_SUPPORT.FormatNotification(self, notification, 0)
         end
         notification.banner_txt = LOC"DEMOCRACY.NOTIFICATION.GROUP_WEALTH_SUPPORT.TITLE"
         if #liked > 0 then
@@ -139,7 +139,7 @@ AddNotification("DELTA_GROUP_WEALTH_SUPPORT", {
     end,
 })
 
-AddNotification("UPDATE_STANCE", {
+AddNotification("DEM_UPDATE_STANCE", {
     sfx = SoundEvents.notification_relationship_new,
     img = DemocracyConstants.icons.support,
     FormatNotification = function( self, notification, issue, stance, strict )
@@ -152,5 +152,21 @@ AddNotification("UPDATE_STANCE", {
         end
         notification.details = loc.format(LOC("DEMOCRACY.NOTIFICATION.UPDATE_STANCE."
             .. (strict and "DETAIL_STRICT" or "DETAIL_LOOSE")), issue, stance)
+    end,
+})
+
+AddNotification("DEM_TIME_PASSED", {
+    sfx = SoundEvents.notification_aspect_gained,
+    -- Yoink the grog's icon
+    img = engine.asset.Texture("UI/location_grogndog.tex"),
+    FormatNotification = function( self, notification, quest, delta, newvalue, reason )
+        print("new value:", newvalue)
+        notification.banner_txt = loc.format(LOC"DEMOCRACY.NOTIFICATION.TIME_PASSED.TITLE", delta)
+        if newvalue and newvalue > 0 then
+            notification.details = loc.format(LOC"DEMOCRACY.NOTIFICATION.TIME_PASSED.DETAIL", delta, LOC("DEMOCRACY.NOTIFICATION.TIME_PASSED.REASON." .. (reason or "ACTION")), newvalue)
+        else
+            notification.details = loc.format(LOC"DEMOCRACY.NOTIFICATION.TIME_PASSED.DETAIL_NO_FREE", delta, LOC("DEMOCRACY.NOTIFICATION.TIME_PASSED.REASON." .. (reason or "ACTION")))
+        end
+        notification.img = quest:GetIcon() or notification.img
     end,
 })
