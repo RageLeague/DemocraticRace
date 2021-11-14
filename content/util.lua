@@ -1397,29 +1397,32 @@ function QuestDef:AddFreeTimeObjective( child )
                 if minigame.start_params.no_free_time_cost then
                     return
                 end
-                quest:DefFn("DeltaActions", -math.ceil(minigame:GetTurns() / 3))
+                -- Dynamically scale action cost based on turn taken
+                -- <= 4: one action
+                -- <= 8: two actions
+                -- <= 12: three actions
+                -- More: What the Hesh are you doing. Also at least 4 actions
+                quest:DefFn("DeltaActions", -math.max(math.ceil(minigame:GetTurns() / 4), 1), "NEGOTIATION")
             end,
             resolve_battle = function(quest, battle)
-                quest:DefFn("DeltaActions", -2)
+                quest:DefFn("DeltaActions", -math.max(math.ceil(battle:GetTurns() / 4), 1), "BATTLE")
             end,
             caravan_move_location = function(quest, location)
-                print("Caravan moved, remove one action")
-                -- DBG(location)
                 if location:HasTag("in_transit") then
-                    print("Caravan moved, remove one action")
-                    quest:DefFn("DeltaActions", -1)
+                    quest:DefFn("DeltaActions", -1, "TRAVEL")
                 end
             end,
         },
     }(child)
 
-    self.DeltaActions = function(quest, delta)
+    self.DeltaActions = function(quest, delta, reason)
         quest.param.free_time_actions = quest.param.free_time_actions + delta
         print("New action count: "..quest.param.free_time_actions)
         if quest.param.free_time_actions <= 0 then
             quest:Complete(new_child.id)
         end
         quest:NotifyChanged()
+        TheGame:GetGameState():LogNotification( NOTIFY.DEM_TIME_PASSED, -delta, quest.param.free_time_actions, reason )
     end
     self.free_time_objective_id = new_child.id
 
