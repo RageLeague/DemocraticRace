@@ -1,8 +1,15 @@
 Convo("DEBUG_ENDING_TEST")
     :Loc{
-        OPT_TEST = "[Debug] Get Business card"
+        OPT_TEST = "[Debug] Test Convo"
     }
     :Hub(function(cxt)
         -- cxt:Opt("OPT_TEST")
         --     :GainCards{"vroc_whistle"}
+
+        cxt:Opt("OPT_TEST")
+            :Fn(function(cxt)
+                local q = QuestUtil.SpawnQuest("RACE_TEST_QUEST")
+                cxt:PlayQuestConvo(q, QUEST_CONVO_HOOK.INTRO)
+            end)
+
     end)
