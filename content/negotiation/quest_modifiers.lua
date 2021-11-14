@@ -1771,44 +1771,38 @@ local MODIFIERS =
     },
     RELATABLE = {
         name = "Relatable",
-        desc = "Certain arguments will be given to Aellon when you get certain arguments yourself.",
+        desc = "{UPVOTE|}{CONTRARIAN|}{FAKE_NEWS|}Every {1} cards you play causes Aellon to gain an argument based on the type of the last card. ({2} remaining)",
+		desc_fn = function( self, fmt_str )
+			return loc.format( fmt_str, self.num_cards or 5, self.count )
+		end,
         modifier_type = MODIFIER_TYPE.CORE,
         max_stacks = 1,
+		num_cards = 4,
+		count = 4,
         icon = "negotiation/modifiers/cool_head.tex",
-
-        argument_map =
-        {
-            DOMINANCE = "CONTRARIAN",
-            INFLUENCE = "TRENDY",
-            RENOWN = "UPVOTE",
-            BAIT = "SHAD_BAN",
-            RIG_HEADS = "FAKE_NEWS",
-            RIG_SNAILS = "FAKE_NEWS",
-        },
 
         event_handlers =
         {
-            --there is probably...definitely...TOTALLY a better way to do this but wump no know lua.
-            [ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
-                if modifier.owner ~= self.owner then
-                    if self.argument_map[modifier.id] then
-                        self.negotiator:AddModifier( self.argument_map[modifier.id], modifier.stacks or 1, self )
-                    end
-                end
-            end,
-                    --so it adds to trendy instead of making a whole new trendy
-            [ EVENT.MODIFIER_CHANGED ] = function( self, modifier, delta, clone, source )
-                if modifier.owner ~= self.owner and delta > 0 then
-                    if self.argument_map[modifier.id] then
-                        self.negotiator:AddModifier( self.argument_map[modifier.id], delta, self )
-                    end
-                end
+            [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
+                if card:GetNegotiator() ~= self.negotiator then
+					self.count = self.count - 1
+					if self.count == 0 then
+						self.count = self.num_cards
+						if card:IsFlagged( CARD_FLAGS.DIPLOMACY ) then
+							self.negotiator:CreateModifier( "UPVOTE", 1, self )
+						elseif card:IsFlagged( CARD_FLAGS.HOSTILE ) then
+							self.negotiator:CreateModifier( "CONTRARIAN", 1, self )
+						else --assuming flagged manipulate
+							self.negotiator:CreateModifier( "FAKE_NEWS", 1, self )
+						end
+					end
+				end
             end,
         },
     },
     CONTRARIAN = {
         name = "Contrarian",
-        desc = "When the core takes damage, this argument deals that amount of damage to a random argument.",
+        desc = "Created by <b>Relatable</> when playing Hostility cards.\nWhen the core takes damage, this argument deals that amount of damage to a random argument.",
         modifier_type = MODIFIER_TYPE.ARGUMENT,
         max_resolve = 3,
         icon = "negotiation/abrupt_remark.tex",
@@ -1832,34 +1826,47 @@ local MODIFIERS =
         },
     },
     UPVOTE = {
-        name = "Upvotes",
-        desc = "",
+        name = "Clout",
+        desc = "Created by <b>Relatable</> when playing Diplomacy cards.\nDeals damage equal to the number of arguments Aellon controls.",
         desc_fn = function( self, fmt_str )
             return loc.format(fmt_str, self.max_persuasion)
         end,
         icon = "negotiation/modifiers/voice_of_the_people.tex",
         modifier_type = MODIFIER_TYPE.ARGUMENT,
-        max_resolve = 4,
+        max_resolve = 3,
 
         min_persuasion = 1,
         max_persuasion = 1,
 
         target_enemy = TARGET_ANY_RESOLVE,
 
-        OnSetStacks = function( self, old_stacks )
-            self.min_persuasion = self.stacks
-            self.max_persuasion = self.stacks
+        OnInit = function( self )
+			self:CalculateDamage(true)
         end,
-
-        OnApply = function( self )
-            self:PrepareTurn()
-        end,
-
+		OnBeginTurn = function( self, minigame )
+			self:ApplyPersuasion()
+		end,
+		CalculateDamage = function( self, bump_hack ) --On first spawning, it shows the wrong value. So... bump_hack!
+			if self.negotiator then
+				local count = bump_hack and 1 or 0
+				for i, mod in self.negotiator:Modifiers() do
+					count = count + 1
+				end
+				self.min_persuasion = count
+				self.max_persuasion = count
+				self.engine:BroadcastEvent( EVENT.CUSTOM, function( panel )
+						panel.opponent_modifiers:UpdatePersuasionLabels()
+					end )
+			end
+		end,
         event_handlers =
         {
-            [ EVENT.END_TURN ] = function( self, minigame )
-                self:ApplyPersuasion()
-            end
+			[ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
+				self:CalculateDamage()
+			end,
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, source )
+				self:CalculateDamage()
+			end,
         },
     },
     SHAD_BAN = {
@@ -1911,10 +1918,8 @@ local MODIFIERS =
     },
     FAKE_NEWS = {
         name = "Fake News",
-        -- I made the hide intent part. If you want to make the add damage part, make it yourself because this doesn't
-        -- actually say anything about how much damage added.
-        desc = "hides intents and adds damage to intents 50% of the time",
-        max_resolve = 2,
+        desc = "Created by <b>Relatable</> when playing Manipulation cards.\nIntents and target previews are hidden. Intents have a 50% chance to do +1 damage.",
+        max_resolve = 3,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
         -- This is the crafty template.
@@ -1923,13 +1928,22 @@ local MODIFIERS =
             self.engine:BroadcastEvent( EVENT.TARGETS_CHANGED )
         end,
 
+        event_priorities =
+        {
+            [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_ADDITIVE,
+        },
         event_handlers =
         {
             [ EVENT.CALC_BOOLEAN ] = function( self, acc, key )
-                if not self.negotiator:IsPlayer() and self.engine:GetTurns() > self.turn_applied then
+                if not self.negotiator:IsPlayer() and self.engine:GetTurns() >= self.turn_applied then
                     if key == "HIDE_INTENT" then
                         acc:ModifyValue( true, self )
                     end
+                end
+            end,
+            [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion )
+                if source.owner == self.owner and is_instance( source, Negotiation.Card ) then
+                    persuasion:AddPersuasion( 0, 1, self )
                 end
             end,
         },
