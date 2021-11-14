@@ -1422,7 +1422,7 @@ function QuestDef:AddFreeTimeObjective( child )
             quest:Complete(new_child.id)
         end
         quest:NotifyChanged()
-        TheGame:GetGameState():LogNotification( NOTIFY.DEM_TIME_PASSED, -delta, quest.param.free_time_actions, reason )
+        TheGame:GetGameState():LogNotification( NOTIFY.DEM_TIME_PASSED, quest, -delta, quest.param.free_time_actions, reason )
     end
     self.free_time_objective_id = new_child.id
 

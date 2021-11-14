@@ -157,13 +157,16 @@ AddNotification("DEM_UPDATE_STANCE", {
 
 AddNotification("DEM_TIME_PASSED", {
     sfx = SoundEvents.notification_aspect_gained,
-    -- img = DemocracyConstants.icons.support,
-    FormatNotification = function( self, notification, delta, newvalue, reason )
+    -- Yoink the grog's icon
+    img = engine.asset.Texture("UI/location_grogndog.tex"),
+    FormatNotification = function( self, notification, quest, delta, newvalue, reason )
+        print("new value:", newvalue)
         notification.banner_txt = loc.format(LOC"DEMOCRACY.NOTIFICATION.TIME_PASSED.TITLE", delta)
         if newvalue and newvalue > 0 then
-            notification.details = loc.format(LOC"DEMOCRACY.NOTIFICATION.TIME_PASSED.DETAIL", delta, LOC("DEMOCRACY.NOTIFICATION.TIME_PASSED.REASON." .. (reason or "ACTION"), newvalue))
+            notification.details = loc.format(LOC"DEMOCRACY.NOTIFICATION.TIME_PASSED.DETAIL", delta, LOC("DEMOCRACY.NOTIFICATION.TIME_PASSED.REASON." .. (reason or "ACTION")), newvalue)
         else
             notification.details = loc.format(LOC"DEMOCRACY.NOTIFICATION.TIME_PASSED.DETAIL_NO_FREE", delta, LOC("DEMOCRACY.NOTIFICATION.TIME_PASSED.REASON." .. (reason or "ACTION")))
         end
+        notification.img = quest:GetIcon() or notification.img
     end,
 })
