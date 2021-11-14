@@ -1397,10 +1397,10 @@ function QuestDef:AddFreeTimeObjective( child )
                 if minigame.start_params.no_free_time_cost then
                     return
                 end
-                quest:DefFn("DeltaActions", -1)
+                quest:DefFn("DeltaActions", -math.ceil(minigame:GetTurns() / 3))
             end,
             resolve_battle = function(quest, battle)
-                quest:DefFn("DeltaActions", -1)
+                quest:DefFn("DeltaActions", -2)
             end,
             caravan_move_location = function(quest, location)
                 print("Caravan moved, remove one action")
