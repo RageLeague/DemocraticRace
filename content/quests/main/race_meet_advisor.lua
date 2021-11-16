@@ -140,6 +140,23 @@ local function GetAdvisorFn(advisor_id)
     end
 end
 
+local function ShowRaceTutorial()
+	local screen = TheGame:FE():GetTopScreen()
+    TheGame:GetGameProfile():SetHasSeenMessage("democracy_race_tutorial")
+	TheGame:FE():InsertScreen( Screen.YesNoPopup(LOC"UI.RACE_TUTORIAL_TITLE", LOC"UI.RACE_TUTORIAL_BODY", nil, nil, LOC"UI.NEGOTIATION_PANEL.TUTORIAL_NO" ))
+		:SetFn(function(v)
+			if v == Screen.YesNoPopup.YES then 
+				local coro = screen:StartCoroutine(function()
+					local advance = false
+					TheGame:FE():PushScreen( Screen.SlideshowScreen( "democracy_race_tutorial", function() advance = true end ):SetAutoAdvance(false) ) 
+					while not advance do                            
+						coroutine.yield()
+					end
+				end )
+			end
+		end)
+end
+
 QDEF:AddConvo("go_to_bar")
     :Confront(function(cxt)
         if cxt.location == cxt.quest:GetCastMember("noodle_shop") then
@@ -444,6 +461,8 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                     Remember, people who like you or love you will most likely vote for you, and people who dislike or hate you will most likely vote against you.
                     But the support level affects your popularity among swing voters.
                     At the same time, you should make people like you more, since they will help your with negotiation and solidifies their votes for you.
+					Check out this tutorial for more information.
+				* {agent} handed you a pamphlet, which you promptly pocketed after reading it (or not).
             ]],
             OPT_FUNDING = "Ask about funding",
             DIALOG_FUNDING = [[
@@ -499,6 +518,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                         TheGame:GetGameProfile():AcquireUnlock("DONE_POLITICS_OPPOSITION")
                     end)
                     :Dialog("DIALOG_SUPPORT_PST")
+					:Fn(function(cxt) ShowRaceTutorial() end)
             end
             if not cxt.quest.param.did_funding then
                 cxt:Opt("OPT_FUNDING")
