@@ -28,7 +28,11 @@ local chars =
                 behaviour =
                 {
                     OnInit = function( self )
-                        self.negotiator:AddModifier("RELATABLE")
+                        local core = self.negotiator:AddModifier("RELATABLE")
+						if GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ARGUMENT_PLUS ) then
+							core.num_cards = 3
+							core.count = 3
+						end
                         self:SetPattern( self.BasicCycle )
                     end,
                     --this can be tweaked later, but for now I just copied it from dronumph because I am wumpus, and I don't understand half of this.
