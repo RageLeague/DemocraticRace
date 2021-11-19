@@ -37,3 +37,12 @@ function MainOverlayTopBar:NavigateTo(screen, ...)
     end
     return top_screen
 end
+
+local old_gain_top = Screen.MainOverlay.OnGainTop
+
+function Screen.MainOverlay:OnGainTop( top_screen, ... )
+    old_gain_top(self, top_screen, ...)
+    if top_screen and top_screen._class.IS_NAV_SCREEN then
+        TheGame:GetMusic():PlayNavMusic()
+    end
+end
