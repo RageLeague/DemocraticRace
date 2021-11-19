@@ -54,3 +54,12 @@ function MainOverlayTopBar:Refresh(...)
     end
     return old_refresh(self, ...)
 end
+
+local old_control_mode = MainOverlayTopBar.OnControlModeChange
+function MainOverlayTopBar:OnControlModeChange( cm, ... )
+    old_control_mode(self, cm, ...)
+    if self.btn_dem_support then
+        local support = DemocracyUtil.TryMainQuestFn("GetGeneralSupport")
+        self.btn_dem_support:SetToolTip( loc.format(LOC"DEMOCRACY.MAIN_OVERLAY.VIEW_SUPPORT", support) )
+    end
+end
