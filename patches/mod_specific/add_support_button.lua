@@ -54,11 +54,3 @@ function MainOverlayTopBar:Refresh(...)
     end
     return old_refresh(self, ...)
 end
-
-local old_navigate_to = MainOverlayTopBar.NavigateTo
-function MainOverlayTopBar:NavigateTo(screen, ...)
-    local top_screen = old_navigate_to(self, screen, ...)
-    if top_screen._class ~= screen._class and screen._class == DemocracyClass.Screen.SupportScreen then
-    end
-    return top_screen
-end
