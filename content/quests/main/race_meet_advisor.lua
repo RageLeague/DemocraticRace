@@ -430,6 +430,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 :Fn(function(cxt)
                     DemocracyUtil.TryMainQuestFn("DoRandomOpposition", OPPO_COUNT)
                     DemocracyUtil.DoLocationUnlock(cxt, "GROG_N_DOG")
+                    TheGame:GetGameState():GetMainQuest().param.enable_support_screen = true
                 end)
                 :GoTo("STATE_COMPLETE_DIALOG")
             cxt:Opt("OPT_NO")
@@ -461,8 +462,8 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                     Remember, people who like you or love you will most likely vote for you, and people who dislike or hate you will most likely vote against you.
                     But the support level affects your popularity among swing voters.
                     At the same time, you should make people like you more, since they will help your with negotiation and solidifies their votes for you.
-					Check out this tutorial for more information.
-				* {agent} handed you a pamphlet, which you promptly pocketed after reading it (or not).
+                    Check out this tutorial for more information.
+                * {agent} handed you a pamphlet, which you promptly pocketed after reading it (or not).
             ]],
             OPT_FUNDING = "Ask about funding",
             DIALOG_FUNDING = [[
@@ -518,7 +519,10 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                         TheGame:GetGameProfile():AcquireUnlock("DONE_POLITICS_OPPOSITION")
                     end)
                     :Dialog("DIALOG_SUPPORT_PST")
-					:Fn(function(cxt) ShowRaceTutorial() end)
+                    :Fn(function(cxt)
+                        TheGame:GetGameState():GetMainQuest().param.enable_support_screen = true
+                        ShowRaceTutorial()
+                    end)
             end
             if not cxt.quest.param.did_funding then
                 cxt:Opt("OPT_FUNDING")
@@ -548,7 +552,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                         DemocracyUtil.TryMainQuestFn("DoRandomOpposition", OPPO_COUNT)
                         cxt.quest.param.did_opposition = true
                         cxt:Dialog("DIALOG_SKIP_OPPOSITION")
-
+                        TheGame:GetGameState():GetMainQuest().param.enable_support_screen = true
                     end
                     cxt:GoTo("STATE_COMPLETE_DIALOG")
                 end)

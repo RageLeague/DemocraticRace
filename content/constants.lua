@@ -3,6 +3,8 @@ return {
         support = engine.asset.Texture("DEMOCRATICRACE:assets/icons/ic_support.png"),
         support_transparent = engine.asset.Texture("DEMOCRATICRACE:assets/icons/support_transparent.png"),
     },
+    -- Temporary support color
+    support_color = 0x00ff00ff,
     wealth_levels = 4,
     wealth_string = {
         "DEMOCRACY.WEALTH_STRING.LVL_1",

@@ -60,6 +60,9 @@ Content.AddStringTable("DEMOCRACY", {
             CONSISTENT_STANCE = "Consistent Stance",
             INCONSISTENT_STANCE = "Hypocrisy",
         },
+        MAIN_OVERLAY = {
+            VIEW_SUPPORT = "<#TITLE>View Support</>\nGeneral support: {1}",
+        },
         METRICS =
         {
             TITLE = "Metric Collection Enabled",
