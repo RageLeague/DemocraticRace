@@ -67,18 +67,19 @@ Convo("DEM_ADMIRALTY_ARREST")
                 {hard_investigation or hard_arrest?
                     I don't know, it might be challenging.
                     |
-                    Sounds like a training exercise. I can get it done.
+                    Sure. piece of cake.
+                    Probably.
                 }
                 {is_ad?
-                    Should warn you, {target} is admiralty. {target.HeShe}'ll be as good at burying dirt as I can dig it up.
+                    {target} is in the Admiralty, so it might be hard for me to dig up {target.hisher} dirt.
                 }
                 {is_rival_faction?
-                    Although there might be a problem. They're a rival faction, and we can't go snooping around them without adding straws to break the Oshnu's shell.
-                    I can weaselword my way through an investigation, but don't expect a miracle.
+                    Our relationship is getting kinda tense with the {rival_id#faction}. We probably don't want to start a war with them.
+                    It might hinder our investigation.
                 }
                 {is_unlawful?
-                    Well, the investigation should be easy. I've already got a file on {target.himher} as is.
-                    But actually putting {target.himher} away is a different story.
+                    {target} is part of a criminal faction. {target.HeShe} is probably guilty.
+                    Although it might be hard to arrest {target.himher} because of this tie.
                 }
                 {not (is_ad or is_rival_faction or is_unlawful)?
                     Everyone's guilty of something.
@@ -92,19 +93,15 @@ Convo("DEM_ADMIRALTY_ARREST")
                 agent:
                     !neutral
                 {high_renown?
-                    {is_ad or is_rival_faction or is_unlawful?Also|However}, {target}'s also got a lot of friends in high places. High places like my own superiors.
-                    Whatever I do find is going to be churned through the pile of paperwork I'll have to get done just to show up at {target.hisher} front door.
+                    {is_ad or is_rival_faction or is_unlawful?Also|However}, {target} has powerful influence. {target.HisHer} power will probably block me from my investigation.
+                    It would be difficult for me to bring {target.himher} down.
                 }
                 {high_strength?
-                    !scared
-                    There's also the...small fact that {target} could break me in half easily. 
-                    Physically break me in half, they are strong.
+                    Additionally, {target} is strong. I don't know if I can bring {target.himher} down on my own.
                 player:
-                    !handwave
-                    So what? Send in a squad and get the job done.
+                    Then send a squad after {target}. I thought you Admiralty are good at this thing.
                 agent:
-                    Easy for you to say, but getting the admiralty to do something <i>that</> productive and sensible?
-                    With the election going on and the admiralty's resources so strained, I could barely get someone to come along on their lunch break!
+                    I don't know, the resources are kind of low, now the Admiralty has to protect the election.
                 }
             ]],
 
