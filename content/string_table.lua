@@ -203,6 +203,14 @@ Content.AddStringTable("DEMOCRACY", {
         RELATIONSHIP_SCREEN = {
             SUPPRESSED = "SUPPRESSED",
         },
+		MAINMENU = {
+			RACE_TUTORIAL = "The Democratic Race",
+		},
+		PAUSEMENU = {
+			RACE_TUTORIAL = "DEMOCRATIC RACE",
+		},
+		RACE_TUTORIAL_TITLE = "Democratic Race Tutorial: Support",
+		RACE_TUTORIAL_BODY = "Would you like to see a quick tutorial on support levels? You can review it at any time from the pause menu.",
     },
     MISC =
     {
