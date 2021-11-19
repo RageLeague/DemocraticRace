@@ -44,7 +44,7 @@ end
 
 local old_refresh = MainOverlayTopBar.Refresh
 function MainOverlayTopBar:Refresh(...)
-    if not DemocracyUtil.IsDemocracyCampaign() then
+    if not DemocracyUtil.IsDemocracyCampaign() or not (TheGame:GetGameState():GetMainQuest() and TheGame:GetGameState():GetMainQuest().param.enable_support_screen) then
         self.btn_dem_support:SetEnabled( false )
         self.btn_dem_support:SetShown( false )
     else
