@@ -399,35 +399,29 @@ QDEF:AddConvo("action")
                     !angry
                 agent:
                 {is_ad?
-                    Why are you doing this?
-                    Aren't we both in the Admiralty?
+                    Must've been eyeing that promotion pretty hard, if you're stooping this low.
                 admiralty:
-                    We might both be, but only one is a criminal.
-                    I've received a tip that you have been abusing your power for so long. It's time to end this.
-                agent:
-                    You talk big, but you are in the same boat, aren't you?
-                    Abuse of power is literally your core argument.
+                    !angryshrug
+                    If you don't want me stooping this low, don't be such an easy target.
                 }
                 {rival_faction?
-                    You know we have a truce right?
-                    We settle everything peacefully with the election once and for all.
-                    Are you going to resume the war?
+                    This is violating our truce! You'll be sorry!
                 admiralty:
-                    I don't particularily care.
-                    I'm sure the {target_faction#faction} are going to be happy now that I got rid of a criminal for them.
+                    You're talking to the wrong person if you think I didn't cover my tracks.
+                    The most they'll be able to do is get lost in the paperwork if they want to make a war out of an arrest.
                 }
                 {unlawful?
-                    You will regret this, switch.
-                    The {target_faction#faction} will come and save me, and you'll be dead.
+                    Just you wait, switch. You lock me up, and I'll be bounced out by lunch.
+                    And then my friends and I will be coming for you.
                 admiralty:
-                    I don't think so, criminal scum.
-                    They don't care about someone like you.
+                    !notepad
+                    Uh huh. Now, would you like to tell me who these "friends" are now or during the interrogation?
                 }
                 {not (is_ad or rival_faction or unlawful)?
-                    What did I do to deserve this?
+                    What did I do? I've done nothing wrong.
                 admiralty:
-                    I don't know. Committing crime?
-                    If you don't want to get arrested, have you tried not committing any crime?
+                    !chuckle
+                    That's not what your file says.
                 }
                 admiralty:
                     !angry_accuse
@@ -711,13 +705,11 @@ QDEF:AddConvo("action")
                 agent:
                     !left
                     Catch me if you can!
-                * You stood aside, watching those two figure out stuff.
+                * The two stand off and launch into a bloody fight.
             ]],
 
             DIALOG_STAND_ASIDE_WIN = [[
-                * The battle was tough.
-                * Eventually, {admiralty} came out on top.
-                * {admiralty} bounded {agent} before looking at you angrily.
+                * Eventually, {admiralty} puts a large, government issue boot down on {agent}'s throat and claps handcuffs onto {agent.himher}.
                 player:
                     !left
                 admiralty:
@@ -760,13 +752,14 @@ QDEF:AddConvo("action")
             ]],
 
             DIALOG_STAND_ASIDE_LOSE = [[
-                * The battle was tough.
-                * Eventually, {admiralty} died to the hands of {agent}.
+                * It comes to a close, though, with one bone crunching punch to the jaw.
+                * {admiralty} lies on the ground either dead or unconscious. {agent} puts a quick end to that question with one last attack.
                 agent:
                     !right
                 {disliked?
-                    Now that I dealt with that {is_ad?traitor|switch}, now I'll deal with you!
-                    * You will have to defend yourself!
+                    Wasn't expecting that, were ya {is_ad?bloody traitor|switch}?
+                    Well, if I've already got blood on my shoes, might as well make the dry cleaners earn my shills.
+                    * {agent} whips {agent.hisher} weapons towards you.
                 }
                 {not disliked?
                     Thanks for nothing, grifter!
@@ -1060,15 +1053,47 @@ QDEF:AddConvo("action")
     :State("STATE_DEFEATED")
         :Loc{
             DIALOG_INTRO = [[
-                * You arrive at the scene.
-                * Seems that {admiralty} isn't doing too good.
+                {is_unlawful?
+                    * You find an ironic scene, an officer of the Admiralty underneath the foot of {target}.
                 admiralty:
                     !left
                     !injured
                 target:
                     !right
                     !angry
-                * They haven't see you yet.
+                    Made a damn big mistake, crossing me, switch.
+                }
+                {is_ad?
+                    * You find {admiralty} dealing with some..."special clerical work".
+                admiralty:
+                        !left
+                        !injured
+                    target:
+                        !right
+                        !angry
+                        How's that promotion looking now? I bet it's looking mighty fine now.
+                }
+                {rival_faction?
+                    * You come across {target} speaking power to power with {admiralty}. 
+                    admiralty:
+                        !left
+                        !injured
+                    target:
+                        !right
+                        !angry
+                        Shouldn't of tried to break the truce that sloppily. Look at where it's gotten you.
+                }
+                {not (is_ad or rival_faction or unlawful)?
+                    * In a surprise twist, you find the ordinary citizen has won out against the Admiralty.
+                admiralty:
+                    !left
+                    !injured
+                target:
+                    !right
+                    !angry
+                    Y'see, Big Brother? Y'see what happens when you mess with the little guys like me?
+                }
+                * Fortunately, {target}'s monologuing has given you a chance to strike or a chance to leave.
             ]],
             OPT_SLIP_AWAY = "Slip away before anyone notices",
             DIALOG_SLIP_AWAY = [[
