@@ -239,7 +239,8 @@ QDEF:AddConvo("action")
                 !right
             player:
                 !left
-                Can you reconsider?
+                Alright, you two have had your fun.
+                how about 
             admiralty:
             {not unplanned?
                 !surprised
@@ -390,7 +391,7 @@ QDEF:AddConvo("action")
     :State("STATE_DOMINATE")
         :Loc{
             DIALOG_INTRO = [[
-                * You see {admiralty} arrested {agent}.
+                * You see {admiralty} has {agent} in cuffs.
                 agent:
                     !right
                     !injured
@@ -425,22 +426,22 @@ QDEF:AddConvo("action")
                 }
                 admiralty:
                     !angry_accuse
-                    Now, are you going to come quiet or not?
+                    You'll be coming with me, back to the station.
                 * {agent} sees you.
                 player:
                     !left
                 agent:
                 {not disliked?
-                    Please, you have to get me out of here!
+                    Grifter! I need help! Just get me away from this cop!
                 }
                 {disliked?
-                    !angry
-                    Oh, it's you.
-                    Are you happy now, seeing me like this?
+                    !injuredpalm
+                    I swear, icing on the Heshing cake...
+                    What do <i>you</> want, {player}?
                 }
 
             ]],
-
+            --not disliked, planned; I thought of the player and admiralty being as aggressively tounge in cheek as possible.
             OPT_TAUNT = "{unplanned?Stand Aside|Taunt {target}}",
             DIALOG_TAUNT = [[
                 {disliked?
@@ -474,20 +475,25 @@ QDEF:AddConvo("action")
                 }
                 {not disliked?
                 player:
-                    !shrug
                     {not unplanned?
-                        Why should I, when <i>I'm</> the one that asked {admiralty} to investigate you.
+                        !wave 
+                        Hello officer! I see you're doing your civic duty today.
+                    admiralty:
+                        !right
+                        Yep. Just clearing a bit of the...
+                        !burp
+                        A bit of the rabble, you could say.
                     agent:
-                        !surprised
-                        What? YOU are the one that caused this?
-                        Why?
+                        Hey! I'm a part of this conversation too! 
+                        {player}, help me!
                     player:
-                        To send a message, of course.
-                        !cruel
-                        You made way too many enemies because of your action. And actions have consequences.
-                    agent:
-                        Oh, actions have consequences all right.
-
+                        Well I'll just leave you to it, {admiralty}.
+                        !salute
+                        Hail to the admiralty.
+                    admiralty:
+                        !salute
+                        Hail to the admiralty.
+                    * With that, {admiralty} hauls {agent} away, knitting {agent.hisher}'s brow in conspiratorial thought.
                     }
                     {unplanned?
                         Why should I?
@@ -1095,14 +1101,11 @@ QDEF:AddConvo("action")
                 }
                 * Fortunately, {target}'s monologuing has given you a chance to strike or a chance to leave.
             ]],
+            --
             OPT_SLIP_AWAY = "Slip away before anyone notices",
             DIALOG_SLIP_AWAY = [[
-                * You left those two to figure out amongst themselves.
-                admiralty:
-                    !exit
-                * Surely enough, they figured out a solution. And that solution is taking {admiralty}'s head.
-                * There's nothing you can do about it.
-                * At least, that is what you told yourself.
+                * As quickly as you came, you sneak away ot let those two bury the hatchet.
+                * <i>Violently</> bury the hatchet. Most likely, in {admiralty}'s face.
             ]],
 
             SIT_MOD_HIGH_MORALE = "{target} just won a battle against {admiralty}",
@@ -1111,7 +1114,8 @@ QDEF:AddConvo("action")
             DIALOG_CONVINCE_SPARE = [[
                 player:
                     !left
-                    Can you leave {admiralty} alone?
+                    Look buddy. I get it. You're gloating.
+                    But you might want to wrap it up before the rest of the admiralty catches wind.
                 target:
                     What?
                     Why should I?
