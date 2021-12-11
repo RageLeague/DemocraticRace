@@ -240,7 +240,7 @@ QDEF:AddConvo("action")
             player:
                 !left
                 Alright, you two have had your fun.
-                how about 
+                how about you let {agent} go and you can all go home?
             admiralty:
             {not unplanned?
                 !surprised
@@ -427,7 +427,7 @@ QDEF:AddConvo("action")
                 admiralty:
                     !angry_accuse
                     You'll be coming with me, back to the station.
-                * {agent} sees you.
+                * As you watch, {agent} flicks {agent.hisher} head at you.
                 player:
                     !left
                 agent:
@@ -493,7 +493,7 @@ QDEF:AddConvo("action")
                     admiralty:
                         !salute
                         Hail to the admiralty.
-                    * With that, {admiralty} hauls {agent} away, knitting {agent.hisher}'s brow in conspiratorial thought.
+                    * With that, {admiralty} hauls {agent} away, {agent} knitting {agent.hisher}'s brow in conspiratorial thought.
                     }
                     {unplanned?
                         Why should I?
@@ -1104,7 +1104,7 @@ QDEF:AddConvo("action")
             --
             OPT_SLIP_AWAY = "Slip away before anyone notices",
             DIALOG_SLIP_AWAY = [[
-                * As quickly as you came, you sneak away ot let those two bury the hatchet.
+                * As quickly as you came, you sneak away to let those two bury the hatchet.
                 * <i>Violently</> bury the hatchet. Most likely, in {admiralty}'s face.
             ]],
 
@@ -1125,43 +1125,47 @@ QDEF:AddConvo("action")
             DIALOG_CONVINCE_SPARE_SUCCESS = [[
                 player:
                 {is_ad?
-                    Look, you're both Admiralty right?
-                    So you know {admiralty.heshe}'s just doing {admiralty.hisher} job, you know?
-                    I'm sure {admiralty.heshe} learned {admiralty.hisher} lesson.
-                    No need to get violent.
+                    I get that all of you switches are one big happy family out in those cramped barracks of yours.
+                    !point
+                    But if you kill {admiralty}, something's going to come back to you.
+                    And someone's going to come for your badge all the same as {admiralty} did.
                 target:
                     !sigh
                     True.
                 }
                 {not is_ad?
-                    You kill {admiralty} now, and you commit a crime that the Admiralty can't ignore.
-                    Best let it slide, eh?
-                    I'm sure {admiralty} will turn a blind eye on whatever you did.
+                    If the blood, broken bones, and whimpering hasn't clued you in yet, {admiralty}'s learned {admiralty.hisher} lesson.
+                    Let {admiralty} go, and the lesson oughta spread. Spread like the plague.
+                    The law's not going to mess with you if you can mess up the law.
                 target:
-                    !thought
-                    That sounds way more convenient.
+                    Convincing argument you've got there.
                 }
                 admiralty:
                     !left
                     !injured
                 target:
-                    You know what, how about a deal.
-                    You leave quiet, and I let you actually leave.
+                    Look, if it makes you both shut up, I'll cut a deal.
+                    You stay away from me. You tell people about how I'm not to be messed with.
+                    It's an "You scratch my back, I don't scratch your back like a starving lumicyte." system I want here. Do you understand?
                 admiralty:
-                    I guess I don't have a choice, do I?
+                    I've got nothing else to understand.
                 target:
-                    You can choose to die, if that's what you want.
+                    Good. Let's shake on it.
+                    !give
                 admiralty:
-                    Fine. I'll leave quiet.
-                    !exit
-                * You saved {admiralty}, but you can't deal with {target}.
+                    !give
+                * With that, your chances of removing {target} were sacrificed for {admiralty}'s life.
                 * Maybe this is for the best.
             ]],
             DIALOG_CONVINCE_SPARE_FAILURE = [[
                 player:
-                    Would your conscience allow that?
+                    Don't think about catharsis. Think...
+                    !interest
+                    Think about your <i>soul</>.
                 target:
-                    That's a terrible reason.
+                    !wave
+                    Oh please.
+                    I have no soul.
             ]],
 
             OPT_LEAVE = "Leave",
@@ -1294,8 +1298,7 @@ QDEF:AddConvo("action")
         :Loc{
             DIALOG_PROMOTION = [[
                 agent:
-                    This person is quite the notorious criminal.
-                    Now I've {target_dead?killed|captured} {target.himher}, I'm going to get promoted.
+                    This one's got a big head on {target.hisher} shoulders. Big head means big bounty.
                 {unplanned?
                     Thanks for your help back there?
                     {dominate?
@@ -1545,19 +1548,18 @@ QDEF:AddConvo("innocent", "admiralty")
         OPT_ASK = "Ask about {agent}",
         DIALOG_ASK = [[
             player:
-                Any progress on {target}?
+                So any updates on {target}?
             agent:
-                Yeah, so turns out {target} is completely innocent.
-                I can't find any dirt on {target.himher}.
-                Thanks for letting me follow a false lead, {player}.
+                I...I can't do it.
             player:
-                Hey, that's not my fault!
-                How am I supposed to know whether {target} is innocent or not?
-                It's supposed to be your job!
+                !dubious
+                Can't arrest someone for the private citizen?
             agent:
-                With this time, I could've did other meaningful things that can get me promoted!
-                Instead, my time is wasted on a wild goose chase.
-                Didn't I tell you? Us Admiralty are getting really busy because of the election.
+                Oh no, it's not that.
+                It's that I've tried <i>Everything</> to arrest {target}!
+                I've tried getting a warrant, I've planted evidence on {target.himher}, I've even tried just flat out dogging {target} in case {target.heshe} littered! 
+                Grifter, either this target's a saint or Hesh itself. Either way, I can't do anything.
+                I've spent too much time on {target.himher}. I'm going to do something that might actually get me promoted.
         ]],
     }
     :Hub(function(cxt)
