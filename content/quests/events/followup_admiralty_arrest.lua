@@ -1300,15 +1300,15 @@ QDEF:AddConvo("action")
                 agent:
                     This one's got a big head on {target.hisher} shoulders. Big head means big bounty.
                 {unplanned?
-                    Thanks for your help back there?
+                    I've got to thank you for giving a hand back there.
                     {dominate?
                     player:
                         But I didn't do anything!
                     agent:
-                        Exactly.
+                        You'll be a witness! Living proof that I did this single-handed!
                     }
                     |
-                    It's all thanks to your lead, {player}.
+                    I'll toast a strong cup of plonk to you while I'm celebrating..
                 }
                 {interrupted?
                     Even though you tried to interfere in the end.
@@ -1330,25 +1330,25 @@ QDEF:AddConvo("action")
             ]],
             DIALOG_LEARN_STATION = [[
                 player:
-                    Wait, I've never been to the Admiralty Headquarters before.
-                    Can you show me the way?
+                    That reminds me...where <i>is</> the Admiralty Headquarters?
                 agent:
-                    Oh, I guess you've never been there before.
-                    Wanna come?
+                    You've never been? I could take you there with {target} here.
             ]],
             OPT_ACCEPT_INVITE = "Accept {admiralty}'s offer",
             DIALOG_ACCEPT_INVITE = [[
                 player:
-                    Sure, why not.
+                    !shrug
+                    I've got nowhere else I need finding.
                 agent:
-                    Follow me.
+                    That's great! You keep an eye out for any of {target}'s friends, come on.
             ]],
             OPT_DECLINE_INVITE = "Decline {admiralty}'s offer",
             DIALOG_DECLINE_INVITE = [[
                 player:
-                    Nah, I have better places to be.
+                    Nah, thinking of heading elsewhere for now.
                 agent:
-                    Oh well. Maybe next time.
+                    !shrug
+                    Suit yourself. 
             ]],
 
             DIALOG_END = [[
@@ -1556,6 +1556,7 @@ QDEF:AddConvo("innocent", "admiralty")
                 Can't arrest someone for the private citizen?
             agent:
                 Oh no, it's not that.
+                !scared
                 It's that I've tried <i>Everything</> to arrest {target}!
                 I've tried getting a warrant, I've planted evidence on {target.himher}, I've even tried just flat out dogging {target} in case {target.heshe} littered! 
                 Grifter, either this target's a saint or Hesh itself. Either way, I can't do anything.
@@ -1677,47 +1678,58 @@ QDEF:AddConvo("escort")
                 {ad_dead?
                     {not target_dead?
                         agent:
-                            [p]Who's this?
+                            !crossed
+                            What's schleped through the door this time?
                         player:
-                            A criminal. {admiralty} and I captured {target.himher} together.
+                            A criminal in cuffs. {admiralty} and I took {target.himher} down.
                         agent:
-                            Speaking of which, where's {admiralty}?
+                            Ah, well, just leave {target.himher} here, I'll take {target} down to a cell.
+                            !chuckle
+                            And I'm sure {admiralty} is going to be doing a lot of paperwork tonight.
                         player:
-                            Well, {admiralty.heshe}'s dead.
+                            !bashful
+                            About that...
                         agent:
-                            What a shame.
-                            We'll handle it from here.
+                            !palm
+                            Figures {admiralty} would clock out like this.
+                            <i>Fine</>. Grifter, leave the inmate, I guess I'll sort things out.
                     }
                 }
                 {not ad_dead?
                     {target_dead?
                         agent:
-                            [p] What's going on?
+                            !disgust
+                            Okay...you dragged a corpse into here <i>why?</>
                         admiralty:
                             !left
-                            We killed {target}.
+                            We killed {target}. Had to bring the body as proof, as per protocol.
                         agent:
-                            Oh nice!
+                            I get that but...we could've had this interaction <i>outside</> instead of here.
+                            Agh, whatever. Put it somewhere it won't stink up the place.
                         {high_bounty?
-                            [p] {admiralty}, you're hearby promoted.
+                            Only thing stronger than the smell must've been the fight. We've had an eye on {target} for a long while, for good reason.
+                            I think once the forms are filled, you'll be seeing a bit of extra blood money in your salary.
                         admiralty:
                             !left
-                            Sweet!
+                            Does that mean a promotion?
+                        agent:
+                            Oh yeah. You at least won't have to be here while the cleaning crew works.
                         }
                     }
                     {not target_dead?
                         agent:
-                            [p] Who's this?
-                        player:
-                            A criminal that {admiralty} and I captured.
-                        agent:
-                            Well done!
-                        {high_bounty?
-                            [p] We've had our eyes on {target} for a while now. I'm glad you can bring {target.himher} in alive.
-                            {admiralty}, you're hearby promoted.
+                            Well then. An officer, a Grifter, and a criminal walk into the headquarters of the Admiralty.
+                            What's the punchline for this joke? Same as usual?
                         admiralty:
                             !left
-                            Sweet!
+                            !salute
+                            Same as usual. Grifter here helped me.
+                        {high_bounty?
+                        agent:
+                            Gotta say, I'm impressed. {target}'s had a bounty that could see over the clouds for a while now.
+                            I think once the arrest forms are sorted, you'll be seeing a bump in pay soon, {admiralty}, and a bump in authority.
+                        admiralty:
+                            That's incredible! Can't wait to start my new duties.
                         }
                         agent:
                             We'll handle it from here.
