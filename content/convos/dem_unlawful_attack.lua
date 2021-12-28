@@ -1,3 +1,19 @@
+local KILL_PROHIBITED = {
+    "RISE_PAMPHLETEER",
+    "RISE_VALET"
+}
+local function CanKill(agent)
+    return not table.arraycontains(KILL_PROHIBITED, agent:GetContentID())
+end
+
+local KILL_FORCED = {
+    "JAKES_ASSASSIN",
+    "JAKES_ASSASSIN2"
+}
+local function MustKill(agent)
+    return table.arraycontains(KILL_FORCED, agent:GetContentID())
+end
+
 Convo("DEM_UNLAWFUL_ATTACK")
     :Loc{
         OPT_ATTACK = "Convince {agent} to attack someone...",
@@ -26,11 +42,11 @@ Convo("DEM_UNLAWFUL_ATTACK")
         if who and who:GetFaction():IsUnlawful() and not AgentUtil.HasPlotArmour(who) then
             local all_targets = DemocracyUtil.GetAllPunishmentTargets()
 
-            Opt("OPT_ATTACK")
+            cxt:Opt("OPT_ATTACK")
                 :PreIcon(global_images.order)
                 :PostText("TT_ATTACK")
                 :ReqCondition(#all_targets > 0, "REQ_NO_TARGETS")
-                :Dialog("DIALOG_INVESTIGATE")
+                :Dialog("DIALOG_ATTACK")
                 :LoopingFn(function(cxt)
                     for i, agent in ipairs(all_targets) do
                         if agent ~= who then
@@ -87,8 +103,10 @@ Convo("DEM_UNLAWFUL_ATTACK")
             ]],
 
             OPT_KILL = "Kill {target}",
+            REQ_NO_KILL = "{agent} doesn't do killing",
             OPT_ANY = "Attack {target}, kill at discretion",
             OPT_SPARE = "Attack {target}, but DON'T kill {target.himher}",
+            REQ_FORCE_KILL = "{agent}'s methods are always lethal",
 
             DIALOG_SELECTED_TARGET = [[
                 agent:
@@ -96,5 +114,28 @@ Convo("DEM_UNLAWFUL_ATTACK")
             ]],
         }
         :Fn(function(cxt)
+            local target = cxt:GetCastMember("target")
 
+            local renown_delta = target:GetRenown() - cxt:GetAgent():GetRenown()
+            if renown_delta >= 0 then
+                cxt.enc.scratch.high_renown = true
+            end
+
+            local strength_delta = target:GetCombatStrength() - cxt:GetAgent():GetCombatStrength()
+            if strength_delta >= 0 or target:IsBoss() then
+                cxt.enc.scratch.high_strength = true
+            end
+
+            cxt.enc.scratch.no_kill = not CanKill(cxt:GetAgent())
+            cxt.enc.scratch.hard_spare = MustKill(cxt:GetAgent())
+
+            cxt:Dialog("DIALOG_SELECT")
+
+            cxt:Opt("OPT_KILL")
+                :ReqCondition(not cxt.enc.scratch.no_kill, "REQ_NO_KILL")
+            cxt:Opt("OPT_ANY")
+            cxt:Opt("OPT_SPARE")
+                :ReqCondition(not cxt.enc.scratch.hard_spare, "REQ_FORCE_KILL")
+
+            StateGraphUtil.AddBackButton(cxt)
         end)
