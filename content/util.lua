@@ -1169,6 +1169,22 @@ function DemocracyUtil.AddBodyguardOpt(cxt, fn, opt_id, filter_fn)
     end
 end
 
+-- Choose a random number in a gaussian distribution.
+-- Based on the polar form of the Box-Muller transformation.
+-- I yoinked it from the game code, but I removed the clamp because it's lame
+function DemocracyUtil.RandomGauss( mean, stddev )
+    local x1, x2, w
+    repeat
+        x1 = 2 * math.random() - 1
+        x2 = 2 * math.random() - 1
+        w = x1 * x1 + x2 * x2
+    until w > 1e-10 and w < 1.0 -- This safeguards against undefined log or division
+
+    w = math.sqrt( (-2 * math.log( w ) ) / w )
+    local x = (x1 * w)*stddev + mean
+    return x
+end
+
 DemocracyUtil.EXCLUDED_WEAPONS = {
     "makeshift_dagger", "makeshift_dagger_plus"
 }
