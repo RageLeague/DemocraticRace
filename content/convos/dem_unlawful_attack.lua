@@ -115,6 +115,7 @@ Convo("DEM_UNLAWFUL_ATTACK")
         }
         :Fn(function(cxt)
             local target = cxt:GetCastMember("target")
+            local strength_balance = 0
 
             local renown_delta = target:GetRenown() - cxt:GetAgent():GetRenown()
             if renown_delta >= 0 then
@@ -122,8 +123,19 @@ Convo("DEM_UNLAWFUL_ATTACK")
             end
 
             local strength_delta = target:GetCombatStrength() - cxt:GetAgent():GetCombatStrength()
+            strength_balance = strength_balance - strength_delta
+
+            if target:IsBoss() then
+                strength_balance = strength_balance - 4
+            end
+
+            if cxt:GetAgent():IsBoss() then
+                strength_balance = strength_balance + 4
+            end
+
             if strength_delta >= 0 or target:IsBoss() then
                 cxt.enc.scratch.high_strength = true
+
             end
 
             cxt.enc.scratch.no_kill = not CanKill(cxt:GetAgent())
@@ -131,11 +143,43 @@ Convo("DEM_UNLAWFUL_ATTACK")
 
             cxt:Dialog("DIALOG_SELECT")
 
-            cxt:Opt("OPT_KILL")
+            local function AddTargetOption(opt, cost, no_kill, must_kill)
+                opt:Dialog("DIALOG_SELECTED_TARGET")
+                    :Fn(function(cxt)
+                        local overrides = {
+                            cast = {
+                                hunter = cxt:GetAgent(),
+                                target = target,
+                            },
+                            parameters = {
+                                attack_difficulty = strength_balance,
+                                no_kill = no_kill,
+                                must_kill = must_kill,
+                                hire_amt = cost,
+                            },
+                        }
+                        local quest = QuestUtil.SpawnQuest("FOLLOWUP_UNLAWFUL_ATTACK", overrides)
+                        quest:Activate()
+                    end)
+                    :DoneConvo()
+            end
+
+            local kill_opt, kill_cost = cxt:Opt("OPT_KILL")
                 :ReqCondition(not cxt.enc.scratch.no_kill, "REQ_NO_KILL")
-            cxt:Opt("OPT_ANY")
-            cxt:Opt("OPT_SPARE")
+                :DeliverMoney(cxt:GetAgent():GetCombatStrength() * 30 + (cxt:GetAgent():IsBoss() and 150 or 70))
+
+            AddTargetOption(kill_opt, kill_cost, false, true)
+
+            local any_opt, any_cost = cxt:Opt("OPT_ANY")
+                :DeliverMoney(cxt:GetAgent():GetCombatStrength() * 30 + (cxt:GetAgent():IsBoss() and 120 or 40))
+
+            AddTargetOption(any_opt, any_cost, cxt.enc.scratch.no_kill, cxt.enc.scratch.hard_spare)
+
+            local spare_opt, spare_cost = cxt:Opt("OPT_SPARE")
                 :ReqCondition(not cxt.enc.scratch.hard_spare, "REQ_FORCE_KILL")
+                :DeliverMoney(cxt:GetAgent():GetCombatStrength() * 30 + (cxt:GetAgent():IsBoss() and 130 or 50))
+
+            AddTargetOption(spare_opt, spare_cost, true, false)
 
             StateGraphUtil.AddBackButton(cxt)
         end)
