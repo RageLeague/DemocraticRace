@@ -1196,11 +1196,11 @@ function DemocracyUtil.SimulateBattle(blue, red, blue_bonus, red_bonus)
     local ratio = DemocracyUtil.CalculateStrengthRatio(blue, red, blue_bonus, red_bonus)
     local result = DemocracyUtil.RandomGauss(0, math.exp (1)) < math.log(ratio)
     if result then
-        blue.health:SetPercent(blue.health:GetPercent() * math.random(0.5, 0.8))
-        red.health:SetPercent(red.health:GetPercent() * math.random(0.2, 0.3))
+        blue.health:SetPercent(blue.health:GetPercent() * math.random(50, 80) * 0.01)
+        red.health:SetPercent(red.health:GetPercent() * math.random(20, 30) * 0.01)
     else
-        red.health:SetPercent(red.health:GetPercent() * math.random(0.5, 0.8))
-        blue.health:SetPercent(blue.health:GetPercent() * math.random(0.2, 0.3))
+        red.health:SetPercent(red.health:GetPercent() * math.random(50, 80) * 0.01)
+        blue.health:SetPercent(blue.health:GetPercent() * math.random(20, 30) * 0.01)
     end
     return result
 end
