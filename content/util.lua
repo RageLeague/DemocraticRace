@@ -1186,8 +1186,8 @@ function DemocracyUtil.RandomGauss( mean, stddev )
 end
 
 function DemocracyUtil.CalculateStrengthRatio(blue, red, blue_bonus, red_bonus)
-    local blue_score = (blue:GetCombatStrength() + (blue:IsBoss() and 4 or 0)) * blue.health:GetPercent() + blue_bonus
-    local red_score = (red:GetCombatStrength() + (red:IsBoss() and 4 or 0)) * red.health:GetPercent() + red_bonus
+    local blue_score = (blue:GetCombatStrength() + (blue:IsBoss() and 4 or 0)) * blue.health:GetPercent() + (blue_bonus or 0)
+    local red_score = (red:GetCombatStrength() + (red:IsBoss() and 4 or 0)) * red.health:GetPercent() + (red_bonus or 0)
     local ratio = blue_score
     return ratio
 end

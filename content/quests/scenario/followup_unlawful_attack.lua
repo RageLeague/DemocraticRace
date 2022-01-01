@@ -35,7 +35,7 @@ local QDEF = QuestDef.Define
     id = "report",
     hide_in_overlay = true,
     on_activate = function(quest)
-        quest.param.attack_successful = DemocracyUtil.RandomGauss(quest.param.attack_difficulty or 0, 3) > 0
+        quest.param.attack_successful = DemocracyUtil.SimulateBattle(quest:GetCastMember("hunter"), quest:GetCastMember("target"), 2)
 
         if quest.param.attack_successful then
             if quest.param.no_kill then
