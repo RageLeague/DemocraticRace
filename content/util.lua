@@ -1185,6 +1185,26 @@ function DemocracyUtil.RandomGauss( mean, stddev )
     return x
 end
 
+function DemocracyUtil.CalculateStrengthRatio(blue, red, blue_bonus, red_bonus)
+    local blue_score = (blue:GetCombatStrength() + (blue:IsBoss() and 4 or 0)) * blue.health:GetPercent() + blue_bonus
+    local red_score = (red:GetCombatStrength() + (red:IsBoss() and 4 or 0)) * red.health:GetPercent() + red_bonus
+    local ratio = blue_score
+    return ratio
+end
+
+function DemocracyUtil.SimulateBattle(blue, red, blue_bonus, red_bonus)
+    local ratio = DemocracyUtil.CalculateStrengthRatio(blue, red, blue_bonus, red_bonus)
+    local result = DemocracyUtil.RandomGauss(0, math.exp (1)) < math.log(ratio)
+    if result then
+        blue.health:SetPercent(blue.health:GetPercent() * math.random(0.5, 0.8))
+        red.health:SetPercent(red.health:GetPercent() * math.random(0.2, 0.3))
+    else
+        red.health:SetPercent(red.health:GetPercent() * math.random(0.5, 0.8))
+        blue.health:SetPercent(blue.health:GetPercent() * math.random(0.2, 0.3))
+    end
+    return result
+end
+
 DemocracyUtil.EXCLUDED_WEAPONS = {
     "makeshift_dagger", "makeshift_dagger_plus"
 }
