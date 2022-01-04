@@ -23,9 +23,11 @@ local QDEF = QuestDef.Define
     unimportant = true,
     events = {
         agent_retired = function(quest, agent)
-            quest:Complete()
-            if quest.param.hire_amt then
-                TheGame:GetGameState():GetCaravan():AddMoney(quest.param.hire_amt)
+            if quest:IsActive("wait") then
+                quest:Complete()
+                if quest.param.hire_amt then
+                    TheGame:GetGameState():GetCaravan():AddMoney(quest.param.hire_amt)
+                end
             end
         end,
     },

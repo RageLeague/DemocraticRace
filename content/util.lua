@@ -1194,7 +1194,11 @@ end
 
 function DemocracyUtil.SimulateBattle(blue, red, blue_bonus, red_bonus)
     local ratio = DemocracyUtil.CalculateStrengthRatio(blue, red, blue_bonus, red_bonus)
-    local result = DemocracyUtil.RandomGauss(0, math.exp (1)) < math.log(ratio)
+    print("ratio =", ratio)
+    print("log(ratio) =", math.log(ratio))
+    local gauss_result = DemocracyUtil.RandomGauss(0, math.exp (1))
+    print("G(0, 1) =", gauss_result)
+    local result =  gauss_result < math.log(ratio)
     if result then
         blue.health:SetPercent(blue.health:GetPercent() * math.random(50, 80) * 0.01)
         red.health:SetPercent(red.health:GetPercent() * math.random(20, 30) * 0.01)
