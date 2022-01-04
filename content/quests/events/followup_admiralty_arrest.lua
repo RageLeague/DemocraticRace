@@ -254,8 +254,9 @@ QDEF:AddConvo("action")
         DIALOG_RECONSIDER_SUCCESS = [[
             player:
             {is_ad?
-                It's probably not a good idea to in-fight.
-                You can probably let whatever did slide, right?
+                Whatever bad blood's between you two's only going to get worse if you kill each other.
+                !point
+                And your higher ups in the Admiralty are quite the bloodhounds.
             }
             {rival_faction?
                 I've been reconsidering my positions in the last few days.
@@ -268,8 +269,8 @@ QDEF:AddConvo("action")
                     People will think we are blocking votes or something. That's bad for our reputation.
                 }
                 {impasse?
-                    This fight, if it goes on, will surely end in bloodshed.
-                    I'm sure no one would like that.
+                    Someone's gonna get hurt here, I'm sure of it.
+                    That's gonna be blood in the water, and I'm sure just as many people want your head as {target} does.
                 }
             }
             admiralty:
@@ -496,23 +497,25 @@ QDEF:AddConvo("action")
                     * With that, {admiralty} hauls {agent} away, {agent} knitting {agent.hisher}'s brow in conspiratorial thought.
                     }
                     {unplanned?
-                        Why should I?
-                        I'm more scared of the Admiralty than I'm scared of <i>you</>.
+                        !bashful
+                        Would if I could, buddy.
+                        But I'm not feeling like fighting the Admiralty today.
+                    agent:
+                        !angry
+                        What? I thought you Grifters loved getting into random fights!
+                    player:
+                        !bashful
+                        Ah, but I've got to stretch first, and then I have to pull out my weapons and...
+                        !wave
+                        Well by then you'd already be at the station.
                     admiralty:
                         !right
-                        I don't know if I like the sound of that, but at least it gets the meaning across.
-                    agent:
-                        !right
-                        Oh, you want a reason for you to be scared?
+                        Hey, back health is important. You take your time getting ready.
+                        !angrypoint
+                        I'll just haul this criminal back to the station in the meantime.
+                    * You step aside as {admiralty} takes a shocked {agent} away.
                     }
                 }
-                agent:
-                    I won't forget this.
-                    If I ever got out of jail, I <i>will</> find you, and you <i>will</> regret the day you did this.
-                admiralty:
-                    !left
-                    Witness intimidation, that's going to be a few more years, buddy.
-
             ]],
 
             -- OPT_RECONSIDER = "Convince {admiralty} to reconsider",
@@ -1169,22 +1172,17 @@ QDEF:AddConvo("action")
             ]],
 
             OPT_LEAVE = "Leave",
-
+            --target doesn't hate you, you leave to let Admiralty be killed.
             DIALOG_LEAVE = [[
                 player:
-                    Sorry for bothering you. I'll see my self out.
-                target:
-                    You'd better be.
-                admiralty:
-                    !right
-                    Wait, where you're going.
-                player:
-                    Leaving.
-                    I don't want to be caught up in this mess.
+                    Ah, I see this is the common Havarian Handshake.
+                    Didn't realize I was trying to interupt tradition around here.
+                    Well, don't let me bother you two. Carry on.
                     !exit
-                * You left. Immediately after, {target} killed {admiralty}.
-                * At least you're still alive... and you haven't attacked anyone...
-                * ...but was it worth it?
+                target:
+                    That's more like it.
+                    !exit
+                * You tromp away, the last thing you hear being a gurgle before you're out of earshot.
             ]],
 
             OPT_ATTACK = "Attack {target} to save {admiralty}",
@@ -1229,7 +1227,9 @@ QDEF:AddConvo("action")
         :Fn(function(cxt)
             local target = cxt.quest:GetCastMember("target")
             local admiralty = cxt.quest:GetCastMember("admiralty")
+            --Fight if you fail negotiations
             local function AttackPhase(cxt)
+                --always have fight option 
                 cxt:Opt("OPT_ATTACK")
                     :Dialog("DIALOG_ATTACK")
                     :Battle{
@@ -1238,6 +1238,7 @@ QDEF:AddConvo("action")
                         :Fn(function(cxt) cxt.quest.param.target_dead = target:IsDead() end)
                         :Dialog("DIALOG_ATTACK_WIN")
                         :GoTo("STATE_PROMOTION")
+                --If the target doesn't hate you and you failed a negotiation.
                 if cxt.quest:GetCastMember("target"):GetRelationship() > RELATIONSHIP.HATED then
                     cxt:Opt("OPT_LEAVE")
                         :Dialog("DIALOG_LEAVE")
