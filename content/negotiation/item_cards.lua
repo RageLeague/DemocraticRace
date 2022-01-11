@@ -190,6 +190,7 @@ local CARDS = {
     {
         name = "Havarian Thesaurus",
         desc = "For the rest of the turn, for each other unique card played, gain 1 {SMARTS}.",
+        icon = "DEMOCRATICRACE:assets/cards/havarian_thesaurus.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.UTILITY,
@@ -355,6 +356,7 @@ local CARDS = {
     {
         name = "Mask of Anonymity",
         desc = "Remove all inceptions you control.\nWhile in your hand, you cannot gain inceptions.",
+        icon = "DEMOCRATICRACE:assets/cards/mask_of_anonymity.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
@@ -538,7 +540,9 @@ local CARDS = {
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.smarts_bonus)
         end,
-        flavour = "Numerous in-depth Baron Studies prove that Rise Activity in worksites is a bad thing for productivity.",
+        flavour = "Numerous in-depth Baron studies prove that Rise activity in worksites is a bad thing for productivity.",
+        icon = "DEMOCRATICRACE:assets/cards/research_report.png",
+
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
         flags = CARD_FLAGS.ITEM,
@@ -568,6 +572,7 @@ local CARDS = {
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.smarts_bonus)
         end,
+        icon = "DEMOCRATICRACE:assets/cards/executive_report.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
