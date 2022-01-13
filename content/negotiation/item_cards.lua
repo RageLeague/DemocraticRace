@@ -540,7 +540,7 @@ local CARDS = {
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.smarts_bonus)
         end,
-        flavour = "Numerous in-depth Baron studies prove that Rise activity in worksites is a bad thing for productivity.",
+        flavour = "After the preliminary test, we have found strong evidence supporting the hypothesis that the chance of the experimental group contracting the parasitic infestation has decreased compared to the control group.",
         icon = "DEMOCRATICRACE:assets/cards/research_report.png",
 
         cost = 1,
