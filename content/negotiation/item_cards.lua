@@ -569,6 +569,7 @@ local CARDS = {
     {
         name = "Executive Report",
         desc = "Targets all opponent argument.",
+        flavour = "Effective immediately, any Spark Baron who discovers an effective solution to control the infestation shall be rewarded with 2800 shills and a promotion.",
         icon = "DEMOCRATICRACE:assets/cards/executive_report.png",
 
         cost = 1,
