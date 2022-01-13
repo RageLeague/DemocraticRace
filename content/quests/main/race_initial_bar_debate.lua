@@ -269,18 +269,22 @@ QDEF:AddConvo("win_argument")
             ]],
             DIALOG_DEBATE_WIN = [[
                 player:
-                    And that's why your opinion is stupid.
-                    You sound like a baby having a tantrum problem.
-                    Your idea's are too out of touch with reality.
-                    Many people are suffering, and you choose to spout useless drivel in the middle of a restaurant?
+                    !angry
+                    This is one of the most stupid things that I've heard.
+                    Have you heard yourself speak at all? I can't believe anyone would stoop this low!
+                    Maybe instead of babbling about in public and utterly humiliate yourself, you should get a life and talk to actual people.
+                    Then maybe you can be an actual functioning member of the society and have a less awful opinion.
                 agent:
-                    ...
-                    !sigh
-                    Alas, you're right. My opinion is too extreme.
-                    That's the nature of ideas, isn't it?
-                    If you don't speak out about it, the society won't change.
+                    !scared
+                    I... You... Dare...?
+                player:
+                    !cruel
+                    What's the matter? Vroc got your tongue?
+                agent:
+                    !angry
+                    I will remember this!
                     !exit
-                * {agent} left the shop. You hope that {agent} actually learned {agent.hisher} lesson, and not just finding trouble at another shop.
+                * Then, {agent} storms out of the noodle shop, in the most humiliating manner possible.
             ]],
             DIALOG_DEBATE_LOST = [[
                 player:
