@@ -569,9 +569,6 @@ local CARDS = {
     {
         name = "Executive Report",
         desc = "Targets all opponent argument.",
-        desc_fn = function(self, fmt_str)
-            return loc.format(fmt_str, self.smarts_bonus)
-        end,
         icon = "DEMOCRATICRACE:assets/cards/executive_report.png",
 
         cost = 1,
