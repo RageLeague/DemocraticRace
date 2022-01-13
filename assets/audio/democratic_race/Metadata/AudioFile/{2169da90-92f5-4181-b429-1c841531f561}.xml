@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.01.00">
 	<object class="AudioFile" id="{2169da90-92f5-4181-b429-1c841531f561}">
 		<property name="assetPath">
-			<value>democratic_race/benni_theme.wav</value>
+			<value>democratic_race/themes/benni_theme.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>48</value>
