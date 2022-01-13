@@ -95,3 +95,32 @@ lines:
       You are right.
       Hesh's will is unpredictable, and I shouldn't let my prejudice to cloud my judgement.
       I'm just a bit salty that I need to attempt the test multiple times to pass, that is all.
+- tags: [clerk, democratic_race]
+  notags: [primary_advisor_diplomacy]
+  dialog:
+  - |
+    agent:
+      And this is why we need mandatory citizenship.
+      Just the other day, someone came to the Admiralty headquarters asking for some paperwork.
+      What was his name again? Al- El-? I can't exactly remember.
+      It's obviously a fake name. Never in Havaria have I heard of this name.
+    player:
+      Uhh... What's the point?
+    agent:
+      The point is! There is no way for either of us to prove whether he is Havarian, or that is his real name.
+      And we are powerless against that! We then have no choice but to authorize the paperwork to this person with an obvious fake name.
+      If we have mandatory citizenship, then we can easily check, and prevent this from happening in the first place.
+    player:
+    {anti_independence?
+      I, of course, fully support this notion.
+      This is a serious issue if we allow people using pseudonyms in official documents.
+    agent:
+      Thank you. I knew I supported the right person.
+    }
+    {not anti_independence?
+      This does sound like a serious issue. I will give it some thought.
+      See if I can find a good way to deal with it.
+    agent:
+      !agree
+      Of course. I knew I could count on you!
+    }
