@@ -190,6 +190,7 @@ local CARDS = {
     {
         name = "Havarian Thesaurus",
         desc = "For the rest of the turn, for each other unique card played, gain 1 {SMARTS}.",
+        icon = "DEMOCRATICRACE:assets/cards/havarian_thesaurus.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.UTILITY,
@@ -355,6 +356,7 @@ local CARDS = {
     {
         name = "Mask of Anonymity",
         desc = "Remove all inceptions you control.\nWhile in your hand, you cannot gain inceptions.",
+        icon = "DEMOCRATICRACE:assets/cards/mask_of_anonymity.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
@@ -510,6 +512,7 @@ local CARDS = {
     {
         name = "Work Report",
         desc = "Insert a {baffled} into your draw pile.",
+        flavour = "Minor commotion occured today at Worksite B. A worker was seen having weird tendrils growing out of his arm, causing minor panic at the worksite.",
         icon = "DEMOCRATICRACE:assets/cards/work_report.png",
 
         cost = 1,
@@ -538,7 +541,9 @@ local CARDS = {
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.smarts_bonus)
         end,
-        flavour = "Numerous in-depth Baron Studies prove that Rise Activity in worksites is a bad thing for productivity.",
+        flavour = "After the preliminary test, we have found strong evidence supporting the hypothesis that the chance of the experimental group contracting the parasitic infestation has decreased compared to the control group.",
+        icon = "DEMOCRATICRACE:assets/cards/research_report.png",
+
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
         flags = CARD_FLAGS.ITEM,
@@ -565,9 +570,8 @@ local CARDS = {
     {
         name = "Executive Report",
         desc = "Targets all opponent argument.",
-        desc_fn = function(self, fmt_str)
-            return loc.format(fmt_str, self.smarts_bonus)
-        end,
+        flavour = "Effective immediately, any Spark Baron who discovers an effective solution to control the infestation shall be rewarded with 2800 shills and a promotion.",
+        icon = "DEMOCRATICRACE:assets/cards/executive_report.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
