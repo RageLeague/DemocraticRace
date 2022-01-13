@@ -512,6 +512,7 @@ local CARDS = {
     {
         name = "Work Report",
         desc = "Insert a {baffled} into your draw pile.",
+        flavour = "Minor commotion occured today at Worksite B. A worker was seen having weird tendrils growing out of his arm, causing minor panic at the worksite.",
         icon = "DEMOCRATICRACE:assets/cards/work_report.png",
 
         cost = 1,
