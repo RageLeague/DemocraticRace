@@ -74,7 +74,7 @@ lines:
     player:
       !shrug
       Yeah... Good luck with that.
-- tags: [priest, democratic_race]
+- tags: [heshian, democratic_race]
   notags: [primary_advisor_manipulate]
   dialog:
   - |
