@@ -116,7 +116,7 @@ QDEF:AddConvo("summary", "primary_advisor")
 
             DIALOG_UNLOCK_SKIP = [[
                 agent:
-                    I feel condifent about your ability to lead.
+                    I feel confident about your ability to lead.
                     If you think your time is better spent elsewhere, you could forgo a rally.
                 player:
                     Really?
@@ -202,10 +202,10 @@ QDEF:AddConvo("summary", "primary_advisor")
             local support_level = general_support * .5 + agent_support * .5
             local expectation = DemocracyUtil.GetCurrentExpectation()
             local delta = support_level - expectation
-            
+
             local RANGE = 4 + 3 * cxt.quest:GetRank()
             local rank = clamp( math.round((RANGE * #RANKS / 2 - delta) / RANGE) ,1, #RANKS)
-            
+
             cxt.enc.scratch.loved = cxt:GetAgent():GetRelationship() == RELATIONSHIP.LOVED
             cxt:Quip(
                 cxt:GetAgent(),
@@ -217,7 +217,7 @@ QDEF:AddConvo("summary", "primary_advisor")
             cxt:Dialog("DIALOG_INTRO")
             -- for rank, data in pairs(RANKS) do
             --     if (not data.min or delta >= data.min) and (not data.max or delta <= data.max) then
-                    
+
             --         cxt:Dialog("DIALOG_" .. rank)
             --         if not cxt.enc.scratch.loved then
             --             cxt:GetAgent():OpinionEvent(OPINION["SUPPORT_EXPECTATION_" .. rank])
@@ -314,7 +314,7 @@ QDEF:AddConvo("summary", "primary_advisor")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-            
+
             cxt:Opt("OPT_LEAVE")
                 :Dialog("DIALOG_LEAVE")
                 :Fn(function(cxt)
@@ -397,12 +397,12 @@ QDEF:AddConvo("summary", "primary_advisor")
                     --:PostText( "OPT_BETTER_DEAL_TT", math.round(BONUS_PERCENT*quest.param.rewards), math.round((1+BONUS_PERCENT)*quest.param.rewards) )
                     -- :SetQuestMark(quest)
                     :Dialog("DIALOG_PRE_NEGOTIATE")
-                    :Fn(function() 
+                    :Fn(function()
                         -- quest.param.has_tried_to_negotiate_better_reward = true
                     end)
                     :Negotiation{
                         on_start_negotiation = function(minigame)
-                            
+
                             local amounts = {}
                             local val = money
                             table.insert(amounts, math.ceil( val*math.randomGauss(.1, .2 )))
@@ -410,7 +410,7 @@ QDEF:AddConvo("summary", "primary_advisor")
                                 table.insert(amounts, math.ceil( val*math.randomGauss(.15, .25) ))
                                 table.insert(amounts, math.ceil( val*math.randomGauss(.2, .35) ))
                             end
-                            
+
                             for k,amt in ipairs(amounts) do
                                 local mod = minigame.opponent_negotiator:CreateModifier( "bonus_payment", amt )
                                 mod.result_table = won_bonuses
@@ -418,7 +418,7 @@ QDEF:AddConvo("summary", "primary_advisor")
                         end,
                         flags = NEGOTIATION_FLAGS.NO_AUTOFAIL,
                         --reason = "NEGOTIATION_REASON",
-    
+
                         reason_fn = function(minigame)
                             local total_amt = 0
                             for k,v in pairs(won_bonuses) do
@@ -430,12 +430,12 @@ QDEF:AddConvo("summary", "primary_advisor")
                         enemy_resolve_required = 10 * cxt.quest:GetRank(),
 
                         -- difficulty = quest:GetRank(),
-                        on_success = function() 
+                        on_success = function()
                             local total_bonus = 0
-                            for k,v in ipairs(won_bonuses) do 
+                            for k,v in ipairs(won_bonuses) do
                                 total_bonus = total_bonus + v
                             end
-                            
+
                             -- quest.param.reward_negotiated_bonus = total_bonus
                             -- quest:VerifyRewards()
                             cxt.enc:GainMoney(total_bonus)
@@ -446,7 +446,7 @@ QDEF:AddConvo("summary", "primary_advisor")
                             end
                             StateGraphUtil.AddEndOption(cxt)
                         end,
-                        on_fail = function() 
+                        on_fail = function()
                             cxt:Dialog("DIALOG_FAILURE")
                             StateGraphUtil.AddEndOption(cxt)
                         end,
@@ -454,5 +454,5 @@ QDEF:AddConvo("summary", "primary_advisor")
             end
             -- DemocracyUtil.StartFreeTime()
             StateGraphUtil.AddEndOption(cxt)
-            
+
         end)
