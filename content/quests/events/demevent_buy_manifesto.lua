@@ -6,13 +6,13 @@ local QDEF = QuestDef.Define
     qtype = QTYPE.EVENT,
     act_filter = DemocracyUtil.DemocracyActFilter,
     spawn_event_mask = QEVENT_TRIGGER.TRAVEL,
-    precondition = function(quest) 
+    precondition = function(quest)
         return TheGame:GetGameState():GetCaravan():GetMoney() >= MANIFESTO_COST
     end,
 }
 
 :AddOpinionEvents{
-    
+
     refused_manifesto = {
         delta = OPINION_DELTAS.DISLIKE,
         txt = "Refused to buy their manifesto",
@@ -27,10 +27,10 @@ local QDEF = QuestDef.Define
 local convo = QDEF:AddConvo()
     :ConfrontState("CONFRONT", function(cxt) return cxt.location:HasTag("in_transit")  end)
         :Loc{
-            
+
             DIALOG_INTRO = [[
                 * You recognize the colors of a member of the Rise, boldly out and about on the main roads.
-                
+
                 player:
                     !left
                 agent:
@@ -51,7 +51,7 @@ local convo = QDEF:AddConvo()
                     $miscRelieved
                     That's a relief. Can't count how many times I've asked that question only to get written up.
                     You want some literature? For a small fee, I mean.
-                    If I pay off my demerits, I can keep talking up the shifts. 
+                    If I pay off my demerits, I can keep talking up the shifts.
             ]],
 
             OPT_EXPRESS_IGNORANCE = "Pretend you don't know about the Rise",
@@ -66,17 +66,17 @@ local convo = QDEF:AddConvo()
                     Don't play dumb. You're a politician, you should know your voter groups.
                     !sigh
                     If you really don't know who we are, I guess I'll tell you.
-                    You heard of the insurrection in the Bread Fields? Where the laborers striked against the Admiralty occupation?
+                    You heard of the insurrection in the Bread Fields? Where the laborers struck against the Admiralty occupation?
                 player:
                     Yes, that does sound familiar.
                 agent:
                     That was the Rise. We're trying to get better worker's rights.
                     !eureka
                     Fair pay for good work: no demerits, no bottomless contracts.
-                    Of course... the overhead is killer. We need money to keep operating, and our own members are lacking. 
+                    Of course... the overhead is killer. We need money to keep operating, and our own members are lacking.
                     You want some literature? For a small fee, I mean.
             ]],
-            
+
             OPT_EXPRESS_DOUBT = "Express doubt about the Rise",
             DIALOG_EXPRESS_DOUBT = [[
                 player:
@@ -92,7 +92,7 @@ local convo = QDEF:AddConvo()
 
         }
         :Fn(function(cxt)
-            
+
             if cxt:FirstLoop() then
 
                 cxt.quest:Complete()
@@ -181,7 +181,7 @@ local convo = QDEF:AddConvo()
             OPT_NEGOTIATE = "Convince {agent} to leave you alone",
             DIALOG_NEGOTIATE = [[
                 player:
-                    I said no, laborer. You'd do best to honor that. 
+                    I said no, laborer. You'd do best to honor that.
             ]],
             DIALOG_NEGOTIATE_WON = [[
                 player:
@@ -189,10 +189,10 @@ local convo = QDEF:AddConvo()
                     Or are you merely using the Rise as a ruse for your highway robbery?
                 agent:
                     !surprised
-                    H-highway...?! 
+                    H-highway...?!
                     Okay, fine. I see how this looks. The foreman would kill me if I made the Rise look no better than the Spree.
                     !exit
-                * {agent} continues down the road, head hanging heavily. 
+                * {agent} continues down the road, head hanging heavily.
             ]],
             DIALOG_NEGOTIATE_LOST = [[
                 player:
@@ -201,7 +201,7 @@ local convo = QDEF:AddConvo()
                     !angry
                     No better? You honestly comparing this to the atrocities the Barons commit?
                     !angry_accuse
-                    We call that a false equivalence, friend, and I'm not falling for it. 
+                    We call that a false equivalence, friend, and I'm not falling for it.
             ]],
 
             OPT_REFUSE = "Forcefully refuse",
@@ -211,7 +211,7 @@ local convo = QDEF:AddConvo()
                     Once more: the answer is no.
                 agent:
                     !angry
-                    I see you now. Watch your back. 
+                    I see you now. Watch your back.
                     !throatcut
                     The Rise is everywhere.
             ]]
@@ -220,7 +220,7 @@ local convo = QDEF:AddConvo()
 
         :SetLooping()
         :Fn(function(cxt)
-            
+
             local card_id = "rise_manifesto"
             if TheGame:GetGameState():GetPlayerAgent():GetAspect("negotiator"):HasCardID(card_id) then
                 cxt:Opt("OPT_SHOW_CARD", card_id)
@@ -240,7 +240,7 @@ local convo = QDEF:AddConvo()
                 :GainCards{card_id}
                 :Travel()
 
-            
+
             if not cxt.enc.scratch_refused_once then
                 cxt:Opt("OPT_NO_BUY")
                     :Dialog("DIALOG_NO_BUY")
@@ -249,23 +249,23 @@ local convo = QDEF:AddConvo()
                 cxt:Opt("OPT_NEGOTIATE")
                     :Dialog("DIALOG_NEGOTIATE")
                     :Negotiation{
-                        on_success = function() 
+                        on_success = function()
                             cxt:Dialog("DIALOG_NEGOTIATE_WON")
                             StateGraphUtil.AddLeaveLocation(cxt)
                         end,
-                        on_fail = function() 
+                        on_fail = function()
                             cxt:Dialog("DIALOG_NEGOTIATE_LOST")
                         end,
                     }
 
                 cxt:Opt("OPT_REFUSE")
-                    :ReceiveOpinion(cxt.quest:GetQuestDef():GetOpinionEvent("refused_manifesto"))              
-                    :Dialog("DIALOG_REFUSE")                 
+                    :ReceiveOpinion(cxt.quest:GetQuestDef():GetOpinionEvent("refused_manifesto"))
+                    :Dialog("DIALOG_REFUSE")
                     :Travel()
             end
 
         end)
-    
+
     :State("STATE_SUSPICION")
         :Loc{
             OPT_BRUSH_OFF = "Brush off {agent}'s concern",
@@ -317,11 +317,11 @@ local convo = QDEF:AddConvo()
                     But that doesn't make any sense!
                     I mean, I-
                 * You remembered that you're supposed to keep your identity a secret, and not reveal it just because you want to win an argument.
-                * You stopped your sentense midway through.
+                * You stopped your sentence midway through.
                 }
                 agent:
                     You can't pull the wool over my eyes.
-                    You killed a pampleteer to get that, didn't you?
+                    You killed a pamphleteer to get that, didn't you?
                     You just made enemies with the rise!
             ]],
         }
@@ -390,12 +390,12 @@ local convo = QDEF:AddConvo()
             cxt:Opt("OPT_ATTACK")
                 :Dialog("DIALOG_ATTACK")
                 :Battle{
-                    on_win = function(cxt) 
+                    on_win = function(cxt)
                         cxt:Dialog("DIALOG_ATTACK_WIN")
                         -- if not cxt:GetAgent():IsDead() then
                         -- DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -10)
                         -- DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", -10, "RISE")
-                        
+
                         -- end
                         StateGraphUtil.AddLeaveLocation(cxt)
                     end,
