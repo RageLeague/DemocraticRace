@@ -56,15 +56,15 @@ QDEF:AddConvo()
                     Spill the shills or I spill your guts.
                 * Oh look, a conflict! Will you intervene?
             ]],
-            
+
             OPT_EXTORT = "Convince {laborer} to give money to {admiralty}",
             DIALOG_EXTORT = [[
                 player:
                     !left
                     I know that this looks bad on the Admiralty, but you really aren't getting the burnt end in this arrangement.
             ]],
-            
-            
+
+
             DIALOG_EXTORT_SUCCESS = [[
                 player:
                     Look at it this way. A common spree bandit would've taken your shills AND beat you to a pulp.
@@ -105,10 +105,10 @@ QDEF:AddConvo()
                 player:
                     Here's how I see it. If you, {admiralty}, continue to extort the poor like this.
                     Well, some might decide you don't deserve as much funding as you get now.
-                    That's going to be a cut in your wages, once they realize YOU'RE the reason the coffers doth runneth dry.
-                    It's a self fuffilling cycle, and you'll end up extorting a lot more people.
+                    That's going to be a cut in your wages, once they realize YOU'RE the reason the coffers run dry.
+                    It's a self fulfilling cycle, and you'll end up extorting a lot more people.
                     !throatcut
-                    And eventually you'll find the one customer you shouldnt've messed with...
+                    And eventually you'll find the one customer you shouldn't have messed with...
                 admiralty:
                     ...
                     Alright, alright, i get it.
@@ -133,9 +133,9 @@ QDEF:AddConvo()
                 player:
                     Aren't your wages enough? Extorting people is a rather quick way to lose your badge.
                 admiralty:
-                    Well i'll keep it blunt, to save your time.
+                    Well I'll keep it blunt, to save your time.
                     These people think the Admiralty should be de-funded. That'd mean I don't get payed as much.
-                    By your logic, i'm the smart one because i'm getting headstart on the robbing people process.
+                    By your logic, I'm the smart one because I'm getting head start on the robbing people process.
                     Now if you're done butting into our business, I'd like to continue with this transaction.
             ]],
 
@@ -315,7 +315,7 @@ QDEF:AddConvo()
             cxt:Opt("OPT_EXTORT")
                 :UpdatePoliticalStance("SECURITY", 1, false, true)
                 :Dialog("DIALOG_EXTORT")
-                
+
                 :Negotiation{
                     target_agent = cxt.quest:GetCastMember("laborer"),
                     flags = NEGOTIATION_FLAGS.INTIMIDATION,
@@ -367,7 +367,7 @@ QDEF:AddConvo()
             cxt:Opt("OPT_DEFEND")
                 :UpdatePoliticalStance("SECURITY", -1, false, true)
                 :Dialog("DIALOG_DEFEND")
-                
+
                 :Negotiation{
                     target_agent = cxt.quest:GetCastMember("admiralty"),
                     on_success = function(cxt)
@@ -404,7 +404,7 @@ QDEF:AddConvo()
                             :Dialog("DIALOG_LEAVE_PST_FAIL")
                             :Travel()
                     end,
-                } 
+                }
                 :ReceiveOpinion(OPINION.DISAPPROVE_MINOR, {only_show = true}, "admiralty")
 
             cxt:Opt("OPT_LEAVE")
