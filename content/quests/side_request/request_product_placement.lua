@@ -142,11 +142,11 @@ QDEF:AddIntro(
             Bless you?
         agent:
             That's the name of the product. <b>M.E.T.A.</>.
-            It stands for "Meritocratic Emulation Totality Apparatus".
+            It stands for "Meritocratic Emulation Transposition Apparatus".
         player:
             That's a very...odd naming convention.
         agent:
-            But snappy, yes? Really rolls off the tounge, like the word "based" or "cringe".
+            But snappy, yes? Really rolls off the tongue, like the word "based" or "cringe".
             <b>M.E.T.A.</>.
             I will admit that I didn't came up with it. A talking vroc told me about it in a dream.
         player:
@@ -263,21 +263,40 @@ QDEF:AddConvo("advertise_poster")
         OPT_POSTER = "Post an advertisement here",
         DIALOG_POSTER = [[
             player:
-                [p] Can you post an ad?
+                Do you mind if I post an advertisement here?
             agent:
-                I don't know, can you?
+                Why should I let you do it? Give me a good reason.
         ]],
         DIALOG_POSTER_SUCCESS = [[
             player:
-                [p] I think I can.
+                !point
+                It's not like you are using this board for anything else.
+                And it's not like I am competing against you.
+                The things I am selling is completely unrelated to what you are selling.
             agent:
-                Well then.
+                !thought
+                I guess there is no harm to let you post here.
+                And it beats arguing with you to no end.
+                Alright, you can post here.
+            * You posted the advertisement at this location. Hopefully enough people see this.
         ]],
         DIALOG_POSTER_FAILURE = [[
-            agent:
-                [p] I don't think you can.
             player:
-                Crap.
+                This is a public place. Why shouldn't I be able to post my advertisement here?
+            agent:
+                !angry
+                It might be public, but <i>I</> am still the owner here.
+                Don't feel like you are entitled to this place just because it's public.
+            player:
+                ...
+                !dubious
+                Is that a yes?
+            agent:
+                Of course not!
+            player:
+                !shrug
+                Well, it's worth a shot.
+            * That is an embarrassment. Maybe you should look for somewhere else?
         ]],
     }
     :Hub(function(cxt, who)
@@ -352,7 +371,7 @@ QDEF:AddConvo("tell_giver")
                     I mean, excellent!
                     Glad to do business with you.
                 * That was a golden opportunity, and you saw it and took it.
-                * Now you own a load of cash, and some Heshian owns the finantial decision power of {giver}'s product.
+                * Now you own a load of cash, and some Heshian owns the financial decision power of {giver}'s product.
                 * You wonder how {giver} would react given that you basically sold the majority of {giver.hisher} business without {giver.hisher} permission.
             ]],
             OPT_SELL_ALL = "Sell ALL of the share",
@@ -366,7 +385,7 @@ QDEF:AddConvo("tell_giver")
                     I mean, excellent!
                     Glad to do business with you.
                 * Wow, you actually sold out {giver}'s entire business to some Heshian.
-                * Now {giver} worked hard for the product and now {giver.heshe} owns nothing, finantially speaking.
+                * Now {giver} worked hard for the product and now {giver.heshe} owns nothing, financially speaking.
                 * What are you, crazy?
             ]],
             OPT_SELL_NOTHING = "Sell nothing",
@@ -577,7 +596,7 @@ QDEF:AddConvo("tell_giver")
                         Vagrant Age?
                     agent:
                         Doesn't matter!
-                        I thought we are on the same page, {player}.
+                        I thought you are going to be different, {player}. I thought you are going to be based.
                         But it appears, you are but another cringe normie.
                         I will still help you with the campaign, as promised.
                         But don't expect me to do you any favors!
@@ -591,19 +610,19 @@ QDEF:AddConvo("tell_giver")
                 agent:
                     !right
                     !angry
-                    $angryseething
+                    $angrySeething
                     You no-good scoundrel!
                 player:
                     !dubious
                     No-good scoundrel? Sure you can't be a little more creative?
                 agent:
                     No, {player}, I can't be a little more creative for <i>your</> sake.
-                    I've been too busy fuming about the fact that a damned heshie owns my entire vagrant age product line!
+                    I've been too busy fuming about the fact that a damned Heshie owns my entire vagrant age product line!
                 player:
                     !taken_aback
                     Vagrant age?!
                 agent:
-                    !angrypoint
+                    !angryPoint
                 {advisor?
                     Grab your damn things, and get out of my damn office!
                 }
@@ -670,7 +689,7 @@ QDEF:AddConvo("tell_giver")
                     !question
                     I suppose that is a lot of money this pulled in from selling just the shares.
                     But the product would've made more. I'm sure of it.
-                    !angrypoint
+                    !angryPoint
                     You come to me next time you try to pull this same kind of stunt, understand?
                 }
             ]],
@@ -685,7 +704,7 @@ QDEF:AddConvo("tell_giver")
                         Because you take half the campaign funding from me and put it in your own pockets!
                     agent:
                         That doesn't mean you get to shoot my hopes and dreams in the foot!
-                        !angrypoint
+                        !angryPoint
                         Look, you better work like a vroc once you get in office to make up for this.
                 }
                 {not advisor?
@@ -694,7 +713,7 @@ QDEF:AddConvo("tell_giver")
                     agent:
                         I know I shouldn't rely on a grifter to handle my business.
                     {not majority_share?
-                        At least I still have the finantial autonomy, so maybe I can still work with this.
+                        At least I still have the financial autonomy, so maybe I can still work with this.
                         But don't expect me to do you any favors in the future!
                     }
                     {majority_share?
@@ -711,7 +730,7 @@ QDEF:AddConvo("tell_giver")
             DIALOG_BRUSH_OFF = [[
                 * [p] You brush off {agent}'s concern.
                 * Obviously {agent} doesn't buy it.
-                * Why do you think the other option has a negitiation, hmm?
+                * Why do you think the other option has a negotiation, hmm?
             ]],
         }
         :Fn(function(cxt)
