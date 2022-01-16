@@ -316,7 +316,7 @@ QDEF:AddConvo()
                         !angry_point
                         But you have not seen Hesh's wrath, not in it's fullest, until today.
                     player:
-                        !hand_wave
+                        !handwave
                         They always say that, but I'm still here.
                 }
             ]],
