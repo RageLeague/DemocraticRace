@@ -107,22 +107,22 @@ local convo = QDEF:AddConvo()
                 :Dialog("DIALOG_EXPRESS_SUPPORT")
                 :UpdatePoliticalStance("LABOR_LAW", 1, false, true)
                 :Fn(function(cxt)cxt.quest.param.support = true end)
-                :GoTo("STATE_BUYIT")
+                :GoTo("STATE_BUY_IT")
 
             cxt:Opt("OPT_EXPRESS_IGNORANCE")
                 :Dialog("DIALOG_EXPRESS_IGNORANCE")
                 :DeltaSupport(-2)
-                :GoTo("STATE_BUYIT")
+                :GoTo("STATE_BUY_IT")
 
             cxt:Opt("OPT_EXPRESS_DOUBT")
                 :Dialog("DIALOG_EXPRESS_DOUBT")
                 :UpdatePoliticalStance("LABOR_LAW", -1, false, true)
                 :Fn(function(cxt)cxt.quest.param.doubt = true end)
-                :GoTo("STATE_BUYIT")
+                :GoTo("STATE_BUY_IT")
 
         end)
 
-    :State("STATE_BUYIT")
+    :State("STATE_BUY_IT")
         :Loc{
             OPT_SHOW_CARD = "Show that you already have a {1#card}",
             DIALOG_SHOW_CARD = [[
@@ -290,7 +290,7 @@ local convo = QDEF:AddConvo()
                 {player_sal?
                     in fact, my parents are the leader of the Rise movement 10 years ago.
                 }
-                    It's just that, i'm a politician now, and i have to be careful with what i'm saying.
+                    It's just that, I'm a politician now, and i have to be careful with what I'm saying.
                     Back in the Bog, letting people know you support the Rise is basically a death sentence.
                 agent:
                     Yeah, i have to agree with that.

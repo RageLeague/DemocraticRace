@@ -524,7 +524,7 @@ QDEF:AddConvo("do_interview")
 --                     im impressed by your work today.
 --                 }
 --                 {bad_interview?
---                     [p] i'm a bit disappointed by you.
+--                     [p] I'm a bit disappointed by you.
 --                     i can't believe you throw away a good opportunity like that.
 --                 }
 --                 {not (good_interview or bad_interview)?

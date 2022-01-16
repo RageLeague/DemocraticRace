@@ -92,7 +92,7 @@ QDEF:AddConvo()
             OPT_CHOOSE_NO_ONE = "Choose no one",
             DIALOG_CHOOSE_NO_ONE = [[
                 player:
-                    Look, i'm flattered, really I am.
+                    Look, I'm flattered, really I am.
                     But I don't think this kind of drama is my kind of place to weigh in.
                 extremist_neg:
                     !right

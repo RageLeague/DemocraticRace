@@ -60,7 +60,7 @@ QDEF:AddConvo()
                     Bougeroise? I'm just as poor as the lot of you. Should <i>I<\> starve just so your little revolution has a few more playthings?
                 rise:
                     This isn't a game, {jake}. This is real life, and real sacrifice needs to be made for real change!
-                * You have a sneaking suspicion the next logical step for this conflict would involve someone getting shot.  
+                * You have a sneaking suspicion the next logical step for this conflict would involve someone getting shot.
             ]],
             OPT_LEAVE = "Leave them figure this out themselves",
             DIALOG_LEAVE = [[
@@ -82,7 +82,7 @@ QDEF:AddConvo()
                     !taken_aback
                     Spree?
                 player:
-                    Well, this appears to be the Spree's general MO. 
+                    Well, this appears to be the Spree's general MO.
                     I bet you have an entire crew just waiting for their chance, just like-
                 rise:
                     !placate
@@ -174,8 +174,8 @@ QDEF:AddConvo()
                     !salute
                     {rise}, {jakes.honorific}.
                 jakes:
-                    Right, right. Listen, the next time I need a favor from the Rise, i'm gonna name drop you.
-                    And if I don't get what i'm asking for, I'll be cutting a few of your strings, got it?
+                    Right, right. Listen, the next time I need a favor from the Rise, I'm gonna name drop you.
+                    And if I don't get what I'm asking for, I'll be cutting a few of your strings, got it?
                 rise:
                     Er, yes. In the calmer sense of the phrase.
                 jakes:
@@ -186,7 +186,7 @@ QDEF:AddConvo()
                 rise:
                     !shrug
                     Not how I would've liked the deal to go by, but the weapons seem good.
-                    Thanks for the help, {player}. 
+                    Thanks for the help, {player}.
                 player:
                     !left
                     Anything to be on the right side of history, right?
@@ -216,7 +216,7 @@ QDEF:AddConvo()
                 player:
                     I could list off several other smugglers who'll charge you a dime on the dollar {jakes} is charging you.
                 rise:
-                    Really? 
+                    Really?
                 player:
                     !eureka
                     For sure! And that oughta lead to a competitive price from {jakes} later on, if you still want to use {jakes.himher}.
@@ -240,7 +240,7 @@ QDEF:AddConvo()
                     I suppose I could call a few favors, get these weapons sold on such short notice.
                 player:
                     !salute
-                    For that, I wish you luck. 
+                    For that, I wish you luck.
             ]],
             DIALOG_CONVINCE_CALL_OFF_FAILURE = [[
                 player:
@@ -567,9 +567,9 @@ QDEF:AddConvo()
                         * {rise} scrambles for the boxes, prying one open with the deftness of a safe cracker.
                         * {rise.HisHer} awareness, however, could use some work. You grab {rise.hisher} arms before clapping {agent.hisher} fists in a pair of restraints.
                         rise:
-                            So i'm leading a life of Martyrdom, now? It'll be a great way to be remembered, y'know.
+                            So I'm leading a life of Martyrdom, now? It'll be a great way to be remembered, y'know.
                         player:
-                            Reason it out however you want. If it helps you sleep tonight, hey, i'm fine with you babbling into thin air.
+                            Reason it out however you want. If it helps you sleep tonight, hey, I'm fine with you babbling into thin air.
                             But just remember you signed up for this.
                         * It doesn't take long for the next Admiralty Patrol to round the corner. You shove {rise} into the hands of an oncoming guard before treking right behind them.
                     }
@@ -582,7 +582,7 @@ QDEF:AddConvo()
                         player:
                             Would you like me to finish the job, then? Would that make you feel better?
                         jakes:
-                            Not from a switch, no. If i'm dying, i'm gonna die for something honorable.
+                            Not from a switch, no. If I'm dying, I'm gonna die for something honorable.
                         player:
                             !crossed
                             Hmph. Maybe you and that Rise member had more in common than you thought.

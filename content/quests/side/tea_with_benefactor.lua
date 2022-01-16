@@ -230,7 +230,7 @@ QDEF:AddConvo("go_to_diner", "benefactor")
         DIALOG_BENEFACTOR_POOR = [[
             agent:
                 You show promise...but atop that promise is much bluster.
-		        I can't give you Havaria, but i'm willing to give you {funds#money}.
+		        I can't give you Havaria, but I'm willing to give you {funds#money}.
             player:
                 I guess this is better than nothing.
             * You have secured a bit of financial support, though it could be a lot better.

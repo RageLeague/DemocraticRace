@@ -163,7 +163,7 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 * {agent} clears {agent.hisher} throat loudly.
                     %opposition_intro idea_monologue {opposition_id}
                 player:
-                    I must say, i'm stunned by your rhetoric.
+                    I must say, I'm stunned by your rhetoric.
                 agent:
                     I bet you are!
                     What say you? Are you persuaded by my speech?

@@ -125,7 +125,7 @@ FOLLOW_QUEST:AddConvo()
             agent:
                 Yes, right around here. It's a bit smudged, but if you can notice the-
             player:
-                Ah, now I see it. 
+                Ah, now I see it.
             }
         ]],
     }
@@ -169,10 +169,10 @@ FOLLOW_QUEST:AddConvo()
             DIALOG_ACCEPT = [[
                 player:
                     !give
-                    Don't know how I can appreciate it if i'm giving it for free, but here.
+                    Don't know how I can appreciate it if I'm giving it for free, but here.
                 agent:
                     !take
-                    It's a small token, but i'm sure Hesh will favor you someday, in exchange for this.
+                    It's a small token, but I'm sure Hesh will favor you someday, in exchange for this.
             ]],
             OPT_REJECT = "Reject the deal",
             DIALOG_REJECT = [[
@@ -221,7 +221,7 @@ FOLLOW_QUEST:AddConvo()
                     I think i'll test it out a little, see if it's worth that market value.
                 agent:
                     !placate
-                    Hey friend, no skin off my nose. If you ever want to pawn it off, though, i'll always be here. 
+                    Hey friend, no skin off my nose. If you ever want to pawn it off, though, i'll always be here.
             ]],
         }
         :Fn(function(cxt)
