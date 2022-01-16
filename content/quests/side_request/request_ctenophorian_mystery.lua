@@ -208,7 +208,7 @@ QDEF:AddConvo("ask_info")
             DIALOG_PROBE_SUCCESS = [[
                 player:
                     Look, just say your piece quietly, if you think that someone's going to hear you.
-                    One straight answer, and i'll drop the subject.
+                    One straight answer, and I'll drop the subject.
                 agent:
                     Fine, if you insist.
             ]],
@@ -245,7 +245,7 @@ QDEF:AddConvo("ask_info")
                     That would be correct, were I talking to you as a politician.
                     But I talk to you as a scholar, instead.
                 agent:
-                    This is so great! I have so many notes on Hesh from all the snippets of lore i've found.
+                    This is so great! I have so many notes on Hesh from all the snippets of lore I've found.
                     Say...how much time do you have to burn?
             ]],
             OPT_ENDURE = "Endure {agent}'s lecture",

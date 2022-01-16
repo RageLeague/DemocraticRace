@@ -210,7 +210,7 @@ FOLLOW_QUEST:AddConvo()
             DIALOG_ACCEPT = [[
                 player:
                     !give
-                    If you put it to better use than I can, i'll take those shills off your hands.
+                    If you put it to better use than I can, I'll take those shills off your hands.
                 agent:
                     !take
                     I'm sure we'll find a way to weaponize it.
@@ -218,10 +218,10 @@ FOLLOW_QUEST:AddConvo()
             OPT_REJECT = "Reject the deal",
             DIALOG_REJECT = [[
                 player:
-                    I think i'll test it out a little, see if it's worth that market value.
+                    I think I'll test it out a little, see if it's worth that market value.
                 agent:
                     !placate
-                    Hey friend, no skin off my nose. If you ever want to pawn it off, though, i'll always be here.
+                    Hey friend, no skin off my nose. If you ever want to pawn it off, though, I'll always be here.
             ]],
         }
         :Fn(function(cxt)

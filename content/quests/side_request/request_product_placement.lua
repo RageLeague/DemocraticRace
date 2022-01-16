@@ -682,7 +682,7 @@ QDEF:AddConvo("tell_giver")
                 {not majority_share?
                  agent:
                     I suppose so. I do have a few other projects that I could tinker with.
-                    Just don't pull this same kind of stunt on any of your political allies, and i'll let this one slide.
+                    Just don't pull this same kind of stunt on any of your political allies, and I'll let this one slide.
                 }
                 {majority_share?
                  agent:

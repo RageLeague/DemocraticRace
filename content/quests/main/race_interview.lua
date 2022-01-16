@@ -367,7 +367,7 @@ QDEF:AddConvo("do_interview")
             ]],
             DIALOG_INTERVIEW_FAIL = [[
                 player:
-                    [p] i said something embarrassing and outrageous in front of everyone!
+                    [p] I said something embarrassing and outrageous in front of everyone!
                 * awkward silence.
                 * oh no.
                 * this embarrassment is going to cost you.

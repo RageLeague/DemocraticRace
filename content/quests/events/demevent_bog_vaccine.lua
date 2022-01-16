@@ -162,7 +162,7 @@ QDEF:AddConvo()
                 {asked_info?
                     player:
                         !hips
-                        I don't think i'll be getting shot up with this vaccine you called "not consumer-friendly".
+                        I don't think I'll be getting shot up with this vaccine you called "not consumer-friendly".
                     agent:
                         !angry_point
                         Do you wish for eternal damnation?

@@ -81,7 +81,7 @@ QDEF:AddConvo()
                     We have rights, Hesh damn it! The election promi-
                 player:
                     !right
-                    Excuse me, but i'd like to have a discussion with the leader here.
+                    Excuse me, but I'd like to have a discussion with the leader here.
                 worker:
                     !right
                     {liked?
@@ -246,7 +246,7 @@ QDEF:AddConvo()
                     These workers are trying to start a protest just days before the voting starts.
                     I've tried to talk sense into them, and I'd be willing to listen if they could just take a damn raincheck on this.
                     !shrug
-                    So, I've got nothing. If you can make them shut down for a while, i'd be in your debt.
+                    So, I've got nothing. If you can make them shut down for a while, I'd be in your debt.
             ]],
             DIALOG_INTRO_NOT_FIRST = [[
                 baron:
@@ -294,7 +294,7 @@ QDEF:AddConvo()
             --Wumpus; I thought of saying "Arkcross" in the same way you'd say "Country" mile. Liable to change.
             DIALOG_CONVINCE_COMPROMISE = [[
                 player:
-                    How about this? You give them an inch, and i'll make sure they don't take an Arkcross mile.
+                    How about this? You give them an inch, and I'll make sure they don't take an Arkcross mile.
             ]],
             DIALOG_CONVINCE_COMPROMISE_FAIL = [[
                 player:

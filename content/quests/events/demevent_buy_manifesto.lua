@@ -127,11 +127,11 @@ local convo = QDEF:AddConvo()
             OPT_SHOW_CARD = "Show that you already have a {1#card}",
             DIALOG_SHOW_CARD = [[
                 player:
-                    It's okay, friend, i already have one.
+                    It's okay, friend, I already have one.
                 agent:
                 {support?
                     Wow. you must be really supportive of the cause.
-                    If Kalandra isn't running, i would've voted for you.
+                    If Kalandra isn't running, I would've voted for you.
                 }
                 {doubt?
                     Hold on, where did you get that?
@@ -290,10 +290,10 @@ local convo = QDEF:AddConvo()
                 {player_sal?
                     in fact, my parents are the leader of the Rise movement 10 years ago.
                 }
-                    It's just that, I'm a politician now, and i have to be careful with what I'm saying.
+                    It's just that, I'm a politician now, and I have to be careful with what I'm saying.
                     Back in the Bog, letting people know you support the Rise is basically a death sentence.
                 agent:
-                    Yeah, i have to agree with that.
+                    Yeah, I have to agree with that.
                     But you don't have to worry about it now.
                     The time is different, we're trying to resolve everything peacefully.
                     Directly killing a politician who support the Rise movement will look bad on whoever was doing it.

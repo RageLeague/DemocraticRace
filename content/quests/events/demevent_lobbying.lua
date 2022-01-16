@@ -21,7 +21,7 @@ QDEF:AddConvo()
         :Loc{
             DIALOG_INTRO = [[
                 * You notice the jingling of shills before you notice the person holding them.
-                * {agent}'s clothing is rich—and rich clothing has deep pockets. 
+                * {agent}'s clothing is rich—and rich clothing has deep pockets.
                 * And the roads are deserted, 'cept for you and your new fri-
                 merchant:
                     !right
@@ -39,7 +39,7 @@ QDEF:AddConvo()
                     Alright, what's the deal?
                 merchant:
                     The deal you presume I want is something simple.
-                    If you publicly support {1#pol_stance} for me, i'll provide you some campaign funds.
+                    If you publicly support {1#pol_stance} for me, I'll provide you some campaign funds.
             ]],
             OPT_ACCEPT = "Accept",
             DIALOG_ACCEPT = [[
@@ -72,7 +72,7 @@ QDEF:AddConvo()
                     If I end up losing, this would be a wasted investment. If I have enough money, I'll be able to stay in the race longer.
                 merchant:
                     !question
-                    A fine point. How about {1#money}? 
+                    A fine point. How about {1#money}?
             ]],
             DIALOG_ASK_FOR_MORE_FAILURE = [[
                 merchant:

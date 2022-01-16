@@ -363,7 +363,7 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                     agent:
                         [p] so you talked to {opposition}. What do you make of {opposition.himher}?
                     player:
-                        {opposition.HeShe}'s fine, i guess.
+                        {opposition.HeShe}'s fine, I guess.
                     {agreed?
                         we more or less have the same ideology. we could probably get along.
                     agent:

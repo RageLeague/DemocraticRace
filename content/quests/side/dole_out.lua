@@ -249,7 +249,7 @@ QDEF:AddConvo("dole_out_three")
                 player:
                     Is something the matter?
                 agent:
-                    Just...i've been eating this for the past...how long?
+                    Just...I've been eating this for the past...how long?
                     Wish I could have something else...
             ]],
             OPT_GIVE = "Give them some Shills",
@@ -290,7 +290,7 @@ QDEF:AddConvo("dole_out_three")
         :Loc{
             DIALOG_POLITICAL = [[
                     agent:
-                    Some of the poor man's food, sure i'll take it.
+                    Some of the poor man's food, sure I'll take it.
                     Though...I wish people would not have to rely on the admiralty's food like this.
                     !question
                     Are you in support of a UBI? So this kind of thing doesn't have to happen anymore?

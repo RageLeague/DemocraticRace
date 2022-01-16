@@ -111,7 +111,7 @@ QDEF:AddConvo()
                     And eventually you'll find the one customer you shouldn't have messed with...
                 admiralty:
                     ...
-                    Alright, alright, i get it.
+                    Alright, alright, I get it.
                     Enough with the prophecy. I promise to stop extorting "the poor", as you high n' mighties call them.
                 player:
                     Pinky promise?

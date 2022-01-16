@@ -9,7 +9,7 @@ local BENEFACTOR_DEFS = {
 -- for balancing reasons
 local SIGNATURE_ARGUMENT = {
     WEALTHY_MERCHANT = "TRIBUTE",
-    PRIEST = "prayer_of_hesh", -- why this is lower case, i have no idea
+    PRIEST = "prayer_of_hesh", -- why this is lower case, I have no idea
 }
 
 local score_fn = function(agent, quest)
