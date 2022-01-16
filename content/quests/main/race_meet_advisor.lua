@@ -145,11 +145,11 @@ local function ShowRaceTutorial()
     TheGame:GetGameProfile():SetHasSeenMessage("democracy_race_tutorial")
 	TheGame:FE():InsertScreen( Screen.YesNoPopup(LOC"UI.RACE_TUTORIAL_TITLE", LOC"UI.RACE_TUTORIAL_BODY", nil, nil, LOC"UI.NEGOTIATION_PANEL.TUTORIAL_NO" ))
 		:SetFn(function(v)
-			if v == Screen.YesNoPopup.YES then 
+			if v == Screen.YesNoPopup.YES then
 				local coro = screen:StartCoroutine(function()
 					local advance = false
-					TheGame:FE():PushScreen( Screen.SlideshowScreen( "democracy_race_tutorial", function() advance = true end ):SetAutoAdvance(false) ) 
-					while not advance do                            
+					TheGame:FE():PushScreen( Screen.SlideshowScreen( "democracy_race_tutorial", function() advance = true end ):SetAutoAdvance(false) )
+					while not advance do
 						coroutine.yield()
 					end
 				end )
@@ -230,7 +230,7 @@ QDEF:AddConvo("go_to_bar")
                     Bunch of normies.
                 player:
                     !left
-                    Can any of you explain what's happenening?
+                    Can any of you explain what's happening?
                 advisor_hostile:
                     !right
                     Look, you pick one of us to be your advisor.
@@ -448,9 +448,9 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
             OPT_SUPPORT = "Ask about support level",
             DIALOG_SUPPORT = [[
                 agent:
-                    The first step of running a campaign is to realize that being a polititian is a hard job.
+                    The first step of running a campaign is to realize that being a politician is a hard job.
                     There are different ways of approaching problems in the society, and people have different opinions on these approaches.
-                    Natually, some people will dislike you simply because of your ideology.
+                    Naturally, some people will dislike you simply because of your ideology.
                 * As if on cue, you see a notification showing people disliking you.
             ]],
             DIALOG_SUPPORT_PST = [[
