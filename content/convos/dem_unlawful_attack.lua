@@ -20,9 +20,11 @@ Convo("DEM_UNLAWFUL_ATTACK")
         TT_ATTACK = "The target can potentially die, or they will be left in a bad shape and can't interfere with you for a while.",
         DIALOG_ATTACK = [[
             player:
-                Can you attack someone for me?
+                !cagey
+                Say...I need some dirty deeds done dirt cheap, if you know what I mean.
             agent:
-                Who do you plan to attack?
+                Yeah, I get you. 
+                Whose going to be hit?
         ]],
 
         REQ_NO_TARGETS = "There are no targets.",
@@ -76,29 +78,34 @@ Convo("DEM_UNLAWFUL_ATTACK")
                     Probably.
                 }
                 {high_renown?
-                    {target} has high influence, so I would imagine {target.heshe} is hard to find, or has bodyguards.
+                    !thought
+                    {target}'s got a good bit of cash in their pockets. Guards, mechs, maybe a few solid walls of concrete are gonna be the start of {target.hisher} protection.
                     {high_strength?
-                        Even if we manage to get {target.himher} alone, defeating {target.himher} would be challenging.
+                        Not only that, {target} ain't shoddy in a fight as well. Gonna have my hands full with this mission.
                     }
                     {not high_strength?
-                        Although, if we can isolate {target.himher}, {target.heshe} would be an easy target.
+                        !handwring
+                        Although {target} {target.himher}self ain't that tough. It'll be fun plucking {target.hisher} plumage. See how high n' mighty they are without a goon to throw in the way.
                     }
                 }
                 {not high_renown?
-                    {target} is not a person of high importance, so {target.heshe} probably won't have backups.
+                    I think {target}'s not that influential. No one's gonna cry a penny when {target.heshe}'s gone.
                     {high_strength?
-                        Even so, defeating {target.himher} would be challenging.
+                       Although making {target} "gone" is gonna be difficult. They're a schmoe with some good combat training.
                     }
                     {not high_strength?
-                        I would imagine that {target.heshe} is an easy target.
+                        Not even good at fighting at that! I could probably deal with {target} and still have enough time to grab a beer.
                     }
                 }
-                    Now, how do you want me to deal with {target}?
+                    Alright, Target bio out of the way, how'd you want {target.himher} dealt with?
                 {no_kill?
-                    Fair warning, though: I don't kill people. I have standards.
+                    !point
+                    Note that death isn't on the line here. I'm letting them live, whether that's good for you or not.
                 }
                 {hard_spare?
-                    Fair warning, though: My methods are usually very lethal, so if you want to just send a message without killing the target, you come to the wrong guy.
+                    !throatcut
+                    I should warn you though. My definition of mercy is...<i>warped</>, you could say.
+                    If you're looking for a lighter touch, look elsewhere.
                 }
             ]],
 
@@ -110,7 +117,8 @@ Convo("DEM_UNLAWFUL_ATTACK")
 
             DIALOG_SELECTED_TARGET = [[
                 agent:
-                    Alright, I am on it.
+                    !salute
+                    You've got it.
             ]],
         }
         :Fn(function(cxt)

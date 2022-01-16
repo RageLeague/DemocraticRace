@@ -56,39 +56,56 @@ QDEF:AddConvo("report")
         :Loc{
             DIALOG_INTRO = [[
                 {not attack_successful?
-                    * [p] You saw {hunter}, who doesn't look so good.
+                    * You find {hunter} leaning against a tree, clutching a variety of wounds with bandages.
                     player:
                         !left
                     hunter:
                         !right
                         !injured
-                        Mission failed. {target} is tougher than I thought.
-                        I barely got away.
+                        So {target} is...just a smidge out of my paygrade, if I'm being honest.
                     player:
-                        Dang. I need to hire better people for this job.
+                        Just a bit. Is {target} injured?
                     hunter:
-                        Anyway, I cannot rightfully take your money.
-                        Here is your money back.
+                        Not even a bit. I was squashed like a Flead.
+                        Look, I got some experience. I'm fine without the money, just going to go...go lay low.
+                        !injuredpalm
+                        Oh the blood loss is not helping my head.
+                    * You take the money and walk before {hunter} can take the offer back.
                 }
                 {attack_successful?
-                    * [p] You saw {hunter}.
+                    * {hunter} arrives, looking tired but satisfied.
                     player:
                         !left
                     hunter:
                         !right
                     {target_killed?
-                        {target} is dead.
+                        Remember that hit you wanted on {target}?
                     player:
-                        Nice work!
+                        Oh right. What happened to {target.himher}?
+                    hunter:
+                        Well, I've got {target}'s blood on my jacket, if that's enough proof for you.
+                    player:
+                        !placate
+                        Yes, that's proof enough. Please go wash that.
+                    hunter:
+                        !happy
+                        Great! I'm gonna go hit the pub on your dime.
+                        !salute
+                        I'll be near, if you need another political assasination.
                     }
                     {not target_killed?
-                        I beat {target} up.
-                        {target.HeShe} shouldn't bother you, at least for a while.
+                        Say, have you heard what happened to {target}?
+                        {target.HeShe} had an accident a while ago. A really <i>messy</> one.
                     player:
-                        Excellent work!
+                        !chuckle
+                        Oh how terrible! Who could let such a thing happen?
+                    target:
+                        !wink
+                        I don't know. It could be <i>anyone</>.
                     }
                 }
             ]],
+            --There's some emote, the little lean back then lean forward one. I don't know what it's called but I would like that.
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
