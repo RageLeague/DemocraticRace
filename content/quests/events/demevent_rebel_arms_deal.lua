@@ -54,10 +54,10 @@ QDEF:AddConvo()
                     Democracy isn't going to pay the customs fees! I still need to get paid for these weapons!
                 rise:
                     !spit
-                    Bah! That's just bougeroise rhetoric.
+                    Bah! That's just bourgeoisie rhetoric.
                 jakes:
-                    !angryshrug
-                    Bougeroise? I'm just as poor as the lot of you. Should <i>I<\> starve just so your little revolution has a few more playthings?
+                    !angry_shrug
+                    Bourgeoisie? I'm just as poor as the lot of you. Should <i>I<\> starve just so your little revolution has a few more playthings?
                 rise:
                     This isn't a game, {jake}. This is real life, and real sacrifice needs to be made for real change!
                 * You have a sneaking suspicion the next logical step for this conflict would involve someone getting shot.
@@ -73,7 +73,7 @@ QDEF:AddConvo()
                     !right
                 player:
                     !left
-                    This is unorderly and you know it.
+                    You should know this is not how normal people trade.
             ]],
             DIALOG_CONVINCE_PAY_SUCCESS = [[
                 player:
@@ -157,7 +157,7 @@ QDEF:AddConvo()
             ]],
             DIALOG_CONVINCE_DONATE_SUCCESS = [[
                 player:
-                    Don't know if you're aware, but this is a democractic Havaria now.
+                    Don't know if you're aware, but this is a democratic Havaria now.
                     !over_there
                     And these guys? They've got "Democracy" tattooed across their foreheads.
                 rise:
@@ -219,7 +219,7 @@ QDEF:AddConvo()
                     Really?
                 player:
                     !eureka
-                    For sure! And that oughta lead to a competitive price from {jakes} later on, if you still want to use {jakes.himher}.
+                    For sure! And that ought to lead to a competitive price from {jakes} later on, if you still want to use {jakes.himher}.
                 rise:
                     !think
                     You make a bit of sense, yeah.
@@ -527,7 +527,7 @@ QDEF:AddConvo()
                 rise:
                     But...but the elect-
                 player:
-                    The election is specifcally so we don't need radicals like you with weapons like those.
+                    The election is specifically so we don't need radicals like you with weapons like those.
             ]],
             DIALOG_INTIMIDATE_FAILURE = [[
                 jakes:
@@ -558,7 +558,7 @@ QDEF:AddConvo()
                 {jakes_dead?
                     {rise_dead?
                         * It does feel good to shake off the rust from your weapons, even if you got a bit overzealous.
-                        * Overzealoutry, however, might affect your campaign in the long run.
+                        * Overzealousness, however, might affect your campaign in the long run.
                     }
                     {not rise_dead?
                         rise:
@@ -571,7 +571,7 @@ QDEF:AddConvo()
                         player:
                             Reason it out however you want. If it helps you sleep tonight, hey, I'm fine with you babbling into thin air.
                             But just remember you signed up for this.
-                        * It doesn't take long for the next Admiralty Patrol to round the corner. You shove {rise} into the hands of an oncoming guard before treking right behind them.
+                        * It doesn't take long for the next Admiralty Patrol to round the corner. You shove {rise} into the hands of an oncoming guard before trekking right behind them.
                     }
                 }
                 {not jakes_dead?
@@ -603,7 +603,7 @@ QDEF:AddConvo()
                         player:
                             !question
                             "Plans rarely survive contact with the enemy". Did you know that quote, or did you not know how to read the fine print before tonight?
-                        * With both your prisoners in tow, the orbitting Admiralty Patrol that passes these parts quickly becomes two criminals fuller.
+                        * With both your prisoners in tow, the orbiting Admiralty Patrol that passes these parts quickly becomes two criminals fuller.
                     }
                 }
             ]],
