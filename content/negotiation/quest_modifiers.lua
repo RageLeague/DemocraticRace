@@ -853,7 +853,7 @@ local MODIFIERS =
             -- end
         end,
     },
-    SECURED_INVESTEMENTS =
+    SECURED_INVESTMENTS =
     {
         name = "Secured Investments",
         icon = "negotiation/modifiers/frisk.tex",
@@ -875,8 +875,8 @@ local MODIFIERS =
     {
         name = "Investment Opportunity",
         icon = "negotiation/modifiers/frisk.tex",
-        desc = "{MYRIAD_MODIFIER {2}}\n\nWhen destroyed, gain {1} {SECURED_INVESTEMENTS}.",
-        alt_desc = "{MYRIAD_MODIFIER {1}}\n\nWhen destroyed, gain {SECURED_INVESTEMENTS} equal to the number of stacks on this bounty.",
+        desc = "{MYRIAD_MODIFIER {2}}\n\nWhen destroyed, gain {1} {SECURED_INVESTMENTS}.",
+        alt_desc = "{MYRIAD_MODIFIER {1}}\n\nWhen destroyed, gain {SECURED_INVESTMENTS} equal to the number of stacks on this bounty.",
 
         desc_fn = function(self, fmt_str)
             if self.stacks then
@@ -903,7 +903,7 @@ local MODIFIERS =
 
         OnBounty = function(self, source)
             -- self.negotiator:CreateModifier("CAUTIOUS_SPENDER")
-            self.anti_negotiator:AddModifier("SECURED_INVESTEMENTS", self.stacks)
+            self.anti_negotiator:AddModifier("SECURED_INVESTMENTS", self.stacks)
             CreateNewSelfMod(self)
         end,
     },
