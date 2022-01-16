@@ -115,7 +115,7 @@ local QDEF = QuestDef.Define{
     },
     political_angry = {
         delta = OPINION_DELTAS.BAD,
-        txt = "Let them call you a strawman.",
+        txt = "Let them call you a straw man.",
     },
 }
 -- Added true to make primary advisor mandatory.
@@ -375,7 +375,7 @@ QDEF:AddConvo("dole_out_three")
                     Do my actions not demonstrate my beliefs?
                     I came to you to help you the people of Havaria who need help.
                 agent:
-                    I geuss that's true.
+                    I guess that's true.
                     Pardon, I'm not great at taking rejection for my ideas.
                 player:
                     Well, follow the debates. People'll talk all day long about different ideas.
@@ -454,9 +454,9 @@ QDEF:AddConvo("dole_out_three")
                 player:
                     I can't exactly change the business practices of an entire corporation.
                 agent:
-                    !angryshrug
-                    Of course you can! You would be the President!
-                    Emphasis on the "would", because I am certainly not voting for <i> you</> now!
+                    !angry_shrug
+                    Of course you can! You would be the president!
+                    Emphasis on the "would", because I am certainly not voting for <i>you</> now!
             ]],
             OPT_IGNORE_2 = "Ignore their complaints.",
             DIALOG_IGNORE_2 = [[
