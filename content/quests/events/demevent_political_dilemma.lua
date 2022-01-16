@@ -33,7 +33,7 @@ QDEF:AddConvo()
     :ConfrontState("STATE_CONFRONT")
         :Loc{
             DIALOG_INTRO = [[
-                * Just as the boredom of treking across the loam makes you consider why you're doing this, you see two people arguing.
+                * Just as the boredom of trekking across the loam makes you consider why you're doing this, you see two people arguing.
                 * You hear just enough buzzwords to realize it's about {issue_name}, and both of them are spitting bricks about it.
                 * You try your best to disengage with it.
                 * Keyword: try.
@@ -45,7 +45,7 @@ QDEF:AddConvo()
                 extremist_neg:
                     !right
                     We've been here for hours trying to figure out whose correct in their ideology.
-                    Now, of course, a sensible individual like youself knows that Havaria needs {2#pol_stance}.
+                    Now, of course, a sensible individual like yourself knows that Havaria needs {2#pol_stance}.
                 extremist_pos:
                     !left
                     Oh shut it you Bogan!
