@@ -136,18 +136,19 @@ QDEF:AddIntro(
         player:
             Is the job any bigger than what you've had me doing all this time?
         agent:
-            Not really. What I need you to do is promote some <b>S.T.O.N.K.S.</>.
+            Not really. What I need you to do is promote some <b>M.E.T.A.</>.
         player:
             !dubious
             Bless you?
         agent:
-            That's the name of the product. <b>S.T.O.N.K.S.</>.
-            It stands for "Synthetic Transform Of Neural-Kinesis System".
+            That's the name of the product. <b>M.E.T.A.</>.
+            It stands for "Meritocratic Emulation Totality Apparatus".
         player:
             That's a very...odd naming convention.
         agent:
             But snappy, yes? Really rolls off the tounge, like the word "based" or "cringe".
-            <b>S.T.O.N.K.S.</>.
+            <b>M.E.T.A.</>.
+            I will admit that I didn't came up with it. A talking vroc told me about it in a dream.
         player:
             So do you want me to advertise it to the people during my campaign?
         agent:
@@ -304,7 +305,7 @@ QDEF:AddConvo("tell_giver")
                 agent:
                     !right
                     [p] Yo.
-                    I heard you are selling <b>S.T.O.N.K.S</>.
+                    I heard you are selling <b>M.E.T.A.</>.
                     I would like to purchase a share.
                     I'm sure {giver} won't mind.
             ]],
@@ -560,7 +561,7 @@ QDEF:AddConvo("tell_giver")
                         Well, I mean it's important-
                     agent:
                         What?!
-                        I've got plenty money. I don't need to sell <b>S.T.O.N.K.S</> to get more!
+                        I've got plenty money. I don't need to sell <b>M.E.T.A.</> to get more!
                         No. What I need is a product that can change the world!
                         How am I supposed to do that now that a Heshian owns a majority share?
                         Them owning a majority share means that they have the executive power on this product!
