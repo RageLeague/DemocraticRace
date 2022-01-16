@@ -91,7 +91,7 @@ QDEF:AddConvo("report")
                         !happy
                         Great! I'm gonna go hit the pub on your dime.
                         !salute
-                        I'll be near, if you need another political assasination.
+                        I'll be near, if you need another political assassination.
                     }
                     {not target_killed?
                         Say, have you heard what happened to {target}?
