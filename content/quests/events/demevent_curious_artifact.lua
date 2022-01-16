@@ -115,7 +115,7 @@ FOLLOW_QUEST:AddConvo()
                 And above all else means...what?
             agent:
                 !shrug
-                Above the riff-raff, I suppose. It's eyecatching, if nothing else.
+                Above the riff-raff, I suppose. It's eye catching, if nothing else.
             }
             {intimidating_blaster?
                 It's a small firearm.
