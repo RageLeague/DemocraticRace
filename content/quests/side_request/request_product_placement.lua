@@ -150,6 +150,7 @@ QDEF:AddIntro(
             <b>M.E.T.A.</>.
             I will admit that I didn't came up with it. A talking vroc told me about it in a dream.
         player:
+            Uh huh.
             So do you want me to advertise it to the people during my campaign?
         agent:
             If you find the time, then yes.
