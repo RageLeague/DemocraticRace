@@ -123,11 +123,11 @@ local QDEF = QuestDef.Define
             end
             quest:Complete("punish_foreman")
             -- if quest:IsActive("punish_foreman") then
-                
+
             -- end
         end,
         aspects_changed = function( quest, agent, added, aspect )
-            if added then 
+            if added then
                 -- if is_instance( aspect, Aspect.Intimidated ) then
                 --     quest.param.beat_up = true
                 --     quest:Complete("punish_foreman")
@@ -217,7 +217,7 @@ local QDEF = QuestDef.Define
     id = "await_strike",
     title = "Await the strike",
     desc = "The strike happens {1#relative_time}. {2#agent_list} will be there. Be prepared.",
-    desc_fn = function(quest, str) 
+    desc_fn = function(quest, str)
         return loc.format(str, (quest.param.strike_time or 0) - Now(), quest.param.strike_people or {})
     end,
 }
@@ -242,7 +242,7 @@ local QDEF = QuestDef.Define
     end,
 }
 :AddOpinionEvents{
-    
+
     helped_get_better_rights = {
         delta = OPINION_DELTAS.LIKE,
         txt = "Helped them get better rights",
@@ -267,7 +267,7 @@ QDEF:AddIntro(
             Can you do something about {foreman}?
             Make sure {foreman} stop doing what {foreman.heshe}'s doing to other workers.
     ]],
-    
+
     --on accept
     [[
         player:
@@ -382,6 +382,13 @@ QDEF:AddConvo("tell_news", "worker")
                 Anyway, that's great!
                 Thanks for your help, {player}. I'm truly grateful.
             }
+            {DEMEVENT_STARVING_WORKER_gave_nothing?
+            agent:
+                And I am sorry for calling you a politician with empty promises the other day.
+                It is clear that you are unlike the others. You truly care about the people.
+            player:
+                Don't worry about it. This is what I do.
+            }
         ]],
     }
     :Hub(function(cxt)
@@ -490,7 +497,7 @@ QDEF:AddConvo("take_your_heart", "foreman")
                 Sure.
             * Now you can tell {worker} about the great news!
         ]],
-        
+
         DIALOG_BACK = [[
             player:
                 Never mind.
@@ -504,7 +511,7 @@ QDEF:AddConvo("take_your_heart", "foreman")
             :Dialog("DIALOG_CONFRONT")
             :RequireFreeTimeAction()
             :LoopingFn(function(cxt)
-                
+
                 if not cxt.quest.param.probed_info then
                     cxt:Opt("OPT_PROBE")
                         :Dialog("DIALOG_PROBE")
@@ -570,7 +577,7 @@ QDEF:AddConvo("punish_foreman")
     :Confront(function(cxt)
         if cxt.quest.param.beat_up and not cxt.quest:GetCastMember("foreman"):IsDead()
             and cxt.quest:GetCastMember("foreman"):GetLocation() == cxt.location then
-            
+
             return "STATE_BEAT_UP"
         end
     end)
@@ -745,7 +752,7 @@ QDEF:AddConvo("organize_strike")
     end)
 QDEF:AddConvo("await_strike")
     :TravelConfront("STATE_STRIKE", function(cxt)
-        return TheGame:GetGameState():CanSpawnTravelEvent() and Now() >= (cxt.quest.param.strike_time or 0) 
+        return TheGame:GetGameState():CanSpawnTravelEvent() and Now() >= (cxt.quest.param.strike_time or 0)
     end)
         :Loc{
             DIALOG_NO_STRIKER = [[
@@ -754,7 +761,7 @@ QDEF:AddConvo("await_strike")
                 * Clearly that was a failure.
             ]],
             DIALOG_ONE_STRIKER = [[
-                * You met {agent}, who's supposed to be one of the people that is striking.
+                * [p] You met {agent}, who's supposed to be one of the people that is striking.
                 player:
                     !left
                 agent:
@@ -771,7 +778,7 @@ QDEF:AddConvo("await_strike")
                     I'm now angry.
             ]],
             DIALOG_LOW_STRIKERS = [[
-                * You arrived at the place where people are supposed to strike.
+                * [p] You arrived at the place where people are supposed to strike.
                 * Instead of a protest, you see a few angry workers.
                 player:
                     !left
@@ -893,7 +900,7 @@ QDEF:AddConvo("await_strike")
                         cxt:Quip(agent, "protest_chant")
                     end
                     cxt:Dialog("DIALOG_PROTEST_SUCCESS")
-                    
+
                     successfn()
                 else
                     cxt:Dialog("DIALOG_LOW_STRIKERS")

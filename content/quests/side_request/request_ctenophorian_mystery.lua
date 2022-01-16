@@ -825,7 +825,8 @@ QDEF:AddConvo("rat_out_aftermath")
                 tei:
                     !right
                     !angry_shrug
-                    {giver}! As a priest of the Cult, you should know better!
+                    {giver}! I've heard you have been asking around about Hesh's classification.
+                    You should know this is very heretical! As a priest, you should know this!
                 giver:
                     !bashful
                     I thought the Cult was just saying that because they themselves don't even know what Hesh is!
@@ -841,8 +842,9 @@ QDEF:AddConvo("rat_out_aftermath")
                     That's a promise.
                 tei:
                     !facepalm
-                    Just be glad that it was me who confronted you about this instead of someone else.
-                    I can't promise that anyone else would be as forgiving as me.
+                    Look, you seem like you genuinely don't know, and you seem sincere enough.
+                    I'll let you go this time, but don't do this again, alright?
+                    I can't promise that I will be merciful next time, or anyone else for that matter.
                 giver:
                     !bashful
                     Thank you.

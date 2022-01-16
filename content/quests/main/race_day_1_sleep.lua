@@ -69,56 +69,7 @@ local QDEF = QuestDef.Define
     state = QSTATUS.ACTIVE,
 }
 DemocracyUtil.AddHomeCasts(QDEF)
--- QDEF:AddConvo("meet_advisor", "primary_advisor")
---     :AttractState("STATE_TALK")
---         :Loc{
---             DIALOG_INTRO = [[
---                 player:
---                     !left
---                 agent:
---                     !right
---                     [p] nice work today
---                 player:
---                     thx
---                 agent:
---                     !give
---                     here's your pay.
---                     do your free time or whatever.
---             ]],
---             DIALOG_INTRO_LOW_SUPPORT = [[
---                 player:
---                     !left
---                 agent:
---                     !right
---                     [p] i have low expectations for you, but i was still surprised about how bad you did.
---                     i'm done with you.
---                 player:
---                     oh come on!
---             ]],
---             DIALOG_INTRO_PST = [[
---                 agent:
---                     go to bed when you're ready.
---             ]]
---         }
---         :Fn(function(cxt)
---             if DemocracyUtil.TryMainQuestFn("GetGeneralSupport") >= 10 then
---                 cxt:Dialog("DIALOG_INTRO")
 
---                 local money = DemocracyUtil.TryMainQuestFn("CalculateFunding")
---                 cxt.enc:GainMoney(money)
---                 cxt:Dialog("DIALOG_INTRO_PST")
---                 cxt.quest:Complete("meet_advisor")
---                 cxt.quest:Activate("go_to_sleep")
---                 DemocracyUtil.StartFreeTime()
---             else
---                 cxt:Dialog("DIALOG_INTRO_LOW_SUPPORT")
---                 DemocracyUtil.AddAutofail(cxt, function(cxt)
---                     cxt.quest:Complete("meet_advisor")
---                     cxt.quest:Activate("go_to_sleep")
---                     DemocracyUtil.StartFreeTime()
---                 end)
---             end
---         end)
 QDEF:AddConvo("go_to_sleep", "primary_advisor")
     :Loc{
         OPT_GO_TO_SLEEP = "Go to sleep",

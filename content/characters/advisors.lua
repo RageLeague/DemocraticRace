@@ -54,7 +54,7 @@ local chars =
     {
         base_def = "PRIEST",
         -- bio = "Your first mistake is listening to Benni. Your second mistake is believing in her.",
-        bio = "Benni is different from other kra'deshi. No, it isn't because she has five fingers on each hand, but it is because she can convince you otherwise. Probably.",
+        bio = "Benni is perhaps one of the most level-headed person in the Cult of Hesh. Anyone who knows anything about how the Cult works knows that this is a very low bar.",
         name = "Benni",
         -- title = "Priest",
 

@@ -43,7 +43,7 @@ QDEF:AddConvo()
             ]],
             OPT_PAY = "Pay the court a fine",
             DIALOG_PAY = [[
-                * [p] you paid the court a fine, so that you don't have to serve a sentence.
+                * [p] You paid the court a fine, so that you don't have to serve a sentence.
             ]],
             OPT_CONVINCE = "Convince {agent} that they got the wrong person",
             DIALOG_CONVINCE = [[
