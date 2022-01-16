@@ -59,7 +59,7 @@ QDEF:AddConvo()
                 agent:
                     Uncouthly put, {player}. I assure you, this is a completely safe preventative measure.
                     You may feel some minor aches and I wouldn't reccommend you exert yourself.
-                    But that is just your body crafting it's shield of faith against this heretical poison. 
+                    But that is just your body crafting it's shield of faith against this heretical poison.
                     !hesh_greeting
                     You'll shrug away the pains quickly, and your soul will be prepared for consumption by Hesh, as all who walk in the shallows deserve.
             ]],
@@ -81,7 +81,7 @@ QDEF:AddConvo()
                     "Painless", I believe I can quote you as.
                     "Painless" is not anything close to what that felt like.
                 agent:
-                    !angrypoint
+                    !angry_point
                     Bite your tounge. Whatever you feel now is leagues better than the eternal damnation at the hands of Hesh itelf.
                     It will take it's toll, yes, but your body and soul will be fit for consumption.
                 player:
@@ -141,7 +141,7 @@ QDEF:AddConvo()
                     !question
                     Heretics wouldn't have any reason to destroy it, though.
                 agent:
-                    !angrypoint
+                    !angry_point
                     Someone who questions the Waterlogged Tomes! Have you no shame?
                 player:
                     My shame's perfectly intact, but fine. Don't tell me how it works, then.
@@ -177,7 +177,7 @@ QDEF:AddConvo()
                         I-
                         !sigh
                         I guess you're right. These are the tools of the enemies we're using.
-                        Still, I wish you luck in not being infected. 
+                        Still, I wish you luck in not being infected.
                         !exit
                 }
                 {not asked_info?

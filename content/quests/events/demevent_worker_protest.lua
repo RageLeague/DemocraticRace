@@ -31,9 +31,9 @@ QDEF:AddConvo()
                 worker:
                     !left
                     !angry
-                    Protesting now is the only way you Spark lovers will listen to us. 
+                    Protesting now is the only way you Spark lovers will listen to us.
                 baron:
-                    !angrypoint
+                    !angry_point
                     I am authorized under the Barons to use force to disperse this violent assembly, and I will if I have to!
                     !exit
                 worker:
@@ -135,7 +135,7 @@ QDEF:AddConvo()
                     They're willing to give you something for now, but if you push it you'll just get tossed away with the trash.
                 worker:
                     !crossed
-                    They'd better be willing to give up something. 
+                    They'd better be willing to give up something.
                     Get that dog to sing and we'll hash it out gentle. Otherwise, we didn't come out here for nothing.
                * The workers huddle together, discussing some of the finer points of what they want from this compromise.
             ]],
@@ -246,7 +246,7 @@ QDEF:AddConvo()
                     These workers are trying to start a protest just days before the voting starts.
                     I've tried to talk sense into them, and I'd be willing to listen if they could just take a damn raincheck on this.
                     !shrug
-                    So, I've got nothing. If you can make them shut down for a while, i'd be in your debt. 
+                    So, I've got nothing. If you can make them shut down for a while, i'd be in your debt.
             ]],
             DIALOG_INTRO_NOT_FIRST = [[
                 baron:

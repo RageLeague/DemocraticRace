@@ -320,7 +320,7 @@ QDEF:AddConvo("go_to_game")
                     I need you to stand watch and make sure {challenger} isn't up to any shenanigans.
                 challenger:
                     !left
-                    !angrypoint
+                    !angry_point
                     Shenanigans? Are you implying I'm a cheat?
                 giver:
                     !placate
@@ -383,7 +383,7 @@ QDEF:AddConvo("go_to_game")
                 giver:
                     I win.
                 challenger:
-                    !angrypoint
+                    !angry_point
                     Wait, woah! I know you fudged the scoring bracket somewhere along the lines!
                 giver:
                     !hips
@@ -503,7 +503,7 @@ QDEF:AddConvo("go_to_game")
                 * {giver} steams with anger, but quickly {giver.heshe} regains some composure as {giver.heshe} sits straighter in {giver.hisher} chair.
                 giver:
                     Well, it seems I have been outsmarted...
-                    !angrypoint
+                    !angry_point
                     By a cheater!
                 challenger:
                     Woah, you lost and you know it.

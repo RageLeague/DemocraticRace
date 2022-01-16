@@ -224,7 +224,7 @@ QDEF:AddConvo("dole_out_three")
                         if card:IsSpent() then
                             cxt.player.battler:RemoveCard( card )
                         end
-                        -- Wumpus; Huh. Didn't know Weighted Pick was an option for the code. That shrank a lot of the code bloat that I had...hopefully I keep that in mind when the need arises. 
+                        -- Wumpus; Huh. Didn't know Weighted Pick was an option for the code. That shrank a lot of the code bloat that I had...hopefully I keep that in mind when the need arises.
                         local weight = {
                             STATE_PANHANDLER = 1,
                             STATE_GRATEFUL = 3,
@@ -271,7 +271,7 @@ QDEF:AddConvo("dole_out_three")
             ]],
         }
         :Fn(function(cxt)
-            
+
             cxt:Dialog("DIALOG_PAN_HANDLE")
             table.insert(cxt.quest.param.gifted_people, cxt:GetAgent())
             cxt:Opt("OPT_GIVE")
@@ -336,7 +336,7 @@ QDEF:AddConvo("dole_out_three")
                 player:
                     It makes no sense to have people work, work, work like they do now.
                 agent:
-                    Thank you! 
+                    Thank you!
             ]],
             OPT_DISAGREE_2 = "Tell them you don't agree with the second stance.",
             DIALOG_DISAGREE_2 = [[
@@ -434,7 +434,7 @@ QDEF:AddConvo("dole_out_three")
                 player:
                     How do you think elections are won?
                 agent:
-                    !angrypoint
+                    !angry_point
                     With strong morals and vigor!
                 player:
                     And look at how much the Rise has gotten done with just "strong morals" and "vigor".
@@ -610,7 +610,7 @@ QDEF:AddConvo("dole_out_three", "primary_advisor")
                 It's just that you did suggest this...can't exactly do anything if I don't have the proper funds...
         ]],
         DIALOG_ASK_MONEY_SUCCESS = [[
-            agent:  
+            agent:
                 Hmph. Take a few shills.
                 I expect results, though. You'd better deliver.
         ]],
