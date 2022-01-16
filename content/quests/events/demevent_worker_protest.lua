@@ -126,7 +126,7 @@ QDEF:AddConvo()
             TT_COMPROMISE = "You will have to convince both sides to accept the compromise.",
             DIALOG_COMPROMISE = [[
                 player:
-                    $miscPersausive
+                    $miscPersuasive
                     How about you accept a smaller concession now instead of being blasted away by the Barons?
             ]],
             DIALOG_COMPROMISE_SUCCESS = [[
@@ -300,7 +300,7 @@ QDEF:AddConvo()
                 player:
                     I've been able to talk to them and-
                 baron:
-                    !angryshrug
+                    !angry_shrug
                     So what, they put you up to this?
                     Is this just one of those political appeals you're doing?
                     Forget it! Dealing with them by force is a lot easier than giving them an inch.
