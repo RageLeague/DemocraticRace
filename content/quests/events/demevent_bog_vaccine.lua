@@ -29,7 +29,7 @@ QDEF:AddConvo()
                 agent:
                     A new type of plague has gone around Pearl-on-the-Foam, infecting those who walk through the shallows.
                     But you're in luck! We have prepared a vaccine to this infection!
-                    Simply allow me to give it to you, and I promise you will be painlessly innoculated against this new plague.
+                    Simply allow me to give it to you, and I promise you will be painlessly inoculated against this new plague.
             ]],
             OPT_ASK_INFESTATION = "Ask about the infestation",
             DIALOG_ASK_INFESTATION = [[
@@ -58,7 +58,7 @@ QDEF:AddConvo()
                     So what's in all those vials that you'd be stabbing me with?
                 agent:
                     Uncouthly put, {player}. I assure you, this is a completely safe preventative measure.
-                    You may feel some minor aches and I wouldn't reccommend you exert yourself.
+                    You may feel some minor aches and I wouldn't recommend you exert yourself.
                     But that is just your body crafting it's shield of faith against this heretical poison.
                     !hesh_greeting
                     You'll shrug away the pains quickly, and your soul will be prepared for consumption by Hesh, as all who walk in the shallows deserve.
@@ -82,7 +82,7 @@ QDEF:AddConvo()
                     "Painless" is not anything close to what that felt like.
                 agent:
                     !angry_point
-                    Bite your tounge. Whatever you feel now is leagues better than the eternal damnation at the hands of Hesh itelf.
+                    Bite your tongue. Whatever you feel now is leagues better than the eternal damnation at the hands of Hesh itself.
                     It will take it's toll, yes, but your body and soul will be fit for consumption.
                 player:
                     And how long will I be paying the fare for this mistake?
@@ -90,7 +90,7 @@ QDEF:AddConvo()
                     !hesh_greeting
                     As long as you keep fighting it.
                     !exit
-                * You roll your sleeve back up and trudge on, feeling a noticable limp, but also a notable strength you can't quite place.
+                * You roll your sleeve back up and trudge on, feeling a noticeable limp, but also a notable strength you can't quite place.
             ]],
             OPT_CONVINCE = "Question {agent} about the source of the vaccine",
             DIALOG_CONVINCE = [[
@@ -109,7 +109,7 @@ QDEF:AddConvo()
                     !question
                     Supplied from where?
                 agent:
-                    The Spark Barons had prepared an innoculative agent against it, although they hadn't made it particularly consumer friendly.
+                    The Spark Barons had prepared an inoculative agent against it, although they hadn't made it particularly consumer friendly.
                     !over_there
                     But we had no choice. We had to protect the pious masses, so we "acquired" some and helped as many as we could.
                 player:
@@ -171,7 +171,7 @@ QDEF:AddConvo()
                     agent:
                         It's out of necces-
                     player:
-                        Neccessity to keep the voter base alive. Neccessity to keep <i>your<\> voter base alive.
+                        Necessity to keep the voter base alive. Necessity to keep <i>your<\> voter base alive.
                     agent:
                         !point
                         I-
