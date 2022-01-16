@@ -4,7 +4,7 @@ local QDEF = QuestDef.Define
     qtype = QTYPE.EVENT,
     act_filter = DemocracyUtil.DemocracyActFilter,
     spawn_event_mask = QEVENT_TRIGGER.TRAVEL,
-    on_init = function(quest) 
+    on_init = function(quest)
         quest.param.wants_job = math.random() > .5
         quest.param.request_quest, quest.param.traced_q = QuestUtil.SpawnInactiveQuest("DEMSIDE_REVENGE_STARVING_WORKER",
             {cast = {worker = quest:GetCastMember("worker"), foreman = quest:GetCastMember("foreman")}})
@@ -64,11 +64,11 @@ local QDEF = QuestDef.Define
 -- :AddDefCastSpawn("worker", {"LABORER", "HEAVY_LABORER", "RISE_REBEL"})
 -- :AddDefCast("foreman", {"FOREMAN", "SPARK_BARON_TASKMASTER", "ADMIRALTY_CLERK"})
 :AddOpinionEvents{
-    gave_little =  
+    gave_little =
     {
-        delta = 
+        delta =
         {
-            relationship_delta = 
+            relationship_delta =
             {
                 [RELATIONSHIP.LOVED] = RELATIONSHIP.LIKED,
                 [RELATIONSHIP.NEUTRAL] = RELATIONSHIP.LIKED,
@@ -79,12 +79,12 @@ local QDEF = QuestDef.Define
 
         txt = "Gave spare change when they asked for help",
     },
-    gave_big =  
+    gave_big =
     {
         delta = OPINION_DELTAS.MAJOR_GOOD,
         txt = "Gave a lot of money when they asked for help",
     },
-    gave_nothing =  
+    gave_nothing =
     {
         delta = OPINION_DELTAS.TO_DISLIKED,
         txt = "Gave nothing when they asked for help",
@@ -137,7 +137,7 @@ QDEF:AddConvo()
             OPT_OFFER_HELP = "Offer to deal with the foreman",
             DIALOG_OFFER_HELP = [[
                 player:
-                    [p] As a politician, I can't just stand by and see the people suffer.
+                    As a politician, I can't just stand by and see the people suffer.
                     I'll help you.
                 agent:
                     Really?
@@ -184,20 +184,20 @@ QDEF:AddConvo()
             DIALOG_OFFER_JOB = [[
                 player:
                 {not offered_to_help?
-                    [p] as a politician, i don't advocate for giving people free stuff.
-                    but! i can hire you as a bodyguard, and that wouldn't be a problem.
+                    As a politician, I don't advocate for giving people free money.
+                    But! I can hire you as a bodyguard, and you would be working legitimately.
                 }
                 {offered_to_help?
-                    [p] i will help you with your situation later.
-                    right now, i can help you.
-                    by hiring you.
+                    I will help you with your situation later.
+                    But right now, I can help you by hiring you as a bodyguard.
                 }
             ]],
             DIALOG_WANT_JOB = [[
                 agent:
-                    [p] sure, i guess
+                    Well, it beats walking around asking for people's money.
+                    I agree with your proposal.
             ]],
-            
+
             OPT_HIRE =  "Hire {agent}",
             OPT_NO_HIRE = "Don't hire {agent}",
             DIALOG_TAKE_JOB = [[
@@ -214,29 +214,51 @@ QDEF:AddConvo()
                     $angryHostile
                     Do I look like a grifter to you? I'm not risking my neck for a few measly shills.
             ]],
-            
+
             OPT_SAY_NO = "Don't give {agent} anything",
-            
+
             DIALOG_SAY_NO = [[
                 player:
                 {not offered_to_help?
-                    [p] look, i'm not a charity.
+                    Look, I can't just go around giving people free stuff.
+                    If I give everyone things for free, then I would be draining my coffers at an extremely rapid rate.
                 agent:
-                    wow. really?
-                    you suck.
+                    !spit
+                    Pfft. All you care about is your "coffers".
+                    What other people can do for you rather than what you can do for Havaria.
+                    It's so hard to find someone who truly cares about others.
+                player:
+                    !dubious
+                    Are you new in Havaria or something?
+                agent:
+                    !angry_point
+                    I will remember this the next time we meet.
+                    !exit
+                * You might just have made an enemy who you really don't want to be with.
+                player:
+                    !shrug
+                * What are the odds of that, though?
                 }
                 {offered_to_help?
-                    [p] i'll help what i can with your foreman problem, but i'm not a charity.
+                    I will help you with the foreman problem, but I am not a charity.
+                    I can't just go around and give people free stuff.
                 agent:
-                    thanks for you effort, but that doesn't help me right now.
-                    have it your way, i guess.
+                    I will believe your true intention once you actually deal with the foreman.
+                    !spit
+                    Right now, you are just a stingy politician with empty promises.
+                    Good luck with your quest to take down the foreman! We will meet again soon.
+                    !exit
+                player:
+                    I am already helping you! Beggars can't be choosers, you know!
+                * Not exactly something you should say to make a beggar like you.
+                * But still, you can help this person out, if you still want to do that.
                 }
-                
+
             ]],
         }
         :SetLooping()
         :Fn(function(cxt)
-            
+
             cxt.quest:Complete()
             if cxt:FirstLoop() then
                 cxt.quest:GetCastMember("worker"):MoveToLocation(cxt.location)
@@ -264,10 +286,10 @@ QDEF:AddConvo()
                                 DemocracyUtil.TryMainQuestFn("UpdateStance", "LABOR_LAW", 1, false, true)
                                 cxt.quest.param.offered_to_help = true
                             end)
-                            
+
                         end)
                 end
-                    
+
                     -- spawn a side quest or something
             end
 
@@ -276,7 +298,7 @@ QDEF:AddConvo()
                 :DeliverMoney(SMALL_AMT, {no_scale = true})
                 :ReceiveOpinion(cxt.quest:GetQuestDef():GetOpinionEvent("gave_little"))
                 :Travel()
-            
+
             cxt:Opt("OPT_GIVE_A_LOT")
                 :Dialog("DIALOG_GIVE_A_LOT")
                 :UpdatePoliticalStance("WELFARE", 1, false, true)
@@ -291,7 +313,7 @@ QDEF:AddConvo()
                     :Dialog("DIALOG_OFFER_JOB")
                     :ReqRelationship( RELATIONSHIP.NEUTRAL )
                     :UpdatePoliticalStance("WELFARE", -1, false, true)
-                    :Fn(function() 
+                    :Fn(function()
                         if wants_job then
                             cxt:Dialog("DIALOG_WANT_JOB")
                             cxt:Opt("OPT_HIRE")
