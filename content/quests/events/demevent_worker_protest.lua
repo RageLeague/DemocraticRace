@@ -349,7 +349,6 @@ QDEF:AddConvo()
                     subject = cxt.quest.param.workers[1],
                     on_success = function()
                         cxt:Dialog("DIALOG_THREATEN_SUCCESS")
-                        cxt.quest:Complete("deal_with_caffy")
                         cxt.quest.param.workers[1]:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("get_better_conditions"))
                         StateGraphUtil.AddLeaveLocation(cxt)
                     end,
