@@ -62,13 +62,13 @@ QDEF:AddConvo("report")
                     hunter:
                         !right
                         !injured
-                        So {target} is...just a smidge out of my paygrade, if I'm being honest.
+                        So {target} is...just a smidge out of my pay grade, if I'm being honest.
                     player:
                         Just a bit. Is {target} injured?
                     hunter:
                         Not even a bit. I was squashed like a Flead.
                         Look, I got some experience. I'm fine without the money, just going to go...go lay low.
-                        !injuredpalm
+                        !injured_palm
                         Oh the blood loss is not helping my head.
                     * You take the money and walk before {hunter} can take the offer back.
                 }
