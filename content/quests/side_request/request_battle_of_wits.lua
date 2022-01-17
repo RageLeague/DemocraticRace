@@ -367,7 +367,7 @@ QDEF:AddConvo("go_to_game")
     :State("STATE_WIN")
         :Loc{
             DIALOG_INTRO = [[
-                * The game slouches on, and your crude understanding of the rules, along with just eyeing {challenger.hisher} wallet tells you that {challenger.heshe}'s losing desparately.
+                * The game slouches on, and your crude understanding of the rules, along with just eyeing {challenger.hisher} wallet tells you that {challenger.heshe}'s losing desperately.
                 challenger:
                     !left
                     I double the ante.
@@ -378,13 +378,13 @@ QDEF:AddConvo("go_to_game")
                     !scared
                     Wait, what?!
                 giver:
-                    !coinflip
+                    !coin_toss
                 * A coin flips through the air, and {challenger} looks at with fear one can only muster when knee deep into a game.
                 giver:
                     I win.
                 challenger:
                     !angry_point
-                    Wait, woah! I know you fudged the scoring bracket somewhere along the lines!
+                    Wait, whoa! I know you fudged the scoring bracket somewhere along the lines!
                 giver:
                     !hips
                     You can hand-inspect it, if you'd like. I made no such adjustments.
@@ -496,7 +496,7 @@ QDEF:AddConvo("go_to_game")
                     All in.
                 challenger:
                     Your loss.
-                    !coinflip
+                    !coin_toss
                 * In a matter of seconds after the coin lands on the table, a bellow of anger erupts from {giver}.
                 challenger:
                     Hey, hey! I win the whole kit!
@@ -506,7 +506,7 @@ QDEF:AddConvo("go_to_game")
                     !angry_point
                     By a cheater!
                 challenger:
-                    Woah, you lost and you know it.
+                    Whoa, you lost and you know it.
                 giver:
                     Silence, lesser player. You should have lost, fair and square, it is only natural to assume you are a cheat.
                     {player}. Please, <i>escort</> {challenger} away from the table.
