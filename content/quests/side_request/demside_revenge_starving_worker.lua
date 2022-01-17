@@ -61,8 +61,8 @@ local QDEF = QuestDef.Define
     end,
     -- optional = true,
     on_assign = function(quest,location)
-        local old_postition = quest:GetCastMember("foreman"):GetBrain():GetWorkPosition()
-        if location:GetWorkPosition("foreman") and location:GetWorkPosition("foreman") ~= old_postition then
+        local old_position = quest:GetCastMember("foreman"):GetBrain():GetWorkPosition()
+        if location:GetWorkPosition("foreman") and location:GetWorkPosition("foreman") ~= old_position then
             AgentUtil.TakeJob(quest:GetCastMember("foreman"), location, "foreman")
         end
     end,
@@ -271,7 +271,7 @@ QDEF:AddIntro(
     --on accept
     [[
         player:
-            I don't like it when foremans abuse their power and oppress the working class.
+            I don't like it when foremen abuse their power and oppress the working class.
             I'll see what I can do.
         agent:
             Thank you.
@@ -451,7 +451,7 @@ QDEF:AddConvo("take_your_heart", "foreman")
             agent:
                 [p] hey! are you trying to get me say something incriminating?
                 get out of my face!
-            * welp, you failed on this front. maybe try some other ways
+            * Whelp, you failed on this front. maybe try some other ways
         ]],
         OPT_DEMAND = "Ask {agent} to change {agent.hisher} ways",
         TT_INFO_PROBED = "<#BONUS>Info probed. -25% demand.</>",
