@@ -59,7 +59,7 @@ local chars =
         -- title = "Priest",
 
         loved_bio = "Facts don't care about your feelings, but Benni does.",
-        hated_bio = "Benni's facts and logic cannot predict your shear incompetence. Then again, her facts and logic works better as hindsights.",
+        hated_bio = "Benni's facts and logic cannot predict your shear incompetence. Then again, her facts and logic works better as hindsight.",
 
         tags = {"advisor", "advisor_manipulate"},
         gender = "FEMALE",
@@ -169,37 +169,6 @@ local chars =
                         self:ChooseCard( self.fragile_ego )
                     end
                 end,
-                -- Cycle = function( self, turns )
-                --     -- Starting turn 3, "Buff" every 3 turns.
-                --     if turns % 3 == 0 then
-                --         self:ChooseCard( self.brag )
-                --     end
-
-                --     -- Double attack every 2 rounds; Single attack otherwise.
-                --     if self.difficulty >= 4 and turns % 2 == 0 then
-                --         self:ChooseGrowingNumbers( 3, -1 )
-                --     elseif turns % 2 == 0 then
-                --         self:ChooseGrowingNumbers( 2, 1 )
-                --     else
-                --         self:ChooseGrowingNumbers( 1, 3 )
-                --     end
-
-                --     -- No filter every 5 turns if it doesn't exist.
-                --     -- NOTE: Added last so it doesn't immediately apply to current attacks
-                --     if (turns - 1) % 5 == 0 and not self.negotiator:FindModifier( "NO_FILTER" ) then
-                --         self:ChooseCard( self.no_filter )
-                --     end
-
-                --     -- Brag every 5 turns, starting turn 2, if doesn't exist.
-                --     if self.BRAG > 0 then
-                --         if (turns + 3) % 5 == 0 and not self.negotiator:FindModifier( "BRAG" ) then
-                --             self:ChooseCard( self.brag )
-                --         end
-                --     end
-                --     if turns % 3 == 0 and self.negotiator:GetModifierStacks( "FRAGILE_EGO" ) == 0 then
-                --         self:ChooseCard( self.fragile_ego )
-                --     end
-                -- end,
             }
         --First turn, then every 4 turns code without it already existing code.
         --if (turns - 1) % 4 == 0 and not self.negotiator:FindModifier( "brag" ) then
