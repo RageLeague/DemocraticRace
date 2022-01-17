@@ -157,18 +157,18 @@ local MODIFIERS =
                 --local txt = loc.format( "{1#agent} is not ready to fight!", self.ally_agent )
                 widget:PostPortrait( self.target_agent )
             end
-            local resultstring = ""
+            local result_string = ""
             if self.target_agent then
                 if self.key_maps[self.target_agent:GetRelationship()] then
-                    resultstring = self.def:GetLocalizedString(self.key_maps[self.target_agent:GetRelationship()])
+                    result_string = self.def:GetLocalizedString(self.key_maps[self.target_agent:GetRelationship()])
                 end
                 if self.target_agent:HasAspect("bribed") then
-                    resultstring = resultstring .. "\n" .. loc.format(self.def:GetLocalizedString("BONUS_BRIBED"), self.target_agent, self.bribe_delta)
+                    result_string = result_string .. "\n" .. loc.format(self.def:GetLocalizedString("BONUS_BRIBED"), self.target_agent, self.bribe_delta)
                 end
             end
-            resultstring = resultstring .. "\n\n" .. fmt_str
-            print(resultstring)
-            return loc.format(resultstring, self.target_agent and self.target_agent:LocTable(),
+            result_string = result_string .. "\n\n" .. fmt_str
+            print(result_string)
+            return loc.format(result_string, self.target_agent and self.target_agent:LocTable(),
                 self.stacks, self.delta_max_resolve[self.target_agent:GetRelationship()], self.annoyed_threshold or 12)
             -- else
             --     return loc.format(fmt_str, self.target_agent and self.target_agent:LocTable(), self.stacks)
@@ -2232,7 +2232,7 @@ local MODIFIERS =
             end,
         },
     },
-    -- This is apparently the literall meaning for "Ctenophora". Makes perfect sense.
+    -- This is apparently the literal meaning for "Ctenophora". Makes perfect sense.
     COMB_BEARER =
     {
         name = "Comb Bearer",
@@ -2301,7 +2301,7 @@ local MODIFIERS =
             end,
         },
     },
-    -- This is apparently the literall meaning for "Cnidaria". Also makes perfect sense.
+    -- This is apparently the literal meaning for "Cnidaria". Also makes perfect sense.
     STINGING_NETTLE =
     {
         name = "Stinging Nettle",
