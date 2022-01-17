@@ -98,7 +98,7 @@ Convo("DEM_CONVINCE_FIRE")
         ]],
         REQ_HIGH_RENOWN = "{agent} is in no position to fire {1#agent}.",
 
-        SIT_MOD_PRESTIGEOUS = "{1#agent} is {2:of little importance|of some importance|of high importance|of very high repute|known by all}.",
+        SIT_MOD_PRESTIGIOUS = "{1#agent} is {2:of little importance|of some importance|of high importance|of very high repute|known by all}.",
         SIT_MOD_TRIED_FIRE_BEFORE = "You already tried to fire someone before.",
         SIT_MOD_SAME_FACTION = "{1#agent} has support from the faction at this location.",
         SIT_MOD_FRIENDLY = "{1#agent} is a friend of {agent}.",
@@ -132,7 +132,7 @@ Convo("DEM_CONVINCE_FIRE")
                         end
                         for i, agent in ipairs(fire_targets) do
                             local sit_mod = {}
-                            table.insert(sit_mod, {value = 5 * (agent:GetRenown() - 1), text = loc.format(cxt:GetLocString("SIT_MOD_PRESTIGEOUS", agent, agent:GetRenown()))})
+                            table.insert(sit_mod, {value = 5 * (agent:GetRenown() - 1), text = loc.format(cxt:GetLocString("SIT_MOD_PRESTIGIOUS", agent, agent:GetRenown()))})
 
                             if who:HasMemory("CONVINCED_FIRE_EMPLOYEE") then
                                 table.insert(sit_mod, {value = 10, text = cxt:GetLocString("SIT_MOD_TRIED_FIRE_BEFORE")})
