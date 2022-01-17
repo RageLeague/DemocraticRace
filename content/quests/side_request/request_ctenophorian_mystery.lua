@@ -259,7 +259,7 @@ QDEF:AddConvo("ask_info")
             DIALOG_ENDURE_SUCCESS = [[
                 agent:
                     But, I say, what of the lumin that Hesh supposedly shed in it's birthing?
-                    Well, the soulution was obvious once I looked at it like that.
+                    Well, the solution was obvious once I looked at it like that.
                     In conclusion...
             ]],
             DIALOG_ENDURE_FAILURE = [[
@@ -268,7 +268,7 @@ QDEF:AddConvo("ask_info")
             ]],
             DIALOG_ENDURE_FAILURE_2 = [[
                 * Your hazy slumber is plagued with the occasional vision of creatures from the abyss
-                * Before whatever part of you still congnizant could process it, you slowly wake up to more droning.
+                * Before whatever part of you still cognizant could process it, you slowly wake up to more droning.
             ]],
             DIALOG_ENDURE_FAILURE_3 = [[
                 agent:
@@ -482,7 +482,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
     :State("START")
         :Loc{
             DIALOG_INTRO = [[
-                * Sleep sucks you into it's grasp, and for a moment you feel a weightlessness you've grown accustomed to as the day's stress dissapates.
+                * Sleep sucks you into it's grasp, and for a moment you feel a weightlessness you've grown accustomed to as the day's stress dissipates.
                 * You stumble into a dream, but this dream...it's different.
                 * Suddenly, you're up to your ankles in saltwater. The water rises, reaching your knees, then your neck.
                 * Finally, a percussive force of seawater envelops you, and for a moment the ocean becomes the only thing you can feel.
@@ -501,7 +501,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
             DIALOG_UNDERSTAND_SUCCESS = [[
                 * Finally, it closes it's gaping jaw. You step out of your trance and stare at what you've deciphered.
                 * It changes its form based on what you believe Hesh looks like at the moment.
-                * Then it occured to you: no one has actually seen Hesh personally, to your knowledge.
+                * Then it occurred to you: no one has actually seen Hesh personally, to your knowledge.
                 * How come everyone are confident about what Hesh looks like? And how come you can see Hesh's form?
                 * You realized that reality is in the eye of the beholder, and whatever you believe is real, is real.
                 * And you accept this, just as much as you accept the saltwater around you, which drains as your fascination dwindles as well.
