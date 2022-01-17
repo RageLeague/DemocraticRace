@@ -923,7 +923,7 @@ FOLLOW_UP:AddConvo("comfort", "giver")
                     -- giver will start at low resolve, and you must bring their resolve to full to actually win the negotiation.
                     -- Winning negotiation without bringing up resolve, like using damage or oolo's requisition, has bad effect.
 
-                    -- Opponent will have attacks targetting their own core.
+                    -- Opponent will have attacks targeting their own core.
                     -- Opponent will be given special bounties that will increase resolve or give composure.
                     -- You can also gift composure to opponent core via special action.
                     on_success = function(cxt, minigame)
