@@ -78,20 +78,20 @@ lines:
     player:
       Well... maybe?
     agent:
-      Well, i know this little bar where you can find the best view of Havaria.
+      Well, I know this little bar where you can find the best view of Havaria.
       Swing by the Grog n' Dog when you get chance.
       They sell amazing drinks, and people from all factions visit there, incase you need some more connections.
       You should definitely go check it out!
-#I'm assuming just attaching this little thing at the end will check for the character. pardon me while i make the common smith conversation.
+#I'm assuming just attaching this little thing at the end will check for the character. pardon me while I make the common smith conversation.
 - tags: [unlock_location, unlock_grog_n_dog, sal]
   dialog:
   - |
     agent:
       Ever enjoy an ice cold cup of plonk with a nice view of the land?
     player:
-      Best view i've ever had was out of a large lumin pipe onto the sea full of flotsam.
+      Best view I've ever had was out of a large lumin pipe onto the sea full of flotsam.
     agent:
-      Well, i know this little bar where you can find the best view of Havaria.
+      Well, I know this little bar where you can find the best view of Havaria.
       Swing by the Grog n' Dog when you get chance.
       They sell amazing drinks, and people from all factions visit there, incase you need some more connections.
       You should definitely go check it out!
@@ -158,7 +158,7 @@ lines:
     player:
       !thought
       I don't know. Their boons are kind of useless.
-      I mean, when am I ever going to use Authroization?
+      I mean, when am I ever going to use Authorization?
       Every time I need Admiralty help, they are never there.
       And when I run into trouble with the Admiralty, I can't even use it.
     agent:

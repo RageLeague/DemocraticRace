@@ -131,11 +131,11 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     Contract killing, eh?
                     I used to do that for a living. Of course, that was before I became a politician.
                     Anyway, you wanna dance? Let's dance.
-                * Just as you prepare your weapon, something just occured to you.
+                * Just as you prepare your weapon, something just occurred to you.
                 player:
                     !scared
                 * You have fought very few, if any, battle since you decide to run for president.
-                * This assasain might've been easy before, but that was before you hung up your weapons.
+                * This assassin might've been easy before, but that was before you hung up your weapons.
                 * You need backup. Luckily, you can, but it'll take time.
                 player:
                     !point
@@ -150,7 +150,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                 "After calling for help, keep {agent.himher} occupied through negotiation or combat until help arrives!",
 
             GOAL_CALL_HELP = "(1/3) Call for help",
-            GOAL_MAINTAIN_CONNECTION = "(2/3) Describe your current situation to the dispacher ({1}/{2})",
+            GOAL_MAINTAIN_CONNECTION = "(2/3) Describe your current situation to the dispatcher ({1}/{2})",
             GOAL_AWAIT_RESCUE = "(3/3) Await rescue (Negotiate for {1} {1*turn|turns} or battle for {2} {2*turn|turns})",
 
             DIALOG_HELP_ARRIVE = [[

@@ -26,7 +26,7 @@ the_election:
   title: The Election
   trigger: Election|the election
   body: |
-    A solution as part of the truce deal. A ruling president will be democratically elected by the people who will rule over Havaria. Theroretically, the elected leader will please most people, as they represents the interest of all these people.
+    A solution as part of the truce deal. A ruling president will be democratically elected by the people who will rule over Havaria. Theoretically, the elected leader will please most people, as they represents the interest of all these people.
 
 the_truce_deal:
   title: The Truce Deal

@@ -215,7 +215,7 @@ QDEF:AddConvo("win_argument")
             WORSHIPPER_BAD_OPINION = [[
                 !hesh_greeting
                 All shall tremble before the mighty Hesh!
-                Believe in Hesh, and your life will be happy and propserous!
+                Believe in Hesh, and your life will be happy and prosperous!
                 Disregard Hesh, and your life will be filled with misery!
                 We must devote every hour of our life to Hesh!
                 All heretics must be executed!

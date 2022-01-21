@@ -217,16 +217,16 @@ QDEF:AddConvo("go_to_interview")
                 primary_advisor:
                     !right
                     Alright {player}, tonight is big, so let's run through what you've got really quick.
-                    Have you got you're prepared anwsers?
+                    Have you got you're prepared answers?
                 player:
                     My what?
                 primary_advisor:
-                    Okay, no anwsers prepared...how about a teleprompter?
+                    Okay, no answers prepared...how about a teleprompter?
                 player:
                     I have integrity, my dear {primary_advisor}!
                 primary_advisor:
                     Yeah well integrity isn't going to get you through this in one piece.
-                    For Hesh's sake, did you even bring a breathmint?
+                    For Hesh's sake, did you even bring a breath mint?
                 player:
                     !crossed
                     Okay now that's just insulting.
@@ -235,7 +235,7 @@ QDEF:AddConvo("go_to_interview")
                     Think about it. You're no longer a passer-by with a big mouth and big opinions.
                     This ain't little league anymore. Many people from all sides are watching your interview, eager to hear if you are a capable candidate.
                 player:
-                    !suprised
+                    !surprised
                     Really?
                 primary_advisor:
                     !facepalm
@@ -367,7 +367,7 @@ QDEF:AddConvo("do_interview")
             ]],
             DIALOG_INTERVIEW_FAIL = [[
                 player:
-                    [p] i said something embarrassing and outrageous in front of everyone!
+                    [p] I said something embarrassing and outrageous in front of everyone!
                 * awkward silence.
                 * oh no.
                 * this embarrassment is going to cost you.
@@ -524,7 +524,7 @@ QDEF:AddConvo("do_interview")
 --                     im impressed by your work today.
 --                 }
 --                 {bad_interview?
---                     [p] i'm a bit disappointed by you.
+--                     [p] I'm a bit disappointed by you.
 --                     i can't believe you throw away a good opportunity like that.
 --                 }
 --                 {not (good_interview or bad_interview)?

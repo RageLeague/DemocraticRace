@@ -3,7 +3,7 @@ local QDEF = QuestDef.Define
     qtype = QTYPE.EVENT,
     act_filter = DemocracyUtil.DemocracyActFilter,
     spawn_event_mask = QEVENT_TRIGGER.TRAVEL,
-    -- precondition = function(quest) 
+    -- precondition = function(quest)
     --     return TheGame:GetGameState():GetCaravan():GetMoney() >= MANIFESTO_COST
     -- end,
     on_init = function(quest)
@@ -21,7 +21,7 @@ local QDEF = QuestDef.Define
         -- but it is not saved, so it will not be true upon load
         quest.did_not_save_scum = true
         -- return true
-    end, 
+    end,
     on_destroy = function(quest)
         if quest:GetCastMember("dealer"):IsInPlayerParty() then
             quest:GetCastMember("dealer"):Dismiss()
@@ -49,7 +49,7 @@ local QDEF = QuestDef.Define
     state = QSTATUS.ACTIVE,
     on_activate = function(quest)
         quest:SetHideInOverlay(true)
-    end,    
+    end,
 }
 :AddObjective{
     id = "escort",
@@ -59,13 +59,13 @@ local QDEF = QuestDef.Define
     on_activate = function(quest)
         quest:SetHideInOverlay(false)
         quest:GetCastMember("dealer"):Recruit(PARTY_MEMBER_TYPE.CAPTIVE)
-        
+
     end,
     mark = {"station"},
-    
+
 }
 :AddOpinionEvents{
-    
+
     arrested_mettle_dealer = {
         delta = OPINION_DELTAS.LIKE,
         txt = "Help them arrest a notorious mettle dealer",
@@ -245,7 +245,7 @@ QDEF:AddConvo("intro")
                     What, do you think I'm a charity? Giving away such a great substance for free?
                 player:
                     Uhh...
-                * You are not sure how to answer, considering that you know {dealer.himher} from another life who gived you mettle for free.
+                * You are not sure how to answer, considering that you know {dealer.himher} from another life who gave you mettle for free.
                 }
                 {not did_not_save_scum?
                     What, just because you tried to time travel, you think my price will change?
@@ -253,7 +253,7 @@ QDEF:AddConvo("intro")
                     Uhh...
                 * Oof, you got called out.
                 }
-                    
+
                 *** You asked for mettle, but {dealer} asked for you money.
             ]],
             OPT_HAGGLE = "Haggle for the price",
@@ -296,7 +296,7 @@ QDEF:AddConvo("intro")
                     Excellent!
                     As promised, here's the mettle. See if you like it.
             ]],
-            
+
             OPT_REJECT = "Reject mettle",
             DIALOG_REJECT = [[
                 player:
@@ -406,7 +406,7 @@ QDEF:AddConvo("intro")
                 :ReqCondition(DemocracyUtil.LocationUnlocked("ADMIRALTY_BARRACKS"), "REQ_KNOW_HQ")
                 :Dialog("DIALOG_ARREST")
                 :Battle{
-                    on_win = function(cxt) 
+                    on_win = function(cxt)
                         cxt:Dialog("DIALOG_ARREST_WIN")
                         if cxt:GetAgent():IsDead() then
                             cxt.quest:Complete()

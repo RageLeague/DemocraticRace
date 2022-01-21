@@ -641,9 +641,6 @@ QDEF:AddConvo("commission")
                     end
                 end
 
-
-                -- DBG(cxt.enc.scratch.demand_list)
-                -- cxt.enc.scratch.testlol = true
                 if IsPotentiallyArtist(who) then
                     cxt.quest.param.demand_list = cxt.quest.param.artist_demands[who:GetID()].demand_list
                     cxt:Dialog("DIALOG_ASK_COMMISSION")
@@ -777,7 +774,7 @@ QDEF:AddConvo("commission")
             cxt:Question("OPT_HINT", "DIALOG_HINT")
 
             local recorded_cards = {}
-            -- yeah havent figured out what to do with it.
+
             local function ProcessFn(cxt, minigame)
                 local stacks = minigame:GetPlayerNegotiator():GetModifierStacks("TIME_CONSTRAINT")
                 cxt.quest.param.free_time_actions = stacks

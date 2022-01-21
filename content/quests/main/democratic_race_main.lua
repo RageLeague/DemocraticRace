@@ -70,7 +70,7 @@ local DEATH_DELTA = -10
 local ISOLATED_DEATH_DELTA = -2
 
 -- Determines the support change if you didn't kill someone, but you're an accomplice
--- or someone dies from neglegience
+-- or someone dies from negligence
 local ACCOMPLICE_KILLING_DELTA = -5
 local QDEF = QuestDef.Define
 {
@@ -725,7 +725,7 @@ local QDEF = QuestDef.Define
     GetSupportForAgent = function(quest, agent)
         return quest:DefFn("GetCompoundSupport", agent:GetFactionID(), agent:GetRenown() or 1)
     end,
-    -- At certain points in the story, random peope dislikes you for no reason.
+    -- At certain points in the story, random people dislikes you for no reason.
     -- call this function to do so.
     DoRandomOpposition = function(quest, num_to_do)
         num_to_do = num_to_do or 1

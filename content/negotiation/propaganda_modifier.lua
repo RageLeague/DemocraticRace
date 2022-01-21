@@ -7,7 +7,7 @@ local BASE_HANDLERS = {
 }
 
 local FEATURES = {
-    PROP_PO_MEDIOCRE = 
+    PROP_PO_MEDIOCRE =
     {
         name = "Mediocre",
         desc = "This argument has no special effects.",
@@ -45,8 +45,8 @@ local FEATURES = {
     PROP_PO_THOUGHT_PROVOKING =
     {
         name = "Thought-Provoking",
-        desc = "When a manipulate card is played by this argument, {INCEPT} 1 Doubt, because Klei forgots to nil check.",
-        -- desc = "When a manipulate card is played by this argument, {INCEPT} 1 {DOUBT}.",
+        -- desc = "When a manipulate card is played by this argument, {INCEPT} 1 Doubt. (You don't have an explanation for Doubt here, because Klei forgot to nil check)",
+        desc = "When a manipulate card is played by this argument, {INCEPT} 1 {DOUBT}.",
         event_handlers = {
             [ EVENT.POST_RESOLVE ] = function(self, minigame, card)
                 print("Compare source...")
@@ -67,7 +67,7 @@ end
 Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
     name = "Propaganda Poster",
     --Wumpus; I saw the issue to clarify the argument's description. What's commented is the old description. I don't know if it's clearer, but it's more concise at least.
-    desc = "{{1}}, {IMPRINT}\nAt the start of your turn, this argument plays {2} cards in this list, in order.\nWhen it plays all cards in the list, remove a random card from the list and restart the order.\nIf there are no more cards in this list when it tries to play a card, remove this argument.", 
+    desc = "{{1}}, {IMPRINT}\nAt the start of your turn, this argument plays {2} cards in this list, in order.\nWhen it plays all cards in the list, remove a random card from the list and restart the order.\nIf there are no more cards in this list when it tries to play a card, remove this argument.",
     --desc = "{{1}}, {IMPRINT}\nAt the beginning of each turn, play {2} cards from the imprinted cards in order.\nIf it reaches the end of the list and a card is to be played, remove a random card from the imprinted list and restart from the beginning.\nIf this argument tries to play a card, but no card remains on the imprinted list, remove this argument.",
     alt_desc = "Imprinted cards:\n{1}",
     desc_fn = function( self, fmt_str, minigame, widget )
@@ -110,7 +110,7 @@ Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
             return
         end
         self.pointer = self.pointer or 1
-        
+
         -- play card
         local card_id = self.imprints[self.pointer]
         if card_id then
@@ -134,10 +134,10 @@ Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
             -- self.engine:DealCard( card )
             table.insert(self.cards_played, card)
         end
-        
+
         -- advance tracker
         self.pointer = self.pointer + 1
-        
+
         if self.pointer > #self.imprints then
             local to_remove = math.random(1, #self.imprints)
             table.remove(self.imprints, to_remove)
@@ -227,14 +227,14 @@ local GENERAL_CARD = {
     "seeds_of_doubt",
     "improvise_vulnerability",
     "seeds_of_doubt",
-    
+
     "drain_resolve",
     "instigate",
     "insistence",
     "goon",
     "boiler",
     "hot_air",
-    
+
 }
 local GENERAL_GOOD_CARD = {
     "heated",
@@ -251,7 +251,7 @@ local SYNERGY_CARDS = {
             "fast_talk",
         },
         basics_synergy = {
-            
+
             "improvise_diplomacy",
             "inspiration",
         },
@@ -260,7 +260,7 @@ local SYNERGY_CARDS = {
             "compliment",
         },
         drafts = {
-            
+
             "final_favor",
             "praise",
             "decency",
@@ -284,7 +284,7 @@ local SYNERGY_CARDS = {
         basics = {
             "threaten",
             "bully",
-            
+
         },
         basics_synergy = {
             "improvise_hostile",
@@ -318,7 +318,7 @@ local SYNERGY_CARDS = {
             "double_entendre",
             "domain",
         },
-        
+
     },
     -- renown synergy?
     {
@@ -350,7 +350,7 @@ local SYNERGY_CARDS = {
     },
 }
 local function GetCardOrUpgrades(card_id, chance_for_upgrades)
-    
+
     if chance_for_upgrades and math.random() < chance_for_upgrades then
         local carddef = Content.GetNegotiationCard(card_id)
         if carddef.upgrade_ids and #carddef.upgrade_ids then

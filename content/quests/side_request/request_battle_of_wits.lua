@@ -320,7 +320,7 @@ QDEF:AddConvo("go_to_game")
                     I need you to stand watch and make sure {challenger} isn't up to any shenanigans.
                 challenger:
                     !left
-                    !angrypoint
+                    !angry_point
                     Shenanigans? Are you implying I'm a cheat?
                 giver:
                     !placate
@@ -367,7 +367,7 @@ QDEF:AddConvo("go_to_game")
     :State("STATE_WIN")
         :Loc{
             DIALOG_INTRO = [[
-                * The game slouches on, and your crude understanding of the rules, along with just eyeing {challenger.hisher} wallet tells you that {challenger.heshe}'s losing desparately.
+                * The game slouches on, and your crude understanding of the rules, along with just eyeing {challenger.hisher} wallet tells you that {challenger.heshe}'s losing desperately.
                 challenger:
                     !left
                     I double the ante.
@@ -378,13 +378,13 @@ QDEF:AddConvo("go_to_game")
                     !scared
                     Wait, what?!
                 giver:
-                    !coinflip
+                    !coin_toss
                 * A coin flips through the air, and {challenger} looks at with fear one can only muster when knee deep into a game.
                 giver:
                     I win.
                 challenger:
-                    !angrypoint
-                    Wait, woah! I know you fudged the scoring bracket somewhere along the lines!
+                    !angry_point
+                    Wait, whoa! I know you fudged the scoring bracket somewhere along the lines!
                 giver:
                     !hips
                     You can hand-inspect it, if you'd like. I made no such adjustments.
@@ -496,17 +496,17 @@ QDEF:AddConvo("go_to_game")
                     All in.
                 challenger:
                     Your loss.
-                    !coinflip
+                    !coin_toss
                 * In a matter of seconds after the coin lands on the table, a bellow of anger erupts from {giver}.
                 challenger:
                     Hey, hey! I win the whole kit!
                 * {giver} steams with anger, but quickly {giver.heshe} regains some composure as {giver.heshe} sits straighter in {giver.hisher} chair.
                 giver:
                     Well, it seems I have been outsmarted...
-                    !angrypoint
+                    !angry_point
                     By a cheater!
                 challenger:
-                    Woah, you lost and you know it.
+                    Whoa, you lost and you know it.
                 giver:
                     Silence, lesser player. You should have lost, fair and square, it is only natural to assume you are a cheat.
                     {player}. Please, <i>escort</> {challenger} away from the table.
@@ -923,7 +923,7 @@ FOLLOW_UP:AddConvo("comfort", "giver")
                     -- giver will start at low resolve, and you must bring their resolve to full to actually win the negotiation.
                     -- Winning negotiation without bringing up resolve, like using damage or oolo's requisition, has bad effect.
 
-                    -- Opponent will have attacks targetting their own core.
+                    -- Opponent will have attacks targeting their own core.
                     -- Opponent will be given special bounties that will increase resolve or give composure.
                     -- You can also gift composure to opponent core via special action.
                     on_success = function(cxt, minigame)
