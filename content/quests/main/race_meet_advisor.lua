@@ -141,20 +141,20 @@ local function GetAdvisorFn(advisor_id)
 end
 
 local function ShowRaceTutorial()
-	local screen = TheGame:FE():GetTopScreen()
+    local screen = TheGame:FE():GetTopScreen()
     TheGame:GetGameProfile():SetHasSeenMessage("democracy_race_tutorial")
-	TheGame:FE():InsertScreen( Screen.YesNoPopup(LOC"UI.RACE_TUTORIAL_TITLE", LOC"UI.RACE_TUTORIAL_BODY", nil, nil, LOC"UI.NEGOTIATION_PANEL.TUTORIAL_NO" ))
-		:SetFn(function(v)
-			if v == Screen.YesNoPopup.YES then
-				local coro = screen:StartCoroutine(function()
-					local advance = false
-					TheGame:FE():PushScreen( Screen.SlideshowScreen( "democracy_race_tutorial", function() advance = true end ):SetAutoAdvance(false) )
-					while not advance do
-						coroutine.yield()
-					end
-				end )
-			end
-		end)
+    TheGame:FE():InsertScreen( Screen.YesNoPopup(LOC"UI.RACE_TUTORIAL_TITLE", LOC"UI.RACE_TUTORIAL_BODY", nil, nil, LOC"UI.NEGOTIATION_PANEL.TUTORIAL_NO" ))
+        :SetFn(function(v)
+            if v == Screen.YesNoPopup.YES then
+                local coro = screen:StartCoroutine(function()
+                    local advance = false
+                    TheGame:FE():PushScreen( Screen.SlideshowScreen( "democracy_race_tutorial", function() advance = true end ):SetAutoAdvance(false) )
+                    while not advance do
+                        coroutine.yield()
+                    end
+                end )
+            end
+        end)
 end
 
 QDEF:AddConvo("go_to_bar")
