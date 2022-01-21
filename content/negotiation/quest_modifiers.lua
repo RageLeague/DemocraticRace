@@ -1772,31 +1772,31 @@ local MODIFIERS =
     RELATABLE = {
         name = "Relatable",
         desc = "{UPVOTE|}{CONTRARIAN|}{FAKE_NEWS|}Every {1} cards you play causes Aellon to gain an argument based on the type of the last card. ({2} remaining)",
-		desc_fn = function( self, fmt_str )
-			return loc.format( fmt_str, self.num_cards or 5, self.count )
-		end,
+        desc_fn = function( self, fmt_str )
+            return loc.format( fmt_str, self.num_cards or 5, self.count )
+        end,
         modifier_type = MODIFIER_TYPE.CORE,
         max_stacks = 1,
-		num_cards = 4,
-		count = 4,
+        num_cards = 4,
+        count = 4,
         icon = "negotiation/modifiers/cool_head.tex",
 
         event_handlers =
         {
             [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
                 if card:GetNegotiator() ~= self.negotiator then
-					self.count = self.count - 1
-					if self.count == 0 then
-						self.count = self.num_cards
-						if card:IsFlagged( CARD_FLAGS.DIPLOMACY ) then
-							self.negotiator:CreateModifier( "UPVOTE", 1, self )
-						elseif card:IsFlagged( CARD_FLAGS.HOSTILE ) then
-							self.negotiator:CreateModifier( "CONTRARIAN", 1, self )
-						else --assuming flagged manipulate
-							self.negotiator:CreateModifier( "FAKE_NEWS", 1, self )
-						end
-					end
-				end
+                    self.count = self.count - 1
+                    if self.count == 0 then
+                        self.count = self.num_cards
+                        if card:IsFlagged( CARD_FLAGS.DIPLOMACY ) then
+                            self.negotiator:CreateModifier( "UPVOTE", 1, self )
+                        elseif card:IsFlagged( CARD_FLAGS.HOSTILE ) then
+                            self.negotiator:CreateModifier( "CONTRARIAN", 1, self )
+                        else --assuming flagged manipulate
+                            self.negotiator:CreateModifier( "FAKE_NEWS", 1, self )
+                        end
+                    end
+                end
             end,
         },
     },
@@ -1841,32 +1841,32 @@ local MODIFIERS =
         target_enemy = TARGET_ANY_RESOLVE,
 
         OnInit = function( self )
-			self:CalculateDamage(true)
+            self:CalculateDamage(true)
         end,
-		OnBeginTurn = function( self, minigame )
-			self:ApplyPersuasion()
-		end,
-		CalculateDamage = function( self, bump_hack ) --On first spawning, it shows the wrong value. So... bump_hack!
-			if self.negotiator then
-				local count = bump_hack and 1 or 0
-				for i, mod in self.negotiator:Modifiers() do
-					count = count + 1
-				end
-				self.min_persuasion = count
-				self.max_persuasion = count
-				self.engine:BroadcastEvent( EVENT.CUSTOM, function( panel )
-						panel.opponent_modifiers:UpdatePersuasionLabels()
-					end )
-			end
-		end,
+        OnBeginTurn = function( self, minigame )
+            self:ApplyPersuasion()
+        end,
+        CalculateDamage = function( self, bump_hack ) --On first spawning, it shows the wrong value. So... bump_hack!
+            if self.negotiator then
+                local count = bump_hack and 1 or 0
+                for i, mod in self.negotiator:Modifiers() do
+                    count = count + 1
+                end
+                self.min_persuasion = count
+                self.max_persuasion = count
+                self.engine:BroadcastEvent( EVENT.CUSTOM, function( panel )
+                        panel.opponent_modifiers:UpdatePersuasionLabels()
+                    end )
+            end
+        end,
         event_handlers =
         {
-			[ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
-				self:CalculateDamage()
-			end,
+            [ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
+                self:CalculateDamage()
+            end,
             [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, source )
-				self:CalculateDamage()
-			end,
+                self:CalculateDamage()
+            end,
         },
     },
     SHAD_BAN = {

@@ -1,4 +1,4 @@
-return 
+return
 {
     is_tutorial = true,
     script=
@@ -36,5 +36,4 @@ There will be multiple opportunities to align yourself with a stance in Havarian
 Be careful when you change your opinion on stances that you've already stated! Self-contradiction will lower your support, as people will notice that your word is untrustworthy.]],
         },
     }
-}    
-
+}
