@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.01.00">
 	<object class="AudioFile" id="{1d3f6d74-7dc4-4ecc-a053-7dbf259556c2}">
 		<property name="assetPath">
-			<value>democratic_race/dronumth_theme.wav</value>
+			<value>democratic_race/themes/dronumth_theme.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>48</value>

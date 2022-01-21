@@ -14,6 +14,8 @@ local chars =
         gender = "MALE",
         species = "HUMAN",
 
+        theme_music = "DEMOCRATICRACE|event:/democratic_race/music/story/aellon_theme",
+
         build = "male_clust_trademaster",
         head = "head_male_shopkeep_002",
 
