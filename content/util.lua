@@ -1,3 +1,11 @@
+-- local url_lib = require "lib/url"
+
+local function url_escape(s)
+    return (string.gsub(s, "([^A-Za-z0-9_])", function(c)
+        return string.format("%%%02x", string.byte(c))
+    end))
+end
+
 local DemocracyUtil = class("DemocracyUtil")
 
 local MODID = CURRENT_MOD_ID
@@ -5,7 +13,7 @@ local MODID = CURRENT_MOD_ID
 getmetatable(DemocracyUtil).__index = function(self, k)
     if TheGame:GetGameState() and TheGame:GetGameState():GetMainQuest() then
         local quest = TheGame:GetGameState():GetMainQuest():GetQuestDef()
-        print(quest)
+        -- print(quest)
         if quest and quest[k] and type(quest[k]) == "function" then
             return function(...)
                 return DemocracyUtil.TryMainQuestFn(k, ...)
@@ -1161,6 +1169,46 @@ function DemocracyUtil.AddBodyguardOpt(cxt, fn, opt_id, filter_fn)
     end
 end
 
+-- Choose a random number in a gaussian distribution.
+-- Based on the polar form of the Box-Muller transformation.
+-- I yoinked it from the game code, but I removed the clamp because it's lame
+function DemocracyUtil.RandomGauss( mean, stddev )
+    local x1, x2, w
+    repeat
+        x1 = 2 * math.random() - 1
+        x2 = 2 * math.random() - 1
+        w = x1 * x1 + x2 * x2
+    until w > 1e-10 and w < 1.0 -- This safeguards against undefined log or division
+
+    w = math.sqrt( (-2 * math.log( w ) ) / w )
+    local x = (x1 * w)*stddev + mean
+    return x
+end
+
+function DemocracyUtil.CalculateStrengthRatio(blue, red, blue_bonus, red_bonus)
+    local blue_score = (blue:GetCombatStrength() + (blue:IsBoss() and 4 or 0)) * blue.health:GetPercent() + (blue_bonus or 0)
+    local red_score = (red:GetCombatStrength() + (red:IsBoss() and 4 or 0)) * red.health:GetPercent() + (red_bonus or 0)
+    local ratio = blue_score
+    return ratio
+end
+
+function DemocracyUtil.SimulateBattle(blue, red, blue_bonus, red_bonus)
+    local ratio = DemocracyUtil.CalculateStrengthRatio(blue, red, blue_bonus, red_bonus)
+    print("ratio =", ratio)
+    print("log(ratio) =", math.log(ratio))
+    local gauss_result = DemocracyUtil.RandomGauss(0, math.exp (1))
+    print("G(0, 1) =", gauss_result)
+    local result =  gauss_result < math.log(ratio)
+    if result then
+        blue.health:SetPercent(blue.health:GetPercent() * math.random(50, 80) * 0.01)
+        red.health:SetPercent(red.health:GetPercent() * math.random(20, 30) * 0.01)
+    else
+        red.health:SetPercent(red.health:GetPercent() * math.random(50, 80) * 0.01)
+        blue.health:SetPercent(blue.health:GetPercent() * math.random(20, 30) * 0.01)
+    end
+    return result
+end
+
 DemocracyUtil.EXCLUDED_WEAPONS = {
     "makeshift_dagger", "makeshift_dagger_plus"
 }
@@ -1228,6 +1276,106 @@ function DemocracyUtil.DeployMod(experimental)
     rawset(_G, "ConfirmUpload", ConfirmFunction)
 end
 
+function DemocracyUtil.SendMetricsData(event_id, event_data)
+    if TheGame:GetLocalSettings().ROBOTICS then
+        return
+    end
+    if not DemocracyUtil.GetModSetting("enable_metrics_collection") then
+        return
+    end
+    -- Initialize fields
+    local payload_fields =
+    {
+        -- Branch
+        ["entry.1174125527"] = "",
+        -- Version
+        ["entry.1846367179"] = "",
+        -- Run ID
+        ["entry.1200902253"] = "",
+        -- Character
+        ["entry.1738061935"] = "",
+        -- Prestige
+        ["entry.992848941"] = "",
+        -- Day Segment
+        ["entry.422634254"] = "",
+        -- Event ID
+        ["entry.169203787"] = event_id or "",
+        -- Event Data
+        ["entry.541892026"] = type(event_data) == "table" and json.encode( event_data ) or event_data or "",
+    }
+
+    -- Set the field for "Branch"
+    if MODID == "DemocraticRace" then
+        payload_fields["entry.1174125527"] = "GitHub"
+    elseif MODID == tostring(main_branch_id) then
+        payload_fields["entry.1174125527"] = "SteamMain"
+    elseif MODID == tostring(test_branch_id) then
+        payload_fields["entry.1174125527"] = "SteamTest"
+    else
+        payload_fields["entry.1174125527"] = "Other(" .. MODID .. ")"
+    end
+
+    -- Set the field for "Version"
+    local mod_data = DemocracyUtil.GetModData()
+    payload_fields["entry.1846367179"] = mod_data.version
+
+    local game_state = TheGame:GetGameState()
+    if game_state then
+        -- Set the field for "Day Segment"
+        local main_quest = game_state:GetMainQuest()
+        if main_quest and main_quest:GetContentID() == "DEMOCRATIC_RACE_MAIN" then
+            if main_quest.param.debug_mode then
+                return
+            end
+            payload_fields["entry.422634254"] = (main_quest.param.day or 1) .. "/" .. (main_quest.param.sub_day_progress or 1)
+        else
+            payload_fields["entry.422634254"] = tostring(game_state.datetime)
+        end
+        -- Set the field for "Run ID"
+        payload_fields["entry.1200902253"] = game_state.uuid
+        -- Set the field for "Character"
+        payload_fields["entry.1738061935"] = game_state.player_agent and game_state.player_agent:GetContentID()
+        -- Set the field for "Prestige"
+        -- "Story" or "P0", "P1", ...
+        if game_state.options.story_mode then
+            payload_fields["entry.992848941"] = "Story"
+        else
+            payload_fields["entry.992848941"] = "P" .. (game_state.options.advancement_level or 0)
+        end
+    end
+
+    -- Assemble the URL
+    local query_strings = {}
+    for id, data in pairs(payload_fields) do
+        if data and data ~= "" then
+            assert(type(data) == "string")
+            table.insert(query_strings, loc.format("{1}={2}", id, url_escape(data)))
+        end
+    end
+    local url = "https://docs.google.com/forms/d/e/1FAIpQLSe3KWUoJQsLqyMAspjQRHowazaXEMR0rxiqKNyFqwwpVB0hWw/formResponse"
+    if #query_strings > 0 then
+        url = url .. "?"
+        for i, query in ipairs(query_strings) do
+            if i == 1 then
+                url = url .. query
+            else
+                url = url .. "&" .. query
+            end
+        end
+    end
+    -- Actually send the payload
+    engine.inst:GetURL(url, nil,
+        function( success, code, response )
+            print("ID:", event_id)
+            print(event_data)
+            print("Access Code:", code)
+            print("URL:", url)
+            if success then
+                print("Metric successfully sent")
+            end
+        end)
+end
+
 local demand_generator = require"DEMOCRATICRACE:content/demand_generator"
 DemocracyUtil.demand_generator = demand_generator
 
@@ -1289,29 +1437,32 @@ function QuestDef:AddFreeTimeObjective( child )
                 if minigame.start_params.no_free_time_cost then
                     return
                 end
-                quest:DefFn("DeltaActions", -1)
+                -- Dynamically scale action cost based on turn taken
+                -- <= 4: one action
+                -- <= 8: two actions
+                -- <= 12: three actions
+                -- More: What the Hesh are you doing. Also at least 4 actions
+                quest:DefFn("DeltaActions", -math.max(math.ceil(minigame:GetTurns() / 4), 1), "NEGOTIATION")
             end,
             resolve_battle = function(quest, battle)
-                quest:DefFn("DeltaActions", -1)
+                quest:DefFn("DeltaActions", -math.max(math.ceil(battle:GetTurns() / 4), 1), "BATTLE")
             end,
             caravan_move_location = function(quest, location)
-                print("Caravan moved, remove one action")
-                -- DBG(location)
                 if location:HasTag("in_transit") then
-                    print("Caravan moved, remove one action")
-                    quest:DefFn("DeltaActions", -1)
+                    quest:DefFn("DeltaActions", -1, "TRAVEL")
                 end
             end,
         },
     }(child)
 
-    self.DeltaActions = function(quest, delta)
+    self.DeltaActions = function(quest, delta, reason)
         quest.param.free_time_actions = quest.param.free_time_actions + delta
         print("New action count: "..quest.param.free_time_actions)
         if quest.param.free_time_actions <= 0 then
             quest:Complete(new_child.id)
         end
         quest:NotifyChanged()
+        TheGame:GetGameState():LogNotification( NOTIFY.DEM_TIME_PASSED, quest, -delta, quest.param.free_time_actions, reason )
     end
     self.free_time_objective_id = new_child.id
 

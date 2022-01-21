@@ -200,7 +200,7 @@ local QDEF = QuestDef.Define
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 DemocracyUtil.AddHomeCasts(QDEF)
 DemocracyUtil.AddOppositionCast(QDEF)
-local function ProcessMinigame(minigame, win_minigame)
+local function ProcessMinigame(minigame, win_minigame, cxt)
     local data = {
         won_game = win_minigame,
         ally_survivors = {},
@@ -219,8 +219,8 @@ local function ProcessMinigame(minigame, win_minigame)
                 else
                     table.insert_unique(data.ally_survivors, TheGame:GetGameState():GetPlayerAgent())
                 end
-                local res, maxres = modifier:GetResolve()
-                data.win_margin = data.win_margin + 0.2 + (res / maxres)
+                local res, max_res = modifier:GetResolve()
+                data.win_margin = data.win_margin + 0.2 + (res / max_res)
             end
         end
     else
@@ -229,8 +229,8 @@ local function ProcessMinigame(minigame, win_minigame)
                 if modifier.candidate_agent then
                     table.insert_unique(data.ally_survivors, modifier.candidate_agent)
                 end
-                local res, maxres = modifier:GetResolve()
-                data.win_margin = data.win_margin + 0.2 + (res / maxres)
+                local res, max_res = modifier:GetResolve()
+                data.win_margin = data.win_margin + 0.2 + (res / max_res)
             end
         end
     end
@@ -255,6 +255,16 @@ local function ProcessMinigame(minigame, win_minigame)
             end
         end
     end
+
+    local METRIC_DATA =
+    {
+        player_data = TheGame:GetGameState():GetPlayerState(),
+        result = win_minigame and "WIN" or "LOSE",
+        topic = cxt.quest.param.topic,
+        player_mvp = table.arraycontains(data.mvp, TheGame:GetGameState():GetPlayerAgent()),
+    }
+    DemocracyUtil.SendMetricsData("DAY_3_BOSS_END", METRIC_DATA)
+
     return data
 end
 local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
@@ -262,14 +272,27 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
         :UpdatePoliticalStance(topic, stance, false)
         :Dialog("DIALOG_SIDE")
         :Fn(function(cxt)
+            local METRIC_DATA =
+            {
+                player_data = TheGame:GetGameState():GetPlayerState(),
+                allies = {},
+                opponents = {},
+                topic = topic,
+                stance = stance,
+            }
+
             cxt.quest.param.allies = helpers
             cxt.quest.param.opponents = hinders
             for i, agent in ipairs(helpers) do
                 cxt.quest.param.candidate_opinion[agent:GetID()] = (cxt.quest.param.candidate_opinion[agent:GetID()] or 0) + 1
+                table.insert(METRIC_DATA.allies, agent:GetContentID())
             end
             for i, agent in ipairs(hinders) do
                 cxt.quest.param.candidate_opinion[agent:GetID()] = (cxt.quest.param.candidate_opinion[agent:GetID()] or 0) - 1
+                table.insert(METRIC_DATA.opponents, agent:GetContentID())
             end
+
+            DemocracyUtil.SendMetricsData("DAY_3_BOSS_START", METRIC_DATA)
         end)
         :Negotiation{
             flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.WORDSMITH | NEGOTIATION_FLAGS.NO_CORE_RESOLVE | NEGOTIATION_FLAGS.NO_LOOT,
@@ -299,12 +322,12 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
                 end
             end,
             on_success = function(cxt, minigame)
-                cxt.quest.param.debate_result = ProcessMinigame(minigame, true)
+                cxt.quest.param.debate_result = ProcessMinigame(minigame, true, cxt)
                 cxt.quest.param.winner_pov = topic .. "_" .. stance
                 cxt:GoTo("STATE_DEBATE_SUMMARY")
             end,
             on_fail = function(cxt, minigame)
-                cxt.quest.param.debate_result = ProcessMinigame(minigame, false)
+                cxt.quest.param.debate_result = ProcessMinigame(minigame, false, cxt)
                 cxt.quest.param.winner_pov = topic .. "_" .. (-stance)
                 cxt:GoTo("STATE_DEBATE_SUMMARY")
             end,
@@ -491,6 +514,16 @@ QDEF:AddConvo("do_debate")
             CreateDebateOption(cxt, pos_helper, pos_hinder, cxt.quest.param.topic, 1)
             cxt:Opt("OPT_SIT_OUT")
                 :PostText("TT_SIT_OUT")
+                :Fn(function(cxt)
+                    local METRIC_DATA =
+                    {
+                        player_data = TheGame:GetGameState():GetPlayerState(),
+                        topic = cxt.quest.param.topic,
+                        stance = 0,
+                    }
+
+                    DemocracyUtil.SendMetricsData("DAY_3_BOSS_START", METRIC_DATA)
+                end)
                 :GoTo("STATE_AUTO_DEBATE")
         end)
     :State("STATE_AUTO_DEBATE")
@@ -540,8 +573,8 @@ QDEF:AddConvo("do_debate")
                 [[
                     * {agent} is able to quickly maintain dominance.
                     * {agent.HeShe} creates a Wrath of Hesh argument on the first turn, and ever since then, it does so much work.
-                    * And worst of all, WHY AREN'T THE OPPONENTS TARGETTING IT?
-                    * IT IS CLEARLY THE MOST DETRIMENTAL ARGUMENT, YET YOU ARE NOT TARGETTING IT!
+                    * And worst of all, WHY AREN'T THE OPPONENTS TARGETING IT?
+                    * IT IS CLEARLY THE MOST DETRIMENTAL ARGUMENT, YET YOU ARE NOT TARGETING IT!
                     * WHAT ARE YOU DOING FOR HESH SAKE?
                     * And yeah, {agent} won, surprising no one.
                 ]],
@@ -849,6 +882,22 @@ QDEF:AddConvo("do_debate")
             else
                 DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.35))
             end
+
+            local METRIC_DATA =
+            {
+                player_score = your_score,
+                ranking = cxt.quest.param.player_rank,
+                popularity = {},
+                player_data = TheGame:GetGameState():GetPlayerState(),
+            }
+            for id, data in pairs(cxt.quest.param.popularity) do
+                local agent = TheGame:GetGameState():GetAgent(id)
+                if agent then
+                    METRIC_DATA.popularity[agent:GetContentID()] = data
+                end
+            end
+            DemocracyUtil.SendMetricsData("DAY_3_BOSS_SUMMARY", METRIC_DATA)
+
             StateGraphUtil.AddEndOption(cxt)
         end)
 QDEF:AddConvo("report_to_advisor", "primary_advisor")

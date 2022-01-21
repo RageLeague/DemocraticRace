@@ -117,11 +117,7 @@ local CARDS = {
     {
         name = "Question answer",
         name_fn = function(self, fmt_str)
-            -- print("wololo")
-            -- print(self.issue_data)
-            -- print(self.stance)
             if self.issue_data and self.stance then
-                -- print("narvini")
                 return self.issue_data.stances[self.stance]:GetLocalizedName()
             end
             return loc.format(fmt_str)
@@ -406,6 +402,7 @@ local CARDS = {
         end,
 
         flavour = "This sounds extremely unethical. Then again, if you are ethical, you wouldn't be a grifter.",
+        icon = "DEMOCRATICRACE:assets/cards/promote_product.png",
 
         cost = 1,
         flags = CARD_FLAGS.MANIPULATE | CARD_FLAGS.EXPEND,
@@ -463,6 +460,7 @@ local CARDS = {
     {
         name = "Console",
         desc = "Transfer all composure on target argument you control to your opponent's core argument.",
+        icon = "negotiation/empathy.tex",
 
         cost = 1,
         flags = CARD_FLAGS.DIPLOMACY | CARD_FLAGS.REPLENISH,

@@ -23,7 +23,7 @@ local BONUSES = {
                 AgentUtil.UpgradeBattleCard( function( card )
                     cxt.enc:ResumeEncounter( card )
                 end )
-                
+
                 local card = cxt.enc:YieldEncounter()
                 if card then
                     -- cxt:Pop()
@@ -168,6 +168,7 @@ local QDEF = QuestDef.Define
 QDEF:AddConvo("win_argument")
     :Confront(function(cxt)
         if TheGame:GetLocalSettings().FAST_STARTUP then
+            TheGame:GetGameState():GetMainQuest().param.debug_mode = true
             cxt.quest:Complete()
         else
             return "STATE_START"
@@ -214,7 +215,7 @@ QDEF:AddConvo("win_argument")
             WORSHIPPER_BAD_OPINION = [[
                 !hesh_greeting
                 All shall tremble before the mighty Hesh!
-                Believe in Hesh, and your life will be happy and propserous!
+                Believe in Hesh, and your life will be happy and prosperous!
                 Disregard Hesh, and your life will be filled with misery!
                 We must devote every hour of our life to Hesh!
                 All heretics must be executed!
@@ -230,7 +231,7 @@ QDEF:AddConvo("win_argument")
                 MũSt cŌnSųMe
                 I ŕEqŮiRe ThÍnE sAcRïFicË
                 cŌmE Tŏ mE, mØrTaĽ
-                
+
             ]],
 
             DIALOG_INTRO_BG = [[
@@ -247,7 +248,7 @@ QDEF:AddConvo("win_argument")
                 agent:
                     !right
                     !angry
-                
+
             ]],
             DIALOG_INTRO_PST = [[
                 * You feel like it's your moral obligation to correct {agent.hisher} opinion.
@@ -268,18 +269,22 @@ QDEF:AddConvo("win_argument")
             ]],
             DIALOG_DEBATE_WIN = [[
                 player:
-                    And that's why your opinion is stupid.
-                    You sound like a baby having a tantrum problem.
-                    Your idea's are too out of touch with reality.
-                    Many people are suffering, and you choose to spout useless drivel in the middle of a restaurant?
+                    !angry
+                    This is one of the most stupid things that I've heard.
+                    Have you heard yourself speak at all? I can't believe anyone would stoop this low!
+                    Maybe instead of babbling about in public and utterly humiliate yourself, you should get a life and talk to actual people.
+                    Then maybe you can be an actual functioning member of the society and have a less awful opinion.
                 agent:
-                    ...
-                    !sigh
-                    Alas, you're right. My opinion is too extreme.
-                    That's the nature of ideas, isn't it?
-                    If you don't speak out about it, the society won't change.
+                    !scared
+                    I... You... Dare...?
+                player:
+                    !cruel
+                    What's the matter? Vroc got your tongue?
+                agent:
+                    !angry
+                    I will remember this!
                     !exit
-                * {agent} left the shop. You hope that {agent} actually learned {agent.hisher} lesson, and not just finding trouble at another shop.
+                * Then, {agent} storms out of the noodle shop, in the most humiliating manner possible.
             ]],
             DIALOG_DEBATE_LOST = [[
                 player:
@@ -362,7 +367,7 @@ QDEF:AddConvo("win_argument")
                             card:TransferCard(minigame:GetDrawDeck())
                         end
                     end,
-                    on_success = function(cxt) 
+                    on_success = function(cxt)
                         cxt:Dialog("DIALOG_DEBATE_WIN")
                         cxt.quest:GetCastMember("heckler"):OpinionEvent(OPINION.INSULT)
                         cxt.enc:GetPrimaryCast():GetBrain():MoveToHome()

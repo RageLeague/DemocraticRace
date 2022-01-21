@@ -70,7 +70,7 @@ local DEATH_DELTA = -10
 local ISOLATED_DEATH_DELTA = -2
 
 -- Determines the support change if you didn't kill someone, but you're an accomplice
--- or someone dies from neglegience
+-- or someone dies from negligence
 local ACCOMPLICE_KILLING_DELTA = -5
 local QDEF = QuestDef.Define
 {
@@ -336,6 +336,27 @@ local QDEF = QuestDef.Define
                 QuestUtil.DoNextDay(DAY_SCHEDULE, quest)
             end
         end,
+        GAME_OVER = function( quest, gamestate, result )
+            for i = 1, 4 do
+                if not quest.param.wealth_support[i] then
+                    quest.param.wealth_support[i] = 0
+                end
+            end
+            local METRIC_DATA =
+            {
+                result = result,
+                support_level = quest.param.support_level,
+                faction_support = quest.param.faction_support,
+                wealth_support = quest.param.wealth_support,
+                stances = quest.param.wealth_support,
+                player_data = TheGame:GetGameState():GetPlayerState(),
+            }
+
+            DemocracyUtil.SendMetricsData("GAME_OVER", METRIC_DATA)
+        end,
+        allow_dual_purpose_cards = function( quest, card, param )
+            param.val = true
+        end,
     },
     SpawnPoolJob = function(quest, pool_name, excluded_ids, spawn_as_inactive, spawn_as_challenge)
         local event_id = pool_name
@@ -479,7 +500,7 @@ local QDEF = QuestDef.Define
             notification = true
         end
         if notification and amt ~= 0 then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GENERAL_SUPPORT, amt, quest:DefFn("GetGeneralSupport"), notification )
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_GENERAL_SUPPORT, amt, quest:DefFn("GetGeneralSupport"), notification )
         end
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_general_support", amt )
@@ -499,7 +520,7 @@ local QDEF = QuestDef.Define
             notification = true
         end
         if notification and amt ~= 0 then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_FACTION_SUPPORT, amt, quest:DefFn("GetFactionSupport", faction), TheGame:GetGameState():GetFaction(faction), notification )
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_FACTION_SUPPORT, amt, quest:DefFn("GetFactionSupport", faction), TheGame:GetGameState():GetFaction(faction), notification )
         end
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_faction_support_" .. faction, amt )
@@ -519,7 +540,7 @@ local QDEF = QuestDef.Define
             notification = true
         end
         if notification and amt ~= 0 then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_WEALTH_SUPPORT, amt, quest:DefFn("GetWealthSupport", r), r, notification )
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_WEALTH_SUPPORT, amt, quest:DefFn("GetWealthSupport", r), r, notification )
         end
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_wealth_support_" .. r, amt )
@@ -627,7 +648,7 @@ local QDEF = QuestDef.Define
             notification = true
         end
         if notification and amt then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_AGENT_SUPPORT, amt, agent, notification )
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_AGENT_SUPPORT, amt, agent, notification )
         end
     end,
     -- DeltaFactionSupportAgent = function(quest, amt, agent, ignore_notification)
@@ -650,7 +671,7 @@ local QDEF = QuestDef.Define
             quest:DefFn("DeltaFactionSupport", actual_group[id], id, false, delta_type)
         end
         if notification then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GROUP_FACTION_SUPPORT, actual_group, notification)
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_GROUP_FACTION_SUPPORT, actual_group, notification)
         end
     end,
     DeltaGroupWealthSupport = function(quest, group_delta, multiplier, notification, delta_type)
@@ -667,7 +688,7 @@ local QDEF = QuestDef.Define
             quest:DefFn("DeltaWealthSupport", math.round(val * multiplier), id, false, delta_type)
         end
         if notification then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GROUP_WEALTH_SUPPORT, actual_group, notification)
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_GROUP_WEALTH_SUPPORT, actual_group, notification)
         end
     end,
     -- Getters
@@ -704,7 +725,7 @@ local QDEF = QuestDef.Define
     GetSupportForAgent = function(quest, agent)
         return quest:DefFn("GetCompoundSupport", agent:GetFactionID(), agent:GetRenown() or 1)
     end,
-    -- At certain points in the story, random peope dislikes you for no reason.
+    -- At certain points in the story, random people dislikes you for no reason.
     -- call this function to do so.
     DoRandomOpposition = function(quest, num_to_do)
         num_to_do = num_to_do or 1
@@ -749,7 +770,7 @@ local QDEF = QuestDef.Define
             quest.param.stances[issue] = val
             quest.param.stance_change[issue] = 0
             quest.param.stance_change_freebie[issue] = not strict
-            TheGame:GetGameState():LogNotification( NOTIFY.UPDATE_STANCE, issue, val, strict )
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_UPDATE_STANCE, issue, val, strict )
         else
             local stance_delta = val - quest.param.stances[issue]
             if stance_delta == 0 or (not strict and (quest.param.stances[issue] > 0) == (val > 0) and (quest.param.stances[issue] < 0) == (val < 0)) then
@@ -772,7 +793,7 @@ local QDEF = QuestDef.Define
                 end
                 quest.param.stances[issue] = val
                 quest.param.stance_change_freebie[issue] = not strict
-                TheGame:GetGameState():LogNotification( NOTIFY.UPDATE_STANCE, issue, val, strict )
+                TheGame:GetGameState():LogNotification( NOTIFY.DEM_UPDATE_STANCE, issue, val, strict )
             end
         end
         if autosupport then
@@ -812,6 +833,21 @@ local QDEF = QuestDef.Define
 
     SetSubdayProgress = function(quest, progress)
         quest.param.sub_day_progress = progress
+        for i = 1, 4 do
+            if not quest.param.wealth_support[i] then
+                quest.param.wealth_support[i] = 0
+            end
+        end
+        -- Send Metric
+        local METRIC_DATA =
+        {
+            support_level = quest.param.support_level,
+            faction_support = quest.param.faction_support,
+            wealth_support = quest.param.wealth_support,
+            stances = quest.param.wealth_support,
+        }
+
+        DemocracyUtil.SendMetricsData("STORY_PROGRESS", METRIC_DATA)
     end,
     GetCurrentExpectationArray = function(quest)
         return DAY_SCHEDULE[math.min(#DAY_SCHEDULE, quest.param.day or 1)].support_expectation

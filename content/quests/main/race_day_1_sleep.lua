@@ -69,56 +69,7 @@ local QDEF = QuestDef.Define
     state = QSTATUS.ACTIVE,
 }
 DemocracyUtil.AddHomeCasts(QDEF)
--- QDEF:AddConvo("meet_advisor", "primary_advisor")
---     :AttractState("STATE_TALK")
---         :Loc{
---             DIALOG_INTRO = [[
---                 player:
---                     !left
---                 agent:
---                     !right
---                     [p] nice work today
---                 player:
---                     thx
---                 agent:
---                     !give
---                     here's your pay.
---                     do your free time or whatever.
---             ]],
---             DIALOG_INTRO_LOW_SUPPORT = [[
---                 player:
---                     !left
---                 agent:
---                     !right
---                     [p] i have low expectations for you, but i was still surprised about how bad you did.
---                     i'm done with you.
---                 player:
---                     oh come on!
---             ]],
---             DIALOG_INTRO_PST = [[
---                 agent:
---                     go to bed when you're ready.
---             ]]
---         }
---         :Fn(function(cxt)
---             if DemocracyUtil.TryMainQuestFn("GetGeneralSupport") >= 10 then
---                 cxt:Dialog("DIALOG_INTRO")
 
---                 local money = DemocracyUtil.TryMainQuestFn("CalculateFunding")
---                 cxt.enc:GainMoney(money)
---                 cxt:Dialog("DIALOG_INTRO_PST")
---                 cxt.quest:Complete("meet_advisor")
---                 cxt.quest:Activate("go_to_sleep")
---                 DemocracyUtil.StartFreeTime()
---             else
---                 cxt:Dialog("DIALOG_INTRO_LOW_SUPPORT")
---                 DemocracyUtil.AddAutofail(cxt, function(cxt)
---                     cxt.quest:Complete("meet_advisor")
---                     cxt.quest:Activate("go_to_sleep")
---                     DemocracyUtil.StartFreeTime()
---                 end)
---             end
---         end)
 QDEF:AddConvo("go_to_sleep", "primary_advisor")
     :Loc{
         OPT_GO_TO_SLEEP = "Go to sleep",
@@ -180,11 +131,11 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     Contract killing, eh?
                     I used to do that for a living. Of course, that was before I became a politician.
                     Anyway, you wanna dance? Let's dance.
-                * Just as you prepare your weapon, something just occured to you.
+                * Just as you prepare your weapon, something just occurred to you.
                 player:
                     !scared
                 * You have fought very few, if any, battle since you decide to run for president.
-                * This assasain might've been easy before, but that was before you hung up your weapons.
+                * This assassin might've been easy before, but that was before you hung up your weapons.
                 * You need backup. Luckily, you can, but it'll take time.
                 player:
                     !point
@@ -199,7 +150,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                 "After calling for help, keep {agent.himher} occupied through negotiation or combat until help arrives!",
 
             GOAL_CALL_HELP = "(1/3) Call for help",
-            GOAL_MAINTAIN_CONNECTION = "(2/3) Describe your current situation to the dispacher ({1}/{2})",
+            GOAL_MAINTAIN_CONNECTION = "(2/3) Describe your current situation to the dispatcher ({1}/{2})",
             GOAL_AWAIT_RESCUE = "(3/3) Await rescue (Negotiate for {1} {1*turn|turns} or battle for {2} {2*turn|turns})",
 
             DIALOG_HELP_ARRIVE = [[
@@ -437,8 +388,24 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                         card:TransferCard(minigame:GetDrawDeck())
 
                         minigame.help_turns = SURVIVAL_TURNS
+
+                        local METRIC_DATA =
+                        {
+                            boss = cxt:GetAgent():GetContentID(),
+                            player_data = TheGame:GetGameState():GetPlayerState(),
+                        }
+
+                        DemocracyUtil.SendMetricsData("DAY_1_BOSS_START", METRIC_DATA)
                     end,
                     on_success = function(cxt, minigame)
+                        local METRIC_DATA =
+                        {
+                            boss = cxt:GetAgent():GetContentID(),
+                            result = "WIN_NEGOTIATION",
+                            player_data = TheGame:GetGameState():GetPlayerState(),
+                        }
+                        DemocracyUtil.SendMetricsData("DAY_1_BOSS_END", METRIC_DATA)
+
                         cxt:Dialog("DIALOG_HELP_ARRIVE")
                         cxt.quest:GetCastMember("assassin"):MoveToLimbo()
                         DemocracyUtil.GiveBossRewards(cxt)
@@ -452,6 +419,15 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                         else
                             cxt.quest.param.help_arrive_time = 99
                         end
+
+                        local METRIC_DATA =
+                        {
+                            boss = cxt:GetAgent():GetContentID(),
+                            result = "LOSE_NEGOTIATION",
+                            time_left = cxt.quest.param.help_arrive_time,
+                            player_data = TheGame:GetGameState():GetPlayerState(),
+                        }
+                        DemocracyUtil.SendMetricsData("DAY_1_BOSS_END", METRIC_DATA)
 
                         cxt:Dialog("DIALOG_FIGHT_PHRASE")
                         local battle_def = {
@@ -467,6 +443,14 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                                 cxt.quest.param.help_arrived = cxt.quest.param.help_arrive_time <= 0
                                 cxt.quest.param.assassin_dead = cxt:GetAgent():IsDead()
                                 cxt.quest.param.responder_liked = cxt:GetCastMember("responder"):GetRelationship() > RELATIONSHIP.NEUTRAL
+
+                                local METRIC_DATA =
+                                {
+                                    boss = cxt:GetAgent():GetContentID(),
+                                    result = "WIN_FIGHT",
+                                    player_data = TheGame:GetGameState():GetPlayerState(),
+                                }
+                                DemocracyUtil.SendMetricsData("DAY_1_BOSS_END", METRIC_DATA)
                                 if cxt.quest.param.assassin_dead then
                                     cxt:Dialog("DIALOG_PST_FIGHT_DEAD")
                                     if cxt.quest.param.help_called then

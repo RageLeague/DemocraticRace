@@ -9,7 +9,7 @@ local BENEFACTOR_DEFS = {
 -- for balancing reasons
 local SIGNATURE_ARGUMENT = {
     WEALTHY_MERCHANT = "TRIBUTE",
-    PRIEST = "prayer_of_hesh", -- why this is lower case, i have no idea
+    PRIEST = "prayer_of_hesh", -- why this is lower case, I have no idea
 }
 
 local score_fn = function(agent, quest)
@@ -31,11 +31,11 @@ local BENEFACTOR_BEHAVIOR = {
         if SIGNATURE_ARGUMENT[self.agent:GetContentID()] then
             self.signature = self:AddArgument(SIGNATURE_ARGUMENT[self.agent:GetContentID()])
         end
-        
+
         self:SetPattern( self.BasicCycle )
-        
+
         self.negotiator:AddModifier(BENEFACTOR_DEFS[self.agent:GetContentID()])
-        
+
     end,
     agents = {},
 
@@ -108,7 +108,7 @@ local QDEF = QuestDef.Define
     -- when = QWHEN.MANUAL,
     -- no_validation = true,
     condition = function(location, quest)
-        local allowed_locations = {"PEARL_FANCY_EATS"}
+        local allowed_locations = {"PEARL_FANCY_EATS", "MOREEF_BAR"}
         return table.arraycontains(allowed_locations, location:GetContentID())
     end,
 }
@@ -118,7 +118,7 @@ local QDEF = QuestDef.Define
     desc = "Go to {diner#location} to meet the benefactor.",
     mark = { "benefactor" },
     state = QSTATUS.ACTIVE,
-    
+
     on_activate = function( quest)
         -- local location = Location( LOCATION_DEF.id )
         -- assert(location)
@@ -145,10 +145,10 @@ local QDEF = QuestDef.Define
     --     table.insert(options, "WEALTHY_MERCHANT")
     --     table.insert(options, "SPARK_BARON_TASKMASTER")
     --     table.insert(options, "PRIEST")
-    
+
     --     local def = options[math.random(#options)]
     --     table.insert( t, quest:CreateSkinnedAgent( def ) )
- 
+
     --     if main_negotiator_limiter == 0 then
     --         main_negotiator = def
     --         main_negotiator_limiter = 1
@@ -165,7 +165,7 @@ local QDEF = QuestDef.Define
     end,
 }
 :AddOpinionEvents{
-    convinced_benefactor =  
+    convinced_benefactor =
     {
         delta = OPINION_DELTAS.LIKE,
         txt = "Confident in your leadership abilities.",
@@ -178,7 +178,7 @@ local QDEF = QuestDef.Define
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true) -- make primary advisor mandatory because that's how you get that info
 
 QDEF:AddConvo("go_to_diner")
-    
+
     :Confront(function(cxt)
         if cxt.location == cxt.quest:GetCastMember("diner") and not cxt.quest.param.visited_diner then
             return "STATE_INTRO"
@@ -188,15 +188,15 @@ QDEF:AddConvo("go_to_diner")
         :Loc{
             DIALOG_INTRO = [[
                 * You arrive at the diner looking for the benefactor.
-                * One person watches you intensly and points to an empty chair.
+                * One person watches you intensely and points to an empty chair.
             ]],
-            
+
         }
         :Fn(function(cxt)
 
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest.param.visited_diner = true
-            
+
         end)
 QDEF:AddConvo("go_to_diner", "benefactor")
     :Loc{
@@ -207,18 +207,18 @@ QDEF:AddConvo("go_to_diner", "benefactor")
                 I don't mind free drinks, but I'm going to wager that isn't why we're here today.
             agent:
                 Afraid not. I hear that you're running for president.
-		        And I didn't amass my wealth by ignoring opportunites.
+		        And I didn't amass my wealth by ignoring opportunities.
 	    	    Lets get down to brass tacks. Tell me why my shills of indiscriminate origin should go to you.
 	        * The drinks arrive.
         ]],
 
         REASON_TALK = "Secure as much shills as you can!",
-            
+
         DIALOG_BENEFACTOR_CONVINCED = [[
             * {agent} pauses for a moment, taking one last taste of {agent.hisher} tea.
             agent:
                 We are in business, {player}.
-                None of the other candidtates have shown as much promise for my bank account as you have.
+                None of the other candidates have shown as much promise for my bank account as you have.
             player:
                 Hey, Biggest shill gets the shills, am I right?
             agent:
@@ -230,7 +230,7 @@ QDEF:AddConvo("go_to_diner", "benefactor")
         DIALOG_BENEFACTOR_POOR = [[
             agent:
                 You show promise...but atop that promise is much bluster.
-		        I can't give you Havaria, but i'm willing to give you {funds#money}.
+		        I can't give you Havaria, but I'm willing to give you {funds#money}.
             player:
                 I guess this is better than nothing.
             * You have secured a bit of financial support, though it could be a lot better.
@@ -271,14 +271,14 @@ QDEF:AddConvo("go_to_diner", "benefactor")
 
                 on_start_negotiation = function(minigame)
                     -- just so you get at least something on win instead of nothing.
-                    minigame.player_negotiator:CreateModifier("SECURED_INVESTEMENTS", 5)
+                    minigame.player_negotiator:CreateModifier("SECURED_INVESTMENTS", 5)
                     minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 5)
                     minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 10)
                     minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 20)
                 end,
 
                 on_success = function(cxt, minigame)
-                    cxt.quest.param.funds = minigame:GetPlayerNegotiator():GetModifierStacks( "SECURED_INVESTEMENTS" )
+                    cxt.quest.param.funds = minigame:GetPlayerNegotiator():GetModifierStacks( "SECURED_INVESTMENTS" )
                     cxt.quest.param.poor_performance = cxt.quest.param.funds < 20 + 10 * cxt.quest:GetRank()
                     if cxt.quest.param.poor_performance then
                         cxt:Dialog("DIALOG_BENEFACTOR_POOR")
@@ -356,7 +356,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-            
+
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{

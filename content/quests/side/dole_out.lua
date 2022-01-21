@@ -115,7 +115,7 @@ local QDEF = QuestDef.Define{
     },
     political_angry = {
         delta = OPINION_DELTAS.BAD,
-        txt = "Let them call you a strawman.",
+        txt = "Let them call you a straw man.",
     },
 }
 -- Added true to make primary advisor mandatory.
@@ -224,7 +224,7 @@ QDEF:AddConvo("dole_out_three")
                         if card:IsSpent() then
                             cxt.player.battler:RemoveCard( card )
                         end
-                        -- Wumpus; Huh. Didn't know Weighted Pick was an option for the code. That shrank a lot of the code bloat that I had...hopefully I keep that in mind when the need arises. 
+                        -- Wumpus; Huh. Didn't know Weighted Pick was an option for the code. That shrank a lot of the code bloat that I had...hopefully I keep that in mind when the need arises.
                         local weight = {
                             STATE_PANHANDLER = 1,
                             STATE_GRATEFUL = 3,
@@ -249,7 +249,7 @@ QDEF:AddConvo("dole_out_three")
                 player:
                     Is something the matter?
                 agent:
-                    Just...i've been eating this for the past...how long?
+                    Just...I've been eating this for the past...how long?
                     Wish I could have something else...
             ]],
             OPT_GIVE = "Give them some Shills",
@@ -271,7 +271,7 @@ QDEF:AddConvo("dole_out_three")
             ]],
         }
         :Fn(function(cxt)
-            
+
             cxt:Dialog("DIALOG_PAN_HANDLE")
             table.insert(cxt.quest.param.gifted_people, cxt:GetAgent())
             cxt:Opt("OPT_GIVE")
@@ -290,7 +290,7 @@ QDEF:AddConvo("dole_out_three")
         :Loc{
             DIALOG_POLITICAL = [[
                     agent:
-                    Some of the poor man's food, sure i'll take it.
+                    Some of the poor man's food, sure I'll take it.
                     Though...I wish people would not have to rely on the admiralty's food like this.
                     !question
                     Are you in support of a UBI? So this kind of thing doesn't have to happen anymore?
@@ -336,7 +336,7 @@ QDEF:AddConvo("dole_out_three")
                 player:
                     It makes no sense to have people work, work, work like they do now.
                 agent:
-                    Thank you! 
+                    Thank you!
             ]],
             OPT_DISAGREE_2 = "Tell them you don't agree with the second stance.",
             DIALOG_DISAGREE_2 = [[
@@ -375,7 +375,7 @@ QDEF:AddConvo("dole_out_three")
                     Do my actions not demonstrate my beliefs?
                     I came to you to help you the people of Havaria who need help.
                 agent:
-                    I geuss that's true.
+                    I guess that's true.
                     Pardon, I'm not great at taking rejection for my ideas.
                 player:
                     Well, follow the debates. People'll talk all day long about different ideas.
@@ -434,7 +434,7 @@ QDEF:AddConvo("dole_out_three")
                 player:
                     How do you think elections are won?
                 agent:
-                    !angrypoint
+                    !angry_point
                     With strong morals and vigor!
                 player:
                     And look at how much the Rise has gotten done with just "strong morals" and "vigor".
@@ -454,9 +454,9 @@ QDEF:AddConvo("dole_out_three")
                 player:
                     I can't exactly change the business practices of an entire corporation.
                 agent:
-                    !angryshrug
-                    Of course you can! You would be the President!
-                    Emphasis on the "would", because I am certainly not voting for <i> you</> now!
+                    !angry_shrug
+                    Of course you can! You would be the president!
+                    Emphasis on the "would", because I am certainly not voting for <i>you</> now!
             ]],
             OPT_IGNORE_2 = "Ignore their complaints.",
             DIALOG_IGNORE_2 = [[
@@ -610,7 +610,7 @@ QDEF:AddConvo("dole_out_three", "primary_advisor")
                 It's just that you did suggest this...can't exactly do anything if I don't have the proper funds...
         ]],
         DIALOG_ASK_MONEY_SUCCESS = [[
-            agent:  
+            agent:
                 Hmph. Take a few shills.
                 I expect results, though. You'd better deliver.
         ]],

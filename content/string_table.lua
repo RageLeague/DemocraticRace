@@ -60,6 +60,14 @@ Content.AddStringTable("DEMOCRACY", {
             CONSISTENT_STANCE = "Consistent Stance",
             INCONSISTENT_STANCE = "Hypocrisy",
         },
+        MAIN_OVERLAY = {
+            VIEW_SUPPORT = "<#TITLE>View Support</>\nGeneral support: {1}",
+        },
+        METRICS =
+        {
+            TITLE = "Metric Collection Enabled",
+            DESC = "Since the last update, the Democratic Race mod now has a metrics collection system in place. It helps us imrpove the mod. You may choose to continue with metrics collecction enabled, or, if you don't want to, you can disable it in the mod options menu.\nOh yeah we figured out how to do metrics collection in mods, I guess that is important.",
+        },
         NOTIFICATION =
         {
             AGENT_SUPPORT =
@@ -98,6 +106,19 @@ Content.AddStringTable("DEMOCRACY", {
                 DETAIL_INCREASE = "Your support among {1#wealth_name_list} are increased.",
                 DETAIL_DECREASE = "Your support among {1#wealth_name_list} are decreased.",
                 DETAIL_BOTH = "Your support among {1#wealth_name_list} are increased, while your support among {2#wealth_name_list} are decreased.",
+            },
+            TIME_PASSED =
+            {
+                TITLE = "{1} {1*Action|Actions} Spent",
+                DETAIL = "You have spent {1} {1*action|actions} on {2}. You have {3} {3*action|actions} left for this free time.",
+                DETAIL_NO_FREE = "You have spent {1} {1*action|actions} on {2}. You have no more free time.",
+                REASON =
+                {
+                    ACTION = "performing a task",
+                    NEGOTIATION = "negotiation",
+                    BATTLE = "battle",
+                    TRAVEL = "travelling",
+                },
             },
             UPDATE_STANCE =
             {
