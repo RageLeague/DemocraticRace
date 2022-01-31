@@ -216,7 +216,7 @@ QDEF:AddConvo("find_challenger")
             agent:
                 Why tho?
             {good_player?
-                Why should I bother?
+                Why should I bother playing against {giver} when I have plenty of other things needs to be doing?
                 |
                 I'm bad.
             }
