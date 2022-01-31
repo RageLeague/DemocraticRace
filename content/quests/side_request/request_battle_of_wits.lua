@@ -214,26 +214,34 @@ QDEF:AddConvo("find_challenger")
                 I've got a sucker, {giver}, just ready to give up his shills to whoever plays him. Want in?
         		You play Grout Bog Flip 'Em. I've got someone who wants to play, if you're interested.
             agent:
-                Why tho?
+                Why should I bother playing against {giver}?
             {good_player?
-                Why should I bother playing against {giver} when I have plenty of other things needs to be doing?
+                I have plenty of other things needs to be doing, and I don't want to spend it playing this game against a random guy for no reason.
                 |
-                I'm bad.
+                Are you trying to humiliate me? I don't play Grout Bog Flip 'Em, and I will surely lose playing it.
             }
         ]],
         OPT_CONVINCE = "Convince {agent} to play",
         DIALOG_CONVINCE = [[
             player:
-                [p] Okay, just bear with me for a sec.
+                Okay, just bear with me for a sec.
         ]],
         DIALOG_CONVINCE_SUCCESS = [[
             agent:
-                [p] Good point.
+                You know what? It's probably easier just to play against {giver} than arguing with you and waste my time.
                 I'll meet up with {giver} and play.
+            player:
+                Thank you for your cooperation.
+            * You now have a challenger. Go meet up {giver} at {giver.hisher} house and spectate the match.
         ]],
         DIALOG_CONVINCE_FAILURE = [[
             agent:
-                [p] Nah, I don't think I will.
+                Okay, so no reason then?
+            player:
+                When you put it that way...
+            agent:
+                Yeah, I agree. This would be a complete waste of my time.
+            * Looks like {agent} is unwilling to play. Perhaps you could find another person, or perhaps you could badger {agent.himher} later.
         ]],
         SIT_MOD = "Bad at Grout Bog Flip 'Em",
     }
@@ -271,16 +279,26 @@ QDEF:AddConvo("go_to_game")
         :Loc{
             DIALOG_INTRO_GIVER_NO_CHALLENGER = [[
                 agent:
-                    [p] You got someone to play? Great!
+                    You got someone to play? Great!
                     But I guess they're not here, yet, huh?
+                player:
+                    Yeah, I guess so.
+                agent:
+                    !shrug
+                    We can wait. In the mean time, what do you want to talk about?
             ]],
             DIALOG_INTRO_CHALLENGER_NO_GIVER = [[
                 agent:
-                    [p] Where's {giver}?
+                    Where's {giver}?
+                    I was promised a game.
                 player:
                     {giver.HeShe}'s not here yet.
                 agent:
+                    !dubious
+                    {giver.HeShe} organized this game and {giver.heshe} doesn't even show up?
                     Oh well, we can wait.
+                    $miscAnnoyed
+                    Not like I have anything else I need to do, <i>{player}</>.
             ]],
         }
         :Fn(function(cxt)
@@ -416,10 +434,11 @@ QDEF:AddConvo("go_to_game")
 
             DIALOG_CONVINCE = [[
                 player:
-                    [p] Obviously no one can beat you.
-                    You are the best, after all.
+                    Obviously no one can beat you.
+                    Nobody knows Grout Bog Flip 'Em better than you, after all.
                 giver:
-                    Uh huh.
+                    !crossed
+                    Yeah, I am sure that is the reason, go on.
             ]],
             DIALOG_CONVINCE_SUCCESS = [[
                 giver:
