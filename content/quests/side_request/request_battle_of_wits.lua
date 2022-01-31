@@ -434,7 +434,7 @@ QDEF:AddConvo("go_to_game")
 
             DIALOG_CONVINCE = [[
                 player:
-                    Obviously no one can beat you.
+                    Obviously, this means that no one can beat you.
                     Nobody knows Grout Bog Flip 'Em better than you, after all.
                 giver:
                     !crossed
@@ -442,13 +442,12 @@ QDEF:AddConvo("go_to_game")
             ]],
             DIALOG_CONVINCE_SUCCESS = [[
                 giver:
-                    [p] Of course I'm the best.
+                    Of course nobody knows Grout Bog Flip 'Em better than me.
                     Tell me something I don't know.
                 player:
-                    Then obviously no one can beat you.
+                    Then in that case, nobody can beat you at it, since nobody knows it better than you.
                 giver:
-                    True.
-                    I love you now.
+                    You do have a point there.
             ]],
             DIALOG_CONVINCE_FAILURE = [[
                 giver:
