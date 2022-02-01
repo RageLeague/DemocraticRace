@@ -434,7 +434,7 @@ QDEF:AddConvo("dole_out_three")
                 player:
                     How do you think elections are won?
                 agent:
-                    !angry_point
+                    !angry_accuse
                     With strong morals and vigor!
                 player:
                     And look at how much the Rise has gotten done with just "strong morals" and "vigor".

@@ -622,7 +622,7 @@ QDEF:AddConvo("tell_giver")
                     !taken_aback
                     Vagrant age?!
                 agent:
-                    !angry_point
+                    !angry_accuse
                 {advisor?
                     Grab your damn things, and get out of my damn office!
                 }
@@ -689,7 +689,7 @@ QDEF:AddConvo("tell_giver")
                     !question
                     I suppose that is a lot of money this pulled in from selling just the shares.
                     But the product would've made more. I'm sure of it.
-                    !angry_point
+                    !angry_accuse
                     You come to me next time you try to pull this same kind of stunt, understand?
                 }
             ]],
@@ -704,7 +704,7 @@ QDEF:AddConvo("tell_giver")
                         Because you take half the campaign funding from me and put it in your own pockets!
                     agent:
                         That doesn't mean you get to shoot my hopes and dreams in the foot!
-                        !angry_point
+                        !angry_accuse
                         Look, you better work like a vroc once you get in office to make up for this.
                 }
                 {not advisor?

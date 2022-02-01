@@ -33,7 +33,7 @@ QDEF:AddConvo()
                     !angry
                     Protesting now is the only way you Spark lovers will listen to us.
                 baron:
-                    !angry_point
+                    !angry_accuse
                     I am authorized under the Barons to use force to disperse this violent assembly, and I will if I have to!
                     !exit
                 worker:
