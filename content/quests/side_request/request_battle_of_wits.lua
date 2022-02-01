@@ -489,9 +489,32 @@ QDEF:AddConvo("go_to_game")
             OPT_BRUSH_OFF = "Brush off {agent}'s concern",
             DIALOG_BRUSH_OFF = [[
                 player:
-                    [p] Don't worry about it.
+                    Strange how these people conveniently lose to you, huh?
+                    !shrug
+                    It's probably a coincidence, and you shouldn't worry about it too hard.
                 giver:
-                    Oh, I will.
+                    !hips
+                    What a statement, coming from someone totally competent at their job.
+                player:
+                    !salute
+                    Why, thank you very much!
+                giver:
+                    !angry_accuse
+                    That was sarcasm, you clown!
+                {advisor?
+                    !handwave
+                    Just... Work on your campaign.
+                    {not disliked?
+                        That seems like what you are good for, anyway.
+                    }
+                    {disliked?
+                        You are already behind, so try not to screw the campaign up as well.
+                    }
+                }
+                {not advisor?
+                    !angry_accuse
+                    Now get out of here. Go work on your campaign or whatever.
+                }
             ]],
 
             SIT_MOD = "You are clearly making a mockery of {agent} with these terrible players",
