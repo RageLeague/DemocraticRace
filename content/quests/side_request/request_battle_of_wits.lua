@@ -338,7 +338,7 @@ QDEF:AddConvo("go_to_game")
                     I need you to stand watch and make sure {challenger} isn't up to any shenanigans.
                 challenger:
                     !left
-                    !angry_point
+                    !angry_accuse
                     Shenanigans? Are you implying I'm a cheat?
                 giver:
                     !placate
@@ -401,7 +401,7 @@ QDEF:AddConvo("go_to_game")
                 giver:
                     I win.
                 challenger:
-                    !angry_point
+                    !angry_accuse
                     Wait, whoa! I know you fudged the scoring bracket somewhere along the lines!
                 giver:
                     !hips
@@ -448,11 +448,42 @@ QDEF:AddConvo("go_to_game")
                     Then in that case, nobody can beat you at it, since nobody knows it better than you.
                 giver:
                     You do have a point there.
+                    Well, it turns out that this experiment is well worth it.
+                    It has proven, once and for all, that my intellect is superior to all.
+                    And I have you to thank for helping me realize that.
+                    You truly are a great friend, {player}.
+                player:
+                    !bashful
+                    You're... welcome? I guess?
+                * Now {giver} is as arrogant as ever, thanks to you.
+                * But, perhaps this is for the best. For you, anyway.
             ]],
             DIALOG_CONVINCE_FAILURE = [[
                 giver:
-                    [p] I'm egotistical, not stupid.
-                    Try harder to fool me next time.
+                    !angry_accuse
+                    You think I don't know what you are doing?
+                    Trying to say things I like to hear so I can ignore your incompetence?
+                    Guess what? Nobody knows how grifters like you work better than me.
+                    And your insincerity is shown right on your face.
+                player:
+                    !bashful
+                    Ah, Hesh. Was it that obvious?
+                giver:
+                    Yes!
+                {advisor?
+                    !handwave
+                    Just... Work on your campaign.
+                    {not disliked?
+                        That seems like what you are good for, anyway.
+                    }
+                    {disliked?
+                        You are already behind, so try not to screw the campaign up as well.
+                    }
+                }
+                {not advisor?
+                    !angry_accuse
+                    Now get out of here. Go work on your campaign or whatever.
+                }
             ]],
 
             OPT_BRUSH_OFF = "Brush off {agent}'s concern",
@@ -521,7 +552,7 @@ QDEF:AddConvo("go_to_game")
                 * {giver} steams with anger, but quickly {giver.heshe} regains some composure as {giver.heshe} sits straighter in {giver.hisher} chair.
                 giver:
                     Well, it seems I have been outsmarted...
-                    !angry_point
+                    !angry_accuse
                     By a cheater!
                 challenger:
                     Whoa, you lost and you know it.
