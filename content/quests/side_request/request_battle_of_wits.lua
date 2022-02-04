@@ -650,30 +650,49 @@ QDEF:AddConvo("go_to_game")
                     !right
                 player:
                     !left
-                    [p] WTF, {agent}?
+                    !placate
+                    Wait, wait, wait. Maybe we should think things a bit through, alright?
             ]],
             DIALOG_CALM_SUCCESS = [[
                 player:
-                    [p] Is it how your treat your guests?
+                    You invite someone to play Grout Bog Flip 'Em, lost to them, and now you want to kill them?
+                    Is this how your treat your guests?
+                    Maybe one day, you decide that <i>I</> am a problem, so you send someone to kill me instead!
                 agent:
-                    Guess not.
+                    !placate
+                    Don't say that! You know I would never do that!
+                player:
+                    Then let {challenger.himher} go. You just have to accept that {challenger.heshe} beat you fair and square.
+                agent:
+                    !facepalm
+                    I- Fine. You do have a point.
                 challenger:
                     !left
                 agent:
-                    You can go now.
+                    !angry_shrug
+                    Alright. You win. Happy now?
                 challenger:
+                    !angry
+                    Not exactly, given that I wasted my time playing this game, and you just threatened to kill me.
+                    !happy
+                    Thanks for the shills, though.
+                agent:
+                    Get out of here before I change my mind.
                     !exit
-                * {challenger} left.
+                * You watch as {challenger} left run off quickly, not wanting to stay for the fallout.
+
+                {advisor_hostile?
                 player:
                     !left
-                {advisor_hostile?
+                * This leaves you and {agent}, who looks very devastated by this revelation.
                 agent:
+                    !scared
                     Did I just lose? Fair and square?
                 player:
                     !shrug
                     From what I can tell, seems like it.
                 agent:
-                    !scared
+                    !scared_shrug
                     But... I can't lose.
                     The Trunoomiel family didn't come this far by losing.
                     So... Why...?
@@ -683,17 +702,23 @@ QDEF:AddConvo("go_to_game")
                 * You left {agent} alone to contemplate {agent.hisher} life choices.
                 }
                 {not advisor_hostile?
+                player:
+                    !left
+                * This leaves you and {agent}, who looks a bit sad, but ultimately composed.
                 agent:
+                    !shrug
                     Well, seems like I lost fair and square.
                 player:
                     From what I can tell, seems like it.
                 agent:
                     Well, you did what I asked you to, so that's good.
+                    !think
                     Now, what I would do with this information, on the other hand, is another thing.
                     Anyway, thank you for all your troubles.
                 player:
                     You are welcome.
                 * You did what you are asked to do and resolved the situation peacefully! That's good.
+                * And it seems like {agent} is happy with your work, which is always a win.
                 }
             ]],
             DIALOG_CALM_FAILURE = [[
