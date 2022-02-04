@@ -723,8 +723,34 @@ QDEF:AddConvo("go_to_game")
             ]],
             DIALOG_CALM_FAILURE = [[
                 agent:
-                    [p] Et tu, {player}?
+                    !angry
+                    You too, {player}?
+                {advisor?
+                    {disliked?
+                        It's not enough that you screw up the campaign, huh?
+                        !angry_shrug
+                        And now you are siding with {challenger.himher}, this dirty <i>cheater</>?
+                    }
+                    {not disliked?
+                        I've done so much for your campaign, and how do you repay me?
+                        !angry_shrug
+                        You side with with {challenger.himher}, this dirty <i>cheater</>?
+                    }
+                }
+                {not advisor?
+                    You would rather side with {challenger.himher}, this dirty <i>cheater</>, than me?
+                }
+                challenger:
+                    !left
+                    !angry_accuse
+                    Hey! You lost! Fair and square!
+                player:
+                    !left
+                * {agent} pays {challenger}'s remark no mind.
+                agent:
+                    !spit
                     Guess I can't rely on a grifter for everything, eh?
+                    !fight
                     I have to do it myself!
             ]],
 
@@ -733,8 +759,23 @@ QDEF:AddConvo("go_to_game")
             DIALOG_REFUSE = [[
                 player:
                     !left
-                    [p] I refuse.
+                    This is not a thing I do anymore.
+                    !fight
+                    I am no longer just a grifter killing other people for money, and I refuse to do your dirty work for you!
                 giver:
+                    You talk real high and mighty for a grifter.
+                    {advisor?
+                        {disliked?
+                            It's not enough that you screw up the campaign, huh?
+                            !angry_shrug
+                            And you can't even do a simple task that I ask for you!
+                        }
+                        {not disliked?
+                            I've done so much for your campaign, and how do you repay me?
+                            !angry_shrug
+                            When I ask you a simple favor, and you even refused to do that!
+                        }
+                    }
                     Guess I will have to do it myself!
             ]],
 
