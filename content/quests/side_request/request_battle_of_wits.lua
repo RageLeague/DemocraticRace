@@ -97,12 +97,9 @@ local QDEF = QuestDef.Define
             DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 2, 3, "POOR_QUEST")
         end
     end,
-    -- process_fighter = function(quest, fighter)
-    --     print(fighter.agent, fighter:GetTeamID())
-    --     if fighter.agent == quest:GetCastMember("challenger") and fighter:GetTeamID() == TEAM.RED then
-    --         fighter:AddCondition("WANTED_DEAD")
-    --     end
-    -- end,
+    fill_out_quip_tags = function(quest, tags, agent)
+
+    end,
 
 }
 :AddCast{
@@ -470,7 +467,7 @@ QDEF:AddConvo("go_to_game")
                     Ah, Hesh. Was it that obvious?
                 giver:
                     Yes!
-                {advisor?
+                {primary_advisor?
                     !handwave
                     Just... Work on your campaign.
                     {not disliked?
@@ -480,7 +477,7 @@ QDEF:AddConvo("go_to_game")
                         You are already behind, so try not to screw the campaign up as well.
                     }
                 }
-                {not advisor?
+                {not primary_advisor?
                     !angry_accuse
                     Now get out of here. Go work on your campaign or whatever.
                 }
@@ -501,7 +498,7 @@ QDEF:AddConvo("go_to_game")
                 giver:
                     !angry_accuse
                     That was sarcasm, you clown!
-                {advisor?
+                {primary_advisor?
                     !handwave
                     Just... Work on your campaign.
                     {not disliked?
@@ -511,7 +508,7 @@ QDEF:AddConvo("go_to_game")
                         You are already behind, so try not to screw the campaign up as well.
                     }
                 }
-                {not advisor?
+                {not primary_advisor?
                     !angry_accuse
                     Now get out of here. Go work on your campaign or whatever.
                 }
@@ -691,7 +688,7 @@ QDEF:AddConvo("go_to_game")
                     !left
                 giver:
                     !right
-                {advisor?
+                {primary_advisor?
                     Told you hiring a bodyguard is a good idea.
                 player:
                     !dubious
@@ -699,7 +696,7 @@ QDEF:AddConvo("go_to_game")
                 giver:
                     Doesn't matter. Don't care.
                 }
-                {not advisor?
+                {not primary_advisor?
                     Wow, money sure can buy a lot of useful services.
                 player:
                     !dubious
@@ -790,7 +787,7 @@ QDEF:AddConvo("go_to_game")
                 agent:
                     !angry
                     You too, {player}?
-                {advisor?
+                {primary_advisor?
                     {disliked?
                         It's not enough that you screw up the campaign, huh?
                         !angry_shrug
@@ -802,7 +799,7 @@ QDEF:AddConvo("go_to_game")
                         You side with with {challenger.himher}, this dirty <i>cheater</>?
                     }
                 }
-                {not advisor?
+                {not primary_advisor?
                     You would rather side with {challenger.himher}, this dirty <i>cheater</>, than me?
                 }
                 challenger:
@@ -829,7 +826,7 @@ QDEF:AddConvo("go_to_game")
                     I am no longer just a grifter killing other people for money, and I refuse to do your dirty work for you!
                 giver:
                     You talk real high and mighty for a grifter.
-                    {advisor?
+                    {primary_advisor?
                         {disliked?
                             It's not enough that you screw up the campaign, huh?
                             !angry_shrug
@@ -1001,7 +998,7 @@ QDEF:AddConvo("go_to_game")
                             I'm going to leave.
                             I already wasted a ton of time trying to play with {giver}, and I have plenty of work to do.
                             Besides, I don't want to stick around for anyone to get the wrong idea.
-                        {advisor?
+                        {primary_advisor?
                         player:
                             Yeah, that too.
                             But I am asking what I should do now? {giver} is my advisor for my campaign.
@@ -1012,7 +1009,7 @@ QDEF:AddConvo("go_to_game")
                             !exit
                         * As {challenger} leave, you quickly leave the scene as well.
                         }
-                        {not advisor?
+                        {not primary_advisor?
                         player:
                             Same here.
                         * You and {challenger} quickly leave the scene.
@@ -1103,14 +1100,14 @@ QDEF:AddConvo("go_to_game")
                 right:
                     !exit
                 * You find an opening and run away.
-                {advisor?
+                {primary_advisor?
                     giver:
                         !right
                         !angry_accuse
                         And don't come back!
                     * Well looks like this advisor is not willing to do more to help you now.
                 }
-                {not advisor?
+                {not primary_advisor?
                     giver:
                         !right
                         !angry_accuse

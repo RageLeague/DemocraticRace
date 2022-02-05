@@ -225,6 +225,9 @@ local QDEF = QuestDef.Define
     end,
     fill_out_quip_tags = function(quest, tags, agent)
         table.insert_unique(tags, "democratic_race")
+        if agent == quest:GetCastMember("primary_advisor") then
+            table.insert_unique(tags, "primary_advisor")
+        end
         if quest:GetCastMember("primary_advisor") == quest:GetCastMember("advisor_diplomacy") then
             table.insert_unique(tags, "primary_advisor_diplomacy")
         end

@@ -194,11 +194,11 @@ QDEF:AddConvo("sell", "giver")
             agent:
                 !surprise
                 You WHAT?
-            {advisor?
+            {primary_advisor?
                 I guess I did told you to focus on the election.
                 Still, if you are just going to forget the things I tell you to do, you shouldn't have accepted my request in the first place!
             }
-            {not advisor?
+            {not primary_advisor?
                 How did that even happen?
             player:
                 That is a question I'm wondering myself.
@@ -623,10 +623,10 @@ QDEF:AddConvo("tell_giver")
                     Vagrant age?!
                 agent:
                     !angry_accuse
-                {advisor?
+                {primary_advisor?
                     Grab your damn things, and get out of my damn office!
                 }
-                {not advisor?
+                {not primary_advisor?
                     Get out of my sight!
                 }
                 * Then {agent} rants, {agent} hates you, blah blah blah.
@@ -699,7 +699,7 @@ QDEF:AddConvo("tell_giver")
                 agent:
                     You mean money <i>you</> have now.
                     Money that I didn't get a say in how you obtained.
-                {advisor?
+                {primary_advisor?
                     player:
                         Because you take half the campaign funding from me and put it in your own pockets!
                     agent:
@@ -707,7 +707,7 @@ QDEF:AddConvo("tell_giver")
                         !angry_accuse
                         Look, you better work like a vroc once you get in office to make up for this.
                 }
-                {not advisor?
+                {not primary_advisor?
                     player:
                         Well-
                     agent:
