@@ -866,21 +866,49 @@ QDEF:AddConvo("go_to_game")
             DIALOG_STEP_ASIDE = [[
                 player:
                     !left
-                    [p] Alright, I'll get out of your way.
+                    !neutral
+                    !shrug
+                    If you insist on killing {challenger}, then who am I to stop you?
+                    Have fun, or whatever.
                     !exit
+                challenger:
+                    !left
+                    !scared
                 giver:
                     !right
                     !cruel
-                * Oof.
+                    This is what happens to people who think they knows better than me.
+                challenger:
+                    !fight
+                    If you refuse to acknowledge you lose, then I will knock some sense into you!
+            ]],
+            DIALOG_STEP_ASIDE_GIVER = [[
+                * You watch as these two fight between themselves.
+                * As the fight goes on, it is clear that {challenger} is no match for {giver}.
+                * Soon, {giver} finishes {challenger} off.
                 player:
                     !left
+                * {giver} turns {giver.hisher} attention towards you.
                 giver:
-                    Got my hands dirty, but no matter.
-                    You did literally nothing.
+                    !right
+                    !angry_accuse
+                    You did nothing! While I do all the work myself.
                 player:
-                    Not my job.
+                    Hey, I can't just go around killing people like I used to.
+                    What does the public think of a candidate that just kill people that don't disagree with them?
+                    !shrug
+                    Besides. You ask me to find someone to play against you. You didn't mention killing anyone.
                 giver:
-                    Fair.
+                    !thought
+                    I will admit that you do have a point.
+                    !angry_accuse
+                    But still! You could've helped me!
+                    But since you refused, don't expect me to do you any favors in the near future!
+                * Looks like your indifference has caused someone die and another to be mad at you.
+                * Was this really worth it?
+            ]],
+            DIALOG_STEP_ASIDE_CHALLENGER = [[
+
             ]],
             OPT_DEFEND = "Defend {challenger}",
             DIALOG_DEFEND = [[
