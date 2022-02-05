@@ -1215,8 +1215,44 @@ FOLLOW_UP:AddConvo("comfort", "giver")
                 How could it be alright? I lost!
         ]],
         DIALOG_COMFORT_SUCCESS = [[
+            player:
+                I know it is hard for you to take in.
+                "How could someone beat me, if nobody knows better than me?" is probably what you think, right?
             agent:
-                [p] Thanks, I'm cured.
+                That is true.
+                Who am I if I can't beat another player? A loser, and a failure, that is who I am.
+            player:
+                !placate
+                That is not true!
+            agent:
+                How is that not true? I lost!
+            player:
+                !shrug
+                So what? We all lose sometimes.
+                Even the most successful person loses sometimes.
+                Losing doesn't make you a failure.
+                You are still successful at lots of other things.
+                Losing just means that there is room for improvement.
+            agent:
+                !dubious
+                What? What you said doesn't make any sense.
+            player:
+                A winner doesn't necessarily need to win at everything. That is physically impossible.
+                What separates a winner and a failure is not how many things they have won, but what they do when they lose.
+                A failure sulk and and gives up when they lose, but a winner use this as an opportunity to improve themselves.
+            agent:
+                So... You are saying I am not a loser, even though I lost the game, as long as I learn from this mistake?
+            player:
+                That is indeed what I am saying.
+            agent:
+                Hmm... That... I am not used to this, but it does sound logical.
+                I will give this though a try.
+                Thanks for opening my eyes, {player}. I never thought of it that way.
+            player:
+                Glad I am able to help.
+            agent:
+                The election is coming up. We need to continue our work and improve ourselves, so we can be winners.
+                I will do my best to help you from now on.
         ]],
         DIALOG_COMFORT_WIN = [[
             player:
