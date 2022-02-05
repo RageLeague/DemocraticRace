@@ -1365,13 +1365,29 @@ FOLLOW_UP:AddConvo("finale")
     :ConfrontState("STATE_CONF", function(cxt) return cxt.location == cxt:GetCastMember("giver_home") end)
         :Loc{
             DIALOG_INTRO = [[
-                * [p] You arrive at {giver}'s {advisor?office|home}, but {giver} is nowhere to be seen.
-                * You found a note. It says:
-                * "I have moved to a better place, for if anyone is better than me, my entire purpose is all for nothing."
-                * And some other poetic stuff idk.
-                * I assure you that this is totally not a suicide note. {giver.HeShe}'s fine.
-                * It's just that you will never see {giver.himher} again.
-                * They are completely different.
+                * You arrive at {giver}'s {advisor?office|home}, but {giver} is nowhere to be seen.
+                * On {giver.hisher}, you found a note. It says:
+                * "For my entire life, I know myself to be the best."
+                * "That nobody knows anything better than me."
+                * "Yet, it turns out, that is not true, and I was beaten by someone lower than me."
+                * "I was beaten and humiliated, and for that, I have failed."
+                * "I am a failure."
+                * "And there is only one place for a failure like me."
+                * "To whoever read my note, by the time that you are reading this, I have already moved on."
+                * "Goodbye."
+                * "P.S. To {player}, I could not bear myself to continue help you campaigning."
+                * "You want someone who is successful to help you, not someone like me."
+                * "Good luck with your campaign."
+                * That is the end of the note.
+                * You put down the notes, and stood solemnly for a long time.
+                * Was it really the right call to convince {giver.himher} that {giver.heshe} lost to someone else, fair and square?
+                * Maybe if you let {giver.himher} believe that {challenger.heshe} did cheat, things would turn out differently?
+                * The past is irrelevant, now.
+                * {giver} is gone.
+                * Not dead, per se, because otherwise you can see it in the relationship screen.
+                * But still. You can't find {giver}, and you have no idea where {giver.heshe} went.
+                * There is nothing else for you to do here, now.
+                * There is nothing more you could do.
             ]],
         }
         :Fn(function(cxt)
