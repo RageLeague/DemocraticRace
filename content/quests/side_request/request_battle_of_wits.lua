@@ -905,9 +905,6 @@ QDEF:AddConvo("go_to_game")
                 * Looks like your indifference has caused someone die and another to be mad at you.
                 * Was this really worth it?
             ]],
-            DIALOG_STEP_ASIDE_CHALLENGER = [[
-
-            ]],
             OPT_DEFEND = "Defend {challenger}",
             DIALOG_DEFEND = [[
                 player:
