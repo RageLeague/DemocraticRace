@@ -1210,23 +1210,65 @@ FOLLOW_UP:AddConvo("comfort", "giver")
         OPT_COMFORT = "Comfort {agent}",
         DIALOG_COMFORT = [[
             player:
-                [p] Feeling depressed? Just don't be sad.
+                Hey, it's alright. Everything is fine.
+            agent:
+                How could it be alright? I lost!
         ]],
         DIALOG_COMFORT_SUCCESS = [[
             agent:
                 [p] Thanks, I'm cured.
         ]],
         DIALOG_COMFORT_WIN = [[
-            agent:
-                [p] Everything to you is about winning, isn't it?
             player:
-                That's what you taught me.
+                !crossed
+                Are you going to stay like this forever?
+                Are you really going to sulk because you've lost?
+                The {agent} I know never admits defeat!
+                The {agent} I know will always find a way to win!
             agent:
-                Well you don't have to talk to a loser like me.
+                !sigh
+                Everything to you is about winning, isn't it?
+            player:
+                Well... I sure don't like losing.
+                And neither should you.
+            agent:
+                The fact of the matter is, I lost that game.
+            player:
+                You can always win the next one!
+            agent:
+                That doesn't change what happened, does it?
+                I always say that nobody knows more than me.
+                But it turns out, there is someone who knows more than me, and probably other people as well.
+                So if I am not the best, then who am I?
+                A failure. A loser. That's who I am.
+            player:
+                Well-
+            agent:
+                Say no more.
+                You are a winner, {player}. You always are.
+                You don't have to talk to a loser like me.
+            * It seems like you have worsened the situation.
+            * Perhaps you shouldn't berate {agent}'s resolve until nothing is left?
+            * It's too late now. {agent} doesn't even want to talk to you.
         ]],
         DIALOG_COMFORT_FAILURE = [[
             agent:
-                [p] Say no more.
+                !handwave
+                I think I've heard enough.
+                Nothing you say will change what happened.
+                The fact of the matter is, I lost that game.
+                I always say that nobody knows more than me.
+                But it turns out, there is someone who knows more than me, and probably other people as well.
+                So if I am not the best, then who am I?
+                A failure. A loser. That's who I am.
+            player:
+                Hold on, that's not-
+            agent:
+                Say no more.
+                You need a winner to help your campaign, {player}.
+                You don't have to talk to a loser like me.
+            * It seems like your attempt to brighten {agent}'s mood has worsened the situation.
+            * It's too late now. {agent} doesn't even want to talk to you.
         ]],
     }
     :Hub(function(cxt)
@@ -1274,6 +1316,7 @@ FOLLOW_UP:AddConvo("comfort", "giver")
         :Loc{
             DIALOG_INTRO = [[
                 agent:
+                    !scared
                     If I'm not the best, then who am I?
             ]],
         }
