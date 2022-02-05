@@ -881,8 +881,6 @@ QDEF:AddConvo("go_to_game")
                 challenger:
                     !fight
                     If you refuse to acknowledge you lose, then I will knock some sense into you!
-            ]],
-            DIALOG_STEP_ASIDE_GIVER = [[
                 * You watch as these two fight between themselves.
                 * As the fight goes on, it is clear that {challenger} is no match for {giver}.
                 * Soon, {giver} finishes {challenger} off.
