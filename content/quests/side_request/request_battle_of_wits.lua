@@ -606,22 +606,70 @@ QDEF:AddConvo("go_to_game")
                     player:
                         For you, maybe.
                     giver:
-                        Well, regardless of how you feel, I am indebted for your aid in the test of my mental faculties against others.
+                        Well, regardless of how you feel, thanks for helping me rid the world of this dirty cheater.
+                    player:
+                        !dubious
+                        Out of curiosity, did you really believe that {challenger} cheated?
+                    giver:
+                        !crossed
+                        As I said numerous times before, nobody knows Grout Bog Flip 'Em better than me.
+                        How else would you explain that {challenger.heshe} beat me?
+                    player:
+                        Uh huh.
+                    giver:
+                        Anyway, thanks for your aid in the test of my mental faculties against others.
+                        And helping me out when I needed you the most.
+                        For that, I am truly indebted to you.
+                    * You feel like it is immoral to just kill people who are better than you at flipping coins.
+                    * Then again, if you care about morals, you wouldn't be a grifter.
+                    * Besides, getting into {giver}'s good grace is way more valuable.
                 }
                 {not dead?
-                    player:
-                        [p] Get out of here.
                     challenger:
+                        !right
+                        !injured
+                        What else do you want from me?
+                    player:
+                        Get out of here. Just be glad I let you live.
+                    challenger:
+                        If this is how you operate, then I'm afraid I don't want anything to do with you.
+                        Goodbye.
                         !exit
-                    * {challenger} runs away.
+                    * {challenger} runs away as quickly as possible.
+                    * You turn your attention towards {giver}, who doesn't look too pleased with what you did.
+                    * Or, rather, what you didn't do.
                     giver:
                         !right
+                        !crossed
                         Why didn't you finish {challenger} off?
+                        You are just going to let that cheater face get off scot free?
                     player:
-                        I'm not a hitman.
+                        I send {challenger.himher} a message, didn't I?
+                        Besides, I didn't accept your request knowing I need to kill someone.
                     giver:
-                        I'm mad now.
+                        !sigh
+                        Fine. It's not technically what I asked you to do.
+                        But still! You could have finish what you have started.
+                        At least that cheater would think twice before showing {challenger.hisher} face in front of me again.
                 }
+                giver:
+                    Anyway, thanks for helping me rid the world of this dirty cheater.
+                player:
+                    !dubious
+                    Out of curiosity, did you really believe that {challenger} cheated?
+                giver:
+                    !crossed
+                    As I said numerous times before, nobody knows Grout Bog Flip 'Em better than me.
+                    How else would you explain that {challenger.heshe} beat me?
+                player:
+                    Uh huh.
+                giver:
+                    Anyway, thanks for your aid in the test of my mental faculties against others.
+                    And helping me out when I needed you the most.
+                    For that, I am truly indebted to you.
+                * You feel like it is immoral to just kill people who are better than you at flipping coins.
+                * Then again, if you care about morals, you wouldn't be a grifter.
+                * Besides, getting into {giver}'s good grace is way more valuable.
             ]],
 
             OPT_ORDER = "Order {1#agent} to kill {challenger}",
@@ -630,18 +678,35 @@ QDEF:AddConvo("go_to_game")
                     !right
                     !scared
                 player:
-                    [p] {hired}, kill {challenger.himher}.
+                    {hired}, kill {challenger.himher}.
                 hired:
                     !left
-                    As you wish.
+                    Finally, something interesting with this job.
                 challenger:
+                    !placate
+                    Wait, hold on a sec-
                     !exit
-                * Oof.
+                * The deed is done before {challenger.heshe} could finish the sentence.
                 player:
                     !left
                 giver:
                     !right
-                    Thx.
+                {advisor?
+                    Told you hiring a bodyguard is a good idea.
+                player:
+                    !dubious
+                    Was that really "bodyguarding" though?
+                giver:
+                    Doesn't matter. Don't care.
+                }
+                {not advisor?
+                    Wow, money sure can buy a lot of useful services.
+                player:
+                    !dubious
+                    I have many questions.
+                giver:
+                    And I am not accepting any of them.
+                }
             ]],
 
             OPT_CALM = "Calm {giver} down",
@@ -917,31 +982,59 @@ QDEF:AddConvo("go_to_game")
             DIALOG_DEFEND_WIN = [[
                 {dead?
                     {challenger_dead?
-                        * [p] Everyone dies lol.
+                        * After the dust settles, {giver_home} looks like a battle has taken place rather than a game of Grout Bog Flip 'Em.
+                        * It seems like neither {giver} nor {challenger} has won.
+                        * You quickly leave the scene, hoping no one mistakes you as the killer for both.
                     }
                     {not challenger_dead?
+                        * After the battle, {giver_home} looks like a battle has taken place rather than a game of Grout Bog Flip 'Em.
+                        * You look at {challenger} as {challenger.heshe} addresses you.
                         player:
                             !left
                         challenger:
                             !right
-                            [p] Holy Hesh, you actually killed {giver.himher}.
-                            Thanks.
-                    }
-                    {advisor?
-                        * Now where will you find another advisor?
+                            Holy Hesh, you actually killed {giver.himher}.
+                            I really wish it didn't have to come to this, but {giver} paid a huge price for {giver.hisher} arrogance.
+                        player:
+                            Now what?
+                        challenger:
+                            I'm going to leave.
+                            I already wasted a ton of time trying to play with {giver}, and I have plenty of work to do.
+                            Besides, I don't want to stick around for anyone to get the wrong idea.
+                        {advisor?
+                        player:
+                            Yeah, that too.
+                            But I am asking what I should do now? {giver} is my advisor for my campaign.
+                        challenger:
+                            I don't know? Find another one?
+                            You really don't want to have {giver} as your advisor, anyway, not with how badly {giver.heshe} can take a loss.
+                            I will be leaving now, and good luck finding another advisor.
+                            !exit
+                        * As {challenger} leave, you quickly leave the scene as well.
+                        }
+                        {not advisor?
+                        player:
+                            Same here.
+                        * You and {challenger} quickly leave the scene.
+                        }
                     }
                 }
                 {not dead?
                     {challenger_dead?
+                        * Even as {giver} is defeated, {giver.heshe} still doesn't seem to want to give up.
                         player:
                             !left
                         giver:
                             !right
                             !injured
-                            [p] Looks like {challenger}'s dead anyway.
-                            Well, was it worth it?
+                            What gives? You would rather side with that <i>cheater</> than me?
+                            Even, so, in the end, nothing has changed! {challenger.HeShe}'s dead anyway!
+                        player:
+                            !angry_accuse
+                            You only accused {challenger.himher} for being a cheater because you lost, fair and square!
                     }
                     {not challenger_dead?
+                        * Even as {giver} is defeated, {giver.heshe} still doesn't seem to want to give up.
                         giver:
                             !injured
                             You cheater! Nobody knows Grout Bog Flip 'Em better than me!
@@ -967,51 +1060,63 @@ QDEF:AddConvo("go_to_game")
                             !left
                         giver:
                             !angry_accuse
-                            You did nothing! While you watch as {challenger} humiliate me!
+                            What gives? You would rather side with that <i>cheater</> than me?
                         player:
-                            !permit
-                            You ask me to find someone to play against you. You didn't mention killing anyone.
-                            Besides, {challenger} does have a point.
-                            You shouldn't just go killing people just because they lost.
-                        {advisor_hostile?
-                        * It is then that {giver} realized what {giver.hisher} situation is.
-                        giver:
-                            !scared
-                            Oh, Hesh. Did I just lose? Fair and square?
-                        player:
-                            !shrug
-                            From what I can tell, seems like it.
-                        agent:
-                            !scared_shrug
-                            But... I can't lose.
-                            The Trunoomiel family didn't come this far by losing.
-                            So... Why...?
-                            I... Need to think.
-                        player:
-                            Okay...?
-                        * You left {agent} alone to contemplate {agent.hisher} life choices.
-                        }
-                        {not advisor_hostile?
-                        giver:
-                            Uh, whatever.
-                            But just know this: you betrayed me when I needed you the most.
-                            So next time when you need me, expect nothing in return.
-                        * You are left alone, contemplating your decisions.
-                        * Was defending {challenger} really the right call?
-                        }
+                            I have to agree with {challenger} here.
+                    }
+                    player:
+                        You have to accept that there are always people who are going to be better than you.
+                        And killing people who are better than you doesn't change that!
+                        !crossed
+                        Sorry, I had to defend {challenger}. I can't allow you to throw a tantrum like that.
+                    {advisor_hostile?
+                    * It is then that {giver} realized what {giver.hisher} situation is.
+                    giver:
+                        !scared
+                        Oh, Hesh. Did I just lose? Fair and square?
+                    player:
+                        !shrug
+                        From what I can tell, seems like it.
+                    agent:
+                        !scared_shrug
+                        But... I can't lose.
+                        The Trunoomiel family didn't come this far by losing.
+                        So... Why...?
+                        I... Need to think.
+                    player:
+                        Okay...?
+                    * You left {agent} alone to contemplate {agent.hisher} life choices.
+                    }
+                    {not advisor_hostile?
+                    giver:
+                        Uh, whatever.
+                        But just know this: you betrayed me when I needed you the most.
+                        So next time when you need me, expect nothing in return.
+                    * You are left alone, contemplating your decisions.
+                    * Was defending {challenger} really the right call?
                     }
                 }
             ]],
             DIALOG_DEFEND_RUN = [[
+                left:
+                    !exit
+                right:
+                    !exit
+                * You find an opening and run away.
                 {advisor?
                     giver:
-                        [p] And don't come back!
+                        !right
+                        !angry_accuse
+                        And don't come back!
                     * Well looks like this advisor is not willing to do more to help you now.
                 }
                 {not advisor?
                     giver:
-                        [p] That's right. Run like a coward.
-                    * Oof, that's not good.
+                        !right
+                        !angry_accuse
+                        That's right. Run like a coward.
+                    * There is nothing left to do but to keep running away.
+                    * You imagine that the next time you meet, {giver} will not be pleased to see you.
                 }
             ]],
         }
@@ -1032,6 +1137,9 @@ QDEF:AddConvo("go_to_game")
                         cxt:Dialog("DIALOG_DEFEND_RUN")
                         cxt.quest:Fail()
                         cxt:GetCastMember("giver"):OpinionEvent(OPINION.BETRAYED)
+                        if cxt:GetCastMember("giver") == TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") then
+                            DemocracyUtil.UpdateAdvisor(nil, "ADVISOR_REJECTED")
+                        end
                         StateGraphUtil.AddLeaveLocation(cxt)
                     end,
                     on_win = function(cxt)
