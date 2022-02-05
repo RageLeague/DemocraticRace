@@ -906,66 +906,7 @@ QDEF:AddConvo("go_to_game")
                 * Was this really worth it?
             ]],
             DIALOG_STEP_ASIDE_CHALLENGER = [[
-                * You watch as these two fight between themselves.
-                * As the fight goes on, it is clear that {giver} is no match for {challenger}.
-                * Soon, {giver} was pacified by {challenger}.
-                challenger:
-                    !angry
-                giver:
-                    !injured
-                    You cheater! Nobody knows Grout Bog Flip 'Em better than me!
-                    It is inconceivable!
-                challenger:
-                {good_player?
-                    !crossed
-                    I've played against many players, and I do have to admit, nobody throws a temper tantrum larger than you.
-                    You lost, so what? There will always people who are better than you.
-                }
-                {not good_player?
-                    !dubious
-                    You? Even I can beat you, and I suck at this game!
-                    And even if I didn't beat you, there will always be people who are better than you.
-                }
-                    But grown ups don't just try to kill other people when they lose at gambling.
-                    Let this be a lesson to you.
-                    !exit
-                * After some stern talking, {challenger} left, leaving you with {giver}.
-                player:
-                    !left
-                giver:
-                    !angry_accuse
-                    You did nothing! While you watch as {challenger} humiliate me!
-                player:
-                    !permit
-                    You ask me to find someone to play against you. You didn't mention killing anyone.
-                    Besides, {challenger} does have a point.
-                    You shouldn't just go killing people just because they lost.
-                {advisor_hostile?
-                * It is then that {giver} realized what {giver.hisher} situation is.
-                giver:
-                    !scared
-                    Oh, Hesh. Did I just lose? Fair and square?
-                player:
-                    !shrug
-                    From what I can tell, seems like it.
-                agent:
-                    !scared_shrug
-                    But... I can't lose.
-                    The Trunoomiel family didn't come this far by losing.
-                    So... Why...?
-                    I... Need to think.
-                player:
-                    Okay...?
-                * You left {agent} alone to contemplate {agent.hisher} life choices.
-                }
-                {not advisor_hostile?
-                giver:
-                    Uh, whatever.
-                    But just know this: you did nothing when I needed you the most.
-                    So next time when you need me, expect nothing in return.
-                * You are left alone, contemplating your decisions.
-                * Was staying neutral really the right call?
-                }
+
             ]],
             OPT_DEFEND = "Defend {challenger}",
             DIALOG_DEFEND = [[
@@ -1005,16 +946,62 @@ QDEF:AddConvo("go_to_game")
                     }
                     {not challenger_dead?
                         giver:
-                            !right
                             !injured
+                            You cheater! Nobody knows Grout Bog Flip 'Em better than me!
+                            It is inconceivable!
+                        challenger:
+                            !left
+                            !angry
+                        {good_player?
+                            !crossed
+                            I've played against many players, and I do have to admit, nobody throws a temper tantrum larger than you.
+                            You lost, so what? There will always people who are better than you.
+                        }
+                        {not good_player?
+                            !dubious
+                            You? Even I can beat you, and I suck at this game!
+                            And even if I didn't beat you, there will always be people who are better than you.
+                        }
+                            But grown ups don't just try to kill other people when they lose at gambling.
+                            Let this be a lesson to you.
+                            !exit
+                        * After some stern talking, {challenger} left, leaving you with {giver}.
                         player:
                             !left
-                            [p] So? Have you finally come to your senses?
-                            You gotta accept that someone is better than you.
                         giver:
-                            Fine, you win this.
-                            But I will remember this.
-                        * In typical Griftlands fashion, violence solves everything.
+                            !angry_accuse
+                            You did nothing! While you watch as {challenger} humiliate me!
+                        player:
+                            !permit
+                            You ask me to find someone to play against you. You didn't mention killing anyone.
+                            Besides, {challenger} does have a point.
+                            You shouldn't just go killing people just because they lost.
+                        {advisor_hostile?
+                        * It is then that {giver} realized what {giver.hisher} situation is.
+                        giver:
+                            !scared
+                            Oh, Hesh. Did I just lose? Fair and square?
+                        player:
+                            !shrug
+                            From what I can tell, seems like it.
+                        agent:
+                            !scared_shrug
+                            But... I can't lose.
+                            The Trunoomiel family didn't come this far by losing.
+                            So... Why...?
+                            I... Need to think.
+                        player:
+                            Okay...?
+                        * You left {agent} alone to contemplate {agent.hisher} life choices.
+                        }
+                        {not advisor_hostile?
+                        giver:
+                            Uh, whatever.
+                            But just know this: you betrayed me when I needed you the most.
+                            So next time when you need me, expect nothing in return.
+                        * You are left alone, contemplating your decisions.
+                        * Was defending {challenger} really the right call?
+                        }
                     }
                 }
             ]],
