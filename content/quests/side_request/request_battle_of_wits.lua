@@ -97,9 +97,6 @@ local QDEF = QuestDef.Define
             DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 2, 3, "POOR_QUEST")
         end
     end,
-    fill_out_quip_tags = function(quest, tags, agent)
-
-    end,
 
 }
 :AddCast{
@@ -1168,7 +1165,12 @@ FOLLOW_UP = QDEF:AddFollowup({
                 end
             end
         end,
-    }
+    },
+    fill_out_quip_tags = function(quest, tags, agent)
+        if agent == quest:GetCastMember("giver") then
+            table.insert_unique(tags, "dronumph_depressed")
+        end
+    end,
 })
 
 FOLLOW_UP:GetCast("challenger").unimportant = true
