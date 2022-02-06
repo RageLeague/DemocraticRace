@@ -1118,7 +1118,10 @@ QDEF:AddConvo("go_to_game")
             cxt:TalkTo(cxt:GetCastMember("giver"))
             cxt:Opt("OPT_STEP_ASIDE")
                 :Dialog("DIALOG_STEP_ASIDE")
-                :Fn(function(cxt) cxt.quest.param.poor_performance = true end)
+                :Fn(function(cxt)
+                    cxt.quest.param.poor_performance = true
+                    cxt:GetCastMember("challenger"):Kill()
+                end)
                 :CompleteQuest()
                 :DoneConvo()
             cxt:Opt("OPT_DEFEND")
@@ -1140,7 +1143,9 @@ QDEF:AddConvo("go_to_game")
                         cxt:Dialog("DIALOG_DEFEND_WIN")
                         if cxt:GetCastMember("giver"):IsAlive() then
                             cxt.quest:Fail()
-                            cxt.quest:SpawnFollowQuest(FOLLOW_UP.id)
+                            if cxt:GetCastMember("giver") == TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") then
+                                cxt.quest:SpawnFollowQuest(FOLLOW_UP.id)
+                            end
                         end
                         StateGraphUtil.AddEndOption(cxt)
                     end,
