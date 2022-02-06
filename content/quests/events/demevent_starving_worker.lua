@@ -231,7 +231,7 @@ QDEF:AddConvo()
                     !dubious
                     Are you new in Havaria or something?
                 agent:
-                    !angry_point
+                    !angry_accuse
                     I will remember this the next time we meet.
                     !exit
                 * You might just have made an enemy who you really don't want to be with.

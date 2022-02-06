@@ -81,7 +81,7 @@ QDEF:AddConvo()
                     "Painless", I believe I can quote you as.
                     "Painless" is not anything close to what that felt like.
                 agent:
-                    !angry_point
+                    !angry_accuse
                     Bite your tongue. Whatever you feel now is leagues better than the eternal damnation at the hands of Hesh itself.
                     It will take it's toll, yes, but your body and soul will be fit for consumption.
                 player:
@@ -141,7 +141,7 @@ QDEF:AddConvo()
                     !question
                     Heretics wouldn't have any reason to destroy it, though.
                 agent:
-                    !angry_point
+                    !angry_accuse
                     Someone who questions the Waterlogged Tomes! Have you no shame?
                 player:
                     My shame's perfectly intact, but fine. Don't tell me how it works, then.
@@ -164,7 +164,7 @@ QDEF:AddConvo()
                         !hips
                         I don't think I'll be getting shot up with this vaccine you called "not consumer-friendly".
                     agent:
-                        !angry_point
+                        !angry_accuse
                         Do you wish for eternal damnation?
                     player:
                         Tough words for the Priest using deemed heretical tools to do holy work.

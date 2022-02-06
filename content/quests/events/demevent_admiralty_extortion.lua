@@ -220,7 +220,7 @@ QDEF:AddConvo()
                             Here, take it.
                             !injured
                             You're nothing but a crook.
-                            !angry_point
+                            !angry_accuse
                             And you there!
                         player:
                             !left
@@ -273,11 +273,11 @@ QDEF:AddConvo()
                             !injured
                         laborer:
                             !left
-                            !angry_point
+                            !angry_accuse
                             Will you leave me alone, now?
                         admiralty:
                             Fine, you win. I won't bother you anymore.
-                            !angry_point
+                            !angry_accuse
                             But you there!
                         player:
                             !left

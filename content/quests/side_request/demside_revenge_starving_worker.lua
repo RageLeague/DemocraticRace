@@ -441,17 +441,28 @@ QDEF:AddConvo("take_your_heart", "foreman")
         DIALOG_PROBE_NO_INTEL = [[
             agent:
                 ...
-                [p] is that all?
+                !dubious
+                Anything else you want to know?
             player:
-                well, yeah.
+                Well... That is all the questions I have for you for now.
             agent:
-                good talk.
+                I am glad I can answer some of your questions.
+                Have a good day, {player.honorific}, and please leave me alone.
+            * Looks like your questioning has lead to no result. Perhaps you should try another way?
         ]],
         DIALOG_PROBE_FAIL = [[
             agent:
-                [p] hey! are you trying to get me say something incriminating?
-                get out of my face!
-            * Whelp, you failed on this front. maybe try some other ways
+                Wait a second...!
+                !angry_accuse
+                You are trying to get me to say something incriminating, aren't you?
+            player:
+                Aha! So you admit that you did something wrong!
+            agent:
+                I admit to nothing!
+                I know your type. Find the slightest problem in my words, and you take it out of context and twist it.
+                !angry_accuse
+                I am not telling you anything!
+            * Looks like this line of questioning has lead you to a dead end. Perhaps you should try another way?
         ]],
         OPT_DEMAND = "Ask {agent} to change {agent.hisher} ways",
         TT_INFO_PROBED = "<#BONUS>Info probed. -25% demand.</>",

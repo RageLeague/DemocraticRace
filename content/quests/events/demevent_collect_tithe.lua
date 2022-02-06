@@ -52,7 +52,7 @@ QDEF:AddConvo()
                 }
                 {not player_sal? and not player_rook? and not player_smith?
                 player:
-                    !angry_point
+                    !angry_accuse
                     I've paid all my tithes on time, just like the rest of us.
                 agent:
                     Well, that's before you became a politician.
@@ -313,7 +313,7 @@ QDEF:AddConvo()
                     agent:
                         !injured
                         That...won't be necessary.
-                        !angry_point
+                        !angry_accuse
                         But you have not seen Hesh's wrath, not in it's fullest, until today.
                     player:
                         !handwave

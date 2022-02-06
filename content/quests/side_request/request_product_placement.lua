@@ -194,11 +194,11 @@ QDEF:AddConvo("sell", "giver")
             agent:
                 !surprise
                 You WHAT?
-            {advisor?
+            {primary_advisor?
                 I guess I did told you to focus on the election.
                 Still, if you are just going to forget the things I tell you to do, you shouldn't have accepted my request in the first place!
             }
-            {not advisor?
+            {not primary_advisor?
                 How did that even happen?
             player:
                 That is a question I'm wondering myself.
@@ -622,11 +622,11 @@ QDEF:AddConvo("tell_giver")
                     !taken_aback
                     Vagrant age?!
                 agent:
-                    !angry_point
-                {advisor?
+                    !angry_accuse
+                {primary_advisor?
                     Grab your damn things, and get out of my damn office!
                 }
-                {not advisor?
+                {not primary_advisor?
                     Get out of my sight!
                 }
                 * Then {agent} rants, {agent} hates you, blah blah blah.
@@ -689,7 +689,7 @@ QDEF:AddConvo("tell_giver")
                     !question
                     I suppose that is a lot of money this pulled in from selling just the shares.
                     But the product would've made more. I'm sure of it.
-                    !angry_point
+                    !angry_accuse
                     You come to me next time you try to pull this same kind of stunt, understand?
                 }
             ]],
@@ -699,15 +699,15 @@ QDEF:AddConvo("tell_giver")
                 agent:
                     You mean money <i>you</> have now.
                     Money that I didn't get a say in how you obtained.
-                {advisor?
+                {primary_advisor?
                     player:
                         Because you take half the campaign funding from me and put it in your own pockets!
                     agent:
                         That doesn't mean you get to shoot my hopes and dreams in the foot!
-                        !angry_point
+                        !angry_accuse
                         Look, you better work like a vroc once you get in office to make up for this.
                 }
-                {not advisor?
+                {not primary_advisor?
                     player:
                         Well-
                     agent:

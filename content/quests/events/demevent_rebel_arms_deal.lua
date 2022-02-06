@@ -258,7 +258,7 @@ QDEF:AddConvo()
                 player:
                     !right
                 jakes:
-                    !angry_point
+                    !angry_accuse
                     What in Hesh's name are you trying to pull, grifter?
                 player:
                     !placate
