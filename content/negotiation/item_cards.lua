@@ -126,6 +126,8 @@ local CARDS = {
         name = "Paperweight",
         desc = "Choose a card in your hand and give it {STICKY} for the rest of this negotiation.",
         flavour = "I'll just keep that here for now.",
+        icon = "DEMOCRATICRACE:assets/cards/paperweight.png",
+
         cost = 0,
         item_tags = ITEM_TAGS.UTILITY,
         flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND | CARD_FLAGS.STICKY,
@@ -310,6 +312,7 @@ local CARDS = {
     {
         name = "Pleasant Perfume",
         desc = "{pleasant_perfume|}Gain: Whenever you would gain {INFLUENCE} or {RENOWN}, gain 1 additional stack.",
+        icon = "DEMOCRATICRACE:assets/cards/pleasant_perfume.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
@@ -590,6 +593,7 @@ local CARDS = {
         name = "Neural Disrupter",
         desc = "Remove target intent.",
         flavour = "Neural disrupters replace a person's thoughts with sparkly lights for a limited time - wait a second.",
+        icon = "DEMOCRATICRACE:assets/cards/neural_disrupter_negotiation.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
