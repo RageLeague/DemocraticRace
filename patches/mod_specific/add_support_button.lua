@@ -12,11 +12,9 @@ function MainOverlayTopBar:init(main_overlay)
         :SetSize( BTN_SIZE, BTN_SIZE )
         :SetOnClickFn( function()
             -- Check if we're in one of this button's screens
-            print("lmao")
             local top_screen = TheGame:FE():GetTopScreen()
             if self.btn_dem_support:IsInScreen( top_screen._class ) then
                 -- Close the screen
-                print("lmao")
                 top_screen:FadeOut()
             else
                 -- If not, navigate to the deck screen
@@ -58,6 +56,9 @@ end
 local old_control_mode = MainOverlayTopBar.OnControlModeChange
 function MainOverlayTopBar:OnControlModeChange( cm, ... )
     old_control_mode(self, cm, ...)
+    if not DemocracyUtil.IsDemocracyCampaign() or not (TheGame:GetGameState():GetMainQuest() and TheGame:GetGameState():GetMainQuest().param.enable_support_screen) then
+        return
+    end
     if self.btn_dem_support then
         local support = DemocracyUtil.TryMainQuestFn("GetGeneralSupport")
         self.btn_dem_support:SetToolTip( loc.format(LOC"DEMOCRACY.MAIN_OVERLAY.VIEW_SUPPORT", support) )
