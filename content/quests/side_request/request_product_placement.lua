@@ -192,7 +192,7 @@ QDEF:AddConvo("sell", "giver")
             player:
                 So, uhh... I kinda just forgot the sales pitch you told me.
             agent:
-                !surprise
+                !surprised
                 You WHAT?
             {primary_advisor?
                 I guess I did told you to focus on the election.
@@ -571,7 +571,7 @@ QDEF:AddConvo("tell_giver")
                     !left
                 agent:
                     !right
-                    [p] Nice going! Thanks for letting everyone know of our product.
+                    Nice going! Thanks for letting everyone know of our product.
                     It is really popular.
                 player:
                     Thanks.
@@ -604,7 +604,8 @@ QDEF:AddConvo("tell_giver")
                     !left
                 agent:
                     !right
-                    [p] I was informed that some Heshian now owns a third of my shares.
+                    !angry
+                    I was informed that some Heshian now owns a third of my shares.
                     Care to explain?
             ]],
             DIALOG_INTRO_SELL_TWO_THIRD = [[
@@ -614,25 +615,31 @@ QDEF:AddConvo("tell_giver")
                 agent:
                     !right
                     !angry
-                    [p] I was informed that some Heshian now owns a majority of my shares.
+                    I was informed that some Heshian now owns a majority of my shares.
                     Why the Hesh did you do that?
                 {advisor_diplomacy?
                     player:
+                        !bashful
                         I just thought we need the money, that's all.
                     agent:
+                        !angry_shrug
                         Really?
                         Is money all you think about?
                     player:
                         Well, I mean it's important-
                     agent:
+                        !surprised
                         What?!
+                        !angry_accuse
                         I've got plenty money. I don't need to sell <b>M.E.T.A.</> to get more!
                         No. What I need is a product that can change the world!
+                        !angry_shrug
                         How am I supposed to do that now that a Heshian owns a majority share?
                         Them owning a majority share means that they have the executive power on this product!
                     player:
                         They did promise the autonomy of your operation-
                     agent:
+                        !angry_shrug
                         Those are just empty promises.
                         They are not on paper, so they don't count.
                         Now that the Heshian owns a majority, Hesh knows what they will do with this product!
@@ -641,7 +648,9 @@ QDEF:AddConvo("tell_giver")
                         Vagrant Age?
                     agent:
                         Doesn't matter!
+                        !angry_accuse
                         I thought you are going to be different, {player}. I thought you are going to be based.
+                        !sigh
                         But it appears, you are but another cringe normie.
                         I will still help you with the campaign, as promised.
                         But don't expect me to do you any favors!
