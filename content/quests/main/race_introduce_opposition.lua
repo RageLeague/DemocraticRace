@@ -317,36 +317,47 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             DIALOG_INTRO = [[
                 {not greeted?
                     agent:
-                        [p] if you haven't talked to {opposition} already, you should probably do so.
-                        you might gain some insights as to what other candidates are up to.
+                        If you haven't talked to {opposition} already, you should probably do so.
+                        You might gain some insights as to what other candidates are up to.
                 }
                 {greeted?
                     agent:
-                        [p] so you talked to {opposition}. What do you make of {opposition.himher}?
+                        So you talked to {opposition}. What do you make of {opposition.himher}?
                     player:
-                        {opposition.HeShe}'s fine, I guess.
+                        {opposition.HeShe} is an interesting character, certainly.
                     {agreed?
-                        we more or less have the same ideology. we could probably get along.
+                        We have a lot of similarities in terms of ideology. We could probably get along.
                     agent:
-                        glad to hear that.
-                        but don't let that fool you. you're still opponents.
-                        there can only be one.
-                        Still, feel free to negotiate an alliance between you two.
-                        You are going to need it if you want to win.
+                        !agree
+                        Glad you found a potential ally so quickly.
+                        But remember, you are still political opponents, so don't get to attached to {opposition.himher}.
+                        Eventually, only one of you can become the president, and it should be you.
+                    player:
+                        !thought
+                        ...
+                    agent:
+                        Still, it is good to find an ally if you can. You can't win this election alone.
+                        You can ask {opposition} about potential alliances.
+                        Or go ask around and see if you can find other candidates with similar ideologies. That might be a start.
                     }
                     {disagreed?
-                        we have some ideological differences, but we might still get along.
+                        We have some ideological differences, but we might still get along.
                     agent:
-                        great. now you know how other's think, you need to use that to your advantage.
-                        Feel free to find an ally.
-                        You are going to need them if you want to win.
+                        !thought
+                        Hmm... If this keeps up, you two might eventually clash against each other.
+                        And you can't do this all by yourself, even with my help.
+                        If you want to win, you will need allies.
+                        Go ask around and see if you can find candidates with similar ideologies. That might be a start.
                     }
                     {not (agreed or disagreed)?
                     agent:
-                        you don't sound so sure.
-                        oh well.
-                        Just in case, if you find someone who share an ideology with you, try negotiating an alliance.
-                        You must do it if you want to win.
+                        You don't sound so sure.
+                    player:
+                        I don't know what to make of {opposition.himher}.
+                    agent:
+                        Don't worry about it. You can make up your mind after you interacted with the candidates more.
+                        But just remember: if you want to win the election, you will need allies.
+                        Go ask around and see if you can find candidates with similar ideologies. That might be a start.
                     }
                     ** You can now talk to other candidates with similar interests and form an alliance!
                 }
@@ -507,7 +518,6 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         nil,
         nil,
         "Ask about the Cult candidate",
-        -- haven't figure out whether to use vixmalli or the bishop
         [[
             player:
                 So who's representing the Cult of Hesh?
