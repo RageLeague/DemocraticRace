@@ -716,7 +716,7 @@ QDEF:AddConvo("buy_loaves", "dealer")
         OPT_BUY = "Buy loaves",
         DIALOG_BUY = [[
             player:
-                [p] I will buy a bundle.
+                I will buy a bundle.
             agent:
                 Good choice.
         ]],
