@@ -492,33 +492,43 @@ QDEF:AddConvo("dole_out_three")
         :Loc{
             DIALOG_UNGRATE = [[
                 agent:
+                    !crossed
                     Do you believe I can't afford my own food?
                     I'll have you know I don't stand for this kind of pandering.
             ]],
             OPT_CONVINCE = "Try to calm them down",
             DIALOG_CONVINCE = [[
                 player:
-                    Well, you don't have to stand to this kind of "pandering".
-                    What you could stand for is someone showing you decency.
+                    !placate
+                    Hey, I am just trying to do some good deeds here.
+                    There is no need to be rude about it.
             ]],
             DIALOG_CONVINCE_SUCCESS = [[
-                player:
-                    [p] LaserDisk.
                 agent:
-                    I'm sold.
-                    Have a great day.
+                    !sigh
+                    Fine. I guess I overreacted a bit.
+                    I am sure you mean well.
+                player:
+                    See? Isn't this better for both of us?
             ]],
             DIALOG_CONVINCE_FAIL = [[
                 agent:
-                    [p] Your deck could be better.
-                    Allow me to remind you of this failure for the rest of the run.
+                    !crossed
+                    It's not like I want to be rude.
+                    It's just that you see yourself as superior to everyone else around you.
+                    Making empty gestures doesn't change that.
+                    !angry_accuse
+                    I hate people who make empty gestures to make themselves feel superior.
             ]],
             OPT_IGNORE = "Ignore their complaints",
             DIALOG_IGNORE = [[
                 player:
-                    [p] Belt Buckles and globs of bandaids
+                    !crossed
+                    Fine. If you don't want to take the bread, then suit yourself.
                 agent:
-                    POPULIST!
+                    !angry_accuse
+                    This is what I'm talking about.
+                    Typical political pandering.
             ]],
         }
         :Fn(function(cxt)
