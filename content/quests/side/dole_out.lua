@@ -570,26 +570,6 @@ QDEF:AddConvo("dole_out_three")
                     Sure. Y'know, you're alright.
                     Thanks!
             ]],
-            -- Bringing someone just for gifting them is extremely op, so we just repurpose this to be the default response.
-            -- I really should've worked on this more...My idea was they would come with you and you'd have a harder encounter with admiralty later on because they're with you.
-            -- OPT_BRING_ALONG = "Let them tag along for a while.",
-            -- DIALOG_BRING_ALONG = [[
-            --     player:
-            --         Come with me. I shall take you to the promised land.
-            --     agent:
-            --         Wait...are you jesus?
-            --     player:
-            --         Don't know who jesus is...come on now.
-            -- ]],
-            -- OPT_DONT = "Don't bring them along.",
-            -- DIALOG_DONT_BRING = [[
-            --     player:
-            --         [p] I don't like the fact ' break code.
-            --     agent:
-            --         how did you say apostrophe without saying it?
-            --     player:
-            --         I don't know. thanks for the offer.
-            -- ]]
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_GRATE")
