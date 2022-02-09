@@ -728,14 +728,28 @@ QDEF:AddConvo("buy_loaves", "dealer")
             :PostCard("dole_loaves")
             :DeliverMoney(80)
             :GainCards{"dole_loaves"}
+            :Fn(function(cxt) cxt.quest.param.bought_at_least_one = true end)
     end)
     :AttractState("STATE_ATTRACT")
         :Loc{
             DIALOG_INTRO = [[
+                {first_time?
                 player:
-                    [p] I heard you sell dole loaves.
+                    I heard you sell dole loaves.
+                    Can I have some?
                 agent:
-                    Oh yeah? Are you willing to buy?
+                    Sure... As long as you can pay.
+                }
+                {not first_time?
+                    {bought_at_least_one?
+                        agent:
+                            Are you coming back to buy some more?
+                    }
+                    {not bought_at_least_one?
+                        agent:
+                            So? Have you made up your mind?
+                    }
+                }
             ]],
         }
         :Fn(function(cxt)
