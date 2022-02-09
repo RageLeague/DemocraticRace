@@ -564,12 +564,44 @@ QDEF:AddConvo("dole_out_three")
     :State("STATE_GRATEFUL")
         :Loc{
             DIALOG_GRATE = [[
-                player:
-                    [p] Hey. Want some bread?
-                agent:
-                    Sure. Y'know, you're alright.
-                    Thanks!
+                %gift_bread
             ]],
+        }
+        :Quips{
+            {
+                tags = "gift_bread",
+                [[
+                    player:
+                        !permit
+                        Hey there. You want some bread?
+                    agent:
+                        !take
+                        Thanks. I needed that.
+                ]],
+                [[
+                    player:
+                        !permit
+                        I'm giving away free bread to the people. You want some?
+                    agent:
+                        !take
+                        Sure. I don't see why not.
+                        !happy
+                        Thanks!
+                ]],
+                [[
+                    player:
+                        !permit
+                        Do you want some free bread?
+                    agent:
+                        !take
+                        Can't say no to some free bread.
+                        !happy
+                        Thanks!
+                    player:
+                        !happy
+                        That's the spirit!
+                ]],
+            },
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_GRATE")
