@@ -605,18 +605,25 @@ QDEF:AddConvo("dole_out_three", "primary_advisor")
             player:
                 I'm a bit short on cash, {primary_advisor}.
             agent:
+                !crossed
                 Is that my problem?
             player:
-                It's just that you did suggest this...can't exactly do anything if I don't have the proper funds...
+                !permit
+                It's just... You asked me to buy it from the supplier.
+                Can't exactly do that without money, can I?
         ]],
         DIALOG_ASK_MONEY_SUCCESS = [[
             agent:
+                !give
                 Hmph. Take a few shills.
-                I expect results, though. You'd better deliver.
+                !sigh
+                What will you do without me.
         ]],
         DIALOG_ASK_MONEY_FAILURE = [[
             agent:
-                [p] You have campaign funds specifically for this purpose.
+                !crossed
+                You have campaign funds specifically for this purpose.
+                If you don't have the money, it's entirely your fault.
         ]],
     }
     :Hub(function(cxt, who)
