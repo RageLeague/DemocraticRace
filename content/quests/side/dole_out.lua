@@ -601,6 +601,16 @@ QDEF:AddConvo("dole_out_three")
                         !happy
                         That's the spirit!
                 ]],
+                [[
+                    player:
+                        !permit
+                        You look like you need some bread. Want some?
+                    agent:
+                        !take
+                        There is never enough bread for everyone.
+                        !happy
+                        I'll happily take some. Thanks!
+                ]],
             },
         }
         :Fn(function(cxt)
