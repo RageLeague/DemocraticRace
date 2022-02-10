@@ -23,6 +23,8 @@ This mod is based on this post that is now archived: https://forums.kleientertai
 
 Supported Languages: English (Right now Simplified/Traditional Chinese is not supported because this is only an Alpha, and lots are bound to change, but it probably will be supported eventually)
 
+Discuss the mod at the discord server: https://discord.gg/g2gU3G8Qwv
+
 ## New Contents
 
 * **Brand new negotiations!** Many negotiations in this campaign are not as straightforward as reducing the opponent's core resolve to 0, and have more strategies to them. In addition, some negotiations have non-binary results. It is possible to win every negotiation but still lose the game, because of your terrible choices!
@@ -53,6 +55,8 @@ I release this alpha to get feedbacks about this mod before the full release. So
 Of course, other forms of feedbacks are welcome.
 
 You can leave feedbacks either on the Steam workshop page (https://steamcommunity.com/sharedfiles/filedetails/?id=2291214111), Klei's forum (DM me or https://forums.kleientertainment.com/forums/topic/123481-the-democratic-racealpha-available/), or on GitHub (https://github.com/RageLeague/DemocraticRace).
+
+You may also submit your feedback at the discord server: https://discord.gg/g2gU3G8Qwv
 
 ## Voluntary Deck Collection Program
 
