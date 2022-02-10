@@ -23,13 +23,15 @@ This mod is based on this post that is now archived: https://forums.kleientertai
 
 Supported Languages: English (Right now Simplified/Traditional Chinese is not supported because this is only an Alpha, and lots are bound to change, but it probably will be supported eventually)
 
+Discuss the mod at the discord server: https://discord.gg/g2gU3G8Qwv
+
 ## New Contents
 
 * **Brand new negotiations!** Many negotiations in this campaign are not as straightforward as reducing the opponent's core resolve to 0, and have more strategies to them. In addition, some negotiations have non-binary results. It is possible to win every negotiation but still lose the game, because of your terrible choices!
 * **A detailed Support mechanic!** Gain as much support as possible, as it determines many factors in this campaign, from the funding you get each day to how likely someone will vote for you. Gain support from various means, by completing quests, befriending people, and making popular decisions.
 * **Know your voter base!** Each person in Griftlands has some allegiance with certain factions, and has different wealth levels. This determines what this person cares about politically. Do you hope to win by getting support from the Admiralty, or will you win by appealing to the lower class? Your choice.
 * **Take your stances!** Havaria has many problems, and different people have different opinions on certain subjects. Will you increase funding for the Admiralty to win them over, or support better worker rights? Be careful, if you change your stances too much, you will be seen as hypocritical!
-* **Pick your advisor!** You get to choose from 3 unique advisors, each specializes in one area of negotiation, and whose resemblence to any entity in real life, living or dead, is totally coincidental! They will help you with your campaign, but make sure to keep them happy, or they will stop supporting you!
+* **Pick your advisor!** You get to choose from 3 unique advisors, each specializes in one area of negotiation, and whose resemblance to any entity in real life, living or dead, is totally coincidental! They will help you with your campaign, but make sure to keep them happy, or they will stop supporting you!
 * **Know your rivals!** You are not the only one running for the election. Other Havarian bigshots, like Oolo or Kalandra, are also running for the election. You can choose to work together, or you can run against someone. Be careful who you work with, though, as the candidates more or less hate each other, and will not ally with you if you allied with the wrong person.
 * **Spend your time wisely!** You will get free time during certain points in the story, during which you can do whatever you want. Will you spend those time socializing with your supporters, or will you learn the location of the market to buy good grafts?
 * **Visit an updated Pearl-on-Foam!** The new campaign takes place in the modified version of Pearl-on-Foam, which contains iconic locations throughout Havaria. Meet familiar people, and visit familiar places. Some places even have added functionalities!
@@ -54,11 +56,13 @@ Of course, other forms of feedbacks are welcome.
 
 You can leave feedbacks either on the Steam workshop page (https://steamcommunity.com/sharedfiles/filedetails/?id=2291214111), Klei's forum (DM me or https://forums.kleientertainment.com/forums/topic/123481-the-democratic-racealpha-available/), or on GitHub (https://github.com/RageLeague/DemocraticRace).
 
+You may also submit your feedback at the discord server: https://discord.gg/g2gU3G8Qwv
+
 ## Voluntary Deck Collection Program
 
 A brand new deck collection program is open to help me gather decks and balance the mod. For more information, visit
 https://forms.gle/2YWzmuUgN8KmTcJj9. If you are from a region where Google is not supported, I have
-to say, under such environment, actually very probematic, not gonna lie.
+to say, under such environment, actually very problematic, not gonna lie.
 
 ## How to install?
 
