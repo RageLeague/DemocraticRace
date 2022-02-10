@@ -34,13 +34,23 @@ QDEF:AddConvo()
 					!angry
 				player:
 					!left
-				* [p]{delto} is angry about the fact that Havaria has a democracy.
-				* {delto} was going to make at least one reference to the fact Havarians might not know how to read.
+				delto:
+					Unbelievable. Unbelievable!
+					!angrypalm
+					The Havarians decide to create a democracy the moment I come on vacation.
+				player:
+					!crossed
+					Now what's wrong with Democracy, then?
+				delto:
+					What's wrong? Half of you people can't even read!
+					You're all straining the relations between Deltree and Havaria, and that makes my job harder!
 				]],
 				
 			OPT_NEGOTIATE = "[p] Negotiate with {agent}.",
 			DIALOG_NEGOTIATE_DELTO = [[
-				* You tell {delto} that there's nothing to worry about.
+				player:
+					!nudgenudge
+					Well who said it was a <i>real</> democracy?
 				]],
 				
 	--[[You tell Delto-dude that the democracy is a ruse. He's relieved.]]
@@ -68,25 +78,84 @@ QDEF:AddConvo()
 	--[[You act too inspirational about democracy. He thinks it's a ploy to get out of deltrean rule]]
 				
 			DIALOG_NEGOTIATE_DELTO_FAILURE = [[
-				* [p] You accidentally act too inspirational.
-				* {delto} is extra angry now.
+				player:
+					Our Havarian democracy is built on the core priniciples of any good Deltrean colony.
+					!eureka
+					Yes, corruption and deciet runs rampant, but we also show all the values Deltree champions!
+					Freedom, Opportunity, and-
+				delto:
+					!palm
+					Don't tell me you idiots fell for those propaganda posters as well.
+					All you self-righteous idiots are going to cause a war, just you watch!
 				]],
 				
+	--[[You show him a half-compotent poster. He gets genuinely worried about the fate of Havarian-Deltrean relations.]]
+	
 			OPT_SHOW_POSTER = "Show {agent} a poster",
 			DIALOG_BAD_POSTER = [[
-				* [p] You show {agent} a bad poster.
-				* She gets miffed.
+				player:
+					Now I'd say we're on track to keeping Havaria right under Deltree's thumb. 
+					!give
+					Just look at some of the material they're using to get elected.
+				delto:
+					This is...
+					!neutral
+					Wow.
+					This is actually rather inspiring now that I look at it.
+					!angry
+					It shouldn't be!
+					It's going to make people want to keep this democracy and not go back to Deltrean rule!
+					Unbelievable. You politicians are going to cause a war, just you wait. 
 				]],
 			
+	--[[You show him a bad poster. He's reassured in his superiority complex over Havarians]]
+	
 			DIALOG_GOOD_POSTER = [[
-				* [p] You show {agent} a good poster.
-				* She is happy.
+				player:
+					!chuckle
+					You think this is a real democracy? Just look at the kind of material the politicans are passing out.
+					!give
+				delto:
+					!take
+					What is this? Did you draw this on the back of a cocktail napkin?
+				player:
+					!hips
+					I drew it on the hopes it would get me elected.
+					!happy
+					And people just eat this stuff up! It's incredible!
+				delto:
+					Wow. I thought Deltree was bad.
+					This kind of shabby oughta give us leverage when we force this whole "democracy" into the abyss.
+					!give
+					Say...here's some money that says you keep Havaria on this kind of downward spiral. Whatdya say?
+				player:
+					!take
+					I say "Long live Deltree!".
+				delto:
+					!happy
+					Right you are!
+					!exit
 				]],
 			
 			OPT_IGNORE = "Ignore {agent}.",
 			DIALOG_IGNORE_DELTREAN = [[
-				* [p]{delto} is angry-ier.
-				* {delto.HeShe} reinvents language just to communicate this angry-ness.
+				player:
+					!shrug
+					So? Deltree can either accept that we're free, or they can go shuck clams.
+					I'm just a politician, what can I say?
+				delto:
+					!angrypoint
+					You can say lots of things! Like how Havaria won't start a war with Deltree!
+				player:
+					!chuckle
+					What'd you take me for, an Oracle?
+				delto:
+					I took you for someone not willing to <i> Make my job a living Heshian Hell.</>
+				player:
+					You took me wrong, I guess. Now mosey on back to the mainland, hm?
+					!exit
+				delto:
+					!exit
 				]],
 			}
             :Fn(function(cxt)
@@ -134,11 +203,9 @@ QDEF:AddConvo()
                                     cxt.player.negotiator:RemoveCard( card )
                                 end
                                 if table.contains(GOOD_POSTERS, CheckPoster(card)) then
-                                    print("Poster good")
                                     cxt:Dialog("DIALOG_GOOD_POSTER")
                                     StateGraphUtil.AddLeaveLocation(cxt)
                                 else
-                                    print("Poster bad")
                                     cxt:Dialog("DIALOG_BAD_POSTER")
                                     StateGraphUtil.AddLeaveLocation(cxt)
                                 end
