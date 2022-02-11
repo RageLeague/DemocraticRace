@@ -18,24 +18,24 @@ local QDEF = QuestDef.Define
         delta = OPINION_DELTAS.LIKE,
         txt = "Convinced them Havarian Democracy is a ruse.",
     },
-	ugh_democracy =
-	{
-		delta = OPINION_DELTAS.DISLIKE,
-		txt = "Convinced them Havarian Democracy is the end of the status quo.",
-	},
+    ugh_democracy =
+    {
+        delta = OPINION_DELTAS.DISLIKE,
+        txt = "Convinced them Havarian Democracy is the end of the status quo.",
+    },
 }
 
 QDEF:AddConvo()
     :ConfrontState("CONFRONT", function() return true end)
-		:Loc{
-			DIALOG_INTRO_DELTREAN = [[
+        :Loc{
+            DIALOG_INTRO_DELTREAN = [[
                 * You are minding your own business when you hear a commotion.
                 * You see everyone's second favorite dignitary, yelling at {delto.hisher} companion in the public.
-				delto:
-					!right
-					!angry_shrug
-					Unbelievable. Unbelievable!
-					!angry_accuse
+                delto:
+                    !right
+                    !angry_shrug
+                    Unbelievable. Unbelievable!
+                    !angry_accuse
                     Who do these Havarians think they are? Thinking they can democratically elect a leader?
                     Do they think Deltree is a joke? Making political decisions without our input?
                 * This does not like something you would like to be involved in, but {delto} doesn't seem to care about your opinion on this matter.
@@ -54,18 +54,18 @@ QDEF:AddConvo()
                     There is no order in this place!
                 * An angry diplomat on foreign soil is never a good thing.
                 * One wrong move, and the conflict can escalate into a war.
-				]],
+                ]],
 
-			OPT_NEGOTIATE = "Placate {agent}",
-			DIALOG_NEGOTIATE_DELTO = [[
-				player:
-					!placate
+            OPT_NEGOTIATE = "Placate {agent}",
+            DIALOG_NEGOTIATE_DELTO = [[
+                player:
+                    !placate
                     Hey, calm down. We don't seek independence.
-				]],
+                ]],
 
-			DIALOG_NEGOTIATE_DELTO_SUCCESS = [[
-				player:
-					Don't worry.
+            DIALOG_NEGOTIATE_DELTO_SUCCESS = [[
+                player:
+                    Don't worry.
                     !permit
                     The election is simply an attempt to settle things peacefully, to end the endless conflicts between factions.
                     !placate
@@ -87,8 +87,8 @@ QDEF:AddConvo()
                 * You leave {agent} alone, hoping to never deal with {agent.himher} again.
             ]],
 
-			DIALOG_NEGOTIATE_DELTO_FAILURE = [[
-				player:
+            DIALOG_NEGOTIATE_DELTO_FAILURE = [[
+                player:
                     !placate
                     Look, we are simply choosing our leader via democracy.
                     You shouldn't be concerned about it.
@@ -111,58 +111,58 @@ QDEF:AddConvo()
                 * You leave {agent} alone, hoping to never deal with {agent.himher} again.
             ]],
 
-	--[[You show him a half-compotent poster. He gets genuinely worried about the fate of Havarian-Deltrean relations.]]
+    --[[You show him a half-compotent poster. He gets genuinely worried about the fate of Havarian-Deltrean relations.]]
 
-			OPT_SHOW_POSTER = "Show {agent} a poster",
-			DIALOG_BAD_POSTER = [[
-				player:
-					Now I'd say we're on track to keeping Havaria right under Deltree's thumb.
-					!give
-					Just look at some of the material they're using to get elected.
-				delto:
-					This is...
-					!neutral
-					Wow.
-					This is actually rather inspiring now that I look at it.
-					!angry
-					It shouldn't be!
-					It's going to make people want to keep this democracy and not go back to Deltrean rule!
-					Unbelievable. You politicians are going to cause a war, just you wait.
-				]],
+            OPT_SHOW_POSTER = "Show {agent} a poster",
+            DIALOG_BAD_POSTER = [[
+                player:
+                    Now I'd say we're on track to keeping Havaria right under Deltree's thumb.
+                    !give
+                    Just look at some of the material they're using to get elected.
+                delto:
+                    This is...
+                    !neutral
+                    Wow.
+                    This is actually rather inspiring now that I look at it.
+                    !angry
+                    It shouldn't be!
+                    It's going to make people want to keep this democracy and not go back to Deltrean rule!
+                    Unbelievable. You politicians are going to cause a war, just you wait.
+                ]],
 
-	--[[You show him a bad poster. He's reassured in his superiority complex over Havarians]]
+    --[[You show him a bad poster. He's reassured in his superiority complex over Havarians]]
 
-			DIALOG_GOOD_POSTER = [[
-				player:
-					!chuckle
-					You think this is a real democracy? Just look at the kind of material the politicans are passing out.
-					!give
-				delto:
-					!take
-					What is this? Did you draw this on the back of a cocktail napkin?
-				player:
-					!hips
-					I drew it on the hopes it would get me elected.
-					!happy
-					And people just eat this stuff up! It's incredible!
-				delto:
-					Wow. I thought Deltree was bad.
-					This kind of shabby oughta give us leverage when we force this whole "democracy" into the abyss.
-					!give
-					Say...here's some money that says you keep Havaria on this kind of downward spiral. Whatdya say?
-				player:
-					!take
-					I say "Long live Deltree!".
-				delto:
-					!happy
-					Right you are!
-					!exit
-				]],
+            DIALOG_GOOD_POSTER = [[
+                player:
+                    !chuckle
+                    You think this is a real democracy? Just look at the kind of material the politicans are passing out.
+                    !give
+                delto:
+                    !take
+                    What is this? Did you draw this on the back of a cocktail napkin?
+                player:
+                    !hips
+                    I drew it on the hopes it would get me elected.
+                    !happy
+                    And people just eat this stuff up! It's incredible!
+                delto:
+                    Wow. I thought Deltree was bad.
+                    This kind of shabby oughta give us leverage when we force this whole "democracy" into the abyss.
+                    !give
+                    Say...here's some money that says you keep Havaria on this kind of downward spiral. Whatdya say?
+                player:
+                    !take
+                    I say "Long live Deltree!".
+                delto:
+                    !happy
+                    Right you are!
+                    !exit
+                ]],
 
-			OPT_IGNORE = "Ignore {agent}.",
-			DIALOG_IGNORE_DELTREAN = [[
-				player:
-					!shrug
+            OPT_IGNORE = "Ignore {agent}.",
+            DIALOG_IGNORE_DELTREAN = [[
+                player:
+                    !shrug
                     I really have no say in this situation.
                 agent:
                     You are a politician! You can say a lot of things!
@@ -208,15 +208,16 @@ QDEF:AddConvo()
                 * There is no taking back what you've just said now.
                 * At least at the moment it felt good, and the voters will see you as a hero standing up to Deltrean oppression.
             ]],
-			}
+            }
             :Fn(function(cxt)
                 cxt.quest:Complete()
                 local posters = {}
-                            for i, card in ipairs(cxt.player.negotiator.cards.cards) do
-                                if card.id == "propaganda_poster" then
-                                    table.insert(posters, card)
-                                end
-                            end
+                for i, card in ipairs(cxt.player.negotiator.cards.cards) do
+                    if card.id == "propaganda_poster" then
+                        table.insert(posters, card)
+                    end
+                end
+
                 cxt:TalkTo(cxt:GetCastMember("delto"))
                 cxt:Dialog("DIALOG_INTRO_DELTREAN")
                 cxt:Opt("OPT_NEGOTIATE")
