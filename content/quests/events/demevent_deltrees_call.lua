@@ -208,6 +208,30 @@ QDEF:AddConvo()
                 * There is no taking back what you've just said now.
                 * At least at the moment it felt good, and the voters will see you as a hero standing up to Deltrean oppression.
             ]],
+
+            DIALOG_INSULT_FAILURE = [[
+                player:
+                    !angry_accuse
+                    You Deltreans are stupid!
+                agent:
+                    !hips
+                    And you Havarians are illiterate!
+                    Can't even come up with an insult beyond grade school!
+                player:
+                    !bashful
+                    Well, uhh... You too!
+                agent:
+                    !permit
+                    See? This is what I'm talking about.
+                    !happy
+                    If this is what the best Havarian democracy has to offer, then there is nothing to worry about!
+                    !chuckle
+                    Man, this is a good one! Wait until I come home and tell my friends the sorry tale of Havarian democracy!
+                * Okay, {agent} clearly is not taking you seriously.
+                * At least you avoided a potential war, I guess?
+                * If only every conflict in the world can be stopped by acting stupidly and embarrassingly.
+                * Then, you can singlehandedly achieve world peace.
+            ]],
             }
             :Fn(function(cxt)
                 cxt.quest:Complete()
