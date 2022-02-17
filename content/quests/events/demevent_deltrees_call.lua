@@ -1,6 +1,8 @@
 local GOOD_POSTERS = {"PROP_PO_SUPERFICIAL", "PROP_PO_MESSY"} --delto likes bad posters and dislikes good posters.
 local BAD_POSTERS = {"PROP_PO_INSPIRING", "PROP_PO_THOUGHT_PROVOKING", "PROP_PO_MEDIOCRE"}
 
+local insult_card = "insult"
+
 local QDEF = QuestDef.Define
 {
     qtype = QTYPE.EVENT,
@@ -13,15 +15,20 @@ local QDEF = QuestDef.Define
   no_validation = true,
 }
 :AddOpinionEvents{
-    democracy_is_funny_joke =
+    reassured_loyalty =
     {
         delta = OPINION_DELTAS.LIKE,
-        txt = "Convinced them Havarian Democracy is a ruse.",
+        txt = "Reassured them of Havaria's loyalty to Deltree",
     },
-    ugh_democracy =
+    suspects_havarian_separatism =
     {
         delta = OPINION_DELTAS.DISLIKE,
-        txt = "Convinced them Havarian Democracy is the end of the status quo.",
+        txt = "Suspects you of Havarian Separatism",
+    },
+    actively_pushing_separatism =
+    {
+        delta = OPINION_DELTAS.MAJOR_BAD,
+        txt = "Actively pushed Havarian Separatism agenda",
     },
 }
 
@@ -111,53 +118,53 @@ QDEF:AddConvo()
                 * You leave {agent} alone, hoping to never deal with {agent.himher} again.
             ]],
 
-    --[[You show him a half-compotent poster. He gets genuinely worried about the fate of Havarian-Deltrean relations.]]
+    -- --[[You show him a half-compotent poster. He gets genuinely worried about the fate of Havarian-Deltrean relations.]]
 
-            OPT_SHOW_POSTER = "Show {agent} a poster",
-            DIALOG_BAD_POSTER = [[
-                player:
-                    Now I'd say we're on track to keeping Havaria right under Deltree's thumb.
-                    !give
-                    Just look at some of the material they're using to get elected.
-                delto:
-                    This is...
-                    !neutral
-                    Wow.
-                    This is actually rather inspiring now that I look at it.
-                    !angry
-                    It shouldn't be!
-                    It's going to make people want to keep this democracy and not go back to Deltrean rule!
-                    Unbelievable. You politicians are going to cause a war, just you wait.
-                ]],
+    --         OPT_SHOW_POSTER = "Show {agent} a poster",
+    --         DIALOG_BAD_POSTER = [[
+    --             player:
+    --                 Now I'd say we're on track to keeping Havaria right under Deltree's thumb.
+    --                 !give
+    --                 Just look at some of the material they're using to get elected.
+    --             delto:
+    --                 This is...
+    --                 !neutral
+    --                 Wow.
+    --                 This is actually rather inspiring now that I look at it.
+    --                 !angry
+    --                 It shouldn't be!
+    --                 It's going to make people want to keep this democracy and not go back to Deltrean rule!
+    --                 Unbelievable. You politicians are going to cause a war, just you wait.
+    --             ]],
 
-    --[[You show him a bad poster. He's reassured in his superiority complex over Havarians]]
+    -- --[[You show him a bad poster. He's reassured in his superiority complex over Havarians]]
 
-            DIALOG_GOOD_POSTER = [[
-                player:
-                    !chuckle
-                    You think this is a real democracy? Just look at the kind of material the politicans are passing out.
-                    !give
-                delto:
-                    !take
-                    What is this? Did you draw this on the back of a cocktail napkin?
-                player:
-                    !hips
-                    I drew it on the hopes it would get me elected.
-                    !happy
-                    And people just eat this stuff up! It's incredible!
-                delto:
-                    Wow. I thought Deltree was bad.
-                    This kind of shabby oughta give us leverage when we force this whole "democracy" into the abyss.
-                    !give
-                    Say...here's some money that says you keep Havaria on this kind of downward spiral. Whatdya say?
-                player:
-                    !take
-                    I say "Long live Deltree!".
-                delto:
-                    !happy
-                    Right you are!
-                    !exit
-                ]],
+    --         DIALOG_GOOD_POSTER = [[
+    --             player:
+    --                 !chuckle
+    --                 You think this is a real democracy? Just look at the kind of material the politicans are passing out.
+    --                 !give
+    --             delto:
+    --                 !take
+    --                 What is this? Did you draw this on the back of a cocktail napkin?
+    --             player:
+    --                 !hips
+    --                 I drew it on the hopes it would get me elected.
+    --                 !happy
+    --                 And people just eat this stuff up! It's incredible!
+    --             delto:
+    --                 Wow. I thought Deltree was bad.
+    --                 This kind of shabby oughta give us leverage when we force this whole "democracy" into the abyss.
+    --                 !give
+    --                 Say...here's some money that says you keep Havaria on this kind of downward spiral. Whatdya say?
+    --             player:
+    --                 !take
+    --                 I say "Long live Deltree!".
+    --             delto:
+    --                 !happy
+    --                 Right you are!
+    --                 !exit
+    --             ]],
 
             OPT_IGNORE = "Ignore {agent}.",
             DIALOG_IGNORE_DELTREAN = [[
@@ -177,6 +184,7 @@ QDEF:AddConvo()
             ]],
 
             OPT_INSULT = "Stand up for Havarian independence and insult {agent}",
+            TT_INSULT = "You will start with some {1#card} in your deck.",
 
             DIALOG_INSULT = [[
                 player:
@@ -245,51 +253,88 @@ QDEF:AddConvo()
                 cxt:TalkTo(cxt:GetCastMember("delto"))
                 cxt:Dialog("DIALOG_INTRO_DELTREAN")
                 cxt:Opt("OPT_NEGOTIATE")
+                    :Dialog("DIALOG_NEGOTIATE_DELTO")
+                    :DeltaSupport(-1)
+                    :UpdatePoliticalStance("INDEPENDENCE", -1)
                     :Negotiation{
                         on_success = function(cxt)
                             cxt:Dialog("DIALOG_NEGOTIATE_DELTO_SUCCESS")
-                            cxt.quest:OpinionEvent("delto", "democracy_is_funny_joke")
+                            cxt.quest:OpinionEvent("delto", "reassured_loyalty")
                             cxt.encounter:GainMoney( 100 )
                             StateGraphUtil.AddLeaveLocation(cxt)
                         end,
                         on_fail = function(cxt)
                             cxt:Dialog("DIALOG_NEGOTIATE_DELTO_FAILURE")
-                            cxt.quest:OpinionEvent("delto", "ugh_democracy")
+                            cxt.quest:OpinionEvent("delto", "suspects_havarian_separatism")
                             StateGraphUtil.AddLeaveLocation(cxt)
                         end,}
-                if #posters > 0 then
-                    cxt:Opt("OPT_SHOW_POSTER")
-                                -- local cards = agent.negotiator:GetCards()
-                        :Fn(function(cxt)
-                            cxt:Wait()
-                            DemocracyUtil.InsertSelectCardScreen(
-                                posters,
-                                cxt:GetLocString("SELECT_TITLE"),
-                                cxt:GetLocString("SELECT_DESC"),
-                                nil,
-                                function(card)
-                                    cxt.enc:ResumeEncounter( card )
-                                end
-                            )
-                            local card = cxt.enc:YieldEncounter()
-                            if card then
-                                --mini block for item usage.
-                                card:ConsumeCharge()
-                                if card:IsSpent() then
-                                    cxt.player.negotiator:RemoveCard( card )
-                                end
-                                if table.contains(GOOD_POSTERS, CheckPoster(card)) then
-                                    cxt:Dialog("DIALOG_GOOD_POSTER")
-                                    StateGraphUtil.AddLeaveLocation(cxt)
-                                else
-                                    cxt:Dialog("DIALOG_BAD_POSTER")
-                                    StateGraphUtil.AddLeaveLocation(cxt)
-                                end
+                cxt:Opt("OPT_INSULT")
+                    :PostText("TT_INSULT", insult_card)
+                    :PostCard(insult_card, true)
+                    :Dialog("DIALOG_INSULT")
+                    :UpdatePoliticalStance("INDEPENDENCE", 2, true)
+                    :Negotiation{
+                        on_start_negotiation = function(minigame)
+                            local n = math.max(1, math.round( minigame.player_negotiator.agent.negotiator:GetCardCount() / 5 ))
+                            for k = 1, n do
+                                local card = Negotiation.Card( "insult", minigame.player_negotiator.agent )
+                                card.show_dealt = true
+                                card:TransferCard(minigame:GetDrawDeck())
                             end
-                        end)
-                end
+                        end,
+                        on_success = function(cxt)
+                            cxt:Dialog("DIALOG_INSULT_SUCCESS")
+                            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 6)
+                            cxt.quest:OpinionEvent("delto", "actively_pushing_separatism")
+                            -- Enable special flag for main quest
+                            -- Probably lead to a special ending
+                            local main_q = TheGame:GetGameState():GetMainQuest()
+                            if main_q then
+                                main_q.param.insulted_deltree = true
+                            end
+                            StateGraphUtil.AddLeaveLocation(cxt)
+                        end,
+                        on_fail = function(cxt)
+                            cxt:Dialog("DIALOG_INSULT_FAILURE")
+                            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -3)
+                            cxt:GetCastMember("delto"):OpinionEvent(OPINION.INSULT)
+                            StateGraphUtil.AddLeaveLocation(cxt)
+                        end,
+                    }
+                -- Don't know if the poster is a good idea for this particular quest
+                -- if #posters > 0 then
+                --     cxt:Opt("OPT_SHOW_POSTER")
+                --                 -- local cards = agent.negotiator:GetCards()
+                --         :Fn(function(cxt)
+                --             cxt:Wait()
+                --             DemocracyUtil.InsertSelectCardScreen(
+                --                 posters,
+                --                 cxt:GetLocString("SELECT_TITLE"),
+                --                 cxt:GetLocString("SELECT_DESC"),
+                --                 nil,
+                --                 function(card)
+                --                     cxt.enc:ResumeEncounter( card )
+                --                 end
+                --             )
+                --             local card = cxt.enc:YieldEncounter()
+                --             if card then
+                --                 --mini block for item usage.
+                --                 card:ConsumeCharge()
+                --                 if card:IsSpent() then
+                --                     cxt.player.negotiator:RemoveCard( card )
+                --                 end
+                --                 if table.contains(GOOD_POSTERS, CheckPoster(card)) then
+                --                     cxt:Dialog("DIALOG_GOOD_POSTER")
+                --                     StateGraphUtil.AddLeaveLocation(cxt)
+                --                 else
+                --                     cxt:Dialog("DIALOG_BAD_POSTER")
+                --                     StateGraphUtil.AddLeaveLocation(cxt)
+                --                 end
+                --             end
+                --         end)
+                -- end
                 cxt:Opt("OPT_IGNORE")
                     :Dialog("DIALOG_IGNORE_DELTREAN")
-                    :ReceiveOpinion("ugh_democracy")
+                    :ReceiveOpinion("suspects_havarian_separatism")
                     :Travel()
             end)
