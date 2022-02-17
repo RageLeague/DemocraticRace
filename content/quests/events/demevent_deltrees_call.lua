@@ -233,7 +233,7 @@ QDEF:AddConvo()
                     See? This is what I'm talking about.
                     !happy
                     If this is what the best Havarian democracy has to offer, then there is nothing to worry about!
-                    !chuckle
+                    !clap
                     Man, this is a good one! Wait until I come home and tell my friends the sorry tale of Havarian democracy!
                 * Okay, {agent} clearly is not taking you seriously.
                 * At least you avoided a potential war, I guess?
