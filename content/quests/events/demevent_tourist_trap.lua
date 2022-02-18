@@ -63,6 +63,20 @@ QDEF:AddConvo()
                 !agree
                 I think I've heard enough.
                 You clearly know what your goal is, and you know how to achieve that goal.
+                Havaria's future will be bright under your lead.
+            player:
+                !bashful
+                Thanks for the complement, I guess?
+                Just... Who are you? Exactly?
+            agent:
+                I am just someone travelling in Havaria to see the election first-hand.
+                And it seems it is going well.
+                I can't directly support you, of course, because I am not from here.
+                But... All I can say is, good luck with your campaign.
+                For a brighter future for both Havaria, and Rentoria.
+                !exit
+            * You are making friends with so many different kinds of people.
+            * Aren't you proud of yourself?
         ]],
 
         --[[You accidentally sound too corrupt. Rento-girl is worried about Havarian democracy and thinks it's hogwash.]]
