@@ -273,6 +273,9 @@ local QDEF = QuestDef.Define
             if agent == quest:GetCastMember("primary_advisor") then
                 return
             end
+            if not DemocracyUtil.CanVote(agent) then
+                return
+            end
             local support_delta = DELTA_SUPPORT[new_rel] - DELTA_SUPPORT[old_rel]
 
             if support_delta ~= 0 then
