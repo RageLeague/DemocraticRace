@@ -82,26 +82,33 @@ QDEF:AddConvo()
         --[[You accidentally sound too corrupt. Rento-girl is worried about Havarian democracy and thinks it's hogwash.]]
 
         DIALOG_NEGOTIATE_RENTO_FAILURE = [[
-        player:
-            Well, this democracy is very simple.
-            Vote for me, and I'll make things better.
-            Vote for the other guy, and you'll regret it a lot.
-        agent:
-            !dubious
-            Make things better for who?
-        player:
-            Uh...the little guy?
-            The rich?
-            My supporters for sure, I know that much.
-        agent:
-            I don't feel convinced. This feels like a cheap power grab for the few of you running.
-        player:
-            ...
-            !question
-            Isn't it supposed to be?
-        agent:
-            I'm going back to Rentoria.
-            !exit
+            agent:
+                !bashful
+                That sounds good and all, but if I may ask...
+                !dubious
+                What is your endgame, exactly?
+            player:
+                ...
+                !bashful
+                Well, you see, uh... It is a very important question that we should ask ourselves often.
+            agent:
+                ...
+                !facepalm
+                You don't have a goal once you get elected, do you?
+            player:
+                !bashful
+                ...
+            agent:
+                !angry
+                Look, democracy is a very important process, alright?
+                It is an incredible privilege that you are finally starting to enjoy!
+                The least you could do is taking it seriously!
+                !sigh
+                If all candidates in Havaria take it as seriously as you, democracy in Havaria still has a long way to go.
+                !exit
+            * You messed up a great opportunity to show your strong leadership.
+            * {agent.HeShe} did ask a good question, though. Do you actually have an endgame?
+            * Think this through a bit more, lest you run into another opportunity like this one.
         ]],
 
         OPT_SHOW_POSTER = "Show {agent} a poster",
@@ -134,11 +141,21 @@ QDEF:AddConvo()
             * She is happy.
         ]],
 
-        OPT_IGNORE = "Ignore {agent}.",
+        OPT_IGNORE = "Ignore {agent}",
 
         DIALOG_IGNORE_RENTORIAN = [[
-            * {rento} is miffed.
-            * {rento} is still fine, but not very happy.
+            player:
+                !shrug
+                I don't just give a speech on a random person about how great a leader I am, you know?
+            agent:
+                !dubious
+                You are literally running for presidency.
+                Any competent leader would take whatever chances they can get to gather more support.
+                !sigh
+                If all candidates in Havaria are as amateur as you, democracy in Havaria still has a long way to go.
+                !exit
+            * It seems you passed up a great opportunity to show off your leadership skills.
+            * I hope the opportunity cost is worth it.
         ]],
 
         SELECT_TITLE = "Select a poster",
