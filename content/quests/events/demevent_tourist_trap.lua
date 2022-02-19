@@ -17,6 +17,11 @@ local QDEF = QuestDef.Define
         delta = OPINION_DELTAS.MAJOR_GOOD,
         txt = "Strengthened their belief in Havarian Democracy",
     },
+    disappointed_them =
+    {
+        delta = OPINION_DELTAS.DISLIKE,
+        txt = "Disappointed them",
+    },
 }
 local GOOD_POSTERS = {"PROP_PO_INSPIRING", "PROP_PO_THOUGHT_PROVOKING", "PROP_PO_MEDIOCRE"}
 local BAD_POSTERS = {"PROP_PO_SUPERFICIAL", "PROP_PO_MESSY"} --rento likes good posters and dislikes bad posters.
@@ -122,7 +127,7 @@ QDEF:AddConvo()
             player:
                 It's good, right?
             agent:
-                You mispelled vote right here. You wrote "vot" instead.
+                You misspelled vote right here. You wrote "vot" instead.
                 And the artist's interpretation of your face isn't very good.
                 And did you make this in crayon?
             player:
@@ -172,6 +177,7 @@ QDEF:AddConvo()
             cxt:TalkTo(cxt:GetCastMember("rento"))
             cxt:Dialog("DIALOG_INTRO_RENTORIAN")
             cxt:Opt("OPT_NEGOTIATE")
+                :Dialog("DIALOG_NEGOTIATE_RENTO")
                 :Negotiation{
                     on_success = function(cxt)
                         cxt:Dialog("DIALOG_NEGOTIATE_RENTO_SUCCESS")
@@ -180,6 +186,7 @@ QDEF:AddConvo()
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_NEGOTIATE_RENTO_FAILURE")
+                        cxt.quest:OpinionEvent("rento", "disappointed_them")
                         StateGraphUtil.AddLeaveLocation(cxt)
                     end,}
             if #posters > 0 then
@@ -205,10 +212,12 @@ QDEF:AddConvo()
                             if table.contains(GOOD_POSTERS, CheckPoster(card)) then
                                 print("Poster good")
                                 cxt:Dialog("DIALOG_GOOD_POSTER")
+                                cxt.quest:OpinionEvent("rento", "belief_in_democracy")
                                 StateGraphUtil.AddLeaveLocation(cxt)
                             else
                                 print("Poster bad")
                                 cxt:Dialog("DIALOG_BAD_POSTER")
+                                cxt.quest:OpinionEvent("rento", "disappointed_them")
                                 StateGraphUtil.AddLeaveLocation(cxt)
                             end
                         end
@@ -216,5 +225,6 @@ QDEF:AddConvo()
             end
             cxt:Opt("OPT_IGNORE")
                 :Dialog("DIALOG_IGNORE_RENTORIAN")
+                :ReceiveOpinion("disappointed_them")
                 :Travel()
         end)
