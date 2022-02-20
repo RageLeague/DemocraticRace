@@ -453,6 +453,7 @@ local CARDS = {
     {
         name = "Mask of Intimidation",
         desc = "Remove all {DOMINANCE} you control and {INCEPT} that much {intimidated}.\nWhile in your hand, when you gain {DOMINANCE}, {INCEPT} that much {intimidated}.",
+        icon = "DEMOCRATICRACE:assets/cards/mask_of_intimidation.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
