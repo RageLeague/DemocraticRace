@@ -308,6 +308,58 @@ local CARDS = {
             end
         end,
     },
+    spicy_noodles_negotiation =
+    {
+        name = "Spicy Noodles",
+        desc = "Gain {1} {DOMINANCE}. Draw a card.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.condition_count)
+        end,
+
+        flavour = "'Establish dominance to your opponent by taking on the heat!'",
+        icon = "battle/spicy_noodles.tex",
+
+        cost = 0,
+        item_tags = ITEM_TAGS.SUPPORT,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.AMBUSH | CARD_FLAGS.EXPEND,
+        rarity = CARD_RARITY.UNIQUE,
+
+        max_charges = 2,
+        battle_counterpart = "spicy_noodles",
+
+        condition_count = 2,
+
+        OnPostResolve = function( self, minigame, targets )
+            self.negotiator:AddModifier("DOMINANCE", self.condition_count, self)
+            minigame:DrawCards(1)
+        end,
+    },
+    hearty_noodles_negotiation =
+    {
+        name = "Hearty Noodles",
+        desc = "Gain {1} {1*action|actions}. Draw a card.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.card_count)
+        end,
+
+        flavour = "'Stupendous flavours and toothsome noodles at a great price!'",
+        icon = "battle/hearty_noodles.tex",
+
+        cost = 1,
+        item_tags = ITEM_TAGS.SUPPORT,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.AMBUSH | CARD_FLAGS.EXPEND,
+        rarity = CARD_RARITY.UNIQUE,
+
+        max_charges = 2,
+        battle_counterpart = "hearty_noodles",
+
+        card_count = 2,
+
+        OnPostResolve = function( self, minigame, targets )
+            minigame:ModifyActionCount(2)
+            minigame:DrawCards(1)
+        end,
+    },
     pleasant_perfume =
     {
         name = "Pleasant Perfume",
