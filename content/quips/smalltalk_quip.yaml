@@ -9,18 +9,20 @@ lines:
   - |
     agent:
       !sigh
-      [p] Another day of toil.
-      The rich just gets richer, and the poor stays poor.
+      Another day of toil.
+      The rich gets richer by exploiting us laborers, and the poor stays poor.
+      There really is no hope for us common folks, is there?
     player:
-      That's rough, buddy.
-      You know, I plan to change that once I'm in office.
+      I'm sorry to hear that.
+      This is why I vow to change the system.
+      The working class will finally stand up for themselves, freeing themselves from the boot of the oppressors.
     agent:
       !happy
-      Thanks.
-      Glad someone considers the common folks.
+      This is precisely why I am supporting you, {player}.
+      Finally, someone is considering the common folks.
   - |
     agent:
-      [p] Have I told you before that I worked for this Spark Baron.
+      Have I told you before that I worked for this Spark Baron.
       Always rambling about wanting to be relatable to the common folks.
       His idea of "being relatable" seems way different from how everyone else thinks.
     player:
@@ -57,7 +59,7 @@ lines:
       Same thing can be said to you, my friend.
   - |
     agent:
-      [p] Have you heard of the tale of Gunter Trunoomiel?
+      [Have you heard of the tale of Gunter Trunoomiel?
     player:
       !thought
       Can't say I have, no.
@@ -79,7 +81,7 @@ lines:
   dialog:
   - |
     player:
-      [p] How hard it is to pass the priest school?
+      How hard it is to pass the priest school?
     agent:
       You would imagine it's pretty hard.
       You gotta pay a lot of tithes to get in, and even after that, it is extremely hard to pass.

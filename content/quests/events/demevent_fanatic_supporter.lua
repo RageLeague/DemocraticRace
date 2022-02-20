@@ -137,7 +137,7 @@ QDEF:AddConvo()
                     So if that's what you mean by "hating the good people of Havaria", I do.
                 supporter:
                     Wow that's a straightforward answer.
-                    And my straightforward is that I dislike you now.
+                    And my straightforward answer is that I dislike you now.
             ]],
             OPT_JUSTIFY = "Justify the silence",
             DIALOG_JUSTIFY = [[

@@ -492,33 +492,43 @@ QDEF:AddConvo("dole_out_three")
         :Loc{
             DIALOG_UNGRATE = [[
                 agent:
+                    !crossed
                     Do you believe I can't afford my own food?
                     I'll have you know I don't stand for this kind of pandering.
             ]],
             OPT_CONVINCE = "Try to calm them down",
             DIALOG_CONVINCE = [[
                 player:
-                    Well, you don't have to stand to this kind of "pandering".
-                    What you could stand for is someone showing you decency.
+                    !placate
+                    Hey, I am just trying to do some good deeds here.
+                    There is no need to be rude about it.
             ]],
             DIALOG_CONVINCE_SUCCESS = [[
-                player:
-                    [p] LaserDisk.
                 agent:
-                    I'm sold.
-                    Have a great day.
+                    !sigh
+                    Fine. I guess I overreacted a bit.
+                    I am sure you mean well.
+                player:
+                    See? Isn't this better for both of us?
             ]],
             DIALOG_CONVINCE_FAIL = [[
                 agent:
-                    [p] Your deck could be better.
-                    Allow me to remind you of this failure for the rest of the run.
+                    !crossed
+                    It's not like I want to be rude.
+                    It's just that you see yourself as superior to everyone else around you.
+                    Making empty gestures doesn't change that.
+                    !angry_accuse
+                    I hate people who make empty gestures to make themselves feel superior.
             ]],
             OPT_IGNORE = "Ignore their complaints",
             DIALOG_IGNORE = [[
                 player:
-                    [p] Belt Buckles and globs of bandaids
+                    !crossed
+                    Fine. If you don't want to take the bread, then suit yourself.
                 agent:
-                    POPULIST!
+                    !angry_accuse
+                    This is what I'm talking about.
+                    Typical political pandering.
             ]],
         }
         :Fn(function(cxt)
@@ -554,32 +564,54 @@ QDEF:AddConvo("dole_out_three")
     :State("STATE_GRATEFUL")
         :Loc{
             DIALOG_GRATE = [[
-                player:
-                    [p] Hey. Want some bread?
-                agent:
-                    Sure. Y'know, you're alright.
-                    Thanks!
+                %gift_bread
             ]],
-            -- Bringing someone just for gifting them is extremely op, so we just repurpose this to be the default response.
-            -- I really should've worked on this more...My idea was they would come with you and you'd have a harder encounter with admiralty later on because they're with you.
-            -- OPT_BRING_ALONG = "Let them tag along for a while.",
-            -- DIALOG_BRING_ALONG = [[
-            --     player:
-            --         Come with me. I shall take you to the promised land.
-            --     agent:
-            --         Wait...are you jesus?
-            --     player:
-            --         Don't know who jesus is...come on now.
-            -- ]],
-            -- OPT_DONT = "Don't bring them along.",
-            -- DIALOG_DONT_BRING = [[
-            --     player:
-            --         [p] I don't like the fact ' break code.
-            --     agent:
-            --         how did you say apostrophe without saying it?
-            --     player:
-            --         I don't know. thanks for the offer.
-            -- ]]
+        }
+        :Quips{
+            {
+                tags = "gift_bread",
+                [[
+                    player:
+                        !permit
+                        Hey there. You want some bread?
+                    agent:
+                        !take
+                        Thanks. I needed that.
+                ]],
+                [[
+                    player:
+                        !permit
+                        I'm giving away free bread to the people. You want some?
+                    agent:
+                        !take
+                        Sure. I don't see why not.
+                        !happy
+                        Thanks!
+                ]],
+                [[
+                    player:
+                        !permit
+                        Do you want some free bread?
+                    agent:
+                        !take
+                        Can't say no to some free bread.
+                        !happy
+                        Thanks!
+                    player:
+                        !happy
+                        That's the spirit!
+                ]],
+                [[
+                    player:
+                        !permit
+                        You look like you need some bread. Want some?
+                    agent:
+                        !take
+                        There is never enough bread for everyone.
+                        !happy
+                        I'll happily take some. Thanks!
+                ]],
+            },
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_GRATE")
@@ -605,18 +637,25 @@ QDEF:AddConvo("dole_out_three", "primary_advisor")
             player:
                 I'm a bit short on cash, {primary_advisor}.
             agent:
+                !crossed
                 Is that my problem?
             player:
-                It's just that you did suggest this...can't exactly do anything if I don't have the proper funds...
+                !permit
+                It's just... You asked me to buy it from the supplier.
+                Can't exactly do that without money, can I?
         ]],
         DIALOG_ASK_MONEY_SUCCESS = [[
             agent:
+                !give
                 Hmph. Take a few shills.
-                I expect results, though. You'd better deliver.
+                !sigh
+                What will you do without me.
         ]],
         DIALOG_ASK_MONEY_FAILURE = [[
             agent:
-                [p] You have campaign funds specifically for this purpose.
+                !crossed
+                You have campaign funds specifically for this purpose.
+                If you don't have the money, it's entirely your fault.
         ]],
     }
     :Hub(function(cxt, who)
@@ -709,7 +748,7 @@ QDEF:AddConvo("buy_loaves", "dealer")
         OPT_BUY = "Buy loaves",
         DIALOG_BUY = [[
             player:
-                [p] I will buy a bundle.
+                I will buy a bundle.
             agent:
                 Good choice.
         ]],
@@ -721,14 +760,28 @@ QDEF:AddConvo("buy_loaves", "dealer")
             :PostCard("dole_loaves")
             :DeliverMoney(80)
             :GainCards{"dole_loaves"}
+            :Fn(function(cxt) cxt.quest.param.bought_at_least_one = true end)
     end)
     :AttractState("STATE_ATTRACT")
         :Loc{
             DIALOG_INTRO = [[
+                {first_time?
                 player:
-                    [p] I heard you sell dole loaves.
+                    I heard you sell dole loaves.
+                    Can I have some?
                 agent:
-                    Oh yeah? Are you willing to buy?
+                    Sure... As long as you can pay.
+                }
+                {not first_time?
+                    {bought_at_least_one?
+                        agent:
+                            Are you coming back to buy some more?
+                    }
+                    {not bought_at_least_one?
+                        agent:
+                            So? Have you made up your mind?
+                    }
+                }
             ]],
         }
         :Fn(function(cxt)
