@@ -672,6 +672,8 @@ QDEF:AddConvo("go_to_game")
                     !right
                     !scared
                 player:
+                    !left
+                    !crossed
                     {hired}, kill {challenger.himher}.
                 hired:
                     !left
@@ -715,6 +717,8 @@ QDEF:AddConvo("go_to_game")
                     !right
                     !scared
                 player:
+                    !left
+                    !crossed
                     {hired}, kill {challenger.himher}.
                 hired:
                     !left
