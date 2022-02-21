@@ -596,6 +596,7 @@ QDEF:AddConvo("visit_office")
                 primary_advisor:
                     There's still some time before we need to continue our campaign, so feel free to do whatever you want.
                     Once you're ready for the afternoon, talk to me about the next step.
+                *** {home} is now your new base of operation. Return to {primary_advisor} after the free time.
             ]],
         }
         :Fn(function(cxt)
