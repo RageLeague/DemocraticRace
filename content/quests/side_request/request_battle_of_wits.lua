@@ -921,6 +921,7 @@ QDEF:AddConvo("go_to_game")
             DemocracyUtil.AddBodyguardOpt(cxt, function(cxt, hireling)
                 cxt:ReassignCastMember("hired", hireling)
 
+                cxt:TalkTo(cxt:GetCastMember("giver"))
                 if hireling:IsSentient() then
                     cxt:Dialog("DIALOG_ORDER")
                 else
