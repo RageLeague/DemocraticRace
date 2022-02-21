@@ -341,7 +341,7 @@ QDEF:AddConvo("go_to_game")
                     !crossed
                     Alright. Then how about {player} makes sure you aren't up to anything underhanded.
                 giver:
-                    {player.heshe} will see to it that no funny business occurs.
+                    {player.HeShe} will see to it that no funny business occurs.
                     From <i>either</> of us.
                 }
                 {not good_player?
