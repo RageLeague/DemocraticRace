@@ -1141,12 +1141,14 @@ function DemocracyUtil.GetPerFileSettings()
     end
     return data
 end
-function DemocracyUtil.GetBodyguards(filter_fn)
+function DemocracyUtil.GetBodyguards(filter_fn, cxt)
     local candidates = {}
     for i, agent in ipairs(TheGame:GetGameState():GetCaravan():GetParty():GetMembers()) do
         if agent:IsHiredMember() or agent:IsPet() then
-            if not filter_fn or filter_fn(agent) then
-                table.insert(candidates, agent)
+            if not cxt.quest or not agent:IsCastInQuest(cxt.quest) then
+                if not filter_fn or filter_fn(agent) then
+                    table.insert(candidates, agent)
+                end
             end
         end
     end
@@ -1154,7 +1156,7 @@ function DemocracyUtil.GetBodyguards(filter_fn)
 end
 
 function DemocracyUtil.AddBodyguardOpt(cxt, fn, opt_id, filter_fn)
-    local candidates = DemocracyUtil.GetBodyguards(filter_fn)
+    local candidates = DemocracyUtil.GetBodyguards(filter_fn, cxt)
     if candidates and #candidates > 0 then
         cxt:Opt(opt_id or "OPT_USE_BODYGUARD")
             :LoopingFn(function(cxt)

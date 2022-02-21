@@ -666,12 +666,14 @@ QDEF:AddConvo("go_to_game")
                 * Besides, getting into {giver}'s good grace is way more valuable.
             ]],
 
-            OPT_ORDER = "Order {1#agent} to kill {challenger}",
+            OPT_ORDER = "Order a bodyguard to kill {challenger}...",
             DIALOG_ORDER = [[
                 challenger:
                     !right
                     !scared
                 player:
+                    !left
+                    !crossed
                     {hired}, kill {challenger.himher}.
                 hired:
                     !left
@@ -699,8 +701,58 @@ QDEF:AddConvo("go_to_game")
                     !dubious
                     I have many questions.
                 giver:
-                    And I am not accepting any of them.
+                    And I am not answering any of them.
                 }
+                giver:
+                    Regardless, I must thank you.
+                    For your aid in the test of my mental faculties against others.
+                    And helping me out when I needed you the most.
+                    For that, I am truly indebted to you.
+                * You feel like it is immoral to just kill people who are better than you at flipping coins.
+                * Then again, if you care about morals, you wouldn't be a grifter.
+                * Besides, getting into {giver}'s good grace is way more valuable.
+            ]],
+            DIALOG_ORDER_PET = [[
+                challenger:
+                    !right
+                    !scared
+                player:
+                    !left
+                    !crossed
+                    {hired}, kill {challenger.himher}.
+                hired:
+                    !left
+                {hireling_mech?
+                    TARGET ACQUIRED.
+                    COMMENCING EXECUTION.
+                }
+                {not hireling_mech?
+                    !bark
+                    Grrr...
+                challenger:
+                    Uhh... Hey there, little fella?
+                    !placate
+                    Wait wait wait!
+                    !exit
+                * You watch as {hired} viciously tears {challenger} apart.
+                player:
+                    !left
+                giver:
+                    !right
+                    !disgust
+                    Yikes. Put that thing on a leash or something.
+                player:
+                    !shrug
+                    Just don't mess with {hired}. It's that easy.
+                }
+                giver:
+                    Regardless, I must thank you.
+                    For your aid in the test of my mental faculties against others.
+                    And helping me out when I needed you the most.
+                    For that, I am truly indebted to you.
+                * You feel like it is immoral to just kill people who are better than you at flipping coins.
+                * Then again, if you care about morals, you wouldn't be a grifter.
+                * Besides, getting into {giver}'s good grace is way more valuable.
             ]],
 
             OPT_CALM = "Calm {giver} down",
@@ -840,9 +892,11 @@ QDEF:AddConvo("go_to_game")
 
             SIT_MOD = "{giver} doesn't like losing!",
         }
+        :SetLooping()
         :Fn(function(cxt)
-            cxt:Dialog("DIALOG_INTRO")
-            local hireling = TheGame:GetGameState():GetCaravan():GetHireling()
+            if cxt:FirstLoop() then
+                cxt:Dialog("DIALOG_INTRO")
+            end
             cxt:Opt("OPT_ATTACK")
                 :Fn(function(cxt)
                     cxt:TalkTo(cxt:GetCastMember("challenger"))
@@ -864,18 +918,26 @@ QDEF:AddConvo("go_to_game")
                         battle:GetTeam(TEAM.RED):Primary():AddCondition("WANTED_DEAD")
                     end,
                 }
-            if hireling then
-                cxt:Opt("OPT_ORDER", hireling)
-                    :Fn(function(cxt)
-                        cxt:ReassignCastMember("hired", hireling)
-                    end)
-                    :Dialog("DIALOG_ORDER")
-                    :Fn(function(cxt)
-                        cxt:GetCastMember("challenger"):Kill()
-                    end)
-                    :CompleteQuest()
-                    :DoneConvo()
-            end
+            DemocracyUtil.AddBodyguardOpt(cxt, function(cxt, hireling)
+                cxt:ReassignCastMember("hired", hireling)
+
+                cxt:TalkTo(cxt:GetCastMember("giver"))
+                if hireling:IsSentient() then
+                    cxt:Dialog("DIALOG_ORDER")
+                else
+                    if hireling:GetSpecies() == SPECIES.MECH then
+                        cxt.enc.scratch.hireling_mech = true
+                    end
+                    cxt:Dialog("DIALOG_ORDER_PET")
+                end
+
+                cxt:GetCastMember("challenger"):Kill()
+
+                cxt.quest:Complete()
+
+                StateGraphUtil.AddEndOption(cxt)
+            end, "OPT_ORDER")
+
             cxt:Opt("OPT_CALM")
                 :Fn(function(cxt)
                     cxt:TalkTo(cxt:GetCastMember("giver"))
