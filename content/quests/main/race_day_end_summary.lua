@@ -114,6 +114,33 @@ QDEF:AddConvo("summary", "primary_advisor")
                 }
             ]],
 
+            DIALOG_GOOD_SUPPORT_BAD_PERSONAL = [[
+                player:
+                    !crossed
+                    Hey! I thought we are doing pretty alright in terms of support!
+                agent:
+                {advisor_diplomacy?
+                    !angry_accuse
+                    It might look good on paper, but you have taken way too many cringe actions.
+                    You can only gain support from <i>cringe</> people, while the <i>based</> people will see you as a terrible candidate.
+                    You can't win with cringe supporters, {player}. You need based supporters. Baron supporters.
+                }
+                {not advisor_diplomacy?
+                    !angry_accuse
+                    You are making terrible campaign decisions, {player}.
+                    Your actions only attracts terrible people with terrible opinions.
+                    If you want to win the election, you need to make decisions that appeal to the right people.
+                    {advisor_manipulate?
+                        You will need the support from the elite, such as high-level priests from the cult.
+                    }
+                    {advisor_hostile?
+                        You will need the support from wealthy people. They have a lot more power.
+                    }
+                }
+                ** {agent}'s judgement on your current support level is clouded by {agent.hisher} personal bias.
+                ** To make your advisor more content, you need to take actions and stances favorable to {agent.hisher} voting group.
+            ]],
+
             DIALOG_UNLOCK_SKIP = [[
                 agent:
                     I feel confident about your ability to lead.
@@ -207,6 +234,7 @@ QDEF:AddConvo("summary", "primary_advisor")
             local rank = clamp( math.round((RANGE * #RANKS / 2 - delta) / RANGE) ,1, #RANKS)
 
             cxt.enc.scratch.loved = cxt:GetAgent():GetRelationship() == RELATIONSHIP.LOVED
+            cxt.enc.scratch.general_support_good = general_support > expectation
             cxt:Quip(
                 cxt:GetAgent(),
                 "summary_banter",
@@ -231,6 +259,9 @@ QDEF:AddConvo("summary", "primary_advisor")
             end) )
             cxt.enc:YieldEncounter()
             cxt:Dialog("DIALOG_" .. RANKS[rank])
+            if cxt.enc.scratch.general_support_good and rank >= 4 then
+                cxt:Dialog("DIALOG_GOOD_SUPPORT_BAD_PERSONAL")
+            end
             if cxt.quest.param.parent_quest then
                 local parent_quest = cxt.quest.param.parent_quest
                 -- If you did interview on a particular day, comment on that
