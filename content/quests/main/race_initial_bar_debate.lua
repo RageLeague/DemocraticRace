@@ -406,9 +406,11 @@ QDEF:AddConvo("win_argument")
                     Now, if I were to run for president, first I need to establish myself in the political world.
                     I need to let people know that I'm running for president.
                     And I also have to gain support while doing so.
+                *** After the successful debate, you decide to run for presidency.
             ]],
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Complete()
+            StateGraphUtil.AddEndOption(cxt)
         end)
