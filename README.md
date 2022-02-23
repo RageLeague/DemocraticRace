@@ -105,15 +105,36 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 
 ## Changelog
 
-### 0.6.0
+### 0.6.0 (A General Update)
 
 This is another minor major update that adds a bunch of miscellaneous features that improves the overall experience of the mod. Also replaced a lot of placeholder dialogs (not all of them, though).
 
 Major Changes:
 
 * Added tutorial slides for support level. (This is subject to changes).
+* Negotiation and battle now cost free time actions proportional to the number of turns spent (4 turns = 1 action, rounded up).
+* Added new notification for when actions are spent during free time events.
+* Added a new negotiation behaviour for Aellon.
+* Added a button that brings up the support screen (will show up once you select an advisor).
+* Added an option to ask someone unlawful to attack another person. They may either kill the target or cause the target to lose influence.
+* Added a theme music for Aellon "the Based".
+* Added two new events regarding the Rentorian and Deltrean dignitaries.
+* Increased support threshold requirement for each day.
 
 Minor Changes:
+
+* Added icons for many cards.
+* Replaced lots of placeholder dialogs and spellchecked a lot of them.
+* Removed intro for Benni and Dronumph's theme.
+* Changed flavour text of some cards.
+* Added some more smalltalk entries (not "Smalltalk", the pedagogically easiest language to learn(TM) (R)).
+* Transferred raw audio assets to a new repo (the raw FMOD project will not show up in the mod anymore).
+* Made various fixed, dialog replacement and addition to the Battle of Wits quest.
+* Added a special check in the relationship support update for non-voters.
+* Added negotiation counterparts for spicy noodles and hearty noodles.
+* Checking for bodyguards now also checks whether that person is also involved in the current quest.
+* Nerfed Rapid Speaker (6,10 -> 4,6 attacks).
+* Added tip on how to appease your advisor during the day end summary.
 
 ### 0.5.2
 
