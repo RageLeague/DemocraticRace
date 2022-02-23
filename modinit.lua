@@ -11,8 +11,9 @@ local function OnNewGame( mod, game_state )
     end
 end
 
-local function OnLoad( mod )
+local function OnPostLoad( mod )
     rawset(_G, "CURRENT_MOD_ID", mod.id)
+
     local STARTING_MONEY = 125
 
     local FORBIDDEN_CONVO = {
@@ -61,6 +62,17 @@ local function OnLoad( mod )
             money = -STARTING_MONEY,
         }
     }
+
+    for id, data in pairs(GetAllPlayerBackgrounds()) do
+        local act_data = shallowcopy(ACT_DATA)
+        act_data.id = data.id .. "_" .. act_data.id
+        data:AddAct(act_data)
+        Content.internal.ACT_DATA[act_data.id] = data.acts[#data.acts]
+    end
+end
+
+local function OnLoad( mod )
+    rawset(_G, "CURRENT_MOD_ID", mod.id)
 
     local function LoadConvoLua( filename )
         package.loaded[ filename ] = nil
@@ -118,13 +130,6 @@ local function OnLoad( mod )
                 Content.AddSlideShow("democracy_" .. id, slides_data)
             end
         end
-    end
-
-    for id, data in pairs(GetAllPlayerBackgrounds()) do
-        local act_data = shallowcopy(ACT_DATA)
-        act_data.id = data.id .. "_" .. act_data.id
-        data:AddAct(act_data)
-        Content.internal.ACT_DATA[act_data.id] = data.acts[#data.acts]
     end
 
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:ui/", "*.lua", true )) do
@@ -203,6 +208,7 @@ local function OnLoad( mod )
 
     -- print(string.match("C:/Users/adfafaf", "^.+[:]([^/\\].+)$"))
     -- print(string.match("DemRace:lalala", "^.+[:]([^/\\].+)$"))
+    return OnPostLoad
 end
 
 local function OnPreLoad( mod )
@@ -377,10 +383,10 @@ return {
         -- New characters
         -----------------------------------------
         -- For shel's adventure and expanded version
-        "LOSTPASSAGE",
+        -- "LOSTPASSAGE",
         -- For rise of kashio
-        "RISE", -- ffs, can you use a more unique alias?
+        -- "RISE", -- ffs, can you use a more unique alias?
         -- Arint mod
-        "ARINTMOD",
+        -- "ARINTMOD",
     },
 }
