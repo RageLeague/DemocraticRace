@@ -13,11 +13,8 @@ Author: RageLeague
 Load order:
 
 * Loads After: Cross Character Campaign (https://steamcommunity.com/sharedfiles/filedetails/?id=2219176890)
-* Loads After: Shel's Adventure (https://steamcommunity.com/sharedfiles/filedetails/?id=2217590179) or Shel's Adventure Expansion (https://steamcommunity.com/sharedfiles/filedetails/?id=2245060394)
-* Loads After: Rise of Kashio (https://steamcommunity.com/sharedfiles/filedetails/?id=2266976421)
-* Loads After: Arint's Last Day (https://steamcommunity.com/sharedfiles/filedetails/?id=2256085147)
 
-(The load order is specified for certain other mods because these modify the game's code, or add new characters to the game.)
+(The load order is specified for certain other mods because these modify the game's code.)
 
 This mod is based on this post that is now archived: https://forums.kleientertainment.com/forums/topic/120281-democracy-mode/.
 
@@ -135,6 +132,8 @@ Minor Changes:
 * Checking for bodyguards now also checks whether that person is also involved in the current quest.
 * Nerfed Rapid Speaker (6,10 -> 4,6 attacks).
 * Added tip on how to appease your advisor during the day end summary.
+* Moved act addition to OnPostLoad so it doesn't care if a character mod is loaded before this mod.
+* Removed load order for character mods (they aren't necessary anymore with the current setup).
 
 ### 0.5.2
 
