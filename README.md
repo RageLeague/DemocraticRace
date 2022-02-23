@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.5.2(Alpha)
+Version: 0.6.0(Alpha)
 
 Author: RageLeague
 
@@ -104,6 +104,16 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Sei Bellissima
 
 ## Changelog
+
+### 0.6.0
+
+This is another minor major update that adds a bunch of miscellaneous features that improves the overall experience of the mod. Also replaced a lot of placeholder dialogs (not all of them, though).
+
+Major Changes:
+
+* Added tutorial slides for support level. (This is subject to changes).
+
+Minor Changes:
 
 ### 0.5.2
 
