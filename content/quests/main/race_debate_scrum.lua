@@ -219,8 +219,8 @@ local function ProcessMinigame(minigame, win_minigame, cxt)
                 else
                     table.insert_unique(data.ally_survivors, TheGame:GetGameState():GetPlayerAgent())
                 end
-                local res, maxres = modifier:GetResolve()
-                data.win_margin = data.win_margin + 0.2 + (res / maxres)
+                local res, max_res = modifier:GetResolve()
+                data.win_margin = data.win_margin + 0.2 + (res / max_res)
             end
         end
     else
@@ -229,8 +229,8 @@ local function ProcessMinigame(minigame, win_minigame, cxt)
                 if modifier.candidate_agent then
                     table.insert_unique(data.ally_survivors, modifier.candidate_agent)
                 end
-                local res, maxres = modifier:GetResolve()
-                data.win_margin = data.win_margin + 0.2 + (res / maxres)
+                local res, max_res = modifier:GetResolve()
+                data.win_margin = data.win_margin + 0.2 + (res / max_res)
             end
         end
     end
@@ -573,8 +573,8 @@ QDEF:AddConvo("do_debate")
                 [[
                     * {agent} is able to quickly maintain dominance.
                     * {agent.HeShe} creates a Wrath of Hesh argument on the first turn, and ever since then, it does so much work.
-                    * And worst of all, WHY AREN'T THE OPPONENTS TARGETTING IT?
-                    * IT IS CLEARLY THE MOST DETRIMENTAL ARGUMENT, YET YOU ARE NOT TARGETTING IT!
+                    * And worst of all, WHY AREN'T THE OPPONENTS TARGETING IT?
+                    * IT IS CLEARLY THE MOST DETRIMENTAL ARGUMENT, YET YOU ARE NOT TARGETING IT!
                     * WHAT ARE YOU DOING FOR HESH SAKE?
                     * And yeah, {agent} won, surprising no one.
                 ]],

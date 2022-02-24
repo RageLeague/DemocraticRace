@@ -4,19 +4,19 @@ local QDEF = QuestDef.Define
     act_filter = DemocracyUtil.DemocracyActFilter,
     spawn_event_mask = QEVENT_TRIGGER.TRAVEL,
     precondition = function(quest)
-        local canspawn = false
+        local can_spawn = false
 
         quest.param.assaulted_officer = TheGame:GetGameState():GetPlayerAgent():HasMemory("ASSAULTED_ADMIRALTY")
         if quest.param.assaulted_officer then
             quest.param.assaulted = true
 
-            canspawn = true
+            can_spawn = true
         end
         if DemocracyUtil.GetFactionEndorsement("ADMIRALTY") < RELATIONSHIP.NEUTRAL then
             quest.param.unpopular = true
-            canspawn = true
+            can_spawn = true
         end
-        return canspawn --or true
+        return can_spawn --or true
     end,
 }
 :AddOpinionEvents{
@@ -43,7 +43,7 @@ QDEF:AddConvo()
             ]],
             OPT_PAY = "Pay the court a fine",
             DIALOG_PAY = [[
-                * [p] you paid the court a fine, so that you don't have to serve a sentence.
+                * [p] You paid the court a fine, so that you don't have to serve a sentence.
             ]],
             OPT_CONVINCE = "Convince {agent} that they got the wrong person",
             DIALOG_CONVINCE = [[
@@ -62,7 +62,7 @@ QDEF:AddConvo()
             DIALOG_CONVINCE_FAILURE = [[
                 agent:
                     [p] A great story you have there.
-                    Ashame that it doesn't absolve your duty.
+                    A shame that it doesn't absolve your duty.
             ]],
             OPT_INTIMIDATE = "Scare {agent} away",
             DIALOG_INTIMIDATE = [[

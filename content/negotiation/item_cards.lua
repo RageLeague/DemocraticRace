@@ -126,6 +126,8 @@ local CARDS = {
         name = "Paperweight",
         desc = "Choose a card in your hand and give it {STICKY} for the rest of this negotiation.",
         flavour = "I'll just keep that here for now.",
+        icon = "DEMOCRATICRACE:assets/cards/paperweight.png",
+
         cost = 0,
         item_tags = ITEM_TAGS.UTILITY,
         flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND | CARD_FLAGS.STICKY,
@@ -150,6 +152,7 @@ local CARDS = {
         name = "Gift Packaging",
         desc = "{IMPROVISE} a card from the draw pile and let the opponent {APPROPRIATED|appropriate} it.",
         flavour = "'I have something for you!'",
+        icon = "DEMOCRATICRACE:assets/cards/gift_packaging.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.UTILITY,
@@ -189,6 +192,7 @@ local CARDS = {
     {
         name = "Havarian Thesaurus",
         desc = "For the rest of the turn, for each other unique card played, gain 1 {SMARTS}.",
+        icon = "DEMOCRATICRACE:assets/cards/havarian_thesaurus.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.UTILITY,
@@ -245,6 +249,7 @@ local CARDS = {
     {
         name = "Business Card",
         desc = "Gain {1} {RENOWN}.\n{STACKING}: Increase the stacks gained by 1.",
+        icon = "DEMOCRATICRACE:assets/cards/business_card.png",
 
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.userdata and self.userdata.stacks or 1)
@@ -303,10 +308,63 @@ local CARDS = {
             end
         end,
     },
+    spicy_noodles_negotiation =
+    {
+        name = "Spicy Noodles",
+        desc = "Gain {1} {DOMINANCE}. Draw a card.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.condition_count)
+        end,
+
+        flavour = "'Establish dominance to your opponent by taking on the heat!'",
+        icon = "battle/spicy_noodles.tex",
+
+        cost = 0,
+        item_tags = ITEM_TAGS.SUPPORT,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.AMBUSH | CARD_FLAGS.EXPEND,
+        rarity = CARD_RARITY.UNIQUE,
+
+        max_charges = 2,
+        battle_counterpart = "spicy_noodles",
+
+        condition_count = 2,
+
+        OnPostResolve = function( self, minigame, targets )
+            self.negotiator:AddModifier("DOMINANCE", self.condition_count, self)
+            minigame:DrawCards(1)
+        end,
+    },
+    hearty_noodles_negotiation =
+    {
+        name = "Hearty Noodles",
+        desc = "Gain {1} {1*action|actions}. Draw a card.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.card_count)
+        end,
+
+        flavour = "'Stupendous flavours and toothsome noodles at a great price!'",
+        icon = "battle/hearty_noodles.tex",
+
+        cost = 1,
+        item_tags = ITEM_TAGS.SUPPORT,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.AMBUSH | CARD_FLAGS.EXPEND,
+        rarity = CARD_RARITY.UNIQUE,
+
+        max_charges = 2,
+        battle_counterpart = "hearty_noodles",
+
+        card_count = 2,
+
+        OnPostResolve = function( self, minigame, targets )
+            minigame:ModifyActionCount(2)
+            minigame:DrawCards(1)
+        end,
+    },
     pleasant_perfume =
     {
         name = "Pleasant Perfume",
         desc = "{pleasant_perfume|}Gain: Whenever you would gain {INFLUENCE} or {RENOWN}, gain 1 additional stack.",
+        icon = "DEMOCRATICRACE:assets/cards/pleasant_perfume.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
@@ -353,6 +411,7 @@ local CARDS = {
     {
         name = "Mask of Anonymity",
         desc = "Remove all inceptions you control.\nWhile in your hand, you cannot gain inceptions.",
+        icon = "DEMOCRATICRACE:assets/cards/mask_of_anonymity.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
@@ -394,6 +453,7 @@ local CARDS = {
     {
         name = "Mask of Intimidation",
         desc = "Remove all {DOMINANCE} you control and {INCEPT} that much {intimidated}.\nWhile in your hand, when you gain {DOMINANCE}, {INCEPT} that much {intimidated}.",
+        icon = "DEMOCRATICRACE:assets/cards/mask_of_intimidation.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
@@ -428,6 +488,7 @@ local CARDS = {
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.resolve_heal)
         end,
+        icon = "DEMOCRATICRACE:assets/cards/index_card.png",
 
         cost = 0,
         item_tags = ITEM_TAGS.SUPPORT,
@@ -453,6 +514,7 @@ local CARDS = {
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.heal_amount, self.damage_amount)
         end,
+        icon = "DEMOCRATICRACE:assets/cards/party_spirit.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
@@ -488,6 +550,7 @@ local CARDS = {
     {
         name = "Pearl Grey",
         desc = "Create 1 {stoic}",
+        icon = "DEMOCRATICRACE:assets/cards/pearl_grey.png",
 
         cost = 0,
         item_tags = ITEM_TAGS.SUPPORT,
@@ -505,6 +568,8 @@ local CARDS = {
     {
         name = "Work Report",
         desc = "Insert a {baffled} into your draw pile.",
+        flavour = "Minor commotion occurred today at Worksite B. A worker was seen having weird tendrils growing out of his arm, causing minor panic at the worksite.",
+        icon = "DEMOCRATICRACE:assets/cards/work_report.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
@@ -532,7 +597,9 @@ local CARDS = {
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.smarts_bonus)
         end,
-        flavour = "Numerous in-depth Baron Studies prove that Rise Activity in worksites is a bad thing for productivity.",
+        flavour = "After the preliminary test, we have found strong evidence supporting the hypothesis that the chance of the experimental group contracting the parasitic infestation has decreased compared to the control group.",
+        icon = "DEMOCRATICRACE:assets/cards/research_report.png",
+
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
         flags = CARD_FLAGS.ITEM,
@@ -559,9 +626,8 @@ local CARDS = {
     {
         name = "Executive Report",
         desc = "Targets all opponent argument.",
-        desc_fn = function(self, fmt_str)
-            return loc.format(fmt_str, self.smarts_bonus)
-        end,
+        flavour = "Effective immediately, any Spark Baron who discovers an effective solution to control the infestation shall be rewarded with 2800 shills and a promotion.",
+        icon = "DEMOCRATICRACE:assets/cards/executive_report.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,
@@ -580,6 +646,7 @@ local CARDS = {
         name = "Neural Disrupter",
         desc = "Remove target intent.",
         flavour = "Neural disrupters replace a person's thoughts with sparkly lights for a limited time - wait a second.",
+        icon = "DEMOCRATICRACE:assets/cards/neural_disrupter_negotiation.png",
 
         cost = 1,
         item_tags = ITEM_TAGS.SUPPORT,

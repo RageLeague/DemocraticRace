@@ -1141,12 +1141,14 @@ function DemocracyUtil.GetPerFileSettings()
     end
     return data
 end
-function DemocracyUtil.GetBodyguards(filter_fn)
+function DemocracyUtil.GetBodyguards(filter_fn, cxt)
     local candidates = {}
     for i, agent in ipairs(TheGame:GetGameState():GetCaravan():GetParty():GetMembers()) do
         if agent:IsHiredMember() or agent:IsPet() then
-            if not filter_fn or filter_fn(agent) then
-                table.insert(candidates, agent)
+            if not cxt.quest or not agent:IsCastInQuest(cxt.quest) then
+                if not filter_fn or filter_fn(agent) then
+                    table.insert(candidates, agent)
+                end
             end
         end
     end
@@ -1154,7 +1156,7 @@ function DemocracyUtil.GetBodyguards(filter_fn)
 end
 
 function DemocracyUtil.AddBodyguardOpt(cxt, fn, opt_id, filter_fn)
-    local candidates = DemocracyUtil.GetBodyguards(filter_fn)
+    local candidates = DemocracyUtil.GetBodyguards(filter_fn, cxt)
     if candidates and #candidates > 0 then
         cxt:Opt(opt_id or "OPT_USE_BODYGUARD")
             :LoopingFn(function(cxt)
@@ -1167,6 +1169,46 @@ function DemocracyUtil.AddBodyguardOpt(cxt, fn, opt_id, filter_fn)
                 StateGraphUtil.AddBackButton(cxt)
             end)
     end
+end
+
+-- Choose a random number in a gaussian distribution.
+-- Based on the polar form of the Box-Muller transformation.
+-- I yoinked it from the game code, but I removed the clamp because it's lame
+function DemocracyUtil.RandomGauss( mean, stddev )
+    local x1, x2, w
+    repeat
+        x1 = 2 * math.random() - 1
+        x2 = 2 * math.random() - 1
+        w = x1 * x1 + x2 * x2
+    until w > 1e-10 and w < 1.0 -- This safeguards against undefined log or division
+
+    w = math.sqrt( (-2 * math.log( w ) ) / w )
+    local x = (x1 * w)*stddev + mean
+    return x
+end
+
+function DemocracyUtil.CalculateStrengthRatio(blue, red, blue_bonus, red_bonus)
+    local blue_score = (blue:GetCombatStrength() + (blue:IsBoss() and 4 or 0)) * blue.health:GetPercent() + (blue_bonus or 0)
+    local red_score = (red:GetCombatStrength() + (red:IsBoss() and 4 or 0)) * red.health:GetPercent() + (red_bonus or 0)
+    local ratio = blue_score
+    return ratio
+end
+
+function DemocracyUtil.SimulateBattle(blue, red, blue_bonus, red_bonus)
+    local ratio = DemocracyUtil.CalculateStrengthRatio(blue, red, blue_bonus, red_bonus)
+    print("ratio =", ratio)
+    print("log(ratio) =", math.log(ratio))
+    local gauss_result = DemocracyUtil.RandomGauss(0, math.exp (1))
+    print("G(0, 1) =", gauss_result)
+    local result =  gauss_result < math.log(ratio)
+    if result then
+        blue.health:SetPercent(blue.health:GetPercent() * math.random(50, 80) * 0.01)
+        red.health:SetPercent(red.health:GetPercent() * math.random(20, 30) * 0.01)
+    else
+        red.health:SetPercent(red.health:GetPercent() * math.random(50, 80) * 0.01)
+        blue.health:SetPercent(blue.health:GetPercent() * math.random(20, 30) * 0.01)
+    end
+    return result
 end
 
 DemocracyUtil.EXCLUDED_WEAPONS = {
@@ -1397,29 +1439,32 @@ function QuestDef:AddFreeTimeObjective( child )
                 if minigame.start_params.no_free_time_cost then
                     return
                 end
-                quest:DefFn("DeltaActions", -1)
+                -- Dynamically scale action cost based on turn taken
+                -- <= 4: one action
+                -- <= 8: two actions
+                -- <= 12: three actions
+                -- More: What the Hesh are you doing. Also at least 4 actions
+                quest:DefFn("DeltaActions", -math.max(math.ceil(minigame:GetTurns() / 4), 1), "NEGOTIATION")
             end,
             resolve_battle = function(quest, battle)
-                quest:DefFn("DeltaActions", -1)
+                quest:DefFn("DeltaActions", -math.max(math.ceil(battle:GetTurns() / 4), 1), "BATTLE")
             end,
             caravan_move_location = function(quest, location)
-                print("Caravan moved, remove one action")
-                -- DBG(location)
                 if location:HasTag("in_transit") then
-                    print("Caravan moved, remove one action")
-                    quest:DefFn("DeltaActions", -1)
+                    quest:DefFn("DeltaActions", -1, "TRAVEL")
                 end
             end,
         },
     }(child)
 
-    self.DeltaActions = function(quest, delta)
+    self.DeltaActions = function(quest, delta, reason)
         quest.param.free_time_actions = quest.param.free_time_actions + delta
         print("New action count: "..quest.param.free_time_actions)
         if quest.param.free_time_actions <= 0 then
             quest:Complete(new_child.id)
         end
         quest:NotifyChanged()
+        TheGame:GetGameState():LogNotification( NOTIFY.DEM_TIME_PASSED, quest, -delta, quest.param.free_time_actions, reason )
     end
     self.free_time_objective_id = new_child.id
 

@@ -60,6 +60,9 @@ Content.AddStringTable("DEMOCRACY", {
             CONSISTENT_STANCE = "Consistent Stance",
             INCONSISTENT_STANCE = "Hypocrisy",
         },
+        MAIN_OVERLAY = {
+            VIEW_SUPPORT = "<#TITLE>View Support</>\nGeneral support: {1}",
+        },
         METRICS =
         {
             TITLE = "Metric Collection Enabled",
@@ -103,6 +106,19 @@ Content.AddStringTable("DEMOCRACY", {
                 DETAIL_INCREASE = "Your support among {1#wealth_name_list} are increased.",
                 DETAIL_DECREASE = "Your support among {1#wealth_name_list} are decreased.",
                 DETAIL_BOTH = "Your support among {1#wealth_name_list} are increased, while your support among {2#wealth_name_list} are decreased.",
+            },
+            TIME_PASSED =
+            {
+                TITLE = "{1} {1*Action|Actions} Spent",
+                DETAIL = "You have spent {1} {1*action|actions} on {2}. You have {3} {3*action|actions} left for this free time.",
+                DETAIL_NO_FREE = "You have spent {1} {1*action|actions} on {2}. You have no more free time.",
+                REASON =
+                {
+                    ACTION = "performing a task",
+                    NEGOTIATION = "negotiation",
+                    BATTLE = "battle",
+                    TRAVEL = "travelling",
+                },
             },
             UPDATE_STANCE =
             {
@@ -187,6 +203,14 @@ Content.AddStringTable("DEMOCRACY", {
         RELATIONSHIP_SCREEN = {
             SUPPRESSED = "SUPPRESSED",
         },
+        MAINMENU = {
+            RACE_TUTORIAL = "The Democratic Race",
+        },
+        PAUSEMENU = {
+            RACE_TUTORIAL = "DEMOCRATIC RACE",
+        },
+        RACE_TUTORIAL_TITLE = "Democratic Race Tutorial: Support",
+        RACE_TUTORIAL_BODY = "Would you like to see a quick tutorial on support levels? You can review it at any time from the pause menu.",
     },
     MISC =
     {

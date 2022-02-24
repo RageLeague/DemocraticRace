@@ -140,6 +140,23 @@ local function GetAdvisorFn(advisor_id)
     end
 end
 
+local function ShowRaceTutorial()
+    local screen = TheGame:FE():GetTopScreen()
+    TheGame:GetGameProfile():SetHasSeenMessage("democracy_race_tutorial")
+    TheGame:FE():InsertScreen( Screen.YesNoPopup(LOC"UI.RACE_TUTORIAL_TITLE", LOC"UI.RACE_TUTORIAL_BODY", nil, nil, LOC"UI.NEGOTIATION_PANEL.TUTORIAL_NO" ))
+        :SetFn(function(v)
+            if v == Screen.YesNoPopup.YES then
+                local coro = screen:StartCoroutine(function()
+                    local advance = false
+                    TheGame:FE():PushScreen( Screen.SlideshowScreen( "democracy_race_tutorial", function() advance = true end ):SetAutoAdvance(false) )
+                    while not advance do
+                        coroutine.yield()
+                    end
+                end )
+            end
+        end)
+end
+
 QDEF:AddConvo("go_to_bar")
     :Confront(function(cxt)
         if cxt.location == cxt.quest:GetCastMember("noodle_shop") then
@@ -213,7 +230,7 @@ QDEF:AddConvo("go_to_bar")
                     Bunch of normies.
                 player:
                     !left
-                    Can any of you explain what's happenening?
+                    Can any of you explain what's happening?
                 advisor_hostile:
                     !right
                     Look, you pick one of us to be your advisor.
@@ -413,6 +430,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 :Fn(function(cxt)
                     DemocracyUtil.TryMainQuestFn("DoRandomOpposition", OPPO_COUNT)
                     DemocracyUtil.DoLocationUnlock(cxt, "GROG_N_DOG")
+                    TheGame:GetGameState():GetMainQuest().param.enable_support_screen = true
                 end)
                 :GoTo("STATE_COMPLETE_DIALOG")
             cxt:Opt("OPT_NO")
@@ -430,9 +448,9 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
             OPT_SUPPORT = "Ask about support level",
             DIALOG_SUPPORT = [[
                 agent:
-                    The first step of running a campaign is to realize that being a polititian is a hard job.
+                    The first step of running a campaign is to realize that being a politician is a hard job.
                     There are different ways of approaching problems in the society, and people have different opinions on these approaches.
-                    Natually, some people will dislike you simply because of your ideology.
+                    Naturally, some people will dislike you simply because of your ideology.
                 * As if on cue, you see a notification showing people disliking you.
             ]],
             DIALOG_SUPPORT_PST = [[
@@ -444,6 +462,8 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                     Remember, people who like you or love you will most likely vote for you, and people who dislike or hate you will most likely vote against you.
                     But the support level affects your popularity among swing voters.
                     At the same time, you should make people like you more, since they will help your with negotiation and solidifies their votes for you.
+                    Check out this tutorial for more information.
+                * {agent} handed you a pamphlet, which you promptly pocketed after reading it (or not).
             ]],
             OPT_FUNDING = "Ask about funding",
             DIALOG_FUNDING = [[
@@ -499,6 +519,10 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                         TheGame:GetGameProfile():AcquireUnlock("DONE_POLITICS_OPPOSITION")
                     end)
                     :Dialog("DIALOG_SUPPORT_PST")
+                    :Fn(function(cxt)
+                        TheGame:GetGameState():GetMainQuest().param.enable_support_screen = true
+                        ShowRaceTutorial()
+                    end)
             end
             if not cxt.quest.param.did_funding then
                 cxt:Opt("OPT_FUNDING")
@@ -528,7 +552,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                         DemocracyUtil.TryMainQuestFn("DoRandomOpposition", OPPO_COUNT)
                         cxt.quest.param.did_opposition = true
                         cxt:Dialog("DIALOG_SKIP_OPPOSITION")
-
+                        TheGame:GetGameState():GetMainQuest().param.enable_support_screen = true
                     end
                     cxt:GoTo("STATE_COMPLETE_DIALOG")
                 end)
@@ -572,10 +596,12 @@ QDEF:AddConvo("visit_office")
                 primary_advisor:
                     There's still some time before we need to continue our campaign, so feel free to do whatever you want.
                     Once you're ready for the afternoon, talk to me about the next step.
+                *** {home} is now your new base of operation. Return to {primary_advisor} after the free time.
             ]],
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Complete()
             QuestUtil.SpawnQuest("RACE_LIVING_WITH_ADVISOR")
+            StateGraphUtil.AddEndOption(cxt)
         end)

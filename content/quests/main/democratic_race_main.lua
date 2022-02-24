@@ -44,8 +44,8 @@ end
 
 local DAY_SCHEDULE = {
     {quest = "RACE_DAY_1", difficulty = 1, support_expectation = {0,10,25}},
-    {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {25,40,55}},
-    {quest = "RACE_DAY_3", difficulty = 3, support_expectation = {55,75,95}},
+    {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {35,50,65}},
+    {quest = "RACE_DAY_3", difficulty = 3, support_expectation = {80,100,120}},
     -- {quest = "RACE_DAY_4", difficulty = 4},
     -- {quest = "RACE_DAY_5", difficulty = 5},
 }
@@ -70,7 +70,7 @@ local DEATH_DELTA = -10
 local ISOLATED_DEATH_DELTA = -2
 
 -- Determines the support change if you didn't kill someone, but you're an accomplice
--- or someone dies from neglegience
+-- or someone dies from negligence
 local ACCOMPLICE_KILLING_DELTA = -5
 local QDEF = QuestDef.Define
 {
@@ -225,6 +225,9 @@ local QDEF = QuestDef.Define
     end,
     fill_out_quip_tags = function(quest, tags, agent)
         table.insert_unique(tags, "democratic_race")
+        if agent == quest:GetCastMember("primary_advisor") then
+            table.insert_unique(tags, "primary_advisor")
+        end
         if quest:GetCastMember("primary_advisor") == quest:GetCastMember("advisor_diplomacy") then
             table.insert_unique(tags, "primary_advisor_diplomacy")
         end
@@ -271,6 +274,9 @@ local QDEF = QuestDef.Define
         end,
         agent_relationship_changed = function( quest, agent, old_rel, new_rel )
             if agent == quest:GetCastMember("primary_advisor") then
+                return
+            end
+            if not DemocracyUtil.CanVote(agent) then
                 return
             end
             local support_delta = DELTA_SUPPORT[new_rel] - DELTA_SUPPORT[old_rel]
@@ -500,7 +506,7 @@ local QDEF = QuestDef.Define
             notification = true
         end
         if notification and amt ~= 0 then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GENERAL_SUPPORT, amt, quest:DefFn("GetGeneralSupport"), notification )
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_GENERAL_SUPPORT, amt, quest:DefFn("GetGeneralSupport"), notification )
         end
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_general_support", amt )
@@ -520,7 +526,7 @@ local QDEF = QuestDef.Define
             notification = true
         end
         if notification and amt ~= 0 then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_FACTION_SUPPORT, amt, quest:DefFn("GetFactionSupport", faction), TheGame:GetGameState():GetFaction(faction), notification )
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_FACTION_SUPPORT, amt, quest:DefFn("GetFactionSupport", faction), TheGame:GetGameState():GetFaction(faction), notification )
         end
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_faction_support_" .. faction, amt )
@@ -540,7 +546,7 @@ local QDEF = QuestDef.Define
             notification = true
         end
         if notification and amt ~= 0 then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_WEALTH_SUPPORT, amt, quest:DefFn("GetWealthSupport", r), r, notification )
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_WEALTH_SUPPORT, amt, quest:DefFn("GetWealthSupport", r), r, notification )
         end
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_wealth_support_" .. r, amt )
@@ -648,7 +654,7 @@ local QDEF = QuestDef.Define
             notification = true
         end
         if notification and amt then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_AGENT_SUPPORT, amt, agent, notification )
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_AGENT_SUPPORT, amt, agent, notification )
         end
     end,
     -- DeltaFactionSupportAgent = function(quest, amt, agent, ignore_notification)
@@ -671,7 +677,7 @@ local QDEF = QuestDef.Define
             quest:DefFn("DeltaFactionSupport", actual_group[id], id, false, delta_type)
         end
         if notification then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GROUP_FACTION_SUPPORT, actual_group, notification)
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_GROUP_FACTION_SUPPORT, actual_group, notification)
         end
     end,
     DeltaGroupWealthSupport = function(quest, group_delta, multiplier, notification, delta_type)
@@ -688,7 +694,7 @@ local QDEF = QuestDef.Define
             quest:DefFn("DeltaWealthSupport", math.round(val * multiplier), id, false, delta_type)
         end
         if notification then
-            TheGame:GetGameState():LogNotification( NOTIFY.DELTA_GROUP_WEALTH_SUPPORT, actual_group, notification)
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_GROUP_WEALTH_SUPPORT, actual_group, notification)
         end
     end,
     -- Getters
@@ -725,7 +731,7 @@ local QDEF = QuestDef.Define
     GetSupportForAgent = function(quest, agent)
         return quest:DefFn("GetCompoundSupport", agent:GetFactionID(), agent:GetRenown() or 1)
     end,
-    -- At certain points in the story, random peope dislikes you for no reason.
+    -- At certain points in the story, random people dislikes you for no reason.
     -- call this function to do so.
     DoRandomOpposition = function(quest, num_to_do)
         num_to_do = num_to_do or 1
@@ -770,7 +776,7 @@ local QDEF = QuestDef.Define
             quest.param.stances[issue] = val
             quest.param.stance_change[issue] = 0
             quest.param.stance_change_freebie[issue] = not strict
-            TheGame:GetGameState():LogNotification( NOTIFY.UPDATE_STANCE, issue, val, strict )
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_UPDATE_STANCE, issue, val, strict )
         else
             local stance_delta = val - quest.param.stances[issue]
             if stance_delta == 0 or (not strict and (quest.param.stances[issue] > 0) == (val > 0) and (quest.param.stances[issue] < 0) == (val < 0)) then
@@ -793,7 +799,7 @@ local QDEF = QuestDef.Define
                 end
                 quest.param.stances[issue] = val
                 quest.param.stance_change_freebie[issue] = not strict
-                TheGame:GetGameState():LogNotification( NOTIFY.UPDATE_STANCE, issue, val, strict )
+                TheGame:GetGameState():LogNotification( NOTIFY.DEM_UPDATE_STANCE, issue, val, strict )
             end
         end
         if autosupport then

@@ -2,7 +2,7 @@ local negotiation_defs = require "negotiation/negotiation_defs"
 local CARD_FLAGS = negotiation_defs.CARD_FLAGS
 local EVENT = negotiation_defs.EVENT
 
-local ARGUMENT_CREATER =
+local ARGUMENT_CREATOR =
 {
     desc = "Create {2} {{1}}.",
     desc_fn = function(self, fmt_str)
@@ -10,7 +10,7 @@ local ARGUMENT_CREATER =
             self.stacks_to_create or (self.userdata and self.userdata.stacks_to_create) or 1)
     end,
     OnPostResolve = function( self, battle, attack)
-        local modifier = self.negotiator:CreateModifier( self.argument_to_create or (self.userdata and self.userdata.argument_to_create) or self.id, 
+        local modifier = self.negotiator:CreateModifier( self.argument_to_create or (self.userdata and self.userdata.argument_to_create) or self.id,
             self.stacks_to_create or (self.userdata and self.userdata.stacks_to_create) or 1, self )
         modifier.real_owner = self.real_owner
         -- if modifier.max_resolve then
@@ -18,7 +18,7 @@ local ARGUMENT_CREATER =
         -- end
     end,
 }
-local ARGUMENT_INCEPTER =
+local ARGUMENT_INCEPTOR =
 {
     desc = "{INCEPT} {2} {{1}}.",
     desc_fn = function(self, fmt_str)
@@ -26,7 +26,7 @@ local ARGUMENT_INCEPTER =
             self.stacks_to_create or (self.userdata and self.userdata.stacks_to_create) or 1)
     end,
     OnPostResolve = function( self, battle, attack)
-        local modifier = self.anti_negotiator:CreateModifier( self.argument_to_create or (self.userdata and self.userdata.argument_to_create), 
+        local modifier = self.anti_negotiator:CreateModifier( self.argument_to_create or (self.userdata and self.userdata.argument_to_create),
             self.stacks_to_create or (self.userdata and self.userdata.stacks_to_create) or 1, self )
         modifier.real_owner = self.real_owner
     end,
@@ -115,32 +115,32 @@ local MINI_NEGOTIATOR_CARDS =
         auto_target = true,
         manual_desc = true,
     },
-    mn_interrogate = table.extend(ARGUMENT_CREATER){
+    mn_interrogate = table.extend(ARGUMENT_CREATOR){
         name = "Interrogate",
         icon = "negotiation/tyrannize.tex",
         flags = CARD_FLAGS.HOSTILE,
         argument_to_create = "INTERROGATE",
     },
-    mn_kingpin = table.extend(ARGUMENT_CREATER){
+    mn_kingpin = table.extend(ARGUMENT_CREATOR){
         name = "Kingpin",
         icon = "negotiation/roughneck.tex",
         flags = CARD_FLAGS.HOSTILE,
         argument_to_create = "KINGPIN",
         cost = 2,
     },
-    mn_all_business = table.extend(ARGUMENT_CREATER){
+    mn_all_business = table.extend(ARGUMENT_CREATOR){
         name = "All Business",
         icon = "negotiation/weight.tex",
         flags = CARD_FLAGS.DIPLOMACY,
         argument_to_create = "ALL_BUSINESS_MODDED",
     },
-    mn_strawman = table.extend(ARGUMENT_INCEPTER){
+    mn_strawman = table.extend(ARGUMENT_INCEPTOR){
         name = "Straw Man",
         icon = "negotiation/fall_guy.tex",
         flags = CARD_FLAGS.MANIPULATE,
         argument_to_create = "straw_man",
     },
-    mn_propaganda = table.extend(ARGUMENT_CREATER){
+    mn_propaganda = table.extend(ARGUMENT_CREATOR){
         name = "Propaganda Machine",
         icon = "negotiation/propaganda.tex",
         argument_to_create = "mn_propaganda",
@@ -165,7 +165,7 @@ local MINI_NEGOTIATOR_CARDS =
             event_handlers = {
                 [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
                     self.composure_gain = self.composure_gain or 0
-    
+
                     if source and source == self then
                         if damage > defended then
                             if target.real_owner then
@@ -183,20 +183,20 @@ local MINI_NEGOTIATOR_CARDS =
             },
         },
     },
-    mn_brainwashed = 
+    mn_brainwashed =
     {
         name = "Brainwashed",
         icon = "negotiation/baffled.tex",
         flags = CARD_FLAGS.STATUS | CARD_FLAGS.UNPLAYABLE,
         cost = 0,
     },
-    mn_prayer = table.extend(ARGUMENT_CREATER){
+    mn_prayer = table.extend(ARGUMENT_CREATOR){
         name = "Prayers",
         icon = "negotiation/token_of_hesh.tex",
         flags = CARD_FLAGS.DIPLOMACY,
         argument_to_create = "prayer_of_hesh",
     },
-    mn_wrath = table.extend(ARGUMENT_CREATER){
+    mn_wrath = table.extend(ARGUMENT_CREATOR){
         name = "Wrath",
         desc = "Create 1 <b>Wrath of Hesh</>.",
         flavour = "Klei fix your Hesh damn description for Wrath of Hesh so that it doesn't break the game when not in a negotiation.",
@@ -204,7 +204,7 @@ local MINI_NEGOTIATOR_CARDS =
         flags = CARD_FLAGS.HOSTILE,
         argument_to_create = "wrath_of_hesh",
     },
-    mn_ploy = table.extend(ARGUMENT_CREATER){
+    mn_ploy = table.extend(ARGUMENT_CREATOR){
         name = "Ploy",
         icon = "negotiation/gossip.tex",
         flags = CARD_FLAGS.MANIPULATE,
@@ -289,7 +289,7 @@ local MINI_NEGOTIATOR =
         if self.negotiator:IsPlayer() then
             self.max_resolve = 30
         else
-            self.max_resolve = self.resolve_scale[ 
+            self.max_resolve = self.resolve_scale[
                 math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2,
                 #self.resolve_scale)
             ]
@@ -319,7 +319,7 @@ local MINI_NEGOTIATOR =
             self.engine:PlayCard(card)
             card:RemoveCard()
         end
-        
+
         if self.EndTurnEffect then
             self:EndTurnEffect(minigame)
         end
@@ -388,7 +388,7 @@ local MINI_NEGOTIATOR =
                     for i, target in ipairs(card_targets) do
                         if target:GetUID() == target_modifier:GetUID() then
                             local mindmg, maxdmg = minigame:PreviewPersuasion( card )
-                            
+
                             for i = 1, card.attack_count or 1 do
                                 slot:CreateDamagePreviewLabel(self, mindmg, maxdmg)
                             end
@@ -407,7 +407,7 @@ local MINI_NEGOTIATOR =
             if opponent_core and opponent_core.scores and opponent_core.scores[self:GetUID()] then
                 return opponent_core.scores[self:GetUID()].score or 0
             end
-        end 
+        end
         return 0
     end,
     EvaluateCardTargetWeight = function(self, card, target, targets)
@@ -467,13 +467,13 @@ table.extend(MINI_NEGOTIATOR){
     name = "Oolo's Power Abuse",
     alt_desc = "Then, if the opponent has no {PLANTED_EVIDENCE_MODDED}, {INCEPT} one.",
     icon = "DEMOCRATICRACE:assets/modifiers/mini_negotiator/admiralty.png",
-    available_cards_def = 
+    available_cards_def =
     {
-        {"mn_influence_damage"}, 
-        {"mn_manipulate_damage"}, 
-        {"mn_manipulate_damage"}, 
+        {"mn_influence_damage"},
+        {"mn_manipulate_damage"},
+        {"mn_manipulate_damage"},
         {"mn_hostile_damage"},
-        
+
         {"mn_composure"},
         {"mn_composure"},
         {"mn_composure_aoe"},
@@ -507,14 +507,14 @@ table.extend(MINI_NEGOTIATOR){
         end
         return res
     end,
-    available_cards_def = 
+    available_cards_def =
     {
-        -- {"mn_influence_damage"}, 
-        {"mn_influence_damage"}, 
+        -- {"mn_influence_damage"},
+        {"mn_influence_damage"},
         {"mn_hostile_damage"},
         {"mn_hostile_damage"},
         {"mn_hostile_damage"},
-        
+
         {"mn_composure"},
         {"mn_composure"},
 
@@ -547,14 +547,14 @@ table.extend(MINI_NEGOTIATOR){
     name = "Fellemo's Appropriation",
     alt_desc = "Then, appropriate a random opponent's card.",
     icon = "DEMOCRATICRACE:assets/modifiers/mini_negotiator/baron.png",
-    available_cards_def = 
+    available_cards_def =
     {
-        -- {"mn_influence_damage"}, 
-        {"mn_influence_damage"}, 
+        -- {"mn_influence_damage"},
+        {"mn_influence_damage"},
         {"mn_manipulate_damage"},
         {"mn_manipulate_damage"},
         {"mn_hostile_damage"},
-        
+
         {"mn_composure"},
         {"mn_composure_aoe"},
 
@@ -605,13 +605,13 @@ table.extend(MINI_NEGOTIATOR){
                         local approp
                         approp = self.negotiator:CreateModifier("APPROPRIATED_MODDED", 1, self )
                         for i, card in ipairs( cards ) do
-                            if approp:IsApplied() then -- veryify that it still exists
+                            if approp:IsApplied() then -- verify that it still exists
                                 print( self.negotiator, "appropriated", card, "from", card.deck )
                                 approp:AppropriateCard( card, chosen )
                             end
                         end
                         return
-                        
+
                     end
                 else
                     local cards = self.engine:GetAllPlayerCards(function(card) return not CheckBits( card.flags, CARD_FLAGS.STATUS ) end)
@@ -619,7 +619,7 @@ table.extend(MINI_NEGOTIATOR){
                     local approp
                     approp = self.negotiator:CreateModifier("APPROPRIATED_MODDED", 1, self )
                     for i, card in ipairs( cards ) do
-                        if approp:IsApplied() then -- veryify that it still exists
+                        if approp:IsApplied() then -- verify that it still exists
                             print( self.negotiator, "appropriated", card, "from", card.deck )
                             approp:AppropriateCard( card )
                         end
@@ -640,13 +640,13 @@ table.extend(MINI_NEGOTIATOR){
     loc_strings = {
         PENALTY_TXT = "-1 Action",
     },
-    available_cards_def = 
+    available_cards_def =
     {
-        {"mn_influence_damage"}, 
-        {"mn_influence_damage"}, 
-        {"mn_manipulate_damage"}, 
+        {"mn_influence_damage"},
+        {"mn_influence_damage"},
+        {"mn_manipulate_damage"},
         {"mn_hostile_damage"},
-        
+
         {"mn_composure"},
         {"mn_composure_aoe"},
         {"mn_composure_aoe"},
@@ -686,7 +686,7 @@ table.extend(MINI_NEGOTIATOR){
 
             label:SetGlyphColour( UICOLOURS.PENALTY )
 
-            
+
             -- label:SetPos( w/2, h/2 )
             label:SetPos( sx, sy )
             label:ScaleTo( 1.0, 1.3, 0.2, easing.outQuad )
@@ -719,7 +719,7 @@ table.extend(MINI_NEGOTIATOR){
             end)
             self:NotifyTriggered()
         end
-        
+
     end,
 })
 
@@ -728,14 +728,14 @@ table.extend(MINI_NEGOTIATOR){
     name = "Vixmalli's Zeal",
     alt_desc = "When any argument on {1.name}'s team gets destroyed, all other arguments gain 1 resolve.",
     icon = "DEMOCRATICRACE:assets/modifiers/mini_negotiator/cult.png",
-    available_cards_def = 
+    available_cards_def =
     {
-        -- {"mn_influence_damage"}, 
-        {"mn_influence_damage"}, 
+        -- {"mn_influence_damage"},
+        {"mn_influence_damage"},
         -- {"mn_manipulate_damage"},
         {"mn_manipulate_damage"},
         {"mn_manipulate_damage"},
-        
+
         -- {"mn_composure"},
         {"mn_composure"},
         -- {"mn_composure_aoe"},
@@ -777,14 +777,14 @@ table.extend(MINI_NEGOTIATOR){
     name = "Andwanette's Double Edge",
     alt_desc = "Whenever {1.name}'s cards deal damage, they gain resolve equal to resolve loss.",
     icon = "DEMOCRATICRACE:assets/modifiers/mini_negotiator/jakes.png",
-    available_cards_def = 
+    available_cards_def =
     {
-        {"mn_influence_damage"}, 
-        {"mn_hostile_damage"}, 
+        {"mn_influence_damage"},
+        {"mn_hostile_damage"},
         {"mn_hostile_damage"},
         {"mn_manipulate_damage"},
         {"mn_manipulate_damage"},
-        
+
         {"mn_composure"},
         {"mn_composure"},
         {"mn_composure_aoe"},
