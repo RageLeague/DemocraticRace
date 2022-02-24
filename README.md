@@ -6,18 +6,15 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.5.2(Alpha)
+Version: 0.6.0(Alpha)
 
 Author: RageLeague
 
 Load order:
 
 * Loads After: Cross Character Campaign (https://steamcommunity.com/sharedfiles/filedetails/?id=2219176890)
-* Loads After: Shel's Adventure (https://steamcommunity.com/sharedfiles/filedetails/?id=2217590179) or Shel's Adventure Expansion (https://steamcommunity.com/sharedfiles/filedetails/?id=2245060394)
-* Loads After: Rise of Kashio (https://steamcommunity.com/sharedfiles/filedetails/?id=2266976421)
-* Loads After: Arint's Last Day (https://steamcommunity.com/sharedfiles/filedetails/?id=2256085147)
 
-(The load order is specified for certain other mods because these modify the game's code, or add new characters to the game.)
+(The load order is specified for certain other mods because these modify the game's code.)
 
 This mod is based on this post that is now archived: https://forums.kleientertainment.com/forums/topic/120281-democracy-mode/.
 
@@ -104,6 +101,39 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Sei Bellissima
 
 ## Changelog
+
+### 0.6.0 (A General Update)
+
+This is another minor major update that adds a bunch of miscellaneous features that improves the overall experience of the mod. Also replaced a lot of placeholder dialogs (not all of them, though).
+
+Major Changes:
+
+* Added tutorial slides for support level. (This is subject to changes).
+* Negotiation and battle now cost free time actions proportional to the number of turns spent (4 turns = 1 action, rounded up).
+* Added new notification for when actions are spent during free time events.
+* Added a new negotiation behaviour for Aellon.
+* Added a button that brings up the support screen (will show up once you select an advisor).
+* Added an option to ask someone unlawful to attack another person. They may either kill the target or cause the target to lose influence.
+* Added a theme music for Aellon "the Based".
+* Added two new events regarding the Rentorian and Deltrean dignitaries.
+* Increased support threshold requirement for each day.
+
+Minor Changes:
+
+* Added icons for many cards.
+* Replaced lots of placeholder dialogs and spellchecked a lot of them.
+* Removed intro for Benni and Dronumph's theme.
+* Changed flavour text of some cards.
+* Added some more smalltalk entries (not "Smalltalk", the pedagogically easiest language to learn(TM) (R)).
+* Transferred raw audio assets to a new repo (the raw FMOD project will not show up in the mod anymore).
+* Made various fixed, dialog replacement and addition to the Battle of Wits quest.
+* Added a special check in the relationship support update for non-voters.
+* Added negotiation counterparts for spicy noodles and hearty noodles.
+* Checking for bodyguards now also checks whether that person is also involved in the current quest.
+* Nerfed Rapid Speaker (6,10 -> 4,6 attacks).
+* Added tip on how to appease your advisor during the day end summary.
+* Moved act addition to OnPostLoad so it doesn't care if a character mod is loaded before this mod.
+* Removed load order for character mods (they aren't necessary anymore with the current setup).
 
 ### 0.5.2
 
