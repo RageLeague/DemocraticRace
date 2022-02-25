@@ -218,11 +218,11 @@ QDEF:AddConvo("ask_info")
                 player:
                     Really? No hashing out the details?
                 agent:
-					!angryshrug
+                    !angry_shrug
                     No! It's a leviathan sized creature that eats us all in the end!
                     Can't exactly break out the yardstick on a creature we can't comprehend.
                 player:
-					!placate
+                    !placate
                     Alright, alright.
             ]],
         }
@@ -244,11 +244,12 @@ QDEF:AddConvo("ask_info")
                     You're one of the politicians, right?
                 player:
                     That would be correct, if I wanted to talk politics.
-                    But I want to talk about Hesh right now. Anything you know about It's classification?
+                    But I want to talk about Hesh right now. Anything you know about Its classification?
                 agent:
                     This is so great! I have so many notes on Hesh from all the snippets of lore I've found.
-					!dubious
+                    !dubious
                     Say...how much time do you have to burn?
+                * This sounds like it could take a while.
             ]],
             OPT_ENDURE = "Endure {agent}'s lecture",
             DIALOG_ENDURE = [[
@@ -256,13 +257,13 @@ QDEF:AddConvo("ask_info")
                     !sigh
                     As much as you need.
                 agent:
-					!happy
+                    !happy
                     So it all starts with the symmetry...
             ]],
             DIALOG_ENDURE_SUCCESS = [[
                 agent:
                     But, I say, what of the lumin that Hesh supposedly shed in it's birthing?
-					!eureka
+                    !eureka
                     Well, the soulution was obvious once I looked at it like that.
                     In conclusion...
             ]],
@@ -303,9 +304,9 @@ QDEF:AddConvo("ask_info")
                 -- Opponent has no core, meaning you can't win by damage.
                 -- You win by surviving a set amount of rounds.
                 flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE,
-				on_start_negotiation = function(minigame)
-					minigame.player_negotiator:AddModifier("FANATIC_LECTURE", math.max(4, 6 - math.floor(cxt.quest:GetRank() / 2)))
-				end,
+                on_start_negotiation = function(minigame)
+                    minigame.player_negotiator:AddModifier("FANATIC_LECTURE", math.max(4, 6 - math.floor(cxt.quest:GetRank() / 2)))
+                end,
             })
                 :OnSuccess()
                     :GoTo("STATE_SUCCESS")
@@ -327,35 +328,36 @@ QDEF:AddConvo("ask_info")
                 agent:
                 {liked?
                     !cagey
-					Keep your voice down!
-					Look, I don't know what's gotten in your head to start asking about that, but as friend I should warn you.
-					The Cult does not like people asking those questions.
+                    Keep your voice down!
+                    Look, I don't know what's gotten in your head to start asking about that, but as friend I should warn you.
+                    The Cult does not like people asking those questions.
                 }
                 {not liked?
-					!cruel
+                    !cruel
                     Well now. What's got you talking about Hesh's classification?
-					The Cult isn't going to like hearing you talking about <i>that</>.
+                    The Cult isn't going to like hearing you talking about <i>that</>.
                 }
             ]],
-			--They don't let it be spoken about because they don't have an answer, only questions
+            --They don't let it be spoken about because they don't have an answer, only questions
             OPT_THANK = "Thank {agent} for the heads up",
             DIALOG_THANK = [[
                 player:
-                    Wasn't aware the Cult didn't want It's lore known.
-					Thanks for the heads up, by the by.
-				agent:
-					Well, that's the thing. It's not a part of It's lore.
-					Because <i>there is no lore</> behind it's classification.
-					They don't want it talked about because it might start a religious coup.
-				player:
-					!happy
-					Hey, that's more of an answer I was expecting from this.
-				agent:
-					!cagey
-					It's an answer to get you to drop the subject. Friend to friend, I'm telling you to put a sock in it.
-				player:
-					!placate
-					Alright, alright.
+                    Wasn't aware the Cult didn't want Its lore known.
+                    Thanks for the heads up, by the by.
+                agent:
+                    Well, that's the thing.
+                    Hesh is beyond our mortal classification, and our puny minds cannot comprehend It.
+                    Any attempt to study it using our mortal understanding will only lead to madness.
+                    Plus, that is what a heretical spark baron would do.
+                player:
+                    !happy
+                    Hey, that's more of an answer I was expecting from this.
+                agent:
+                    !cagey
+                    It's an answer to get you to drop the subject. Friend to friend, I'm telling you to put a sock in it.
+                player:
+                    !placate
+                    Alright, alright.
             ]],
             OPT_BRUSH = "Brush off {agent}'s concern",
             DIALOG_BRUSH = [[
@@ -381,22 +383,24 @@ QDEF:AddConvo("ask_info")
             ]],
             DIALOG_EXCUSE_FAILURE = [[
                 player:
-					I was asking this for a friend, you see...
-				agent:
-					!dubious
-					...
-				player:
-					!bashful
-					So my friend, her name is Benni by the way. She's actually part of the Cult...
-				agent:
-					!angry
-					...
-				player:
-					!scaredshrug
-					Her husband's a doctor, if that makes things better.
-				agent:
-					!angrypoint
-					I'll remember this. People will know that you're snooping about like this.
+                    I was asking this for a friend, you see...
+                agent:
+                    !dubious
+                    ...
+                player:
+                    !bashful
+                    My friend is actually part of the Cult, so I am asking these questions for {giver.himher}...
+                agent:
+                    !angry
+                    This is oshnu dung!
+                    A <i>real</> Cult member would know that these questions should not be asked around!
+                    Who do you really work for? Maybe one of those spark baron scums?
+                player:
+                    Well...
+                agent:
+                    Just be glad there is a ceasefire, because otherwise it's going to be a <i>lot</> worse for you.
+                    !angry_accuse
+                    Now get out of my face.
             ]],
         }
         :Fn(function(cxt)
@@ -431,7 +435,7 @@ QDEF:AddConvo("ask_info")
                 agent:
                     $miscMocking
                     C-te-no-phore.
-					They've got little hair-thingys that they use for swimming.
+                    They've got little hair-thingys that they use for swimming.
                 player:
                     !dubious
                     Sounds... Cute?
@@ -464,8 +468,8 @@ QDEF:AddConvo("ask_info")
                     Hesh is a multi-faceted being, and to classify it is to waste what precious time we have before being consumed.
                 player:
                     Thanks for the answer.
-					$miscMocking
-					You've <i>really</> cleared up my questions about Hesh's identity.
+                    $miscMocking
+                    You've <i>really</> cleared up my questions about Hesh's identity.
                 agent:
                     !shrug
                     It is what it is.
@@ -519,7 +523,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 * Finally, a percussive force of seawater envelops you, and for a moment the ocean becomes the only thing you can feel.
                 agent:
                 !right
-                * And from the deep blue, a marine creature appears. A...you can't discern. It's face shifts too quickly for you to understand it.
+                * And from the deep blue, a marine creature appears. A...you can't discern. Its face shifts too quickly for you to understand it.
                 * But you need to understand it. You must...
             ]],
             --Wumpus;If I can make something up that isn't blaring against canon, there'll be things for the three main characters based on these "weird dreams". gonna look into that.
@@ -545,7 +549,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 agent:
                 !exit
                 * it is the sand of the beach you are confined to, the sand that you cannot go beyond, as the creature of your dreams slips further into the murky blue.
-                * It's face still shifts between identities, but you were so close to understanding, if only you could reach beyond the sand, if only you could see, IF ONLY-
+                * Its face still shifts between identities, but you were so close to understanding, if only you could reach beyond the sand, if only you could see, IF ONLY-
                 * Yet you cannot, and you are plagued with those thoughts for the rest of the night, unable to decipher anything.
             ]],
         }
@@ -576,24 +580,24 @@ QDEF:AddConvo("tell_result", "giver")
                     Hey, {player}? Are you okay?
                 {not went_crazy?
                 player:
-					!handwave
-					I had some odd dream last night.
-					Had a lot of weird Hesh metaphors. Lots of water, dark, Hesh itself rearing it's head, the usual gist.
-				agent:
-					!surprised
-					You saw Hesh? What'd it look like? 
-				player:
-					!shrug
-					Nothing. And that's alright.
-					The fact of the matter is the facts don't matter. Hesh is just...whatever it wants to be.
-				agent:
-					!thought
-					So are facts just...subjective? Are all of my FACTS and LOGIC just...subjective?
-				player:
-					!shrug
-					Like I said, eye of the beholder.
-				agent:
-					Hmmm...
+                    !handwave
+                    I had some odd dream last night.
+                    Had a lot of weird Hesh metaphors. Lots of water, dark, Hesh itself rearing it's head, the usual gist.
+                agent:
+                    !surprised
+                    You saw Hesh? What'd it look like?
+                player:
+                    !shrug
+                    Nothing. And that's alright.
+                    The fact of the matter is the facts don't matter. Hesh is just...whatever it wants to be.
+                agent:
+                    !thought
+                    So are facts just...subjective? Are all of my FACTS and LOGIC just...subjective?
+                player:
+                    !shrug
+                    Like I said, eye of the beholder.
+                agent:
+                    Hmmm...
                 }
                 {went_crazy?
                     I saw too much, and I talk crazy.
