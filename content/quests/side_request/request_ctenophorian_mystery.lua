@@ -588,8 +588,18 @@ QDEF:AddConvo("tell_result", "giver")
                     You saw Hesh? What'd it look like?
                 player:
                     !shrug
-                    Nothing. And that's alright.
-                    The fact of the matter is the facts don't matter. Hesh is just...whatever it wants to be.
+                    That's the thing.
+                    It shifts form based on what I believe is true.
+                    When I think it's a ctenophore, it appears to be a ctenophore, and when I think it's a cnidarian, it appears to be a cnidarian.
+                agent:
+                    !dubious
+                    So it shifts form based on your belief? I mean, it is Hesh that we are talking about.
+                player:
+                    !permit
+                    The takeaway is this: We constantly think that we believe what we see, but this is untrue.
+                    We see what we believe. We see what we want to believe.
+                    In our minds, that becomes the truth and an absolute fact.
+                    There is no such thing as an inherit fact. It's all subjective.
                 agent:
                     !thought
                     So are facts just...subjective? Are all of my FACTS and LOGIC just...subjective?
@@ -597,10 +607,17 @@ QDEF:AddConvo("tell_result", "giver")
                     !shrug
                     Like I said, eye of the beholder.
                 agent:
+                    !thought
                     Hmmm...
+                    This is... certainly an angle that I was expecting, but it makes perfect sense, actually.
+                    The true form of Hesh seems less relevant than this revelation.
+                    Thank you, {player}, for opening my eyes.
+                player:
+                    !dubious
+                    You're welcome, I suppose?
                 }
                 {went_crazy?
-                    I saw too much, and I talk crazy.
+                    [p] I saw too much, and I talk crazy.
                 agent:
                     Oh no, now I feel bad for you.
                 }
