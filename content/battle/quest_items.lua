@@ -10,6 +10,7 @@ local attacks =
         anim = "taunt",
         flavour = "'It's food, I'll give you that.'",
         desc = "{HEAL {1}}.",
+        icon = "DEMOCRATICRACE:assets/cards/dole_loaves.png",
         anims = { "anim/grog_beer_glass2.zip"},
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.heal_amount )

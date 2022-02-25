@@ -4,14 +4,14 @@ local QDEF = QuestDef.Define
     act_filter = DemocracyUtil.DemocracyActFilter,
     spawn_event_mask = QEVENT_TRIGGER.TRAVEL,
     precondition = function(quest)
-        local canspawn = false
+        local can_spawn = false
 
         if DemocracyUtil.GetFactionEndorsement("CULT_OF_HESH") < RELATIONSHIP.NEUTRAL then
             quest.param.unpopular = true
-            canspawn = true
+            can_spawn = true
         end
 
-        return canspawn
+        return can_spawn
     end,
 }
 :AddOpinionEvents{
@@ -31,7 +31,7 @@ QDEF:AddConvo()
                 {player_sal?
                 player:
                     !crossed
-                    I paid plenty of tithes back on the derricks. 
+                    I paid plenty of tithes back on the derricks.
                 agent:
                     Well there's always plenty more work to do for Hesh, so the tithes need to keep flowing.
                 }
@@ -52,7 +52,7 @@ QDEF:AddConvo()
                 }
                 {not player_sal? and not player_rook? and not player_smith?
                 player:
-                    !angry_point
+                    !angry_accuse
                     I've paid all my tithes on time, just like the rest of us.
                 agent:
                     Well, that's before you became a politician.
@@ -89,20 +89,20 @@ QDEF:AddConvo()
                         Vix gave me an exemption. Said I could beat the face in of anyone saying otherwise.
                     agent:
                         !question
-                        Vix'malli said this specifically?
+                        Vixmalli said this specifically?
                     player:
                         !shrug
                         What, d'you need to see the decree?
                         Sure he said trying to refuse a cardinal was worth some sort of punishment.
                     agent:
                         !scared
-                        Oh, I would never question Vix'malli. 
+                        Oh, I would never question Vixmalli.
                         You...may have a good day, now.
                         * It's hard to live with, but having Vix in your back pocket always helped in these kinds of ruts.
                     }
                     {player_rook?
                         !give
-                        ...and my records of all times i've been tithed, timestamped for your convenience, and my-
+                        ...and my records of all times I've been tithed, timestamped for your convenience, and my-
                     agent:
                         !scared
                         How does someone have so many papers on just their tithes?
@@ -125,10 +125,10 @@ QDEF:AddConvo()
                         I've donated more than my fair share to the Cult all this time.
                         So I went up to the Bishop and-
                     agent:
-                        This is an expemtion from the Bishop?
+                        This is an exemption from the Bishop?
                     player:
                         !point
-                        That's the one. 
+                        That's the one.
                         Heard he liked enforcing these kinds of exemptions a little too much.
                         !nudge_nudge
                         If you get my meaning.
@@ -139,19 +139,19 @@ QDEF:AddConvo()
                     }
                 }
                 {paid_all?
-                agent:
-                    !sigh
-                    I suppose hesh does not bless us all with good fortune.
-                    Very well. If you need time, we shall take what we already have and leave you be.
-                    !exit
-                        * As {agent} leaves, you make sure to remember {agent.hisher} face, so you know who to avoid for a very long time.
+                    agent:
+                        !sigh
+                        I suppose hesh does not bless us all with good fortune.
+                        Very well. If you need time, we shall take what we already have and leave you be.
+                        !exit
+                    * As {agent} leaves, you make sure to remember {agent.hisher} face, so you know who to avoid for a very long time.
                 }
             ]],
             DIALOG_CONVINCE_EXEMPT_FAILURE = [[
                 {not paid_all?
                     {player_smith?
                         player:
-                            So I went up to Vix and I said "Hey Vix, what's a brother-
+                            So I went up to Vix and I said "Hey Vix, what's a brother-"
                         agent:
                             !question
                             You're Vix's brother?
@@ -160,7 +160,7 @@ QDEF:AddConvo()
                         agent:
                             !think
                             Strange. He said he never gave exemptions to siblings.
-                            Especially the "Dissapointment", as he called him.
+                            Especially the "Disappointment", as he called him.
                         player:
                             Wow. I get he has multiple axes to grind but...
                             But that just stings an extra bit hard.
@@ -169,11 +169,11 @@ QDEF:AddConvo()
                         player:
                             I believe you'll find all of my tithes paid under a different alias.
                             !give
-                            But i'm thorough. I've got all of my records right here.
+                            But I'm thorough. I've got all of my records right here.
                         agent:
                             !notepad
-                            Hrm...looks alright...except
-                            You've apparently never paid any tithes when you were called "Coin Flipster"
+                            Hrm... Looks alright...
+                            Except you've apparently never paid any tithes when you were called "Coin Flipster".
                         player:
                             !bashful
                             It was...a phase.
@@ -195,17 +195,18 @@ QDEF:AddConvo()
                         agent:
                             What a shame. Without proper papers, I can't give you a free pass.
                     }
+                }
                 {paid_all?
-                        player:
-                            The work has been light, my advisor-
-                        agent:
-                            Advisor? How can you pay an advisor and yet not have enough to stave off damnation?
-                        player:
-                            Well, funny story, I-
-                        agent:
-                            I've heard enough. If you spent all of your money on booze, maybe you'll understand this lesson.
-                            !fight
-                            Time to dispense a fraction of Hesh's wrath.
+                    player:
+                        The work has been light, my advisor-
+                    agent:
+                        Advisor? How can you pay an advisor and yet not have enough to stave off damnation?
+                    player:
+                        Well, funny story, I-
+                    agent:
+                        I've heard enough. If you spent all of your money on booze, maybe you'll understand this lesson.
+                        !fight
+                        Time to dispense a fraction of Hesh's wrath.
                 }
             ]],
             OPT_NO_PAY = "Refuse to pay",
@@ -217,12 +218,12 @@ QDEF:AddConvo()
                     No?
                 player:
                     !shrug
-                    No, i'm not going to pay tithes.
+                    No, I'm not going to pay tithes.
                     I don't care what happens with my soul, I care about the now.
                 agent:
                     I...see
                     !fight
-                    Perhaps i'll just shift the "now" to issues of your soul. 
+                    Perhaps I'll just shift the "now" to issues of your soul.
                     Witness a fraction of Hesh's wrath.
             ]],
             OPT_PAY_ALL = "Pay all you have",
@@ -298,7 +299,7 @@ QDEF:AddConvo()
             DIALOG_DEFEND = [[
                 player:
                     !fight
-                    Warnin' you now. You're dealing with a Lumin Shark.
+                    I'm warning you now. You're dealing with a Lumin Shark.
             ]],
             DIALOG_DEFEND_WIN = [[
                 {dead?
@@ -311,12 +312,12 @@ QDEF:AddConvo()
                         Had enough, or do you want me to pay to hurt you a step further?
                     agent:
                         !injured
-                        That...won't be neccesary.
-                        !angry_point
+                        That...won't be necessary.
+                        !angry_accuse
                         But you have not seen Hesh's wrath, not in it's fullest, until today.
                     player:
-                        !hand_wave
-                        They always say that, but i'm still here.
+                        !handwave
+                        They always say that, but I'm still here.
                 }
             ]],
         }

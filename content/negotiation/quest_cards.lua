@@ -117,11 +117,7 @@ local CARDS = {
     {
         name = "Question answer",
         name_fn = function(self, fmt_str)
-            -- print("wololo")
-            -- print(self.issue_data)
-            -- print(self.stance)
             if self.issue_data and self.stance then
-                -- print("narvini")
                 return self.issue_data.stances[self.stance]:GetLocalizedName()
             end
             return loc.format(fmt_str)

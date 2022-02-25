@@ -61,7 +61,7 @@ CARD_SHOP_DEFS.RISE_PROPAGANDA_SHOP = function(stock)
     -- Front. Sell general negotiation stuff
     AddShopItems(stock, 1, {"business_card", "business_card", "index_card", "paperweight", "havarian_thesaurus", "work_report"})
     -- Spell special "rise" stuff
-    AddShopItems(stock, 2, {"rise_manifesto", "rise_manifesto", "executive_report", "research_report", "neural_disrupter"})
+    AddShopItems(stock, 2, {"rise_manifesto", "rise_manifesto", "executive_report", "research_report", "neural_disrupter_negotiation"})
 end
 
 CARD_SHOP_DEFS.PARTY_SUPPLY_SHOP = function(stock)
@@ -97,5 +97,5 @@ CARD_SHOP_DEFS.CULT_SHOP_DEMOCRACY = function(stock)
     -- A report
     AddShopItems(stock, 2, {"business_card", "business_card", "paperweight", "pearl_grey", "pleasant_perfume"})
     -- Cult special
-    AddShopItems(stock, 1, {"mask_of_anonymity", "mask_of_intimidation", "token_of_hesh", "brain_gills", "lumin_wine"})
+    AddShopItems(stock, 1, {"mask_of_anonymity", "mask_of_intimidation", "token_of_hesh", "brain_gills", "lumin_wine", "neural_disrupter_negotiation"})
 end

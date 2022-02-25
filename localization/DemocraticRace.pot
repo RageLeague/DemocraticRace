@@ -1720,7 +1720,7 @@ msgstr ""
 
 #: CONVO.DEMEVENT_ADMIRALTY_EXTORTION.STATE_INTERVENE.DIALOG_DEFEND_FAIL
 msgctxt "CONVO.DEMEVENT_ADMIRALTY_EXTORTION.STATE_INTERVENE.DIALOG_DEFEND_FAIL"
-msgid "player:\nAren't your wages enough? Extorting people is a rather quick way to lose your badge.\nadmiralty:\nWell i'll keep it blunt, to save your time.\nThese people think the Admiralty should be de-funded. That'd mean I don't get payed as much.\nBy your logic, i'm the smart one because i'm getting headstart on the robbing people process.\nNow if you're done butting into our business, I'd like to continue with this transaction."
+msgid "player:\nAren't your wages enough? Extorting people is a rather quick way to lose your badge.\nadmiralty:\nWell i'll keep it blunt, to save your time.\nThese people think the Admiralty should be de-funded. That'd mean I don't get payed as much.\nBy your logic, I'm the smart one because I'm getting headstart on the robbing people process.\nNow if you're done butting into our business, I'd like to continue with this transaction."
 msgstr ""
 
 #: CONVO.DEMEVENT_ADMIRALTY_EXTORTION.STATE_INTERVENE.DIALOG_DEFEND_SUCCESS
@@ -1745,12 +1745,12 @@ msgstr ""
 
 #: CONVO.DEMEVENT_ADMIRALTY_EXTORTION.STATE_INTERVENE.DIALOG_FINISH_DEFEND
 msgctxt "CONVO.DEMEVENT_ADMIRALTY_EXTORTION.STATE_INTERVENE.DIALOG_FINISH_DEFEND"
-msgid "{partner_dead?\n{dead?\n* Everyone's dead.\n* Where's your justice now, huh?\n* There's too many dead bodies for anyone to believe in your good intentions.\n}\n{not dead?\nadmiralty:\n!injured\nLook what you've forced me to do.\nYou happy now?\n!exit\n* That's a really good question.\n* Are you prepared to suffer from support loss, not just from the Admiralty, but also any other factions?\n}\n}\n{not partner_dead?\n{dead?\nlaborer:\n!right\nThanks buddy.\nYou just rid the world of a vermin.\nIt's a win win situation.\n!exit\n* You're not sure how this situation is considered win-win.\n* A politician killing an Admiralty? That's quite the scandal.\n}\n{not dead?\nadmiralty:\n!right\n!injured\nlaborer:\n!left\n!angry_point\nWill you leave me alone, now?\nadmiralty:\nFine, you win. I won't bother you anymore.\n!angry_point\nBut you there!\nplayer:\n!left\n!surprised\nWhat, me?\nadmiralty:\nThe Admiralty will remember this.\n!throatcut\nDon't expect anyone to support you now.\nplayer:\nHow is that possible?\nI protected the weak from the oppressive Admiralty. If anything, I should gain more support.\nadmiralty:\n!cruel\n$angryCruel\nThat's what you say, anyway. But other people will just see a grifter obstructing the law.\nAnd who do you think the people's gonna listen? The word of a grifting politician, or an admirable officer?\n* I have to admit, that pun was horrible.\nadmiralty:\nEnjoy your freedom. While it lasts.\n!exit\n}\n}"
+msgid "{partner_dead?\n{dead?\n* Everyone's dead.\n* Where's your justice now, huh?\n* There's too many dead bodies for anyone to believe in your good intentions.\n}\n{not dead?\nadmiralty:\n!injured\nLook what you've forced me to do.\nYou happy now?\n!exit\n* That's a really good question.\n* Are you prepared to suffer from support loss, not just from the Admiralty, but also any other factions?\n}\n}\n{not partner_dead?\n{dead?\nlaborer:\n!right\nThanks buddy.\nYou just rid the world of a vermin.\nIt's a win win situation.\n!exit\n* You're not sure how this situation is considered win-win.\n* A politician killing an Admiralty? That's quite the scandal.\n}\n{not dead?\nadmiralty:\n!right\n!injured\nlaborer:\n!left\n!angry_accuse\nWill you leave me alone, now?\nadmiralty:\nFine, you win. I won't bother you anymore.\n!angry_accuse\nBut you there!\nplayer:\n!left\n!surprised\nWhat, me?\nadmiralty:\nThe Admiralty will remember this.\n!throatcut\nDon't expect anyone to support you now.\nplayer:\nHow is that possible?\nI protected the weak from the oppressive Admiralty. If anything, I should gain more support.\nadmiralty:\n!cruel\n$angryCruel\nThat's what you say, anyway. But other people will just see a grifter obstructing the law.\nAnd who do you think the people's gonna listen? The word of a grifting politician, or an admirable officer?\n* I have to admit, that pun was horrible.\nadmiralty:\nEnjoy your freedom. While it lasts.\n!exit\n}\n}"
 msgstr ""
 
 #: CONVO.DEMEVENT_ADMIRALTY_EXTORTION.STATE_INTERVENE.DIALOG_FINISH_EXTORT
 msgctxt "CONVO.DEMEVENT_ADMIRALTY_EXTORTION.STATE_INTERVENE.DIALOG_FINISH_EXTORT"
-msgid "{partner_dead?\n{dead?\n* Everyone's dead.\n* You took the money and left the scene.\n* Surely no one would notice, unless you're a famous politician.\n}\n{not dead?\nlaborer:\n!injured\nplayer:\nLook what you've done.\nNow you really gotta pay those reparations for what you did to the Admiralty.\nlaborer:\n!angry_permit\nHere, take it.\n!injured\nYou claim you're a politician, but really you're just a lowly bandit.\nGood luck getting votes now.\n!exit\n* {laborer.HeShe}'s right, you know.\n}\n}\n{not partner_dead?\n{dead?\n* {admiralty} looks at you, disappointedly.\nadmiralty:\n!right\nGood job, us.\nNow that {laborer} is dead, I lost a steady source of cash.\nplayer:\nDon't worry about it.\nAfter the election, I plan to increase funding for the Admiralty.\nThen you don't need to resort to extorting civilians.\nadmiralty:\nI sure do hope so.\n!give\nAt any rate, here's your cut.\n* You take your blood money.\n* One thing is certain, though. The stunt you just pulled will probably not get elected.\n* So enjoy {admiralty}'s support, until {admiralty.heshe} finds out how empty your promise is.\n}\n{not dead?\nlaborer:\n!right\n!injured\nadmiralty:\n!left\nSo? What's it gonna be?\nlaborer:\n!angry_permit\nHere, take it.\n!injured\nYou're nothing but a crook.\n!angry_point\nAnd you there!\nplayer:\n!left\n!surprised\nMe?\nlaborer:\nYou claim you're a politician, but really you're just a lowly bandit.\nGood luck getting votes now.\n!exit\n* {laborer.HeShe}'s right, you know.\nadmiralty:\nAt least you made things right.\n!give\nHere's your cut.\n* You take your blood money and leave.\n}\n}"
+msgid "{partner_dead?\n{dead?\n* Everyone's dead.\n* You took the money and left the scene.\n* Surely no one would notice, unless you're a famous politician.\n}\n{not dead?\nlaborer:\n!injured\nplayer:\nLook what you've done.\nNow you really gotta pay those reparations for what you did to the Admiralty.\nlaborer:\n!angry_permit\nHere, take it.\n!injured\nYou claim you're a politician, but really you're just a lowly bandit.\nGood luck getting votes now.\n!exit\n* {laborer.HeShe}'s right, you know.\n}\n}\n{not partner_dead?\n{dead?\n* {admiralty} looks at you, disappointedly.\nadmiralty:\n!right\nGood job, us.\nNow that {laborer} is dead, I lost a steady source of cash.\nplayer:\nDon't worry about it.\nAfter the election, I plan to increase funding for the Admiralty.\nThen you don't need to resort to extorting civilians.\nadmiralty:\nI sure do hope so.\n!give\nAt any rate, here's your cut.\n* You take your blood money.\n* One thing is certain, though. The stunt you just pulled will probably not get elected.\n* So enjoy {admiralty}'s support, until {admiralty.heshe} finds out how empty your promise is.\n}\n{not dead?\nlaborer:\n!right\n!injured\nadmiralty:\n!left\nSo? What's it gonna be?\nlaborer:\n!angry_permit\nHere, take it.\n!injured\nYou're nothing but a crook.\n!angry_accuse\nAnd you there!\nplayer:\n!left\n!surprised\nMe?\nlaborer:\nYou claim you're a politician, but really you're just a lowly bandit.\nGood luck getting votes now.\n!exit\n* {laborer.HeShe}'s right, you know.\nadmiralty:\nAt least you made things right.\n!give\nHere's your cut.\n* You take your blood money and leave.\n}\n}"
 msgstr ""
 
 #: CONVO.DEMEVENT_ADMIRALTY_EXTORTION.STATE_INTERVENE.DIALOG_FINISH_JOB
@@ -1930,7 +1930,7 @@ msgstr ""
 
 #: CONVO.DEMEVENT_BUY_MANIFESTO.STATE_SUSPICION.DIALOG_EXCUSE_SUCCESS
 msgctxt "CONVO.DEMEVENT_BUY_MANIFESTO.STATE_SUSPICION.DIALOG_EXCUSE_SUCCESS"
-msgid "player:\nI actually do support the Rise.\n{player_sal?\nin fact, my parents are the leader of the Rise movement 10 years ago.\n}\nIt's just that, i'm a politician now, and i have to be careful with what i'm saying.\nBack in the Bog, letting people know you support the Rise is basically a death sentence.\nagent:\nYeah, i have to agree with that.\nBut you don't have to worry about it now.\nThe time is different, we're trying to resolve everything peacefully.\nDirectly killing a politician who support the Rise movement will look bad on whoever was doing it.\nplayer:\nEven still, you never know, right.\nagent:\nTrue.\nAnyway, see you around.\n!exit\n* Do you truly believe what you're saying? Doesn't matter, because {agent} believed it."
+msgid "player:\nI actually do support the Rise.\n{player_sal?\nin fact, my parents are the leader of the Rise movement 10 years ago.\n}\nIt's just that, I'm a politician now, and i have to be careful with what I'm saying.\nBack in the Bog, letting people know you support the Rise is basically a death sentence.\nagent:\nYeah, i have to agree with that.\nBut you don't have to worry about it now.\nThe time is different, we're trying to resolve everything peacefully.\nDirectly killing a politician who support the Rise movement will look bad on whoever was doing it.\nplayer:\nEven still, you never know, right.\nagent:\nTrue.\nAnyway, see you around.\n!exit\n* Do you truly believe what you're saying? Doesn't matter, because {agent} believed it."
 msgstr ""
 
 #: CONVO.DEMEVENT_BUY_MANIFESTO.STATE_SUSPICION.OPT_BRUSH_OFF
@@ -2065,7 +2065,7 @@ msgstr ""
 
 #: CONVO.DEMEVENT_POLITICAL_DILEMMA.STATE_CONFRONT.DIALOG_CHOOSE_NO_ONE
 msgctxt "CONVO.DEMEVENT_POLITICAL_DILEMMA.STATE_CONFRONT.DIALOG_CHOOSE_NO_ONE"
-msgid "player:\nLook, i'm flattered, really I am.\nBut I don't think this kind of drama is my kind of place to weigh in.\nextremist_neg:\n!right\n!surprised\nWhat?\nextremist_pos:\n!left\n!hips\n$happyCocky\nWas hoping for the grifter will back you up? Well too bad! {player.HeShe} isn't.\nextremist_neg:\n!angry\nOf course not!\n* You left those two be. Better to stay neutral than getting involved, right?"
+msgid "player:\nLook, I'm flattered, really I am.\nBut I don't think this kind of drama is my kind of place to weigh in.\nextremist_neg:\n!right\n!surprised\nWhat?\nextremist_pos:\n!left\n!hips\n$happyCocky\nWas hoping for the grifter will back you up? Well too bad! {player.HeShe} isn't.\nextremist_neg:\n!angry\nOf course not!\n* You left those two be. Better to stay neutral than getting involved, right?"
 msgstr ""
 
 #: CONVO.DEMEVENT_POLITICAL_DILEMMA.STATE_CONFRONT.DIALOG_INTRO
@@ -2135,7 +2135,7 @@ msgstr ""
 
 #: CONVO.DEMEVENT_STARVING_WORKER.CONFRONT.DIALOG_SAY_NO
 msgctxt "CONVO.DEMEVENT_STARVING_WORKER.CONFRONT.DIALOG_SAY_NO"
-msgid "player:\n{not offered_to_help?\n[p] look, i'm not a charity.\nagent:\nwow. really?\nyou suck.\n}\n{offered_to_help?\n[p] i'll help what i can with your foreman problem, but i'm not a charity.\nagent:\nthanks for you effort, but that doesn't help me right now.\nhave it your way, i guess.\n}"
+msgid "player:\n{not offered_to_help?\n[p] look, I'm not a charity.\nagent:\nwow. really?\nyou suck.\n}\n{offered_to_help?\n[p] i'll help what i can with your foreman problem, but I'm not a charity.\nagent:\nthanks for you effort, but that doesn't help me right now.\nhave it your way, i guess.\n}"
 msgstr ""
 
 #: CONVO.DEMEVENT_STARVING_WORKER.CONFRONT.DIALOG_TAKE_JOB
@@ -4755,7 +4755,7 @@ msgstr ""
 
 #: CONVO.RACE_INTRODUCE_OPPOSITION_2.DIALOG_GREET
 msgctxt "CONVO.RACE_INTRODUCE_OPPOSITION_2.DIALOG_GREET"
-msgid "player:\nSo I believe we should introduce ourselves a scoche bit better.\nIf you're going to win, surely you've nothing to hide from your opponents.\nagent:\nNothing I couldn't tell you about me that the public doesn't already.\nAsk away.\nplayer:\nWhat's your goal in this democratic race? What drives you forward?\nagent:\nI'm glad you asked.\n* {agent} clears {agent.hisher} throat loudly.\n%opposition_intro idea_monologue {opposition_id}\nplayer:\nI must say, i'm stunned by your rhetoric.\nagent:\nI bet you are!\nWhat say you? Are you persuaded by my speech?"
+msgid "player:\nSo I believe we should introduce ourselves a scoche bit better.\nIf you're going to win, surely you've nothing to hide from your opponents.\nagent:\nNothing I couldn't tell you about me that the public doesn't already.\nAsk away.\nplayer:\nWhat's your goal in this democratic race? What drives you forward?\nagent:\nI'm glad you asked.\n* {agent} clears {agent.hisher} throat loudly.\n%opposition_intro idea_monologue {opposition_id}\nplayer:\nI must say, I'm stunned by your rhetoric.\nagent:\nI bet you are!\nWhat say you? Are you persuaded by my speech?"
 msgstr ""
 
 #: CONVO.RACE_INTRODUCE_OPPOSITION_2.DIALOG_GREET_PST
@@ -4825,7 +4825,7 @@ msgstr ""
 
 #: CONVO.RACE_INTRODUCE_OPPOSITION_3.DIALOG_DONE_QUEST
 msgctxt "CONVO.RACE_INTRODUCE_OPPOSITION_3.DIALOG_DONE_QUEST"
-msgid "player:\n[p] i'm done with intel gathering.\nagent:\ngood\nremember, there's still an interview coming up.\nyou need to prepare for it.\nGo back to my office when you're ready to start working."
+msgid "player:\n[p] I'm done with intel gathering.\nagent:\ngood\nremember, there's still an interview coming up.\nyou need to prepare for it.\nGo back to my office when you're ready to start working."
 msgstr ""
 
 #: CONVO.RACE_INTRODUCE_OPPOSITION_3.OPT_DONE_QUEST
@@ -5300,7 +5300,7 @@ msgstr ""
 
 #: CONVO.TEA_WITH_BENEFACTOR_2.DIALOG_BENEFACTOR_POOR
 msgctxt "CONVO.TEA_WITH_BENEFACTOR_2.DIALOG_BENEFACTOR_POOR"
-msgid "agent:\nYou show promise...but atop that promise is much bluster.\n		        I can't give you Havaria, but i'm willing to give you {funds#money}.\nplayer:\nI guess this is better than nothing.\n* You have secured a bit of financial support, though it could be a lot better."
+msgid "agent:\nYou show promise...but atop that promise is much bluster.\n		        I can't give you Havaria, but I'm willing to give you {funds#money}.\nplayer:\nI guess this is better than nothing.\n* You have secured a bit of financial support, though it could be a lot better."
 msgstr ""
 
 #: CONVO.TEA_WITH_BENEFACTOR_2.DIALOG_BENEFACTOR_UNCONVINCED
@@ -6580,12 +6580,12 @@ msgstr ""
 
 #: MODIFIER.INVESTMENT_OPPORTUNITY.ALT_DESC
 msgctxt "MODIFIER.INVESTMENT_OPPORTUNITY.ALT_DESC"
-msgid "{MYRIAD_MODIFIER {1}}\nWhen destroyed, gain {SECURED_INVESTEMENTS} equal to the number of stacks on this bounty."
+msgid "{MYRIAD_MODIFIER {1}}\nWhen destroyed, gain {SECURED_INVESTMENTS} equal to the number of stacks on this bounty."
 msgstr ""
 
 #: MODIFIER.INVESTMENT_OPPORTUNITY.DESC
 msgctxt "MODIFIER.INVESTMENT_OPPORTUNITY.DESC"
-msgid "{MYRIAD_MODIFIER {2}}\nWhen destroyed, gain {1} {SECURED_INVESTEMENTS}."
+msgid "{MYRIAD_MODIFIER {2}}\nWhen destroyed, gain {1} {SECURED_INVESTMENTS}."
 msgstr ""
 
 #: MODIFIER.INVESTMENT_OPPORTUNITY.NAME
@@ -6803,18 +6803,18 @@ msgctxt "MODIFIER.RISE_MINI_NEGOTIATOR.PENALTY_TXT"
 msgid "-1 Action"
 msgstr ""
 
-#: MODIFIER.SECURED_INVESTEMENTS.ALT_DESC
-msgctxt "MODIFIER.SECURED_INVESTEMENTS.ALT_DESC"
+#: MODIFIER.SECURED_INVESTMENTS.ALT_DESC
+msgctxt "MODIFIER.SECURED_INVESTMENTS.ALT_DESC"
 msgid "Gain shills equal to the number of stacks on this argument if the negotiation is successful."
 msgstr ""
 
-#: MODIFIER.SECURED_INVESTEMENTS.DESC
-msgctxt "MODIFIER.SECURED_INVESTEMENTS.DESC"
+#: MODIFIER.SECURED_INVESTMENTS.DESC
+msgctxt "MODIFIER.SECURED_INVESTMENTS.DESC"
 msgid "Gain {1} shills if the negotiation is successful."
 msgstr ""
 
-#: MODIFIER.SECURED_INVESTEMENTS.NAME
-msgctxt "MODIFIER.SECURED_INVESTEMENTS.NAME"
+#: MODIFIER.SECURED_INVESTMENTS.NAME
+msgctxt "MODIFIER.SECURED_INVESTMENTS.NAME"
 msgid "Secured Investments"
 msgstr ""
 
@@ -7190,7 +7190,7 @@ msgstr ""
 
 #: NEGOTIATION_FEATURE.INVESTMENT_OPPORTUNITY.DESC
 msgctxt "NEGOTIATION_FEATURE.INVESTMENT_OPPORTUNITY.DESC"
-msgid "{MYRIAD_MODIFIER {2}}\nWhen destroyed, gain {1} {SECURED_INVESTEMENTS}."
+msgid "{MYRIAD_MODIFIER {2}}\nWhen destroyed, gain {1} {SECURED_INVESTMENTS}."
 msgstr ""
 
 #: NEGOTIATION_FEATURE.INVESTMENT_OPPORTUNITY.NAME
@@ -7408,13 +7408,13 @@ msgctxt "NEGOTIATION_FEATURE.RISE_MINI_NEGOTIATOR.NAME"
 msgid "Kalandra's Call to Rise"
 msgstr ""
 
-#: NEGOTIATION_FEATURE.SECURED_INVESTEMENTS.DESC
-msgctxt "NEGOTIATION_FEATURE.SECURED_INVESTEMENTS.DESC"
+#: NEGOTIATION_FEATURE.SECURED_INVESTMENTS.DESC
+msgctxt "NEGOTIATION_FEATURE.SECURED_INVESTMENTS.DESC"
 msgid "Gain {1} shills if the negotiation is successful."
 msgstr ""
 
-#: NEGOTIATION_FEATURE.SECURED_INVESTEMENTS.NAME
-msgctxt "NEGOTIATION_FEATURE.SECURED_INVESTEMENTS.NAME"
+#: NEGOTIATION_FEATURE.SECURED_INVESTMENTS.NAME
+msgctxt "NEGOTIATION_FEATURE.SECURED_INVESTMENTS.NAME"
 msgid "Secured Investments"
 msgstr ""
 

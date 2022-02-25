@@ -141,20 +141,20 @@ local function GetAdvisorFn(advisor_id)
 end
 
 local function ShowRaceTutorial()
-	local screen = TheGame:FE():GetTopScreen()
+    local screen = TheGame:FE():GetTopScreen()
     TheGame:GetGameProfile():SetHasSeenMessage("democracy_race_tutorial")
-	TheGame:FE():InsertScreen( Screen.YesNoPopup(LOC"UI.RACE_TUTORIAL_TITLE", LOC"UI.RACE_TUTORIAL_BODY", nil, nil, LOC"UI.NEGOTIATION_PANEL.TUTORIAL_NO" ))
-		:SetFn(function(v)
-			if v == Screen.YesNoPopup.YES then 
-				local coro = screen:StartCoroutine(function()
-					local advance = false
-					TheGame:FE():PushScreen( Screen.SlideshowScreen( "democracy_race_tutorial", function() advance = true end ):SetAutoAdvance(false) ) 
-					while not advance do                            
-						coroutine.yield()
-					end
-				end )
-			end
-		end)
+    TheGame:FE():InsertScreen( Screen.YesNoPopup(LOC"UI.RACE_TUTORIAL_TITLE", LOC"UI.RACE_TUTORIAL_BODY", nil, nil, LOC"UI.NEGOTIATION_PANEL.TUTORIAL_NO" ))
+        :SetFn(function(v)
+            if v == Screen.YesNoPopup.YES then
+                local coro = screen:StartCoroutine(function()
+                    local advance = false
+                    TheGame:FE():PushScreen( Screen.SlideshowScreen( "democracy_race_tutorial", function() advance = true end ):SetAutoAdvance(false) )
+                    while not advance do
+                        coroutine.yield()
+                    end
+                end )
+            end
+        end)
 end
 
 QDEF:AddConvo("go_to_bar")
@@ -230,7 +230,7 @@ QDEF:AddConvo("go_to_bar")
                     Bunch of normies.
                 player:
                     !left
-                    Can any of you explain what's happenening?
+                    Can any of you explain what's happening?
                 advisor_hostile:
                     !right
                     Look, you pick one of us to be your advisor.
@@ -448,9 +448,9 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
             OPT_SUPPORT = "Ask about support level",
             DIALOG_SUPPORT = [[
                 agent:
-                    The first step of running a campaign is to realize that being a polititian is a hard job.
+                    The first step of running a campaign is to realize that being a politician is a hard job.
                     There are different ways of approaching problems in the society, and people have different opinions on these approaches.
-                    Natually, some people will dislike you simply because of your ideology.
+                    Naturally, some people will dislike you simply because of your ideology.
                 * As if on cue, you see a notification showing people disliking you.
             ]],
             DIALOG_SUPPORT_PST = [[
@@ -596,10 +596,12 @@ QDEF:AddConvo("visit_office")
                 primary_advisor:
                     There's still some time before we need to continue our campaign, so feel free to do whatever you want.
                     Once you're ready for the afternoon, talk to me about the next step.
+                *** {home} is now your new base of operation. Return to {primary_advisor} after the free time.
             ]],
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Complete()
             QuestUtil.SpawnQuest("RACE_LIVING_WITH_ADVISOR")
+            StateGraphUtil.AddEndOption(cxt)
         end)

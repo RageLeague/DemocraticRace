@@ -54,13 +54,13 @@ QDEF:AddConvo()
                     Democracy isn't going to pay the customs fees! I still need to get paid for these weapons!
                 rise:
                     !spit
-                    Bah! That's just bougeroise rhetoric.
+                    Bah! That's just bourgeoisie rhetoric.
                 jakes:
-                    !angryshrug
-                    Bougeroise? I'm just as poor as the lot of you. Should <i>I<\> starve just so your little revolution has a few more playthings?
+                    !angry_shrug
+                    Bourgeoisie? I'm just as poor as the lot of you. Should <i>I<\> starve just so your little revolution has a few more playthings?
                 rise:
                     This isn't a game, {jake}. This is real life, and real sacrifice needs to be made for real change!
-                * You have a sneaking suspicion the next logical step for this conflict would involve someone getting shot.  
+                * You have a sneaking suspicion the next logical step for this conflict would involve someone getting shot.
             ]],
             OPT_LEAVE = "Leave them figure this out themselves",
             DIALOG_LEAVE = [[
@@ -73,7 +73,7 @@ QDEF:AddConvo()
                     !right
                 player:
                     !left
-                    This is unorderly and you know it.
+                    You should know this is not how normal people trade.
             ]],
             DIALOG_CONVINCE_PAY_SUCCESS = [[
                 player:
@@ -82,7 +82,7 @@ QDEF:AddConvo()
                     !taken_aback
                     Spree?
                 player:
-                    Well, this appears to be the Spree's general MO. 
+                    Well, this appears to be the Spree's general MO.
                     I bet you have an entire crew just waiting for their chance, just like-
                 rise:
                     !placate
@@ -157,7 +157,7 @@ QDEF:AddConvo()
             ]],
             DIALOG_CONVINCE_DONATE_SUCCESS = [[
                 player:
-                    Don't know if you're aware, but this is a democractic Havaria now.
+                    Don't know if you're aware, but this is a democratic Havaria now.
                     !over_there
                     And these guys? They've got "Democracy" tattooed across their foreheads.
                 rise:
@@ -174,8 +174,8 @@ QDEF:AddConvo()
                     !salute
                     {rise}, {jakes.honorific}.
                 jakes:
-                    Right, right. Listen, the next time I need a favor from the Rise, i'm gonna name drop you.
-                    And if I don't get what i'm asking for, I'll be cutting a few of your strings, got it?
+                    Right, right. Listen, the next time I need a favor from the Rise, I'm gonna name drop you.
+                    And if I don't get what I'm asking for, I'll be cutting a few of your strings, got it?
                 rise:
                     Er, yes. In the calmer sense of the phrase.
                 jakes:
@@ -186,7 +186,7 @@ QDEF:AddConvo()
                 rise:
                     !shrug
                     Not how I would've liked the deal to go by, but the weapons seem good.
-                    Thanks for the help, {player}. 
+                    Thanks for the help, {player}.
                 player:
                     !left
                     Anything to be on the right side of history, right?
@@ -216,10 +216,10 @@ QDEF:AddConvo()
                 player:
                     I could list off several other smugglers who'll charge you a dime on the dollar {jakes} is charging you.
                 rise:
-                    Really? 
+                    Really?
                 player:
                     !eureka
-                    For sure! And that oughta lead to a competitive price from {jakes} later on, if you still want to use {jakes.himher}.
+                    For sure! And that ought to lead to a competitive price from {jakes} later on, if you still want to use {jakes.himher}.
                 rise:
                     !think
                     You make a bit of sense, yeah.
@@ -240,7 +240,7 @@ QDEF:AddConvo()
                     I suppose I could call a few favors, get these weapons sold on such short notice.
                 player:
                     !salute
-                    For that, I wish you luck. 
+                    For that, I wish you luck.
             ]],
             DIALOG_CONVINCE_CALL_OFF_FAILURE = [[
                 player:
@@ -258,7 +258,7 @@ QDEF:AddConvo()
                 player:
                     !right
                 jakes:
-                    !angry_point
+                    !angry_accuse
                     What in Hesh's name are you trying to pull, grifter?
                 player:
                     !placate
@@ -527,7 +527,7 @@ QDEF:AddConvo()
                 rise:
                     But...but the elect-
                 player:
-                    The election is specifcally so we don't need radicals like you with weapons like those.
+                    The election is specifically so we don't need radicals like you with weapons like those.
             ]],
             DIALOG_INTIMIDATE_FAILURE = [[
                 jakes:
@@ -558,7 +558,7 @@ QDEF:AddConvo()
                 {jakes_dead?
                     {rise_dead?
                         * It does feel good to shake off the rust from your weapons, even if you got a bit overzealous.
-                        * Overzealoutry, however, might affect your campaign in the long run.
+                        * Overzealousness, however, might affect your campaign in the long run.
                     }
                     {not rise_dead?
                         rise:
@@ -567,11 +567,11 @@ QDEF:AddConvo()
                         * {rise} scrambles for the boxes, prying one open with the deftness of a safe cracker.
                         * {rise.HisHer} awareness, however, could use some work. You grab {rise.hisher} arms before clapping {agent.hisher} fists in a pair of restraints.
                         rise:
-                            So i'm leading a life of Martyrdom, now? It'll be a great way to be remembered, y'know.
+                            So I'm leading a life of Martyrdom, now? It'll be a great way to be remembered, y'know.
                         player:
-                            Reason it out however you want. If it helps you sleep tonight, hey, i'm fine with you babbling into thin air.
+                            Reason it out however you want. If it helps you sleep tonight, hey, I'm fine with you babbling into thin air.
                             But just remember you signed up for this.
-                        * It doesn't take long for the next Admiralty Patrol to round the corner. You shove {rise} into the hands of an oncoming guard before treking right behind them.
+                        * It doesn't take long for the next Admiralty Patrol to round the corner. You shove {rise} into the hands of an oncoming guard before trekking right behind them.
                     }
                 }
                 {not jakes_dead?
@@ -582,7 +582,7 @@ QDEF:AddConvo()
                         player:
                             Would you like me to finish the job, then? Would that make you feel better?
                         jakes:
-                            Not from a switch, no. If i'm dying, i'm gonna die for something honorable.
+                            Not from a switch, no. If I'm dying, I'm gonna die for something honorable.
                         player:
                             !crossed
                             Hmph. Maybe you and that Rise member had more in common than you thought.
@@ -603,7 +603,7 @@ QDEF:AddConvo()
                         player:
                             !question
                             "Plans rarely survive contact with the enemy". Did you know that quote, or did you not know how to read the fine print before tonight?
-                        * With both your prisoners in tow, the orbitting Admiralty Patrol that passes these parts quickly becomes two criminals fuller.
+                        * With both your prisoners in tow, the orbiting Admiralty Patrol that passes these parts quickly becomes two criminals fuller.
                     }
                 }
             ]],

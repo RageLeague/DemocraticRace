@@ -44,8 +44,8 @@ end
 
 local DAY_SCHEDULE = {
     {quest = "RACE_DAY_1", difficulty = 1, support_expectation = {0,10,25}},
-    {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {25,40,55}},
-    {quest = "RACE_DAY_3", difficulty = 3, support_expectation = {55,75,95}},
+    {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {35,50,65}},
+    {quest = "RACE_DAY_3", difficulty = 3, support_expectation = {80,100,120}},
     -- {quest = "RACE_DAY_4", difficulty = 4},
     -- {quest = "RACE_DAY_5", difficulty = 5},
 }
@@ -70,7 +70,7 @@ local DEATH_DELTA = -10
 local ISOLATED_DEATH_DELTA = -2
 
 -- Determines the support change if you didn't kill someone, but you're an accomplice
--- or someone dies from neglegience
+-- or someone dies from negligence
 local ACCOMPLICE_KILLING_DELTA = -5
 local QDEF = QuestDef.Define
 {
@@ -225,6 +225,9 @@ local QDEF = QuestDef.Define
     end,
     fill_out_quip_tags = function(quest, tags, agent)
         table.insert_unique(tags, "democratic_race")
+        if agent == quest:GetCastMember("primary_advisor") then
+            table.insert_unique(tags, "primary_advisor")
+        end
         if quest:GetCastMember("primary_advisor") == quest:GetCastMember("advisor_diplomacy") then
             table.insert_unique(tags, "primary_advisor_diplomacy")
         end
@@ -271,6 +274,9 @@ local QDEF = QuestDef.Define
         end,
         agent_relationship_changed = function( quest, agent, old_rel, new_rel )
             if agent == quest:GetCastMember("primary_advisor") then
+                return
+            end
+            if not DemocracyUtil.CanVote(agent) then
                 return
             end
             local support_delta = DELTA_SUPPORT[new_rel] - DELTA_SUPPORT[old_rel]
@@ -725,7 +731,7 @@ local QDEF = QuestDef.Define
     GetSupportForAgent = function(quest, agent)
         return quest:DefFn("GetCompoundSupport", agent:GetFactionID(), agent:GetRenown() or 1)
     end,
-    -- At certain points in the story, random peope dislikes you for no reason.
+    -- At certain points in the story, random people dislikes you for no reason.
     -- call this function to do so.
     DoRandomOpposition = function(quest, num_to_do)
         num_to_do = num_to_do or 1

@@ -69,56 +69,7 @@ local QDEF = QuestDef.Define
     state = QSTATUS.ACTIVE,
 }
 DemocracyUtil.AddHomeCasts(QDEF)
--- QDEF:AddConvo("meet_advisor", "primary_advisor")
---     :AttractState("STATE_TALK")
---         :Loc{
---             DIALOG_INTRO = [[
---                 player:
---                     !left
---                 agent:
---                     !right
---                     [p] nice work today
---                 player:
---                     thx
---                 agent:
---                     !give
---                     here's your pay.
---                     do your free time or whatever.
---             ]],
---             DIALOG_INTRO_LOW_SUPPORT = [[
---                 player:
---                     !left
---                 agent:
---                     !right
---                     [p] i have low expectations for you, but i was still surprised about how bad you did.
---                     i'm done with you.
---                 player:
---                     oh come on!
---             ]],
---             DIALOG_INTRO_PST = [[
---                 agent:
---                     go to bed when you're ready.
---             ]]
---         }
---         :Fn(function(cxt)
---             if DemocracyUtil.TryMainQuestFn("GetGeneralSupport") >= 10 then
---                 cxt:Dialog("DIALOG_INTRO")
 
---                 local money = DemocracyUtil.TryMainQuestFn("CalculateFunding")
---                 cxt.enc:GainMoney(money)
---                 cxt:Dialog("DIALOG_INTRO_PST")
---                 cxt.quest:Complete("meet_advisor")
---                 cxt.quest:Activate("go_to_sleep")
---                 DemocracyUtil.StartFreeTime()
---             else
---                 cxt:Dialog("DIALOG_INTRO_LOW_SUPPORT")
---                 DemocracyUtil.AddAutofail(cxt, function(cxt)
---                     cxt.quest:Complete("meet_advisor")
---                     cxt.quest:Activate("go_to_sleep")
---                     DemocracyUtil.StartFreeTime()
---                 end)
---             end
---         end)
 QDEF:AddConvo("go_to_sleep", "primary_advisor")
     :Loc{
         OPT_GO_TO_SLEEP = "Go to sleep",
@@ -180,11 +131,11 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     Contract killing, eh?
                     I used to do that for a living. Of course, that was before I became a politician.
                     Anyway, you wanna dance? Let's dance.
-                * Just as you prepare your weapon, something just occured to you.
+                * Just as you prepare your weapon, something just occurred to you.
                 player:
                     !scared
                 * You have fought very few, if any, battle since you decide to run for president.
-                * This assasain might've been easy before, but that was before you hung up your weapons.
+                * This assassin might've been easy before, but that was before you hung up your weapons.
                 * You need backup. Luckily, you can, but it'll take time.
                 player:
                     !point
@@ -199,7 +150,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                 "After calling for help, keep {agent.himher} occupied through negotiation or combat until help arrives!",
 
             GOAL_CALL_HELP = "(1/3) Call for help",
-            GOAL_MAINTAIN_CONNECTION = "(2/3) Describe your current situation to the dispacher ({1}/{2})",
+            GOAL_MAINTAIN_CONNECTION = "(2/3) Describe your current situation to the dispatcher ({1}/{2})",
             GOAL_AWAIT_RESCUE = "(3/3) Await rescue (Negotiate for {1} {1*turn|turns} or battle for {2} {2*turn|turns})",
 
             DIALOG_HELP_ARRIVE = [[

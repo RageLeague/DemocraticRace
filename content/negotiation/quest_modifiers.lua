@@ -7,7 +7,7 @@ local EVENT = negotiation_defs.EVENT
 --     RISE_AUTODOG = engine.asset.Texture( "negotiation/modifiers/recruit_rise_cobbledog.tex"),
 --     RISE_RADICAL = engine.asset.Texture( "negotiation/modifiers/recruit_rise_radical.tex"),
 --     RISE_REBEL = engine.asset.Texture( "negotiation/modifiers/recruit_rise_rebel.tex"),
---     RISE_PAMPLETEER = engine.asset.Texture( "negotiation/modifiers/recruit_rise_pamphleteer.tex"),
+--     RISE_PAMPHLETEER = engine.asset.Texture( "negotiation/modifiers/recruit_rise_pamphleteer.tex"),
 --     SPARK_BARON_AUTOMECH = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_automech.tex"),
 --     AUTODOG = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_autodog.tex"),
 --     SPARK_BARON_PROFESSIONAL = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_professional.tex"),
@@ -157,18 +157,18 @@ local MODIFIERS =
                 --local txt = loc.format( "{1#agent} is not ready to fight!", self.ally_agent )
                 widget:PostPortrait( self.target_agent )
             end
-            local resultstring = ""
+            local result_string = ""
             if self.target_agent then
                 if self.key_maps[self.target_agent:GetRelationship()] then
-                    resultstring = self.def:GetLocalizedString(self.key_maps[self.target_agent:GetRelationship()])
+                    result_string = self.def:GetLocalizedString(self.key_maps[self.target_agent:GetRelationship()])
                 end
                 if self.target_agent:HasAspect("bribed") then
-                    resultstring = resultstring .. "\n" .. loc.format(self.def:GetLocalizedString("BONUS_BRIBED"), self.target_agent, self.bribe_delta)
+                    result_string = result_string .. "\n" .. loc.format(self.def:GetLocalizedString("BONUS_BRIBED"), self.target_agent, self.bribe_delta)
                 end
             end
-            resultstring = resultstring .. "\n\n" .. fmt_str
-            print(resultstring)
-            return loc.format(resultstring, self.target_agent and self.target_agent:LocTable(),
+            result_string = result_string .. "\n\n" .. fmt_str
+            print(result_string)
+            return loc.format(result_string, self.target_agent and self.target_agent:LocTable(),
                 self.stacks, self.delta_max_resolve[self.target_agent:GetRelationship()], self.annoyed_threshold or 12)
             -- else
             --     return loc.format(fmt_str, self.target_agent and self.target_agent:LocTable(), self.stacks)
@@ -853,7 +853,7 @@ local MODIFIERS =
             -- end
         end,
     },
-    SECURED_INVESTEMENTS =
+    SECURED_INVESTMENTS =
     {
         name = "Secured Investments",
         icon = "negotiation/modifiers/frisk.tex",
@@ -875,8 +875,8 @@ local MODIFIERS =
     {
         name = "Investment Opportunity",
         icon = "negotiation/modifiers/frisk.tex",
-        desc = "{MYRIAD_MODIFIER {2}}\n\nWhen destroyed, gain {1} {SECURED_INVESTEMENTS}.",
-        alt_desc = "{MYRIAD_MODIFIER {1}}\n\nWhen destroyed, gain {SECURED_INVESTEMENTS} equal to the number of stacks on this bounty.",
+        desc = "{MYRIAD_MODIFIER {2}}\n\nWhen destroyed, gain {1} {SECURED_INVESTMENTS}.",
+        alt_desc = "{MYRIAD_MODIFIER {1}}\n\nWhen destroyed, gain {SECURED_INVESTMENTS} equal to the number of stacks on this bounty.",
 
         desc_fn = function(self, fmt_str)
             if self.stacks then
@@ -903,7 +903,7 @@ local MODIFIERS =
 
         OnBounty = function(self, source)
             -- self.negotiator:CreateModifier("CAUTIOUS_SPENDER")
-            self.anti_negotiator:AddModifier("SECURED_INVESTEMENTS", self.stacks)
+            self.anti_negotiator:AddModifier("SECURED_INVESTMENTS", self.stacks)
             CreateNewSelfMod(self)
         end,
     },
@@ -1772,31 +1772,31 @@ local MODIFIERS =
     RELATABLE = {
         name = "Relatable",
         desc = "{UPVOTE|}{CONTRARIAN|}{FAKE_NEWS|}Every {1} cards you play causes Aellon to gain an argument based on the type of the last card. ({2} remaining)",
-		desc_fn = function( self, fmt_str )
-			return loc.format( fmt_str, self.num_cards or 5, self.count )
-		end,
+        desc_fn = function( self, fmt_str )
+            return loc.format( fmt_str, self.num_cards or 5, self.count )
+        end,
         modifier_type = MODIFIER_TYPE.CORE,
         max_stacks = 1,
-		num_cards = 4,
-		count = 4,
+        num_cards = 4,
+        count = 4,
         icon = "negotiation/modifiers/cool_head.tex",
 
         event_handlers =
         {
             [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
                 if card:GetNegotiator() ~= self.negotiator then
-					self.count = self.count - 1
-					if self.count == 0 then
-						self.count = self.num_cards
-						if card:IsFlagged( CARD_FLAGS.DIPLOMACY ) then
-							self.negotiator:CreateModifier( "UPVOTE", 1, self )
-						elseif card:IsFlagged( CARD_FLAGS.HOSTILE ) then
-							self.negotiator:CreateModifier( "CONTRARIAN", 1, self )
-						else --assuming flagged manipulate
-							self.negotiator:CreateModifier( "FAKE_NEWS", 1, self )
-						end
-					end
-				end
+                    self.count = self.count - 1
+                    if self.count == 0 then
+                        self.count = self.num_cards
+                        if card:IsFlagged( CARD_FLAGS.DIPLOMACY ) then
+                            self.negotiator:CreateModifier( "UPVOTE", 1, self )
+                        elseif card:IsFlagged( CARD_FLAGS.HOSTILE ) then
+                            self.negotiator:CreateModifier( "CONTRARIAN", 1, self )
+                        else --assuming flagged manipulate
+                            self.negotiator:CreateModifier( "FAKE_NEWS", 1, self )
+                        end
+                    end
+                end
             end,
         },
     },
@@ -1841,32 +1841,32 @@ local MODIFIERS =
         target_enemy = TARGET_ANY_RESOLVE,
 
         OnInit = function( self )
-			self:CalculateDamage(true)
+            self:CalculateDamage(true)
         end,
-		OnBeginTurn = function( self, minigame )
-			self:ApplyPersuasion()
-		end,
-		CalculateDamage = function( self, bump_hack ) --On first spawning, it shows the wrong value. So... bump_hack!
-			if self.negotiator then
-				local count = bump_hack and 1 or 0
-				for i, mod in self.negotiator:Modifiers() do
-					count = count + 1
-				end
-				self.min_persuasion = count
-				self.max_persuasion = count
-				self.engine:BroadcastEvent( EVENT.CUSTOM, function( panel )
-						panel.opponent_modifiers:UpdatePersuasionLabels()
-					end )
-			end
-		end,
+        OnBeginTurn = function( self, minigame )
+            self:ApplyPersuasion()
+        end,
+        CalculateDamage = function( self, bump_hack ) --On first spawning, it shows the wrong value. So... bump_hack!
+            if self.negotiator then
+                local count = bump_hack and 1 or 0
+                for i, mod in self.negotiator:Modifiers() do
+                    count = count + 1
+                end
+                self.min_persuasion = count
+                self.max_persuasion = count
+                self.engine:BroadcastEvent( EVENT.CUSTOM, function( panel )
+                        panel.opponent_modifiers:UpdatePersuasionLabels()
+                    end )
+            end
+        end,
         event_handlers =
         {
-			[ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
-				self:CalculateDamage()
-			end,
+            [ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
+                self:CalculateDamage()
+            end,
             [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, source )
-				self:CalculateDamage()
-			end,
+                self:CalculateDamage()
+            end,
         },
     },
     SHAD_BAN = {
@@ -2232,7 +2232,7 @@ local MODIFIERS =
             end,
         },
     },
-    -- This is apparently the literall meaning for "Ctenophora". Makes perfect sense.
+    -- This is apparently the literal meaning for "Ctenophora". Makes perfect sense.
     COMB_BEARER =
     {
         name = "Comb Bearer",
@@ -2301,7 +2301,7 @@ local MODIFIERS =
             end,
         },
     },
-    -- This is apparently the literall meaning for "Cnidaria". Also makes perfect sense.
+    -- This is apparently the literal meaning for "Cnidaria". Also makes perfect sense.
     STINGING_NETTLE =
     {
         name = "Stinging Nettle",

@@ -31,9 +31,9 @@ QDEF:AddConvo()
                 worker:
                     !left
                     !angry
-                    Protesting now is the only way you Spark lovers will listen to us. 
+                    Protesting now is the only way you Spark lovers will listen to us.
                 baron:
-                    !angrypoint
+                    !angry_accuse
                     I am authorized under the Barons to use force to disperse this violent assembly, and I will if I have to!
                     !exit
                 worker:
@@ -81,7 +81,7 @@ QDEF:AddConvo()
                     We have rights, Hesh damn it! The election promi-
                 player:
                     !right
-                    Excuse me, but i'd like to have a discussion with the leader here.
+                    Excuse me, but I'd like to have a discussion with the leader here.
                 worker:
                     !right
                     {liked?
@@ -126,7 +126,7 @@ QDEF:AddConvo()
             TT_COMPROMISE = "You will have to convince both sides to accept the compromise.",
             DIALOG_COMPROMISE = [[
                 player:
-                    $miscPersausive
+                    $miscPersuasive
                     How about you accept a smaller concession now instead of being blasted away by the Barons?
             ]],
             DIALOG_COMPROMISE_SUCCESS = [[
@@ -135,7 +135,7 @@ QDEF:AddConvo()
                     They're willing to give you something for now, but if you push it you'll just get tossed away with the trash.
                 worker:
                     !crossed
-                    They'd better be willing to give up something. 
+                    They'd better be willing to give up something.
                     Get that dog to sing and we'll hash it out gentle. Otherwise, we didn't come out here for nothing.
                * The workers huddle together, discussing some of the finer points of what they want from this compromise.
             ]],
@@ -246,7 +246,7 @@ QDEF:AddConvo()
                     These workers are trying to start a protest just days before the voting starts.
                     I've tried to talk sense into them, and I'd be willing to listen if they could just take a damn raincheck on this.
                     !shrug
-                    So, I've got nothing. If you can make them shut down for a while, i'd be in your debt. 
+                    So, I've got nothing. If you can make them shut down for a while, I'd be in your debt.
             ]],
             DIALOG_INTRO_NOT_FIRST = [[
                 baron:
@@ -294,13 +294,13 @@ QDEF:AddConvo()
             --Wumpus; I thought of saying "Arkcross" in the same way you'd say "Country" mile. Liable to change.
             DIALOG_CONVINCE_COMPROMISE = [[
                 player:
-                    How about this? You give them an inch, and i'll make sure they don't take an Arkcross mile.
+                    How about this? You give them an inch, and I'll make sure they don't take an Arkcross mile.
             ]],
             DIALOG_CONVINCE_COMPROMISE_FAIL = [[
                 player:
                     I've been able to talk to them and-
                 baron:
-                    !angryshrug
+                    !angry_shrug
                     So what, they put you up to this?
                     Is this just one of those political appeals you're doing?
                     Forget it! Dealing with them by force is a lot easier than giving them an inch.
@@ -349,7 +349,6 @@ QDEF:AddConvo()
                     subject = cxt.quest.param.workers[1],
                     on_success = function()
                         cxt:Dialog("DIALOG_THREATEN_SUCCESS")
-                        cxt.quest:Complete("deal_with_caffy")
                         cxt.quest.param.workers[1]:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("get_better_conditions"))
                         StateGraphUtil.AddLeaveLocation(cxt)
                     end,

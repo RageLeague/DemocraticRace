@@ -29,7 +29,7 @@ QDEF:AddConvo()
                 agent:
                     A new type of plague has gone around Pearl-on-the-Foam, infecting those who walk through the shallows.
                     But you're in luck! We have prepared a vaccine to this infection!
-                    Simply allow me to give it to you, and I promise you will be painlessly innoculated against this new plague.
+                    Simply allow me to give it to you, and I promise you will be painlessly inoculated against this new plague.
             ]],
             OPT_ASK_INFESTATION = "Ask about the infestation",
             DIALOG_ASK_INFESTATION = [[
@@ -58,8 +58,8 @@ QDEF:AddConvo()
                     So what's in all those vials that you'd be stabbing me with?
                 agent:
                     Uncouthly put, {player}. I assure you, this is a completely safe preventative measure.
-                    You may feel some minor aches and I wouldn't reccommend you exert yourself.
-                    But that is just your body crafting it's shield of faith against this heretical poison. 
+                    You may feel some minor aches and I wouldn't recommend you exert yourself.
+                    But that is just your body crafting it's shield of faith against this heretical poison.
                     !hesh_greeting
                     You'll shrug away the pains quickly, and your soul will be prepared for consumption by Hesh, as all who walk in the shallows deserve.
             ]],
@@ -81,8 +81,8 @@ QDEF:AddConvo()
                     "Painless", I believe I can quote you as.
                     "Painless" is not anything close to what that felt like.
                 agent:
-                    !angrypoint
-                    Bite your tounge. Whatever you feel now is leagues better than the eternal damnation at the hands of Hesh itelf.
+                    !angry_accuse
+                    Bite your tongue. Whatever you feel now is leagues better than the eternal damnation at the hands of Hesh itself.
                     It will take it's toll, yes, but your body and soul will be fit for consumption.
                 player:
                     And how long will I be paying the fare for this mistake?
@@ -90,7 +90,7 @@ QDEF:AddConvo()
                     !hesh_greeting
                     As long as you keep fighting it.
                     !exit
-                * You roll your sleeve back up and trudge on, feeling a noticable limp, but also a notable strength you can't quite place.
+                * You roll your sleeve back up and trudge on, feeling a noticeable limp, but also a notable strength you can't quite place.
             ]],
             OPT_CONVINCE = "Question {agent} about the source of the vaccine",
             DIALOG_CONVINCE = [[
@@ -109,7 +109,7 @@ QDEF:AddConvo()
                     !question
                     Supplied from where?
                 agent:
-                    The Spark Barons had prepared an innoculative agent against it, although they hadn't made it particularly consumer friendly.
+                    The Spark Barons had prepared an inoculative agent against it, although they hadn't made it particularly consumer friendly.
                     !over_there
                     But we had no choice. We had to protect the pious masses, so we "acquired" some and helped as many as we could.
                 player:
@@ -141,7 +141,7 @@ QDEF:AddConvo()
                     !question
                     Heretics wouldn't have any reason to destroy it, though.
                 agent:
-                    !angrypoint
+                    !angry_accuse
                     Someone who questions the Waterlogged Tomes! Have you no shame?
                 player:
                     My shame's perfectly intact, but fine. Don't tell me how it works, then.
@@ -162,22 +162,22 @@ QDEF:AddConvo()
                 {asked_info?
                     player:
                         !hips
-                        I don't think i'll be getting shot up with this vaccine you called "not consumer-friendly".
+                        I don't think I'll be getting shot up with this vaccine you called "not consumer-friendly".
                     agent:
-                        !angry_point
+                        !angry_accuse
                         Do you wish for eternal damnation?
                     player:
                         Tough words for the Priest using deemed heretical tools to do holy work.
                     agent:
                         It's out of necces-
                     player:
-                        Neccessity to keep the voter base alive. Neccessity to keep <i>your<\> voter base alive.
+                        Necessity to keep the voter base alive. Necessity to keep <i>your<\> voter base alive.
                     agent:
                         !point
                         I-
                         !sigh
                         I guess you're right. These are the tools of the enemies we're using.
-                        Still, I wish you luck in not being infected. 
+                        Still, I wish you luck in not being infected.
                         !exit
                 }
                 {not asked_info?
