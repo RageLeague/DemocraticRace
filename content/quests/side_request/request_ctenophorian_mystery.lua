@@ -218,9 +218,11 @@ QDEF:AddConvo("ask_info")
                 player:
                     Really? No hashing out the details?
                 agent:
+                    !angry_shrug
                     No! It's a leviathan sized creature that eats us all in the end!
                     Can't exactly break out the yardstick on a creature we can't comprehend.
                 player:
+                    !placate
                     Alright, alright.
             ]],
         }
@@ -237,16 +239,17 @@ QDEF:AddConvo("ask_info")
     :State("STATE_FANATIC")
         :Loc{
             DIALOG_TALK = [[
-                player:
-                    [p] So about Hesh...
+                * The mention of Hesh makes {agent} perk up in excitement.
                 agent:
                     You're one of the politicians, right?
                 player:
-                    That would be correct, were I talking to you as a politician.
-                    But I talk to you as a scholar, instead.
+                    That would be correct, if I wanted to talk politics.
+                    But I want to talk about Hesh right now. Anything you know about Its classification?
                 agent:
                     This is so great! I have so many notes on Hesh from all the snippets of lore I've found.
+                    !dubious
                     Say...how much time do you have to burn?
+                * This sounds like it could take a while.
             ]],
             OPT_ENDURE = "Endure {agent}'s lecture",
             DIALOG_ENDURE = [[
@@ -254,11 +257,13 @@ QDEF:AddConvo("ask_info")
                     !sigh
                     As much as you need.
                 agent:
+                    !happy
                     So it all starts with the symmetry...
             ]],
             DIALOG_ENDURE_SUCCESS = [[
                 agent:
                     But, I say, what of the lumin that Hesh supposedly shed in it's birthing?
+                    !eureka
                     Well, the solution was obvious once I looked at it like that.
                     In conclusion...
             ]],
@@ -267,7 +272,7 @@ QDEF:AddConvo("ask_info")
                 * Syllables blur together, becoming a potent white noise, and you barely hear {agent.hisher} notes on tentacle lengths before slumping over, asleep.
             ]],
             DIALOG_ENDURE_FAILURE_2 = [[
-                * Your hazy slumber is plagued with the occasional vision of creatures from the abyss
+                * Your hazy slumber is plagued with the occasional vision of creatures from the abyss.
                 * Before whatever part of you still cognizant could process it, you slowly wake up to more droning.
             ]],
             DIALOG_ENDURE_FAILURE_3 = [[
@@ -277,7 +282,7 @@ QDEF:AddConvo("ask_info")
                     !drunk
                     Hey, wait a minute...Hesh is a wha...?
                 agent:
-                    !question
+                    !dubious
                     Did you fall asleep?
                 player:
                     Hrm? Yeah...I'm uh, sorry.
@@ -299,9 +304,9 @@ QDEF:AddConvo("ask_info")
                 -- Opponent has no core, meaning you can't win by damage.
                 -- You win by surviving a set amount of rounds.
                 flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE,
-				on_start_negotiation = function(minigame)
-					minigame.player_negotiator:AddModifier("FANATIC_LECTURE", math.max(4, 6 - math.floor(cxt.quest:GetRank() / 2)))
-				end,
+                on_start_negotiation = function(minigame)
+                    minigame.player_negotiator:AddModifier("FANATIC_LECTURE", math.max(4, 6 - math.floor(cxt.quest:GetRank() / 2)))
+                end,
             })
                 :OnSuccess()
                     :GoTo("STATE_SUCCESS")
@@ -322,26 +327,37 @@ QDEF:AddConvo("ask_info")
                     [p] So about Hesh...
                 agent:
                 {liked?
-                    I'm telling you this as a friend, but you really shouldn't be asking this kind of questions around.
-                    People in the Cult don't like that.
+                    !cagey
+                    Keep your voice down!
+                    Look, I don't know what's gotten in your head to start asking about that, but as friend I should warn you.
+                    The Cult does not like people asking those questions.
                 }
                 {not liked?
-                    I am suspicious of you!
+                    !cruel
+                    Well now. What's got you talking about Hesh's classification?
+                    The Cult isn't going to like hearing you talking about <i>that</>.
                 }
             ]],
+            --They don't let it be spoken about because they don't have an answer, only questions
             OPT_THANK = "Thank {agent} for the heads up",
             DIALOG_THANK = [[
                 player:
-                    [p] I'm not aware.
-                    Thanks.
+                    Wasn't aware the Cult didn't want Its lore known.
+                    Thanks for the heads up, by the by.
                 agent:
-                    You'll welcome.
-                    If you must know, Hesh cannot be classified.
-                    Hesh is a multi-faceted being, and to classify it is to waste what precious time we have before being consumed.
-                    Now you know the answer, just promise me you won't ask around this kind of question again.
+                    Well, that's the thing.
+                    Hesh is beyond our mortal classification, and our puny minds cannot comprehend It.
+                    Any attempt to study it using our mortal understanding will only lead to madness.
+                    Plus, that is what a heretical spark baron would do.
                 player:
-                    Sure.
-                    It's already confusing enough.
+                    !happy
+                    Hey, that's more of an answer I was expecting from this.
+                agent:
+                    !cagey
+                    It's an answer to get you to drop the subject. Friend to friend, I'm telling you to put a sock in it.
+                player:
+                    !placate
+                    Alright, alright.
             ]],
             OPT_BRUSH = "Brush off {agent}'s concern",
             DIALOG_BRUSH = [[
@@ -350,7 +366,7 @@ QDEF:AddConvo("ask_info")
                 agent:
                     Indeed.
             ]],
-            OPT_EXCUSE = "Excuse",
+            OPT_EXCUSE = "Excuse yourself",
             DIALOG_EXCUSE = [[
                 player:
                     [p] Pardon my wudeness.
@@ -366,8 +382,25 @@ QDEF:AddConvo("ask_info")
                     It's already confusing enough.
             ]],
             DIALOG_EXCUSE_FAILURE = [[
+                player:
+                    I was asking this for a friend, you see...
                 agent:
-                    [p] I am sus of you!
+                    !dubious
+                    ...
+                player:
+                    !bashful
+                    My friend is actually part of the Cult, so I am asking these questions for {giver.himher}...
+                agent:
+                    !angry
+                    This is oshnu dung!
+                    A <i>real</> Cult member would know that these questions should not be asked around!
+                    Who do you really work for? Maybe one of those spark baron scums?
+                player:
+                    Well...
+                agent:
+                    Just be glad there is a ceasefire, because otherwise it's going to be a <i>lot</> worse for you.
+                    !angry_accuse
+                    Now get out of my face.
             ]],
         }
         :Fn(function(cxt)
@@ -398,11 +431,11 @@ QDEF:AddConvo("ask_info")
                     Hesh is a ctenophore.
                 player:
                     !surprised
-                    The what-a-what-phore?
+                    It's a what-for?
                 agent:
                     $miscMocking
                     C-te-no-phore.
-                    They basically have these comb-like cilia that are used for swimming, from what I can tell.
+                    They've got little hair-thingys that they use for swimming.
                 player:
                     !dubious
                     Sounds... Cute?
@@ -417,15 +450,15 @@ QDEF:AddConvo("ask_info")
                     Hesh is a cnidarian.
                 player:
                     !surprised
-                    The what-a-what-rian?
+                    So Hesh is...a durian?
                 agent:
                     $miscMocking
                     C-ni-da-rian.
-                    They basically have these nettle cells that allows them to harpoon their preys, from what I can tell.
+                    They've got these little splinters on them. Used for catching prey.
                 player:
                     !wince
                     $scaredFearful
-                    That sounds... Terrifying.
+                    Sounds gruesome to be on the wrong end of it.
                     And you worship that thing?
                 agent:
                     !hesh_greeting
@@ -434,7 +467,9 @@ QDEF:AddConvo("ask_info")
                     Hesh is not ctenophorian, nor is it cnidarian.
                     Hesh is a multi-faceted being, and to classify it is to waste what precious time we have before being consumed.
                 player:
-                    Yeah that definitely make sense and not at all confusing.
+                    Thanks for the answer.
+                    $miscMocking
+                    You've <i>really</> cleared up my questions about Hesh's identity.
                 agent:
                     !shrug
                     It is what it is.
@@ -488,7 +523,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 * Finally, a percussive force of seawater envelops you, and for a moment the ocean becomes the only thing you can feel.
                 agent:
                 !right
-                * And from the deep blue, a marine creature appears. A...you can't discern. It's face shifts too quickly for you to understand it.
+                * And from the deep blue, a marine creature appears. A...you can't discern. Its face shifts too quickly for you to understand it.
                 * But you need to understand it. You must...
             ]],
             --Wumpus;If I can make something up that isn't blaring against canon, there'll be things for the three main characters based on these "weird dreams". gonna look into that.
@@ -496,7 +531,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
             DIALOG_UNDERSTAND = [[
                 * You swim forward, towards the creature, but not too close, afraid of it's might.
                 * You concentrate on the creature. Every fiber of your mind invests itself into understanding the thing that lies before you.
-                * After an arduous, pained moment, finally it opens it's mouth to speak...
+                * After an arduous, pained moment, it opens it's mouth to speak...
             ]],
             DIALOG_UNDERSTAND_SUCCESS = [[
                 * Finally, it closes it's gaping jaw. You step out of your trance and stare at what you've deciphered.
@@ -514,7 +549,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 agent:
                 !exit
                 * it is the sand of the beach you are confined to, the sand that you cannot go beyond, as the creature of your dreams slips further into the murky blue.
-                * It's face still shifts between identities, but you were so close to understanding, if only you could reach beyond the sand, if only you could see, IF ONLY-
+                * Its face still shifts between identities, but you were so close to understanding, if only you could reach beyond the sand, if only you could see, IF ONLY-
                 * Yet you cannot, and you are plagued with those thoughts for the rest of the night, unable to decipher anything.
             ]],
         }
@@ -542,16 +577,47 @@ QDEF:AddConvo("tell_result", "giver")
         :Loc{
             DIALOG_INTRO = [[
                 agent:
-                    [p] So you figured out Hesh's true form?
-                player:
+                    Hey, {player}? Are you okay?
                 {not went_crazy?
-                    Facts, logic, it's all an illusion.
-                    The truth is in the eye of the beholder.
+                player:
+                    !handwave
+                    I had some odd dream last night.
+                    Had a lot of weird Hesh metaphors. Lots of water, dark, Hesh itself rearing it's head, the usual gist.
                 agent:
-                    This is very significant and may affect the ending in some way.
+                    !surprised
+                    You saw Hesh? What'd it look like?
+                player:
+                    !shrug
+                    That's the thing.
+                    It shifts form based on what I believe is true.
+                    When I think it's a ctenophore, it appears to be a ctenophore, and when I think it's a cnidarian, it appears to be a cnidarian.
+                agent:
+                    !dubious
+                    So it shifts form based on your belief? I mean, it is Hesh that we are talking about.
+                player:
+                    !permit
+                    The takeaway is this: We constantly think that we believe what we see, but this is untrue.
+                    We see what we believe. We see what we want to believe.
+                    In our minds, that becomes the truth and an absolute fact.
+                    There is no such thing as an inherit fact. It's all subjective.
+                agent:
+                    !thought
+                    So are facts just...subjective? Are all of my FACTS and LOGIC just...subjective?
+                player:
+                    !shrug
+                    Like I said, eye of the beholder.
+                agent:
+                    !thought
+                    Hmmm...
+                    This is... certainly an angle that I was expecting, but it makes perfect sense, actually.
+                    The true form of Hesh seems less relevant than this revelation.
+                    Thank you, {player}, for opening my eyes.
+                player:
+                    !dubious
+                    You're welcome, I suppose?
                 }
                 {went_crazy?
-                    I saw too much, and I talk crazy.
+                    [p] I saw too much, and I talk crazy.
                 agent:
                     Oh no, now I feel bad for you.
                 }
