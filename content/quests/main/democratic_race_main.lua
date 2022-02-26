@@ -737,7 +737,7 @@ local QDEF = QuestDef.Define
             quest.param.opposition_support = {}
         end
         if type(agent) == "table" then
-            agent = agent:GetID()
+            agent = DemocracyUtil.GetOppositionID(agent)
         end
         return quest.param.opposition_support[agent] or 0
     end,
@@ -746,7 +746,7 @@ local QDEF = QuestDef.Define
             quest.param.opposition_support = {}
         end
         if type(agent) == "table" then
-            agent = agent:GetID()
+            agent = DemocracyUtil.GetOppositionID(agent)
         end
         quest.param.opposition_support[agent] = (quest.param.opposition_support[agent] or 0) + delta
     end,
