@@ -731,6 +731,26 @@ local QDEF = QuestDef.Define
     GetSupportForAgent = function(quest, agent)
         return quest:DefFn("GetCompoundSupport", agent:GetFactionID(), agent:GetRenown() or 1)
     end,
+    -- This represents how popular an opposition candidate is
+    GetOppositionSupport = function(quest, agent)
+        if not quest.param.opposition_support then
+            quest.param.opposition_support = {}
+        end
+        if type(agent) == "table" then
+            agent = agent:GetID()
+        end
+        return quest.param.opposition_support[agent] or 0
+    end,
+    DeltaOppositionSupport = function(quest, agent, delta)
+        if not quest.param.opposition_support then
+            quest.param.opposition_support = {}
+        end
+        if type(agent) == "table" then
+            agent = agent:GetID()
+        end
+        quest.param.opposition_support[agent] = (quest.param.opposition_support[agent] or 0) + delta
+    end,
+
     -- At certain points in the story, random people dislikes you for no reason.
     -- call this function to do so.
     DoRandomOpposition = function(quest, num_to_do)
