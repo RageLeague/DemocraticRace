@@ -4,8 +4,6 @@ A pioneer campaign mod for Griftlands, the Democratic Race is a mod for Griftlan
 
 This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
-\*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
-
 Version: 0.6.1(Alpha)
 
 Author: RageLeague
