@@ -6,7 +6,7 @@ This campaign is designed for experienced players of Griftlands, as it expects y
 
 \*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
 
-Version: 0.6.0(Alpha)
+Version: 0.6.1(Alpha)
 
 Author: RageLeague
 
@@ -101,6 +101,11 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Sei Bellissima
 
 ## Changelog
+
+### 0.6.1
+
+* Fixed the victory condition for a certain negotiation in the quest "Battle of Wits".
+* Removed the debug table popup for this negotiation.
 
 ### 0.6.0 (A General Update)
 
