@@ -1224,10 +1224,10 @@ FOLLOW_UP = QDEF:AddFollowup({
             if agent == TheGame:GetGameState():GetPlayerAgent() and new_loc and new_loc:HasTag("tavern")
                 and quest:IsActive("comfort") then
                 local giver = quest:GetCastMember("giver")
-                if not giver then
+                if not giver or giver:IsRetired() then
                     return
                 end
-                if (giver:InLimbo() or giver:GetLocation() == giver:GetHomeLocation()) and not AgentUtil.IsInHiding(giver) then
+                if (giver:InLimbo() or giver:GetLocation() == giver:GetHomeLocation()) and not AgentUtil.IsInHiding(giver) and giver:GetBrain() then
                     giver:GetBrain():SendToPatronize(new_loc)
                 end
             end
