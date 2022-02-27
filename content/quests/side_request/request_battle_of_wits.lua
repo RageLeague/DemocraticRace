@@ -1389,11 +1389,12 @@ FOLLOW_UP:AddConvo("comfort", "giver")
                     -- Opponent will be given special bounties that will increase resolve or give composure.
                     -- You can also gift composure to opponent core via special action.
                     on_success = function(cxt, minigame)
-                        local core = minigame:GetOpponentNegotiator():FindCoreArgument()
-                        local resolve_left = core and core:GetResolve()
-                        if resolve_left > (minigame.start_params.enemy_resolve_required
-                            or MiniGame.GetPersuasionRequired( minigame:GetDifficulty() )) then
+                        -- local core = minigame:GetOpponentNegotiator():FindCoreArgument()
+                        -- local resolve_left = core and core:GetResolve()
+                        -- if resolve_left > (minigame.start_params.enemy_resolve_required
+                        --     or MiniGame.GetPersuasionRequired( minigame:GetDifficulty() )) then
 
+                        if minigame.restored_full_resolve then
                             -- We win legit
                             cxt:Dialog("DIALOG_COMFORT_SUCCESS")
                             cxt.quest:Complete()

@@ -2072,6 +2072,7 @@ local MODIFIERS =
         OnBeginTurn = function( self, minigame )
             if self.resolve >= (minigame.start_params.enemy_resolve_required or MiniGame.GetPersuasionRequired( minigame:GetDifficulty() )) then
                 if not self.engine:CheckGameOver() then
+                    self.engine.restored_full_resolve = true
                     self.engine:Win()
                 end
                 return
@@ -2105,7 +2106,7 @@ local MODIFIERS =
         event_handlers =
         {
             [ EVENT.CALC_COMPOSURE_DECAY ] = function( self, decay, source )
-                DBG(source)
+                -- DBG(source)
                 if source.negotiator == self.negotiator then
                     print("Same negotiator as self")
                     decay:ClearValue(self)
