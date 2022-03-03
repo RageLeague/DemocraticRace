@@ -139,7 +139,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     I spent all night setting up an interview for you to get some more publicity with the masses.
                     The least you can do is pretend you're pulling your weight!
                 player:
-                    okay, okay. When's the interview scheduled?
+                    Okay, okay. When's the interview scheduled?
                 primary_advisor:
                     Later tonight.
                 player:
