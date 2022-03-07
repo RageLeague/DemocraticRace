@@ -735,6 +735,7 @@ local val =  {
         },
     },
     -- small issues
+    -- TODO: Remove welfare policy and merge with tax policy as fiscal policy
     WELFARE = {
         name = "Welfare Policy",
         desc = "A way to address the widespread poverty in Havaria is through welfare. It can help those in need by giving them breathing rooms, so they can recover from poverty. However, critics argue that it encourages laziness, and puts a toll on the taxpayers.",
