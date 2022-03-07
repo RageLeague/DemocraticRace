@@ -112,7 +112,7 @@ QDEF:AddConvo("meet_opposition", "opposition")
                     Hello there. My name is {agent}. You may have heard of me already down the grapevine.
                 player:
                     {player}. Charmed to meet you, {agent.honorific}.
-                    So I believe we should introduce ourselves a litter bit better.
+                    So I believe we should introduce ourselves a little bit better.
                     If you're going to win, surely you've nothing to hide from your opponents.
                 agent:
                     Nothing I couldn't tell you about me that the public doesn't already.
@@ -248,7 +248,7 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 If I want to find you, where should I go?
             agent:
             {(agreed or liked) and not disliked?
-                Since we have similar, I guess I'll tell you.
+                Since we have similar goals, I guess I'll tell you.
                 You can find me at {oppo_location#location}. That's where my base is.
                 The people there may or may not like you, I can't make any promises.
                 If you want to talk about potential alliance, meet me there.

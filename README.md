@@ -4,7 +4,7 @@ A pioneer campaign mod for Griftlands, the Democratic Race is a mod for Griftlan
 
 This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
-Version: 0.6.1(Alpha)
+Version: 0.6.2(Alpha)
 
 Author: RageLeague
 
@@ -99,6 +99,12 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Sei Bellissima
 
 ## Changelog
+
+### 0.6.2
+
+* (From HOTFIX) Added nil-check for the giver's brain in "Battle of Wits".
+* Added a clarifying side objective for "Dole Out", telling you that you can request funds from your advisor.
+* Fixed some hard to catch typos.
 
 ### 0.6.1
 
