@@ -64,14 +64,17 @@ local DELTA_SUPPORT = {
 }
 -- Determines the support level change when an agent is killed.
 local DEATH_DELTA = -10
+local DEATH_GENERAL_DELTA = -10
 
 -- Determines the support level change when an agent is killed in an isolated scenario.
 -- Still reduce support, but people won't know for sure it's you.
 local ISOLATED_DEATH_DELTA = -2
+local ISOLATED_DEATH_GENERAL_DELTA = -1
 
 -- Determines the support change if you didn't kill someone, but you're an accomplice
 -- or someone dies from negligence
 local ACCOMPLICE_KILLING_DELTA = -5
+local ACCOMPLICE_KILLING_GENERAL_DELTA = -2
 local QDEF = QuestDef.Define
 {
     title = "The Democratic Race",
@@ -288,7 +291,7 @@ local QDEF = QuestDef.Define
                     quest:DefFn("DeltaGroupFactionSupport", opposition_data.faction_support, new_rel - old_rel, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE" )
                     quest:DefFn("DeltaGroupWealthSupport", opposition_data.wealth_support, new_rel - old_rel, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE" )
                 else
-                    quest:DefFn("DeltaAgentSupport", support_delta, support_delta, agent, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
+                    quest:DefFn("DeltaAgentSupport", math.floor(support_delta / 3), support_delta, agent, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
                 end
             end
             -- if new_rel == RELATIONSHIP.LOVED and old_rel ~= RELATIONSHIP.LOVED then
@@ -305,15 +308,15 @@ local QDEF = QuestDef.Define
                 local agent = fighter.agent
                 if agent:IsSentient() and agent:IsDead() then
                     if CheckBits( battle:GetScenario():GetFlags(), BATTLE_FLAGS.ISOLATED ) then
-                        quest:DefFn("DeltaAgentSupport", ISOLATED_DEATH_DELTA, ISOLATED_DEATH_DELTA, agent, "SUSPICION")
+                        quest:DefFn("DeltaAgentSupport", ISOLATED_DEATH_GENERAL_DELTA, ISOLATED_DEATH_DELTA, agent, "SUSPICION")
                     elseif fighter:GetKiller() and fighter:GetKiller():IsPlayer() then
                         -- killing already comes with a heavy drawback of someone hating you, thus reducing support significantly.
-                        -- quest:DefFn("DeltaAgentSupport", DEATH_DELTA, DEATH_DELTA, agent, "MURDER")
+                        -- quest:DefFn("DeltaAgentSupport", DEATH_GENERAL_DELTA, DEATH_DELTA, agent, "MURDER")
                     else
                         if fighter:GetTeamID() == TEAM.BLUE then
-                            quest:DefFn("DeltaAgentSupport", ACCOMPLICE_KILLING_DELTA, ACCOMPLICE_KILLING_DELTA, agent, "NEGLIGENCE")
+                            quest:DefFn("DeltaAgentSupport", ACCOMPLICE_KILLING_GENERAL_DELTA, ACCOMPLICE_KILLING_DELTA, agent, "NEGLIGENCE")
                         else
-                            quest:DefFn("DeltaAgentSupport", ACCOMPLICE_KILLING_DELTA, ACCOMPLICE_KILLING_DELTA, agent, "ACCOMPLICE")
+                            quest:DefFn("DeltaAgentSupport", ACCOMPLICE_KILLING_GENERAL_DELTA, ACCOMPLICE_KILLING_DELTA, agent, "ACCOMPLICE")
                         end
                     end
                 end
@@ -654,7 +657,7 @@ local QDEF = QuestDef.Define
             notification = true
         end
         if notification and additional_amt then
-            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_AGENT_SUPPORT, additional_amt, agent, notification )
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_AGENT_SUPPORT, general_amt, additional_amt, agent, notification )
         end
     end,
     -- DeltaFactionSupportAgent = function(quest, amt, agent, ignore_notification)
