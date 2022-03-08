@@ -356,13 +356,13 @@ local val =  {
         },
     },
     FISCAL_POLICY = {
-        name = "Tax Policy",
-        desc = "Taxes are huge issues in society. On the one hand, increasing taxes means more funding for important infrastructures that benefits everyone. On the other hand, it adds toll to the people's wealth, and can lead to high corruption.",
+        name = "Fiscal Policy",
+        desc = "Fiscal policies describes how much the government intervenes with the economy. To little intervention will cause those in need to be unable to get the support they need from the government, while too much intervention will cause an increase in governmental spending and taxes.",
         importance = 9,
         stances = {
             [-2] = {
-                name = "Abolish Taxes",
-                desc = "Taxes are tools invented by those in power to legally steal people's hard work, therefore all taxes should be abolished. The people can find better uses for the money than giving them up to the coffers of those in power.",
+                name = "Laissez Faire",
+                desc = "The government should leave the economy alone. The invisible hand will make the market efficient, and any intervention will only cause problems. Taxes should be reduced to a minimum, and the government should not support anyone financially.",
                 faction_support = {
                     SPARK_BARONS = 4,
                     ADMIRALTY = -5,
