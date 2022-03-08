@@ -330,7 +330,7 @@ QDEF:AddConvo("dole_out_three")
             table.insert(cxt.quest.param.gifted_people, cxt:GetAgent())
 
             cxt:Opt("OPT_AGREE")
-                :UpdatePoliticalStance("WELFARE", 2, false, true)
+                :UpdatePoliticalStance("FISCAL_POLICY", 2, false, true)
                 :ReceiveOpinion("politic")
                 :Dialog("DIALOG_AGREE")
                 :GoTo("STATE_AGREE")
