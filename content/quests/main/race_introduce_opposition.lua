@@ -474,7 +474,7 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             player:
                 What's Fellemo's angle, then?
             agent:
-                He wants to <!pol_stance_tax_policy_-2>abolish taxes</>.
+                He wants to <!pol_stance_fiscal_policy_-2>abolish taxes</>.
                 Of course, many people would want that, especially the Spark Barons.
                 They don't want their hard-earned money to go to leeches that is the state.
                 But it would mean that the state can't get funding this way.
