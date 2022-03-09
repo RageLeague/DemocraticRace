@@ -64,7 +64,7 @@ local DELTA_SUPPORT = {
 }
 -- Determines the support level change when an agent is killed.
 local DEATH_DELTA = -10
-local DEATH_GENERAL_DELTA = -10
+local DEATH_GENERAL_DELTA = -3
 
 -- Determines the support level change when an agent is killed in an isolated scenario.
 -- Still reduce support, but people won't know for sure it's you.
@@ -323,7 +323,7 @@ local QDEF = QuestDef.Define
             end
             if not CheckBits( battle:GetScenario():GetFlags(), battle_defs.BATTLE_FLAGS.SELF_DEFENCE ) then
                 -- Being aggressive hurts your reputation
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5, "ATTACK")
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2, "ATTACK")
             end
         end,
         action_clock_advance = function(quest, location)
