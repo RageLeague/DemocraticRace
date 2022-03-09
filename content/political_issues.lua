@@ -362,7 +362,7 @@ local val =  {
         stances = {
             [-2] = {
                 name = "Laissez Faire",
-                desc = "The government should leave the economy alone. The invisible hand will make the market efficient, and any intervention will only cause problems. Taxes should be reduced to a minimum, and the government should not support anyone financially.",
+                desc = "The government should completely leave the economy alone. The invisible hand will make the market efficient, and any intervention will only cause problems. Taxes should be reduced to a minimum, and the government should not support anyone financially.",
                 faction_support = {
                     SPARK_BARONS = 4,
                     ADMIRALTY = -5,
@@ -380,8 +380,8 @@ local val =  {
                 },
             },
             [-1] = {
-                name = "Reduced Taxes",
-                desc = "While it is important that public infrastructure to be funded, at the current state, the taxes are just going to corrupted officials. The taxes has taken a huge toll on the people, therefore it should be reduced.",
+                name = "Minimal Intervention",
+                desc = "",
                 faction_support = {
                     SPARK_BARONS = 2,
                     ADMIRALTY = -4,
@@ -400,7 +400,7 @@ local val =  {
             },
             [0] = {
                 name = "Keep As It Is",
-                desc = "The amount of taxes is balanced at the current state, so it is not necessary to change it.",
+                desc = "",
                 faction_support = {
                     SPARK_BARONS = 1,
                     ADMIRALTY = -1,
@@ -415,8 +415,8 @@ local val =  {
                 },
             },
             [1] = {
-                name = "Restructure Taxes",
-                desc = "A big reason why people are not satisfied with the taxes is because the traditional tax structure does not care whether or not you are able to afford to pay the tax. We need to restructure taxes so that people pay what they can, and make everyone happier.",
+                name = "Social Safety Net",
+                desc = "",
                 faction_support = {
                     SPARK_BARONS = -4,
                     ADMIRALTY = 2,
@@ -433,8 +433,8 @@ local val =  {
                 },
             },
             [2] = {
-                name = "Increase Taxes",
-                desc = "It is important to keep the ruling people funded so that they can provide their services for the people. The taxes collected are all eventually given back to the people. Therefore, taxes should be increased as high as possible, so that public services are properly funded.",
+                name = "Universal Basic Income",
+                desc = "",
                 faction_support = {
                     SPARK_BARONS = -6,
                     ADMIRALTY = 6,
