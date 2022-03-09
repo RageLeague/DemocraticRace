@@ -92,7 +92,9 @@ lines:
   - |
     You don't understand the struggle of the laborers!
   - |
-    You never worked an honest day in your life! So don't talk as if you know anything about hard-working laborers!
+    You never worked an honest day in your life!
+    !angry_accuse
+    So don't talk as if you know anything about hard-working laborers!
 - tags: [exclaim, insult, s_anti_fiscal_policy]
   dialog:
   - |
@@ -101,6 +103,20 @@ lines:
     You Rise sympathizers don't even understand the basics of economy!
   - |
     Stop asking for handouts! Pull yourself up by your bootstrap!
+- tags: [exclaim, insult, s_pro_security]
+  dialog:
+  - |
+    You think I don't know why you are against security funding?
+    You are probably a criminal, or have something to hide!
+  - |
+    How do you think society would function without security, huh?
+    Without it, it will soon fall into anarchy!
+- tags: [exclaim, insult, s_pro_security, admiralty]
+  dialog:
+  - |
+    We've done so much to protect your butt, and this is how you want to repay us?
+  - |
+    We don't work tirelessly to protect Havaria just so you can spit on our effort!
 
 - tags: [question, s_pro_labor_law]
   dialog:
