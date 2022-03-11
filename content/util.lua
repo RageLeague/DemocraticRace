@@ -1211,6 +1211,30 @@ function DemocracyUtil.SimulateBattle(blue, red, blue_bonus, red_bonus)
     return result
 end
 
+function DemocracyUtil.QuipStance(cxt, agent, stance, ...)
+    if type(stance) == "string" then
+        local st_issue, st_stance = stance:match("([_%w]+)_([%-%d]+)")
+        st_stance = tonumber(st_stance)
+        if st_issue and st_stance then
+            local issue_data = DemocracyConstants.issue_data[loc.toupper(st_issue)]
+            if issue_data and issue_data.stances[st_stance] then
+                stance = issue_data.stances[st_stance]
+            end
+        end
+    end
+    assert(type(stance) == "table", "Stance must be a table")
+    cxt.enc.scratch.stance = stance
+    local stance_tag
+    if stance.stance_intensity > 0 then
+        stance_tag = "s_pro_" .. stance.issue_id
+    elseif stance.stance_intensity < 0 then
+        stance_tag = "s_anti_" .. stance.issue_id
+    else
+        stance_tag = "s_no_" .. stance.issue_id
+    end
+    cxt:Quip(agent, "stance_quip", stance_tag, ...)
+end
+
 DemocracyUtil.EXCLUDED_WEAPONS = {
     "makeshift_dagger", "makeshift_dagger_plus"
 }
