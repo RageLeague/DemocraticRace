@@ -45,15 +45,21 @@ QDEF:AddConvo()
                 extremist_neg:
                     !right
                     We've been here for hours trying to figure out whose correct in their ideology.
-                    Now, of course, a sensible individual like yourself knows that Havaria needs {2#pol_stance}.
+                    !thumb
+                    Now, of course, a sensible individual like yourself knows one thing about Havaria:
+            ]],
+            DIALOG_INTRO_2 = [[
                 extremist_pos:
                     !left
-                    Oh shut it you Bogan!
-                    Pseudo-intellectuals like you are what's ruining Havaria!
-                    What we really need is {1#pol_stance}.
+                    !angry_accuse
+                    You know nothing about being sensible!
+            ]],
+            DIALOG_INTRO_3 = [[
                 player:
                     !left
                 extremist_neg:
+                    !right
+                    !sigh
                     This isn't going anywhere.
                     Help us settle this, will you?
             ]],
@@ -114,7 +120,11 @@ QDEF:AddConvo()
             cxt.quest.param.issue_name = cxt.quest.param.issue:GetLocalizedName()
             -- cxt.quest.param.pos_stance = :GetLocalizedName()
             -- cxt.quest.param.neg_stance = :GetLocalizedName()
-            cxt:Dialog("DIALOG_INTRO", cxt.quest.param.issue.stances[2], cxt.quest.param.issue.stances[-2])
+            cxt:Dialog("DIALOG_INTRO")
+            DemocracyUtil.QuipStance(cxt, cxt:GetCastMember("extremist_neg"), cxt.quest.param.issue.stances[-2], "statement")
+            cxt:Dialog("DIALOG_INTRO_2")
+            DemocracyUtil.QuipStance(cxt, cxt:GetCastMember("extremist_pos"), cxt.quest.param.issue.stances[2], "exclaim", "insult")
+            cxt:Dialog("DIALOG_INTRO_3")
 
             cxt:Opt("OPT_SIDE_WITH", cxt.quest:GetCastMember("extremist_pos"))
                 :Fn(function(cxt)
