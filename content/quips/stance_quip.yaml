@@ -155,6 +155,24 @@ lines:
     The law only serves those in power! You are a bootlicker for supporting them!
   - |
     You must be really brainwashed if you think the Admiralty exists to protect the people.
+- tags: [exclaim, insult, s_pro_religious_policy]
+  dialog:
+  - |
+    You heretic! It's people like you that are turning into a faithless land.
+  - |
+    How dare you stand in the way of Hesh's will? Do you wish eternal damnation?
+  - |
+    I cannot allow you to desecrate the ancient artifacts! They should not be tarnished with mundane tasks!
+- tags: [exclaim, insult, s_anti_religious_policy]
+  dialog:
+  - |
+    You think your god cares about you? Don't be foolish.
+    Your god probably don't even exist!
+  - |
+    Why should we let a jellyfish living in the depth of the Sea decide what we should and should not do?
+  - |
+    Well, my god says that I can do whatever I want without giving a shill about the Cult's opinion.
+    What do you think of that?
 
 - tags: [question, s_pro_labor_law]
   dialog:
