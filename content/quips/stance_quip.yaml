@@ -105,6 +105,33 @@ lines:
     You Rise sympathizers don't even understand the basics of economy!
   - |
     Stop asking for handouts! Pull yourself up by your bootstrap!
+  - |
+    The government legally steals money from the people through taxation, and you want to support them?
+    Are you insane?
+- tags: [exclaim, insult, s_pro_fiscal_policy]
+  notags: [admiralty]
+  dialog:
+  - |
+    You think just because you inherited a bunch of cash from your parent makes you superior to us?
+    It's because of people like you that we need to raise taxes! To level the playing field!
+  - |
+    You are a leech on the society! Exploit the poor so you can fatten your own wallets!
+    You need to taste your own medicine!
+- tags: [exclaim, insult, s_pro_fiscal_policy]
+  dialog:
+  - |
+    Why, pray tell, do you think that the government functions?
+    You think the government can just print money?
+    !thought
+    Wait, hold on, shoot-
+    * Looks like this line of argument is not very well thought out.
+  - |
+    So you get rid of taxes. Then what? How will the government function?
+    !point
+    That's not a well thought out plan, is it?
+  - |
+    Many governmental services are chronically underfunded, and you want to reduce their funding?
+    Don't expect to use those services the next time you need it, then.
 - tags: [exclaim, insult, s_pro_security]
   dialog:
   - |
@@ -119,6 +146,15 @@ lines:
     We've done so much to protect your butt, and this is how you want to repay us?
   - |
     We don't work tirelessly to protect Havaria just so you can spit on our effort!
+- tags: [exclaim, insult, s_anti_security]
+  dialog:
+  - |
+    You think the Admiralty works for the people? What a pile of oshnu dung.
+    They serve no one but themselves.
+  - |
+    The law only serves those in power! You are a bootlicker for supporting them!
+  - |
+    You must be really brainwashed if you think the Admiralty exists to protect the people.
 
 - tags: [question, s_pro_labor_law]
   dialog:
