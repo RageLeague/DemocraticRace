@@ -1235,6 +1235,20 @@ function DemocracyUtil.QuipStance(cxt, agent, stance, ...)
     cxt:Quip(agent, "stance_quip", stance_tag, ...)
 end
 
+function DemocracyUtil.LoadCSV(path)
+    local file = io.open( path, "r" )
+    if file then
+        local raw_data = file:read("a")
+        local raw_rows = raw_data:split('\n')
+        local result = {}
+        for i, row in ipairs(raw_rows) do
+            local raw_entries = row:split(',')
+            table.insert(result, raw_entries)
+        end
+        return result
+    end
+end
+
 DemocracyUtil.EXCLUDED_WEAPONS = {
     "makeshift_dagger", "makeshift_dagger_plus"
 }
