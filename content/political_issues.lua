@@ -237,20 +237,20 @@ local val =  {
                 desc = "The government should completely leave the economy alone. The invisible hand will make the market efficient, and any intervention will only cause problems. Taxes should be reduced to a minimum, and the government should not support anyone financially.",
             },
             [-1] = {
-                name = "Minimal Intervention",
-                desc = "",
+                name = "Reduced Intervention",
+                desc = "While it's sometimes beneficial for the government to intervene with the economy, it isn't something that the government should do often. As such, the government should reduce some of its programs, such as welfare, and in turn, it reduces taxes.",
             },
             [0] = {
                 name = "Keep As It Is",
-                desc = "",
+                desc = "The current economic situation in Havaria is very stable. There is no need to change either way.",
             },
             [1] = {
-                name = "Social Safety Net",
-                desc = "",
+                name = "Increased Intervention",
+                desc = "Not everyone is fortunate enough to be wealthy, so the government needs to increase its welfare programs. It will increase taxes for some people, but it will level the playing field between the rich and the poor.",
             },
             [2] = {
-                name = "Universal Basic Income",
-                desc = "",
+                name = "Planned Economy",
+                desc = "Free market will only cause the rich to become richer and the poor to become poorer. The government should control lots of aspects of the economy, such as the prices of goods and wealth distribution.",
             },
         },
     },
