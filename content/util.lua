@@ -1235,6 +1235,14 @@ function DemocracyUtil.QuipStance(cxt, agent, stance, ...)
     cxt:Quip(agent, "stance_quip", stance_tag, ...)
 end
 
+function DemocracyUtil.SplitNullable(str, sep)
+    local sep, fields = sep or " ", {}
+    local pattern = string.format("([^%s]*)[%s]", sep, sep)
+    str = str .. sep
+    str:gsub(pattern, function(c) fields[#fields+1] = c end)
+    return fields
+end
+
 function DemocracyUtil.LoadCSV(path)
     local file = io.open( path, "r" )
     if file then
@@ -1242,7 +1250,7 @@ function DemocracyUtil.LoadCSV(path)
         local raw_rows = raw_data:split('\n')
         local result = {}
         for i, row in ipairs(raw_rows) do
-            local raw_entries = row:split(',')
+            local raw_entries = DemocracyUtil.SplitNullable(row, ',')
             table.insert(result, raw_entries)
         end
         return result
