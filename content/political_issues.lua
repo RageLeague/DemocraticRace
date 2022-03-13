@@ -181,92 +181,22 @@ local val =  {
             [-2] = {
                 name = "Defund the Admiralty",
                 desc = "The Admiralty has always abused their power and made many false arrests. It's better if the Admiralty is defunded, and measures must be put in place to prevent anyone else from taking this power.",
-                faction_support = {
-                    ADMIRALTY = -6,
-                    FEUD_CITIZEN = -5,
-                    BANDITS = 6,
-                    RISE = 5,
-                    CULT_OF_HESH = -3,
-                    JAKES = 2,
-                },
-                wealth_support = {
-                    2,
-                    -2,
-                    -1,
-                    -1,
-                },
             },
             [-1] = {
                 name = "Cut Funding for the Admiralty",
                 desc = "While it's important to have some sort of public security, at the current state, the Admiralty has too much power and is abusing it. By cutting their funding, their influence will be reduced.",
-                faction_support = {
-                    ADMIRALTY = -3,
-                    FEUD_CITIZEN = -2,
-                    BANDITS = 3,
-                    RISE = 1,
-                    SPARK_BARONS = 2,
-                    CULT_OF_HESH = -2,
-                    JAKES = 1,
-                },
-                wealth_support = {
-                    1,
-                    -1,
-                    0,
-                    0,
-                },
             },
             [0] = {
                 name = "No Change",
                 desc = "The current system works just fine. There's no need to change it.",
-                faction_support = {
-                    ADMIRALTY = 1,
-                    RISE = -1,
-                    BANDITS = -1,
-                },
-                wealth_support = {
-                    0,
-                    -1,
-                    0,
-                    1,
-                },
             },
             [1] = {
                 name = "Increase Funding for the Admiralty",
                 desc = "Havaria is overrun with criminals of all kind. That's why we need to improve the security by increasing funding for the Admiralty. This way, the people can live in peace.",
-                faction_support = {
-                    ADMIRALTY = 3,
-                    FEUD_CITIZEN = 2,
-                    BANDITS = -3,
-                    RISE = -2,
-                    SPARK_BARONS = -1,
-                    JAKES = -1,
-                },
-                wealth_support = {
-                    -1,
-                    1,
-                    0,
-                    -1,
-                },
             },
             [2] = {
-                -- "Universal" literally means "for all".
                 name = "Security for All",
                 desc = "Havaria is overrun with criminals of all kind, and the only way to fix it is through drastic measures. By funding for Security for All, everyone, regardless of social status, can be protected from criminals.",
-                faction_support = {
-                    ADMIRALTY = 5,
-                    FEUD_CITIZEN = 3,
-                    BANDITS = -5,
-                    RISE = -4,
-                    SPARK_BARONS = -2,
-                    CULT_OF_HESH = 2,
-                    JAKES = -2,
-                },
-                wealth_support = {
-                    -2,
-                    2,
-                    -1,
-                    -1,
-                },
             },
         },
     },
@@ -278,80 +208,22 @@ local val =  {
             [-2] = {
                 name = "Total Annexation",
                 desc = "There is no point in distinguish between Havaria and Deltree. The Admiralty more or less controls Havaria anyway, so things won't change much. Plus, annexing Havaria can make trading easier, as well as improving Havarian's living conditions.",
-                faction_support = {
-                    ADMIRALTY = 5,
-                    FEUD_CITIZEN = -4,
-                    BANDITS = -5,
-                    CULT_OF_HESH = 4,
-                    JAKES = -3,
-                },
-                wealth_support = {
-                    -3,
-                    -2,
-                    0,
-                    3,
-                },
             },
             [-1] = {
                 name = "Havarian Special Administration",
                 desc = "Many locals won't like the annexation of Havaria. However, Havaria is better off if it is part of Deltree. As a compromise, Havaria is part of Deltree by name, but Havaria has partial autonomy to allow better integration.",
-                faction_support = {
-                    ADMIRALTY = 3,
-                    FEUD_CITIZEN = -2,
-                    BANDITS = -3,
-                    CULT_OF_HESH = 2,
-                    JAKES = -1,
-                },
-                wealth_support = {
-                    -2,
-                    0,
-                    0,
-                    1,
-                },
             },
             [0] = {
                 name = "Turn A Blind Eye",
                 desc = "The tension between Deltree and Havaria is too high, that no one will benefit if a decision is made immediately. It's probably better to not touch on this issue.",
-                faction_support = {
-                    ADMIRALTY = -1,
-                    FEUD_CITIZEN = 1,
-                },
-                wealth_support = {
-                    -1,
-                },
             },
             [1] = {
                 name = "Vassal State",
                 desc = "It is undeniable that Havarian lives will be better under Deltrean protection. However, it is also important to Havarian autonomy that Havaria and Deltree are separate nations. Therefore, Havaria should become a vassal state of Deltree, but Deltree should respect Havaria's sovereignty.",
-                faction_support = {
-                    ADMIRALTY = -4,
-                    FEUD_CITIZEN = 2,
-                    BANDITS = 3,
-                    CULT_OF_HESH = -2,
-                },
-                wealth_support = {
-                    1,
-                    0,
-                    0,
-                    -2,
-                },
             },
             [2] = {
                 name = "Havaria Independence",
                 desc = "Deltree wants to conquer Havaria, and we won't allow that. Havaria will become completely independent of Deltree, and Deltree should recognize the independence and not interfere with Havarian politics.",
-                faction_support = {
-                    ADMIRALTY = -5,
-                    FEUD_CITIZEN = 3,
-                    BANDITS = 5,
-                    CULT_OF_HESH = -4,
-                    JAKES = 2,
-                },
-                wealth_support = {
-                    3,
-                    0,
-                    -2,
-                    -4,
-                },
             },
         },
     },
@@ -363,93 +235,22 @@ local val =  {
             [-2] = {
                 name = "Laissez Faire",
                 desc = "The government should completely leave the economy alone. The invisible hand will make the market efficient, and any intervention will only cause problems. Taxes should be reduced to a minimum, and the government should not support anyone financially.",
-                faction_support = {
-                    SPARK_BARONS = 4,
-                    ADMIRALTY = -5,
-                    RISE = -2,
-                    CULT_OF_HESH = -4,
-                    FEUD_CITIZEN = 2,
-                    JAKES = 3,
-                    BANDITS = 2,
-                },
-                wealth_support = {
-                    2,
-                    -5,
-                    4,
-                    1,
-                },
             },
             [-1] = {
                 name = "Minimal Intervention",
                 desc = "",
-                faction_support = {
-                    SPARK_BARONS = 2,
-                    ADMIRALTY = -4,
-                    CULT_OF_HESH = -2,
-                    RISE = -1,
-                    FEUD_CITIZEN = 2,
-                    JAKES = 2,
-                    BANDITS = 1,
-                },
-                wealth_support = {
-                    1,
-                    -3,
-                    3,
-                    -2,
-                },
             },
             [0] = {
                 name = "Keep As It Is",
                 desc = "",
-                faction_support = {
-                    SPARK_BARONS = 1,
-                    ADMIRALTY = -1,
-                    RISE = -1,
-                    FEUD_CITIZEN = -1,
-                },
-                wealth_support = {
-                    0,
-                    -2,
-                    0,
-                    1,
-                },
             },
             [1] = {
                 name = "Social Safety Net",
                 desc = "",
-                faction_support = {
-                    SPARK_BARONS = -4,
-                    ADMIRALTY = 2,
-                    CULT_OF_HESH = 2,
-                    RISE = 1,
-                    FEUD_CITIZEN = -1,
-                    JAKES = -1,
-                },
-                wealth_support = {
-                    2,
-                    2,
-                    -3,
-                    -2,
-                },
             },
             [2] = {
                 name = "Universal Basic Income",
                 desc = "",
-                faction_support = {
-                    SPARK_BARONS = -6,
-                    ADMIRALTY = 6,
-                    CULT_OF_HESH = 5,
-                    RISE = -1,
-                    FEUD_CITIZEN = -4,
-                    JAKES = -3,
-                    BANDITS = -3,
-                },
-                wealth_support = {
-                    -3,
-                    2,
-                    -5,
-                    4,
-                },
             },
         },
     },
@@ -461,93 +262,22 @@ local val =  {
             [-2] = {
                 name = "State-Enforced Employer Protection",
                 desc = "Employers' rights should be protected at all cost to ensure the efficiency of workplaces. All organized attempt to disrupt the harmony of the workplaces must be eliminated, therefore the state should pass laws that bans trade unions and enforce these laws through the state.",
-                faction_support = {
-                    SPARK_BARONS = 5,
-                    ADMIRALTY = 1,
-                    CULT_OF_HESH = 3,
-                    RISE = -5,
-                    FEUD_CITIZEN = -2,
-                    JAKES = -4,
-                    BANDITS = -2,
-                },
-                wealth_support = {
-                    -4,
-                    -2,
-                    3,
-                    5,
-                },
             },
             [-1] = {
                 name = "Pro-Employer",
                 desc = "While the worker's rights should be respected, their rights cannot interfere with the productivity of the workplace. The government should provide the tools necessary for employers to enforce their rights, such as passing a law allowing employers to bust down strikes.",
-                faction_support = {
-                    SPARK_BARONS = 3,
-                    -- ADMIRALTY = 1,
-                    CULT_OF_HESH = 2,
-                    RISE = -4,
-                    FEUD_CITIZEN = -1,
-                    JAKES = -2,
-                    BANDITS = -1,
-                },
-                wealth_support = {
-                    -2,
-                    -1,
-                    2,
-                    2,
-                },
             },
             [0] = {
                 name = "Laissez Faire",
                 desc = "When regarding labor laws, Laissez Faire is the best way to treat it. By that, I mean completely ignore the issue and let the market decide. If the workers want better rights, they can find a better place to work, forcing the employers to improve their working conditions.",
-                faction_support = {
-                    SPARK_BARONS = -1,
-                    RISE = -1,
-                    BANDITS = 1,
-                    JAKES = 1,
-                },
-                wealth_support = {
-                    -1,
-                    -1,
-                    0,
-                    1,
-                },
             },
             [1] = {
                 name = "Pro-Worker",
                 desc = "While it is the employers' job to maintain the efficiency of the worksite, they cannot do so while infringing upon the rights of the workers. The government should pass laws that gives workers more rights and powers to fight against poor working conditions.",
-                faction_support = {
-                    SPARK_BARONS = -3,
-                    ADMIRALTY = -2,
-                    CULT_OF_HESH = -3,
-                    RISE = 3,
-                    FEUD_CITIZEN = 2,
-                    JAKES = 2,
-                    BANDITS = 1,
-                },
-                wealth_support = {
-                    3,
-                    1,
-                    -2,
-                    -3,
-                },
             },
             [2] = {
                 name = "Socialism",
                 desc = "The workers are the ones doing the job, so why should the employers profit from it? By cutting out the middle man, the workers can enjoy better working conditions and better wages, as well as working more efficiently. Therefore, the means of production should fall under the hands of the workers.",
-                faction_support = {
-                    SPARK_BARONS = -5,
-                    ADMIRALTY = -3,
-                    CULT_OF_HESH = -4,
-                    RISE = 5,
-                    FEUD_CITIZEN = 2,
-                    JAKES = -1,
-                },
-                wealth_support = {
-                    5,
-                    2,
-                    -3,
-                    -5,
-                },
             },
         },
     },
@@ -559,84 +289,22 @@ local val =  {
             [-2] = {
                 name = "Atheism",
                 desc = "There is no proof that Hesh really exist, and if it does, it shouldn't be worshipped. When making policies, we should not worry about what the Cult or Hesh thinks, and do whatever we want.",
-                faction_support = {
-                    SPARK_BARONS = 5,
-                    BILEBROKERS = 3,
-                    JAKES = 2,
-                    CULT_OF_HESH = -5,
-                    BOGGERS = -4,
-                    FEUD_CITIZEN = -2,
-                },
-                wealth_support = {
-                    -5,
-                    2,
-                    3,
-                    1,
-                },
             },
             [-1] = {
                 name = "Secular Focus",
                 desc = "While we need to worry about Hesh when making policies, we cannot let it interfere with normal activities. Small transgressions against Hesh should be tolerated, if it gives more benefits in the long run.",
-                faction_support = {
-                    SPARK_BARONS = 3,
-                    BILEBROKERS = 1,
-                    CULT_OF_HESH = -4,
-                    BOGGERS = -2,
-                    JAKES = 3,
-                },
-                wealth_support = {
-                    -3,
-                    1,
-                    1,
-                    0,
-                },
             },
             [0] = {
                 name = "Balanced",
                 desc = "While making policies, we need to find a balance between religion and practicality, as such, the policies needs to be balanced around that.",
-                faction_support = {
-                    BILEBROKERS = -1,
-                    CULT_OF_HESH = -1,
-                    JAKES = 1,
-                },
-                wealth_support = {
-                    -1,
-                },
             },
             [1] = {
                 name = "Religious Focus",
                 desc = "While we don't have to follow the religion of Hesh to the exact point, we need to focus on policy on it. Doing so will appeal to the religious.",
-                faction_support = {
-                    SPARK_BARONS = -3,
-                    BILEBROKERS = -2,
-                    CULT_OF_HESH = 3,
-                    BOGGERS = 2,
-                    JAKES = -2,
-                },
-                wealth_support = {
-                    2,
-                    -1,
-                    -3,
-                    0,
-                },
             },
             [2] = {
                 name = "Fanaticism",
                 desc = "Hesh is to be feared, and its will must be exercised. Any heretical activities shall not be tolerated.",
-                faction_support = {
-                    SPARK_BARONS = -5,
-                    BILEBROKERS = -4,
-                    CULT_OF_HESH = 5,
-                    BOGGERS = 3,
-                    JAKES = -3,
-                    FEUD_CITIZEN = 2,
-                },
-                wealth_support = {
-                    3,
-                    -1,
-                    -4,
-                    1,
-                },
             },
         },
     },
@@ -648,89 +316,22 @@ local val =  {
             [-2] = {
                 name = "Legalize Everything",
                 desc = "There's no point in banning any substances. If a person really wants something, they will get it no matter what. Substance regulation is just a way for those in power to arrest people on false charges. Therefore, all substances should be legalized.",
-                faction_support = {
-                    JAKES = 5,
-                    ADMIRALTY = -5,
-                    BANDITS = 3,
-                    CULT_OF_HESH = -4,
-                    FEUD_CITIZEN = 2,
-                    SPARK_BARONS = -2,
-                },
-                wealth_support = {
-                    1,
-                    -3,
-                    3,
-                    -2,
-                },
             },
             [-1] = {
                 name = "Relax Restriction",
                 desc = "While some substances are indeed dangerous, plenty of people have been arrested falsely because they are carrying harmless substances. It's better to let them be. Not only does this lead to less people getting arrested for no reason, it can also make the economy flow by expanding trades.",
-                faction_support = {
-                    JAKES = 3,
-                    ADMIRALTY = -3,
-                    BANDITS = 2,
-                    CULT_OF_HESH = -2,
-                    FEUD_CITIZEN = 1,
-                    SPARK_BARONS = 1,
-                },
-                wealth_support = {
-                    2,
-                    -2,
-                    1,
-                    -1,
-                },
             },
             [0] = {
                 name = "Keep Unchanged",
                 desc = "The current policy is good enough for now. There is no need to change it.",
-                faction_support = {
-                    JAKES = 1,
-                    ADMIRALTY = -1,
-                    CULT_OF_HESH = -1,
-                },
-                wealth_support = {
-                    0,
-                    -1,
-                    1,
-                    -1,
-                },
             },
             [1] = {
                 name = "Tighten Restriction",
                 desc = "Illegal trading of illicit substances has been going on for so long, and it is not going to end unless we do something. We should tighten the restrictions on illicit substances to stop these illegal tradings.",
-                faction_support = {
-                    JAKES = -3,
-                    ADMIRALTY = 3,
-                    BANDITS = -3,
-                    CULT_OF_HESH = 2,
-                    FEUD_CITIZEN = -1,
-                    SPARK_BARONS = 1,
-                },
-                wealth_support = {
-                    -2,
-                    2,
-                    -2,
-                    2,
-                },
             },
             [2] = {
                 name = "Heavily Enforced Restriction",
                 desc = "There are way too many illegal trading of substances, and it negatively impacts the health and morale of the people. To deal with such crisis, we need to increase restrictions on them, and ensure that we send people to properly enforce them.",
-                faction_support = {
-                    JAKES = -5,
-                    ADMIRALTY = 5,
-                    BANDITS = -4,
-                    CULT_OF_HESH = 3,
-                    FEUD_CITIZEN = -2,
-                    SPARK_BARONS = -2,
-                },
-                wealth_support = {
-                    -2,
-                    3,
-                    -4,
-                    1,
-                },
             },
         },
     },
@@ -828,5 +429,96 @@ for id, data in pairs(val) do
     data.id = id
     val[id] = IssueLocDef(id, data)
 end
+
+do
+    local faction_stances = DemocracyUtil.LoadCSV("DEMOCRATICRACE:content/stances/stance_faction.csv")
+
+    assert(faction_stances, "Fail to load faction stances")
+
+    local first_row = faction_stances[1]
+
+    local current_issue
+    local current_stance
+
+    for i, row in ipairs(faction_stances) do
+        if i ~= 1 then
+            for j, entry in ipairs(row) do
+                if j == 1 then
+                    if entry:sub(1,1) == "!" then
+                        current_issue = entry:sub(2,-1)
+                        break
+                    else
+                        current_stance = tonumber(entry)
+                        if current_stance == nil then
+                            break
+                        end
+                    end
+                else
+                    local label = first_row[j]
+                    if label == "" or string.find(label, ":.*:") then
+                    else
+                        if entry == "" then
+                            entry = "0"
+                        end
+                        local entry_value = tonumber(entry) or 0
+                        assert(current_issue, "Current issue must be non-nil")
+                        assert(current_stance, "Current stance must be non-nil")
+                        val[current_issue].stances[current_stance].faction_support = val[current_issue].stances[current_stance].faction_support or {}
+                        val[current_issue].stances[current_stance].faction_support[label] = entry_value
+                    end
+                end
+            end
+        end
+    end
+end
+do
+    local wealth_stances = DemocracyUtil.LoadCSV("DEMOCRATICRACE:content/stances/stance_wealth.csv")
+
+    assert(wealth_stances, "Fail to load wealth stances")
+
+    local first_row = wealth_stances[1]
+
+    local current_issue
+    local current_stance
+
+    for i, row in ipairs(wealth_stances) do
+        if i ~= 1 then
+            for j, entry in ipairs(row) do
+                if j == 1 then
+                    if entry:sub(1,1) == "!" then
+                        current_issue = entry:sub(2,-1)
+                        break
+                    else
+                        current_stance = tonumber(entry)
+                        if current_stance == nil then
+                            break
+                        end
+                    end
+                else
+                    local label = first_row[j]
+                    print("\"" .. label .. "\"")
+                    print(type(label))
+                    print(string.find(label, "^[:].*[:]$"))
+                    if label == ":Total:" then
+                        print(":Total: found")
+                    end
+                    if label == "" or string.find(label, ":.*:") then
+                    else
+                        if entry == "" then
+                            entry = "0"
+                        end
+                        local entry_value = tonumber(entry) or 0
+                        assert(current_issue, "Current issue must be non-nil")
+                        assert(current_stance, "Current stance must be non-nil")
+                        val[current_issue].stances[current_stance].wealth_support = val[current_issue].stances[current_stance].wealth_support or {}
+                        assert(tonumber(label), label)
+                        val[current_issue].stances[current_stance].wealth_support[tonumber(label)] = entry_value
+                    end
+                end
+            end
+        end
+    end
+end
+
 Content.internal.POLITICAL_ISSUE = val
 return val
