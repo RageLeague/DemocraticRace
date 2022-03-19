@@ -920,7 +920,7 @@ function DemocracyUtil.GetAlliancePotential(candidate_id)
                 local rel_with_player = candidate:GetRelationship()
                 local faction_rel = target_candidate:GetRelationship(candidate)
                 -- Positive when friend with friend, enemy of enemy
-                -- Negative when enemy of friend, enemy of enemy
+                -- Negative when enemy of friend, friend of enemy
                 local fof = (rel_with_player - RELATIONSHIP.NEUTRAL) * (faction_rel - RELATIONSHIP.NEUTRAL)
                 if fof <= -2 then
                     -- This happens when you are liked with hated, loved with disliked,
