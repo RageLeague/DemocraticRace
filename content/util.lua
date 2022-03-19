@@ -912,13 +912,13 @@ function DemocracyUtil.GetAlliancePotential(candidate_id)
     local candidate_data = oppositions[candidate_id]
     assert(candidate_data, "Invalid candidate_id")
     local score = DemocracyUtil.GetVoterIntentionIndex({faction = candidate_data.main_supporter})
+    local target_candidate = TheGame:GetGameState():GetMainQuest():GetCastMember(candidate_data.cast_id)
     for id, data in pairs(oppositions) do
         if id ~= candidate_id then
             local candidate = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
             if candidate then
                 local rel_with_player = candidate:GetRelationship()
-                local faction_rel = TheGame:GetGameState():GetFactions():GetFactionRelationship(
-                    data.main_supporter, candidate_data.main_supporter )
+                local faction_rel = target_candidate:GetRelationship(candidate)
                 -- Positive when friend with friend, enemy of enemy
                 -- Negative when enemy of friend, enemy of enemy
                 local fof = (rel_with_player - RELATIONSHIP.NEUTRAL) * (faction_rel - RELATIONSHIP.NEUTRAL)
