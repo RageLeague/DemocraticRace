@@ -1005,7 +1005,7 @@ function DemocracyUtil.DebugSetRandomDeck(seed)
     local deck = DECKS[deck_idx]
     TheGame:GetGameState():SetDecks(deck)
 end
-function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
+function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset, post_fn)
     potential_offset = potential_offset or 0
     local candidate_data = DemocracyUtil.GetOppositionData(ally)
     cxt:Dialog("DIALOG_ALLIANCE_TALK_INTRO")
@@ -1026,8 +1026,9 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
                     -- :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
                     :Fn(function(cxt)
                         DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
+                        post_fn(cxt, true)
                     end)
-                    :DoneConvo()
+                    -- :DoneConvo()
 
             else
                 cxt:Opt("OPT_ALLIANCE_TALK_ACCEPT")
@@ -1036,15 +1037,17 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
                     -- :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
                     :Fn(function(cxt)
                         DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
+                        post_fn(cxt, true)
                     end)
-                    :DoneConvo()
+                    -- :DoneConvo()
             end
             cxt:Opt("OPT_ALLIANCE_TALK_REJECT_ALLIANCE")
                 :Dialog("DIALOG_ALLIANCE_TALK_REJECT_ALLIANCE")
                 :Fn(function()
                     ally:Remember("REJECTED_ALLIANCE")
+                    post_fn(cxt, false)
                 end)
-                :DoneConvo()
+                -- :DoneConvo()
         elseif potential and DemocracyUtil.GetEndorsement(potential + potential_offset) >= RELATIONSHIP.NEUTRAL then
             potential = potential + potential_offset
             cxt:Dialog("DIALOG_ALLIANCE_TALK_CONDITIONAL", cxt.enc.scratch.opposite_spectrum and (platform .. "_" .. oppo_main_stance) or nil)
@@ -1053,18 +1056,17 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
                     cxt:Opt("OPT_ALLIANCE_TALK_AGREE_STANCE")
                         :Dialog("DIALOG_ALLIANCE_TALK_AGREE_STANCE")
                         :UpdatePoliticalStance(platform, oppo_main_stance)
-                        -- :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
                         :Pop()
                     cxt:Opt("OPT_ALLIANCE_TALK_REJECT_ALLIANCE")
                         :Dialog("DIALOG_ALLIANCE_TALK_REJECT_ALLIANCE")
                         :Fn(function()
                             ally:Remember("REJECTED_ALLIANCE")
+                            post_fn(cxt, false)
                         end)
-                        :DoneConvo()
+                        -- :DoneConvo()
                 end)
             end
             local rawcost = 500 - potential * 6
-            -- local cost, reasons = CalculatePayment(ally, rawcost)
             local demands, demand_list = ally:HasMemoryFromToday("ALLIANCE_DEMANDS"), ally:HasMemoryFromToday("ALLIANCE_DEMAND_LIST")
             if not demands or not demand_list then
                 demands, demand_list = DemocracyUtil.GenerateDemandList(rawcost, ally, nil, {auto_scale = true})
@@ -1079,7 +1081,8 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
                     cxt:Dialog("DIALOG_ALLIANCE_TALK_ACCEPT_CONDITIONAL")
                     -- ally:OpinionEvent(OPINION.ALLIED_WITH)
                     DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
-                    StateGraphUtil.AddEndOption(cxt)
+                    -- StateGraphUtil.AddEndOption(cxt)
+                    post_fn(cxt, true)
                     return
                 end
             -- local demand_list = DemocracyUtil.ParseDemandList(demands)
@@ -1087,8 +1090,9 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
                     :Dialog("DIALOG_ALLIANCE_TALK_REJECT_ALLIANCE")
                     :Fn(function()
                         ally:Remember("REJECTED_ALLIANCE")
+                        post_fn(cxt, false)
                     end)
-                    :DoneConvo()
+                    -- :DoneConvo()
             end)
         else
             if problem_agent then
@@ -1097,10 +1101,9 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
             else
                 cxt:Dialog("DIALOG_ALLIANCE_TALK_REJECT")
             end
-            -- ally:OpinionEvent(OPINION.ALLIED_WITH)
-            DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
             ally:Remember("REJECTED_ALLIANCE")
-            StateGraphUtil.AddEndOption(cxt)
+            -- StateGraphUtil.AddEndOption(cxt)
+            post_fn(cxt, false)
         end
     end
 end
