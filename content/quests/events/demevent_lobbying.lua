@@ -21,7 +21,7 @@ QDEF:AddConvo()
         :Loc{
             DIALOG_INTRO = [[
                 * You notice the jingling of shills before you notice the person holding them.
-                * {agent}'s clothing is rich—and rich clothing has deep pockets.
+                * {merchant}'s clothing is rich—and rich clothing has deep pockets.
                 * And the roads are deserted, 'cept for you and your new fri-
                 merchant:
                     !right
