@@ -789,6 +789,7 @@ QDEF:AddConvo("go_to_game")
                     Thanks for the shills, though.
                 agent:
                     Get out of here before I change my mind.
+                challenger:
                     !exit
                 * You watch as {challenger} left run off quickly, not wanting to stay for the fallout.
 
@@ -904,6 +905,7 @@ QDEF:AddConvo("go_to_game")
                 :Dialog("DIALOG_ATTACK")
                 :Battle{
                     enemies = {"challenger"},
+                    noncombatants = {cxt.quest:GetCastMember("giver")},
                     on_win = function(cxt)
                         cxt:Dialog("DIALOG_ATTACK_WIN")
                         if cxt:GetAgent():IsDead() then
