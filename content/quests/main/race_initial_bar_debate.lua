@@ -398,14 +398,14 @@ QDEF:AddConvo("win_argument")
                     Wow, I can't believe how good I am at political debates.
                     Maybe I should use my power for good.
                     Like running for the president.
-                * Wait...is there ANY democracy in Havaria?
-                * Let's just say there is one.
-                * Do you really want a lore justification?
-                * Let's just say that the people in power decide to let the people vote for a president instead of constantly fighting for power.
+                * That's right, Havaria is a democracy now.
+                * In fact, it is a very recent development, and the election is coming up in a few days.
                 player:
-                    Now, if I were to run for president, first I need to establish myself in the political world.
-                    I need to let people know that I'm running for president.
-                    And I also have to gain support while doing so.
+                    Here I thought this is all just another grift for me.
+                    But now, I am going to pull the biggest grift of all: running for presidency.
+                    !thought
+                    Now, to run a campaign, I need to gather some support.
+                    And I might know just the thing...
                 *** After the successful debate, you decide to run for presidency.
             ]],
         }
