@@ -814,11 +814,7 @@ function DemocracyUtil.GiveBossRewards(cxt)
 end
 
 -- A person's voter intention is a value indicating how likely they will vote for you.
--- As a guideline, if > 50 it means 100% support, while < 50 means 100% against.
--- [-20, 20] is the apathetic range, where they don't care enough to vote.
--- > 20, you have the support, while < 20, people are against you.
--- This can also be used to determine faction support or wealth support.
--- In practice, a value from [-50, 50] will probably be added, to add randomness.
+-- This is based on Gaussian distribution. A G(0,100) offset will be added to this value to add randomness.
 function DemocracyUtil.GetVoterIntentionIndex(data)
     local faction, wealth
     if data.agent then
