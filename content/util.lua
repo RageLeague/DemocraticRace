@@ -1067,9 +1067,9 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, post_fn, potential_offset)
                         -- :DoneConvo()
                 end)
             end
-            local rawcost = 500 - potential * 6
             local demands, demand_list = ally:HasMemoryFromToday("ALLIANCE_DEMANDS"), ally:HasMemoryFromToday("ALLIANCE_DEMAND_LIST")
             if not demands or not demand_list then
+                local rawcost = 500 - potential * 6
                 demands, demand_list = DemocracyUtil.GenerateDemandList(rawcost, ally, nil, {auto_scale = true})
                 ally:Remember("ALLIANCE_DEMANDS", demands)
                 ally:Remember("ALLIANCE_DEMAND_LIST", demand_list)
