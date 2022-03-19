@@ -136,24 +136,26 @@ local QDEF = QuestDef.Define
         quest.param.stance_change = {}
         quest.param.stance_change_freebie = {}
 
-        local new_faction_relationships = {
-            {"BANDITS", "SPARK_BARONS", RELATIONSHIP.DISLIKED},
-            {"BANDITS", "CULT_OF_HESH", RELATIONSHIP.DISLIKED},
-            {"BANDITS", "FEUD_CITIZEN", RELATIONSHIP.DISLIKED},
-            {"SPARK_BARONS", "CULT_OF_HESH", RELATIONSHIP.HATED},
-            {"ADMIRALTY", "RISE", RELATIONSHIP.HATED},
-            -- {"BANDITS", "RISE", RELATIONSHIP.DISLIKED},
-            {"BANDITS", "JAKES", RELATIONSHIP.LIKED},
-            {"ADMIRALTY", "CULT_OF_HESH", RELATIONSHIP.LIKED},
-            {"ADMIRALTY", "SPARK_BARONS", RELATIONSHIP.LIKED},
-            {"JAKES", "SPARK_BARONS", RELATIONSHIP.LIKED},
-            {"JAKES", "ADMIRALTY", RELATIONSHIP.NEUTRAL},
-            {"JAKES", "CULT_OF_HESH", RELATIONSHIP.DISLIKED},
-            {"FEUD_CITIZEN", "RISE", RELATIONSHIP.LIKED},
-        }
-        for i, data in ipairs(new_faction_relationships) do
-            TheGame:GetGameState():GetFactions():SetFactionRelationship(table.unpack(data))
-        end
+        -- We shouldn't change the faction's relationship. We should specify relationship between candidates instead so we don't change functionalities of locations.
+
+        -- local new_faction_relationships = {
+        --     {"BANDITS", "SPARK_BARONS", RELATIONSHIP.DISLIKED},
+        --     {"BANDITS", "CULT_OF_HESH", RELATIONSHIP.DISLIKED},
+        --     {"BANDITS", "FEUD_CITIZEN", RELATIONSHIP.DISLIKED},
+        --     {"SPARK_BARONS", "CULT_OF_HESH", RELATIONSHIP.HATED},
+        --     {"ADMIRALTY", "RISE", RELATIONSHIP.HATED},
+        --     -- {"BANDITS", "RISE", RELATIONSHIP.DISLIKED},
+        --     {"BANDITS", "JAKES", RELATIONSHIP.LIKED},
+        --     {"ADMIRALTY", "CULT_OF_HESH", RELATIONSHIP.LIKED},
+        --     {"ADMIRALTY", "SPARK_BARONS", RELATIONSHIP.LIKED},
+        --     {"JAKES", "SPARK_BARONS", RELATIONSHIP.LIKED},
+        --     {"JAKES", "ADMIRALTY", RELATIONSHIP.NEUTRAL},
+        --     {"JAKES", "CULT_OF_HESH", RELATIONSHIP.DISLIKED},
+        --     {"FEUD_CITIZEN", "RISE", RELATIONSHIP.LIKED},
+        -- }
+        -- for i, data in ipairs(new_faction_relationships) do
+        --     TheGame:GetGameState():GetFactions():SetFactionRelationship(table.unpack(data))
+        -- end
 
         -- quest.param.allow_skip_side = true
 
