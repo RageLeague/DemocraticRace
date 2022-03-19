@@ -869,7 +869,7 @@ local QDEF = QuestDef.Define
         end
         quest.param.alliances = quest.param.alliances or {}
         if turn_on then
-            table.insert(quest.param.alliances, agent)
+            table.insert_unique(quest.param.alliances, agent)
         else
             table.arrayremove(quest.param.alliances, agent)
         end
