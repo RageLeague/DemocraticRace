@@ -1091,7 +1091,7 @@ QDEF:AddConvo("talk_to_candidates")
                     -- Special alliance talk.
                     cxt:Opt("OPT_ALLIANCE")
                         :Fn(function(cxt)
-                            DemocracyUtil.DoAllianceConvo(cxt, who, 15)
+                            DemocracyUtil.DoAllianceConvo(cxt, who, nil, 15)
                         end)
 
                     StateGraphUtil.AddEndOption(cxt)

@@ -299,7 +299,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             cxt:TalkTo(cxt.enc.scratch.potential_ally)
             cxt:Dialog("DIALOG_INTRO")
 
-            DemocracyUtil.DoAllianceConvo(cxt, cxt.enc.scratch.potential_ally, 15)
+            DemocracyUtil.DoAllianceConvo(cxt, cxt.enc.scratch.potential_ally, function(cxt) StateGraphUtil.AddEndOption(cxt) end, 15)
 
             -- cxt:Opt("OPT_ACCEPT")
             --     :PreIcon(global_images.accept)

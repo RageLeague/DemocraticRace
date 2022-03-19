@@ -1005,7 +1005,8 @@ function DemocracyUtil.DebugSetRandomDeck(seed)
     local deck = DECKS[deck_idx]
     TheGame:GetGameState():SetDecks(deck)
 end
-function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset, post_fn)
+function DemocracyUtil.DoAllianceConvo(cxt, ally, post_fn, potential_offset)
+    post_fn = post_fn or function(cxt) StateGraphUtil.AddEndOption(cxt) end
     potential_offset = potential_offset or 0
     local candidate_data = DemocracyUtil.GetOppositionData(ally)
     cxt:Dialog("DIALOG_ALLIANCE_TALK_INTRO")
