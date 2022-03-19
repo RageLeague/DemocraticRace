@@ -355,6 +355,12 @@ local QDEF = QuestDef.Define
             if event_quest:GetQuestDef():HasTag( "REQUEST_JOB" ) and event_quest:IsComplete() then
                 TheGame:AddGameplayStat( "completed_request_quest", 1 )
             end
+            if event_quest:GetQuestDef():HasTag( "REQUEST_JOB" ) and event_quest:IsActive() then
+                if event_quest:GetProvider() then
+                    -- In a run, a person can only do one request quest
+                    event_quest:GetProvider():Remember("ISSUED_REQUEST_QUEST")
+                end
+            end
             if event_quest == quest.param.day_quest and quest.param.day_quest:IsComplete() then
                 DemocracyUtil.EndFreeTime()
                 if quest.param.day then

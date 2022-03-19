@@ -988,12 +988,13 @@ function DemocracyUtil.SpawnRequestQuest(agent, allow_placeholder, spawn_param)
     -- assert(false, loc.format("No request quest spawned for {1#agent}", agent))
 end
 function DemocracyUtil.HasRequestQuest(agent)
-    for k,quest in TheGame:GetGameState():ActiveQuests() do
-        if quest:GetProvider() == agent then
-            return true
-        end
-    end
-    return false
+    return agent:HasMemory("ISSUED_REQUEST_QUEST")
+    -- for k,quest in TheGame:GetGameState():ActiveQuests() do
+    --     if quest:GetProvider() == agent then
+    --         return true
+    --     end
+    -- end
+    -- return false
 end
 function DemocracyUtil.DebugSetRandomDeck(seed)
     local DECKS = require "content/quests/experiments/sal_day_4_decks"
