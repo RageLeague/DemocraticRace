@@ -95,7 +95,7 @@ QDEF:AddConvo()
                 cxt.quest.param.chosen_issue = chosen
                 cxt.quest.param.chosen_stance = DemocracyConstants.issue_data[chosen]:GetAgentStanceIndex(cxt:GetCastMember("merchant"))
 
-                cxt:Dialog("DIALOG_INTRO")
+                cxt:Dialog("DIALOG_INTRO", cxt.quest.param.chosen_issue .. "_" .. cxt.quest.param.chosen_stance)
             end
 
             local haggle_count = cxt.player.graft_owner:CountGraftsByID( "haggle_badge" )
