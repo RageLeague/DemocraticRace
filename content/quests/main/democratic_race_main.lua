@@ -127,8 +127,7 @@ local QDEF = QuestDef.Define
         quest.param.wealth_support_gain_source = {}
         quest.param.wealth_support_loss_source = {}
         -- The locations you've unlocked.
-        quest.param.unlocked_locations = --shallowcopy(Content.GetWorldRegion("democracy_pearl").locations)--{"MURDERBAY_NOODLE_SHOP"}
-        {"MURDERBAY_NOODLE_SHOP"}
+        quest.param.unlocked_locations = {"MURDERBAY_NOODLE_SHOP"}
 
         -- quest.param.free_time_actions = 1
 
@@ -137,7 +136,22 @@ local QDEF = QuestDef.Define
         quest.param.stance_change_freebie = {}
 
         -- We shouldn't change the faction's relationship. We should specify relationship between candidates instead so we don't change functionalities of locations.
+        local relationship_maps = {
+            [ RELATIONSHIP.HATED ] = OPINION.DISLIKE_IDEOLOGY_II,
+            [ RELATIONSHIP.DISLIKED ] = OPINION.DISLIKE_IDEOLOGY,
+            [ RELATIONSHIP.LIKED ] = OPINION.SHARE_IDEOLOGY,
+        }
 
+        for id, data in pairs(DemocracyConstants.opposition_data) do
+            for other_id, rel in pairs(data.relationship) do
+                local agent = quest:GetCastMember(id)
+                local other_agent = quest:GetCastMember(other_id)
+                local delta = relationship_maps[rel]
+                if agent and other_agent and delta then
+                    agent:OpinionEvent(delta, nil, other_agent)
+                end
+            end
+        end
         -- local new_faction_relationships = {
         --     {"BANDITS", "SPARK_BARONS", RELATIONSHIP.DISLIKED},
         --     {"BANDITS", "CULT_OF_HESH", RELATIONSHIP.DISLIKED},

@@ -35,6 +35,11 @@ local t = {
             4,
             -4,
         },
+        relationship = {
+            candidate_spree = RELATIONSHIP.HATED,
+            candidate_rise = RELATIONSHIP.DISLIKED,
+            candidate_baron = RELATIONSHIP.LIKED,
+        },
     },
     candidate_spree = {
         cast_id = "candidate_spree",
@@ -72,6 +77,10 @@ local t = {
             3,
             -3,
             -7,
+        },
+        relationship = {
+            candidate_baron = RELATIONSHIP.DISLIKED,
+            candidate_jakes = RELATIONSHIP.LIKED,
         },
     },
     candidate_baron = {
@@ -111,6 +120,11 @@ local t = {
             -8,
             6,
             2,
+        },
+        relationship = {
+            candidate_rise = RELATIONSHIP.HATED,
+            candidate_cult = RELATIONSHIP.DISLIKED,
+            candidate_jakes = RELATIONSHIP.LIKED,
         },
     },
     candidate_rise = {
@@ -185,6 +199,9 @@ local t = {
             -3,
             -7,
             3,
+        },
+        relationship = {
+            candidate_jakes = RELATIONSHIP.DISLIKED,
         },
     },
     candidate_jakes = {
