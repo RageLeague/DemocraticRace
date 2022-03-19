@@ -230,35 +230,19 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     !right
                     I'll leave you to it.
             ]],
-            OPT_ACCEPT = "Accept",
-
-            DIALOG_ACCEPT = [[
-                player:
-                    [p] You know what, I agree.
-                    If we can work together, we will surely win!
-                agent:
-                    Excellent! That's the kind of stuff I like to hear!
-                * You've agreed to ally with {agent}.
+            DIALOG_CHOOSE_PST = [[
+                {allied?
                 agent:
                     Feel free to visit me at {ally_work_pos#location}.
                 player:
                     Thanks.
+                }
+                {not allied?
                 agent:
-                    !exit
-                * {agent} leaves, leaving you with {primary_advisor}.
-            ]],
-            OPT_DECLINE = "Decline",
-
-            DIALOG_DECLINE = [[
-                player:
-                    [p] While that is a great offer, I have to decline, unfortunately.
-                    Sorry if I offended you, but I want to keep my options open.
-                agent:
-                    I see.
-                    It is a real shame.
                     Well, if you ever change your mind, visit me at {ally_work_pos#location}.
                 player:
                     I'll keep that in mind, thanks.
+                }
                 agent:
                     !exit
                 * {agent} leaves, leaving you with {primary_advisor}.
@@ -301,6 +285,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
 
             DemocracyUtil.DoAllianceConvo(cxt, cxt.enc.scratch.potential_ally, function(cxt, allied)
                 cxt.enc.scratch.allied = allied
+                cxt:Dialog("DIALOG_CHOOSE_PST")
                 DemocracyUtil.DoLocationUnlock(cxt, cxt.enc.scratch.ally_work_pos)
                 cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
                 cxt:Dialog("DIALOG_CHOOSE_PST")
