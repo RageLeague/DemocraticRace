@@ -839,6 +839,21 @@ local QDEF = QuestDef.Define
         end
         return quest.param.stance_change_freebie[issue]
     end,
+    SetAlliance = function(quest, agent, turn_on)
+        if turn_on == nil then
+            turn_on = true
+        end
+        quest.param.alliances = quest.param.alliances or {}
+        if turn_on then
+            table.insert(quest.param.alliances, agent)
+        else
+            table.arrayremove(quest.param.alliances, agent)
+        end
+    end,
+    GetAlliance = function(quest, agent)
+        quest.param.alliances = quest.param.alliances or {}
+        return table.arraycontains(quest.param.alliances, agent)
+    end,
 
     SetSubdayProgress = function(quest, progress)
         quest.param.sub_day_progress = progress

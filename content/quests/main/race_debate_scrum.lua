@@ -1074,7 +1074,11 @@ QDEF:AddConvo("talk_to_candidates")
 
                     }:OnSuccess()
                         :Dialog("DIALOG_APOLOGIZE_SUCCESS")
-                        :ReceiveOpinion(OPINION.ALLIED_WITH)
+                        :ReceiveOpinion(OPINION.SHARE_IDEOLOGY)
+                        -- :Fn(function(cxt)
+                        --     -- Okay there needs to be something else here
+                        --     DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
+                        -- end)
                     :OnFailure()
                         :Dialog("DIALOG_APOLOGIZE_FAILURE")
                 cxt:Opt("OPT_IGNORE_CONCERN")

@@ -838,28 +838,30 @@ function DemocracyUtil.GetVoterIntentionIndex(data)
 
     local delta = DemocracyUtil.TryMainQuestFn("GetGeneralSupport") - DemocracyUtil.TryMainQuestFn("GetCurrentExpectation")
 
-    if delta <= 5 then
-        voter_index = delta
-    else
-        delta = delta - 5
-        if delta >= 20 then
-            voter_index = voter_index + 5
-            delta = delta - 20
-        else
-            voter_index = voter_index + math.round(delta / 2)
-            delta = 0
-        end
-        -- if delta >= 20 then
-        --     voter_index = voter_index + 5
-        --     delta = delta - 20
-        -- else
-        --     voter_index = voter_index + math.round(delta / 4)
-        --     delta = 0
-        -- end
-        if delta > 0 then
-            voter_index = voter_index + math.round(delta / 5)
-        end
-    end
+    -- Removed balancing because we shouldn't care about it, now that we balanced general support gain
+
+    -- if delta <= 5 then
+    --     voter_index = delta
+    -- else
+    --     delta = delta - 5
+    --     if delta >= 20 then
+    --         voter_index = voter_index + 5
+    --         delta = delta - 20
+    --     else
+    --         voter_index = voter_index + math.round(delta / 2)
+    --         delta = 0
+    --     end
+    --     -- if delta >= 20 then
+    --     --     voter_index = voter_index + 5
+    --     --     delta = delta - 20
+    --     -- else
+    --     --     voter_index = voter_index + math.round(delta / 4)
+    --     --     delta = 0
+    --     -- end
+    --     if delta > 0 then
+    --         voter_index = voter_index + math.round(delta / 5)
+    --     end
+    -- end
     if faction then
         voter_index = voter_index + (TheGame:GetGameState():GetMainQuest().param.faction_support[faction] or 0)
     end
@@ -874,13 +876,13 @@ function DemocracyUtil.GetEndorsement(index)
     -- Also this runs at O(1) time, so it doesn't really matter that much.
     -- And this reuses the relationship array. It's kinda redundant having another enum with the same elements
     -- representing similar things.
-    if index >= 50 then
+    if index >= 75 then
         return RELATIONSHIP.LOVED
-    elseif index >= 20 then
+    elseif index >= 25 then
         return RELATIONSHIP.LIKED
-    elseif index > -20 then
+    elseif index > -25 then
         return RELATIONSHIP.NEUTRAL
-    elseif index > -50 then
+    elseif index > -75 then
         return RELATIONSHIP.DISLIKED
     else
         return RELATIONSHIP.HATED
@@ -1024,14 +1026,20 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
                 cxt:Opt("OPT_ALLIANCE_TALK_AGREE_STANCE")
                     :Dialog("DIALOG_ALLIANCE_TALK_AGREE_STANCE")
                     :UpdatePoliticalStance(platform, oppo_main_stance)
-                    :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
+                    -- :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
+                    :Fn(function(cxt)
+                        DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
+                    end)
                     :DoneConvo()
 
             else
                 cxt:Opt("OPT_ALLIANCE_TALK_ACCEPT")
                     :Dialog("DIALOG_ALLIANCE_TALK_ACCEPT")
                     -- :UpdatePoliticalStance(platform, oppo_main_stance)
-                    :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
+                    -- :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
+                    :Fn(function(cxt)
+                        DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
+                    end)
                     :DoneConvo()
             end
             cxt:Opt("OPT_ALLIANCE_TALK_REJECT_ALLIANCE")
@@ -1072,7 +1080,8 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
                 local done_all = DemocracyUtil.AddDemandConvo(cxt, demand_list, demands)
                 if done_all then
                     cxt:Dialog("DIALOG_ALLIANCE_TALK_ACCEPT_CONDITIONAL")
-                    ally:OpinionEvent(OPINION.ALLIED_WITH)
+                    -- ally:OpinionEvent(OPINION.ALLIED_WITH)
+                    DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
                     StateGraphUtil.AddEndOption(cxt)
                     return
                 end
@@ -1092,6 +1101,7 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
                 cxt:Dialog("DIALOG_ALLIANCE_TALK_REJECT")
             end
             -- ally:OpinionEvent(OPINION.ALLIED_WITH)
+            DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
             ally:Remember("REJECTED_ALLIANCE")
             StateGraphUtil.AddEndOption(cxt)
         end
