@@ -85,8 +85,8 @@ local function OnLoad( mod )
 
     require "DEMOCRATICRACE:content/string_table"
 
-    rawset(_G, "DemocracyConstants", require("DEMOCRATICRACE:content/constants"))
     require "DEMOCRATICRACE:content/util"
+    rawset(_G, "DemocracyConstants", require("DEMOCRATICRACE:content/constants"))
     -- rawset(_G, "DemocracyUtil", )
 
     -- Patch existing files first

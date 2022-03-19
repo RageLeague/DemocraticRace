@@ -226,11 +226,11 @@ QDEF:AddConvo("summary", "primary_advisor")
             -- but the bias would be too obvious
             local general_support = DemocracyUtil.GetGeneralSupport()
             local agent_support = DemocracyUtil.GetSupportForAgent(cxt:GetAgent())
-            local support_level = general_support * .5 + agent_support * .5
+            local support_level = general_support * .75 + agent_support * .25
             local expectation = DemocracyUtil.GetCurrentExpectation()
             local delta = support_level - expectation
 
-            local RANGE = 4 + 3 * cxt.quest:GetRank()
+            local RANGE = 5 + 5 * cxt.quest:GetRank()
             local rank = clamp( math.round((RANGE * #RANKS / 2 - delta) / RANGE) ,1, #RANKS)
 
             cxt.enc.scratch.loved = cxt:GetAgent():GetRelationship() == RELATIONSHIP.LOVED
