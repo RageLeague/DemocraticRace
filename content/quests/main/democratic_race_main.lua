@@ -143,12 +143,14 @@ local QDEF = QuestDef.Define
         }
 
         for id, data in pairs(DemocracyConstants.opposition_data) do
-            for other_id, rel in pairs(data.relationship) do
-                local agent = quest:GetCastMember(id)
-                local other_agent = quest:GetCastMember(other_id)
-                local delta = relationship_maps[rel]
-                if agent and other_agent and delta then
-                    agent:OpinionEvent(delta, nil, other_agent)
+            if data.relationship then
+                for other_id, rel in pairs(data.relationship) do
+                    local agent = quest:GetCastMember(id)
+                    local other_agent = quest:GetCastMember(other_id)
+                    local delta = relationship_maps[rel]
+                    if agent and other_agent and delta then
+                        agent:OpinionEvent(delta, nil, other_agent)
+                    end
                 end
             end
         end
