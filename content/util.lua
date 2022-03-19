@@ -917,7 +917,7 @@ function DemocracyUtil.GetAlliancePotential(candidate_id)
         if id ~= candidate_id then
             local candidate = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
             if candidate then
-                local rel_with_player = candidate:GetRelationship()
+                local rel_with_player = math.max(candidate:GetRelationship(), DemocracyUtil.TryMainQuestFn("GetAlliance", candidate) and RELATIONSHIP.LIKED or RELATIONSHIP.HATED)
                 local faction_rel = target_candidate:GetRelationship(candidate)
                 -- Positive when friend with friend, enemy of enemy
                 -- Negative when enemy of friend, friend of enemy
