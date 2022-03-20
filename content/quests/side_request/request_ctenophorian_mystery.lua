@@ -565,6 +565,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 * Its face still shifts between identities, but you were so close to understanding, if only you could reach beyond the sand, if only you could see, IF ONLY-
                 * Yet you cannot, and you are plagued with those thoughts for the rest of the night, unable to decipher anything.
             ]],
+            OPT_LOSE = "Embrace the madness",
         }
         :Fn(function(cxt)
             cxt:TalkTo(TheGame:GetGameState():AddSkinnedAgent("COGNITIVE_HESH"))
@@ -581,10 +582,15 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                         -- You earn a special card or something.
                         cxt.quest.param.went_crazy = true
                         -- cxt.caravan:DeltaMaxResolve(-5)
-                        DemocracyUtil.DoEnding(cxt, "broken_mind", {})
+
+                        -- Nah you just lose lol
+                        cxt:Opt("OPT_LOSE")
+                            :Fn(function(cxt)
+                                DemocracyUtil.DoEnding(cxt, "broken_mind", {})
+                            end)
                     end)
-                    :CompleteQuest("ask_info")
-                    :ActivateQuest("tell_result")
+                    -- :CompleteQuest("ask_info")
+                    -- :ActivateQuest("tell_result")
         end)
 QDEF:AddConvo("tell_result", "giver")
     :AttractState("STATE_ATTRACT")

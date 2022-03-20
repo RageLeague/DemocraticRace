@@ -1061,6 +1061,7 @@ QDEF:AddConvo()
                     * You can no longer rely on your old advisor. It's time to find a new one.
                 }
             ]],
+            OPT_RENOUNCE = "Renounce your campaign",
         }
         :Fn(function(cxt)
             local available_advisors = {}
@@ -1086,13 +1087,16 @@ QDEF:AddConvo()
                 )
                 StateGraphUtil.AddEndOption(cxt)
             else
-                -- You lose lol
-                local flags = {
-                    [cxt.quest.param.alert_advisor_removed] = true,
-                }
-                cxt.quest.param.alert_advisor_removed = nil
-                DemocracyUtil.DoEnding(cxt, "no_more_advisors", flags)
-
+                cxt:Dialog("DIALOG_NO_NEW_ADVISOR")
+                cxt:Opt("OPT_RENOUNCE")
+                    :Fn(function(cxt)
+                        -- You lose lol
+                        local flags = {
+                            [cxt.quest.param.alert_advisor_removed] = true,
+                        }
+                        cxt.quest.param.alert_advisor_removed = nil
+                        DemocracyUtil.DoEnding(cxt, "no_more_advisors", flags)
+                    end)
             end
         end)
 
