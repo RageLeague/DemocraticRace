@@ -230,35 +230,19 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     !right
                     I'll leave you to it.
             ]],
-            OPT_ACCEPT = "Accept",
-
-            DIALOG_ACCEPT = [[
-                player:
-                    [p] You know what, I agree.
-                    If we can work together, we will surely win!
-                agent:
-                    Excellent! That's the kind of stuff I like to hear!
-                * You've agreed to ally with {agent}.
+            DIALOG_CHOOSE_PST = [[
+                {allied?
                 agent:
                     Feel free to visit me at {ally_work_pos#location}.
                 player:
                     Thanks.
+                }
+                {not allied?
                 agent:
-                    !exit
-                * {agent} leaves, leaving you with {primary_advisor}.
-            ]],
-            OPT_DECLINE = "Decline",
-
-            DIALOG_DECLINE = [[
-                player:
-                    [p] While that is a great offer, I have to decline, unfortunately.
-                    Sorry if I offended you, but I want to keep my options open.
-                agent:
-                    I see.
-                    It is a real shame.
                     Well, if you ever change your mind, visit me at {ally_work_pos#location}.
                 player:
                     I'll keep that in mind, thanks.
+                }
                 agent:
                     !exit
                 * {agent} leaves, leaving you with {primary_advisor}.
@@ -299,36 +283,16 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             cxt:TalkTo(cxt.enc.scratch.potential_ally)
             cxt:Dialog("DIALOG_INTRO")
 
-            cxt:Opt("OPT_ACCEPT")
-                :PreIcon(global_images.accept)
-                :Dialog("DIALOG_ACCEPT")
-                :ReceiveOpinion(OPINION.ALLIED_WITH)
-                :UpdatePoliticalStance(cxt.enc.scratch.ally_platform, cxt.enc.scratch.stance_index)
-                :Fn(function(cxt)
-                    cxt.enc.scratch.allied = true
-                    DemocracyUtil.DoLocationUnlock(cxt, cxt.enc.scratch.ally_work_pos)
-                    cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
-                end)
-                :Dialog("DIALOG_CHOOSE_PST")
-                :CompleteQuest("starting_out")
-                :Fn(function(cxt)
-                    cxt.enc.scratch.potential_ally:MoveToLimbo()
-                end)
-                :Travel()
-
-            cxt:Opt("OPT_DECLINE")
-                :PreIcon(global_images.reject)
-                :Dialog("DIALOG_DECLINE")
-                :Fn(function(cxt)
-                    DemocracyUtil.DoLocationUnlock(cxt, cxt.enc.scratch.ally_work_pos)
-                    cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
-                end)
-                :Dialog("DIALOG_CHOOSE_PST")
-                :CompleteQuest("starting_out")
-                :Fn(function(cxt)
-                    cxt.enc.scratch.potential_ally:MoveToLimbo()
-                end)
-                :Travel()
+            DemocracyUtil.DoAllianceConvo(cxt, cxt.enc.scratch.potential_ally, function(cxt, allied)
+                cxt.enc.scratch.allied = allied
+                cxt:Dialog("DIALOG_CHOOSE_PST")
+                DemocracyUtil.DoLocationUnlock(cxt, cxt.enc.scratch.ally_work_pos)
+                cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
+                cxt:Dialog("DIALOG_CHOOSE_PST")
+                cxt.quest:Complete("starting_out")
+                cxt.enc.scratch.potential_ally:MoveToLimbo()
+                StateGraphUtil.AddLeaveLocation(cxt)
+            end, 15)
         end)
     :State("STATE_FAVOR")
         :Loc{

@@ -474,16 +474,18 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             player:
                 What's Fellemo's angle, then?
             agent:
-                He wants to <!pol_stance_tax_policy_-2>abolish taxes</>.
+                He wants a <!pol_stance_fiscal_policy_-2>Laissez Faire</> approach to the economy.
+                Basically, the government leaves the economy alone by removing government services and taxes.
                 Of course, many people would want that, especially the Spark Barons.
                 They don't want their hard-earned money to go to leeches that is the state.
-                But it would mean that the state can't get funding this way.
+                But it would mean that the government can't get much funding through taxes.
+                And I suppose can't get the help they need from the government, but that is the reality of Havaria.
             player:
                 How does he plan to make Havaria function if he abolish taxes?
             agent:
                 No clue.
-                State industries, maybe?
                 You should ask him about it.
+                Although I doubt you will get a straight answer from him.
         ]],
         nil,
         nil,

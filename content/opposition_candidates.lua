@@ -12,11 +12,11 @@ local t = {
         stances = {
             SECURITY = 2,
             INDEPENDENCE = -2,
-            TAX_POLICY = 2,
+            FISCAL_POLICY = 2,
             LABOR_LAW = -1,
             RELIGIOUS_POLICY = 0,
             SUBSTANCE_REGULATION = 1,
-            WELFARE = 0,
+            -- WELFARE = 0,
         },
         faction_support = {
             ADMIRALTY = 10,
@@ -35,6 +35,11 @@ local t = {
             4,
             -4,
         },
+        relationship = {
+            candidate_spree = RELATIONSHIP.HATED,
+            candidate_rise = RELATIONSHIP.DISLIKED,
+            candidate_baron = RELATIONSHIP.LIKED,
+        },
     },
     candidate_spree = {
         cast_id = "candidate_spree",
@@ -48,11 +53,11 @@ local t = {
         stances = {
             SECURITY = -2,
             INDEPENDENCE = 2,
-            TAX_POLICY = 0,
+            FISCAL_POLICY = 0,
             LABOR_LAW = 0,
             RELIGIOUS_POLICY = 0,
             SUBSTANCE_REGULATION = -2,
-            WELFARE = 1,
+            -- WELFARE = 1,
         },
         -- main = "Havaria Independence",
         -- desc = "Nadan wants to cut the ties of Havaria with Deltree. Popular among poorer people, but unpopular among the rich, Admiralty, and the Cult.",
@@ -73,6 +78,10 @@ local t = {
             -3,
             -7,
         },
+        relationship = {
+            candidate_baron = RELATIONSHIP.DISLIKED,
+            candidate_jakes = RELATIONSHIP.LIKED,
+        },
     },
     candidate_baron = {
         cast_id = "candidate_baron",
@@ -83,16 +92,16 @@ local t = {
 
         -- main = "Tax cut",
         -- desc = "Reduce taxes for all. That's it. That's their plan. Fellemo isn't really that bright. Popular among rich people(and some poor people), but unpopular among those who care about equality and those who have plans for utilizing the taxes.",
-        platform = "TAX_POLICY",
+        platform = "FISCAL_POLICY",
 
         stances = {
             SECURITY = 0,
             INDEPENDENCE = 0,
-            TAX_POLICY = -2,
+            FISCAL_POLICY = -2,
             LABOR_LAW = -2,
             RELIGIOUS_POLICY = -2,
             SUBSTANCE_REGULATION = 0,
-            WELFARE = -1,
+            -- WELFARE = -1,
         },
 
         faction_support = {
@@ -112,6 +121,11 @@ local t = {
             6,
             2,
         },
+        relationship = {
+            candidate_rise = RELATIONSHIP.HATED,
+            candidate_cult = RELATIONSHIP.DISLIKED,
+            candidate_jakes = RELATIONSHIP.LIKED,
+        },
     },
     candidate_rise = {
         cast_id = "candidate_rise",
@@ -126,11 +140,11 @@ local t = {
         stances = {
             SECURITY = -1,
             INDEPENDENCE = 0,
-            TAX_POLICY = 1,
+            FISCAL_POLICY = 1,
             LABOR_LAW = 2,
             RELIGIOUS_POLICY = 0,
             SUBSTANCE_REGULATION = 0,
-            WELFARE = 2,
+            -- WELFARE = 2,
         },
         faction_support = {
             ADMIRALTY = -5,
@@ -163,11 +177,11 @@ local t = {
         stances = {
             SECURITY = 1,
             INDEPENDENCE = -1,
-            TAX_POLICY = 0,
+            FISCAL_POLICY = 0,
             LABOR_LAW = -2,
             RELIGIOUS_POLICY = 2,
             SUBSTANCE_REGULATION = 2,
-            WELFARE = 0,
+            -- WELFARE = 0,
         },
         faction_support = {
             CULT_OF_HESH = 10,
@@ -186,6 +200,9 @@ local t = {
             -7,
             3,
         },
+        relationship = {
+            candidate_jakes = RELATIONSHIP.DISLIKED,
+        },
     },
     candidate_jakes = {
         cast_id = "candidate_jakes",
@@ -202,11 +219,11 @@ local t = {
         stances = {
             SECURITY = 0,
             INDEPENDENCE = 1,
-            TAX_POLICY = -2,
+            FISCAL_POLICY = -2,
             LABOR_LAW = 1,
             RELIGIOUS_POLICY = -1,
             SUBSTANCE_REGULATION = -2,
-            WELFARE = 0,
+            -- WELFARE = 0,
         },
         faction_support = {
             ADMIRALTY = -10,
