@@ -362,6 +362,10 @@ QDEF:AddConvo("debate_people")
                     I'm here to debate people, not fall back like a coward.
                     Bring it on!
             ]],
+
+
+            OPT_PATROL = "Attempt to arrest {debater} with nearby Admiralty patrol...",
+            OPT_DENOUNCE = "Publicly denounce {debater}'s character..."
         }
         -- :SetLooping(true)
         :Fn(function(cxt)
@@ -405,6 +409,13 @@ QDEF:AddConvo("debate_people")
             cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("debater"))
             cxt:Dialog("DIALOG_CONFRONT")
 
+            if DemocracyUtil.PunishTargetCondition(cxt:GetAgent()) then
+                cxt:Dialog("DIALOG_CONFRONT_ENEMY")
+                cxt:Opt("OPT_PATROL")
+                    :GoTo("STATE_ARREST_TARGET")
+                cxt:Opt("OPT_DENOUNCE")
+                    :GoTo("STATE_DENOUNCE_TARGET")
+            end
             cxt:Opt("OPT_DEBATE")
                 :PostText("TT_DEBATE")
                 :Dialog("DIALOG_DEBATE")
@@ -501,6 +512,107 @@ QDEF:AddConvo("debate_people")
                 :FailQuest()
                 :DoneConvo()
         end)
+    :State("STATE_ARREST_TARGET")
+        :Loc{
+            DIALOG_ARREST = [[
+                * You turned your attention to a nearby Admiralty patrol.
+                patrol:
+                    !right
+                player:
+                    !left
+                    Good day, officer!
+                patrol:
+                {bad_relation?
+                    !humoring
+                    Well, look at that.
+                    I thought you hated the Admiralty? What changed your tone?
+                player:
+                    !crossed
+                    I'm just here to remind you to do your job, that is all.
+                    'Cause, {debater} over here is causing a lot of trouble, and it is your job to deal with it.
+                }
+                {not bad_relation?
+                    What seems to be the problem, good citizen?
+                player:
+                    {debater} over here is causing a lot of trouble. You should probably deal with {debater.himher}.
+                }
+                debater:
+                    !right
+                    !angry_accuse
+                    Hey! What are you doing there?
+                patrol:
+                    !right
+                    !dubious
+                    Is that a fact?
+            ]],
+            OPT_CONVINCE = "Convince {patrol} that {debater} is causing troubles",
+            DIALOG_CONVINCE = [[
+                player:
+                    !agree
+                    It's true!
+                patrol:
+                    Tell me the full story then.
+            ]],
+            DIALOG_CONVINCE_SUCCESS = [[
+                patrol:
+                    Alright, I heard enough.
+                    That's more evidence than the higher-ups care about.
+                debater:
+                    !left
+                    !scared
+                patrol:
+                    !angry
+                    {debater}, you are arrested for disrupting public order.
+                    !fight
+                    You are coming with me!
+                debater:
+                    {player.HeShe}'s lying!
+                    {player} is just mad {player.heshe} can't win a debate!
+                    Don't listen to {player.himher}!
+                patrol:
+                    Tell that to the judge hearing your case that totally exists.
+                player:
+                    !left
+                debater:
+                    !right
+                    !angry_accuse
+                    You despicable scum!
+                    Can't win a legitimate debate so you decide to put me in jail?
+                    !spit
+                    That is low, even for you.
+                player:
+                    !humoring
+                    Save your breath, {debater}.
+                    After all, everything you say can and will be used against you in the trial that you are totally going to get.
+                debater:
+                    !exit
+                * {patrol} takes {debater} away.
+                * The rest of the crowd quickly leave, not wanting to get caught up with this mess.
+                * Well, it's a win in your book.
+            ]],
+            DIALOG_CONVINCE_FAILURE = [[
+                patrol:
+                    It seems to me that you can't win a debate against {debater}.
+                    Now that's not an arrestable offense, is it?
+                player:
+                    But...
+                patrol:
+                    Next time, tell me when people make <i>actual</> troubles, and not when your feelings are hurt.
+                    !exit
+                * {patrol} leaves.
+                debater:
+                    !right
+                    !angry_accuse
+                    You despicable scum!
+                    Can't win a legitimate debate so you decide to try and arrest me?
+                    !spit
+                    That is low, even for you.
+                    I think everyone here agrees that you are just a coward, hiding in your shell the moment you face any trouble.
+                * With that utter humiliation, there is nothing left for you to do but leave.
+                * This failure will be remembered by the public for a long time.
+            ]],
+        }
+    :State("STATE_DENOUNCE_TARGET")
     :State("STATE_ARREST")
         :Loc{
             DIALOG_CONFRONT = [[
