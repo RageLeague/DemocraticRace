@@ -79,7 +79,7 @@ local QDEF = QuestDef.Define
     desc = "Go to {junction#location} to set up a debate booth.",
     mark = { "junction" },
     -- state = QSTATUS.ACTIVE,
-    
+
     on_activate = function( quest)
         local location = Location( LOCATION_DEF.id )
         assert(location)
@@ -117,7 +117,7 @@ local QDEF = QuestDef.Define
     end,
 }
 :AddOpinionEvents{
-    -- convinced_political_idea =  
+    -- convinced_political_idea =
     -- {
     --     delta = OPINION_DELTAS.LIKE,
     --     txt = "Enlightened them with your ideology",
@@ -126,7 +126,7 @@ local QDEF = QuestDef.Define
         delta = OPINION_DELTAS.OPINION_DOWN,
         txt = "Reached an impasse in a debate against them",
     },
-    lost_debate = 
+    lost_debate =
     {
         delta = OPINION_DELTAS.BAD,
         txt = "Lost a debate against them",
@@ -138,7 +138,7 @@ local QDEF = QuestDef.Define
 --     }
 DemocracyUtil.AddPrimaryAdvisor(QDEF)
 QDEF:AddConvo("go_to_junction")
-    
+
     :Confront(function(cxt)
         if cxt.location == cxt.quest:GetCastMember("junction") then
             return "STATE_INTRO"
@@ -223,6 +223,10 @@ QDEF:AddConvo("debate_people")
                     !point
                     %confront_argument
             ]],
+            DIALOG_CONFRONT_ENEMY = [[
+                * Now that {agent} brought {agent.himher}self to you, perhaps you can use this public opportunity to ruin {agent.hisher} life.
+                * If you do that, though, it will cause a significant disruption that you can't debate anymore.
+            ]],
             OPT_DEBATE = "Debate!",
             TT_DEBATE = "Win the debate normally to convince {agent}, OR delay long enough for {agent} to concede.\n" ..
                 "However, only convincing {agent} before {agent.heshe} gets too impatient can you completely convince {agent.himher}.\n",
@@ -289,7 +293,7 @@ QDEF:AddConvo("debate_people")
             ]],
             DIALOG_DEBATE_LOST = [[
                 * You debated for a long time, and it's clear that you can't win the debate.
-                * Nothing else to do but packing up and accept your defeat.
+                * There is only one thing left to do...
             ]],
             DIALOG_DEBATE_LOST_BRIBED = [[
                 * You debated for a long time, and it's clear that you can't win the debate.
@@ -315,8 +319,8 @@ QDEF:AddConvo("debate_people")
                     Give me my money back!
                 agent:
                     No can do, pal. Finders keepers.
-                    !exit
-                * {agent} leaves, leaving you contemplating your life decisions.
+                * Your plan is exposed, as {agent} betrays you.
+                * There is only one thing left to do...
                 }
                 {not disliked?
                 agent:
@@ -385,16 +389,16 @@ QDEF:AddConvo("debate_people")
                 table.insert(cxt.quest.param.crowd, cxt.quest:GetCastMember("crowd"))
                 cxt.quest:UnassignCastMember("crowd")
             end
-            
-            
+
+
             if cxt.quest.param.debated_people == 0 then
-                
+
                 cxt:Dialog("DIALOG_INTEREST")
             else
                 cxt:Dialog("DIALOG_INTEREST_AGAIN")
             end
 
-            
+
             cxt.quest:AssignCastMember("debater")
             cxt.quest:GetCastMember("debater"):MoveToLocation(cxt.location)
             table.insert(cxt.quest.param.crowd, cxt.quest:GetCastMember("debater"))
@@ -408,7 +412,7 @@ QDEF:AddConvo("debate_people")
                     -- flags = NEGOTIATION_FLAGS.NO_AUTOFAIL,
                     cooldown = 0,
                     reason_fn = function(minigame) return cxt:GetLocString("DEBATE_REASON") end,
-                    
+
                     situation_modifiers =
                     {
                         { value = 5 * math.ceil(cxt.quest:GetRank()/2), text = cxt:GetLocString("SIT_MOD") }
@@ -421,7 +425,7 @@ QDEF:AddConvo("debate_people")
                         end
                         minigame.opponent_negotiator:AddModifier("IMPATIENCE", cxt.quest.param.debated_people)
                     end,
-                    on_success = function(cxt, minigame) 
+                    on_success = function(cxt, minigame)
                         local core = minigame:GetOpponentNegotiator():FindCoreArgument()
                         local resolve_left = core and core:GetResolve()
                         if minigame.impasse and resolve_left then
@@ -465,8 +469,7 @@ QDEF:AddConvo("debate_people")
                             if cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL then
                                 cxt.quest:GetCastMember("debater"):OpinionEvent(OPINION.BETRAYED)
                                 DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5)
-                                cxt:Opt("OPT_ACCEPT_FAILURE")
-                                    :FailQuest()
+                                cxt:GoTo("STATE_FAIL")
                             else
                                 DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -3)
                             end
@@ -475,11 +478,28 @@ QDEF:AddConvo("debate_people")
                             -- if math.random() < 0.5 then
                             cxt.quest:GetCastMember("debater"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("lost_debate"))
                             -- end
-                            cxt:Opt("OPT_ACCEPT_FAILURE")
-                                :FailQuest()
+                            cxt:GoTo("STATE_FAIL")
                         end
                     end,
                 }
+        end)
+    :State("STATE_FAIL")
+        :Loc{
+            DIALOG_ACCEPT_FAILURE = [[
+                * Nothing else for you to do except leaving the scene, utterly humiliated.
+                * This failure will be remembered by the public for a long time.
+            ]],
+            OPT_PATROL = "Attempt to arrest {debater} with nearby Admiralty patrol...",
+            OPT_DENOUNCE = "Publicly denounce {debater}'s character..."
+        }
+        :Fn(function(cxt)
+            cxt:Opt("OPT_PATROL")
+                :GoTo("STATE_ARREST_TARGET")
+            cxt:Opt("OPT_DENOUNCE")
+                :GoTo("STATE_DENOUNCE_TARGET")
+            cxt:Opt("OPT_ACCEPT_FAILURE")
+                :FailQuest()
+                :DoneConvo()
         end)
     :State("STATE_ARREST")
         :Loc{
@@ -585,7 +605,7 @@ QDEF:AddConvo("debate_people")
                 cxt:Opt("OPT_AUTHORIZE", graft)
                     :Dialog("DIALOG_AUTHORIZE", graft.userdata.agents[1])
                     :Fn(function()
-                        graft:GetDef().StartCooldown( graft ) 
+                        graft:GetDef().StartCooldown( graft )
                     end)
                     :CompleteQuest()
             end
@@ -634,7 +654,7 @@ QDEF:AddConvo("debate_people")
                 }
         end)
 -- QDEF:AddConvo("debate_people")
-    
+
 
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :Loc{
