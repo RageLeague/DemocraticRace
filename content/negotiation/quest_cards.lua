@@ -304,8 +304,11 @@ local CARDS = {
             if opposition_data and opposition_data.mini_negotiator then
                 mini_negotiator_id = opposition_data.mini_negotiator
             end
-            local mod = self.negotiator:CreateModifier( mini_negotiator_id, 1, self )
+
+            local mod = Negotiation.Modifier( mini_negotiator_id, self.negotiator )
             mod.candidate_agent = self.owner
+            self.negotiator:CreateModifier( mod )
+
             self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                 panel.last_ev_time = nil
                 panel.speedup_factor = nil
@@ -367,8 +370,11 @@ local CARDS = {
             if opposition_data and opposition_data.mini_negotiator then
                 mini_negotiator_id = opposition_data.mini_negotiator
             end
-            local mod = self.negotiator:CreateModifier( mini_negotiator_id, 1, self )
+
+            local mod = Negotiation.Modifier( mini_negotiator_id, self.negotiator )
             mod.candidate_agent = self.owner
+            self.negotiator:CreateModifier( mod )
+
             self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                 panel.last_ev_time = nil
                 panel.speedup_factor = nil
