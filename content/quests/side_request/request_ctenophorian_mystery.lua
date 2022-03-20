@@ -135,25 +135,38 @@ QDEF:AddIntro(
     --attract spiel
     [[
         agent:
-            Hypothetically, Hesh could be a ctenophore.
-            !think
-            But hypothetically, Hesh could also be a cnidarian.
+            We all worship Hesh.
+        {player_sal or player_arint?
         player:
-            What does that have to do with helping you?
+            !crossed
+            What do you mean, "we"?
         agent:
-            Well, this is a paradoxical question.
-            It doesn't fit cleanly into my FACTS and LOGIC.
-            That's where you come in, as of now.
-            Go out, and try to weasel out a straight answer.
+            Okay, <i>some</> of us worship Hesh.
+        }
+            !think
+            But in the end, do we truly understand Hesh?
+        player:
+            !dubious
+            Uhh... What are you getting at?
+        agent:
+            For instance, what is Hesh, factually speaking?
+            What does it look like? What is its living environment? We don't know.
+            We don't even know what kind of jellyfish it is.
+            !point
+            That's where you come in.
+            Go ask around, see if anyone knows anything about it.
     ]],
 
     --on accept
     [[
         player:
-            Well, now you've got me a bit curious. Sure, why not?
+            You got me interested.
+            Just one question: where do I start?
         agent:
-            Well, that "why not" might be your reputation with the cult.
-            But just keep an eye out for any eavesdroppers. You never know they're listening until it's too late.
+            Logically speaking, you should ask people who at least believe in Hesh.
+            The Heretical Spark Barons knows nothing about Hesh, so you would get nothing of value out of them.
+            But if you ask other people in the cult, or even civilians who worship Hesh, you might get an answer out of them.
+            That would be a good place to start.
     ]])
 
 QDEF:AddConvo("ask_info")
