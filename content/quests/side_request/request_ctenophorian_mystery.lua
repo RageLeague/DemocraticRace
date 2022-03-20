@@ -580,7 +580,8 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                     :Fn(function(cxt)
                         -- You earn a special card or something.
                         cxt.quest.param.went_crazy = true
-                        cxt.caravan:DeltaMaxResolve(-5)
+                        -- cxt.caravan:DeltaMaxResolve(-5)
+                        DemocracyUtil.DoEnding(cxt, "broken_mind", {})
                     end)
                     :CompleteQuest("ask_info")
                     :ActivateQuest("tell_result")
@@ -589,9 +590,13 @@ QDEF:AddConvo("tell_result", "giver")
     :AttractState("STATE_ATTRACT")
         :Loc{
             DIALOG_INTRO = [[
+                {went_crazy?
+                    * Okay, in the new update, the negotiation against Hesh will automatically cause you to lose if you fail.
+                    * You can't get here normally unless you updated the mod.
+                    * So let's just pretend you actually did win, and find out about Hesh.
+                }
                 agent:
-                    Hey, {player}? Are you okay?
-                {not went_crazy?
+                    So, have you find out anything about Hesh?
                 player:
                     !handwave
                     I had some odd dream last night.
@@ -628,12 +633,6 @@ QDEF:AddConvo("tell_result", "giver")
                 player:
                     !dubious
                     You're welcome, I suppose?
-                }
-                {went_crazy?
-                    [p] I saw too much, and I talk crazy.
-                agent:
-                    Oh no, now I feel bad for you.
-                }
             ]],
         }
         :Fn(function(cxt)
