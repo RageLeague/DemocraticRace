@@ -369,7 +369,6 @@ QDEF:AddConvo("debate_people")
         }
         -- :SetLooping(true)
         :Fn(function(cxt)
-            print(#(TheGame:GetGameState().agents))
             local interested_people = math.random(
                 math.ceil(cxt.quest:GetRank() / 2),
                 math.floor(cxt.quest:GetRank() / 2) + 2
@@ -413,8 +412,10 @@ QDEF:AddConvo("debate_people")
                 cxt:Dialog("DIALOG_CONFRONT_ENEMY")
                 cxt:Opt("OPT_PATROL")
                     :GoTo("STATE_ARREST_TARGET")
-                cxt:Opt("OPT_DENOUNCE")
-                    :GoTo("STATE_DENOUNCE_TARGET")
+                if #cxt.quest.param.crowd > 0 then
+                    cxt:Opt("OPT_DENOUNCE")
+                        :GoTo("STATE_DENOUNCE_TARGET")
+                end
             end
             cxt:Opt("OPT_DEBATE")
                 :PostText("TT_DEBATE")
@@ -506,8 +507,10 @@ QDEF:AddConvo("debate_people")
         :Fn(function(cxt)
             cxt:Opt("OPT_PATROL")
                 :GoTo("STATE_ARREST_TARGET")
-            cxt:Opt("OPT_DENOUNCE")
-                :GoTo("STATE_DENOUNCE_TARGET")
+            if #cxt.quest.param.crowd > 0 then
+                cxt:Opt("OPT_DENOUNCE")
+                    :GoTo("STATE_DENOUNCE_TARGET")
+            end
             cxt:Opt("OPT_ACCEPT_FAILURE")
                 :FailQuest()
                 :DoneConvo()
@@ -612,7 +615,67 @@ QDEF:AddConvo("debate_people")
                 * This failure will be remembered by the public for a long time.
             ]],
         }
+        :Fn(function(cxt)
+            local patrol = AgentUtil.GetFreeAgent("ADMIRALTY_PATROL_LEADER")
+            cxt:ReassignCastMember("patrol", patrol)
+
+            cxt:Dialog("DIALOG_ARREST")
+
+            cxt:Opt("OPT_CONVINCE")
+                :Dialog("DIALOG_CONVINCE")
+                :UpdatePoliticalStance("SECURITY", 1)
+                :DeltaSupport(-2)
+                :Negotiation{
+                    target_agent = cxt.quest:GetCastMember("patrol"),
+                    hinders = {"debater"},
+                })
+                    :OnSuccess()
+                        :Dialog("DIALOG_CONVINCE_SUCCESS")
+                        :Fn(function(cxt)
+                            local debater = cxt:GetCastMember("debater")
+                            debater:GainAspect("stripped_influence", 5)
+                            debater:OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
+                            debater:Retire()
+                            cxt.quest.param.debated_people = cxt.quest.param.debated_people + 1
+                        end)
+                        :CompleteQuest()
+                        :Travel()
+                    :OnFailure()
+                        :Dialog("DIALOG_CONVINCE_FAILURE")
+                        :ReceiveOpinion(OPINION.SOLD_OUT_TO_ADMIRALTY)
+                        :FailQuest()
+                        :Travel()
+        end)
     :State("STATE_DENOUNCE_TARGET")
+        :Loc{
+            DIALOG_DENOUNCE = [[
+                * If you can't win a debate, there is nothing like a little ad hominem to shift the debate in your favor.
+                player:
+                    Do you guys know what kind of person {debater} is?
+                    {debater.HeShe} might seems like a reasonable person, but you don't know what is behind this facade.
+                debater:
+                    !surprised
+                    Huh?
+            ]],
+            OPT_CONVINCE = "Convince the crowd",
+            DIALOG_CONVINCE = [[
+                player:
+                    Let me tell you what kind of person {debater} truly is...
+            ]],
+            DIALOG_CONVINCE_SUCCESS = [[
+                * [p] You convinced everyone how bad of a person {debater} is.
+                * Now everyone is mad at {debater.himher}.
+                * Under the chaos of a riot, you leave the scene.
+            ]],
+            DIALOG_CONVINCE_FAILURE = [[
+                * [p] You fail to convince the crowd.
+                * You lost the debate, now {debater} is mad at you.
+                * With that, you leave dishonorably.
+            ]],
+        }
+        :Fn(function(cxt)
+
+        end)
     :State("STATE_ARREST")
         :Loc{
             DIALOG_CONFRONT = [[
