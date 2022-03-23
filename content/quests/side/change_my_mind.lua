@@ -628,7 +628,7 @@ QDEF:AddConvo("debate_people")
                 :Negotiation{
                     target_agent = cxt.quest:GetCastMember("patrol"),
                     hinders = {"debater"},
-                })
+                }
                     :OnSuccess()
                         :Dialog("DIALOG_CONVINCE_SUCCESS")
                         :Fn(function(cxt)
