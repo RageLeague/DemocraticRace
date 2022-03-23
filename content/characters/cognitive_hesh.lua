@@ -17,8 +17,9 @@ Content.AddCharacterDef
         name = "Hesh of the Dark",
         title = "Transphylum Deity",
         -- Can't figure this out.
-        build = "luminthian",
-        head = "head_luminari",
+        build = "cognitive_hesh_build",
+        -- head = "head_luminari",
+        scale_adjust = 2,
 
         gender = GENDER.UNDISCLOSED, -- GENDER.UNDISCLOSED,
 

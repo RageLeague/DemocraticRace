@@ -7,6 +7,13 @@ local new_builds = {
         -- no_hand_swap = true,
         glow = { colour = 0x11FFFEFF, bloom = 0.15, threshold = 0.02 }
     },
+    cognitive_hesh_build = CreateCreatureBuild({
+
+        dialog_build = "DEMOCRATICRACE:assets/anim/hesh.png.zip",
+        dialog_anim = "DEMOCRATICRACE:assets/anim/hesh.png.zip",
+        combat_anims = { "DEMOCRATICRACE:assets/anim/hesh.png.zip", },
+        portrait_anim = "DEMOCRATICRACE:assets/anim/hesh.png.zip",
+    })
 }
 
 Content.AddCharacterBuilds(new_builds)
