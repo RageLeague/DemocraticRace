@@ -412,9 +412,12 @@ QDEF:AddConvo("debate_people")
                 cxt:Dialog("DIALOG_CONFRONT_ENEMY")
                 cxt:Opt("OPT_PATROL")
                     :GoTo("STATE_ARREST_TARGET")
-                if #cxt.quest.param.crowd > 0 then
-                    cxt:Opt("OPT_DENOUNCE")
-                        :GoTo("STATE_DENOUNCE_TARGET")
+                for _, agent in cxt.location:Agents() do
+                    if table.arrayfind(cxt.quest.param.crowd, agent) and agent ~= cxt.quest:GetCastMember("debater") then
+                        cxt:Opt("OPT_DENOUNCE")
+                            :GoTo("STATE_DENOUNCE_TARGET")
+                        break
+                    end
                 end
             end
             cxt:Opt("OPT_DEBATE")
@@ -507,9 +510,12 @@ QDEF:AddConvo("debate_people")
         :Fn(function(cxt)
             cxt:Opt("OPT_PATROL")
                 :GoTo("STATE_ARREST_TARGET")
-            if #cxt.quest.param.crowd > 0 then
-                cxt:Opt("OPT_DENOUNCE")
-                    :GoTo("STATE_DENOUNCE_TARGET")
+            for _, agent in cxt.location:Agents() do
+                if table.arrayfind(cxt.quest.param.crowd, agent) and agent ~= cxt.quest:GetCastMember("debater") then
+                    cxt:Opt("OPT_DENOUNCE")
+                        :GoTo("STATE_DENOUNCE_TARGET")
+                    break
+                end
             end
             cxt:Opt("OPT_ACCEPT_FAILURE")
                 :FailQuest()
@@ -672,9 +678,58 @@ QDEF:AddConvo("debate_people")
                 * You lost the debate, now {debater} is mad at you.
                 * With that, you leave dishonorably.
             ]],
+            NEGOTIATION_REASON = "Improve the crowd's opinion to at least <b>Sympathetic</>",
         }
         :Fn(function(cxt)
-
+            local leader
+            for _, agent in cxt.location:Agents() do
+                if table.arrayfind(cxt.quest.param.crowd, agent) and agent ~= cxt.quest:GetCastMember("debater") then
+                    leader = agent
+                    break
+                end
+            end
+            assert(leader, "Leader not found")
+            cxt:ReassignCastMember("crowd", leader)
+            cxt:Dialog("DIALOG_DENOUNCE")
+            local function SuccessFn(cxt)
+                cxt:Dialog("DIALOG_CONVINCE_SUCCESS")
+                local debater = cxt:GetCastMember("debater")
+                debater:GainAspect("stripped_influence", 3)
+                debater:OpinionEvent(OPINION.PUBLICLY_DENOUNCE)
+                cxt.quest.param.debated_people = cxt.quest.param.debated_people + 1
+                cxt.quest:Complete()
+                StateGraphUtil.AddLeaveLocation(cxt)
+            end
+            local function FailureFn(cxt)
+                cxt:Dialog("DIALOG_CONVINCE_FAILURE")
+                local debater = cxt:GetCastMember("debater")
+                debater:OpinionEvent(OPINION.PUBLICLY_DENOUNCE)
+                cxt.quest:Fail()
+                StateGraphUtil.AddLeaveLocation(cxt)
+            end
+            cxt:Opt("OPT_CONVINCE")
+                :Dialog("DIALOG_CONVINCE")
+                :Negotiation{
+                    target_agent = cxt.quest:GetCastMember("crowd"),
+                    reason_fn = function(minigame)
+                        return loc.format(cxt:GetLocString("NEGOTIATION_REASON") )
+                    end,
+                    on_start_negotiation = function(minigame)
+                        minigame:GetOpponentNegotiator():CreateModifier("CROWD_OPINION", 3)
+                        minigame:GetOpponentNegotiator():CreateModifier("INSTIGATE_CROWD", 1)
+                    end,
+                    on_success = function(cxt,minigame)
+                        local stage = minigame:GetOpponentNegotiator():GetModifierStacks("CROWD_OPINION") - 1
+                        if stage >= 3 then
+                            SuccessFn(cxt)
+                        else
+                            FailureFn(cxt)
+                        end
+                    end,
+                    on_fail = function(cxt,minigame)
+                        FailureFn(cxt)
+                    end,
+                }
         end)
     :State("STATE_ARREST")
         :Loc{
