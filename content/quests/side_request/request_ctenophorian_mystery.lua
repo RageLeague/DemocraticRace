@@ -309,6 +309,8 @@ QDEF:AddConvo("ask_info")
                     !exit
                 * {agent} storms off in a huff, leaving you with a few new questions that you slept through the answers to.
             ]],
+
+            NEGOTIATION_REASON = "Endure {agent}'s lecture",
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_TALK")
@@ -317,6 +319,7 @@ QDEF:AddConvo("ask_info")
                 -- Opponent has no core, meaning you can't win by damage.
                 -- You win by surviving a set amount of rounds.
                 flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE,
+                reason_fn = function(minigame) return cxt:GetLocString("NEGOTIATION_REASON") end,
                 on_start_negotiation = function(minigame)
                     minigame.player_negotiator:AddModifier("FANATIC_LECTURE", math.max(4, 6 - math.floor(cxt.quest:GetRank() / 2)))
                 end,

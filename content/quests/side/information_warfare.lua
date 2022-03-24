@@ -766,7 +766,7 @@ QDEF:AddConvo("commission")
                     But only time will tell whether this is really effective.
             ]],
 
-            NEGOTIATION_REASON = "Create the poster",
+            NEGOTIATION_REASON = "Create the propaganda poster",
         }
         :Fn(function(cxt)
             if not cxt.quest.param.cards then
