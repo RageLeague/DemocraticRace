@@ -243,7 +243,12 @@ QDEF:AddConvo("win_argument")
             ]],
 
             DIALOG_INTRO = [[
-                * Hopefully you can find some work here, and maybe even find a place to live in.
+                {not player_arint?
+                    * Hopefully you can find some work here, and maybe even find a place to live in.
+                }
+                {player_arint?
+                    * Hopefully you can find Fellemo somewhere and talk some sense into him.
+                }
                 * Just as you start to get comfortable, you hear a rather loud patron causing a commotion at the bar.
                 agent:
                     !right
@@ -401,8 +406,15 @@ QDEF:AddConvo("win_argument")
                 * That's right, Havaria is a democracy now.
                 * In fact, it is a very recent development, and the election is coming up in a few days.
                 player:
+                {not player_arint?
                     Here I thought this is all just another grift for me.
                     But now, I am going to pull the biggest grift of all: running for presidency.
+                }
+                {player_arint?
+                    The Spark Barons need another choice.
+                    Someone who is less impulsive and actually has a plan.
+                    It's decided: I am running for presidency.
+                }
                     !thought
                     Now, to run a campaign, I need to gather some support.
                     And I might know just the thing...
