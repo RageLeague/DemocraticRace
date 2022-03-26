@@ -135,25 +135,38 @@ QDEF:AddIntro(
     --attract spiel
     [[
         agent:
-            Hypothetically, Hesh could be a ctenophore.
-            !think
-            But hypothetically, Hesh could also be a cnidarian.
+            We all worship Hesh.
+        {player_sal or player_arint?
         player:
-            What does that have to do with helping you?
+            !crossed
+            What do you mean, "we"?
         agent:
-            Well, this is a paradoxical question.
-            It doesn't fit cleanly into my FACTS and LOGIC.
-            That's where you come in, as of now.
-            Go out, and try to weasel out a straight answer.
+            Okay, <i>some</> of us worship Hesh.
+        }
+            !think
+            But in the end, do we truly understand Hesh?
+        player:
+            !dubious
+            Uhh... What are you getting at?
+        agent:
+            For instance, what is Hesh, factually speaking?
+            What does it look like? What is its living environment? We don't know.
+            We don't even know what kind of jellyfish it is.
+            !point
+            That's where you come in.
+            Go ask around, see if anyone knows anything about it.
     ]],
 
     --on accept
     [[
         player:
-            Well, now you've got me a bit curious. Sure, why not?
+            You got me interested.
+            Just one question: where do I start?
         agent:
-            Well, that "why not" might be your reputation with the cult.
-            But just keep an eye out for any eavesdroppers. You never know they're listening until it's too late.
+            Logically speaking, you should ask people who at least believe in Hesh.
+            The Heretical Spark Barons knows nothing about Hesh, so you would get nothing of value out of them.
+            But if you ask other people in the cult, or even civilians who worship Hesh, you might get an answer out of them.
+            That would be a good place to start.
     ]])
 
 QDEF:AddConvo("ask_info")
@@ -296,6 +309,8 @@ QDEF:AddConvo("ask_info")
                     !exit
                 * {agent} storms off in a huff, leaving you with a few new questions that you slept through the answers to.
             ]],
+
+            NEGOTIATION_REASON = "Endure {agent}'s lecture",
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_TALK")
@@ -304,6 +319,7 @@ QDEF:AddConvo("ask_info")
                 -- Opponent has no core, meaning you can't win by damage.
                 -- You win by surviving a set amount of rounds.
                 flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE,
+                reason_fn = function(minigame) return cxt:GetLocString("NEGOTIATION_REASON") end,
                 on_start_negotiation = function(minigame)
                     minigame.player_negotiator:AddModifier("FANATIC_LECTURE", math.max(4, 6 - math.floor(cxt.quest:GetRank() / 2)))
                 end,
@@ -552,6 +568,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 * Its face still shifts between identities, but you were so close to understanding, if only you could reach beyond the sand, if only you could see, IF ONLY-
                 * Yet you cannot, and you are plagued with those thoughts for the rest of the night, unable to decipher anything.
             ]],
+            OPT_LOSE = "Embrace the madness",
         }
         :Fn(function(cxt)
             cxt:TalkTo(TheGame:GetGameState():AddSkinnedAgent("COGNITIVE_HESH"))
@@ -567,18 +584,28 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                     :Fn(function(cxt)
                         -- You earn a special card or something.
                         cxt.quest.param.went_crazy = true
-                        cxt.caravan:DeltaMaxResolve(-5)
+                        -- cxt.caravan:DeltaMaxResolve(-5)
+
+                        -- Nah you just lose lol
+                        cxt:Opt("OPT_LOSE")
+                            :Fn(function(cxt)
+                                DemocracyUtil.DoEnding(cxt, "broken_mind", {})
+                            end)
                     end)
-                    :CompleteQuest("ask_info")
-                    :ActivateQuest("tell_result")
+                    -- :CompleteQuest("ask_info")
+                    -- :ActivateQuest("tell_result")
         end)
 QDEF:AddConvo("tell_result", "giver")
     :AttractState("STATE_ATTRACT")
         :Loc{
             DIALOG_INTRO = [[
+                {went_crazy?
+                    * Okay, in the new update, the negotiation against Hesh will automatically cause you to lose if you fail.
+                    * You can't get here normally unless you updated the mod.
+                    * So let's just pretend you actually did win, and find out about Hesh.
+                }
                 agent:
-                    Hey, {player}? Are you okay?
-                {not went_crazy?
+                    So, have you find out anything about Hesh?
                 player:
                     !handwave
                     I had some odd dream last night.
@@ -615,12 +642,6 @@ QDEF:AddConvo("tell_result", "giver")
                 player:
                     !dubious
                     You're welcome, I suppose?
-                }
-                {went_crazy?
-                    [p] I saw too much, and I talk crazy.
-                agent:
-                    Oh no, now I feel bad for you.
-                }
             ]],
         }
         :Fn(function(cxt)

@@ -1374,6 +1374,7 @@ FOLLOW_UP:AddConvo("comfort", "giver")
             * It seems like your attempt to brighten {agent}'s mood has worsened the situation.
             * It's too late now. {agent} doesn't even want to talk to you.
         ]],
+        NEGOTIATION_REASON = "Comfort {agent}'s spirit!",
     }
     :Hub(function(cxt)
         if not cxt.quest.param.tried_comfort then
@@ -1383,6 +1384,7 @@ FOLLOW_UP:AddConvo("comfort", "giver")
                     cxt:GetAgent():SetTempNegotiationBehaviour(DEPRESSION_BEHAVIOUR)
                 end)
                 :Negotiation{
+                    reason_fn = function(minigame) return cxt:GetLocString("NEGOTIATION_REASON") end,
                     -- This will be a special negotiation.
                     -- giver will start at low resolve, and you must bring their resolve to full to actually win the negotiation.
                     -- Winning negotiation without bringing up resolve, like using damage or oolo's requisition, has bad effect.

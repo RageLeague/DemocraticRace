@@ -103,20 +103,142 @@ QDEF:AddConvo("meet_opposition", "opposition")
             :GoTo("STATE_QUESTIONS")
     end)
     :AttractState("STATE_ATTRACT", function(cxt) return not cxt.quest.param.greeted end)
+        :Quips{
+            {
+                tags = "oppo_greeting",
+                [[
+                    * You walk up to {agent}.
+                    * {agent} extends a hand to greet you.
+                    agent:
+                        !right
+                        Hello there. My name is {agent}. You may have heard of me already down the grapevine.
+                    player:
+                        {player}. Charmed to meet you, {agent.honorific}.
+                        So I believe we should introduce ourselves a little bit better.
+                        If you're going to win, surely you've nothing to hide from your opponents.
+                    agent:
+                        Nothing I couldn't tell you about me that the public doesn't already.
+                        Ask away.
+                ]],
+            },
+            {
+                tags = "oppo_greeting, met",
+                score = 5,
+                [[
+                    * You walk up to {agent}.
+                    * {agent} looks around the office, observing.
+                    agent:
+                        !right
+                        So, this is your campaign office, huh?
+                        A pretty nice place, if I do say so myself.
+                    player:
+                        Ah, {agent}. Fancy seeing you here.
+                        Last time we meet, we haven't properly talked about the campaign yet.
+                        Do you mind if I ask you some questions?
+                    agent:
+                        Of course, ask away.
+                ]],
+            },
+            {
+                tags = "oppo_greeting, player_sal, kalandra",
+                [[
+                    * You walk up to {agent}.
+                    * {agent} looks at you in shock.
+                    agent:
+                        !right
+                        !surprised
+                        {player}?
+                    * Even though you haven't seen each other for ten years, you can still recognize {agent.himher} clearly.
+                    player:
+                        Prindo, is that you?
+                        !happy
+                        How long has it been? Ten years?
+                    agent:
+                        !agree
+                        Too long to keep track of.
+                    player:
+                        Anyway, we can catch up later.
+                        Right now, there are a few things I'd like to know about your campaign.
+                    agent:
+                        Don't worry. Ask ahead.
+                ]],
+            },
+            {
+                tags = "oppo_greeting, player_arint, spark_contact",
+                [[
+                    * You walk up to {agent}.
+                    * {agent} looks at you in dismay.
+                    agent:
+                        !right
+                        Oh, {player}. You followed me, after all.
+                        !crossed
+                        Didn't I say I can do this by myself?
+                        Why did you show up now, all of a sudden?
+                    player:
+                        I'm not here to help you win, per se.
+                        I am running for president as well, so that the Barons don't put all their eggs in one basket.
+                        This way, even if one of us loses the election, the other person can still win.
+                    agent:
+                        !sigh
+                        I suppose that is a fair arrangement.
+                    player:
+                        Anyway, if you don't mind, I'd like to ask some questions. To see if you have a plan.
+                    agent:
+                        !agree
+                        Oh, I sure do have a plan, alright. Just go ahead and ask.
+                ]],
+            },
+            {
+                tags = "oppo_greeting, player_rook, spark_contact",
+                [[
+                    * You walk up to {agent}.
+                    * {agent} seems glad to see you.
+                    agent:
+                        !right
+                        !happy
+                        Didn't expect to see you here, old chum!
+                    player:
+                        !crossed
+                        I will have you know that I am running for president, so me being here is completely expected.
+                    agent:
+                        You will need more than stealth and espionage if you want to win the election.
+                        !chuckle
+                        But I guess, in that aspect, we are in the same boat.
+                    player:
+                        Speaking of which, there are some questions I'd like to ask you about your campaign.
+                    agent:
+                        Of course, go ahead and ask.
+                ]],
+            },
+            {
+                tags = "oppo_greeting, player_smith, vixmalli",
+                [[
+                    * You walk up to {agent}.
+                    * {agent} looks at you in disbelief.
+                    agent:
+                        !right
+                        What are you doing here? Shouldn't you be drinking in some rundown bar or something?
+                    player:
+                        !angry_accuse
+                        Hey! I will have you know that I am running for president!
+                    agent:
+                        !agree
+                        If you are speaking the truth, then perhaps it's finally time for you to do something useful.
+                        Of course, I am not going to make it easier for you.
+                        I actually want to win.
+                    player:
+                        If you're going to win, surely you've nothing to hide from your opponents.
+                        There are some questions I'd like to ask of you.
+                    agent:
+                        !shrug
+                        Eh, what's the harm? Sure.
+                ]],
+            },
+        }
         :Loc{
             DIALOG_GREET = [[
-                * You walk up to {agent}.
-                * {agent} extends a hand to greet you.
                 agent:
-                    !right
-                    Hello there. My name is {agent}. You may have heard of me already down the grapevine.
-                player:
-                    {player}. Charmed to meet you, {agent.honorific}.
-                    So I believe we should introduce ourselves a little bit better.
-                    If you're going to win, surely you've nothing to hide from your opponents.
-                agent:
-                    Nothing I couldn't tell you about me that the public doesn't already.
-                    Ask away.
+                    %oppo_greeting
                 player:
                     What's your goal in the race? What drives you forward?
                 agent:
@@ -124,9 +246,18 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 * {agent} clears {agent.hisher} throat loudly.
                     %opposition_intro idea_monologue {opposition_id}
                 player:
+                {not spark_contact?
                     I must say, I'm stunned by your rhetoric.
                 agent:
                     I bet you are!
+                }
+                {spark_contact?
+                    Wow, that... definitely is one of the speeches I've ever heard.
+                agent:
+                    I'm glad you liked it.
+                }
+                agent:
+                    !permit
                     What say you? Are you persuaded by my speech?
             ]],
             OPT_AGREE = "Agree",
@@ -455,21 +586,27 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         nil,
         "Ask about the Spark Baron candidate",
         [[
+            {player_arint?
             player:
-                Someone in the Spark Barons has got to be running.
+                I'm assuming that Fellemo is running.
+                Is there anyone else from the Spark Baron running as well?
             agent:
-                Of course.
+                As far as I am aware, other than you and him, there is no one else from the Spark Baron running.
+                Seems you already know Fellemo, huh?
+            player:
+                !sigh
+                All too well.
+            }
+            {not player_arint?
+            player:
+                There must be someone from the Spark Barons running, right?
+            agent:
+                !agree
+                There sure is.
                 Their candidate is Lellyn Fellemo, a retired Admiralty solider, who now is a regional officer managing Grout Bog.
-                Although I'm not sure how competent he really is.
-                Seems like he's in just because his lieutenant really wants the Spark Barons to play a part in this.
-            player:
-                Uh huh.
-            {spark_barons?
-                Then why didn't you run, seeing as no one competent in the Spark Barons is running?
-            agent:
-                !crossed
-                ...
-                I have my reasons.
+                !cagey
+                Although... if I'm honest, I am not sure if he is really a capable candidate.
+                He doesn't seem to have a concrete plan, and he doesn't seem to put a lot of work into the campaign.
             }
             player:
                 What's Fellemo's angle, then?
