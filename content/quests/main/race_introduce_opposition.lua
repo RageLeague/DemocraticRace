@@ -103,20 +103,118 @@ QDEF:AddConvo("meet_opposition", "opposition")
             :GoTo("STATE_QUESTIONS")
     end)
     :AttractState("STATE_ATTRACT", function(cxt) return not cxt.quest.param.greeted end)
+        :Quips{
+            {
+                tags = "oppo_greeting",
+                [[
+                    * You walk up to {agent}.
+                    * {agent} extends a hand to greet you.
+                    agent:
+                        !right
+                        Hello there. My name is {agent}. You may have heard of me already down the grapevine.
+                    player:
+                        {player}. Charmed to meet you, {agent.honorific}.
+                        So I believe we should introduce ourselves a little bit better.
+                        If you're going to win, surely you've nothing to hide from your opponents.
+                    agent:
+                        Nothing I couldn't tell you about me that the public doesn't already.
+                        Ask away.
+                ]],
+            },
+            {
+                tags = "oppo_greeting, met",
+                score = 5,
+                [[
+                    * You walk up to {agent}.
+                    * {agent} looks around the office, observing.
+                    agent:
+                        !right
+                        So, this is your campaign office, huh?
+                        A pretty nice place, if I do say so myself.
+                    player:
+                        Ah, {agent}. Fancy seeing you here.
+                        Last time we meet, we haven't properly talked about the campaign yet.
+                        Do you mind if I ask you some questions?
+                    agent:
+                        Of course, ask away.
+                ]],
+            },
+            {
+                tags = "oppo_greeting, player_sal, kalandra",
+                [[
+                    * You walk up to {agent}.
+                    * {agent} looks at you in shock.
+                    agent:
+                        !right
+                        !surprised
+                        {player}?
+                    * Even though you haven't seen each other for ten years, you can still recognize {agent.himher} clearly.
+                    player:
+                        Prindo, is that you?
+                        !happy
+                        How long has it been? Ten years?
+                    agent:
+                        !agree
+                        Too long to keep track of.
+                    player:
+                        Anyway, we can catch up later.
+                        Right now, there are a few things I'd like to know about your campaign.
+                    agent:
+                        Don't worry. Ask ahead.
+                ]],
+            },
+            {
+                tags = "oppo_greeting, player_arint, spark_contact",
+                [[
+                    * You walk up to {agent}.
+                    * {agent} looks at you in dismay.
+                    agent:
+                        !right
+                        Oh, {player}. You followed me, after all.
+                        !crossed
+                        Didn't I say I can do this by myself?
+                        Why did you show up now, all of a sudden?
+                    player:
+                        I'm not here to help you win, per se.
+                        I am running for president as well, so that the Barons don't put all their eggs in one basket.
+                        This way, even if one of us loses the election, the other person can still win.
+                    agent:
+                        !sigh
+                        I suppose that is a fair arrangement.
+                    player:
+                        Anyway, if you don't mind, I'd like to ask some questions. To see if you have a plan.
+                    agent:
+                        !agree
+                        Oh, I sure do have a plan, alright. Just go ahead and ask.
+                ]],
+            },
+            {
+                tags = "oppo_greeting, player_rook, spark_contact",
+                [[
+                    * You walk up to {agent}.
+                    * {agent} seems glad to see you.
+                    agent:
+                        !right
+                        !happy
+                        Didn't expect to see you here, old chum!
+                    player:
+                        !crossed
+                        I will have you know that I am running for president, so me being here is completely expected.
+                    agent:
+                        You will need more than stealth and espionage if you want to win the election.
+                        !chuckle
+                        But I guess, in that aspect, we are in the same boat.
+                    player:
+                        Speaking of which, there are some questions I'd like to ask you about your campaign.
+                    agent:
+                        Of course, go ahead and ask.
+                ]],
+            },
+        }
         :Loc{
             DIALOG_GREET = [[
-                * You walk up to {agent}.
-                * {agent} extends a hand to greet you.
                 agent:
-                    !right
-                    Hello there. My name is {agent}. You may have heard of me already down the grapevine.
-                player:
-                    {player}. Charmed to meet you, {agent.honorific}.
-                    So I believe we should introduce ourselves a little bit better.
-                    If you're going to win, surely you've nothing to hide from your opponents.
-                agent:
-                    Nothing I couldn't tell you about me that the public doesn't already.
-                    Ask away.
+                    %oppo_greeting
                 player:
                     What's your goal in the race? What drives you forward?
                 agent:
@@ -124,9 +222,18 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 * {agent} clears {agent.hisher} throat loudly.
                     %opposition_intro idea_monologue {opposition_id}
                 player:
+                {not spark_contact?
                     I must say, I'm stunned by your rhetoric.
                 agent:
                     I bet you are!
+                }
+                {spark_contact?
+                    Wow, that... definitely is one of the speeches I've ever heard.
+                agent:
+                    I'm glad you liked it.
+                }
+                agent:
+                    !permit
                     What say you? Are you persuaded by my speech?
             ]],
             OPT_AGREE = "Agree",

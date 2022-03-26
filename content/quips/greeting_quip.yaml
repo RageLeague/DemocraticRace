@@ -117,6 +117,7 @@ lines:
   dialog:
   - |
     agent:
+      !crossed
       Didn't I say I can do this by myself?
       Why did you show up now, all of a sudden?
     player:
