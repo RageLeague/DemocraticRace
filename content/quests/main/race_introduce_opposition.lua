@@ -210,6 +210,30 @@ QDEF:AddConvo("meet_opposition", "opposition")
                         Of course, go ahead and ask.
                 ]],
             },
+            {
+                tags = "oppo_greeting, player_smith, vixmalli",
+                [[
+                    * You walk up to {agent}.
+                    * {agent} looks at you in disbelief.
+                    agent:
+                        !right
+                        What are you doing here? Shouldn't you be drinking in some rundown bar or something?
+                    player:
+                        !angry_accuse
+                        Hey! I will have you know that I am running for president!
+                    agent:
+                        !agree
+                        If you are speaking the truth, then perhaps it's finally time for you to do something useful.
+                        Of course, I am not going to make it easier for you.
+                        I actually want to win.
+                    player:
+                        If you're going to win, surely you've nothing to hide from your opponents.
+                        There are some questions I'd like to ask of you.
+                    agent:
+                        !shrug
+                        Eh, what's the harm? Sure.
+                ]],
+            },
         }
         :Loc{
             DIALOG_GREET = [[
