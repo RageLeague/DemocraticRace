@@ -632,7 +632,7 @@ QDEF:AddConvo("debate_people")
                 :UpdatePoliticalStance("SECURITY", 1)
                 :DeltaSupport(-2)
                 :Negotiation{
-                    target_agent = cxt.quest:GetCastMember("patrol"),
+                    target_agent = cxt:GetCastMember("patrol"),
                     hinders = {"debater"},
                 }
                     :OnSuccess()
@@ -710,7 +710,8 @@ QDEF:AddConvo("debate_people")
             cxt:Opt("OPT_CONVINCE")
                 :Dialog("DIALOG_CONVINCE")
                 :Negotiation{
-                    target_agent = cxt.quest:GetCastMember("crowd"),
+                    target_agent = cxt:GetCastMember("crowd"),
+                    hinders = {"debater"},
                     reason_fn = function(minigame)
                         return loc.format(cxt:GetLocString("NEGOTIATION_REASON") )
                     end,
