@@ -455,21 +455,27 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         nil,
         "Ask about the Spark Baron candidate",
         [[
+            {player_arint?
             player:
-                Someone in the Spark Barons has got to be running.
+                I'm assuming that Fellemo is running.
+                Is there anyone else from the Spark Baron running as well?
             agent:
-                Of course.
+                As far as I am aware, other than you and him, there is no one else from the Spark Baron running.
+                Seems you already know Fellemo, huh?
+            player:
+                !sigh
+                All too well.
+            }
+            {not player_arint?
+            player:
+                There must be someone from the Spark Barons running, right?
+            agent:
+                !agree
+                There sure is.
                 Their candidate is Lellyn Fellemo, a retired Admiralty solider, who now is a regional officer managing Grout Bog.
-                Although I'm not sure how competent he really is.
-                Seems like he's in just because his lieutenant really wants the Spark Barons to play a part in this.
-            player:
-                Uh huh.
-            {spark_barons?
-                Then why didn't you run, seeing as no one competent in the Spark Barons is running?
-            agent:
-                !crossed
-                ...
-                I have my reasons.
+                !cagey
+                Although... if I'm honest, I am not sure if he is really a capable candidate.
+                He doesn't seem to have a concrete plan, and he doesn't seem to put a lot of work into the campaign.
             }
             player:
                 What's Fellemo's angle, then?
