@@ -378,15 +378,21 @@ QDEF:AddConvo()
                 rise:
                     !right
                 player:
-                    What kind of long con were you trying to pull on {jakes}?
+                    !shrug
+                    If you can't pay for the goods, you don't get the goods.
+                    It's just how it works.
                 rise:
                     !bashful
-                    Ah jeez, two of you getting on my case.
-                    The revolution has...had weapons.
-                    We discarded quite a few of them when the election was pronounced. Bit of symbolism, laying down our arms, y'know?
-                    Unfortunately we needed to pick up those weapons again to help protect the election from being completely rigged.
-                    !shrug
-                    And you can probably guess the amount of money we also threw away when we threw away those weapons.
+                    Ah Hesh, now where will we get the weapons now?
+                    !exit
+                * As {rise} leaves, {jakes} addresses you.
+                jakes:
+                    !right
+                    Thanks for the help with dealing with {rise.himher}.
+                    !spit
+                    Hopefully I can get more customers who are actually willing to pay.
+                player:
+                    Yeah. Good luck with that buddy.
             ]],
             OPT_PAY = "Pay for {rise}",
             DIALOG_PAY = [[
@@ -412,6 +418,14 @@ QDEF:AddConvo()
                 rise:
                     !salute
                     Er, yes. I promise that we won't try to cheap you out anymore.
+                player:
+                    !left
+                jakes:
+                    !right
+                    Thanks for the help.
+                    I don't know why you choose to help out that freeloader, but I get the deal anyway, so I won't complain.
+                    !salute
+                    Safe travels.
             ]],
             OPT_DONATE = "Donate some weapons",
             DIALOG_DONATE = [[
