@@ -425,7 +425,7 @@ QDEF:AddConvo()
                     Thanks for the help.
                     I don't know why you choose to help out that freeloader, but I get the deal anyway, so I won't complain.
                     !salute
-                    Safe travels.
+                    Anyway, safe travels!
             ]],
             OPT_DONATE = "Donate some weapons",
             DIALOG_DONATE = [[
@@ -443,7 +443,15 @@ QDEF:AddConvo()
                     Don't start squabbling again. I can always take that weapon back, y'know.
                 rise:
                     !salute
-                    You're right. Safe travels.
+                    You're right. Thank you for your contribution to the cause.
+                player:
+                    !left
+                jakes:
+                    !right
+                    Thanks for the help.
+                    I don't know why you choose to help out that freeloader, but you get rid of an annoying customer, so I won't complain.
+                    !salute
+                    Anyway, safe travels!
             ]],
 
             SELECT_TITLE = "Select a card",
