@@ -59,7 +59,7 @@ QDEF:AddConvo()
                     !angry_shrug
                     Bourgeoisie? I'm just as poor as the lot of you. Should <i>I<\> starve just so your little revolution has a few more playthings?
                 rise:
-                    This isn't a game, {jake}. This is real life, and real sacrifice needs to be made for real change!
+                    This isn't a game, {jakes}. This is real life, and real sacrifice needs to be made for real change!
                 * You have a sneaking suspicion the next logical step for this conflict would involve someone getting shot.
             ]],
             OPT_LEAVE = "Leave them figure this out themselves",
@@ -109,7 +109,7 @@ QDEF:AddConvo()
                 rise:
                     !left
                     !give
-                * {rise} coughs out a wad of shills larger than some bounties you've bagged and placed it in {jake}'s hand.
+                * {rise} coughs out a wad of shills larger than some bounties you've bagged and placed it in {jakes}'s hand.
                 jakes:
                     !take
                     Now why couldn't we have started with this, hm?
