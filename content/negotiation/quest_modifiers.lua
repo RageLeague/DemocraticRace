@@ -681,7 +681,11 @@ local MODIFIERS =
     {
         name = "Etiquette",
         icon = "negotiation/modifiers/compromise.tex",
-        desc = "Whenever you play a Hostility card discard a random card.",
+        desc = "Whenever you play a Hostility card, discard a random card.\n\nReduce <b>Etiquette</b> by 1 at the beginning of {1}'s turn.",
+
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOwnerName() )
+        end,
 
         max_resolve = 5,
         max_stacks = 1,
@@ -700,7 +704,13 @@ local MODIFIERS =
                         self.engine:DiscardCard( card )
                     end
                 end
-            end
+            end,
+
+            [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
+                if negotiator == self.negotiator then
+                    negotiator:RemoveModifier( self, 1 )
+                end
+            end,
         },
     },
     CAUTIOUS_SPENDER  =
