@@ -19,3 +19,23 @@ function DemocracyUtil.AddDemocracyNegotiationBehaviour(id, additional_data)
         end
     end
 end
+
+local NEW_BEHAVIOURS = {
+    VIXMALLI =
+    {
+        -- Use standard priest negotiation
+        OnInitDemocracy = function(self, ...)
+            local res = Content.GetCharacterDef( "PRIEST" ).negotiation_data.behaviour.OnInit(self, ...)
+            self:SetPattern( self.DemocracyDefaultCycle )
+            return res
+        end,
+
+        DemocracyDefaultCycle = function(self, ...)
+            return Content.GetCharacterDef( "PRIEST" ).negotiation_data.behaviour.Cycle(self, ...)
+        end,
+    },
+}
+
+for id, data in pairs(NEW_BEHAVIOURS) do
+    DemocracyUtil.AddDemocracyNegotiationBehaviour(id, data)
+end
