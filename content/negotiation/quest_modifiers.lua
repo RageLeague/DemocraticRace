@@ -688,7 +688,6 @@ local MODIFIERS =
         end,
 
         max_resolve = 5,
-        max_stacks = 1,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
         OnInit = function(self)
@@ -717,7 +716,7 @@ local MODIFIERS =
     {
         name = "Cautious Spender",
         icon = "negotiation/modifiers/obscurity.tex",
-        desc = "At the begging of each turn, add {1} resolve to all {{2}} bounty.",
+        desc = "At the begging of each turn, add {1} resolve to a random {{2}} bounty.",
 
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.delta_resolve, self.apply_target)
@@ -733,18 +732,22 @@ local MODIFIERS =
 
         OnInit = function(self)
             self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
+            self.delta_resolve = self.engine:GetDifficulty() + 1 + (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ARGUMENT_PLUS ) and 1 or 0)
         end,
 
         event_handlers =
         {
             [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
                 if negotiator == self.negotiator then
+                    local candidates = {}
                     for i, modifier in self.negotiator:ModifierSlots() do
                         if modifier.id == self.apply_target then
-                            modifier:ModifyResolve( self.delta_resolve, self )
-                            self:NotifyTriggered()
+                            table.insert(candidates, modifier)
                         end
                     end
+                    local modifier = table.arraypick(candidates)
+                    modifier:ModifyResolve( self.delta_resolve, self )
+                    self:NotifyTriggered()
                 end
             end
         }
