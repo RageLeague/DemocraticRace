@@ -47,12 +47,6 @@ local MODIFIERS = {
                     math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
                     #self.multiplier_scale) ]
             end
-
-            local stacks = 3
-            if CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
-                stacks = math.min(5 - (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1))
-            end
-            self:SetStacks(stacks)
         end,
 
         OnBeginTurn = function( self, minigame )
@@ -108,12 +102,6 @@ local MODIFIERS = {
 
         OnInit = function(self)
             self:SetResolve( 5, MODIFIER_SCALING.MED )
-
-            local stacks = 3
-            if CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
-                stacks = math.min(5 - (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1))
-            end
-            self:SetStacks(stacks)
         end,
 
         OnBeginTurn = function( self, minigame )
@@ -152,12 +140,6 @@ local MODIFIERS = {
                     math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
                     #self.resolve_scale) ]
             end
-
-            local stacks = 3
-            if CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
-                stacks = math.min(5 - (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1))
-            end
-            self:SetStacks(stacks)
         end,
 
         OnBeginTurn = function( self, minigame )
@@ -193,12 +175,6 @@ local MODIFIERS = {
         end,
         OnInit = function( self )
             self:SetResolve( 6 + 2 * (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1), MODIFIER_SCALING.MED )
-
-            local stacks = 3
-            if CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
-                stacks = math.min(5 - (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1))
-            end
-            self:SetStacks(stacks)
         end,
         random_damage = 8,
 

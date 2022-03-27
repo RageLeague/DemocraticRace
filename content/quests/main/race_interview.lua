@@ -1,3 +1,4 @@
+local QUESTION_STACKS = {4, 3, 2, 1}
 local INTERVIEWER_BEHAVIOR = {
     OnInit = function( self, difficulty )
         -- self.bog_boil = self:AddCard("bog_boil")
@@ -7,10 +8,25 @@ local INTERVIEWER_BEHAVIOR = {
         -- modifier.agents = shallowcopy(self.agents)
         -- modifier:InitModifiers()
         self.cont_question_card = self:AddCard("contemporary_question_card")
+        self.cont_question_card.stacks = QUESTION_STACKS[
+            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
+            #QUESTION_STACKS) ]
+
         self.modifier_picker = self:MakePicker()
-            :AddArgument("LOADED_QUESTION", 2 + math.max(0, -relationship_delta))
-            :AddArgument("PLEASANT_QUESTION", 2 + math.max(0, relationship_delta))
-            :AddArgument("GENERIC_QUESTION", 4)
+
+        local _, card = self.modifier_picker:AddArgument("LOADED_QUESTION", 2 + math.max(0, -relationship_delta))
+        card.stacks = QUESTION_STACKS[
+            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
+            #QUESTION_STACKS) ]
+        local _, card = self.modifier_picker:AddArgument("PLEASANT_QUESTION", 2 + math.max(0, relationship_delta))
+        card.stacks = QUESTION_STACKS[
+            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
+            #QUESTION_STACKS) ]
+        local _, card = self.modifier_picker:AddArgument("GENERIC_QUESTION", 4)
+        card.stacks = QUESTION_STACKS[
+            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
+            #QUESTION_STACKS) ]
+
             -- :AddCard(self.cont_question_card, 1)
         if not self.params then self.params = {} end
         self.params.questions_answered = 0
