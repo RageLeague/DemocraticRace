@@ -1,3 +1,5 @@
+local QUESTION_COUNT = 3
+
 local HOST_BEHAVIOUR =
 {
     OnInit = function( self, difficulty )
@@ -32,7 +34,7 @@ local QDEF = QuestDef.Define
         for id, data in pairs(DemocracyConstants.issue_data) do
             weightings[id] = data.importance
         end
-        for i = 1, 5 do
+        for i = 1, QUESTION_COUNT do
             local chosen = weightedpick(weightings)
             table.insert(questions, chosen)
             weightings[chosen] = nil
@@ -395,7 +397,7 @@ QDEF:AddConvo("do_debate")
             if not cxt.quest.param.candidate_opinion then
                 cxt.quest.param.candidate_opinion = {}
             end
-            if #cxt.quest.param.questions < 5 then
+            if #cxt.quest.param.questions < QUESTION_COUNT then
                 cxt:GoTo("STATE_QUESTION")
                 return
             end
