@@ -1,5 +1,5 @@
-local QUESTION_STACKS = {4, 3, 2, 1}
 local INTERVIEWER_BEHAVIOR = {
+    QUESTION_STACKS = {4, 3, 2, 1},
     OnInit = function( self, difficulty )
         -- self.bog_boil = self:AddCard("bog_boil")
         local relationship_delta = self.agent and (self.agent:GetRelationship() - RELATIONSHIP.NEUTRAL) or 0
@@ -8,31 +8,29 @@ local INTERVIEWER_BEHAVIOR = {
         -- modifier.agents = shallowcopy(self.agents)
         -- modifier:InitModifiers()
         self.cont_question_card = self:AddCard("contemporary_question_card")
-        self.cont_question_card.stacks = QUESTION_STACKS[
+        self.cont_question_card.stacks = self.QUESTION_STACKS[
             math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-            #QUESTION_STACKS) ]
+            #self.QUESTION_STACKS) ]
 
         self.modifier_picker = self:MakePicker()
 
         local _, card = self.modifier_picker:AddArgument("LOADED_QUESTION", 2 + math.max(0, -relationship_delta))
-        card.stacks = QUESTION_STACKS[
+        card.stacks = self.QUESTION_STACKS[
             math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-            #QUESTION_STACKS) ]
+            #self.QUESTION_STACKS) ]
         local _, card = self.modifier_picker:AddArgument("PLEASANT_QUESTION", 2 + math.max(0, relationship_delta))
-        card.stacks = QUESTION_STACKS[
+        card.stacks = self.QUESTION_STACKS[
             math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-            #QUESTION_STACKS) ]
+            #self.QUESTION_STACKS) ]
         local _, card = self.modifier_picker:AddArgument("GENERIC_QUESTION", 4)
-        card.stacks = QUESTION_STACKS[
+        card.stacks = self.QUESTION_STACKS[
             math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-            #QUESTION_STACKS) ]
+            #self.QUESTION_STACKS) ]
 
-            -- :AddCard(self.cont_question_card, 1)
         if not self.params then self.params = {} end
         self.params.questions_answered = 0
+        self.available_issues = copyvalues(DemocracyConstants.issue_data)
     end,
-    available_issues = copyvalues(DemocracyConstants.issue_data),
-    params = {},
     BasicCycle = function( self, turns )
         -- Double attack every 2 rounds; Single attack otherwise.
         if self.difficulty >= 4 and turns % 2 == 0 then

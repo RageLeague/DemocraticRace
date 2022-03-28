@@ -38,7 +38,7 @@ local MODIFIERS = {
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
         OnInit = function( self )
-            self:SetResolve( 5, MODIFIER_SCALING.MED )
+            self:SetResolve( 4, MODIFIER_SCALING.HIGH )
             if CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
                 self.address_cost = self.address_cost_scale[
                     math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
@@ -50,7 +50,7 @@ local MODIFIERS = {
         end,
 
         OnBeginTurn = function( self, minigame )
-            self.negotiator:DeltaModifier( self, -1, self )
+            self.negotiator:RemoveModifier( self, 1 )
             if self.stacks == 0 then
                 minigame:ApplyPersuasion( self, nil, self.random_damage, self.random_damage )
             end
@@ -101,11 +101,11 @@ local MODIFIERS = {
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
         OnInit = function(self)
-            self:SetResolve( 5, MODIFIER_SCALING.MED )
+            self:SetResolve( 4, MODIFIER_SCALING.HIGH )
         end,
 
         OnBeginTurn = function( self, minigame )
-            self.negotiator:DeltaModifier( self, -1, self )
+            self.negotiator:RemoveModifier( self, 1 )
             if self.stacks == 0 then
                 minigame:ApplyPersuasion( self, nil, self.random_damage, self.random_damage )
             end
@@ -134,7 +134,7 @@ local MODIFIERS = {
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
         OnInit = function( self )
-            self:SetResolve( 5, MODIFIER_SCALING.MED )
+            self:SetResolve( 4, MODIFIER_SCALING.HIGH )
             if CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
                 self.resolve_gain = self.resolve_scale[
                     math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
@@ -143,7 +143,7 @@ local MODIFIERS = {
         end,
 
         OnBeginTurn = function( self, minigame )
-            self.negotiator:DeltaModifier( self, -1, self )
+            self.negotiator:RemoveModifier( self, 1 )
             if self.stacks == 0 then
                 minigame:ApplyPersuasion( self, nil, self.random_damage, self.random_damage )
             end
@@ -174,7 +174,11 @@ local MODIFIERS = {
             return loc.format( fmt_str, self.issue_data and self.issue_data:GetLocalizedName() or self.def:GetLocalizedString("ISSUE_DEFAULT"), self.stacks, self.random_damage)
         end,
         OnInit = function( self )
-            self:SetResolve( 6 + 2 * (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1), MODIFIER_SCALING.MED )
+            if CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                self:SetResolve( 4 + 2 * (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1), MODIFIER_SCALING.HIGH )
+            else
+                self:SetResolve( 6, MODIFIER_SCALING.HIGH )
+            end
         end,
         random_damage = 8,
 
@@ -219,7 +223,7 @@ local MODIFIERS = {
         end,
 
         OnBeginTurn = function( self, minigame )
-            self.negotiator:DeltaModifier( self, -1, self )
+            self.negotiator:RemoveModifier( self, 1 )
             if self.stacks == 0 then
                 minigame:ApplyPersuasion( self, nil, self.random_damage, self.random_damage )
             end
