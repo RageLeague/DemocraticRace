@@ -50,7 +50,7 @@ local MODIFIERS = {
         end,
 
         OnBeginTurn = function( self, minigame )
-            self.negotiator:DeltaModifier( self, -1, self )
+            self.negotiator:RemoveModifier( self, 1 )
             if self.stacks == 0 then
                 minigame:ApplyPersuasion( self, nil, self.random_damage, self.random_damage )
             end
@@ -105,7 +105,7 @@ local MODIFIERS = {
         end,
 
         OnBeginTurn = function( self, minigame )
-            self.negotiator:DeltaModifier( self, -1, self )
+            self.negotiator:RemoveModifier( self, 1 )
             if self.stacks == 0 then
                 minigame:ApplyPersuasion( self, nil, self.random_damage, self.random_damage )
             end
@@ -143,7 +143,7 @@ local MODIFIERS = {
         end,
 
         OnBeginTurn = function( self, minigame )
-            self.negotiator:DeltaModifier( self, -1, self )
+            self.negotiator:RemoveModifier( self, 1 )
             if self.stacks == 0 then
                 minigame:ApplyPersuasion( self, nil, self.random_damage, self.random_damage )
             end
@@ -219,7 +219,7 @@ local MODIFIERS = {
         end,
 
         OnBeginTurn = function( self, minigame )
-            self.negotiator:DeltaModifier( self, -1, self )
+            self.negotiator:RemoveModifier( self, 1 )
             if self.stacks == 0 then
                 minigame:ApplyPersuasion( self, nil, self.random_damage, self.random_damage )
             end
