@@ -1237,7 +1237,7 @@ FOLLOW_UP = QDEF:AddFollowup({
     },
     fill_out_quip_tags = function(quest, tags, agent)
         if agent == quest:GetCastMember("giver") then
-            table.insert_unique(tags, "dronumph_depressed")
+            table.insert_unique(tags, "depressed")
         end
     end,
 })
