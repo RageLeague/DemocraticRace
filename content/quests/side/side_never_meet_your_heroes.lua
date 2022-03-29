@@ -47,7 +47,13 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
             primary_advisor:
                 !shrug
                 Not really. But you can easily make this up.
-                It doesn't have to be true. It just has to bring down the opponent's popularity.
+            {not can_manipulate_truth?
+                It doesn't have to be true. It just has to be plausible enough to bring down the opponent's popularity.
+            }
+            {can_manipulate_truth?
+                After all, facts are subjective.
+                Tell the world what they want to believe, and it will become the truth.
+            }
                 Which one of your opponents to target is up to you.
         ]],
     }
