@@ -123,7 +123,6 @@ QDEF:AddConvo("meet_opposition", "opposition")
             },
             {
                 tags = "oppo_greeting, met",
-                score = 5,
                 [[
                     * You walk up to {agent}.
                     * {agent} looks around the office, observing.

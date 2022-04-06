@@ -55,6 +55,7 @@ local QDEF = QuestDef.Define
     desc = "Use this time to spread your rumor.",
     action_multiplier = 1.5,
     on_complete = function(quest)
+        quest:Complete("spread_rumor")
     end,
 }
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
@@ -215,3 +216,117 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
         end)
+QDEF:AddConvo("spread_rumor")
+    :Quips{
+        {
+            tags = "need_convincing",
+            [[
+                !hips
+                Big if true. That is a BIG if, though.
+            ]],
+            [[
+                !thought
+                I find this hard to believe. Please enlighten me on this topic.
+            ]],
+            [[
+                !dubious
+                Wait, is that supposed to be a bad thing? Can you elaborate on that?
+            ]],
+            [[
+                {is_supporter?
+                    !angry_accuse
+                    You're lying! You can't just say things without proof!
+                }
+                {not is_supporter?
+                    !crossed
+                    I'll admit I don't like {target} that much, but what you are saying sounds way over the top.
+                }
+            ]],
+            [[
+                !crossed
+                And people die when they are killed. What's your point?
+            ]],
+            [[
+                !dubious
+                Is that true? Tell me more about it.
+            ]],
+        },
+    }
+    :Loc{
+        OPT_CONVINCE = "Convince {agent} that your rumor about {target} is true",
+        TT_CONVINCE = "The more people you convince, the bigger the story gets, and the bigger the holes in your story gets.",
+        DIALOG_CONVINCE = [[
+            {is_supporter?
+            player:
+                You support {target}, right?
+            agent:
+                So what? Are you trying to convince me otherwise?
+            player:
+                I wonder if you still hold the same view after I show you what kind of a person {target} truly is.
+            }
+            {not is_supporter?
+            player:
+                You know {target} is running for president, right?
+                !sigh
+                It's a real shame that this terrible person is still allowed to run.
+            agent:
+                What do you mean?
+            }
+            player:
+                {1}
+            agent:
+                %need_convincing
+        ]],
+        DIALOG_CONVINCE = [[
+            player:
+                Yep. This is true enough.
+            agent:
+            {is_supporter?
+                !spit
+                Hesh dammit- To think I ever supported you.
+            }
+            {not is_supporter?
+                !thought
+                This information... The consequences for this would be huge.
+                And certainly bad for {target}.
+            }
+                Thanks for showing me what kind of person {target} truly is.
+            * One more person now believes your little rumor.
+            * And this person can spread this rumor further, to even more people.
+            * This is how your rumor gains traction, to bring down {target}'s reputation.
+        ]],
+        DIALOG_CONVINCE_FAILURE = [[
+            agent:
+                Wait a second!
+                !angry_accuse
+                There is a contradiction in what you just said!
+                Just what are you trying to pull?
+            player:
+                Well, uh...
+            agent:
+            {not is_supporter?
+                And here I though you finally found some dirt on {target}.
+                It turns out just to be more baseless rumor.
+            }
+            {is_supporter?
+                Hearing you out was a mistake. I knew I should trust {target} more than you.
+            }
+            * Oops, the holes in your story gets exposed.
+            {first_fail?
+                * Not to worry. As long as you convince enough people of your story, it will make {agent} look like the fool here.
+                * You have one more chance of making it right. Don't screw this up.
+            }
+            {not first_fail?
+                * People are going to catch on, and your rumor will dissipate.
+                * This does not look good for you.
+            }
+        ]],
+    }
+    :Fn(function(cxt)
+        if cxt:GetAgent() and not cxt:GetAgent():IsCastInQuest(cxt.quest) then
+            cxt:Opt("OPT_CONVINCE")
+                :PostText("TT_CONVINCE")
+                :Dialog("DIALOG_CONVINCE")
+                :Negotiation{}
+        end
+    end)
