@@ -30,6 +30,17 @@ local QDEF = QuestDef.Define
         return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and TheGame:GetGameState():GetMainQuest().param.day >= 2
     end,
 }
+:AddCast{
+    cast_id = "target",
+    when = QWHEN.MANUAL,
+}
+:Loc{
+    RUMOR_1 = "{target} is suspicious.",
+    RUMOR_2 = "{target} hunts baby yotes for fun.",
+    RUMOR_3 = "{target} supports Rentoria's invasion against Havaria.",
+    RUMOR_4 = "{target}'s parents bought {target}'s way into a position of power.",
+    RUMOR_5 = "{target} wants to meddle with the election.",
+}
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :Loc{
@@ -108,16 +119,59 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
                 !sigh
                 I'm sure whatever you wrote is at least a good enough rumor to hopefully sow doubts in the voter base.
             }
+        ]],
+        DIALOG_TARGET_PST_NO_ENTRY = [[
+            * {agent} carefully reads what you've just wrote.
+            agent:
+                !dubious
+                Can't think of anything, huh?
+                Okay, how about this:
+                {1}
+            player:
+                !neutral_burp
+                Ooh, I like this one!
+        ]],
+        DIALOG_TARGET_PST_2 = [[
             agent:
                 !point
                 Now go and tell everyone about it.
                 Make sure to tell people from different backgrounds about it, so this story becomes more believable.
                 And make sure to keep your stories straight.
         ]],
+
+        POPUP_TITLE = "Make a scandal!",
+        POPUP_SUBTITLE = "Write something down that might be condemning to {target}",
     }
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
+
+            for id, data in pairs(DemocracyConstants.opposition_data) do
+                local opponent = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
+                if opponent and not opponent:IsRetired() then
+                    cxt:Opt("OPT_TARGET", opponent)
+                        :Fn(function(cxt)
+                            cxt.quest:AssignCastMember("target", opponent)
+                        end)
+                        :Dialog("DIALOG_TARGET")
+                        :Fn(function(cxt)
+                            UIHelpers.EditString(
+                                cxt:GetLocString( "POPUP_TITLE" ),
+                                loc.format( cxt:GetLocString( "POPUP_SUBTITLE" ) ),
+                                "",
+                                function( val )
+                                    cxt.enc:ResumeEncounter( val )
+                                end )
+
+                            local val = cxt.encounter:YieldEncounter()
+
+                            if val and val ~= "" then
+                            else
+                            end
+                        end)
+                end
+            end
+
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{
