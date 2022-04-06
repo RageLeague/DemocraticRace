@@ -14,7 +14,8 @@ local QDEF = QuestDef.Define
 
     end,
     on_start = function(quest)
-
+        quest:Activate("spread_rumor")
+        quest:Activate("time_countdown")
     end,
 
     on_destroy = function( quest )
@@ -27,7 +28,11 @@ local QDEF = QuestDef.Define
 
     end,
     precondition = function(quest)
-        return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and TheGame:GetGameState():GetMainQuest().param.day >= 2
+        return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") --and TheGame:GetGameState():GetMainQuest().param.day >= 2
+    end,
+    GenerateRumor = function(quest)
+        local chosen = math.random(1,5)
+        return quest:GetLocalizedStr("RUMOR_" .. chosen)
     end,
 }
 :AddCast{
@@ -40,6 +45,17 @@ local QDEF = QuestDef.Define
     RUMOR_3 = "{target} supports Rentoria's invasion against Havaria.",
     RUMOR_4 = "{target}'s parents bought {target}'s way into a position of power.",
     RUMOR_5 = "{target} wants to meddle with the election.",
+}
+:AddObjective{
+    id = "spread_rumor",
+    title = "Spread the rumor",
+    desc = "Spread your rumor about {target} through different factions to increase the credibility of your claim.",
+}
+:AddFreeTimeObjective{
+    desc = "Use this time to spread your rumor.",
+    action_multiplier = 1.5,
+    on_complete = function(quest)
+    end,
 }
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
@@ -140,13 +156,14 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
         ]],
 
         POPUP_TITLE = "Make a scandal!",
-        POPUP_SUBTITLE = "Write something down that might be condemning to {target}",
+        POPUP_SUBTITLE = "Write something down that might be condemning to {target}!",
     }
     :State("START")
         :Fn(function(cxt)
+            cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
             cxt:Dialog("DIALOG_INTRO")
 
-            for id, data in pairs(DemocracyConstants.opposition_data) do
+            for i, id, data in sorted_pairs(DemocracyConstants.opposition_data) do
                 local opponent = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
                 if opponent and not opponent:IsRetired() then
                     cxt:Opt("OPT_TARGET", opponent)
@@ -155,19 +172,26 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
                         end)
                         :Dialog("DIALOG_TARGET")
                         :Fn(function(cxt)
-                            UIHelpers.EditString(
-                                cxt:GetLocString( "POPUP_TITLE" ),
+                            local screen = Screen.EditStringPopup( cxt:GetLocString( "POPUP_TITLE" ),
                                 loc.format( cxt:GetLocString( "POPUP_SUBTITLE" ) ),
                                 "",
                                 function( val )
                                     cxt.enc:ResumeEncounter( val )
                                 end )
+                            screen.inputbox.lines = 3
+                            screen.inputbox:SetSize(720)
+                            TheGame:FE():PushScreen(screen)
 
                             local val = cxt.encounter:YieldEncounter()
 
                             if val and val ~= "" then
+                                cxt.quest.param.rumor = val
+                                cxt:Dialog("DIALOG_TARGET_PST")
                             else
+                                cxt.quest.param.rumor = cxt.quest:DefFn("GenerateRumor")
+                                cxt:Dialog("DIALOG_TARGET_PST_NO_ENTRY", cxt.quest.param.rumor)
                             end
+                            cxt:Dialog("DIALOG_TARGET_PST_2")
                         end)
                 end
             end
