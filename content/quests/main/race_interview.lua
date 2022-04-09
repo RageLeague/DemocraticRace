@@ -430,7 +430,10 @@ QDEF:AddConvo("do_interview")
             cxt:Dialog("DIALOG_UNRECOGNIZE_PEOPLE", unrecognized_descs)
 
             cxt:Dialog("DIALOG_INTERVIEW")
-            cxt:GetAgent():SetTempNegotiationBehaviour(INTERVIEWER_BEHAVIOR)
+
+            local BEHAVIOUR_INSTANCE = shallowcopy(INTERVIEWER_BEHAVIOR)
+            BEHAVIOUR_INSTANCE.params = {}
+            cxt:GetAgent():SetTempNegotiationBehaviour(BEHAVIOUR_INSTANCE)
 
             local function ResolvePostInterview()
                 local agent_response = {}
@@ -484,13 +487,13 @@ QDEF:AddConvo("do_interview")
                         { value = 20, text = cxt:GetLocString("SIT_MOD") }
                     },
                     reason_fn = function(minigame)
-
-                        return loc.format(cxt:GetLocString("NEGOTIATION_REASON"), INTERVIEWER_BEHAVIOR.params.questions_answered or 0 )
+                        return loc.format(cxt:GetLocString("NEGOTIATION_REASON"), BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0 )
                     end,
                     on_success = function(cxt, minigame)
+                        local questions_answered = (BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0)
                         cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
                         -- TheGame:GetDebug():CreatePanel(DebugTable(INTERVIEWER_BEHAVIOR))
-                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", (INTERVIEWER_BEHAVIOR.params.questions_answered or 0), "COMPLETED_QUEST")
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", questions_answered, "COMPLETED_QUEST")
                         -- Big calculations that happens.
                         ResolvePostInterview()
                         cxt.quest:Complete()
@@ -499,7 +502,7 @@ QDEF:AddConvo("do_interview")
                         local METRIC_DATA =
                         {
                             player_data = TheGame:GetGameState():GetPlayerState(),
-                            questions_answered = INTERVIEWER_BEHAVIOR.params.questions_answered,
+                            questions_answered = questions_answered,
                             num_likes = cxt.quest.param.num_likes,
                             num_dislikes = cxt.quest.param.num_dislikes,
                             result = "WIN",
@@ -509,13 +512,14 @@ QDEF:AddConvo("do_interview")
                         StateGraphUtil.AddEndOption(cxt)
                     end,
                     on_fail = function(cxt)
+                        local questions_answered = (BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0)
                         cxt:Dialog("DIALOG_INTERVIEW_FAIL")
                         DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -20)
                         ResolvePostInterview()
                         local METRIC_DATA =
                         {
                             player_data = TheGame:GetGameState():GetPlayerState(),
-                            questions_answered = INTERVIEWER_BEHAVIOR.params.questions_answered,
+                            questions_answered = questions_answered,
                             num_likes = cxt.quest.param.num_likes,
                             num_dislikes = cxt.quest.param.num_dislikes,
                             result = "LOSE",
