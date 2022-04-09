@@ -10,29 +10,29 @@ local QDEF = QuestDef.Define
     reward_mod = 0,
     extra_reward = false,
 
-    on_init = function(quest)
-
-    end,
     on_start = function(quest)
         quest:Activate("spread_rumor")
         quest:Activate("time_countdown")
     end,
 
-    on_destroy = function( quest )
-
-    end,
     on_complete = function( quest )
         if quest:GetCastMember("target") then
             quest:GetCastMember("target"):OpinionEvent(quest:GetQuestDef():GetOpinionEvent("spread_rumors"))
+        end
+        if quest.param.convinced_factions then
+            local score = quest.param.poor_performance and 3 or 4
+            score = score * #quest.param.convinced_factions
+            DemocracyUtil.DeltaGeneralSupport(score, "COMPLETED_QUEST")
         end
     end,
     on_fail = function(quest)
         if quest:GetCastMember("target") then
             quest:GetCastMember("target"):OpinionEvent(quest:GetQuestDef():GetOpinionEvent("spread_rumors"))
         end
+        DemocracyUtil.DeltaGeneralSupport(-5, "FAILED_QUEST")
     end,
     precondition = function(quest)
-        return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") --and TheGame:GetGameState():GetMainQuest().param.day >= 2
+        return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and TheGame:GetGameState():GetMainQuest().param.day >= 2
     end,
     GenerateRumor = function(quest)
         local chosen = math.random(1,5)
