@@ -640,17 +640,19 @@ QDEF:AddConvo("bad_event")
     :TravelConfront("INTERRUPT", function(cxt) return TheGame:GetGameState():CanSpawnTravelEvent() end)
         :Loc{
             DIALOG_INTRO = [[
-                * [p] You are interrupted by {agent}.
+                * Your regular tromp through the hesh-blessed land is interrupted by someone with a hesh-fueled ire in {agent.hisher} eyes.
                 player:
                     !left
                 agent:
                     !right
                 {liked?
-                    I can't believe it.
-                    You out of all people are having heretic thoughts.
+                    {player}...heresy. Really?
+                    I never thought you'd be capable of offending the cult like this.
                 }
                 {not liked?
-                    I heard someone is asking questions that they shouldn't ask.
+                    !cruel
+                    So let's talk about the identity of Hesh.
+                    Those are the heretical questions you've been asking around, right?
                 }
                 player:
                     What do you mean?
@@ -667,29 +669,80 @@ QDEF:AddConvo("bad_event")
             DIALOG_GASLIGHT = [[
                 player:
                 {not leader_absent?
-                    [p] Pretty sure that wasn't me.
-                agent:
-                    Oh yeah? Then who did I saw, then?
+                    Oh, that wasn't what we were talking about.
+                    !hips
+                    Let me clear that up for you.
                 }
                 {leader_absent?
-                    [p] Pretty sure {leader} was mistaken.
-                agent:
-                    Are you seriously doubting {leader}'s cognitive abilities?
+                    !question
+                    Strange. I don't remember talking to {cultist} at all.
+                    I think you're mistaken. Let me clear this up.
                 }
             ]],
             DIALOG_GASLIGHT_SUCCESS = [[
-                agent:
-                    [p] Well, if you insist that is wasn't you, then it probably wasn't.
-                    Sorry for the trouble.
-                * I can't believe that worked.
+                {not_leader_absent?
+                    player:
+                        Y'see, {cultist} and I were actually talking about Hesh as an <i>entity</>, not Its identity.
+                    agent:
+                        !question
+                        But Hesh is an entity. Of the abyss.
+                    player:
+                        !point
+                        Exactly! That was the point I was trying to explain to {cultist}.
+                        !chuckle
+                        Glad to see I wasn't the heretic in that conversation.
+                    agent:
+                        Well, if that's true, then there's nothing I need to do here.
+                        !hesh_greeting
+                        Sorry to bother, {player}.
+                }
+                {leader_absent?
+                    player:
+                        !point
+                        You know how some fans are. They like to dress up.
+                    agent:
+                        !angry
+                        Do you honestly believe people are dressing up as a politician and grifter?
+                    player:
+                        !shrug
+                        Hey, remember the run on jellyfish costumes?
+                        I'm just saying, crazier things have happened.
+                    agent:
+                        !neutral
+                        ...y'know what? That's true.
+                        !hesh_greeting
+                        Sorry to bother. I'll report back to {leader} that someone just dressed up as you.
+                }
             ]],
             DIALOG_GASLIGHT_FAILURE = [[
-                agent:
-                    [p] Yeah right, who else wears the distinct outfit that you are currently wearing?
-                player:
-                    Good point.
-                    Crap.
-                * Uh oh.
+                {not leader_absent?
+                    player:
+                        {cultist.HeShe} and I were just talking about Hesh's density, that's all.
+                    agent:
+                        !question
+                        Density? 
+                    player:
+                        !flinch
+                        Er, I meant we talked about Its Enmity.
+                    agent:
+                        !angry
+                        ...
+                    player:
+                        !bashful
+                        Immensity?
+                        !point
+                        Parliamentary! Yes, of course.
+                    agent:
+                        Next time you try to lie to a cult member, be a little more convincing.
+                }
+                {leader_absent?
+                    agent:
+                        [p] Yeah right, who else wears the distinct outfit that you are currently wearing?
+                    player:
+                        Good point.
+                        Crap.
+                    * Uh oh.
+                }
             ]],
 
             OPT_LET_GO = "Convince {agent} to let you go",
@@ -710,30 +763,47 @@ QDEF:AddConvo("bad_event")
                     That's the spirit.
                 * {agent} let you go, but you are sure that this is not over.
             ]],
-
+            
             OPT_BRIBE = "Bribe {agent}",
             DIALOG_BRIBE = [[
-                player:
-                    !happy
-                    Look, I'm just asking some questions.
-                    It's not hurting anyone for being curious, right?
-                    !give
-                    And it's certainly not hurting you.
-                agent:
-                    !take
-                    Ah, yes, of course.
-                    Considering you don't know any better, this transgression can be overlooked.
-                    Just... Make sure you don't ask questions that you shouldn't ask again.
-                player:
-                    Yes, of course.
-                * It's probably a lie, but {agent} is not going to question it.
+                {not leader_absent?
+                    player:
+                        Hey, no need to lie about me if you just wanted tithes.
+                        !give
+                        How's this? That oughta be enough for your quotas and such.
+                    agent:
+                        !taken_aback
+                        I-
+                        !take
+                        First of all, that word is for the bearers of spark and derrick workers.
+                        !handwring
+                        Secondly, thank you, {player}. May you walk in the shallows.
+                }
+                {leader_absent?
+                    player:
+                        !give
+                        What I'm have to say is "big bag of money".
+                        And what you're going to say is "Nothing to report".
+                    agent:
+                        !take
+                        Of course, loyal Heshian. You were simply-
+                    player:
+                        !point
+                        No no no. "Nothing to report.". Got it?
+                    agent:
+                        !hesh_greeting
+                        Right, right. May you walk in the shallows.
+                }
             ]],
 
             OPT_USE_BODYGUARD = "Send your guard to distract",
             DIALOG_USE_BODYGUARD = [[
                 player:
-                    [p] Go, {guard}!
-                * {guard} deals with the Heshians while you "tactically retreat".
+                    !bashful
+                    Well, y'see. The thing about heresy is uhm...
+                    !point
+                    {guard} go distract them.
+                * You book it in the opposite direction, your guard keeping the group distracted long enough for you to duck out of sight.
             ]],
 
             DIALOG_DEFEND = [[
@@ -747,33 +817,29 @@ QDEF:AddConvo("bad_event")
             OPT_RAT_OUT = "Tell {agent} about {giver}'s involvement",
             DIALOG_RAT_OUT = [[
                 player:
-                    !bashful
-                    Oh, I wasn't aware that there is a problem.
-                    {giver} told me to find out about what type of jellyfish Hesh is, and so I just ask around.
-                    Didn't realize that it was heretical.
+                    !handwave
+                    Well, if I could be frank, I never had any interest what kind of stingers the big jellyfish has.
+                    {giver} just asked me for an errand to ask around.
                 agent:
                 {disliked?
-                    !crossed
-                    Hmm. A likely excuse.
-                    We will look into {giver} later, but as far as I'm concerned, you are the one asking the questions.
-                player:
-                    !angry_shrug
-                    Oh come on! I give you the real reason. You should just let me go.
+                    !angry
+                    Calling a cult member's credibility into question? A dangerous move, you know.
+                    We'll look into {giver}'s motives soon, but you're still the heretic here.
                 }
                 {not disliked?
                     !dubious
-                    {giver}, are you sure?
-                player:
-                    Yeah, why else would I say {giver.hisher} name?
-                agent:
-                    !shrug
-                    Fair enough.
-                    Well, since you didn't know that it is problematic, and you are very cooperative, I'm going to let you go this time.
-                    There will be questionings for {giver} of course, but it's not your problem.
-                player:
-                    !scared_shrug
-                    Sure, I guess...?
-                * {agent} let you go, but you are sure that this is not over.
+                        {giver}, are you sure?
+                    player:
+                        Yeah, why else would I say {giver.hisher} name?
+                    agent:
+                        !shrug
+                        Fair enough.
+                        Well, since you didn't know that it is problematic, and you are very cooperative, I'm going to let you go this time.
+                        There will be questionings for {giver} of course, but it's not your problem.
+                    player:
+                        !scared_shrug
+                        Sure, I guess...?
+                    * {agent} let you go, but you are sure that this is not over.
                 }
             ]],
 
