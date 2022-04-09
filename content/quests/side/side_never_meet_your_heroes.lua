@@ -60,6 +60,7 @@ local QDEF = QuestDef.Define
     action_multiplier = 1.5,
     on_complete = function(quest)
         quest:Complete("spread_rumor")
+        quest:Activate("out_of_time")
     end,
 }
 :AddObjective{
