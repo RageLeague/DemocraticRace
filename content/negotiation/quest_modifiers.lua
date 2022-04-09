@@ -2150,6 +2150,8 @@ local MODIFIERS =
 
         modifier_type = MODIFIER_TYPE.BOUNTY,
 
+        max_resolve = 1,
+
         OnBounty = function(self, source)
             self.engine:Lose()
         end,

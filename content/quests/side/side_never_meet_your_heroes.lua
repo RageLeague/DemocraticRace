@@ -22,10 +22,14 @@ local QDEF = QuestDef.Define
 
     end,
     on_complete = function( quest )
-
+        if quest:GetCastMember("target") then
+            quest:GetCastMember("target"):OpinionEvent(quest:GetQuestDef():GetOpinionEvent("spread_rumors"))
+        end
     end,
     on_fail = function(quest)
-
+        if quest:GetCastMember("target") then
+            quest:GetCastMember("target"):OpinionEvent(quest:GetQuestDef():GetOpinionEvent("spread_rumors"))
+        end
     end,
     precondition = function(quest)
         return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") --and TheGame:GetGameState():GetMainQuest().param.day >= 2
@@ -57,6 +61,27 @@ local QDEF = QuestDef.Define
     on_complete = function(quest)
         quest:Complete("spread_rumor")
     end,
+}
+:AddObjective{
+    id = "out_of_time",
+    mark = {"primary_advisor"},
+    title = "Report to {primary_advisor}",
+    desc = "You ran out of time. Return to {primary_advisor} on your progress.",
+    on_activate = function(quest)
+        if quest:IsActive("spread_rumor") then
+            quest:Cancel("spread_rumor")
+        end
+        if quest:IsActive("time_countdown") then
+            quest:Cancel("time_countdown")
+        end
+    end,
+}
+:AddOpinionEvents{
+    spread_rumors =
+    {
+        delta = OPINION_DELTAS.DIMINISH,
+        txt = "Spread rumors about them",
+    },
 }
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
@@ -277,7 +302,7 @@ QDEF:AddConvo("spread_rumor")
             agent:
                 %need_convincing
         ]],
-        DIALOG_CONVINCE = [[
+        DIALOG_CONVINCE_SUCCESS = [[
             player:
                 Yep. This is true enough.
             agent:
@@ -312,21 +337,150 @@ QDEF:AddConvo("spread_rumor")
                 Hearing you out was a mistake. I knew I should trust {target} more than you.
             }
             * Oops, the holes in your story gets exposed.
-            {first_fail?
+            {not failed_once?
                 * Not to worry. As long as you convince enough people of your story, it will make {agent} look like the fool here.
                 * You have one more chance of making it right. Don't screw this up.
             }
-            {not first_fail?
+            {failed_once?
                 * People are going to catch on, and your rumor will dissipate.
                 * This does not look good for you.
             }
         ]],
     }
-    :Fn(function(cxt)
-        if cxt:GetAgent() and not cxt:GetAgent():IsCastInQuest(cxt.quest) then
+    :Hub(function(cxt)
+        cxt.quest.param.convinced_factions = cxt.quest.param.convinced_factions or {}
+        if cxt:GetAgent() and not cxt:GetAgent():IsCastInQuest(cxt.quest) and not table.arraycontains(cxt.quest.param.convinced_factions, cxt:GetAgent():GetFactionID()) then
             cxt:Opt("OPT_CONVINCE")
                 :PostText("TT_CONVINCE")
-                :Dialog("DIALOG_CONVINCE")
-                :Negotiation{}
+                :Dialog("DIALOG_CONVINCE", cxt.quest.param.rumor)
+                :Negotiation{
+                    on_start_negotiation = function(minigame)
+                        local count = 1 + #cxt.quest.param.convinced_factions
+                        local total_resolve = 6 + 3 * cxt.quest:GetDifficulty()
+                        while count >= 1 do
+                            local arg_resolve = math.ceil(total_resolve / count)
+                            local mod = minigame.player_negotiator:CreateModifier("DR_CONTRADICTION_IN_RUMOR")
+                            mod:SetResolve(arg_resolve)
+                            total_resolve = total_resolve - arg_resolve
+                            count = count - 1
+                        end
+                    end,
+                }
+                    :OnSuccess()
+                        :Dialog("DIALOG_CONVINCE_SUCCESS")
+                        :Fn(function(cxt)
+                            table.insert(cxt.quest.param.convinced_factions, cxt:GetAgent():GetFactionID())
+                        end)
+                    :OnFailure()
+                        :Dialog("DIALOG_CONVINCE_FAILURE")
+                        :Fn(function(cxt)
+                            if cxt.quest.param.failed_once then
+                                cxt.quest:Fail()
+                            else
+                                cxt.quest.param.failed_once = true
+                            end
+                        end)
         end
+    end)
+
+QDEF:AddConvo("spread_rumor", "primary_advisor")
+    :Loc{
+        OPT_END_EARLY = "Finish quest early",
+        DIALOG_END_EARLY = [[
+            player:
+                I'm done.
+            agent:
+                Wait, really?
+                But there's still plenty of time!
+            player:
+                Nothing else I can do.
+            agent:
+                Suit yourself, I guess.
+        ]],
+    }
+    :Hub(function(cxt, who)
+        cxt:Opt("OPT_END_EARLY")
+            :SetQuestMark(cxt.quest)
+            :Dialog("DIALOG_END_EARLY")
+            :Fn(function(cxt)
+                cxt.quest:Complete("time_countdown")
+            end)
+    end)
+
+QDEF:AddConvo("out_of_time", "primary_advisor")
+    :Loc{
+        OPT_TALK_PROGRESS = "Talk about your progress",
+        DIALOG_TALK_PROGRESS = [[
+            agent:
+                So? How did you do?
+        ]],
+        DIALOG_NO_CONVINCE = [[
+            player:
+                [p] I convinced no one.
+            {failed_once?
+                In fact, the only person I talked to didn't even believe my story.
+            agent:
+                Okay, that was really bad.
+            }
+            {not failed_once?
+            agent:
+                Are you even trying?
+            }
+        ]],
+        DIALOG_ONE_CONVINCE = [[
+            player:
+                [p] I convinced only one person.
+            {not failed_once?
+            agent:
+                This is not going to be enough.
+                It's not going to be a rumor if only one person believes it.
+            }
+            {failed_once?
+                But another person didn't even believe my story.
+            agent:
+                This is really bad for us.
+            }
+        ]],
+        DIALOG_MORE_CONVINCE = [[
+            player:
+                [p] I convinced {1} people.
+            {not failed_once?
+            agent:
+                Nice. The more people from different factions are convinced, the more this will gain traction.
+                This will surely hurt {target}'s reputation and boost your own.
+            }
+            {failed_once?
+                Although a person doesn't seem to believe my story.
+            agent:
+                This is not ideal, but as long as that person's voice is drowned out by the sea of rumors that we are spreading, we should be fine.
+                This will surely hurt {target}'s reputation and boost your own.
+            }
+        ]],
+    }
+    --This final part is where the issue lies.
+    :Hub(function(cxt)
+        cxt:Opt("OPT_TALK_PROGRESS")
+            :SetQuestMark()
+            :Dialog("DIALOG_TALK_PROGRESS")
+            :Fn(function(cxt)
+                cxt.quest.param.convinced_factions = cxt.quest.param.convinced_factions or {}
+                local count = #cxt.quest.param.convinced_factions
+                if count == 0 then
+                    cxt:Dialog("DIALOG_NO_CONVINCE")
+                    cxt.quest:Fail()
+                elseif count == 1 then
+                    cxt:Dialog("DIALOG_ONE_CONVINCE")
+                    if cxt.quest.param.failed_once then
+                        cxt.quest:Fail()
+                    else
+                        cxt.quest.param.poor_performance = true
+                        cxt.quest:Complete()
+                    end
+                else
+                    cxt:Dialog("DIALOG_MORE_CONVINCE", count)
+                    cxt.quest.param.poor_performance = cxt.quest.param.failed_once
+                    cxt.quest:Complete()
+                end
+            end)
+            :DoneConvo()
     end)
