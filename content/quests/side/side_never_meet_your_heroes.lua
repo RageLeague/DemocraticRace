@@ -308,7 +308,7 @@ QDEF:AddConvo("spread_rumor")
             agent:
             {is_supporter?
                 !spit
-                Hesh dammit- To think I ever supported you.
+                Hesh dammit- To think I ever supported you, {target}.
             }
             {not is_supporter?
                 !thought
@@ -346,17 +346,42 @@ QDEF:AddConvo("spread_rumor")
                 * This does not look good for you.
             }
         ]],
+        SIT_MOD_POS = "{agent} supports {target}.",
+        SIT_MOD_NEG = "{agent} opposes {target}.",
+
+        REQ_DIFFERENT_FACTION = "You already spread this rumor among {agent}'s faction",
     }
     :Hub(function(cxt)
         cxt.quest.param.convinced_factions = cxt.quest.param.convinced_factions or {}
-        if cxt:GetAgent() and not cxt:GetAgent():IsCastInQuest(cxt.quest) and not table.arraycontains(cxt.quest.param.convinced_factions, cxt:GetAgent():GetFactionID()) then
+        if cxt:GetAgent() and not cxt:GetAgent():IsCastInQuest(cxt.quest) then
+
+            local opposition_data = DemocracyUtil.GetOppositionData(cxt:GetCastMember("target"))
+            local support = 0
+            if opposition_data then
+                support = support + (opposition_data.faction_support[cxt:GetAgent():GetFactionID()] or 0)
+                support = support + (opposition_data.wealth_support[DemocracyUtil.GetWealth(cxt:GetAgent())] or 0)
+            end
+            cxt.enc.scratch.target_support = support
+            if cxt.enc.scratch.target_support > 0 then
+                cxt.enc.scratch.is_supporter = true
+            end
+
+            local sit_mod
+            if cxt.enc.scratch.target_support ~= 0 then
+                sit_mod = {{ value = cxt.enc.scratch.target_support, text = cxt:GetLocString(cxt.enc.scratch.target_support > 0 and "SIT_MOD_POS" or "SIT_MOD_NEG") }}
+            end
+
             cxt:Opt("OPT_CONVINCE")
                 :PostText("TT_CONVINCE")
+                :ReqCondition(not table.arraycontains(cxt.quest.param.convinced_factions, cxt:GetAgent():GetFactionID()), "REQ_DIFFERENT_FACTION")
                 :Dialog("DIALOG_CONVINCE", cxt.quest.param.rumor)
                 :Negotiation{
                     on_start_negotiation = function(minigame)
                         local count = 1 + #cxt.quest.param.convinced_factions
                         local total_resolve = 6 + 3 * cxt.quest:GetDifficulty()
+                        if count >= 2 then
+                            minigame.player_negotiator:AddModifier("FATIGUED")
+                        end
                         while count >= 1 do
                             local arg_resolve = math.ceil(total_resolve / count)
                             local mod = minigame.player_negotiator:CreateModifier("DR_CONTRADICTION_IN_RUMOR")
@@ -365,6 +390,7 @@ QDEF:AddConvo("spread_rumor")
                             count = count - 1
                         end
                     end,
+                    situation_modifiers = sit_mod,
                 }
                     :OnSuccess()
                         :Dialog("DIALOG_CONVINCE_SUCCESS")
