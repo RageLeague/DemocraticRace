@@ -280,6 +280,10 @@ local CARDS = {
                 end
             end,
         },
+
+        OnPostResolve = function( self, minigame, targets )
+            self.negotiator:AddModifier("RENOWN", self.userdata.stacks or 1, self)
+        end,
     },
     vroc_whistle_negotiation =
     {
