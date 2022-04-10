@@ -35,7 +35,7 @@ local QDEF = QuestDef.Define
                     -- :ReqCondition( not bribe_params.disable, bribe_params.disable_reason )
                     :Dialog("DIALOG_BRIBE")
                     :DeliverMoney( cost )
-                    :Fn(function() 
+                    :Fn(function()
                         who:AddAspectStacks("bribed", 2)
                     end)
             end
