@@ -355,13 +355,59 @@ QDEF:AddConvo("go_to_debate")
                     Anyway, whether you're ready or not, time to go.
                     Good luck.
             ]],
+            OPT_ASK_FORMAT = "Ask about the debate format",
+            DIALOG_ASK_FORMAT = [[
+                player:
+                    What does the debate format look like?
+                {depressed?
+                agent:
+                    !scared_shrug
+                    How would I know? I'm a loser who doesn't even know anything.
+                player:
+                    !bashful
+                    That's... Not very helpful.
+                agent:
+                    !sigh
+                    As expected. After all, I am completely useless.
+                }
+                {not depressed?
+                    agent:
+                        There will be three rounds of debates.
+                        In each round, the interviewer will ask a political question, and you need to take a side.
+                    {advisor_diplomacy?
+                        Pick a based opinion, and show the opponent how cringe their opinions are!
+                    }
+                    {advisor_manipulate?
+                        !eureka
+                        Use FACTS and LOGIC to win the debate against your opponents!
+                    }
+                    {advisor_hostile?
+                        Show the world that nobody knows debate better than you!
+                        {not accept_limits and not depressed?
+                            Except me, of course. 'Cause nobody knows debate better than me.
+                            !point
+                            Including you.
+                        }
+                    }
+                    player:
+                        What if I don't have enough energy to debate? Or I simply don't have a strong opinion on a topic?
+                    agent:
+                        You can always choose to stay out.
+                        But remember: You are here to stand out to the audience.
+                        If you don't participate in the debate, you will not stand out.
+                }
+            ]],
         }
+        :SetLooping()
         :Fn(function(cxt)
-            cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
-            DemocracyUtil.PopulateTheater(cxt.quest, cxt.quest:GetCastMember("theater"), 8)
-            cxt:Dialog("DIALOG_INTRO")
-            cxt.quest:Complete("go_to_debate")
-            cxt.quest:Activate("do_debate")
+            if cxt:FirstLoop() then
+                cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
+                DemocracyUtil.PopulateTheater(cxt.quest, cxt.quest:GetCastMember("theater"), 8)
+                cxt:Dialog("DIALOG_INTRO")
+                cxt.quest:Complete("go_to_debate")
+                cxt.quest:Activate("do_debate")
+            end
+            cxt:Question("OPT_ASK_FORMAT", "DIALOG_ASK_FORMAT")
             cxt:Opt("OPT_LEAVE_LOCATION")
                 :Fn(function(cxt)
                     cxt.encounter:DoLocationTransition(cxt.quest:GetCastMember("theater"))
