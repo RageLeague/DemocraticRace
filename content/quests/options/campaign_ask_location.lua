@@ -90,7 +90,7 @@ local QDEF = QuestDef.Define
         ]],
     }
     :Hub(function(cxt, who)
-        if DemocracyUtil.IsDemocracyCampaign() and who and who:GetRelationship() > RELATIONSHIP.NEUTRAL then
+        if DemocracyUtil.IsDemocracyCampaign() and who and (who:GetRelationship() > RELATIONSHIP.NEUTRAL or who == TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")) then
             cxt:Opt("OPT_ASK_ABOUT_LOCATION")
                 :ReqCondition(not who:HasMemoryFromToday("OFFERED_BOON"), "REQ_NOT_SOCIALIZED")
                 :RequireFreeTimeAction(2, true)
