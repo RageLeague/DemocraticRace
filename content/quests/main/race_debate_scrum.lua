@@ -590,7 +590,7 @@ QDEF:AddConvo("do_debate")
 
             cxt:TalkTo(cxt:GetCastMember("host"))
             cxt:GetAgent():SetTempNegotiationBehaviour(HOST_BEHAVIOUR)
-            cxt:Quip(cxt:GetAgent(), "debate_question")
+            cxt:Quip(cxt:GetAgent(), "debate_question", string.lower(cxt.quest.param.topic))
             CreateDebateOption(cxt, neg_helper, neg_hinder, cxt.quest.param.topic, -1)
             CreateDebateOption(cxt, pos_helper, pos_hinder, cxt.quest.param.topic, 1)
             cxt:Opt("OPT_SIT_OUT")
