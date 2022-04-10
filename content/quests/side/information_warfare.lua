@@ -834,6 +834,7 @@ QDEF:AddConvo("commission")
                         end
                         minigame:GetOpponentNegotiator():FindCoreArgument().cards_played = recorded_cards
                         minigame:GetPlayerNegotiator():CreateModifier( "TIME_CONSTRAINT", math.max(cxt.quest.param.free_time_actions or 1, 1) )
+                        minigame.player_negotiator:AddModifier("FATIGUED")
                     end,
                     finish_negotiation_anytime = true,
                     on_success = ProcessFn,

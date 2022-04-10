@@ -2143,6 +2143,19 @@ local MODIFIERS =
             end,
         },
     },
+    DR_CONTRADICTION_IN_RUMOR =
+    {
+        name = "Contradiction In Rumor",
+        desc = "When destroyed, you lose the negotiation.",
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+
+        max_resolve = 1,
+
+        OnBounty = function(self, source)
+            self.engine:Lose()
+        end,
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
