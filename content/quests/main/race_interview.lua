@@ -1,4 +1,5 @@
 local INTERVIEWER_BEHAVIOR = {
+    QUESTION_STACKS = {4, 3, 2, 1},
     OnInit = function( self, difficulty )
         -- self.bog_boil = self:AddCard("bog_boil")
         local relationship_delta = self.agent and (self.agent:GetRelationship() - RELATIONSHIP.NEUTRAL) or 0
@@ -7,16 +8,29 @@ local INTERVIEWER_BEHAVIOR = {
         -- modifier.agents = shallowcopy(self.agents)
         -- modifier:InitModifiers()
         self.cont_question_card = self:AddCard("contemporary_question_card")
+        self.cont_question_card.stacks = self.QUESTION_STACKS[
+            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
+            #self.QUESTION_STACKS) ]
+
         self.modifier_picker = self:MakePicker()
-            :AddArgument("LOADED_QUESTION", 2 + math.max(0, -relationship_delta))
-            :AddArgument("PLEASANT_QUESTION", 2 + math.max(0, relationship_delta))
-            :AddArgument("GENERIC_QUESTION", 4)
-            -- :AddCard(self.cont_question_card, 1)
+
+        local _, card = self.modifier_picker:AddArgument("LOADED_QUESTION", 2 + math.max(0, -relationship_delta))
+        card.stacks = self.QUESTION_STACKS[
+            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
+            #self.QUESTION_STACKS) ]
+        local _, card = self.modifier_picker:AddArgument("PLEASANT_QUESTION", 2 + math.max(0, relationship_delta))
+        card.stacks = self.QUESTION_STACKS[
+            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
+            #self.QUESTION_STACKS) ]
+        local _, card = self.modifier_picker:AddArgument("GENERIC_QUESTION", 4)
+        card.stacks = self.QUESTION_STACKS[
+            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
+            #self.QUESTION_STACKS) ]
+
         if not self.params then self.params = {} end
         self.params.questions_answered = 0
+        self.available_issues = copyvalues(DemocracyConstants.issue_data)
     end,
-    available_issues = copyvalues(DemocracyConstants.issue_data),
-    params = {},
     BasicCycle = function( self, turns )
         -- Double attack every 2 rounds; Single attack otherwise.
         if self.difficulty >= 4 and turns % 2 == 0 then
@@ -416,7 +430,10 @@ QDEF:AddConvo("do_interview")
             cxt:Dialog("DIALOG_UNRECOGNIZE_PEOPLE", unrecognized_descs)
 
             cxt:Dialog("DIALOG_INTERVIEW")
-            cxt:GetAgent():SetTempNegotiationBehaviour(INTERVIEWER_BEHAVIOR)
+
+            local BEHAVIOUR_INSTANCE = shallowcopy(INTERVIEWER_BEHAVIOR)
+            BEHAVIOUR_INSTANCE.params = {}
+            cxt:GetAgent():SetTempNegotiationBehaviour(BEHAVIOUR_INSTANCE)
 
             local function ResolvePostInterview()
                 local agent_response = {}
@@ -470,13 +487,13 @@ QDEF:AddConvo("do_interview")
                         { value = 20, text = cxt:GetLocString("SIT_MOD") }
                     },
                     reason_fn = function(minigame)
-
-                        return loc.format(cxt:GetLocString("NEGOTIATION_REASON"), INTERVIEWER_BEHAVIOR.params.questions_answered or 0 )
+                        return loc.format(cxt:GetLocString("NEGOTIATION_REASON"), BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0 )
                     end,
                     on_success = function(cxt, minigame)
+                        local questions_answered = (BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0)
                         cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
                         -- TheGame:GetDebug():CreatePanel(DebugTable(INTERVIEWER_BEHAVIOR))
-                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", (INTERVIEWER_BEHAVIOR.params.questions_answered or 0), "COMPLETED_QUEST")
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", questions_answered, "COMPLETED_QUEST")
                         -- Big calculations that happens.
                         ResolvePostInterview()
                         cxt.quest:Complete()
@@ -485,7 +502,7 @@ QDEF:AddConvo("do_interview")
                         local METRIC_DATA =
                         {
                             player_data = TheGame:GetGameState():GetPlayerState(),
-                            questions_answered = INTERVIEWER_BEHAVIOR.params.questions_answered,
+                            questions_answered = questions_answered,
                             num_likes = cxt.quest.param.num_likes,
                             num_dislikes = cxt.quest.param.num_dislikes,
                             result = "WIN",
@@ -495,13 +512,14 @@ QDEF:AddConvo("do_interview")
                         StateGraphUtil.AddEndOption(cxt)
                     end,
                     on_fail = function(cxt)
+                        local questions_answered = (BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0)
                         cxt:Dialog("DIALOG_INTERVIEW_FAIL")
                         DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -20)
                         ResolvePostInterview()
                         local METRIC_DATA =
                         {
                             player_data = TheGame:GetGameState():GetPlayerState(),
-                            questions_answered = INTERVIEWER_BEHAVIOR.params.questions_answered,
+                            questions_answered = questions_answered,
                             num_likes = cxt.quest.param.num_likes,
                             num_dislikes = cxt.quest.param.num_dislikes,
                             result = "LOSE",

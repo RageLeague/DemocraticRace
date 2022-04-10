@@ -199,7 +199,7 @@ local CARDS = {
         end,
 
         OnPostResolve = function( self, engine, targets )
-            local modifier = self.negotiator:CreateModifier("CONTEMPORARY_QUESTION")
+            local modifier = Negotiation.Modifier("CONTEMPORARY_QUESTION", self.negotiator, self.stacks)
             if modifier then
                 modifier:SetIssue(self.issue_data)
             end
@@ -207,6 +207,8 @@ local CARDS = {
                 table.arrayremove(self.negotiator.behaviour.available_issues, self.issue_data)
                 self.issue_data = nil
             end
+
+            self.negotiator:CreateModifier(modifier, nil, self)
         end,
     },
 

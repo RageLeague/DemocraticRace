@@ -647,6 +647,7 @@ QDEF:AddConvo("tell_result", "giver")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Complete()
+            cxt:GetCastMember("giver"):AddTag("can_manipulate_truth")
         end)
 -- local BAD_EVENT = QuestDef.Define{
 --     id = "REQUEST_CTENOPHORIAN_MYSTERY_EVENT",
