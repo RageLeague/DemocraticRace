@@ -355,6 +355,38 @@ QDEF:AddConvo("go_to_debate")
                     Anyway, whether you're ready or not, time to go.
                     Good luck.
             ]],
+            OPT_ASK_GOAL = "Ask about the goal of the debate",
+            DIALOG_ASK_GOAL = [[
+                player:
+                    What is my goal in this debate?
+                {depressed?
+                agent:
+                    You don't need me to tell you about your goal.
+                    A useless fool like myself wouldn't know the goal of someone like you.
+                player:
+                    !crossed
+                    I am not sure I should feel flattered or concerned.
+                agent:
+                    !placate
+                    Do not concern yourself with a loser like me.
+                }
+                {not depressed?
+                agent:
+                    Your goal, of course, is to win as many debates as possible.
+                    But there is like seven of you up there, and the audience will not remember you all.
+                    So your actual goal is to stand out and impress the audience.
+                player:
+                    !dubious
+                    And how do I do that?
+                agent:
+                    Making crucial arguments, dismantling opponent's arguments, defending your arguments, do whatever you can to make the crowd see that you are the true debate master.
+                {advisor_manipulate?
+                    FACTS and LOGIC are your friends here, {player}. Use them wisely.
+                }
+                    !cruel
+                    You might even want to sabotage your ally's argument to make yours seem more impressive.
+                }
+            ]],
             OPT_ASK_FORMAT = "Ask about the debate format",
             DIALOG_ASK_FORMAT = [[
                 player:
@@ -407,6 +439,7 @@ QDEF:AddConvo("go_to_debate")
                 cxt.quest:Complete("go_to_debate")
                 cxt.quest:Activate("do_debate")
             end
+            cxt:Question("OPT_ASK_GOAL", "DIALOG_ASK_GOAL")
             cxt:Question("OPT_ASK_FORMAT", "DIALOG_ASK_FORMAT")
             cxt:Opt("OPT_LEAVE_LOCATION")
                 :Fn(function(cxt)
