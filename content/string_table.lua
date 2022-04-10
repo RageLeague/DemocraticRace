@@ -40,7 +40,9 @@ Content.AddStringTable("DEMOCRACY", {
             DEFAULT_UP = "Favorable Action",
             DEFAULT_DOWN = "Unfavorable Action",
 
-            COMPLETED_QUEST = "Quest Completed",
+            COMPLETED_QUEST = "Rally Quest Completed",
+            COMPLETED_QUEST_MAIN = "Main Quest Completed",
+            COMPLETED_QUEST_REQUEST = "Request Quest Completed",
             FAILED_QUEST = "Quest Failed",
             POOR_QUEST = "Poor Quest Result",
 
@@ -53,12 +55,14 @@ Content.AddStringTable("DEMOCRACY", {
             ACCOMPLICE = "Accomplice to Murder",
             NEGLIGENCE = "Negligence",
 
+            PAID_SHILLS = "Paid Shills",
+
             STANCE_TAKEN = "Stance Taken",
             ALLIANCE_FORMED = "Alliance Formed",
             ENEMY_MADE = "Enemy Made",
 
             CONSISTENT_STANCE = "Consistent Stance",
-            INCONSISTENT_STANCE = "Hypocrisy",
+            INCONSISTENT_STANCE = "Inconsistent Stance",
         },
         MAIN_OVERLAY = {
             VIEW_SUPPORT = "<#TITLE>View Support</>\nGeneral support: {1}",

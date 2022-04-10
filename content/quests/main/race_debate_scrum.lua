@@ -878,11 +878,11 @@ QDEF:AddConvo("do_debate")
 
             local your_score = cxt.quest.param.popularity[cxt.player:GetID()] or 0
             if cxt.quest.param.good_debate then
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.5))
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.5), "COMPLETED_QUEST_MAIN")
             elseif cxt.quest.param.bad_debate then
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.25))
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.25), "COMPLETED_QUEST_MAIN")
             else
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.35))
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.35), "COMPLETED_QUEST_MAIN")
             end
 
             local METRIC_DATA =

@@ -493,7 +493,7 @@ QDEF:AddConvo("do_interview")
                         local questions_answered = (BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0)
                         cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
                         -- TheGame:GetDebug():CreatePanel(DebugTable(INTERVIEWER_BEHAVIOR))
-                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", questions_answered, "COMPLETED_QUEST")
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", questions_answered, "COMPLETED_QUEST_MAIN")
                         -- Big calculations that happens.
                         ResolvePostInterview()
                         cxt.quest:Complete()

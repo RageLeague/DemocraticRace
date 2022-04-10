@@ -105,9 +105,9 @@ local QDEF = QuestDef.Define
                         if preicon then
                             opt:PreIcon(preicon)
                         end
-                        if who:HasMemoryFromToday("WASTED_LOCATION_UNLOCK") then
-                            opt:PostText("TT_REDUCED_ACTION_COST")
-                        end
+                        -- if who:HasMemoryFromToday("WASTED_LOCATION_UNLOCK") then
+                        --     opt:PostText("TT_REDUCED_ACTION_COST")
+                        -- end
                         opt:Fn(function(cxt)
                             who:Remember("ASKED_OPT_" .. opt_id)
                             cxt.quest.param.loc_to_unlock = PickLocationUnlockForAgent(who, unlock_type)
