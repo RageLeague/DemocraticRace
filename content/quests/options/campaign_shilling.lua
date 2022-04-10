@@ -37,6 +37,7 @@ local QDEF = QuestDef.Define
                     :DeliverMoney( cost )
                     :Fn(function()
                         who:AddAspectStacks("bribed", 2)
+                        DemocracyUtil.DeltaAgentSupport(1, 1, who, "PAID_SHILLS")
                     end)
             end
         end
