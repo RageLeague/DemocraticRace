@@ -369,12 +369,27 @@ QDEF:AddConvo("get_job")
         if not cxt.quest:GetCastMember("primary_advisor") then
             cxt:Opt("OPT_GET_JOB")
                 :SetQuestMark()
-                :Dialog("DIALOG_GET_JOB")
-                :LoopingFn(function(cxt)
-                    DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB")
-                end)
+                :Fn( function(cxt)
+                    UIHelpers.DoSpecificConvo( nil, cxt.convodef.id, "STATE_GET_JOB" ,nil,nil,cxt.quest)
+                end )
         end
     end)
+    :State("STATE_GET_JOB")
+        :Loc{
+            DIALOG_GET_JOB = [[
+                player:
+                    !left
+                    !thought
+                    $neutralThoughtful
+                    Here's what I can do...
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_GET_JOB")
+            cxt:RunLoopingFn(function(cxt)
+                DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB")
+            end)
+        end)
 QDEF:AddConvo("get_job", "primary_advisor")
     :Loc{
         OPT_GET_JOB = "Discuss Job...",
