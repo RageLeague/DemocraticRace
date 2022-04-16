@@ -421,6 +421,12 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
             ]],
         }
         :Fn(function(cxt)
+            local unlocks = {
+                ADVISOR_DIPLOMACY = "GB_NEUTRAL_BAR",
+                ADVISOR_MANIPULATE = "MOREEF_BAR",
+                ADVISOR_HOSTILE = "GROG_N_DOG",
+            }
+            cxt.quest.param.free_bar_location = unlocks[cxt:GetAgent():GetContentID()] or "GROG_N_DOG"
             cxt:Dialog("DIALOG_INTRO")
             local profile = TheGame:GetGameProfile()
             cxt:Opt("OPT_YES")
@@ -429,7 +435,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 :Dialog("DIALOG_YES")
                 :Fn(function(cxt)
                     DemocracyUtil.TryMainQuestFn("DoRandomOpposition", OPPO_COUNT)
-                    DemocracyUtil.DoLocationUnlock(cxt, "GROG_N_DOG")
+                    DemocracyUtil.DoLocationUnlock(cxt, cxt.quest.param.free_bar_location)
                     TheGame:GetGameState():GetMainQuest().param.enable_support_screen = true
                 end)
                 :GoTo("STATE_COMPLETE_DIALOG")
@@ -552,6 +558,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
         }
         :SetLooping()
         :Fn(function(cxt)
+            local bar_location = cxt.quest.param.free_bar_location
             if not cxt.quest.param.did_opposition then
                 cxt:Opt("OPT_SUPPORT")
                     :Dialog("DIALOG_SUPPORT")
@@ -575,14 +582,14 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                     end)
                     -- :Dialog("DIALOG_SUPPORT_PST")
             end
-            cxt.quest.param.unlocked_grog = table.arraycontains(TheGame:GetGameState():GetMainQuest().param.unlocked_locations, "GROG_N_DOG")
+            cxt.quest.param.unlocked_grog = table.arraycontains(TheGame:GetGameState():GetMainQuest().param.unlocked_locations, bar_location)
             if not cxt.quest.param.did_free_time then
                 cxt:Opt("OPT_FREE_TIME")
                     :Dialog("DIALOG_FREE_TIME")
                     :Fn(function(cxt)
                         cxt.quest.param.did_free_time = true
                         if not cxt.quest.param.unlocked_grog then
-                            DemocracyUtil.DoLocationUnlock(cxt, "GROG_N_DOG")
+                            DemocracyUtil.DoLocationUnlock(cxt, bar_location)
                         end
                         TheGame:GetGameProfile():AcquireUnlock("DONE_POLITICS_FREE_TIME")
                     end)

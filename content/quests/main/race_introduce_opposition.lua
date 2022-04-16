@@ -377,7 +377,7 @@ QDEF:AddConvo("meet_opposition", "opposition")
             player:
                 If I want to find you, where should I go?
             agent:
-            {(agreed or liked) and not disliked?
+            {agreed?
                 Since we have similar goals, I guess I'll tell you.
                 You can find me at {oppo_location#location}. That's where my base is.
                 The people there may or may not like you, I can't make any promises.
@@ -385,29 +385,18 @@ QDEF:AddConvo("meet_opposition", "opposition")
             player:
                 That sounds very reassuring.
             }
-            {not ((agreed or liked) and not disliked)?
-                !angry_shrug
-                What? So you can send an assassin to my door?
+            {not agreed?
+                If you ever change your mind about your political position, you can find me at {oppo_location#location}.
+                There, we can discuss our potential alliance.
+                !crossed
+                Provided you can prove yourself first, of course.
             player:
-                !placate
-                That's not what I-
-            agent:
-                {not disliked?
-                    !sigh
-                    It's just a precaution, you see.
-                    I don't know you, you don't know me. Gotta be careful.
-                    It's nothing personal, I assure you.
-                }
-                {disliked?
-                    Better be careful than sorry, you know?
-                    It's nothing personal.
-                    Nah, who am I kidding, it totally is.
-                }
+                !handwave
+                Yeah, what else is new?
             }
         ]],
         function(cxt)
-            local learn_location = ((cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL) or cxt.quest.param.agreed)
-                and not (cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL)
+            local learn_location = true-- ((cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL) or cxt.quest.param.agreed) and not (cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL)
             if learn_location then
                 DemocracyUtil.DoLocationUnlock(cxt, cxt.quest.param.oppo_location)
             end
