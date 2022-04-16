@@ -1,4 +1,8 @@
-Convo("DEM_LUMIN_WINE")
+local resolve_restore = 10
+local meditate_cost = 10
+local max_delta = 4
+
+Convo("DEM_PARK_CONVO")
     :Priority(CONVO_PRIORITY_LOW)
     :Quips{
         {
@@ -48,26 +52,24 @@ Convo("DEM_LUMIN_WINE")
         TT_MEDITATE = "This will increase your max resolve by <#BONUS>{1}</>",
     }
     :Hub_Location(function(cxt)
-        if DemocracyUtil.IsDemocracyCampaign() then
+        if DemocracyUtil.IsDemocracyCampaign() and cxt.location and cxt.location:GetContentID() == "PEARL_PARK" then
             cxt:Opt("OPT_STROLL")
                 :RequireFreeTimeAction(2)
                 :PreIcon( global_images.restoreresolvelittle )
+                :PostText("TT_GAIN_RESOLVE", resolve_restore )
                 :Fn( function(cxt)
                     UIHelpers.DoSpecificConvo( nil, cxt.convodef.id, "STATE_STROLL" ,nil,nil,nil)
                 end )
-                :DeltaResolve(resolve_restore)
-                :DoneConvo()
 
             cxt:Opt("OPT_MEDITATE")
                 :RequireFreeTimeAction(4)
                 :PreIcon( global_images.restoreresolve )
                 :PostText("TT_MEDITATE", max_delta)
+                :PostText("TT_LOSE_RESOLVE", meditate_cost )
                 :Fn( function(cxt)
                     UIHelpers.DoSpecificConvo( nil, cxt.convodef.id, "STATE_MEDITATE" ,nil,nil,nil)
                 end )
-                :DeltaResolve(-meditate_cost)
                 :Fn(function() TheGame:GetGameState():GetCaravan():UpgradeResolve(max_delta, false, true) end)
-                :DoneConvo()
         end
     end)
     :State("STATE_STROLL")
@@ -79,6 +81,8 @@ Convo("DEM_LUMIN_WINE")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_STROLL")
+            ConvoUtil.DoResolveDelta(cxt, resolve_restore)
+            StateGraphUtil.AddEndOption(cxt)
         end)
 
     :State("STATE_MEDITATE")
@@ -90,4 +94,6 @@ Convo("DEM_LUMIN_WINE")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_MEDITATE")
+            ConvoUtil.DoResolveDelta(cxt, -meditate_cost)
+            StateGraphUtil.AddEndOption(cxt)
         end)
