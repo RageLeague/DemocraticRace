@@ -494,10 +494,52 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                     You can go visit locations you have learned through various means and socialize with your supporters once per day.
                     Sometimes you will learn new locations from them, sometimes they will provide a random benefit for you.
                 {not unlocked_grog?
-                    To show you how it works, I'll tell you a location you don't know yet.
-                    A great place to visit is the Grog n' Dog.
-                    All kinds of people visit there, so you can make friends from different factions easily there.
-                    The owner, Fssh, is very friendly, and doesn't mind who visits her bar.
+                    {advisor_manipulate?
+                        Let's say, that hypothetically, that you don't know where the Hideaway.
+                    player:
+                        !crossed
+                        It's not really a hypothetical, as I really don't know where it is.
+                    agent:
+                        !handwave
+                        Doesn't matter.
+                        And let's say, hypothetically, you talk to me, and I know where it is.
+                        I know this because I frequent it, as it provides humid air and superb drinks.
+                        Then, when you ask me about where to find it, I will tell you to go past the Heshian compound, walk towards the Sea, until you see a bar sitting near a cliff.
+                        !shrug
+                        Now, you would know where it is.
+                    player:
+                        !dubious
+                        You know, you can just drop the hypotheticals and just tell me about it.
+                        Like normal people.
+                    agent:
+                        ...
+                    }
+                    {advisor_diplomacy?
+                        !point
+                        I know of a place that you should visit.
+                        It's called the Last Stand.
+                        The drinks are chill, and the people there are based. Mostly.
+                        That would be a good place for you to start.
+                    }
+                    {advisor_hostile?
+                        !hips
+                        Luckily, nobody knows about locations more than me.
+                    player:
+                        !humoring
+                        If you know so much about locations, why don't you recommend me one.
+                    agent:
+                        Alright.
+                        !permit
+                        There is a bar called the Grog n' Dog.
+                        All kinds of people, from different faction visits there.
+                        It's a good place to visit if you want to expand your campaign horizon.
+                    }
+                    {not (advisor_diplomacy or advisor_manipulate or advisor_hostile)?
+                        !permit
+                        There is a bar called the Grog n' Dog.
+                        All kinds of people, from different faction visits there.
+                        It's a good place to visit if you want to expand your campaign horizon.
+                    }
                 }
             ]],
             -- OPT_NEW_LOCATION = "Unlock new location: {1#location}",
