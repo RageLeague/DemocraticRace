@@ -187,6 +187,7 @@ local QDEF = QuestDef.Define
         QuestUtil.SpawnQuest("CAMPAIGN_SHILLING")
         QuestUtil.SpawnQuest("CAMPAIGN_RANDOM_COIN_FIND")
         QuestUtil.SpawnQuest("CAMPAIGN_ASK_LOCATION")
+        QuestUtil.SpawnQuest("LOCATION_OSHNUDROME_RACES")
 
         QuestUtil.SpawnQuest("SAL_STORY_MERCHANTS")
         -- populate all locations.
