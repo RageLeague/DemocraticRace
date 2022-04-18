@@ -42,7 +42,7 @@ Convo("DEM_PARK_CONVO")
             [[
                 * How many different group homomorphism are there from a cyclic group of order 69 to a cyclic group of order 420?
                 * I mean, what?
-                *** The answer is 3, if you're curious.
+                ** (The answer is 3, if you're curious.)
             ]],
         },
     }
