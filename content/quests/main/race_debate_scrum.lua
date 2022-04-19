@@ -339,7 +339,32 @@ local function DeltaPopularity(table, agent, delta)
     table[agent:GetID()] = (table[agent:GetID()] or 0) + delta
 end
 QDEF:AddConvo("go_to_debate")
-    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("backroom") end)
+    :Confront(function(cxt)
+        if cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("backroom") then
+            return "STATE_CONFRONT"
+        end
+        if cxt.location == cxt.quest:GetCastMember("theater") then
+            return "STATE_THEATER"
+        end
+    end)
+    :State("STATE_THEATER")
+        :Loc{
+            DIALOG_INTRO = [[
+                * You arrived at the Grand Theater.
+                * Looks like the debate hasn't started yet.
+                * You quickly walk into the backroom to meet up with {primary_advisor}.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+            cxt:Opt("OPT_LEAVE_LOCATION")
+                :Fn(function(cxt)
+                    cxt.quest.param.enter_from_theater = true
+                    cxt.encounter:DoLocationTransition(cxt.quest:GetCastMember("backroom"))
+                end)
+                :MakeUnder()
+        end)
+    :State("STATE_CONFRONT")
         :Loc{
             DIALOG_INTRO = [[
                 * [p] You arrive at the grand theater backroom, where {agent} awaits you.
