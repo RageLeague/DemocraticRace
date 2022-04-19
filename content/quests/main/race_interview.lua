@@ -222,10 +222,40 @@ local QDEF = QuestDef.Define
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 DemocracyUtil.AddHomeCasts(QDEF)
 QDEF:AddConvo("go_to_interview")
-    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("backroom") end)
+    :Confront(function(cxt)
+        if cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("backroom") then
+            return "STATE_CONFRONT"
+        end
+        if cxt.location == cxt.quest:GetCastMember("theater") then
+            return "STATE_THEATER"
+        end
+    end)
+    :State("STATE_THEATER")
         :Loc{
             DIALOG_INTRO = [[
-                * You arrive at the Grand Theater, and are ushered into a back room. You barely make it into the room before you're ambushed by {primary_advisor}.
+                * You arrived at the Grand Theater.
+                * Looks like the interview hasn't started yet.
+                * You quickly walk into the backroom to meet up with {primary_advisor}.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+            cxt:Opt("OPT_LEAVE_LOCATION")
+                :Fn(function(cxt)
+                    cxt.quest.param.enter_from_theater = true
+                    cxt.encounter:DoLocationTransition(cxt.quest:GetCastMember("backroom"))
+                end)
+                :MakeUnder()
+        end)
+    :State("STATE_CONFRONT")
+        :Loc{
+            DIALOG_INTRO = [[
+                {not enter_from_theater?
+                    * You arrive at the Grand Theater, and are ushered into a back room. You barely make it into the room before you're ambushed by {primary_advisor}.
+                }
+                {enter_from_theater?
+                    * Just as you begin to look for {primary_advisor}, looks like {primary_advisor.heshe} found you first.
+                }
                 player:
                     !left
                 primary_advisor:
