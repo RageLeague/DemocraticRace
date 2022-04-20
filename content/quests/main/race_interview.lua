@@ -305,6 +305,25 @@ QDEF:AddConvo("go_to_interview")
                 player:
                     Sounds complicated.
                     I think I will just improvise.
+                {has_pet?
+                agent:
+                    Also, just letting you know, they don't allow pets in the venue.
+                    I can take care of your {pet.species} while you are on the stage.
+                player:
+                    !crossed
+                    {pet} has a name, you know.
+                    Also, why? Why are pets not allowed?
+                agent:
+                    !point
+                    Think about it.
+                    Imagine doing an interview, and the audience just see {pet.a_desc} on the stage.
+                    That would certainly cause chaos, and they can't have that.
+                player:
+                    ...
+                agent:
+                    !handwave
+                    Either way, {pet} isn't going to help you on the stage.
+                }
             ]],
             OPT_ASK_AUDIENCE = "Ask about the audience",
             DIALOG_ASK_AUDIENCE = [[
@@ -325,6 +344,12 @@ QDEF:AddConvo("go_to_interview")
                 player:
                     Alright, I'm ready.
                     Moment of truth, here I go.
+                {has_pet?
+                agent:
+                    I will take care of your {pet.species} for you.
+                }
+                agent:
+                    Good luck.
             ]],
         }
         :SetLooping()
@@ -332,6 +357,11 @@ QDEF:AddConvo("go_to_interview")
             if cxt:FirstLoop() then
                 DemocracyUtil.PopulateTheater(cxt.quest, cxt.quest:GetCastMember("theater"), 8)
                 cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
+                cxt.quest.param.party_pets = TheGame:GetGameState():GetCaravan():GetPets()
+                if cxt.quest.param.party_pets and #cxt.quest.param.party_pets > 0 then
+                    cxt.enc.scratch.has_pet = true
+                    cxt:ReassignCastMember("pet", cxt.quest.param.party_pets[1])
+                end
                 cxt:Dialog("DIALOG_INTRO")
                 cxt.quest:Complete("go_to_interview")
                 cxt.quest:Activate("do_interview")
@@ -519,6 +549,7 @@ QDEF:AddConvo("do_interview")
                     reason_fn = function(minigame)
                         return loc.format(cxt:GetLocString("NEGOTIATION_REASON"), BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0 )
                     end,
+                    suppressed = cxt.quest.param.party_pets,
                     on_success = function(cxt, minigame)
                         local questions_answered = (BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0)
                         cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
