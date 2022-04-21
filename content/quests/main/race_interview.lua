@@ -260,6 +260,26 @@ QDEF:AddConvo("go_to_interview")
                     !left
                 primary_advisor:
                     !right
+                {depressed?
+                    Oh, {player}. You finally arrived.
+                    Are you ready for the interview?
+                player:
+                    Can't say I'm ready, exactly. I am a bit nervous.
+                agent:
+                    !sigh
+                    That's okay, I'm sure whatever you do, you will do better than me.
+                    You don't need a loser to tell you what to do.
+                player:
+                    !dubious
+                    Are you alright? You don't sound like yourself.
+                agent:
+                    !handwave
+                    Nah. Don't worry about a loser like me.
+                    Worry about yourself. The interview is about to start, and you need to prepare.
+                * Regardless of {agent}'s strange episode, {agent.heshe} is right that you need to prepare.
+                * You can ask {agent} about it later. The interview is of the utmost importance.
+                }
+                {not depressed?
                     Alright {player}, tonight is big, so let's run through what you've got really quick.
                     Have you got you're prepared answers?
                 player:
@@ -285,21 +305,45 @@ QDEF:AddConvo("go_to_interview")
                     !facepalm
                     Yes really! I can't believe you didn't realize the importance of such interview.
                     Anyway, you have a few minutes before the interview starts. Try compose yourself before you go.
+                }
             ]],
             OPT_ASK_INTERVIEW = "Ask about the interview",
             DIALOG_ASK_INTERVIEW = [[
                 player:
                     [p] I'm not sure what this interview is about.
                 agent:
+                {depressed?
+                    !sigh
+                    Don't worry, however little you know, you will know it more than me.
+                player:
+                    I don't think that's how it works, given that I have literally no idea what is going on.
+                    Surely you must know something?
+                }
+                {not depressed?
                     !dubious
                     Seriously? You are about to do it, and you don't even know how it works?
                     Unbelievable.
                 player:
                     !crossed
                     I'm busy. Gathering support.
+                }
                 agent:
+                {depressed or not advisor_hostile?
                     !placate
                     Alright.
+                }
+                {advisor_hostile and not depressed?
+                    !hips
+                    Of course.
+                    {accept_limits?
+                        I will happily tell you all about the interview.
+                        Even though I might be the best, I can still give you some useful tips.
+                    }
+                    {not accept_limits?
+                        I can tell you all about the interview.
+                        After all, nobody knows interviews better than me.
+                    }
+                }
                     The interviewer will ask you a bunch of questions, and you want to answer as much question as possible.
                     You can address each question directly, or you can spend some time tailor your answers.
                 player:
@@ -333,12 +377,21 @@ QDEF:AddConvo("go_to_interview")
                     Yeah.
                     They are all eager to hear from you and what you have to say.
                     Some are here to confirm beliefs about you, while others are here to listen to what you have to say before making a decision.
+                {advisor_diplomacy?
+                    Try to be based. Be cool. Appeal to the crowd.
+                player:
+                    Yeah, those are words that definitely mean things.
+                agent:
+                    Just... Know your audience, and say things they want to hear.
+                }
+                {not advisor_diplomacy?
                     Try to tailor your answers based on your audience.
                 player:
                     Alright.
                 agent:
                     Of course, you can always just say something generic that appeals to everyone.
                     But that would take a lot of skills, and sometimes you might want to appeal to a more generic audience.
+                }
             ]],
             DIALOG_LEAVE = [[
                 player:
