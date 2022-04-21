@@ -78,9 +78,10 @@ QDEF:AddConvo()
         :Loc{
             DIALOG_INTRO_FIRST = [[
                 worker:
+                    !right
                     We have rights, Hesh damn it! The election promi-
                 player:
-                    !right
+                    !left
                     Excuse me, but I'd like to have a discussion with the leader here.
                 worker:
                     !right
@@ -233,8 +234,10 @@ QDEF:AddConvo()
         :Loc{
             DIALOG_INTRO_FIRST = [[
                 baron:
+                    !right
                     Furthermore, I can have all of your contracts-
                 player:
+                    !left
                     Hello. What's going on here, if I might ask?
                 baron:
                     !right

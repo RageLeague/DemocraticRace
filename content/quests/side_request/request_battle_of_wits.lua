@@ -1405,7 +1405,7 @@ FOLLOW_UP:AddConvo("comfort", "giver")
                             QDEF.on_complete(cxt.quest)
                             -- This will probably change dronumph's narcissist personality a little, as he accepts that there
                             -- are always people better than him, but that should not be a cause for his depression.
-                            cxt:GetAgent():Remember("ACCEPT_LIMITS")
+                            cxt:GetAgent():AddTag("accept_limits")
                             StateGraphUtil.AddEndOption(cxt)
                         else
                             cxt:Dialog("DIALOG_COMFORT_WIN")
