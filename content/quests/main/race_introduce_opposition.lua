@@ -531,6 +531,12 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 I have some questions regarding the other candidates...
         ]],
         function(cxt)
+            -- A hack to allow you to ask again. Not really elegant
+            for optdata, _ in pairs(cxt.enc.scratch.STATE_QUESTIONS_HISTORY) do
+                if optdata.opt_id == "OPT_2" then
+                    cxt.enc.scratch.STATE_QUESTIONS_HISTORY[optdata] = nil
+                end
+            end
             cxt:GoTo("STATE_OPPOSITION_QUESTIONS")
         end,
     })
