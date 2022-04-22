@@ -276,6 +276,9 @@ QDEF:AddConvo("go_to_interview")
                     !handwave
                     Nah. Don't worry about a loser like me.
                     Worry about yourself. The interview is about to start, and you need to prepare.
+                    {has_pet?
+                        And leave your {pet.species} here. You can't bring it into the venue.
+                    }
                 * Regardless of {agent}'s strange episode, {agent.heshe} is right that you need to prepare.
                 * You can ask {agent} about it later. The interview is of the utmost importance.
                 }
@@ -305,6 +308,9 @@ QDEF:AddConvo("go_to_interview")
                     !facepalm
                     Yes really! I can't believe you didn't realize the importance of such interview.
                     Anyway, you have a few minutes before the interview starts. Try compose yourself before you go.
+                    {has_pet?
+                        And leave your {pet.species} here. You can't bring it into the venue.
+                    }
                 }
             ]],
             OPT_ASK_INTERVIEW = "Ask about the interview",
@@ -349,25 +355,6 @@ QDEF:AddConvo("go_to_interview")
                 player:
                     Sounds complicated.
                     I think I will just improvise.
-                {has_pet?
-                agent:
-                    Also, just letting you know, they don't allow pets in the venue.
-                    I can take care of your {pet.species} while you are on the stage.
-                player:
-                    !crossed
-                    {pet} has a name, you know.
-                    Also, why? Why are pets not allowed?
-                agent:
-                    !point
-                    Think about it.
-                    Imagine doing an interview, and the audience just see {pet.a_desc} on the stage.
-                    That would certainly cause chaos, and they can't have that.
-                player:
-                    ...
-                agent:
-                    !handwave
-                    Either way, {pet} isn't going to help you on the stage.
-                }
             ]],
             OPT_ASK_AUDIENCE = "Ask about the audience",
             DIALOG_ASK_AUDIENCE = [[
@@ -392,6 +379,28 @@ QDEF:AddConvo("go_to_interview")
                     Of course, you can always just say something generic that appeals to everyone.
                     But that would take a lot of skills, and sometimes you might want to appeal to a more generic audience.
                 }
+            ]],
+            OPT_ASK_PET = "Ask about pet policy",
+            DIALOG_ASK_PET = [[
+                player:
+                    !crossed
+                    {pet} has a name, you know. And {pet} is a {pet.heshe}.
+                agent:
+                    !point
+                    Doesn't matter. You can't bring {pet.himher} into the venue either way.
+                player:
+                    Why? Why are pets not allowed?
+                agent:
+                    !point
+                    Think about it.
+                    Imagine doing an interview, and the audience just see {pet.a_desc} on the stage.
+                    That would certainly cause chaos, and they can't have that.
+                player:
+                    ...
+                agent:
+                    !handwave
+                    Either way, {pet} isn't going to help you on the stage.
+                ** Your pets will still be in your party, but will not help you in the upcoming negotiation.
             ]],
             DIALOG_LEAVE = [[
                 player:
@@ -421,6 +430,9 @@ QDEF:AddConvo("go_to_interview")
             end
             cxt:Question("OPT_ASK_INTERVIEW", "DIALOG_ASK_INTERVIEW")
             cxt:Question("OPT_ASK_AUDIENCE", "DIALOG_ASK_AUDIENCE")
+            if cxt.enc.scratch.has_pet then
+                cxt:Question("OPT_ASK_PET", "DIALOG_ASK_PET")
+            end
             cxt:Opt("OPT_LEAVE_LOCATION")
                 :Dialog("DIALOG_LEAVE")
                 :Fn(function(cxt)
