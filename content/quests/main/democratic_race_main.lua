@@ -180,7 +180,10 @@ local QDEF = QuestDef.Define
         QuestUtil.StartDayQuests(DAY_SCHEDULE, quest)
 
         if quest.param.start_on_day and quest.param.start_on_day >= 2 then
-            quest:AssignCastMember("primary_advisor", quest:GetCastMember(quest.param.force_advisor_id or table.arraypick(DemocracyUtil.ADVISOR_IDS)))
+            quest:AssignCastMember("primary_advisor", quest:GetCastMember(quest.param.force_advisor_id or table.arraypick(copykeys(DemocracyUtil.ADVISOR_IDS))))
+            print(quest:GetCastMember("primary_advisor"))
+            print(quest:GetCastMember("home"))
+            print(quest:GetCastMember("player_room"))
             QuestUtil.SpawnQuest("RACE_LIVING_WITH_ADVISOR")
             quest:DefFn("DeltaGeneralSupport", (quest.param.init_support_level or 0) * (quest.param.start_on_day - 1))
         end
