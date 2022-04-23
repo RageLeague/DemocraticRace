@@ -119,6 +119,7 @@ local function OnLoad( mod )
     require "DEMOCRATICRACE:content/grifts"
     require "DEMOCRATICRACE:content/more_boon_services"
     require "DEMOCRATICRACE:content/combat_parties"
+    require "DEMOCRATICRACE:content/debug_commands"
     -- we load slides before we load act data. who knows what would happen if we didn't?
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:content/slides/", "*.lua", true )) do
         local name = filepath:match( "(.+)[.]lua$" )
@@ -250,7 +251,7 @@ local function OnPreLoad( mod )
 end
 
 local function OnGlobalEvent(mod, event_name, ...)
-    print("I'm listening...")
+    -- print("I'm listening...")
     if event_name == "allow_dual_purpose_cards" then
         local card, param = ...
         if DemocracyUtil.GetModSetting("allow_dual_purpose_cards") then
@@ -265,21 +266,21 @@ local function OnGlobalEvent(mod, event_name, ...)
             end
         end
     elseif event_name == "get_work_availability" then
-        print("Found event")
+        -- print("Found event")
         local location, work_data = ...
         if location and work_data then
             for id, data in pairs(work_data) do
                 print(id, data)
                 if type(data) == "table" and data.is_democracy_job then
-                    print("Found job for democracy", id)
+                    -- print("Found job for democracy", id)
                     if not DemocracyUtil.IsDemocracyCampaign() then
-                        print("Not in democracy. Disable job", id)
+                        -- print("Not in democracy. Disable job", id)
                         work_data[id] = nil
                     end
                 elseif type(data) == "table" and data.disable_for_democracy then
-                    print("Found job disabled for democracy", id)
+                    -- print("Found job disabled for democracy", id)
                     if DemocracyUtil.IsDemocracyCampaign() then
-                        print("In democracy. Disable job", id)
+                        -- print("In democracy. Disable job", id)
                         work_data[id] = nil
                     end
                 end
@@ -289,7 +290,7 @@ local function OnGlobalEvent(mod, event_name, ...)
 end
 
 local function OnGameStart( mod )
-    print("I am actually listening")
+    -- print("I am actually listening")
     TheGame:GetEvents():ListenForEvents( mod, "allow_dual_purpose_cards", "card_added", "get_work_availability" )
 end
 

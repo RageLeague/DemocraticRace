@@ -202,13 +202,15 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         ]],
     }
     :Fn(function(cxt)
-        local dead_bodies = cxt:GetCastMember("player_room"):HasMemory("HAS_DEAD_BODY")
+        local dead_bodies = cxt:GetCastMember("player_room") and cxt:GetCastMember("player_room"):HasMemory("HAS_DEAD_BODY")
 
         cxt.enc.scratch.dead_body = dead_bodies and true
         cxt:Dialog("DIALOG_INTRO", dead_bodies and #dead_bodies)
         DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 2)
         cxt:Dialog("DIALOG_INTRO_PST")
-        cxt:GetCastMember("player_room"):Forget("HAS_DEAD_BODY")
+        if cxt:GetCastMember("player_room") then
+            cxt:GetCastMember("player_room"):Forget("HAS_DEAD_BODY")
+        end
         cxt.quest:Complete("starting_out")
         StateGraphUtil.AddEndOption(cxt)
     end)
