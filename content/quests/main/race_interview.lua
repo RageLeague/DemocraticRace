@@ -222,10 +222,40 @@ local QDEF = QuestDef.Define
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 DemocracyUtil.AddHomeCasts(QDEF)
 QDEF:AddConvo("go_to_interview")
-    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("backroom") end)
+    :Confront(function(cxt)
+        if cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("backroom") then
+            return "STATE_CONFRONT"
+        end
+        if cxt.location == cxt.quest:GetCastMember("theater") then
+            return "STATE_THEATER"
+        end
+    end)
+    :State("STATE_THEATER")
         :Loc{
             DIALOG_INTRO = [[
-                * You arrive at the Grand Theater, and are ushered into a back room. You barely make it into the room before you're ambushed by {primary_advisor}.
+                * You arrived at the Grand Theater.
+                * Looks like the interview hasn't started yet.
+                * You quickly walk into the backroom to meet up with {primary_advisor}.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+            cxt:Opt("OPT_LEAVE_LOCATION")
+                :Fn(function(cxt)
+                    cxt.quest.param.enter_from_theater = true
+                    cxt.encounter:DoLocationTransition(cxt.quest:GetCastMember("backroom"))
+                end)
+                :MakeUnder()
+        end)
+    :State("STATE_CONFRONT")
+        :Loc{
+            DIALOG_INTRO = [[
+                {not enter_from_theater?
+                    * You arrive at the Grand Theater, and are ushered into a back room. You barely make it into the room before you're ambushed by {primary_advisor}.
+                }
+                {enter_from_theater?
+                    * Just as you begin to look for {primary_advisor}, looks like {primary_advisor.heshe} found you first.
+                }
                 player:
                     !left
                 primary_advisor:
@@ -246,6 +276,9 @@ QDEF:AddConvo("go_to_interview")
                     !handwave
                     Nah. Don't worry about a loser like me.
                     Worry about yourself. The interview is about to start, and you need to prepare.
+                    {has_pet?
+                        And leave your {pet.species} here. You can't bring it into the venue.
+                    }
                 * Regardless of {agent}'s strange episode, {agent.heshe} is right that you need to prepare.
                 * You can ask {agent} about it later. The interview is of the utmost importance.
                 }
@@ -275,6 +308,9 @@ QDEF:AddConvo("go_to_interview")
                     !facepalm
                     Yes really! I can't believe you didn't realize the importance of such interview.
                     Anyway, you have a few minutes before the interview starts. Try compose yourself before you go.
+                    {has_pet?
+                        And leave your {pet.species} here. You can't bring it into the venue.
+                    }
                 }
             ]],
             OPT_ASK_INTERVIEW = "Ask about the interview",
@@ -344,10 +380,38 @@ QDEF:AddConvo("go_to_interview")
                     But that would take a lot of skills, and sometimes you might want to appeal to a more generic audience.
                 }
             ]],
+            OPT_ASK_PET = "Ask about pet policy",
+            DIALOG_ASK_PET = [[
+                player:
+                    !crossed
+                    {pet} has a name, you know. And {pet} is a {pet.heshe}.
+                agent:
+                    !point
+                    Doesn't matter. You can't bring {pet.himher} into the venue either way.
+                player:
+                    Why? Why are pets not allowed?
+                agent:
+                    !point
+                    Think about it.
+                    Imagine doing an interview, and the audience just see {pet.a_desc} on the stage.
+                    That would certainly cause chaos, and they can't have that.
+                player:
+                    ...
+                agent:
+                    !handwave
+                    Either way, {pet} isn't going to help you on the stage.
+                ** Your pets will still be in your party, but will not help you in the upcoming negotiation.
+            ]],
             DIALOG_LEAVE = [[
                 player:
                     Alright, I'm ready.
                     Moment of truth, here I go.
+                {has_pet?
+                agent:
+                    I will take care of your {pet.species} for you.
+                }
+                agent:
+                    Good luck.
             ]],
         }
         :SetLooping()
@@ -355,12 +419,20 @@ QDEF:AddConvo("go_to_interview")
             if cxt:FirstLoop() then
                 DemocracyUtil.PopulateTheater(cxt.quest, cxt.quest:GetCastMember("theater"), 8)
                 cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
+                cxt.quest.param.party_pets = TheGame:GetGameState():GetCaravan():GetPets()
+                if cxt.quest.param.party_pets and #cxt.quest.param.party_pets > 0 then
+                    cxt.enc.scratch.has_pet = true
+                    cxt:ReassignCastMember("pet", cxt.quest.param.party_pets[1])
+                end
                 cxt:Dialog("DIALOG_INTRO")
                 cxt.quest:Complete("go_to_interview")
                 cxt.quest:Activate("do_interview")
             end
             cxt:Question("OPT_ASK_INTERVIEW", "DIALOG_ASK_INTERVIEW")
             cxt:Question("OPT_ASK_AUDIENCE", "DIALOG_ASK_AUDIENCE")
+            if cxt.enc.scratch.has_pet then
+                cxt:Question("OPT_ASK_PET", "DIALOG_ASK_PET")
+            end
             cxt:Opt("OPT_LEAVE_LOCATION")
                 :Dialog("DIALOG_LEAVE")
                 :Fn(function(cxt)
@@ -542,6 +614,7 @@ QDEF:AddConvo("do_interview")
                     reason_fn = function(minigame)
                         return loc.format(cxt:GetLocString("NEGOTIATION_REASON"), BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0 )
                     end,
+                    suppressed = cxt.quest.param.party_pets,
                     on_success = function(cxt, minigame)
                         local questions_answered = (BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0)
                         cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
