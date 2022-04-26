@@ -202,6 +202,7 @@ QDEF:AddConvo(nil, "steven")
                 player:
                     !scared
                     Wait, why are you holding a-
+                agent:
                     !exit
                 player:
                     !exit
