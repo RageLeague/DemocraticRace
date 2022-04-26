@@ -36,7 +36,7 @@ QDEF:AddConvo()
                 We have the finest selection in the Foam.
             {not liked?
                 Finer than some can afford, I might add.
-                How do you know about our better selection, anyway.
+                How do you know about our better selection, anyway?
             }
             {liked?
                 !thought
@@ -96,7 +96,7 @@ QDEF:AddConvo()
                         end
                     end)
             elseif not cxt.quest.param.access_granted then
-                cxt:BasicNegotiation("CONVINCE0")
+                cxt:BasicNegotiation("CONVINCE")
                     :OnSuccess()
                     :Fn(function(cxt)
                         cxt.quest.param.access_granted = true
@@ -113,3 +113,130 @@ QDEF:AddConvo()
                 end)
         end
     end)
+QDEF:AddConvo(nil, "steven")
+    :AttractState("ATTR")
+        :Loc{
+            DIALOG_INTRO = [[
+                {first_time?
+                    player:
+                        I've been told the real party's going on back here.
+                    agent:
+                        !greeting
+                        Indeed!
+                        This is the place for the partying!
+                    player:
+                        It doesn't look like much...
+                        It's just two of you and some dusty old crates.
+                    agent:
+                        !point
+                        I can assure you, we know how to party.
+                        Those crates?
+                        Full of party.
+                }
+                {not first_time?
+                    agent:
+                        !greeting
+                        Are you ready for more of the partying?
+                        I certainly am!
+                }
+            ]],
+            OPT_LEAVE = "Stop Partying",
+            DIALOG_LEAVE = [[
+                player:
+                    I think I've had enough partying for now.
+                    !exit
+                agent:
+                    The party will be waiting for you when you get back!
+            ]],
+            DIALOG_REMOVE_BATTLE_CARD = [[
+                player:
+                    I have a bad habit I can't seem to shake.
+                agent:
+                    $neutralThoughtful
+                    Perhaps you have a buggy subroutine?
+            ]],
+            DIALOG_REMOVE_NEGOTIATION_CARD = [[
+                player:
+                    Ever just get tongue-tied?
+                agent:
+                    $neutralThoughtful
+                    No. That would require a tongue.
+            ]],
+            DIALOG_ASK_ABOUT = [[
+                player:
+                    I have so many questions...
+            ]],
+            OPT_SHOP = "See what {agent} has for sale...",
+            DIALOG_POST_SHOP = [[
+                agent:
+                    !happy
+                    Party every day!
+            ]]
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+
+            cxt:RunLoop(function()
+                StateGraphUtil.AddRemoveBattleCardOption( cxt, "DIALOG_REMOVE_BATTLE_CARD" )
+                StateGraphUtil.AddRemoveNegotiationCardOption( cxt, "DIALOG_REMOVE_NEGOTIATION_CARD" )
+
+                cxt:Opt("OPT_SHOP")
+                    :IsHubOption(true)
+                    :PreIcon( global_images.shop, UICOLOURS.MONEY_LIGHT )
+                    :Fn(function()
+                        cxt.enc:WaitOnLine()
+                        local screen = Screen.CardShopScreen( cxt:GetAgent(), function() cxt.enc:ResumeEncounter() end )
+                        TheGame:FE():InsertScreen( screen )
+                        cxt.enc:YieldEncounter()
+                        cxt:Dialog("DIALOG_POST_SHOP")
+                    end)
+
+
+                cxt:Opt("OPT_ASK_ABOUT")
+                    :Dialog("DIALOG_ASK_ABOUT")
+                    :IsHubOption(true)
+                    :GoTo("STATE_QUESTIONS")
+
+                cxt:Opt("OPT_LEAVE")
+                    :MakeUnder()
+                    :Dialog("DIALOG_LEAVE")
+                    :PreIcon(global_images.close)
+                    :DoneConvo()
+            end)
+        end)
+    :AskAboutHub("STATE_QUESTIONS",
+    {
+
+        "Ask when the party starts",
+        [[
+            player:
+                So when does the party start?
+            agent:
+                Look around you, friend. The party has already started!
+        ]],
+        "Ask what the party is about",
+        [[
+            player:
+                What's the reason for this party?
+            agent:
+                Parties do not need a reason, friend.
+                Parties <b>are</> the reason!
+            player:
+                Is there a theme?
+            agent:
+                The theme is...
+                !laugh
+                Partying!
+        ]],
+        "Ask when the party ends",
+        [[
+            player:
+                How long is this party going to last?
+            agent:
+                This party will never end!
+            player:
+                Never?
+            agent:
+                It will outlast you, at least!
+        ]],
+    })
