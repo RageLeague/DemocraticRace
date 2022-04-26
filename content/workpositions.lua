@@ -34,7 +34,7 @@ for id, data in pairs(ADDITIONAL_WORK) do
     -- DBG(location_data)
 end
 
-for id, data in pairs(ADDITIONAL_WORK) do
+for id, data in pairs(DISABLED_WORK) do
     local location_data = Content.GetLocationContent(id)
     if not location_data.work then
         location_data.work = {}
