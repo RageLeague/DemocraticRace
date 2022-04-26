@@ -409,7 +409,7 @@ local CARDS = {
             return loc.format(fmt_str, self.userdata and self.userdata.linked_quest and self.userdata.linked_quest:GetProvider() and self.userdata.linked_quest:GetProvider():GetName() or (self.def or self):GetLocalizedString("ALT_DESC"))
         end,
 
-        flavour = "This sounds extremely unethical. Then again, if you are ethical, you wouldn't be a grifter.",
+        flavour = "'It sounds like you need this... sideways... eight. Yeah! You need sideways eight in your life!'",
         icon = "DEMOCRATICRACE:assets/cards/promote_product.png",
 
         cost = 1,

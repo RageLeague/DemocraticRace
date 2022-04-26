@@ -207,6 +207,7 @@ local CARDS = {
 
         modifier =
         {
+            icon = "DEMOCRATICRACE:assets/modifiers/havarian_thesaurus.png",
             alt_desc = "(Cards played: {1#comma_listing})",
             desc_fn = function(self, fmt_str)
                 if self.cards_played and #self.cards_played > 0 then
@@ -383,6 +384,7 @@ local CARDS = {
 
         modifier =
         {
+            icon = "DEMOCRATICRACE:assets/modifiers/pleasant_perfume.png",
             desc = "Whenever you would gain {INFLUENCE} or {RENOWN}, gain <#HILITE>{1}</> additional {1*stack|stacks}.",
             desc_fn = function(self, fmt_str)
                 return loc.format(fmt_str, self.stacks or 1)
