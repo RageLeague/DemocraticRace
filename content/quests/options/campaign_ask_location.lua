@@ -91,7 +91,7 @@ local QDEF = QuestDef.Define
         ]],
     }
     :Hub(function(cxt, who)
-        if not (DemocracyUtil.IsDemocracyCampaign() and who) then
+        if not (DemocracyUtil.IsDemocracyCampaign() and who and who:IsSentient()) then
             return
         end
         if (cxt.location and cxt.location:GetProprietor() == who) or (who:GetRelationship() > RELATIONSHIP.NEUTRAL or who == TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")) then
