@@ -1,6 +1,19 @@
 local QDEF = QuestDef.Define
 {
     qtype = QTYPE.STORY,
+
+    events =
+    {
+        caravan_member_event = function(quest, event, agent, old_loc, new_loc)
+            if event == "agent_location_changed" and agent == TheGame:GetGameState():GetPlayerAgent() and new_loc == quest:GetCastMember("back_room") then
+                if quest.param.last_graft_restock ~= TheGame:GetGameState():GetDateTime() then
+                    quest.param.negotiation_grafts = GenerateGrafts(GRAFT_TYPE.NEGOTIATION)
+                    quest.param.combat_grafts = GenerateGrafts(GRAFT_TYPE.COMBAT)
+                    quest.param.last_graft_restock = TheGame:GetGameState():GetDateTime()
+                end
+            end
+        end,
+    },
 }
 :AddObjective{
     id = "start",
@@ -171,13 +184,50 @@ QDEF:AddConvo(nil, "steven")
                 agent:
                     !happy
                     Party every day!
-            ]]
+            ]],
+
+            OPT_SELL_GRAFT = "Purchase {1#graft}",
+            DIALOG_SELL_GRAFT = [[
+                agent:
+                    !happy
+                    You are a party machine!
+            ]],
+            REQ_FULL = "You have too many grafts of this type",
+
+            OPT_SEE_NEGOTIATION_GRAFTS = "Buy negotiation grafts",
+
+            DIALOG_ADD_SLOT_1 = [[
+                agent:
+                    Wanna party?
+                player:
+                    !scared
+                    Wait, why are you holding a-
+                    !exit
+                player:
+                    !exit
+            ]],
+            DIALOG_ADD_SLOT_2 = [[
+                agent:
+                    !right
+                player:
+                    !left
+                    !wince
+                    Ow!
+                agent:
+                    That's what I call a party!
+            ]],
+            OPT_ADD_NEGOTIATION_SLOT = "Add a negotiation graft slot",
+            REQ_TOO_MANY = "You have the maximum allowed!",
+            DIALOG_SEE_NEGOTIATION_GRAFTS = [[
+                agent:
+                    Need to get the last word in?
+
+            ]],
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
 
             cxt:RunLoop(function()
-                StateGraphUtil.AddRemoveBattleCardOption( cxt, "DIALOG_REMOVE_BATTLE_CARD" )
                 StateGraphUtil.AddRemoveNegotiationCardOption( cxt, "DIALOG_REMOVE_NEGOTIATION_CARD" )
 
                 cxt:Opt("OPT_SHOP")
@@ -191,6 +241,13 @@ QDEF:AddConvo(nil, "steven")
                         cxt:Dialog("DIALOG_POST_SHOP")
                     end)
 
+                cxt:Opt("OPT_SEE_NEGOTIATION_GRAFTS")
+                    :Dialog("DIALOG_SEE_NEGOTIATION_GRAFTS")
+                    :PreIcon( engine.asset.Texture( "UI/ic_graftscompendium.tex"), UICOLOURS.NEGOTIATION )
+                    :LoopingFn(PresetGrafts(cxt.quest.param.negotiation_grafts))
+
+                ConvoUtil.OptBuyGraftSlot( cxt, GRAFT_TYPE.NEGOTIATION, "DIALOG_ADD_SLOT_1" )
+                    :Dialog( "DIALOG_ADD_SLOT_2" )
 
                 cxt:Opt("OPT_ASK_ABOUT")
                     :Dialog("DIALOG_ASK_ABOUT")
