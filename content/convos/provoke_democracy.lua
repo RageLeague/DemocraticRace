@@ -1,6 +1,6 @@
 Convo("PROVOKE_DEMOCRACY")
     :Loc{
-        
+
         OPT_PROVOKE = "Provoke {agent}",
         DIALOG_PROVOKE = [[
             player:
@@ -66,10 +66,9 @@ Convo("PROVOKE_DEMOCRACY")
         if not DemocracyUtil.IsDemocracyCampaign(cxt.act_id) then
             return
         end
-        
+
         if who then
             local canprovoke, reasons = DemocracyUtil.PunishTargetCondition(who)
-            print(#reasons, reasons)
             if not canprovoke then return end
             -- local can_provoke_here = true--not cxt.location:HasTag("HQ")
             local can_provoke_this_person = not who:IsInPlayerParty()
@@ -96,7 +95,7 @@ Convo("PROVOKE_DEMOCRACY")
                         cxt.encounter:SetMusicEvent( kashio_stinger )
                         cxt:GetAgent():OpinionEvent(OPINION.TRIED_TO_PROVOKE)
                         cxt:Dialog("DIALOG_WIN_NEGOTIATION_FIGHT")
-                        
+
                         cxt:Opt("OPT_FIGHT")
                             :Dialog("DIALOG_WIN_NEGOTIATION_FIGHT_PST")
                             -- :Fn(function()
@@ -105,7 +104,7 @@ Convo("PROVOKE_DEMOCRACY")
                             -- end)
                             :Battle{
                                 -- flags = BATTLE_FLAGS.NO_SURRENDER,
-                                on_win = function(cxt) 
+                                on_win = function(cxt)
                                     if cxt:GetAgent():IsDead() then
                                         cxt:Dialog("DIALOG_KILLED_AGENT")
                                     else
@@ -131,6 +130,6 @@ Convo("PROVOKE_DEMOCRACY")
                         StateGraphUtil.AddEndOption(cxt)
                     end,
                 }
-                
+
         end
     end)

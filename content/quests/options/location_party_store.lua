@@ -127,6 +127,82 @@ QDEF:AddConvo()
         end
     end)
 QDEF:AddConvo(nil, "steven")
+    :Loc{
+        DIALOG_REMOVE_BATTLE_CARD = [[
+            player:
+                I have a bad habit I can't seem to shake.
+            agent:
+                $neutralThoughtful
+                Perhaps you have a buggy subroutine?
+        ]],
+        DIALOG_REMOVE_NEGOTIATION_CARD = [[
+            player:
+                Ever just get tongue-tied?
+            agent:
+                $neutralThoughtful
+                No. That would require a tongue.
+        ]],
+        DIALOG_ASK_ABOUT = [[
+            player:
+                I have so many questions...
+        ]],
+        OPT_SELL_GRAFT = "Purchase {1#graft}",
+        DIALOG_SELL_GRAFT = [[
+            agent:
+                !happy
+                Party every day!
+        ]],
+        REQ_FULL = "You have too many grafts of this type",
+
+        OPT_SEE_NEGOTIATION_GRAFTS = "Buy negotiation grafts",
+
+        DIALOG_ADD_SLOT_1 = [[
+            agent:
+                Wanna party?
+            player:
+                !scared
+                Wait, why are you holding a-
+            agent:
+                !exit
+            player:
+                !exit
+        ]],
+        DIALOG_ADD_SLOT_2 = [[
+            agent:
+                !right
+            player:
+                !left
+                !wince
+                Ow!
+            agent:
+                !greeting
+                That's what I call a party!
+        ]],
+        OPT_ADD_NEGOTIATION_SLOT = "Add a negotiation graft slot",
+        REQ_TOO_MANY = "You have the maximum allowed!",
+        DIALOG_SEE_NEGOTIATION_GRAFTS = [[
+            agent:
+                I can make you a party machine!
+            player:
+                I would rather be a party {player.species}, but a party machine is my second choice.
+        ]],
+    }
+    :Hub(function(cxt)
+        cxt:Opt("OPT_ASK_ABOUT")
+            :Dialog("DIALOG_ASK_ABOUT")
+            :IsHubOption(true)
+            :GoTo("STATE_QUESTIONS")
+
+        cxt:Opt("OPT_SEE_NEGOTIATION_GRAFTS")
+            :Dialog("DIALOG_SEE_NEGOTIATION_GRAFTS")
+            :PreIcon( engine.asset.Texture( "UI/ic_graftscompendium.tex"), UICOLOURS.NEGOTIATION )
+            :LoopingFn(PresetGrafts(cxt.quest.param.negotiation_grafts))
+
+        ConvoUtil.OptBuyGraftSlot( cxt, GRAFT_TYPE.NEGOTIATION, "DIALOG_ADD_SLOT_1" )
+            :Dialog( "DIALOG_ADD_SLOT_2" )
+
+        StateGraphUtil.AddRemoveNegotiationCardOption( cxt, "DIALOG_REMOVE_NEGOTIATION_CARD" )
+    end)
     :AttractState("ATTR")
         :Loc{
             DIALOG_INTRO = [[
@@ -153,114 +229,9 @@ QDEF:AddConvo(nil, "steven")
                         I certainly am!
                 }
             ]],
-            OPT_LEAVE = "Stop Partying",
-            DIALOG_LEAVE = [[
-                player:
-                    I think I've had enough partying for now.
-                    !exit
-                agent:
-                    The party will be waiting for you when you get back!
-            ]],
-            DIALOG_REMOVE_BATTLE_CARD = [[
-                player:
-                    I have a bad habit I can't seem to shake.
-                agent:
-                    $neutralThoughtful
-                    Perhaps you have a buggy subroutine?
-            ]],
-            DIALOG_REMOVE_NEGOTIATION_CARD = [[
-                player:
-                    Ever just get tongue-tied?
-                agent:
-                    $neutralThoughtful
-                    No. That would require a tongue.
-            ]],
-            DIALOG_ASK_ABOUT = [[
-                player:
-                    I have so many questions...
-            ]],
-            OPT_SHOP = "See what {agent} has for sale...",
-            DIALOG_POST_SHOP = [[
-                agent:
-                    !happy
-                    Party every day!
-            ]],
-
-            OPT_SELL_GRAFT = "Purchase {1#graft}",
-            DIALOG_SELL_GRAFT = [[
-                agent:
-                    !happy
-                    You are a party machine!
-            ]],
-            REQ_FULL = "You have too many grafts of this type",
-
-            OPT_SEE_NEGOTIATION_GRAFTS = "Buy negotiation grafts",
-
-            DIALOG_ADD_SLOT_1 = [[
-                agent:
-                    Wanna party?
-                player:
-                    !scared
-                    Wait, why are you holding a-
-                agent:
-                    !exit
-                player:
-                    !exit
-            ]],
-            DIALOG_ADD_SLOT_2 = [[
-                agent:
-                    !right
-                player:
-                    !left
-                    !wince
-                    Ow!
-                agent:
-                    That's what I call a party!
-            ]],
-            OPT_ADD_NEGOTIATION_SLOT = "Add a negotiation graft slot",
-            REQ_TOO_MANY = "You have the maximum allowed!",
-            DIALOG_SEE_NEGOTIATION_GRAFTS = [[
-                agent:
-                    Need to get the last word in?
-
-            ]],
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-
-            cxt:RunLoop(function()
-                StateGraphUtil.AddRemoveNegotiationCardOption( cxt, "DIALOG_REMOVE_NEGOTIATION_CARD" )
-
-                cxt:Opt("OPT_SHOP")
-                    :IsHubOption(true)
-                    :PreIcon( global_images.shop, UICOLOURS.MONEY_LIGHT )
-                    :Fn(function()
-                        cxt.enc:WaitOnLine()
-                        local screen = Screen.CardShopScreen( cxt:GetAgent(), function() cxt.enc:ResumeEncounter() end )
-                        TheGame:FE():InsertScreen( screen )
-                        cxt.enc:YieldEncounter()
-                        cxt:Dialog("DIALOG_POST_SHOP")
-                    end)
-
-                cxt:Opt("OPT_SEE_NEGOTIATION_GRAFTS")
-                    :Dialog("DIALOG_SEE_NEGOTIATION_GRAFTS")
-                    :PreIcon( engine.asset.Texture( "UI/ic_graftscompendium.tex"), UICOLOURS.NEGOTIATION )
-                    :LoopingFn(PresetGrafts(cxt.quest.param.negotiation_grafts))
-
-                ConvoUtil.OptBuyGraftSlot( cxt, GRAFT_TYPE.NEGOTIATION, "DIALOG_ADD_SLOT_1" )
-                    :Dialog( "DIALOG_ADD_SLOT_2" )
-
-                cxt:Opt("OPT_ASK_ABOUT")
-                    :Dialog("DIALOG_ASK_ABOUT")
-                    :IsHubOption(true)
-                    :GoTo("STATE_QUESTIONS")
-
-                cxt:Opt("OPT_LEAVE")
-                    :MakeUnder()
-                    :Dialog("DIALOG_LEAVE")
-                    :PreIcon(global_images.close)
-                    :DoneConvo()
-            end)
         end)
     :AskAboutHub("STATE_QUESTIONS",
     {
