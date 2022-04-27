@@ -1,3 +1,5 @@
+local EVERYONE_DIES_MOD
+
 Convo("PROVOKE_DEMOCRACY")
     :Loc{
 
@@ -67,17 +69,29 @@ Convo("PROVOKE_DEMOCRACY")
             return
         end
 
+        if EVERYONE_DIES_MOD == nil then
+            for i, mod_table in Content.AllMods() do
+                if mod_table and mod_table.alias == "EveryoneDies" and Content.IsModEnabled(mod_table) then
+                    EVERYONE_DIES_MOD = mod_table
+                    break
+                end
+            end
+            if EVERYONE_DIES_MOD == nil then
+                EVERYONE_DIES_MOD = false
+            end
+        end
+
         if who then
             local canprovoke, reasons = DemocracyUtil.PunishTargetCondition(who)
-            if not canprovoke then return end
+            if not canprovoke and not (EVERYONE_DIES_MOD and Content.GetModSetting( EVERYONE_DIES_MOD, "allow_any_relation_provoking" )) then return end
             -- local can_provoke_here = true--not cxt.location:HasTag("HQ")
-            local can_provoke_this_person = not who:IsInPlayerParty()
+            local can_provoke_this_person = (not who:IsInPlayerParty()) or (EVERYONE_DIES_MOD and Content.GetModSetting( EVERYONE_DIES_MOD, "allow_provoke_anyone" ))
 
             cxt:Opt("OPT_PROVOKE")
                 :PostText("TT_PROVOKE_REASONS", reasons)
                 :Dialog( "DIALOG_PROVOKE" )
                 -- :ReqCondition(can_provoke_here, "REQ_CAN_NOT_PROVOKE_HERE")
-                :ReqCondition((who:GetRenown() or 1) <= who:GetCombatStrength(), "REQ_CAN_NOT_PROVOKE_HIGH_RENOWN")
+                :ReqCondition((who:GetRenown() or 1) <= who:GetCombatStrength() or (EVERYONE_DIES_MOD and Content.GetModSetting( EVERYONE_DIES_MOD, "allow_provoke_anyone" )), "REQ_CAN_NOT_PROVOKE_HIGH_RENOWN")
                 :ReqCondition(can_provoke_this_person, "REQ_CAN_NOT_PROVOKE_THIS_PERSON")
                 :PostText("TT_PROVOKE")
                 :ReceiveOpinion(OPINION.TRIED_TO_PROVOKE, {only_show = true})
