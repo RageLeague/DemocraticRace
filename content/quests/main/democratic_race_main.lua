@@ -175,7 +175,7 @@ local QDEF = QuestDef.Define
 
         -- quest.param.allow_skip_side = true
 
-        -- TheGame:GetGameState():GetPlayerAgent().graft_owner:AddGraft(GraftInstance("relation_support_tracker"))
+        TheGame:GetGameState():GetPlayerAgent().graft_owner:AddGraft(GraftInstance("democracy_resolve_limiter"))
 
         QuestUtil.StartDayQuests(DAY_SCHEDULE, quest)
 
@@ -187,10 +187,12 @@ local QDEF = QuestDef.Define
             QuestUtil.SpawnQuest("RACE_LIVING_WITH_ADVISOR")
             quest:DefFn("DeltaGeneralSupport", (quest.param.init_support_level or 0) * (quest.param.start_on_day - 1))
         end
+
         QuestUtil.SpawnQuest("CAMPAIGN_SHILLING")
         QuestUtil.SpawnQuest("CAMPAIGN_RANDOM_COIN_FIND")
         QuestUtil.SpawnQuest("CAMPAIGN_ASK_LOCATION")
         QuestUtil.SpawnQuest("LOCATION_OSHNUDROME_RACES")
+        QuestUtil.SpawnQuest("LOCATION_PARTY_STORE")
 
         QuestUtil.SpawnQuest("SAL_STORY_MERCHANTS")
         -- populate all locations.
@@ -244,8 +246,12 @@ local QDEF = QuestDef.Define
             quest.param[field].RELIGIOUS_POLICY = quest.param[field].ARTIFACT_TREATMENT
             quest.param[field].ARTIFACT_TREATMENT = nil
         end
-        if #TheGame:GetGameState():GetActiveQuestWithContentID("CAMPAIGN_ASK_LOCATION") == 0 then
-            QuestUtil.SpawnQuest("CAMPAIGN_ASK_LOCATION")
+
+        local required_quests = {"CAMPAIGN_SHILLING", "CAMPAIGN_RANDOM_COIN_FIND", "CAMPAIGN_ASK_LOCATION", "LOCATION_OSHNUDROME_RACES", "LOCATION_PARTY_STORE", "SAL_STORY_MERCHANTS"}
+        for i, id in ipairs(required_quests) do
+            if #TheGame:GetGameState():GetActiveQuestWithContentID(id) == 0 then
+                QuestUtil.SpawnQuest(id)
+            end
         end
     end,
     fill_out_quip_tags = function(quest, tags, agent)
