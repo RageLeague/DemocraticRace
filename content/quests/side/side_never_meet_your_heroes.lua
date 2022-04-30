@@ -2,6 +2,7 @@ local QDEF = QuestDef.Define
 {
     title = "Never Meet Your Heroes",
     desc = "Manufacture a scandal for one of your political opponents. Show their supporters who they are really supporting.",
+    icon = engine.asset.Texture("icons/quests/side_smith_delicate_negotiations.tex"),
 
     qtype = QTYPE.SIDE,
     act_filter = DemocracyUtil.DemocracyActFilter,
