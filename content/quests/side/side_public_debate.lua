@@ -18,7 +18,7 @@ local QDEF = QuestDef.Define
     qtype = QTYPE.SIDE,
     desc = [[{opponent} is hosting a public debate, you might be able to make use of the large audience by swaying them to your side.]],
     rank = {1, 5},
-    icon = engine.asset.Texture("icons/quests/handler_admiralty_find_bandit_informant.tex"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/public_debate.png"),
 
     reward_mod = 0,
     tags = {"RALLY_JOB"},

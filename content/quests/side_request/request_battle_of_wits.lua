@@ -53,7 +53,7 @@ local QDEF = QuestDef.Define
 {
     title = "Battle of Wits",
     desc = "To prove that nobody is smarter than {giver}, {giver} asks you to find someone who can defeat {giver.himher} in a battle of Grout Bog Flip 'Em.",
-    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/revenge_starving_worker.png"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/battle_of_wits.png"),
 
     qtype = QTYPE.SIDE,
 

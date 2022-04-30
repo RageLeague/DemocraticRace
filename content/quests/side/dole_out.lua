@@ -7,6 +7,8 @@ end
 local QDEF = QuestDef.Define{
     title = "Dole out",
     desc = "Give Bread to the poor to gain support",
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/dole_out.png"),
+
     qtype = QTYPE.SIDE,
     rank = {2, 5},
     act_filter = DemocracyUtil.DemocracyActFilter,
