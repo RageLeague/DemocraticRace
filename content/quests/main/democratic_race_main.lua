@@ -175,7 +175,7 @@ local QDEF = QuestDef.Define
 
         -- quest.param.allow_skip_side = true
 
-        -- TheGame:GetGameState():GetPlayerAgent().graft_owner:AddGraft(GraftInstance("relation_support_tracker"))
+        -- TheGame:GetGameState():GetPlayerAgent().graft_owner:AddGraft(GraftInstance("democracy_resolve_limiter"))
 
         QuestUtil.StartDayQuests(DAY_SCHEDULE, quest)
 
@@ -187,10 +187,12 @@ local QDEF = QuestDef.Define
             QuestUtil.SpawnQuest("RACE_LIVING_WITH_ADVISOR")
             quest:DefFn("DeltaGeneralSupport", (quest.param.init_support_level or 0) * (quest.param.start_on_day - 1))
         end
+
         QuestUtil.SpawnQuest("CAMPAIGN_SHILLING")
         QuestUtil.SpawnQuest("CAMPAIGN_RANDOM_COIN_FIND")
         QuestUtil.SpawnQuest("CAMPAIGN_ASK_LOCATION")
         QuestUtil.SpawnQuest("LOCATION_OSHNUDROME_RACES")
+        QuestUtil.SpawnQuest("LOCATION_PARTY_STORE")
 
         QuestUtil.SpawnQuest("SAL_STORY_MERCHANTS")
         -- populate all locations.
@@ -244,8 +246,12 @@ local QDEF = QuestDef.Define
             quest.param[field].RELIGIOUS_POLICY = quest.param[field].ARTIFACT_TREATMENT
             quest.param[field].ARTIFACT_TREATMENT = nil
         end
-        if #TheGame:GetGameState():GetActiveQuestWithContentID("CAMPAIGN_ASK_LOCATION") == 0 then
-            QuestUtil.SpawnQuest("CAMPAIGN_ASK_LOCATION")
+
+        local required_quests = {"CAMPAIGN_SHILLING", "CAMPAIGN_RANDOM_COIN_FIND", "CAMPAIGN_ASK_LOCATION", "LOCATION_OSHNUDROME_RACES", "LOCATION_PARTY_STORE", "SAL_STORY_MERCHANTS"}
+        for i, id in ipairs(required_quests) do
+            if #TheGame:GetGameState():GetActiveQuestWithContentID(id) == 0 then
+                QuestUtil.SpawnQuest(id)
+            end
         end
     end,
     fill_out_quip_tags = function(quest, tags, agent)
@@ -1033,6 +1039,65 @@ QDEF:AddConvo()
         cxt:Dialog("DIALOG_NEW_LOCATION")
         DemocracyUtil.DoLocationUnlock(cxt, cxt.location:GetContentID())
     end)
+QDEF:AddConvo()
+    :Priority(CONVO_PRIORITY_HIGHEST)
+    :ConfrontState("STATE_HURT", function(cxt)
+        local health = TheGame:GetGameState():GetPlayerAgent().health:GetPercent()
+        local has_graft = TheGame:GetGameState():GetPlayerAgent().graft_owner:HasGraft("democracy_resolve_limiter")
+        return health < 1 and not has_graft
+    end)
+        :Loc{
+            DIALOG_INTRO = [[
+                player:
+                    !left
+                * You really ought to take care of yourself better.
+                player:
+                    !cagey
+                    What? Who said that?
+                * This is your pain receptor talking to you.
+                * You are hurt. And being hurt is very painful.
+                {high_health?
+                    player:
+                        !crossed
+                        Come on, it was just some bruises. Nothing I can't walk off, or sleep off.
+                    * While you can probably survive this ordeal, you will still feel the pain as a reminder to take care of yourself.
+                }
+                {low_health?
+                    player:
+                        !injured
+                        Now that you mention it, it Heshing hurts so much!
+                        But I've handled worse, probably.
+                        And as long as I don't fight, I can just sleep the injury off.
+                    * Sure, you've handled this kind of injury before, but you've never felt this painful while you are actively working on a campaign.
+                }
+                {not (high_health or low_health)?
+                    player:
+                        Now that you mention it, it really does hurt.
+                        Still, I've handled worse.
+                        And as long as I don't fight, I can just sleep the injury off.
+                    * Sure, you've handled this kind of injury before, but you've never felt this painful while you are actively working on a campaign.
+                }
+                * Your resolve will be limited as long as you feel the pain.
+                * You don't want to be unable to focus due to the pain while you are thinking for a counterargument, do you?
+                player:
+                    !shrug
+                    Guess not.
+                * Then you better find a place to heal yourself before you blunder.
+                *** While you are hurt, your resolve will be limited by the proportion of health you have.
+                *** Restore to full health to remove this limit.
+            ]],
+        }
+        :Fn(function(cxt)
+            local health = TheGame:GetGameState():GetPlayerAgent().health:GetPercent()
+            if health >= 0.8 then
+                cxt.enc.scratch.high_health = true
+            elseif health <= 0.5 then
+                cxt.enc.scratch.low_health = true
+            end
+            cxt:Dialog("DIALOG_INTRO")
+            TheGame:GetGameState():GetPlayerAgent().graft_owner:AddGraft(GraftInstance("democracy_resolve_limiter"))
+            StateGraphUtil.AddEndOption(cxt)
+        end)
 QDEF:AddConvo()
     :Priority(CONVO_PRIORITY_LOWEST)
     :ConfrontState("STATE_NO_ADVISOR", function(cxt)
