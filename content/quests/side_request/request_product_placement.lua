@@ -4,7 +4,7 @@ local QDEF = QuestDef.Define
 {
     title = "Product Placement",
     desc = "{giver} wants you to endorse {giver.hisher} product and asks you to advertise them to the people.",
-    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/revenge_starving_worker.png"),
+    icon = engine.asset.Texture("icons/quests/special_delivery.tex"),
 
     qtype = QTYPE.SIDE,
 

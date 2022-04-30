@@ -33,7 +33,7 @@ local QDEF = QuestDef.Define
 {
     title = "Ctenophorian Mystery",
     desc = "{giver} is curious about Hesh's true form. {giver.HeShe} wants you to find out what Hesh really is.",
-    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/revenge_starving_worker.png"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/ctenophorian_mystery.png"),
 
     qtype = QTYPE.SIDE,
 
