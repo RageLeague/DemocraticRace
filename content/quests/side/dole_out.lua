@@ -10,6 +10,7 @@ local QDEF = QuestDef.Define{
     icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/dole_out.png"),
 
     qtype = QTYPE.SIDE,
+    rank = {2, 5},
     act_filter = DemocracyUtil.DemocracyActFilter,
     focus = QUEST_FOCUS.NEGOTIATION,
     tags = {"RALLY_JOB"},
