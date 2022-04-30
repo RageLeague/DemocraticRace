@@ -9,7 +9,8 @@ local GRAFTS =
 {
     democracy_resolve_limiter =
     {
-        hidden = true,
+        -- hidden = true,
+        name = "Agonizing Injury",
         desc = "Your max resolve in negotiation is limited by the proportion of health you have.",
         negotiation_modifier =
         {
@@ -63,5 +64,7 @@ local GRAFTS =
 ---------------------------------------------------------------------------------------------
 
 for id, graft in pairs( GRAFTS ) do
-    Content.AddStoryGraft( id, graft )
+    graft.is_bane = true
+    Content.AddSocialGraft( id, graft )
+    -- Content.AddStoryGraft( id, graft )
 end
