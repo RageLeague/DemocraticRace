@@ -605,6 +605,7 @@ QDEF:AddConvo("do_interview")
                     }
 
                     DemocracyUtil.SendMetricsData("DAY_2_BOSS_START", METRIC_DATA)
+                    TheGame:SetTempMusicOverride("DEMOCRATICRACE|event:/democratic_race/music/negotiation/interview", cxt.enc)
                 end)
                 :Negotiation{
                     flags = NEGOTIATION_FLAGS.WORDSMITH,
