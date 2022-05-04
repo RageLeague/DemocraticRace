@@ -324,7 +324,7 @@ QDEF:AddConvo("ask_info")
         :Loc{
             DIALOG_TALK = [[
                 player:
-                    [p] So about Hesh...
+                    Say, I have a question about Hesh's classification.
                 agent:
                 {liked?
                     !cagey
@@ -369,17 +369,26 @@ QDEF:AddConvo("ask_info")
             OPT_EXCUSE = "Excuse yourself",
             DIALOG_EXCUSE = [[
                 player:
-                    [p] Pardon my wudeness.
+                    !placate
+                    Oh, pardon me. I wasn't aware <i>that</> was taboo.
             ]],
             DIALOG_EXCUSE_SUCCESS = [[
-                agent:
-                    [p] I get your point.
-                    If you must know, Hesh cannot be classified.
-                    Hesh is a multi-faceted being, and to classify it is to waste what precious time we have before being consumed.
-                    Now you know the answer, just promise me you won't ask around this kind of question again.
                 player:
-                    Sure.
-                    It's already confusing enough.
+                    !overthere
+                    I was just a bit curious about <i>that</>. Bit new to cult traditions, y'know.
+                agent:
+                    !crossed
+                    I suppose that's your excuse for not reading the Waterlogged Tomes?
+                    It stated clearly in those texts that Hesh is an unidentifiable being.
+                player:
+                    !bashful
+                    Yeah, I must've not gotten to that one yet. Though it's a real page turner, let me tell you.
+                agent:
+                    !angry
+                    Hmph. I'll let this one slide, but swear to your eventual consumption that you'll actually study before you commit heresy again.
+                player:
+                    !salute
+                    You've got my word.
             ]],
             DIALOG_EXCUSE_FAILURE = [[
                 player:
@@ -577,6 +586,7 @@ QDEF:AddConvo("tell_result", "giver")
         :Loc{
             DIALOG_INTRO = [[
                 agent:
+                    !left
                     Hey, {player}? Are you okay?
                 {not went_crazy?
                 player:
@@ -617,9 +627,25 @@ QDEF:AddConvo("tell_result", "giver")
                     You're welcome, I suppose?
                 }
                 {went_crazy?
-                    [p] I saw too much, and I talk crazy.
+                    !scared
+                    {player}! Wake up!
+                    !angry
+                    C'mon, I need you to make me money!
+                player:
+                    !right
+                    !drunk
+                    hughshih...
                 agent:
-                    Oh no, now I feel bad for you.
+                    Rise and shine, {player}. C'mon, what the hesh happened to you.
+                player:
+                    !scared
+                    Hesh! It's classification, what is it, I could barely comprehend it, I...I...
+                agent:
+                    !placate
+                    Calm down, {player}. You're okay.
+                player:
+                    Bad dream, <i>terrible</> dream. Hesh, saltwater, confusion.
+                    I...let's just get on with the day.
                 }
             ]],
         }
