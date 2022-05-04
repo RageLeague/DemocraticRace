@@ -736,32 +736,41 @@ QDEF:AddConvo("bad_event")
                         Next time you try to lie to a cult member, be a little more convincing.
                 }
                 {leader_absent?
-                    agent:
-                        [p] Yeah right, who else wears the distinct outfit that you are currently wearing?
                     player:
-                        Good point.
-                        Crap.
-                    * Uh oh.
+                        !angrypoint
+                        I was nowhere near {cultist} all day!
+                    agent:
+                        !crossed
+                        Oh really? And where were you all day, then?
+                    player:
+                        Doing my usual politician duties. A speech here, a check in with my advisor there, a little bit of heresy every now and the-
+                    agent:
+                        !angry
+                    player: 
+                        !bashful
+                        I uh...don't suppose I could take back that last bit, can I?
                 }
-            ]],
+            ]], 
 
             OPT_LET_GO = "Convince {agent} to let you go",
 
             DIALOG_LET_GO = [[
                 player:
-                    I know you don't like me, but I helped you get what you want.
-                    Would you at least let me go?
+                    !angry
+                    Hey, no need to keep me here when there's actual heresy to deal with.
             ]],
 
             DIALOG_LET_GO_SUCCESS = [[
-                agent:
-                    !facepalm
-                    Uh, fine. We have the real source of this heresy.
-                    Easier to find {giver} than staying here arguing with you.
                 player:
                     !hips
-                    That's the spirit.
-                * {agent} let you go, but you are sure that this is not over.
+                    I know you don't like me, but that's the thing. You <i>know</> me.
+                    Did I ever come off as caring about this topic beforehand?
+                agent:
+                    !thought
+                    You bring up <i>a</> point. I don't think you were that particular over Hesh lore.
+                    !angry
+                    Fine. Cult business comes first, but what's between us isn't over!
+                * {agent} tromps off, leaving a dread that {agent.heshe}'ll be a thorn in your side later lingering the air.
             ]],
             
             OPT_BRIBE = "Bribe {agent}",
@@ -774,9 +783,9 @@ QDEF:AddConvo("bad_event")
                     agent:
                         !taken_aback
                         I-
-                        !take
+                        !angrypoint
                         First of all, that word is for the bearers of spark and derrick workers.
-                        !handwring
+                        !take
                         Secondly, thank you, {player}. May you walk in the shallows.
                 }
                 {leader_absent?
@@ -808,10 +817,25 @@ QDEF:AddConvo("bad_event")
 
             DIALOG_DEFEND = [[
                 player:
-                    [p] Easier just to fight.
+                    !fight
+                    You're going down, cultist!
             ]],
             DIALOG_DEFEND_WIN = [[
-                * [p] You win. Now what.
+                {dead?
+                    * You take the extra second to wipe some lumin-blue blood off your weaponry.
+                    * Your polling average would've prefered you didn't murder a group of voters, but it is what it is.
+                }
+                {not dead?
+                    agent:
+                        !injured
+                    player:
+                        !fight
+                        I hope I've sufficiently beaten the idea I commited heresy out of your dense skull.
+                    agent:
+                        You have. Won't be dealing with us for a while.
+                        But keep that heresy talk to yourself if you don't want to see someone else's ugly mug asking the same thing I did.
+                    * The cultish crew stumbles away, leaving the thinly veiled threat for you to ponder.
+                }
             ]],
 
             OPT_RAT_OUT = "Tell {agent} about {giver}'s involvement",
@@ -828,18 +852,15 @@ QDEF:AddConvo("bad_event")
                 }
                 {not disliked?
                     !dubious
-                        {giver}, are you sure?
-                    player:
-                        Yeah, why else would I say {giver.hisher} name?
-                    agent:
-                        !shrug
-                        Fair enough.
-                        Well, since you didn't know that it is problematic, and you are very cooperative, I'm going to let you go this time.
-                        There will be questionings for {giver} of course, but it's not your problem.
-                    player:
-                        !scared_shrug
-                        Sure, I guess...?
-                    * {agent} let you go, but you are sure that this is not over.
+                    {giver}? Aren't they a member of the cult?
+                player:
+                    !shrug
+                    That's what it says on {giver.hisher} business card.
+                agent:
+                    I guess they'd have the motive to learn more about Hesh, though {giver.heshe} should've known about this heresy beforehand.
+                    !hesh_greeting
+                    Thank you, {player}, for this information. We'll be sure to investigate {giver} shortly.
+                * {agent} walks away, though you can't help the sense of foreboding you feel. 
                 }
             ]],
 
