@@ -809,7 +809,7 @@ QDEF:AddConvo("bad_event")
                     Do you really think I am capable of committing heresy?
                 {pro_religious_policy?
                     !thumb
-                    I will have you know that I run a <i>very</> religious platform.
+                    I will have you know that I run a <i>very</> pro-Heshian platform.
                 agent:
                     !angry_accuse
                     Don't be a fool! Anyone with a brain knows that you don't actually believe the stuff you say!
