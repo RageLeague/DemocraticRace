@@ -53,7 +53,7 @@ local QDEF = QuestDef.Define
 {
     title = "Battle of Wits",
     desc = "To prove that nobody is smarter than {giver}, {giver} asks you to find someone who can defeat {giver.himher} in a battle of Grout Bog Flip 'Em.",
-    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/revenge_starving_worker.png"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/battle_of_wits.png"),
 
     qtype = QTYPE.SIDE,
 
@@ -84,13 +84,13 @@ local QDEF = QuestDef.Define
     on_complete = function(quest)
         if not (quest.param.sub_optimal or quest.param.poor_performance) then
             quest:GetCastMember("giver"):OpinionEvent(OPINION.DID_LOYALTY_QUEST)
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 4, "COMPLETED_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 3, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 4, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 3, "COMPLETED_QUEST_REQUEST")
         elseif quest.param.sub_optimal then
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 4, "COMPLETED_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 3, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 4, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 3, "COMPLETED_QUEST_REQUEST")
         elseif quest.param.poor_performance then
             DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2, "POOR_QUEST")
             DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 4, "POOR_QUEST")
@@ -1237,7 +1237,7 @@ FOLLOW_UP = QDEF:AddFollowup({
     },
     fill_out_quip_tags = function(quest, tags, agent)
         if agent == quest:GetCastMember("giver") then
-            table.insert_unique(tags, "dronumph_depressed")
+            table.insert_unique(tags, "depressed")
         end
     end,
 })
@@ -1374,6 +1374,7 @@ FOLLOW_UP:AddConvo("comfort", "giver")
             * It seems like your attempt to brighten {agent}'s mood has worsened the situation.
             * It's too late now. {agent} doesn't even want to talk to you.
         ]],
+        NEGOTIATION_REASON = "Comfort {agent}'s spirit!",
     }
     :Hub(function(cxt)
         if not cxt.quest.param.tried_comfort then
@@ -1383,6 +1384,7 @@ FOLLOW_UP:AddConvo("comfort", "giver")
                     cxt:GetAgent():SetTempNegotiationBehaviour(DEPRESSION_BEHAVIOUR)
                 end)
                 :Negotiation{
+                    reason_fn = function(minigame) return cxt:GetLocString("NEGOTIATION_REASON") end,
                     -- This will be a special negotiation.
                     -- giver will start at low resolve, and you must bring their resolve to full to actually win the negotiation.
                     -- Winning negotiation without bringing up resolve, like using damage or oolo's requisition, has bad effect.
@@ -1403,7 +1405,7 @@ FOLLOW_UP:AddConvo("comfort", "giver")
                             QDEF.on_complete(cxt.quest)
                             -- This will probably change dronumph's narcissist personality a little, as he accepts that there
                             -- are always people better than him, but that should not be a cause for his depression.
-                            cxt:GetAgent():Remember("ACCEPT_LIMITS")
+                            cxt:GetAgent():AddTag("accept_limits")
                             StateGraphUtil.AddEndOption(cxt)
                         else
                             cxt:Dialog("DIALOG_COMFORT_WIN")

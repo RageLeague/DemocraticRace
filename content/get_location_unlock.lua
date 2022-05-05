@@ -113,7 +113,7 @@ local function GetLocationUnlockScore(location, agent, location_type)
     end
     local score = 2 -- initial weighting
     if location:GetFactionID() == agent:GetFactionID() then
-        score = score + 3
+        score = score + 10
     else
         if RELATIONSHIP_SCORES[faction_relationship] then
             score = score + RELATIONSHIP_SCORES[faction_relationship]

@@ -26,7 +26,7 @@ function Location:PopulateGameState(...)
         self.location_data.work_data = self.location_data.work
         self.location_data.work = shallowcopy(self.location_data.work)
     end
-    print("Broadcasting event... get_work_availability", self, self.location_data and self.location_data.work or {})
+    -- print("Broadcasting event... get_work_availability", self, self.location_data and self.location_data.work or {})
     TheGame:BroadcastEvent("get_work_availability", self, self.location_data and self.location_data.work or {})
     -- if self:GetContentID() == "GB_LABOUR_OFFICE" then
     --     print(serpent.dump(self.location_data.work))

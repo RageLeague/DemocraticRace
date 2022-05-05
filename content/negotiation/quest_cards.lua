@@ -199,7 +199,7 @@ local CARDS = {
         end,
 
         OnPostResolve = function( self, engine, targets )
-            local modifier = self.negotiator:CreateModifier("CONTEMPORARY_QUESTION")
+            local modifier = Negotiation.Modifier("CONTEMPORARY_QUESTION", self.negotiator, self.stacks)
             if modifier then
                 modifier:SetIssue(self.issue_data)
             end
@@ -207,6 +207,8 @@ local CARDS = {
                 table.arrayremove(self.negotiator.behaviour.available_issues, self.issue_data)
                 self.issue_data = nil
             end
+
+            self.negotiator:CreateModifier(modifier, nil, self)
         end,
     },
 
@@ -304,8 +306,11 @@ local CARDS = {
             if opposition_data and opposition_data.mini_negotiator then
                 mini_negotiator_id = opposition_data.mini_negotiator
             end
-            local mod = self.negotiator:CreateModifier( mini_negotiator_id, 1, self )
+
+            local mod = Negotiation.Modifier( mini_negotiator_id, self.negotiator )
             mod.candidate_agent = self.owner
+            self.negotiator:CreateModifier( mod )
+
             self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                 panel.last_ev_time = nil
                 panel.speedup_factor = nil
@@ -367,8 +372,11 @@ local CARDS = {
             if opposition_data and opposition_data.mini_negotiator then
                 mini_negotiator_id = opposition_data.mini_negotiator
             end
-            local mod = self.negotiator:CreateModifier( mini_negotiator_id, 1, self )
+
+            local mod = Negotiation.Modifier( mini_negotiator_id, self.negotiator )
             mod.candidate_agent = self.owner
+            self.negotiator:CreateModifier( mod )
+
             self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                 panel.last_ev_time = nil
                 panel.speedup_factor = nil
@@ -401,7 +409,7 @@ local CARDS = {
             return loc.format(fmt_str, self.userdata and self.userdata.linked_quest and self.userdata.linked_quest:GetProvider() and self.userdata.linked_quest:GetProvider():GetName() or (self.def or self):GetLocalizedString("ALT_DESC"))
         end,
 
-        flavour = "This sounds extremely unethical. Then again, if you are ethical, you wouldn't be a grifter.",
+        flavour = "'It sounds like you need this... sideways... eight. Yeah! You need sideways eight in your life!'",
         icon = "DEMOCRATICRACE:assets/cards/promote_product.png",
 
         cost = 1,

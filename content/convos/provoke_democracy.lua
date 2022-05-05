@@ -1,6 +1,8 @@
+local EVERYONE_DIES_MOD
+
 Convo("PROVOKE_DEMOCRACY")
     :Loc{
-        
+
         OPT_PROVOKE = "Provoke {agent}",
         DIALOG_PROVOKE = [[
             player:
@@ -66,19 +68,30 @@ Convo("PROVOKE_DEMOCRACY")
         if not DemocracyUtil.IsDemocracyCampaign(cxt.act_id) then
             return
         end
-        
+
+        if EVERYONE_DIES_MOD == nil then
+            for i, mod_table in Content.AllMods() do
+                if mod_table and mod_table.alias == "EveryoneDies" and Content.IsModEnabled(mod_table) then
+                    EVERYONE_DIES_MOD = mod_table
+                    break
+                end
+            end
+            if EVERYONE_DIES_MOD == nil then
+                EVERYONE_DIES_MOD = false
+            end
+        end
+
         if who then
             local canprovoke, reasons = DemocracyUtil.PunishTargetCondition(who)
-            print(#reasons, reasons)
-            if not canprovoke then return end
+            if not canprovoke and not (EVERYONE_DIES_MOD and Content.GetModSetting( EVERYONE_DIES_MOD, "allow_any_relation_provoking" )) then return end
             -- local can_provoke_here = true--not cxt.location:HasTag("HQ")
-            local can_provoke_this_person = not who:IsInPlayerParty()
+            local can_provoke_this_person = (not who:IsInPlayerParty()) or (EVERYONE_DIES_MOD and Content.GetModSetting( EVERYONE_DIES_MOD, "allow_provoke_anyone" ))
 
             cxt:Opt("OPT_PROVOKE")
                 :PostText("TT_PROVOKE_REASONS", reasons)
                 :Dialog( "DIALOG_PROVOKE" )
                 -- :ReqCondition(can_provoke_here, "REQ_CAN_NOT_PROVOKE_HERE")
-                :ReqCondition((who:GetRenown() or 1) <= who:GetCombatStrength(), "REQ_CAN_NOT_PROVOKE_HIGH_RENOWN")
+                :ReqCondition((who:GetRenown() or 1) <= who:GetCombatStrength() or (EVERYONE_DIES_MOD and Content.GetModSetting( EVERYONE_DIES_MOD, "allow_provoke_anyone" )), "REQ_CAN_NOT_PROVOKE_HIGH_RENOWN")
                 :ReqCondition(can_provoke_this_person, "REQ_CAN_NOT_PROVOKE_THIS_PERSON")
                 :PostText("TT_PROVOKE")
                 :ReceiveOpinion(OPINION.TRIED_TO_PROVOKE, {only_show = true})
@@ -96,7 +109,7 @@ Convo("PROVOKE_DEMOCRACY")
                         cxt.encounter:SetMusicEvent( kashio_stinger )
                         cxt:GetAgent():OpinionEvent(OPINION.TRIED_TO_PROVOKE)
                         cxt:Dialog("DIALOG_WIN_NEGOTIATION_FIGHT")
-                        
+
                         cxt:Opt("OPT_FIGHT")
                             :Dialog("DIALOG_WIN_NEGOTIATION_FIGHT_PST")
                             -- :Fn(function()
@@ -105,7 +118,7 @@ Convo("PROVOKE_DEMOCRACY")
                             -- end)
                             :Battle{
                                 -- flags = BATTLE_FLAGS.NO_SURRENDER,
-                                on_win = function(cxt) 
+                                on_win = function(cxt)
                                     if cxt:GetAgent():IsDead() then
                                         cxt:Dialog("DIALOG_KILLED_AGENT")
                                     else
@@ -131,6 +144,6 @@ Convo("PROVOKE_DEMOCRACY")
                         StateGraphUtil.AddEndOption(cxt)
                     end,
                 }
-                
+
         end
     end)

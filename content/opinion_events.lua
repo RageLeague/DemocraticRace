@@ -96,6 +96,10 @@ local OPINIONS = {
         delta = OPINION_DELTAS.DISLIKE,
         txt = "Rejected their alliance",
     },
+    PUBLICLY_DENOUNCE = {
+        delta = OPINION_DELTAS.BAD,
+        txt = "Publicly denounced them",
+    },
 }
 
 for id, data in pairs(OPINIONS) do

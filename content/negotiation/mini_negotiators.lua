@@ -236,7 +236,7 @@ end
 local MINI_NEGOTIATOR =
 {
     name = "Candidate",
-    desc = "At the end of the turn, <b>{1.fullname}</> acts and plays {2} cards.",
+    desc = "At the end of the turn, <b>{1.fullname}</> acts and plays {2} {2*card|cards}.",
     -- loc_strings = {
     --     ADMIRALTY_BONUS = "Then, if the opponent has no {PLANTED_EVIDENCE}, {INCEPT} one.",
     --     SPREE_BONUS = "{1.name}'s cards deals 1 bonus damage for every 2 turns passed.",

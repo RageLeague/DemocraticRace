@@ -1198,6 +1198,11 @@ function DemocracyUtil.RandomGauss( mean, stddev )
     return x
 end
 
+-- Choose a random number in an exponential distribution
+function DemocracyUtil.RandomExp( mean )
+    return - math.log(math.max(math.random(), 1e-3)) * mean
+end
+
 function DemocracyUtil.CalculateStrengthRatio(blue, red, blue_bonus, red_bonus)
     local blue_score = (blue:GetCombatStrength() + (blue:IsBoss() and 4 or 0)) * blue.health:GetPercent() + (blue_bonus or 0)
     local red_score = (red:GetCombatStrength() + (red:IsBoss() and 4 or 0)) * red.health:GetPercent() + (red_bonus or 0)
