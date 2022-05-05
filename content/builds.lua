@@ -12,7 +12,7 @@ local new_builds = {
         dialog_build = "DEMOCRATICRACE:assets/anim/hesh.png.zip",
         dialog_anim = "DEMOCRATICRACE:assets/anim/hesh.png.zip",
         combat_anims = { "DEMOCRATICRACE:assets/anim/hesh.png.zip", },
-        portrait_anim = "anim/med_portrait.zip",
+        portrait_anim = "DEMOCRATICRACE:assets/anim/hesh.png.zip",
     })
 }
 
