@@ -768,7 +768,7 @@ QDEF:AddConvo("bad_event")
                 }
                 {leader_absent?
                     player:
-                        !angrypoint
+                        !angry_point
                         I was nowhere near {cultist} all day!
                     agent:
                         !crossed
@@ -814,7 +814,7 @@ QDEF:AddConvo("bad_event")
                     agent:
                         !taken_aback
                         I-
-                        !angrypoint
+                        !angry_point
                         First of all, that word is for the bearers of spark and derrick workers.
                         !take
                         Secondly, thank you, {player}. May you walk in the shallows.
@@ -854,14 +854,14 @@ QDEF:AddConvo("bad_event")
             DIALOG_DEFEND_WIN = [[
                 {dead?
                     * You take the extra second to wipe some lumin-blue blood off your weaponry.
-                    * Your polling average would've prefered you didn't murder a group of voters, but it is what it is.
+                    * Your polling average would've preferred you didn't murder a group of voters, but it is what it is.
                 }
                 {not dead?
                     agent:
                         !injured
                     player:
                         !fight
-                        I hope I've sufficiently beaten the idea I commited heresy out of your dense skull.
+                        I hope I've sufficiently beaten the idea I committed heresy out of your dense skull.
                     agent:
                         You have. Won't be dealing with us for a while.
                         But keep that heresy talk to yourself if you don't want to see someone else's ugly mug asking the same thing I did.
