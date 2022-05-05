@@ -768,7 +768,7 @@ QDEF:AddConvo("bad_event")
                 }
                 {leader_absent?
                     player:
-                        !angry_point
+                        !angry_accuse
                         I was nowhere near {cultist} all day!
                     agent:
                         !crossed
@@ -804,6 +804,28 @@ QDEF:AddConvo("bad_event")
                 * {agent} tromps off, leaving a dread that {agent.heshe}'ll be a thorn in your side later lingering the air.
             ]],
 
+            DIALOG_LET_GO_FAILURE = [[
+                player:
+                    Do you really think I am capable of committing heresy?
+                {pro_religious_policy?
+                    !thumb
+                    I will have you know that I run a <i>very</> religious platform.
+                agent:
+                    !angry_accuse
+                    Don't be a fool! Anyone with a brain knows that you don't actually believe the stuff you say!
+                    You are just trying to steal votes from devout Hesh followers!
+                }
+                {not pro_religious_policy?
+                agent:
+                    !angry_shrug
+                    Yes! Absolutely!
+                    You are a heretic, through and through.
+                    Anyone knowing anything about your campaign would know that.
+                }
+                agent:
+                    And there is only one way this is going to end for heretics like you!
+            ]],
+
             OPT_BRIBE = "Bribe {agent}",
             DIALOG_BRIBE = [[
                 {not leader_absent?
@@ -814,7 +836,7 @@ QDEF:AddConvo("bad_event")
                     agent:
                         !taken_aback
                         I-
-                        !angry_point
+                        !angry_accuse
                         First of all, that word is for the bearers of spark and derrick workers.
                         !take
                         Secondly, thank you, {player}. May you walk in the shallows.
