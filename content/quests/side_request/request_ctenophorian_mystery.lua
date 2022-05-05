@@ -902,6 +902,7 @@ QDEF:AddConvo("bad_event")
                     !angry
                     Calling a cult member's credibility into question? A dangerous move, you know.
                     We'll look into {giver}'s motives soon, but you're still the heretic here.
+                * Dang, you really hoped that snitching on {giver} would get you out of this situation.
                 }
                 {not disliked?
                     !dubious
