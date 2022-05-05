@@ -15,7 +15,7 @@ Content.AddCharacterDef
     {
         base_def = "MONSTER",
         name = "Hesh of the Dark",
-        title = "Interphylum Leviathan",
+        title = "Transphylum Deity",
         -- Can't figure this out.
         build = "cognitive_hesh_build",
         -- head = "head_luminari",
