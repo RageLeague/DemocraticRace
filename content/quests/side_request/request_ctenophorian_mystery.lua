@@ -812,7 +812,7 @@ QDEF:AddConvo("bad_event")
                     I will have you know that I run a <i>very</> pro-Heshian platform.
                 agent:
                     !angry_accuse
-                    Don't be a fool! Anyone with a brain knows that you don't actually believe the stuff you say!
+                    Don't be ridiculous! Anyone with a brain knows that you don't actually believe the stuff you say!
                     You are just trying to steal votes from devout Hesh followers!
                 }
                 {not pro_religious_policy?
