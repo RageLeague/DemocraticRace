@@ -624,6 +624,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                     Now, forget about the whole Hesh business. Drop the investigation into Hesh's taxonomy.
                     !sigh
                     Sometimes, absolute FACTS and LOGIC is not worth the price we pay.
+                    FACTS don't care about your feelings. But I do.
             ]],
             DIALOG_BENNI_INTERFERE_PST = [[
                 giver:
