@@ -94,7 +94,7 @@ local QDEF = QuestDef.Define
         if not (DemocracyUtil.IsDemocracyCampaign() and who and who:IsSentient()) then
             return
         end
-        if (cxt.location and cxt.location:GetProprietor() == who) or (who:GetRelationship() > RELATIONSHIP.NEUTRAL or who == TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")) then
+        if (cxt.location and cxt.location:GetProprietor() == who and who:GetRelationship() >= RELATIONSHIP.NEUTRAL) or (who:GetRelationship() > RELATIONSHIP.NEUTRAL or who == TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")) then
             cxt:Opt("OPT_ASK_ABOUT_LOCATION")
                 :ReqCondition(not who:HasMemoryFromToday("OFFERED_LOCATION"), "REQ_NOT_SOCIALIZED")
                 :RequireFreeTimeAction(2, true)
