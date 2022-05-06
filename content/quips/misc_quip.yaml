@@ -194,7 +194,14 @@ lines:
       I often drink at a place called {loc_to_unlock#location}.
       It's nothing too special, but you get to visit many interesting people there.
       We should drink at there some time.
-    * You're pretty sure you're not allowed to drink with someone who you already liked, but you don't want to bring it up to ruin your relationship.
+    {liked?
+      * You're pretty sure you're not allowed to drink with someone who you already liked, but you don't want to bring it up to ruin your relationship.
+    }
+    {not liked?
+    player:
+      That sounds like a great plan.
+      When the opportunity arises, of course.
+    }
 - tags: [unlock_location, unlock_shop]
   dialog:
   - |
