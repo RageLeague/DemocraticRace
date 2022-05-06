@@ -96,9 +96,13 @@ QDEF:AddConvo()
     end)
     :State("STATE_GAME")
         :Loc{
+            --Moving the player and agent out of frame until needed.
             DIALOG_INTRO = [[
-                * You take a seat at the gallery, as the game is about to start.
-                * You see three oshnus at the starting line.
+                player:
+                    !exit
+                agent:
+                    !exit
+                * You find the nearest empty seat and survey the competitors saddling up to the starting line.
             ]],
             DIALOG_INTRO_CHAMPION = [[
                 * There is {1#agent}, a long time champion, and many in the audience is rooting for {1.himher}.
@@ -138,17 +142,18 @@ QDEF:AddConvo()
     :State("STATE_BET")
         :Loc{
             DIALOG_BETTING = [[
-                * Before the race starts, you can choose to make a bet.
+                * Before you get too comfy, you hear the bookie for this race calling for bets.
+                * You could throw some money on the line, if you're feeling confident. 
             ]],
             OPT_NO_BET = "Don't bet on anyone",
             DIALOG_NO_BET = [[
-                * You opt to not bet, and simply watch the race instead.
+                * You stay firmly in your seat, your cash more worth holding on to than gambling away.
             ]],
             OPT_BET = "Bet on {1#agent}",
             TT_ODDS = "Estimated payout: {1}/1",
 
             DIALOG_BET = [[
-                * You placed a bet worth {1#money} on {2#agent}.
+                * You throw down your cash, and get a ticket in return. Nothing left to do than sit back.
             ]],
 
             POPUP_TITLE = "Place a bet",
@@ -158,8 +163,8 @@ QDEF:AddConvo()
             CONFIRM_DESC = "Betting {1#money} on {2#agent} will cause you to win {3#money} if {2.heshe} wins the race.",
 
             DIALOG_NO_MONEY = [[
-                * You could make a bet on one of the osnhus, if you have any money at all.
-                * It's actually quite impressive that you have exactly zero shills.
+                * You hear the race's bookie calling out for bets, though you only blankly notice it.
+                * You're fairly certain they won't take bets in pocket lint and sandwich crumbs.  
             ]],
 
             POPUP_TITLE_INVALID = "Invalid input",
@@ -220,19 +225,91 @@ QDEF:AddConvo()
                 :GoTo("STATE_RACE")
         end)
     :State("STATE_RACE")
+        :Quips{
+            {
+                tags = "race_pt1",
+                [[
+                    agent:
+                        And there off! This is one exciting race we have!
+                        {snail1} pulls ahead, {snail2} in close competition.
+                ]],
+                [[
+                    agent:
+                        The race starts, though it appears {snail3}'s rider is asleep at the reins.
+                        Folks, it appears the {snail3} is tired of waiting and is just starting the race themself.
+                ]],
+                [[
+                    agent:
+                        On your mark, get set-
+                        Wait, {snail3} is already speeding ahead of the others!
+                        The other racers are quick to catch up though. This cheat didn't earn them that much of a lead. 
+                ]],
+                tags = "race_pt2",
+                [[
+                    agent:
+                        While we let the racers coast, it's a good time to talk about this Race's sponsor.
+                        This race was sponsored by Rai-
+                        !surprised
+                        Hold that thought, folks! There's been an upset in the race!
+                ]],
+                [[
+                    agent:
+                        {snail1} seems to be falling back, but not out of the race yet!
+                        {snail2} is taking that chence, and going ahead-
+                        Oh, and streaking up to the front is {snail3} by turning on the rocket thrusters!
+                ]],
+                [[
+                    agent:
+                        It appears the race is going steady, except wait!
+                        It seems {snail2}'s racer has stopped their snail to eat a sandwich! 
+                        And it looks like they're done, and have lost a surprisingly small amount of distance on the other races.
+                ]],
+                tags = "race_pt3",
+                [[
+                    agent:
+                        All of the snails crossed the finish at the same time! I can't believe it myself, folks!
+                        Our referees are determining the victor now...
+                        And, by just an eye stalk, the winner is...
+                ]],
+                [[
+                    agent:
+                        {snail3} has the impressive advantage but wait, what's this?
+                        !scared
+                        {snail3} has seen a bird and is chasing after it! Their rider is corraling them back, but this will cost them.
+                        It's close, but the winner is crossing the line now, and it's...
+                ]],
+                [[
+                    agent:
+                        We're in the home stretch now, and it's still anyone's game!
+                        Or it would be, if {snail2}'s rider wasn't racing away last night's drink.
+                        !flinch
+                        Oh, and it's a snail crash into the wall. That's gonna cost them distance.
+                        All of them are pulling into the finish line, and the winner is...
+                ]],
+            },
+        }
         :Loc{
             DIALOG_INTRO = [[
-                * [p] The race starts.
+                * A flag, a whistle, and the crackle of a microphone signal the start of the race.
+                agent:
+                    !right
             ]],
             DIALOG_RESULT = [[
-                * {winner} wins.
-                * That was fun.
+                %race_pt1
+                %race_pt2
+                %race_pt3
+                agent:
+                    !clap
+                    {winner}! Give it up for the snail, everyone!
             ]],
             DIALOG_LOST = [[
-                * [p] Shame about the bet, though.
+                * You become painfully aware of the lightness in your pocket.
+                *** The snail you bet on lost! You don't get any money.
             ]],
             DIALOG_WIN = [[
-                * [p] And you won money! Good job.
+                * You glance down at your ticket with an excited smile.
+                * You give the Bookie your winning ticket and receive a massive pile of shills.
+                *** The snail you bet on won! You got your bet and then some!
             ]],
         }
         :Fn(function(cxt)
