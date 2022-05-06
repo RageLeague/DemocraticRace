@@ -40,7 +40,7 @@ local QDEF = QuestDef.Define
     act_filter = DemocracyUtil.DemocracyActFilter,
     focus = QUEST_FOCUS.NEGOTIATION,
     tags = {"REQUEST_JOB"},
-    -- reward_mod = 0,
+    reward_mod = 0,
     can_flush = false,
 
     events = {
@@ -644,9 +644,12 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                         -- You earn a special card or something.
                         cxt.quest.param.went_crazy = true
                         -- cxt.caravan:DeltaMaxResolve(-5)
+                        cxt.player.negotiator:LearnCard( "status_fracturing_mind" )
 
                         if cxt:GetCastMember("giver") == TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and cxt:GetCastMember("giver"):GetContentID() == "ADVISOR_MANIPULATE" and cxt:GetCastMember("giver"):GetRelationship() >= RELATIONSHIP.LIKED then
                             cxt:Dialog("DIALOG_BENNI_INTERFERE")
+                            quest.extra_reward = EXTRA_QUEST_REWARD.FREE_ITEM
+                            quest.extra_reward_data = "white_lie"
                             cxt.quest:Complete()
                             ConvoUtil.GiveQuestRewards(cxt)
                             cxt:GetCastMember("giver"):AddTag("white_lier")
