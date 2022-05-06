@@ -50,6 +50,11 @@ local QDEF = QuestDef.Define
 
     },
 
+    on_init = function(quest)
+        quest.extra_reward = EXTRA_QUEST_REWARD.FREE_ITEM
+        quest.extra_reward_data = "quest_any_card_bonus"
+    end,
+
     on_start = function(quest)
         quest:Activate("ask_info")
         -- quest.param.people_advertised = 0
@@ -648,8 +653,8 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
 
                         if cxt:GetCastMember("giver") == TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and cxt:GetCastMember("giver"):GetContentID() == "ADVISOR_MANIPULATE" and cxt:GetCastMember("giver"):GetRelationship() >= RELATIONSHIP.LIKED then
                             cxt:Dialog("DIALOG_BENNI_INTERFERE")
-                            quest.extra_reward = EXTRA_QUEST_REWARD.FREE_ITEM
-                            quest.extra_reward_data = "white_lie"
+                            cxt.quest.extra_reward = EXTRA_QUEST_REWARD.FREE_ITEM
+                            cxt.quest.extra_reward_data = "white_lie"
                             cxt.quest:Complete()
                             ConvoUtil.GiveQuestRewards(cxt)
                             cxt:GetCastMember("giver"):AddTag("white_lier")
@@ -717,7 +722,11 @@ QDEF:AddConvo("tell_result", "giver")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
+            cxt.quest.extra_reward = EXTRA_QUEST_REWARD.FREE_ITEM
+            -- TODO: Change the reward
+            cxt.quest.extra_reward_data = "advisor_manipulate_gaslighting"
             cxt.quest:Complete()
+            ConvoUtil.GiveQuestRewards(cxt)
             cxt:GetCastMember("giver"):AddTag("can_manipulate_truth")
         end)
 -- local BAD_EVENT = QuestDef.Define{
