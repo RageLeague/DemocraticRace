@@ -1403,6 +1403,7 @@ FOLLOW_UP:AddConvo("comfort", "giver")
                             -- We win legit
                             cxt:Dialog("DIALOG_COMFORT_SUCCESS")
                             cxt.quest:Complete()
+                            -- You will not get mettle award, because (1) screw mettle (2) we can't without modifying existing code, and I am not willing to screw up with existing code for mettle.
                             ConvoUtil.GiveQuestRewards(cxt)
                             QDEF.on_complete(cxt.quest)
                             -- This will probably change dronumph's narcissist personality a little, as he accepts that there
