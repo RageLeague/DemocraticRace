@@ -50,9 +50,11 @@ local QDEF = QuestDef.Define
 
     },
 
-    on_init = function(quest)
+    postcondition = function(quest)
         quest.extra_reward = EXTRA_QUEST_REWARD.FREE_ITEM
         quest.extra_reward_data = "quest_any_card_bonus"
+        -- print("The reward is replaced, brother")
+        return true
     end,
 
     on_start = function(quest)
@@ -649,7 +651,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                         -- You earn a special card or something.
                         cxt.quest.param.went_crazy = true
                         -- cxt.caravan:DeltaMaxResolve(-5)
-                        cxt.player.negotiator:LearnCard( "status_fracturing_mind" )
+                        cxt:ForceTakeCards{"status_fracturing_mind"}
 
                         if cxt:GetCastMember("giver") == TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and cxt:GetCastMember("giver"):GetContentID() == "ADVISOR_MANIPULATE" and cxt:GetCastMember("giver"):GetRelationship() >= RELATIONSHIP.LIKED then
                             cxt:Dialog("DIALOG_BENNI_INTERFERE")
