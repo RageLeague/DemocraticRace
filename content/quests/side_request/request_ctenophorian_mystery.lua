@@ -575,9 +575,59 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 !exit
                 * it is the sand of the beach you are confined to, the sand that you cannot go beyond, as the creature of your dreams slips further into the murky blue.
                 * Its face still shifts between identities, but you were so close to understanding, if only you could reach beyond the sand, if only you could see, IF ONLY-
-                * Yet you cannot, and you are plagued with those thoughts for the rest of the night, unable to decipher anything.
+                * Yet you cannot, and you are plagued with those thoughts, unable to decipher anything.
+            ]],
+            DIALOG_NO_INTERFERE = [[
+                * Every time you tried to decipher what you have seen, your mind frays further and further.
+                * As such, your mind is consumed by Hesh's madness.
             ]],
             OPT_LOSE = "Embrace the madness",
+            DIALOG_BENNI_INTERFERE = [[
+                * Yet just before you get completely consumed by Hesh's madness, you wake up, with {giver} violently shaking you.
+                player:
+                    !left
+                    !scared
+                giver:
+                    !right
+                    !scared
+                    {player}!
+                player:
+                    !surprised
+                    Wha-
+                giver:
+                    Calm down! Everything is fine!
+                player:
+                    Hesh- It-
+                giver:
+                    You are going to be fine!
+                    I will not lose another person I care about to Hesh's madness!
+                    !exit
+                player:
+                    !exit
+                * After a while, you finally calmed down.
+                giver:
+                    !right
+                player:
+                    !left
+                    !sigh
+                    Okay, I'm fine now.
+                giver:
+                    !agree
+                    That's a relief.
+                    Now, forget about the whole Hesh business. Drop the investigation into Hesh's taxonomy.
+                    !sigh
+                    Sometimes, absolute FACTS and LOGIC is not worth the price we pay.
+            ]],
+            DIALOG_BENNI_INTERFERE_PST = [[
+                giver:
+                    Now, let's get you back to sleep.
+                    !hesh_greeting
+                    May you have a pleasant dream.
+                    !exit
+                player:
+                    !exit
+                * That night, you didn't have any more dreams, which is quite a relief.
+            ]],
         }
         :Fn(function(cxt)
             cxt:TalkTo(TheGame:GetGameState():AddSkinnedAgent("COGNITIVE_HESH"))
@@ -595,11 +645,20 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                         cxt.quest.param.went_crazy = true
                         -- cxt.caravan:DeltaMaxResolve(-5)
 
-                        -- Nah you just lose lol
-                        cxt:Opt("OPT_LOSE")
-                            :Fn(function(cxt)
-                                DemocracyUtil.DoEnding(cxt, "broken_mind", {})
-                            end)
+                        if cxt:GetCastMember("giver") == TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and cxt:GetCastMember("giver"):GetContentID() == "ADVISOR_MANIPULATE" and cxt:GetCastMember("giver"):GetRelationship() >= RELATIONSHIP.LIKED then
+                            cxt:Dialog("DIALOG_BENNI_INTERFERE")
+                            cxt.quest:Complete()
+                            ConvoUtil.GiveQuestRewards(cxt)
+                            cxt:GetCastMember("giver"):AddTag("white_lier")
+                            cxt:Dialog("DIALOG_BENNI_INTERFERE_PST")
+                        else
+                            cxt:Dialog("DIALOG_NO_INTERFERE")
+                            -- Nah you just lose lol
+                            cxt:Opt("OPT_LOSE")
+                                :Fn(function(cxt)
+                                    DemocracyUtil.DoEnding(cxt, "broken_mind", {})
+                                end)
+                        end
                     end)
                     -- :CompleteQuest("ask_info")
                     -- :ActivateQuest("tell_result")
