@@ -564,6 +564,19 @@ local CARDS = {
             minigame:InceptCards( cards, self )
         end,
     },
+    quest_any_card_bonus =
+    {
+        name = "Mystery Card Bonus",
+        desc = "What card bonus will you get? It's a mystery.",
+
+        icon = "negotiation/negotiation_wild.tex",
+
+        flags = CARD_FLAGS.MANIPULATE | CARD_FLAGS.UNPLAYABLE,
+        rarity = CARD_RARITY.UNIQUE,
+        manual_desc = true,
+
+        hide_in_cardex = true
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     if not def.series then

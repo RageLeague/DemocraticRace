@@ -30,7 +30,7 @@ local QDEF = QuestDef.Define
 :AddSubQuest{
     id = "do_interview",
     quest_id = "RACE_INTERVIEW",
-    mark = {"primary_advisor"},
+    -- mark = {"primary_advisor"},
     on_activate = function(quest)
         UIHelpers.PassTime(DAY_PHASE.NIGHT)
         DemocracyUtil.SetSubdayProgress(2)
