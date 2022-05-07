@@ -128,7 +128,7 @@ QDEF:AddConvo("get_job")
             cxt:Opt("OPT_GET_JOB")
                 :SetQuestMark()
                 :Fn( function(cxt)
-                    UIHelpers.DoSpecificConvo( cxt.quest:GetCastMember("oshnu"), cxt.convodef.id, "STATE_GET_JOB" ,nil,nil,cxt.quest)
+                    UIHelpers.DoSpecificConvo( nil, cxt.convodef.id, "STATE_GET_JOB" ,nil,nil,cxt.quest)
                 end )
         end
     end)

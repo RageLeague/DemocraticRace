@@ -33,14 +33,14 @@ local QDEF = QuestDef.Define
 {
     title = "Ctenophorian Mystery",
     desc = "{giver} is curious about Hesh's true form. {giver.HeShe} wants you to find out what Hesh really is.",
-    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/revenge_starving_worker.png"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/ctenophorian_mystery.png"),
 
     qtype = QTYPE.SIDE,
 
     act_filter = DemocracyUtil.DemocracyActFilter,
     focus = QUEST_FOCUS.NEGOTIATION,
     tags = {"REQUEST_JOB"},
-    -- reward_mod = 0,
+    reward_mod = 0,
     can_flush = false,
 
     events = {
@@ -50,6 +50,13 @@ local QDEF = QuestDef.Define
 
     },
 
+    postcondition = function(quest)
+        quest.extra_reward = EXTRA_QUEST_REWARD.FREE_ITEM
+        quest.extra_reward_data = "quest_any_card_bonus"
+        -- print("The reward is replaced, brother")
+        return true
+    end,
+
     on_start = function(quest)
         quest:Activate("ask_info")
         -- quest.param.people_advertised = 0
@@ -58,13 +65,13 @@ local QDEF = QuestDef.Define
     on_complete = function(quest)
         if not (quest.param.sub_optimal or quest.param.poor_performance) then
             quest:GetProvider():OpinionEvent(OPINION.DID_LOYALTY_QUEST)
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 4, "COMPLETED_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 5, "CULT_OF_HESH", "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 4, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 5, "CULT_OF_HESH", "COMPLETED_QUEST_REQUEST")
         elseif quest.param.sub_optimal then
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 4, "COMPLETED_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 3, "CULT_OF_HESH", "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 4, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 3, "CULT_OF_HESH", "COMPLETED_QUEST_REQUEST")
         elseif quest.param.poor_performance then
             DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2, "POOR_QUEST")
             DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 4, "POOR_QUEST")
@@ -135,25 +142,38 @@ QDEF:AddIntro(
     --attract spiel
     [[
         agent:
-            Hypothetically, Hesh could be a ctenophore.
-            !think
-            But hypothetically, Hesh could also be a cnidarian.
+            We all worship Hesh.
+        {player_sal or player_arint?
         player:
-            What does that have to do with helping you?
+            !crossed
+            What do you mean, "we"?
         agent:
-            Well, this is a paradoxical question.
-            It doesn't fit cleanly into my FACTS and LOGIC.
-            That's where you come in, as of now.
-            Go out, and try to weasel out a straight answer.
+            Okay, <i>some</> of us worship Hesh.
+        }
+            !think
+            But in the end, do we truly understand Hesh?
+        player:
+            !dubious
+            Uhh... What are you getting at?
+        agent:
+            For instance, what is Hesh, factually speaking?
+            What does it look like? What is its living environment? We don't know.
+            We don't even know what kind of jellyfish it is.
+            !point
+            That's where you come in.
+            Go ask around, see if anyone knows anything about it.
     ]],
 
     --on accept
     [[
         player:
-            Well, now you've got me a bit curious. Sure, why not?
+            You got me interested.
+            Just one question: where do I start?
         agent:
-            Well, that "why not" might be your reputation with the cult.
-            But just keep an eye out for any eavesdroppers. You never know they're listening until it's too late.
+            Logically speaking, you should ask people who at least believe in Hesh.
+            The Heretical Spark Barons knows nothing about Hesh, so you would get nothing of value out of them.
+            But if you ask other people in the cult, or even civilians who worship Hesh, you might get an answer out of them.
+            That would be a good place to start.
     ]])
 
 QDEF:AddConvo("ask_info")
@@ -296,6 +316,8 @@ QDEF:AddConvo("ask_info")
                     !exit
                 * {agent} storms off in a huff, leaving you with a few new questions that you slept through the answers to.
             ]],
+
+            NEGOTIATION_REASON = "Endure {agent}'s lecture",
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_TALK")
@@ -304,6 +326,7 @@ QDEF:AddConvo("ask_info")
                 -- Opponent has no core, meaning you can't win by damage.
                 -- You win by surviving a set amount of rounds.
                 flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE,
+                reason_fn = function(minigame) return cxt:GetLocString("NEGOTIATION_REASON") end,
                 on_start_negotiation = function(minigame)
                     minigame.player_negotiator:AddModifier("FANATIC_LECTURE", math.max(4, 6 - math.floor(cxt.quest:GetRank() / 2)))
                 end,
@@ -324,7 +347,7 @@ QDEF:AddConvo("ask_info")
         :Loc{
             DIALOG_TALK = [[
                 player:
-                    [p] So about Hesh...
+                    Say, I have a question about Hesh's classification.
                 agent:
                 {liked?
                     !cagey
@@ -369,17 +392,26 @@ QDEF:AddConvo("ask_info")
             OPT_EXCUSE = "Excuse yourself",
             DIALOG_EXCUSE = [[
                 player:
-                    [p] Pardon my wudeness.
+                    !placate
+                    Oh, pardon me. I wasn't aware <i>that</> was taboo.
             ]],
             DIALOG_EXCUSE_SUCCESS = [[
-                agent:
-                    [p] I get your point.
-                    If you must know, Hesh cannot be classified.
-                    Hesh is a multi-faceted being, and to classify it is to waste what precious time we have before being consumed.
-                    Now you know the answer, just promise me you won't ask around this kind of question again.
                 player:
-                    Sure.
-                    It's already confusing enough.
+                    !overthere
+                    I was just a bit curious about <i>that</>. Bit new to cult traditions, y'know.
+                agent:
+                    !crossed
+                    I suppose that's your excuse for not reading the Waterlogged Tomes?
+                    It stated clearly in those texts that Hesh is an unidentifiable being.
+                player:
+                    !bashful
+                    Yeah, I must've not gotten to that one yet. Though it's a real page turner, let me tell you.
+                agent:
+                    !angry
+                    Hmph. I'll let this one slide, but swear to your eventual consumption that you'll actually study before you commit heresy again.
+                player:
+                    !salute
+                    You've got my word.
             ]],
             DIALOG_EXCUSE_FAILURE = [[
                 player:
@@ -550,7 +582,59 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 !exit
                 * it is the sand of the beach you are confined to, the sand that you cannot go beyond, as the creature of your dreams slips further into the murky blue.
                 * Its face still shifts between identities, but you were so close to understanding, if only you could reach beyond the sand, if only you could see, IF ONLY-
-                * Yet you cannot, and you are plagued with those thoughts for the rest of the night, unable to decipher anything.
+                * Yet you cannot, and you are plagued with those thoughts, unable to decipher anything.
+            ]],
+            DIALOG_NO_INTERFERE = [[
+                * Every time you tried to decipher what you have seen, your mind frays further and further.
+                * As such, your mind is consumed by Hesh's madness.
+            ]],
+            OPT_LOSE = "Embrace the madness",
+            DIALOG_BENNI_INTERFERE = [[
+                * Yet just before you get completely consumed by Hesh's madness, you wake up, with {giver} violently shaking you.
+                player:
+                    !left
+                    !scared
+                giver:
+                    !right
+                    !scared
+                    {player}!
+                player:
+                    !surprised
+                    Wha-
+                giver:
+                    Calm down! Everything is fine!
+                player:
+                    Hesh- It-
+                giver:
+                    You are going to be fine!
+                    I will not lose another person I care about to Hesh's madness!
+                    !exit
+                player:
+                    !exit
+                * After a while, you finally calmed down.
+                giver:
+                    !right
+                player:
+                    !left
+                    !sigh
+                    Okay, I'm fine now.
+                giver:
+                    !agree
+                    That's a relief.
+                    Now, forget about the whole Hesh business. Drop the investigation into Hesh's taxonomy.
+                    !sigh
+                    Sometimes, absolute FACTS and LOGIC is not worth the price we pay.
+                    FACTS don't care about your feelings. But I do.
+            ]],
+            DIALOG_BENNI_INTERFERE_PST = [[
+                giver:
+                    Now, let's get you back to sleep.
+                    !hesh_greeting
+                    May you have a pleasant dream.
+                    !exit
+                player:
+                    !exit
+                * That night, you didn't have any more dreams, which is quite a relief.
             ]],
         }
         :Fn(function(cxt)
@@ -567,18 +651,40 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                     :Fn(function(cxt)
                         -- You earn a special card or something.
                         cxt.quest.param.went_crazy = true
-                        cxt.caravan:DeltaMaxResolve(-5)
+                        -- cxt.caravan:DeltaMaxResolve(-5)
+                        cxt:ForceTakeCards{"status_fracturing_mind"}
+
+                        if cxt:GetCastMember("giver") == TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and cxt:GetCastMember("giver"):GetContentID() == "ADVISOR_MANIPULATE" and cxt:GetCastMember("giver"):GetRelationship() >= RELATIONSHIP.LIKED then
+                            cxt:Dialog("DIALOG_BENNI_INTERFERE")
+                            cxt.quest.extra_reward = EXTRA_QUEST_REWARD.FREE_ITEM
+                            cxt.quest.extra_reward_data = "white_lie"
+                            cxt.quest:Complete()
+                            ConvoUtil.GiveQuestRewards(cxt)
+                            cxt:GetCastMember("giver"):AddTag("white_lier")
+                            cxt:Dialog("DIALOG_BENNI_INTERFERE_PST")
+                        else
+                            cxt:Dialog("DIALOG_NO_INTERFERE")
+                            -- Nah you just lose lol
+                            cxt:Opt("OPT_LOSE")
+                                :Fn(function(cxt)
+                                    DemocracyUtil.DoEnding(cxt, "broken_mind", {})
+                                end)
+                        end
                     end)
-                    :CompleteQuest("ask_info")
-                    :ActivateQuest("tell_result")
+                    -- :CompleteQuest("ask_info")
+                    -- :ActivateQuest("tell_result")
         end)
 QDEF:AddConvo("tell_result", "giver")
     :AttractState("STATE_ATTRACT")
         :Loc{
             DIALOG_INTRO = [[
+                {went_crazy?
+                    * Okay, in the new update, the negotiation against Hesh will automatically cause you to lose if you fail.
+                    * You can't get here normally unless you updated the mod.
+                    * So let's just pretend you actually did win, and find out about Hesh.
+                }
                 agent:
-                    Hey, {player}? Are you okay?
-                {not went_crazy?
+                    So, have you find out anything about Hesh?
                 player:
                     !handwave
                     I had some odd dream last night.
@@ -615,17 +721,16 @@ QDEF:AddConvo("tell_result", "giver")
                 player:
                     !dubious
                     You're welcome, I suppose?
-                }
-                {went_crazy?
-                    [p] I saw too much, and I talk crazy.
-                agent:
-                    Oh no, now I feel bad for you.
-                }
             ]],
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
+            cxt.quest.extra_reward = EXTRA_QUEST_REWARD.FREE_ITEM
+            -- TODO: Change the reward
+            cxt.quest.extra_reward_data = "advisor_manipulate_gaslighting"
             cxt.quest:Complete()
+            ConvoUtil.GiveQuestRewards(cxt)
+            cxt:GetCastMember("giver"):AddTag("can_manipulate_truth")
         end)
 -- local BAD_EVENT = QuestDef.Define{
 --     id = "REQUEST_CTENOPHORIAN_MYSTERY_EVENT",
@@ -640,17 +745,19 @@ QDEF:AddConvo("bad_event")
     :TravelConfront("INTERRUPT", function(cxt) return TheGame:GetGameState():CanSpawnTravelEvent() end)
         :Loc{
             DIALOG_INTRO = [[
-                * [p] You are interrupted by {agent}.
+                * Your regular tromp through the hesh-blessed land is interrupted by someone with a hesh-fueled ire in {agent.hisher} eyes.
                 player:
                     !left
                 agent:
                     !right
                 {liked?
-                    I can't believe it.
-                    You out of all people are having heretic thoughts.
+                    {player}...heresy. Really?
+                    I never thought you'd be capable of offending the cult like this.
                 }
                 {not liked?
-                    I heard someone is asking questions that they shouldn't ask.
+                    !cruel
+                    So let's talk about the identity of Hesh.
+                    Those are the heretical questions you've been asking around, right?
                 }
                 player:
                     What do you mean?
@@ -667,113 +774,221 @@ QDEF:AddConvo("bad_event")
             DIALOG_GASLIGHT = [[
                 player:
                 {not leader_absent?
-                    [p] Pretty sure that wasn't me.
-                agent:
-                    Oh yeah? Then who did I saw, then?
+                    Oh, that wasn't what we were talking about.
+                    !hips
+                    Let me clear that up for you.
                 }
                 {leader_absent?
-                    [p] Pretty sure {leader} was mistaken.
-                agent:
-                    Are you seriously doubting {leader}'s cognitive abilities?
+                    !question
+                    Strange. I don't remember talking to {cultist} at all.
+                    I think you're mistaken. Let me clear this up.
                 }
             ]],
             DIALOG_GASLIGHT_SUCCESS = [[
-                agent:
-                    [p] Well, if you insist that is wasn't you, then it probably wasn't.
-                    Sorry for the trouble.
-                * I can't believe that worked.
+                {not_leader_absent?
+                    player:
+                        Y'see, {cultist} and I were actually talking about Hesh as an <i>entity</>, not Its identity.
+                    agent:
+                        !question
+                        But Hesh is an entity. Of the abyss.
+                    player:
+                        !point
+                        Exactly! That was the point I was trying to explain to {cultist}.
+                        !chuckle
+                        Glad to see I wasn't the heretic in that conversation.
+                    agent:
+                        Well, if that's true, then there's nothing I need to do here.
+                        !hesh_greeting
+                        Sorry to bother, {player}.
+                }
+                {leader_absent?
+                    player:
+                        !point
+                        You know how some fans are. They like to dress up.
+                    agent:
+                        !angry
+                        Do you honestly believe people are dressing up as a politician and grifter?
+                    player:
+                        !shrug
+                        Hey, remember the run on jellyfish costumes?
+                        I'm just saying, crazier things have happened.
+                    agent:
+                        !neutral
+                        ...y'know what? That's true.
+                        !hesh_greeting
+                        Sorry to bother. I'll report back to {leader} that someone just dressed up as you.
+                }
             ]],
             DIALOG_GASLIGHT_FAILURE = [[
-                agent:
-                    [p] Yeah right, who else wears the distinct outfit that you are currently wearing?
-                player:
-                    Good point.
-                    Crap.
-                * Uh oh.
+                {not leader_absent?
+                    player:
+                        {cultist.HeShe} and I were just talking about Hesh's density, that's all.
+                    agent:
+                        !question
+                        Density?
+                    player:
+                        !flinch
+                        Er, I meant we talked about Its Enmity.
+                    agent:
+                        !angry
+                        ...
+                    player:
+                        !bashful
+                        Immensity?
+                        !point
+                        Parliamentary! Yes, of course.
+                    agent:
+                        Next time you try to lie to a cult member, be a little more convincing.
+                }
+                {leader_absent?
+                    player:
+                        !angry_accuse
+                        I was nowhere near {cultist} all day!
+                    agent:
+                        !crossed
+                        Oh really? And where were you all day, then?
+                    player:
+                        Doing my usual politician duties. A speech here, a check in with my advisor there, a little bit of heresy every now and the-
+                    agent:
+                        !angry
+                    player:
+                        !bashful
+                        I uh...don't suppose I could take back that last bit, can I?
+                }
             ]],
 
             OPT_LET_GO = "Convince {agent} to let you go",
 
             DIALOG_LET_GO = [[
                 player:
-                    I know you don't like me, but I helped you get what you want.
-                    Would you at least let me go?
+                    !angry
+                    Hey, no need to keep me here when there's actual heresy to deal with.
             ]],
 
             DIALOG_LET_GO_SUCCESS = [[
-                agent:
-                    !facepalm
-                    Uh, fine. We have the real source of this heresy.
-                    Easier to find {giver} than staying here arguing with you.
                 player:
                     !hips
-                    That's the spirit.
-                * {agent} let you go, but you are sure that this is not over.
+                    I know you don't like me, but that's the thing. You <i>know</> me.
+                    Did I ever come off as caring about this topic beforehand?
+                agent:
+                    !thought
+                    You bring up <i>a</> point. I don't think you were that particular over Hesh lore.
+                    !angry
+                    Fine. Cult business comes first, but what's between us isn't over!
+                * {agent} tromps off, leaving a dread that {agent.heshe}'ll be a thorn in your side later lingering the air.
+            ]],
+
+            DIALOG_LET_GO_FAILURE = [[
+                player:
+                    Do you really think I am capable of committing heresy?
+                {pro_religious_policy?
+                    !thumb
+                    I will have you know that I run a <i>very</> pro-Heshian platform.
+                agent:
+                    !angry_accuse
+                    Don't be ridiculous! Anyone with a brain knows that you don't actually believe the stuff you say!
+                    You are just trying to steal votes from devout Hesh followers!
+                }
+                {not pro_religious_policy?
+                agent:
+                    !angry_shrug
+                    Yes! Absolutely!
+                    You are a heretic, through and through.
+                    Anyone knowing anything about your campaign would know that.
+                }
+                agent:
+                    And there is only one way this is going to end for heretics like you!
             ]],
 
             OPT_BRIBE = "Bribe {agent}",
             DIALOG_BRIBE = [[
-                player:
-                    !happy
-                    Look, I'm just asking some questions.
-                    It's not hurting anyone for being curious, right?
-                    !give
-                    And it's certainly not hurting you.
-                agent:
-                    !take
-                    Ah, yes, of course.
-                    Considering you don't know any better, this transgression can be overlooked.
-                    Just... Make sure you don't ask questions that you shouldn't ask again.
-                player:
-                    Yes, of course.
-                * It's probably a lie, but {agent} is not going to question it.
+                {not leader_absent?
+                    player:
+                        Hey, no need to lie about me if you just wanted tithes.
+                        !give
+                        How's this? That oughta be enough for your quotas and such.
+                    agent:
+                        !taken_aback
+                        I-
+                        !angry_accuse
+                        First of all, that word is for the bearers of spark and derrick workers.
+                        !take
+                        Secondly, thank you, {player}. May you walk in the shallows.
+                }
+                {leader_absent?
+                    player:
+                        !give
+                        What I'm have to say is "big bag of money".
+                        And what you're going to say is "Nothing to report".
+                    agent:
+                        !take
+                        Of course, loyal Heshian. You were simply-
+                    player:
+                        !point
+                        No no no. "Nothing to report.". Got it?
+                    agent:
+                        !hesh_greeting
+                        Right, right. May you walk in the shallows.
+                }
             ]],
 
             OPT_USE_BODYGUARD = "Send your guard to distract",
             DIALOG_USE_BODYGUARD = [[
                 player:
-                    [p] Go, {guard}!
-                * {guard} deals with the Heshians while you "tactically retreat".
+                    !bashful
+                    Well, y'see. The thing about heresy is uhm...
+                    !point
+                    {guard} go distract them.
+                * You book it in the opposite direction, your guard keeping the group distracted long enough for you to duck out of sight.
             ]],
 
             DIALOG_DEFEND = [[
                 player:
-                    [p] Easier just to fight.
+                    !fight
+                    You're going down, cultist!
             ]],
             DIALOG_DEFEND_WIN = [[
-                * [p] You win. Now what.
+                {dead?
+                    * You take the extra second to wipe some lumin-blue blood off your weaponry.
+                    * Your polling average would've preferred you didn't murder a group of voters, but it is what it is.
+                }
+                {not dead?
+                    agent:
+                        !injured
+                    player:
+                        !fight
+                        I hope I've sufficiently beaten the idea I committed heresy out of your dense skull.
+                    agent:
+                        You have. Won't be dealing with us for a while.
+                        But keep that heresy talk to yourself if you don't want to see someone else's ugly mug asking the same thing I did.
+                    * The cultish crew stumbles away, leaving the thinly veiled threat for you to ponder.
+                }
             ]],
 
             OPT_RAT_OUT = "Tell {agent} about {giver}'s involvement",
             DIALOG_RAT_OUT = [[
                 player:
-                    !bashful
-                    Oh, I wasn't aware that there is a problem.
-                    {giver} told me to find out about what type of jellyfish Hesh is, and so I just ask around.
-                    Didn't realize that it was heretical.
+                    !handwave
+                    Well, if I could be frank, I never had any interest what kind of stingers the big jellyfish has.
+                    {giver} just asked me for an errand to ask around.
                 agent:
                 {disliked?
-                    !crossed
-                    Hmm. A likely excuse.
-                    We will look into {giver} later, but as far as I'm concerned, you are the one asking the questions.
-                player:
-                    !angry_shrug
-                    Oh come on! I give you the real reason. You should just let me go.
+                    !angry
+                    Calling a cult member's credibility into question? A dangerous move, you know.
+                    We'll look into {giver}'s motives soon, but you're still the heretic here.
+                * Dang, you really hoped that snitching on {giver} would get you out of this situation.
                 }
                 {not disliked?
                     !dubious
-                    {giver}, are you sure?
+                    {giver}? Aren't they a member of the cult?
                 player:
-                    Yeah, why else would I say {giver.hisher} name?
-                agent:
                     !shrug
-                    Fair enough.
-                    Well, since you didn't know that it is problematic, and you are very cooperative, I'm going to let you go this time.
-                    There will be questionings for {giver} of course, but it's not your problem.
-                player:
-                    !scared_shrug
-                    Sure, I guess...?
-                * {agent} let you go, but you are sure that this is not over.
+                    That's what it says on {giver.hisher} business card.
+                agent:
+                    I guess they'd have the motive to learn more about Hesh, though {giver.heshe} should've known about this heresy beforehand.
+                    !hesh_greeting
+                    Thank you, {player}, for this information. We'll be sure to investigate {giver} shortly.
+                * {agent} walks away, though you can't help the sense of foreboding you feel.
                 }
             ]],
 

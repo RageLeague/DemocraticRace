@@ -10,35 +10,36 @@ lines:
     agent:
       !sigh
       Another day of toil.
-      The rich gets richer by exploiting us laborers, and the poor stays poor.
-      There really is no hope for us common folks, is there?
+      The rich get richer, and the poor stay poor.
+      There really is no hope for us common folk, is there?
     player:
       I'm sorry to hear that.
-      This is why I vow to change the system.
-      The working class will finally stand up for themselves, freeing themselves from the boot of the oppressors.
+      I won't let this stand if I'm elected.
+      The working class will finally rise, out from under the boot of the oppressors.
     agent:
       !happy
-      This is precisely why I am supporting you, {player}.
-      Finally, someone is considering the common folks.
+      This is why you'll have my vote, {player}.
+      Finally, someone's looking out for us.
   - |
     agent:
-      Have I told you before that I worked for this Spark Baron.
-      Always rambling about wanting to be relatable to the common folks.
-      His idea of "being relatable" seems way different from how everyone else thinks.
+      There was this Spark Baron I worked for, once.
+      Always rambling about wanting to be relatable to the common folk.
+      But he went about it very strangely.
     player:
       Really? How so?
     agent:
       He seems to think using obscure and confusing words somehow makes him relatable.
-      First off, nobody talks like that.
-      Second, he isn't actually concerned with the common folks' well-being.
-      He wouldn't give a second thought to giving demerits to workers who miss their quota for something that is not their fault.
+      Nobody actually talks like that! He just made himself into more of a fool.
+      Besides, he wasn't actually concerned with workers' well-being.
+      Even if it wasn't your fault, if you missed your quota, you got a demerit.
+      He would just talk over anybody who protested.
     player:
       !shrug
-      What can you expect from a Spark Baron, though.
+      That's a Spark Baron for you.
     agent:
-      True.
+      if that ain't the truth.
       !happy
-      Anyway, thanks for listening to my rambling. It has really lighten up my day.
+      Anyway, thanks for listening. Feels like a weight off my chest.
 - tags: [poor_merchant, democratic_race]
   dialog:
   - |

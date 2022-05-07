@@ -1,3 +1,5 @@
+local QUESTION_COUNT = 3
+
 local HOST_BEHAVIOUR =
 {
     OnInit = function( self, difficulty )
@@ -32,7 +34,7 @@ local QDEF = QuestDef.Define
         for id, data in pairs(DemocracyConstants.issue_data) do
             weightings[id] = data.importance
         end
-        for i = 1, 5 do
+        for i = 1, QUESTION_COUNT do
             local chosen = weightedpick(weightings)
             table.insert(questions, chosen)
             weightings[chosen] = nil
@@ -298,6 +300,7 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
             flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.WORDSMITH | NEGOTIATION_FLAGS.NO_CORE_RESOLVE | NEGOTIATION_FLAGS.NO_LOOT,
             helpers = helpers,
             hinders = hinders,
+            suppressed = cxt.quest.param.party_pets,
             reason_fn = function(minigame)
                 local core = minigame:GetOpponentNegotiator():FindCoreArgument()
                 local total_amt = core.player_score or 0
@@ -337,7 +340,32 @@ local function DeltaPopularity(table, agent, delta)
     table[agent:GetID()] = (table[agent:GetID()] or 0) + delta
 end
 QDEF:AddConvo("go_to_debate")
-    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("backroom") end)
+    :Confront(function(cxt)
+        if cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("backroom") then
+            return "STATE_CONFRONT"
+        end
+        if cxt.location == cxt.quest:GetCastMember("theater") then
+            return "STATE_THEATER"
+        end
+    end)
+    :State("STATE_THEATER")
+        :Loc{
+            DIALOG_INTRO = [[
+                * You arrived at the Grand Theater.
+                * Looks like the debate hasn't started yet.
+                * You quickly walk into the backroom to meet up with {primary_advisor}.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+            cxt:Opt("OPT_LEAVE_LOCATION")
+                :Fn(function(cxt)
+                    cxt.quest.param.enter_from_theater = true
+                    cxt.encounter:DoLocationTransition(cxt.quest:GetCastMember("backroom"))
+                end)
+                :MakeUnder()
+        end)
+    :State("STATE_CONFRONT")
         :Loc{
             DIALOG_INTRO = [[
                 * [p] You arrive at the grand theater backroom, where {agent} awaits you.
@@ -352,18 +380,151 @@ QDEF:AddConvo("go_to_debate")
                     Good point.
                     Anyway, whether you're ready or not, time to go.
                     Good luck.
+                {has_pet?
+                    And leave your {pet.species} here. You can't bring it into the venue.
+                }
+            ]],
+            OPT_ASK_GOAL = "Ask about the goal of the debate",
+            DIALOG_ASK_GOAL = [[
+                player:
+                    What is my goal in this debate?
+                {depressed?
+                agent:
+                    You don't need me to tell you about your goal.
+                    A useless fool like myself wouldn't know the goal of someone like you.
+                player:
+                    !crossed
+                    I am not sure I should feel flattered or concerned.
+                agent:
+                    !placate
+                    Do not concern yourself with a loser like me.
+                }
+                {not depressed?
+                agent:
+                    Your goal, of course, is to win as many debates as possible.
+                    But there is like seven of you up there, and the audience will not remember you all.
+                    So your actual goal is to stand out and impress the audience.
+                player:
+                    !dubious
+                    And how do I do that?
+                agent:
+                    Making crucial arguments, dismantling opponent's arguments, defending your arguments, do whatever you can to make the crowd see that you are the true debate master.
+                {advisor_manipulate?
+                    FACTS and LOGIC are your friends here, {player}. Use them wisely.
+                }
+                    !cruel
+                    You might even want to sabotage your ally's argument to make yours seem more impressive.
+                }
+            ]],
+            OPT_ASK_FORMAT = "Ask about the debate format",
+            DIALOG_ASK_FORMAT = [[
+                player:
+                    What does the debate format look like?
+                {depressed?
+                agent:
+                    !scared_shrug
+                    How would I know? I'm a loser who doesn't even know anything.
+                player:
+                    !bashful
+                    That's... Not very helpful.
+                agent:
+                    !sigh
+                    As expected. After all, I am completely useless.
+                }
+                {not depressed?
+                    agent:
+                        There will be three rounds of debates.
+                        In each round, the interviewer will ask a political question, and you need to take a side.
+                    {advisor_diplomacy?
+                        Pick a based opinion, and show the opponent how cringe their opinions are!
+                    }
+                    {advisor_manipulate?
+                        !eureka
+                        Use FACTS and LOGIC to win the debate against your opponents!
+                    }
+                    {advisor_hostile?
+                        Show the world that nobody knows debate better than you!
+                        {not accept_limits and not depressed?
+                            Except me, of course. 'Cause nobody knows debate better than me.
+                            !point
+                            Including you.
+                        }
+                    }
+                    player:
+                        What if I don't have enough energy to debate? Or I simply don't have a strong opinion on a topic?
+                    agent:
+                        You can always choose to stay out.
+                        But remember: You are here to stand out to the audience.
+                        If you don't participate in the debate, you will not stand out.
+                }
+            ]],
+            OPT_ASK_PET = "Ask about pet policy",
+            DIALOG_ASK_PET = [[
+                player:
+                    !crossed
+                    {pet} has a name, you know. And {pet} is a {pet.heshe}.
+                agent:
+                    !point
+                    Doesn't matter. You can't bring {pet.himher} into the venue either way.
+                player:
+                    Why? Why are pets not allowed?
+                agent:
+                    !point
+                    Think about it.
+                    Imagine doing an interview, and the audience just see {pet.a_desc} on the stage.
+                    That would certainly cause chaos, and they can't have that.
+                    !permit
+                    Think about it. If you are allowed to bring a pet, then every candidate is allowed to.
+                    And there's like seven of you up there.
+                    Just Oolo alone would bring an oshnu with way too many guns attached to it.
+                    Is that what you want? Bringing a battle oshnu to a place that is supposed to host a peaceful debate?
+                player:
+                    !thought
+                    Not gonna lie, I kinda want to see that.
+                agent:
+                    !crossed
+                    That's supposed to be a rhetorical question.
+                    !handwave
+                    Either way, {pet} isn't going to help you on the stage.
+                ** Your pets will still be in your party, but will not help you in the upcoming negotiation.
+            ]],
+            DIALOG_LEAVE = [[
+                player:
+                    Alright, I'm ready.
+                    Moment of truth, here I go.
+                {has_pet?
+                agent:
+                    I will take care of your {pet.species} for you.
+                }
+                agent:
+                    Good luck.
             ]],
         }
+        :SetLooping()
         :Fn(function(cxt)
-            cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
-            DemocracyUtil.PopulateTheater(cxt.quest, cxt.quest:GetCastMember("theater"), 8)
-            cxt:Dialog("DIALOG_INTRO")
-            cxt.quest:Complete("go_to_debate")
-            cxt.quest:Activate("do_debate")
+            if cxt:FirstLoop() then
+                cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
+                DemocracyUtil.PopulateTheater(cxt.quest, cxt.quest:GetCastMember("theater"), 8)
+                cxt.quest.param.party_pets = TheGame:GetGameState():GetCaravan():GetPets()
+                if cxt.quest.param.party_pets and #cxt.quest.param.party_pets > 0 then
+                    cxt.enc.scratch.has_pet = true
+                    cxt:ReassignCastMember("pet", cxt.quest.param.party_pets[1])
+                end
+                cxt:Dialog("DIALOG_INTRO")
+                cxt.quest:Complete("go_to_debate")
+                cxt.quest:Activate("do_debate")
+            end
+            cxt:Question("OPT_ASK_GOAL", "DIALOG_ASK_GOAL")
+            cxt:Question("OPT_ASK_FORMAT", "DIALOG_ASK_FORMAT")
+            if cxt.enc.scratch.has_pet then
+                cxt:Question("OPT_ASK_PET", "DIALOG_ASK_PET")
+            end
             cxt:Opt("OPT_LEAVE_LOCATION")
+                :Dialog("DIALOG_LEAVE")
                 :Fn(function(cxt)
                     cxt.encounter:DoLocationTransition(cxt.quest:GetCastMember("theater"))
                 end)
+                :Pop()
                 :MakeUnder()
         end)
 QDEF:AddConvo("do_debate")
@@ -395,7 +556,7 @@ QDEF:AddConvo("do_debate")
             if not cxt.quest.param.candidate_opinion then
                 cxt.quest.param.candidate_opinion = {}
             end
-            if #cxt.quest.param.questions < 5 then
+            if #cxt.quest.param.questions < QUESTION_COUNT then
                 cxt:GoTo("STATE_QUESTION")
                 return
             end
@@ -509,7 +670,7 @@ QDEF:AddConvo("do_debate")
 
             cxt:TalkTo(cxt:GetCastMember("host"))
             cxt:GetAgent():SetTempNegotiationBehaviour(HOST_BEHAVIOUR)
-            cxt:Quip(cxt:GetAgent(), "debate_question")
+            cxt:Quip(cxt:GetAgent(), "debate_question", string.lower(cxt.quest.param.topic))
             CreateDebateOption(cxt, neg_helper, neg_hinder, cxt.quest.param.topic, -1)
             CreateDebateOption(cxt, pos_helper, pos_hinder, cxt.quest.param.topic, 1)
             cxt:Opt("OPT_SIT_OUT")
@@ -876,11 +1037,11 @@ QDEF:AddConvo("do_debate")
 
             local your_score = cxt.quest.param.popularity[cxt.player:GetID()] or 0
             if cxt.quest.param.good_debate then
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.5))
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.5), "COMPLETED_QUEST_MAIN")
             elseif cxt.quest.param.bad_debate then
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.25))
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.25), "COMPLETED_QUEST_MAIN")
             else
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.35))
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.35), "COMPLETED_QUEST_MAIN")
             end
 
             local METRIC_DATA =

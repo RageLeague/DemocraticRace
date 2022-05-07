@@ -71,6 +71,7 @@ QDEF:AddConvo("locate_advisor")
                 agent:
                     [p] No way.
             ]],
+            OPT_RENOUNCE = "Renounce your campaign",
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
@@ -85,10 +86,13 @@ QDEF:AddConvo("locate_advisor")
                     :Fn(function(cxt)
                         table.arrayremove(cxt.quest.param.available_advisors, cxt:GetAgent())
                         if #cxt.quest.param.available_advisors <= 0 then
-                            local flags = {
-                                no_advisor = true,
-                            }
-                            DemocracyUtil.DoEnding(cxt, "no_more_advisors", flags)
+                            cxt:Opt("OPT_RENOUNCE")
+                                :Fn(function(cxt)
+                                    local flags = {
+                                        no_advisor = true,
+                                    }
+                                    DemocracyUtil.DoEnding(cxt, "no_more_advisors", flags)
+                                end)
                         end
                     end)
                     :DoneConvo()
