@@ -23,6 +23,8 @@ Content.AddCharacterDef
 
         gender = GENDER.UNDISCLOSED, -- GENDER.UNDISCLOSED,
 
+        compendium_offset = { -200, 0 },
+
         combat_strength = 3,
         boss = true,
 
@@ -32,6 +34,12 @@ Content.AddCharacterDef
 
         negotiation_data =
         {
+            ring_offset =
+            {
+                x = 0,
+                y = 600,
+                z = 0,
+            },
             behaviour =
             {
                 OnInit = function( self, difficulty )
