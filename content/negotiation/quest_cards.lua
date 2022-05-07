@@ -574,6 +574,8 @@ local CARDS = {
         flags = CARD_FLAGS.MANIPULATE | CARD_FLAGS.UNPLAYABLE,
         rarity = CARD_RARITY.UNIQUE,
         manual_desc = true,
+
+        hide_in_cardex = true
     },
 }
 for i, id, def in sorted_pairs( CARDS ) do
