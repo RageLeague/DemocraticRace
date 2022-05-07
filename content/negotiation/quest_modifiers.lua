@@ -1560,8 +1560,8 @@ local MODIFIERS =
         end,
         modifier_type = MODIFIER_TYPE.CORE,
         max_stacks = 1,
-        num_cards = 4,
-        count = 4,
+        num_cards = 5,
+        count = 5,
         -- icon = "negotiation/modifiers/cool_head.tex",
 
         event_handlers =

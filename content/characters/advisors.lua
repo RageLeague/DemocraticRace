@@ -33,8 +33,8 @@ local chars =
                         local core = self.negotiator:AddModifier("FELLOW_GRIFTER")
 
                         if GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ARGUMENT_PLUS ) then
-                            core.num_cards = 3
-                            core.count = 3
+                            core.num_cards = 4
+                            core.count = 4
                         end
                         self:SetPattern( self.BasicCycle )
                     end,
