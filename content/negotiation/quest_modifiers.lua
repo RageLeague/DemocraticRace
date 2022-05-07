@@ -1552,17 +1552,17 @@ local MODIFIERS =
             CreateNewSelfMod(self)
         end,
     },
-    RELATABLE = {
-        name = "Relatable",
+    FELLOW_GRIFTER = {
+        name = "Fellow Grifter",
         desc = "{UPVOTE|}{CONTRARIAN|}{FAKE_NEWS|}Every {1} cards you play causes Aellon to gain an argument based on the type of the last card. ({2} remaining)",
         desc_fn = function( self, fmt_str )
             return loc.format( fmt_str, self.num_cards or 5, self.count )
         end,
         modifier_type = MODIFIER_TYPE.CORE,
         max_stacks = 1,
-        num_cards = 4,
-        count = 4,
-        icon = "negotiation/modifiers/cool_head.tex",
+        num_cards = 5,
+        count = 5,
+        -- icon = "negotiation/modifiers/cool_head.tex",
 
         event_handlers =
         {
@@ -1585,10 +1585,10 @@ local MODIFIERS =
     },
     CONTRARIAN = {
         name = "Contrarian",
-        desc = "Created by <b>Relatable</> when playing Hostility cards.\nWhen the core takes damage, this argument deals that amount of damage to a random argument.",
+        desc = "Created by <b>Fellow Grifter</> when playing Hostility cards.\nWhen the core takes damage, this argument deals that amount of damage to a random argument.",
         modifier_type = MODIFIER_TYPE.ARGUMENT,
         max_resolve = 3,
-        icon = "negotiation/abrupt_remark.tex",
+        -- icon = "negotiation/abrupt_remark.tex",
         event_handlers =
         {
             [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
@@ -1610,11 +1610,11 @@ local MODIFIERS =
     },
     UPVOTE = {
         name = "Clout",
-        desc = "Created by <b>Relatable</> when playing Diplomacy cards.\nDeals damage equal to the number of arguments Aellon controls.",
+        desc = "Created by <b>Fellow Grifter</> when playing Diplomacy cards.\nDeals damage equal to the number of arguments Aellon controls.",
         desc_fn = function( self, fmt_str )
             return loc.format(fmt_str, self.max_persuasion)
         end,
-        icon = "negotiation/modifiers/voice_of_the_people.tex",
+        -- icon = "negotiation/modifiers/voice_of_the_people.tex",
         modifier_type = MODIFIER_TYPE.ARGUMENT,
         max_resolve = 3,
 
@@ -1652,56 +1652,56 @@ local MODIFIERS =
             end,
         },
     },
-    SHAD_BAN = {
-        name = "Shadow Ban",
-        max_resolve = 6,
-        modifier_type = MODIFIER_TYPE.ARGUMENT,
-        icon = "negotiation/modifiers/bidder.tex",
-        desc = "At the start of {1}'s turn, add {SHIELDED} to a friendly argument.",
-        desc_fn = function( self, fmt_str )
-            local bonus = self.bonus or 0
-            return loc.format( fmt_str, self:GetOwnerName())
-        end,
+    -- SHAD_BAN = {
+    --     name = "Shadow Ban",
+    --     max_resolve = 6,
+    --     modifier_type = MODIFIER_TYPE.ARGUMENT,
+    --     -- icon = "negotiation/modifiers/bidder.tex",
+    --     desc = "At the start of {1}'s turn, add {SHIELDED} to a friendly argument.",
+    --     desc_fn = function( self, fmt_str )
+    --         local bonus = self.bonus or 0
+    --         return loc.format( fmt_str, self:GetOwnerName())
+    --     end,
 
-        ShieldArgument = function( self, target )
-            if self.last_shield and self.last_shield:IsApplied() then
-                self.last_shield:SetShieldStatus( nil )
-            end
+    --     ShieldArgument = function( self, target )
+    --         if self.last_shield and self.last_shield:IsApplied() then
+    --             self.last_shield:SetShieldStatus( nil )
+    --         end
 
-            if target and target:IsApplied() then
-                target:SetShieldStatus( true )
-                self.last_shield = target
-            end
-        end,
+    --         if target and target:IsApplied() then
+    --             target:SetShieldStatus( true )
+    --             self.last_shield = target
+    --         end
+    --     end,
 
-        OnUnapply = function( self )
-            self:ShieldArgument( nil )
-        end,
+    --     OnUnapply = function( self )
+    --         self:ShieldArgument( nil )
+    --     end,
 
-        event_handlers =
-        {
-            [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
-                if negotiator == self.negotiator then
-                    local targets = {}
-                    for i, modifier in self.negotiator:ModifierSlots() do
-                        if modifier:GetResolve() ~= nil and not modifier:GetShieldStatus() then
-                            table.insert( targets, modifier )
-                        end
-                    end
+    --     event_handlers =
+    --     {
+    --         [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
+    --             if negotiator == self.negotiator then
+    --                 local targets = {}
+    --                 for i, modifier in self.negotiator:ModifierSlots() do
+    --                     if modifier:GetResolve() ~= nil and not modifier:GetShieldStatus() then
+    --                         table.insert( targets, modifier )
+    --                     end
+    --                 end
 
-                    local target = table.arraypick( targets )
-                    if target then
-                        self:NotifyTriggered()
-                        self:ShieldArgument( target )
-                    end
+    --                 local target = table.arraypick( targets )
+    --                 if target then
+    --                     self:NotifyTriggered()
+    --                     self:ShieldArgument( target )
+    --                 end
 
-                end
-            end,
-        },
-    },
+    --             end
+    --         end,
+    --     },
+    -- },
     FAKE_NEWS = {
         name = "Fake News",
-        desc = "Created by <b>Relatable</> when playing Manipulation cards.\nIntents and target previews are hidden. Intents have a 50% chance to do +1 damage.",
+        desc = "Created by <b>Fellow Grifter</> when playing Manipulation cards.\nIntents and target previews are hidden. Intents have a 50% chance to do +1 damage.",
         max_resolve = 3,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
@@ -1731,28 +1731,28 @@ local MODIFIERS =
             end,
         },
     },
-    TRENDY = {
-        name = "Trending",
-        desc = "When this reaches 5 stacks, Heal all arguments and the core resolve for 5 resolve.",
-        max_resolve = 10,
-        resolve_gain = 5,
-        counter = 5,
-        modifier_type = MODIFIER_TYPE.ARGUMENT,
-        --Wumpus; I'm stumped on this one. Ive tried a lot, but either i
-        event_handlers = {
-            [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
-                local targets = self.engine:CollectAlliedTargets(self.negotiator)
-                if #targets > 0 then
-                    for i,target in ipairs(targets) do
-                        if self.stacks >= self.counter then
-                            target:ModifyResolve(self.resolve_gain, self)
-                            self.negotiator:RemoveModifier( self )
-                        end
-                    end
-                end
-            end,
-        },
-    },
+    -- TRENDY = {
+    --     name = "Trending",
+    --     desc = "When this reaches 5 stacks, Heal all arguments and the core resolve for 5 resolve.",
+    --     max_resolve = 10,
+    --     resolve_gain = 5,
+    --     counter = 5,
+    --     modifier_type = MODIFIER_TYPE.ARGUMENT,
+    --     --Wumpus; I'm stumped on this one. Ive tried a lot, but either i
+    --     event_handlers = {
+    --         [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
+    --             local targets = self.engine:CollectAlliedTargets(self.negotiator)
+    --             if #targets > 0 then
+    --                 for i,target in ipairs(targets) do
+    --                     if self.stacks >= self.counter then
+    --                         target:ModifyResolve(self.resolve_gain, self)
+    --                         self.negotiator:RemoveModifier( self )
+    --                     end
+    --                 end
+    --             end
+    --         end,
+    --     },
+    -- },
     LOGICAL = {
         name = "Logical",
         desc = "If {1}'s opponent has no {SMARTS}, {1} deals +{2} damage.",
