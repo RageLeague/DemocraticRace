@@ -344,23 +344,24 @@ local MODIFIERS =
         max_resolve = 3,
         max_stacks = 10,
 
-        -- force_target = true,
+        OnApply = function(self)
+            local count = self.negotiator:GetModifierStacks("CONNECTED_LINE")
+            if count and count ~= 0 then
+                TheGame:GetMusic():SetParameter("radio_layer", 1)
+            end
+        end,
 
-        -- OnInit = function(self)
-
-        -- end,
-
-        -- CanPlayCard = function( self, source, engine, target )
-        --     if source:IsAttack() and target:GetNegotiator() == self.negotiator then
-        --         if source.modifier_type == MODIFIER_TYPE.INCEPTION or source:GetNegotiator() ~= self.negotiator then
-        --             if not target.force_target then
-        --                 return false, loc.format( "Must target <b>{1}</b>", self:GetName() )
-        --             end
-        --         end
-        --     end
-
-        --     return true
-        -- end,
+        OnUnapply = function(self)
+            local count = self.negotiator:GetModifierStacks("CONNECTED_LINE")
+            if count and count == 0 then
+                TheGame:GetMusic():SetParameter("radio_layer", 0)
+            end
+            local card = Negotiation.Card( "assassin_fight_call_for_help", self.engine:GetPlayer() )
+            if self.stacks > 1 then
+                card.init_help_count = self.stacks
+            end
+            self.engine:DealCard(card, self.engine:GetDiscardDeck())
+        end,
 
         CleanUpCard = function(self, card_id)
             local to_expend = {}
@@ -389,15 +390,7 @@ local MODIFIERS =
         OnBounty = function(self, source)
             if source ~= self then
                 self.anti_negotiator:AddModifier("IMPATIENCE", 1)
-
-                local card = Negotiation.Card( "assassin_fight_call_for_help", self.engine:GetPlayer() )
-                if self.stacks > 1 then
-                    card.init_help_count = self.stacks
-                end
-                self.engine:DealCard(card, self.engine:GetDiscardDeck())
             end
-
-            -- self:CleanUpCard("assassin_fight_describe_information")
         end,
         event_handlers =
         {
@@ -454,6 +447,11 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.PERMANENT,
 
         -- turns_left = rawget(_G, "SURVIVAL_TURNS") or 12,
+        OnApply = function(self)
+            self.engine:BroadcastEvent( EVENT.CUSTOM, function( panel )
+                panel:SetMusicPhase(2)
+            end )
+        end,
 
         event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
@@ -463,9 +461,14 @@ local MODIFIERS =
                 else
                     self.negotiator:RemoveModifier(self, 1)
                     self:NotifyChanged()
+                    if self.stacks <= 4 then
+                        self.engine:BroadcastEvent( EVENT.CUSTOM, function( panel )
+                            panel:SetMusicPhase(4)
+                        end )
+                    end
                 end
             end,
-        }
+        },
     },
     DISTRACTION_ENTERTAINMENT =
     {
