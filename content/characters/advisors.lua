@@ -30,7 +30,7 @@ local chars =
                 behaviour =
                 {
                     OnInit = function( self )
-                        local core = self.negotiator:AddModifier("RELATABLE")
+                        local core = self.negotiator:AddModifier("FELLOW_GRIFTER")
 
                         if GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ARGUMENT_PLUS ) then
                             core.num_cards = 3
@@ -43,11 +43,14 @@ local chars =
 
                         if (turns-1) % 3 == 0 then
                             -- Double attack.
-                            self:ChooseGrowingNumbers( 2, 0 )
+                            self:ChooseGrowingNumbers( 3, 0, 0.75 )
 
-                        else
+                        elseif (turns-2) % 3 == 0 then
                             -- Single attack.
-                            self:ChooseGrowingNumbers( 1, 1 )
+                            self:ChooseGrowingNumbers( 1, 0 )
+                            self:ChooseComposure( 1, 1 + self.difficulty, 1 + self.difficulty )
+                        else
+                            self:ChooseGrowingNumbers( 2, 0 )
                         end
                     end,
                 }
@@ -106,6 +109,8 @@ local chars =
 
                         if turns % 2 == 0 then
                             self:ChooseCard( self.facts )
+                        else
+                            self:ChooseComposure( 1, 1 + math.ceil(self.difficulty / 2), 2 + math.ceil(self.difficulty / 2) )
                         end
                     end,
                 }
