@@ -366,6 +366,11 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
 
             cxt:Opt("OPT_DISTRACT")
                 :PostText("TT_DISTRACT")
+                :Fn(function(cxt)
+                    -- The theme is sal's night theme for now. Might change up later.
+                    TheGame:SetTempMusicOverride("event:/music/adaptive_negotiation_barter_night", cxt.enc)
+                    -- TheGame:SetTempMusicOverride("DEMOCRATICRACE|event:/democratic_race/music/test_negotiation", cxt.enc)
+                end)
                 :Negotiation{
                     flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE | NEGOTIATION_FLAGS.WORDSMITH, -- this is the boss
                     reason_fn = function(minigame)
