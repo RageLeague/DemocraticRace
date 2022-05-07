@@ -6,3 +6,7 @@ function dem_test_day(day)
     local qdef = Content.GetQuestDef( "DEMOCRATIC_RACE_MAIN" )
     qdef:IsolatedTest({start_on_day = day}, 3, deck, 0)
 end
+
+function dem_test_request(agent)
+    return DemocracyUtil.SpawnRequestQuest(agent, nil, {debug_test = true})
+end

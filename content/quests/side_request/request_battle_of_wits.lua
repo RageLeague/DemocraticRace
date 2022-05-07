@@ -60,7 +60,7 @@ local QDEF = QuestDef.Define
     act_filter = DemocracyUtil.DemocracyActFilter,
     focus = QUEST_FOCUS.NEGOTIATION,
     tags = {"REQUEST_JOB"},
-    -- reward_mod = 0,
+    reward_mod = 0,
     can_flush = false,
 
     events = {
@@ -966,7 +966,8 @@ QDEF:AddConvo("go_to_game")
                     :Fn(function(cxt)
                         -- Spawn a followup.
                         if cxt:GetCastMember("giver"):GetContentID() == "ADVISOR_HOSTILE" then
-                            cxt.quest:SpawnFollowQuest(FOLLOW_UP.id)
+                            local new_quest = cxt.quest:SpawnFollowQuest(FOLLOW_UP.id)
+                            new_quest.extra_reward, new_quest.extra_reward_data = cxt.quest:GetExtraReward()
                             cxt.quest:Cancel()
                         else
                             cxt.quest:Complete()
@@ -1402,6 +1403,8 @@ FOLLOW_UP:AddConvo("comfort", "giver")
                             -- We win legit
                             cxt:Dialog("DIALOG_COMFORT_SUCCESS")
                             cxt.quest:Complete()
+                            -- You will not get mettle award, because (1) screw mettle (2) we can't without modifying existing code, and I am not willing to screw up with existing code for mettle.
+                            ConvoUtil.GiveQuestRewards(cxt)
                             QDEF.on_complete(cxt.quest)
                             -- This will probably change dronumph's narcissist personality a little, as he accepts that there
                             -- are always people better than him, but that should not be a cause for his depression.
