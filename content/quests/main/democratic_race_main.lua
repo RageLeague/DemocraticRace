@@ -189,7 +189,9 @@ local QDEF = QuestDef.Define
         end
 
         QuestUtil.SpawnQuest("CAMPAIGN_SHILLING")
-        QuestUtil.SpawnQuest("CAMPAIGN_RANDOM_COIN_FIND")
+
+        -- Rook now has his flourish. This isn't necessary anymore.
+        -- QuestUtil.SpawnQuest("CAMPAIGN_RANDOM_COIN_FIND")
         QuestUtil.SpawnQuest("CAMPAIGN_ASK_LOCATION")
         QuestUtil.SpawnQuest("LOCATION_OSHNUDROME_RACES")
         QuestUtil.SpawnQuest("LOCATION_PARTY_STORE")
@@ -247,7 +249,7 @@ local QDEF = QuestDef.Define
             quest.param[field].ARTIFACT_TREATMENT = nil
         end
 
-        local required_quests = {"CAMPAIGN_SHILLING", "CAMPAIGN_RANDOM_COIN_FIND", "CAMPAIGN_ASK_LOCATION", "LOCATION_OSHNUDROME_RACES", "LOCATION_PARTY_STORE", "SAL_STORY_MERCHANTS"}
+        local required_quests = {"CAMPAIGN_SHILLING", "CAMPAIGN_ASK_LOCATION", "LOCATION_OSHNUDROME_RACES", "LOCATION_PARTY_STORE", "SAL_STORY_MERCHANTS"}
         for i, id in ipairs(required_quests) do
             if #TheGame:GetGameState():GetActiveQuestWithContentID(id) == 0 then
                 QuestUtil.SpawnQuest(id)
