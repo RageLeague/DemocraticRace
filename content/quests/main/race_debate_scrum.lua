@@ -973,8 +973,8 @@ QDEF:AddConvo("do_debate")
                 agent:
                     !right
                     That is all, folks!
-                * Wow, that was a handful. Quite literally if you are a human or a phicket.
-                * We don't discriminate phickets around here.
+                * Wow, that was a handful. If you are a shroke or a kradeshi.
+                * For anyone else, ehh...
                 * Anyway, let's see how you do!
             ]],
             DIALOG_CHEER = [[
