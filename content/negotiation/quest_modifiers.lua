@@ -356,11 +356,15 @@ local MODIFIERS =
             if count and count == 0 then
                 TheGame:GetMusic():SetParameter("radio_layer", 0)
             end
-            local card = Negotiation.Card( "assassin_fight_call_for_help", self.engine:GetPlayer() )
-            if self.stacks > 1 then
-                card.init_help_count = self.stacks
+
+            local phase_3 = self.negotiator:GetModifierStacks("HELP_UNDERWAY") > 0
+            if not phase_3 then
+                local card = Negotiation.Card( "assassin_fight_call_for_help", self.engine:GetPlayer() )
+                if self.stacks > 1 then
+                    card.init_help_count = self.stacks
+                end
+                self.engine:DealCard(card, self.engine:GetDiscardDeck())
             end
-            self.engine:DealCard(card, self.engine:GetDiscardDeck())
         end,
 
         CleanUpCard = function(self, card_id)
