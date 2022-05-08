@@ -1847,14 +1847,11 @@ local MODIFIERS =
     PESSIMIST =
     {
         name = "Pessimist",
-        desc = "{1} is feeling down.\n\nAt the beginning of {1}'s turn, if this argument has at least an amount of resolve "
-            .. "equal to {1}'s starting resolve, you win the negotiation!\n\n"
-            .. "Otherwise, remove a random attack intent and take damage equal to the damage from the intent.\n\n"
-            .. "Arguments {1} control removes their composure at the end of their turn instead of at the beginning of their turn.",
+        desc = "{1} is feeling down.\n\nAt the beginning of {1}'s turn, if this argument has at least {2} resolve, you win the negotiation!\n\nArguments {1} control removes their composure at the end of their turn instead of at the beginning of their turn.",
 
         desc_fn = function(self, fmt_str )
-
-            return loc.format(fmt_str, self:GetOwnerName())
+            local minigame = self.engine
+            return loc.format(fmt_str, self:GetOwnerName(), minigame and minigame.start_params.enemy_resolve_required or MiniGame.GetPersuasionRequired( TheGame:GetGameState():GetCurrentBaseDifficulty() ))
         end,
         icon = "DEMOCRATICRACE:assets/modifiers/pessimist.png",
         modifier_type = MODIFIER_TYPE.CORE,
@@ -1867,18 +1864,18 @@ local MODIFIERS =
                 end
                 return
             end
-            local intents = {}
-            for i, data in ipairs(self.negotiator:GetIntents()) do
-                if data.min_persuasion and data.max_persuasion then
-                    table.insert(intents, data)
-                end
-            end
+            -- local intents = {}
+            -- for i, data in ipairs(self.negotiator:GetIntents()) do
+            --     if data.min_persuasion and data.max_persuasion then
+            --         table.insert(intents, data)
+            --     end
+            -- end
 
-            if #intents > 0 then
-                local selected_intent = table.arraypick(intents)
-                self.negotiator:DismissIntent(selected_intent)
-                minigame:ApplyPersuasion( self, self, selected_intent.min_persuasion or selected_intent.max_persuasion or 0, selected_intent.max_persuasion or 0 )
-            end
+            -- if #intents > 0 then
+            --     local selected_intent = table.arraypick(intents)
+            --     self.negotiator:DismissIntent(selected_intent)
+            --     minigame:ApplyPersuasion( self, self, selected_intent.min_persuasion or selected_intent.max_persuasion or 0, selected_intent.max_persuasion or 0 )
+            -- end
         end,
         OnEndTurn = function( self, minigame )
             for i, modifier in self.negotiator:Modifiers() do
