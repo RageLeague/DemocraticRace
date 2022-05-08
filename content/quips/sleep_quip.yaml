@@ -1,0 +1,64 @@
+tag_scores:
+  pro_labor_law: 0
+lines:
+
+- tags: [go_to_sleep, democratic_race]
+  score: 3
+  dialog:
+  - |
+    * You've worked too hard to stay up worrying. Sleep claims you quickly.
+  - |
+    * Dreams of power and influence keep you warm through the night.
+  - |
+    * In your dreams, you stand atop of a cliff, overlooking Havaria. Soon, you will remake this land in your image.
+  - |
+    * In your dreams, you think about your past life as a freelance grifter. Those days are long gone now.
+
+- tags: [go_to_sleep, democratic_race, did_assassination]
+  dialog:
+  - |
+    * This is the first time you feel this powerless. The thought haunts you until you fall asleep.
+  - |
+    * That night, you dream of hordes of people trying to take your life. You fend them off one by one, but you know that you will eventually blunder, and reach the end.
+- tags: [go_to_sleep, democratic_race, did_assassination, victor]
+  score: 3
+  - |
+    * The event of the night left you uneasy. It's a kill-or-be-killed world, and you choose to not kill.
+- tags: [go_to_sleep, democratic_race, day1]
+  dialog:
+  - |
+    * This is the first time you've slept in a proper bed for a long time. You fall asleep very quickly.
+- tags: [go_to_sleep, democratic_race, sal]
+  dialog:
+  - |
+    * You dream of the day when you get elected, and finally see Kashio in the eye.
+    * Speaking of which, Kashio isn't in this mod, don't worry.
+    * {player} has already suffered enough.
+- tags: [go_to_sleep, democratic_race, day3, sal, pro_labor_law]
+  dialog:
+  - |
+    * That night, you remember hearing about the news of your parents' valiant death. You remember the sorrow, the despair, and the anger.
+  - |
+    * That night, you dream of Prindo. She is just as determined as you remembered.
+- tags: [go_to_sleep, democratic_race, day3, sal]
+  notags: [pro_labor_law]
+  dialog:
+  - |
+    * That night, you remember hearing about the news of your parents' demise. You learned of Havaria's harsh reality, and that fighting against it is futile.
+  - |
+    * That night, you dream of Prindo walking away from you. You tried to catch up, but she just seem further and further away.
+- tags: [go_to_sleep, democratic_race, rook]
+  dialog:
+  - |
+    * So many people looking up to you, supporting you. You shudder to think of what happens when they find out your true intentions.
+- tags: [go_to_sleep, democratic_race, day3, rook, pro_labor_law]
+  dialog:
+  - |
+    * You dream of the fateful event that lead to your discharge. A part of you still believe you fought for more than just pay. You always hated yourself for that.
+  - |
+    * The thought of fighting for a cause you believe in instead of fighting for the largest bidder terrifies you.
+- tags: [go_to_sleep, democratic_race, day3, rook]
+  notags: [pro_labor_law]
+  dialog:
+  - |
+    * You dream of the day of your discharge. You learned of the consequences of betraying someone that can retaliate.
