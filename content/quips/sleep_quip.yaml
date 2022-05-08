@@ -1,7 +1,6 @@
 tag_scores:
   pro_labor_law: 0
 lines:
-
 - tags: [go_to_sleep, democratic_race]
   score: 3
   dialog:
@@ -22,6 +21,7 @@ lines:
     * That night, you dream of hordes of people trying to take your life. You fend them off one by one, but you know that you will eventually blunder, and reach the end.
 - tags: [go_to_sleep, democratic_race, did_assassination, victor]
   score: 3
+  dialog:
   - |
     * The event of the night left you uneasy. It's a kill-or-be-killed world, and you choose to not kill.
 - tags: [go_to_sleep, democratic_race, day1]
