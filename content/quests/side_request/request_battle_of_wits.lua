@@ -22,12 +22,6 @@ local DEPRESSION_BEHAVIOUR =
 
         self.negotiator:AddModifier("ENCOURAGEMENT")
 
-        local cards = {}
-        for i = 1, 3 do
-            table.insert(cards, Negotiation.Card( "console_opponent", self.engine:GetPlayer() ))
-        end
-        self.engine:InceptCards( cards, self )
-
         self:SetPattern( self.BasicCycle )
     end,
 
@@ -1386,6 +1380,14 @@ FOLLOW_UP:AddConvo("comfort", "giver")
                 end)
                 :Negotiation{
                     reason_fn = function(minigame) return cxt:GetLocString("NEGOTIATION_REASON") end,
+                    on_start_negotiation = function(minigame)
+                        local n = math.max(1, math.round( minigame.player_negotiator.agent.negotiator:GetCardCount() / 5 ))
+                        for k = 1, n do
+                            local card = Negotiation.Card( "console_opponent", minigame.player_negotiator.agent )
+                            card.show_dealt = true
+                            card:TransferCard(minigame:GetDrawDeck())
+                        end
+                    end,
                     -- This will be a special negotiation.
                     -- giver will start at low resolve, and you must bring their resolve to full to actually win the negotiation.
                     -- Winning negotiation without bringing up resolve, like using damage or oolo's requisition, has bad effect.
