@@ -1,5 +1,6 @@
 tag_scores:
   democratic_race: 0
+  many_paid_shills: 0
 lines:
 - push: [smalltalk]
 
@@ -78,6 +79,27 @@ lines:
     }
     agent:
       Anyway, thanks for listening to my rant.
+- tags: [democratic_race, many_paid_shills]
+  notags: [bribed]
+  dialog:
+  - |
+    agent:
+      I heard you've been paying people to spread your ideology for you.
+      !hips
+      Why don't I get paid for doing so?
+    player:
+      !bashful
+      Uh...
+    agent:
+      !chuckle
+      Kidding, of course.
+      I am perfectly happy supporting your cause, if only to make Havaria a better place for all of us.
+    player:
+      !agree
+      Well said.
+    agent:
+      !neutral
+      But seriously though, if you want to pay me to spread your ideology, I would be more than happy to do so.
 - tags: [laborer, democratic_race, pro_labor_law]
   notags: [primary_advisor_diplomacy]
   dialog:
