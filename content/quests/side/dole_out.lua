@@ -1,5 +1,7 @@
 local function CanFeed(agent, quest)
-    return DemocracyUtil.RandomBystanderCondition(agent)
+    return not (AgentUtil.IsInHiding(agent) or agent:IsRetired() or agent:IsInPlayerParty()
+        or AgentUtil.HasPlotArmour(agent) or not agent:IsSentient())
+        and not agent:HasQuestMembership()
         and not (quest.param.gifted_people and table.arraycontains(quest.param.gifted_people, agent))
         and not (quest.param.rejected_people and table.arraycontains(quest.param.rejected_people, agent))
 end

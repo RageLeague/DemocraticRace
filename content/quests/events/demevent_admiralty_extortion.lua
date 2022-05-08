@@ -119,7 +119,7 @@ QDEF:AddConvo()
                     Hesh off...
                     Stupid democracy... Why can't we just solve things the ol' fashioned way?
                     !exit
-                * Maybe he's right? Remind me why there's democracy in Griftlands again?
+                * Maybe {admiralty.heshe}'s right? Remind me why there's democracy in Griftlands again?
                 laborer:
                     !right
                     Thanks for that. I didn't have anymore sandwiches to squirrel away my cash in.

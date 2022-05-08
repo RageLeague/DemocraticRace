@@ -230,7 +230,8 @@ function DemocracyUtil.RandomBystanderCondition(agent)
         and not (agent:GetBrain() and agent:GetBrain():GetWorkPosition() and agent:GetBrain():GetWorkPosition():ShouldBeWorking())
         and not agent:HasQuestMembership()
         -- Kick the auctioneer out of random bystander, as his negotiation behaviour is wack
-        and agent:GetContentID() ~= "HESH_AUCTIONEER"
+        -- Don't worry guys, it's no longer wack anymore
+        -- and agent:GetContentID() ~= "HESH_AUCTIONEER"
 end
 
 function DemocracyUtil.CanVote(agent)

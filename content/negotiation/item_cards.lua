@@ -107,7 +107,7 @@ local CARDS = {
         icon = "DEMOCRATICRACE:assets/cards/intimidating_blaster.png",
 
         cost = 1,
-        flags = CARD_FLAGS.ITEM,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.HOSTILE,
         rarity = CARD_RARITY.RARE,
 
         is_artifact = true,
