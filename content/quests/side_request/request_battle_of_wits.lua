@@ -36,6 +36,18 @@ local DEPRESSION_BEHAVIOUR =
         else
             self:ChooseGrowingNumbers( 2, 1 )
         end
+
+        local candidates = {}
+        for i, card in ipairs(self.prepared_cards) do
+            if card.id == "default" and card.target_enemy then
+                table.insert(candidates, card)
+            end
+        end
+        if #candidates > 0 then
+            local chosen = table.arraypick(candidates)
+            chosen.target_self = TARGET_FLAG.CORE
+            chosen.target_enemy = nil
+        end
 	end,
 }
 
@@ -1369,7 +1381,7 @@ FOLLOW_UP:AddConvo("comfort", "giver")
             * It seems like your attempt to brighten {agent}'s mood has worsened the situation.
             * It's too late now. {agent} doesn't even want to talk to you.
         ]],
-        NEGOTIATION_REASON = "Comfort {agent}'s spirit!",
+        NEGOTIATION_REASON = "Comfort {agent}!",
     }
     :Hub(function(cxt)
         if not cxt.quest.param.tried_comfort then

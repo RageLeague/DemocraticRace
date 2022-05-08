@@ -467,17 +467,24 @@ local CARDS = {
     console_opponent =
     {
         name = "Console",
-        desc = "Transfer all composure on target argument you control to your opponent's core argument.",
+        desc = "Apply {1} {COMPOSURE}, then transfer all composure on that argument to your opponent's core argument.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:CalculateComposureText( self.composure_base ))
+        end,
         icon = "negotiation/empathy.tex",
 
         cost = 1,
         flags = CARD_FLAGS.DIPLOMACY | CARD_FLAGS.REPLENISH,
         rarity = CARD_RARITY.UNIQUE,
 
+        composure_base = 2,
+
         target_self = TARGET_ANY_RESOLVE,
 
         OnPostResolve = function( self, minigame, targets )
             for i, target in ipairs(targets) do
+                target:DeltaComposure( self.composure_base, self )
+
                 local delta = target.composure
                 if self.anti_negotiator:FindCoreArgument() then
                     self.anti_negotiator:FindCoreArgument():DeltaComposure(delta, self)
