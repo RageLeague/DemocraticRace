@@ -48,9 +48,9 @@ QDEF:AddConvo()
                     !injured
                 * You see {admiralty} trying to extort {laborer}.
                 admiralty:
-                    It's nothing personal, believe me. Hand over the money or else
+                    It's nothing personal, believe me. Hand over the money or else.
                 laborer:
-                    Really? How much could I give you that a jake couldn't give?
+                    Why do you keep targeting me? You could arrest someone like a Jake and get way more money!
                 admiralty:
                     You keep bringing that up whenever we do this song and dance. It's gotten old.
                     Spill the shills or I spill your guts.
@@ -119,7 +119,7 @@ QDEF:AddConvo()
                     Hesh off...
                     Stupid democracy... Why can't we just solve things the ol' fashioned way?
                     !exit
-                * Maybe he's right? Remind me why there's democracy in Griftlands again?
+                * Maybe {admiralty.heshe}'s right? Remind me why there's democracy in Griftlands again?
                 laborer:
                     !right
                     Thanks for that. I didn't have anymore sandwiches to squirrel away my cash in.
@@ -133,6 +133,7 @@ QDEF:AddConvo()
                 player:
                     Aren't your wages enough? Extorting people is a rather quick way to lose your badge.
                 admiralty:
+                    !hips
                     Well I'll keep it blunt, to save your time.
                     These people think the Admiralty should be de-funded. That'd mean I don't get payed as much.
                     By your logic, I'm the smart one because I'm getting head start on the robbing people process.
