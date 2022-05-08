@@ -1244,7 +1244,7 @@ QDEF:AddConvo("talk_to_candidates")
                         :Dialog("DIALOG_APOLOGIZE_FAILURE")
                 cxt:Opt("OPT_IGNORE_CONCERN")
                     :Dialog("DIALOG_IGNORE_CONCERN")
-            elseif cxt.quest.param.candidate_opinion and cxt.quest.param.candidate_opinion[who:GetID()] >= 2 then
+            elseif cxt.quest.param.candidate_opinion and (cxt.quest.param.candidate_opinion[who:GetID()] or 0) >= 2 then
                 cxt:Dialog("DIALOG_SUPPORT")
                 if who:GetRelationship() < RELATIONSHIP.NEUTRAL then
                     who:OpinionEvent(OPINION.SHARE_IDEOLOGY)
