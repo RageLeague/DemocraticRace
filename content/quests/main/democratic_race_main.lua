@@ -931,6 +931,15 @@ local QDEF = QuestDef.Define
         return intel
     end,
 
+    DeltaGameplayStats = function(quest, id, delta)
+        quest.param.gameplay_stats = quest.param.gameplay_stats or {}
+        quest.param.gameplay_stats[id] = (quest.param.gameplay_stats[id] or 0) + delta
+    end,
+    GetGameplayStats = function(quest, id, delta)
+        quest.param.gameplay_stats = quest.param.gameplay_stats or {}
+        return (quest.param.gameplay_stats[id] or 0)
+    end,
+
     -- debug functions
     DebugUnlockAllLocations = function(quest)
         quest.param.unlocked_locations = shallowcopy(Content.GetWorldRegion("democracy_pearl").locations)
