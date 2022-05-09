@@ -1,6 +1,6 @@
 Convo("DEM_CONVINCE_FIRE")
     :Loc{
-        OPT_CONVINCE_FIRE = "Convince {agent} to fire an employee...",
+        OPT_CONVINCE_FIRE = "Convince {agent} to fire an employee from {1#location}...",
         TT_CONVINCE_FIRE = "Firing someone will cause them to hate you, but it will strip them of their influence temporarily.",
 
         REQ_ALREADY_FIRED = "Already fired someone today.",
@@ -121,7 +121,7 @@ Convo("DEM_CONVINCE_FIRE")
                 end
             end
             if #fire_targets > 0 then
-                cxt:Opt("OPT_CONVINCE_FIRE")
+                cxt:Opt("OPT_CONVINCE_FIRE", workplace)
                     :PreIcon( global_images.order )
                     :PostText("TT_CONVINCE_FIRE")
                     :ReqCondition(not who:HasMemoryFromToday("CONVINCED_FIRE_EMPLOYEE"), "REQ_ALREADY_FIRED")

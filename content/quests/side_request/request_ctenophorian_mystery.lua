@@ -1085,15 +1085,17 @@ QDEF:AddConvo("rat_out_aftermath")
             if tei and tei:IsAlive() then
                 if cxt.location == cxt:GetCastMember("giver"):GetHomeLocation() and
                     cxt.location == cxt:GetCastMember("giver"):GetLocation() then
-
                     return "STATE_BENNI_TEI_DIALOG"
-                else
+                end
+            else
+                if (quest.time_left or 0) <= 0 and cxt.location:HasTag("in_transit") then
                     return "STATE_ARREST"
                 end
             end
-        end
-        if (quest.time_left or 0) <= 0 and cxt.location:HasTag("in_transit") then
-            return "STATE_ARREST"
+        else
+            if (quest.time_left or 0) <= 0 and cxt.location:HasTag("in_transit") then
+                return "STATE_ARREST"
+            end
         end
     end)
     :State("STATE_BENNI_TEI_DIALOG")

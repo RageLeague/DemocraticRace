@@ -848,6 +848,7 @@ QDEF:AddConvo("debate_people")
                         cxt:Dialog("DIALOG_CONVINCE_WIN")
                         cxt.quest:Complete()
                         ConvoUtil.GiveQuestRewards(cxt)
+                        StateGraphUtil.AddLeaveLocation(cxt)
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_CONVINCE_LOSE")

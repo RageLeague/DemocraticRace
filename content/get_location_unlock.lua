@@ -35,7 +35,7 @@ local UNLOCK_LOCATIONS = {
         "GB_BARON_HQ", --
         "GB_LABOUR_OFFICE",
         "PEARL_CULT_COMPOUND",
-        "CONTRACT_CHAPEL",
+        -- "CONTRACT_CHAPEL",
     },
     [UNLOCK_TYPE.SHOP] = {
         "NEWDELTREE_OUTFITTERS", --
@@ -66,7 +66,7 @@ local FANCY_LOCATIONS = {
     "PEARL_FANCY_EATS",
     "GRAND_THEATER", --
     "PEARL_CULT_COMPOUND",
-    "CONTRACT_CHAPEL",
+    -- "CONTRACT_CHAPEL",
 }
 local ILLEGAL_LOCATIONS = {
     "MARKET_STALL",
