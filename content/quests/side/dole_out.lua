@@ -1,12 +1,16 @@
 local function CanFeed(agent, quest)
-    return DemocracyUtil.RandomBystanderCondition(agent)
+    return not (AgentUtil.IsInHiding(agent) or agent:IsRetired() or agent:IsInPlayerParty()
+        or AgentUtil.HasPlotArmour(agent) or not agent:IsSentient())
+        and not agent:HasQuestMembership()
         and not (quest.param.gifted_people and table.arraycontains(quest.param.gifted_people, agent))
         and not (quest.param.rejected_people and table.arraycontains(quest.param.rejected_people, agent))
 end
 
 local QDEF = QuestDef.Define{
     title = "Dole out",
-    desc = "Give Bread to the poor to gain support",
+    desc = "Give Bread to the poor to gain support.",
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/dole_out.png"),
+
     qtype = QTYPE.SIDE,
     rank = {2, 5},
     act_filter = DemocracyUtil.DemocracyActFilter,
@@ -18,6 +22,7 @@ local QDEF = QuestDef.Define{
         quest:Activate("dole_out_three")
         quest:Activate("buy_loaves")
         quest:Activate("time_countdown")
+        quest:Activate("request_funds")
     end,
 
     on_complete = function(quest)
@@ -40,7 +45,9 @@ local QDEF = QuestDef.Define{
     mark = {"primary_advisor"},
 
     on_activate = function(quest)
-
+        if quest:IsActive("request_funds") then
+            quest:Cancel("request_funds")
+        end
     end,
 }
 :AddObjective{
@@ -64,6 +71,12 @@ local QDEF = QuestDef.Define{
             DemocracyUtil.AddUnlockedLocationMarks(t)
         end
     end,
+}
+:AddObjective{
+    id = "request_funds",
+    title = "(Optional) Request additional funds",
+    desc = "If you don't have enough money to buy the loaves, you can ask your advisor for some.",
+    mark = {"primary_advisor"},
 }
 :AddFreeTimeObjective{
     desc = "Use this time to find people to feed with your dole loaves.",
@@ -321,7 +334,7 @@ QDEF:AddConvo("dole_out_three")
             table.insert(cxt.quest.param.gifted_people, cxt:GetAgent())
 
             cxt:Opt("OPT_AGREE")
-                :UpdatePoliticalStance("WELFARE", 2, false, true)
+                :UpdatePoliticalStance("FISCAL_POLICY", 2, false, true)
                 :ReceiveOpinion("politic")
                 :Dialog("DIALOG_AGREE")
                 :GoTo("STATE_AGREE")
@@ -632,6 +645,17 @@ QDEF:AddConvo("dole_out_three", "primary_advisor")
             agent:
                 Suit yourself, I guess.
         ]],
+    }
+    :Hub(function(cxt, who)
+        cxt:Opt("OPT_END_EARLY")
+            :SetQuestMark(cxt.quest)
+            :Dialog("DIALOG_END_EARLY")
+            :Fn(function(cxt)
+                cxt.quest:Complete("time_countdown")
+            end)
+    end)
+QDEF:AddConvo("request_funds", "primary_advisor")
+    :Loc{
         OPT_ASK_MONEY = "Ask for funds for buying the loaves",
         DIALOG_ASK_MONEY = [[
             player:
@@ -659,26 +683,18 @@ QDEF:AddConvo("dole_out_three", "primary_advisor")
         ]],
     }
     :Hub(function(cxt, who)
-        cxt:Opt("OPT_END_EARLY")
-            :SetQuestMark(cxt.quest)
-            :Dialog("DIALOG_END_EARLY")
-            :Fn(function(cxt)
-                cxt.quest:Complete("time_countdown")
-            end)
-        if not cxt.quest.param.ask_funds then
-            cxt:BasicNegotiation("ASK_MONEY", {
+        cxt:BasicNegotiation("ASK_MONEY", {
 
-            })
-                :OnSuccess()
-                    :ReceiveMoney(80)
-                    :Fn(function(cxt)
-                        cxt.quest.param.ask_funds = true
-                    end)
-                :OnFailure()
-                    :Fn(function(cxt)
-                        cxt.quest.param.ask_funds = true
-                    end)
-        end
+        })
+            :OnSuccess()
+                :ReceiveMoney(80)
+                :Fn(function(cxt)
+                    cxt.quest:Complete("request_funds")
+                end)
+            :OnFailure()
+                :Fn(function(cxt)
+                    cxt.quest:Fail("request_funds")
+                end)
     end)
 QDEF:AddConvo("go_to_advisor", "primary_advisor")
     :Loc{

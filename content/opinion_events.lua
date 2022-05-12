@@ -21,6 +21,10 @@ local OPINIONS = {
         delta = OPINION_DELTAS.OPINION_DOWN,
         txt = "Dislikes your ideology",
     },
+    DISLIKE_IDEOLOGY_II = {
+        delta = OPINION_DELTAS.MAJOR_BAD,
+        txt = "Extremely dislikes your ideology",
+    },
     SHARE_IDEOLOGY = {
         delta = OPINION_DELTAS.LIKE,
         txt = "Shares an ideology with you",
@@ -91,6 +95,10 @@ local OPINIONS = {
     REJECTED_ALLIANCE = {
         delta = OPINION_DELTAS.DISLIKE,
         txt = "Rejected their alliance",
+    },
+    PUBLICLY_DENOUNCE = {
+        delta = OPINION_DELTAS.BAD,
+        txt = "Publicly denounced them",
     },
 }
 

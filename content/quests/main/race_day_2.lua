@@ -30,7 +30,7 @@ local QDEF = QuestDef.Define
 :AddSubQuest{
     id = "do_interview",
     quest_id = "RACE_INTERVIEW",
-    mark = {"primary_advisor"},
+    -- mark = {"primary_advisor"},
     on_activate = function(quest)
         UIHelpers.PassTime(DAY_PHASE.NIGHT)
         DemocracyUtil.SetSubdayProgress(2)
@@ -139,7 +139,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     I spent all night setting up an interview for you to get some more publicity with the masses.
                     The least you can do is pretend you're pulling your weight!
                 player:
-                    okay, okay. When's the interview scheduled?
+                    Okay, okay. When's the interview scheduled?
                 primary_advisor:
                     Later tonight.
                 player:
@@ -202,13 +202,15 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         ]],
     }
     :Fn(function(cxt)
-        local dead_bodies = cxt:GetCastMember("player_room"):HasMemory("HAS_DEAD_BODY")
+        local dead_bodies = cxt:GetCastMember("player_room") and cxt:GetCastMember("player_room"):HasMemory("HAS_DEAD_BODY")
 
         cxt.enc.scratch.dead_body = dead_bodies and true
         cxt:Dialog("DIALOG_INTRO", dead_bodies and #dead_bodies)
         DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 2)
         cxt:Dialog("DIALOG_INTRO_PST")
-        cxt:GetCastMember("player_room"):Forget("HAS_DEAD_BODY")
+        if cxt:GetCastMember("player_room") then
+            cxt:GetCastMember("player_room"):Forget("HAS_DEAD_BODY")
+        end
         cxt.quest:Complete("starting_out")
         StateGraphUtil.AddEndOption(cxt)
     end)
@@ -231,12 +233,27 @@ QDEF:AddConvo("get_job")
         if not cxt.quest:GetCastMember("primary_advisor") then
             cxt:Opt("OPT_GET_JOB")
                 :SetQuestMark()
-                :Dialog("DIALOG_GET_JOB")
-                :LoopingFn(function(cxt)
-                    DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB")
-                end)
+                :Fn( function(cxt)
+                    UIHelpers.DoSpecificConvo( nil, cxt.convodef.id, "STATE_GET_JOB" ,nil,nil,cxt.quest)
+                end )
         end
     end)
+    :State("STATE_GET_JOB")
+        :Loc{
+            DIALOG_GET_JOB = [[
+                player:
+                    !left
+                    !thought
+                    $neutralThoughtful
+                    Here's what I can do...
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_GET_JOB")
+            cxt:RunLoopingFn(function(cxt)
+                DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB")
+            end)
+        end)
 QDEF:AddConvo("get_job", "primary_advisor")
     :Loc{
         OPT_GET_JOB = "Discuss Job...",

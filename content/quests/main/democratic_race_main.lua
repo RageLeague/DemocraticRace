@@ -44,8 +44,8 @@ end
 
 local DAY_SCHEDULE = {
     {quest = "RACE_DAY_1", difficulty = 1, support_expectation = {0,10,25}},
-    {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {35,50,65}},
-    {quest = "RACE_DAY_3", difficulty = 3, support_expectation = {80,100,120}},
+    {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {25,40,55}},
+    {quest = "RACE_DAY_3", difficulty = 3, support_expectation = {60,80,100}},
     -- {quest = "RACE_DAY_4", difficulty = 4},
     -- {quest = "RACE_DAY_5", difficulty = 5},
 }
@@ -64,14 +64,17 @@ local DELTA_SUPPORT = {
 }
 -- Determines the support level change when an agent is killed.
 local DEATH_DELTA = -10
+local DEATH_GENERAL_DELTA = -3
 
 -- Determines the support level change when an agent is killed in an isolated scenario.
 -- Still reduce support, but people won't know for sure it's you.
 local ISOLATED_DEATH_DELTA = -2
+local ISOLATED_DEATH_GENERAL_DELTA = -1
 
 -- Determines the support change if you didn't kill someone, but you're an accomplice
 -- or someone dies from negligence
 local ACCOMPLICE_KILLING_DELTA = -5
+local ACCOMPLICE_KILLING_GENERAL_DELTA = -2
 local QDEF = QuestDef.Define
 {
     title = "The Democratic Race",
@@ -124,8 +127,7 @@ local QDEF = QuestDef.Define
         quest.param.wealth_support_gain_source = {}
         quest.param.wealth_support_loss_source = {}
         -- The locations you've unlocked.
-        quest.param.unlocked_locations = --shallowcopy(Content.GetWorldRegion("democracy_pearl").locations)--{"MURDERBAY_NOODLE_SHOP"}
-        {"MURDERBAY_NOODLE_SHOP"}
+        quest.param.unlocked_locations = {"MURDERBAY_NOODLE_SHOP"}
 
         -- quest.param.free_time_actions = 1
 
@@ -133,39 +135,66 @@ local QDEF = QuestDef.Define
         quest.param.stance_change = {}
         quest.param.stance_change_freebie = {}
 
-        local new_faction_relationships = {
-            {"BANDITS", "SPARK_BARONS", RELATIONSHIP.DISLIKED},
-            {"BANDITS", "CULT_OF_HESH", RELATIONSHIP.DISLIKED},
-            {"BANDITS", "FEUD_CITIZEN", RELATIONSHIP.DISLIKED},
-            {"SPARK_BARONS", "CULT_OF_HESH", RELATIONSHIP.HATED},
-            {"ADMIRALTY", "RISE", RELATIONSHIP.HATED},
-            -- {"BANDITS", "RISE", RELATIONSHIP.DISLIKED},
-            {"BANDITS", "JAKES", RELATIONSHIP.LIKED},
-            {"ADMIRALTY", "CULT_OF_HESH", RELATIONSHIP.LIKED},
-            {"ADMIRALTY", "SPARK_BARONS", RELATIONSHIP.LIKED},
-            {"JAKES", "SPARK_BARONS", RELATIONSHIP.LIKED},
-            {"JAKES", "ADMIRALTY", RELATIONSHIP.NEUTRAL},
-            {"JAKES", "CULT_OF_HESH", RELATIONSHIP.DISLIKED},
-            {"FEUD_CITIZEN", "RISE", RELATIONSHIP.LIKED},
+        -- We shouldn't change the faction's relationship. We should specify relationship between candidates instead so we don't change functionalities of locations.
+        local relationship_maps = {
+            [ RELATIONSHIP.HATED ] = OPINION.DISLIKE_IDEOLOGY_II,
+            [ RELATIONSHIP.DISLIKED ] = OPINION.DISLIKE_IDEOLOGY,
+            [ RELATIONSHIP.LIKED ] = OPINION.SHARE_IDEOLOGY,
         }
-        for i, data in ipairs(new_faction_relationships) do
-            TheGame:GetGameState():GetFactions():SetFactionRelationship(table.unpack(data))
+
+        for id, data in pairs(DemocracyConstants.opposition_data) do
+            if data.relationship then
+                for other_id, rel in pairs(data.relationship) do
+                    local agent = quest:GetCastMember(id)
+                    local other_agent = quest:GetCastMember(other_id)
+                    local delta = relationship_maps[rel]
+                    if agent and other_agent and delta then
+                        agent:OpinionEvent(delta, nil, other_agent)
+                    end
+                end
+            end
         end
+        -- local new_faction_relationships = {
+        --     {"BANDITS", "SPARK_BARONS", RELATIONSHIP.DISLIKED},
+        --     {"BANDITS", "CULT_OF_HESH", RELATIONSHIP.DISLIKED},
+        --     {"BANDITS", "FEUD_CITIZEN", RELATIONSHIP.DISLIKED},
+        --     {"SPARK_BARONS", "CULT_OF_HESH", RELATIONSHIP.HATED},
+        --     {"ADMIRALTY", "RISE", RELATIONSHIP.HATED},
+        --     -- {"BANDITS", "RISE", RELATIONSHIP.DISLIKED},
+        --     {"BANDITS", "JAKES", RELATIONSHIP.LIKED},
+        --     {"ADMIRALTY", "CULT_OF_HESH", RELATIONSHIP.LIKED},
+        --     {"ADMIRALTY", "SPARK_BARONS", RELATIONSHIP.LIKED},
+        --     {"JAKES", "SPARK_BARONS", RELATIONSHIP.LIKED},
+        --     {"JAKES", "ADMIRALTY", RELATIONSHIP.NEUTRAL},
+        --     {"JAKES", "CULT_OF_HESH", RELATIONSHIP.DISLIKED},
+        --     {"FEUD_CITIZEN", "RISE", RELATIONSHIP.LIKED},
+        -- }
+        -- for i, data in ipairs(new_faction_relationships) do
+        --     TheGame:GetGameState():GetFactions():SetFactionRelationship(table.unpack(data))
+        -- end
 
         -- quest.param.allow_skip_side = true
 
-        -- TheGame:GetGameState():GetPlayerAgent().graft_owner:AddGraft(GraftInstance("relation_support_tracker"))
+        -- TheGame:GetGameState():GetPlayerAgent().graft_owner:AddGraft(GraftInstance("democracy_resolve_limiter"))
 
         QuestUtil.StartDayQuests(DAY_SCHEDULE, quest)
 
         if quest.param.start_on_day and quest.param.start_on_day >= 2 then
-            quest:AssignCastMember("primary_advisor", quest:GetCastMember(quest.param.force_advisor_id or table.arraypick(DemocracyUtil.ADVISOR_IDS)))
+            quest:AssignCastMember("primary_advisor", quest:GetCastMember(quest.param.force_advisor_id or table.arraypick(copykeys(DemocracyUtil.ADVISOR_IDS))))
+            print(quest:GetCastMember("primary_advisor"))
+            print(quest:GetCastMember("home"))
+            print(quest:GetCastMember("player_room"))
             QuestUtil.SpawnQuest("RACE_LIVING_WITH_ADVISOR")
             quest:DefFn("DeltaGeneralSupport", (quest.param.init_support_level or 0) * (quest.param.start_on_day - 1))
         end
+
         QuestUtil.SpawnQuest("CAMPAIGN_SHILLING")
-        QuestUtil.SpawnQuest("CAMPAIGN_RANDOM_COIN_FIND")
+
+        -- Rook now has his flourish. This isn't necessary anymore.
+        -- QuestUtil.SpawnQuest("CAMPAIGN_RANDOM_COIN_FIND")
         QuestUtil.SpawnQuest("CAMPAIGN_ASK_LOCATION")
+        QuestUtil.SpawnQuest("LOCATION_OSHNUDROME_RACES")
+        QuestUtil.SpawnQuest("LOCATION_PARTY_STORE")
 
         QuestUtil.SpawnQuest("SAL_STORY_MERCHANTS")
         -- populate all locations.
@@ -181,7 +210,7 @@ local QDEF = QuestDef.Define
         local summon_people = {}
         for i, id in ipairs(TheGame:GetGameState().region:GetContent().population) do
             local content = Content.GetCharacterDef( id )
-            local threshold = 6 - (content.renown or 1)
+            local threshold = math.ceil((6 - (content.renown or 1)) / 2)
             while (population_count[id] or 0) < threshold do
                 population_count[id] = (population_count[id] or 0) + 1
                 table.insert(summon_people, id)
@@ -190,6 +219,7 @@ local QDEF = QuestDef.Define
         table.shuffle(summon_people)
         for i, id in ipairs(summon_people) do
             local agent = TheGame:GetGameState():AddSkinnedAgent(id)
+            agent:AddTag("NO_AUTO_CULL")
             if math.random() < 0.5 then
                 AgentUtil.PutAgentInWorld(agent)
             end
@@ -219,8 +249,12 @@ local QDEF = QuestDef.Define
             quest.param[field].RELIGIOUS_POLICY = quest.param[field].ARTIFACT_TREATMENT
             quest.param[field].ARTIFACT_TREATMENT = nil
         end
-        if #TheGame:GetGameState():GetActiveQuestWithContentID("CAMPAIGN_ASK_LOCATION") == 0 then
-            QuestUtil.SpawnQuest("CAMPAIGN_ASK_LOCATION")
+
+        local required_quests = {"CAMPAIGN_SHILLING", "CAMPAIGN_ASK_LOCATION", "LOCATION_OSHNUDROME_RACES", "LOCATION_PARTY_STORE", "SAL_STORY_MERCHANTS"}
+        for i, id in ipairs(required_quests) do
+            if #TheGame:GetGameState():GetActiveQuestWithContentID(id) == 0 then
+                QuestUtil.SpawnQuest(id)
+            end
         end
     end,
     fill_out_quip_tags = function(quest, tags, agent)
@@ -245,6 +279,9 @@ local QDEF = QuestDef.Define
                     table.insert_unique(tags, "anti_" .. string.lower(id))
                 end
             end
+        end
+        if quest:DefFn("GetGameplayStats", "PAID_SHILLS") >= 5 then
+            table.insert_unique(tags, "many_paid_shills")
         end
     end,
     events =
@@ -288,7 +325,7 @@ local QDEF = QuestDef.Define
                     quest:DefFn("DeltaGroupFactionSupport", opposition_data.faction_support, new_rel - old_rel, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE" )
                     quest:DefFn("DeltaGroupWealthSupport", opposition_data.wealth_support, new_rel - old_rel, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE" )
                 else
-                    quest:DefFn("DeltaAgentSupport", support_delta, agent, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
+                    quest:DefFn("DeltaAgentSupport", math.floor(support_delta / 3), support_delta, agent, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
                 end
             end
             -- if new_rel == RELATIONSHIP.LOVED and old_rel ~= RELATIONSHIP.LOVED then
@@ -305,22 +342,22 @@ local QDEF = QuestDef.Define
                 local agent = fighter.agent
                 if agent:IsSentient() and agent:IsDead() then
                     if CheckBits( battle:GetScenario():GetFlags(), BATTLE_FLAGS.ISOLATED ) then
-                        quest:DefFn("DeltaAgentSupport", ISOLATED_DEATH_DELTA, agent, "SUSPICION")
+                        quest:DefFn("DeltaAgentSupport", ISOLATED_DEATH_GENERAL_DELTA, ISOLATED_DEATH_DELTA, agent, "SUSPICION")
                     elseif fighter:GetKiller() and fighter:GetKiller():IsPlayer() then
                         -- killing already comes with a heavy drawback of someone hating you, thus reducing support significantly.
-                        -- quest:DefFn("DeltaAgentSupport", DEATH_DELTA, agent, "MURDER")
+                        -- quest:DefFn("DeltaAgentSupport", DEATH_GENERAL_DELTA, DEATH_DELTA, agent, "MURDER")
                     else
                         if fighter:GetTeamID() == TEAM.BLUE then
-                            quest:DefFn("DeltaAgentSupport", ACCOMPLICE_KILLING_DELTA, agent, "NEGLIGENCE")
+                            quest:DefFn("DeltaAgentSupport", ACCOMPLICE_KILLING_GENERAL_DELTA, ACCOMPLICE_KILLING_DELTA, agent, "NEGLIGENCE")
                         else
-                            quest:DefFn("DeltaAgentSupport", ACCOMPLICE_KILLING_DELTA, agent, "ACCOMPLICE")
+                            quest:DefFn("DeltaAgentSupport", ACCOMPLICE_KILLING_GENERAL_DELTA, ACCOMPLICE_KILLING_DELTA, agent, "ACCOMPLICE")
                         end
                     end
                 end
             end
             if not CheckBits( battle:GetScenario():GetFlags(), battle_defs.BATTLE_FLAGS.SELF_DEFENCE ) then
                 -- Being aggressive hurts your reputation
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5, "ATTACK")
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2, "ATTACK")
             end
         end,
         action_clock_advance = function(quest, location)
@@ -333,6 +370,12 @@ local QDEF = QuestDef.Define
         quests_changed = function(quest, event_quest)
             if event_quest:GetQuestDef():HasTag( "REQUEST_JOB" ) and event_quest:IsComplete() then
                 TheGame:AddGameplayStat( "completed_request_quest", 1 )
+            end
+            if event_quest:GetQuestDef():HasTag( "REQUEST_JOB" ) and event_quest:IsActive() then
+                if event_quest:GetProvider() then
+                    -- In a run, a person can only do one request quest
+                    event_quest:GetProvider():Remember("ISSUED_REQUEST_QUEST")
+                end
             end
             if event_quest == quest.param.day_quest and quest.param.day_quest:IsComplete() then
                 DemocracyUtil.EndFreeTime()
@@ -642,19 +685,19 @@ local QDEF = QuestDef.Define
         end
     end,
 
-    DeltaAgentSupport = function(quest, amt, agent, notification, delta_type)
+    DeltaAgentSupport = function(quest, general_amt, additional_amt, agent, notification, delta_type)
 
         if not delta_type and type(notification) == "string" then
             delta_type = notification
         end
-        quest:DefFn("DeltaGeneralSupport", amt, false, delta_type)
-        quest:DefFn("DeltaFactionSupport", amt, agent, false, delta_type)
-        quest:DefFn("DeltaWealthSupport", amt, agent, false, delta_type)
+        quest:DefFn("DeltaGeneralSupport", general_amt, false, delta_type)
+        quest:DefFn("DeltaFactionSupport", additional_amt, agent, false, delta_type)
+        quest:DefFn("DeltaWealthSupport", additional_amt, agent, false, delta_type)
         if notification == nil then
             notification = true
         end
-        if notification and amt then
-            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_AGENT_SUPPORT, amt, agent, notification )
+        if notification and additional_amt then
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_AGENT_SUPPORT, general_amt, additional_amt, agent, notification )
         end
     end,
     -- DeltaFactionSupportAgent = function(quest, amt, agent, ignore_notification)
@@ -856,6 +899,21 @@ local QDEF = QuestDef.Define
         end
         return quest.param.stance_change_freebie[issue]
     end,
+    SetAlliance = function(quest, agent, turn_on)
+        if turn_on == nil then
+            turn_on = true
+        end
+        quest.param.alliances = quest.param.alliances or {}
+        if turn_on then
+            table.insert_unique(quest.param.alliances, agent)
+        else
+            table.arrayremove(quest.param.alliances, agent)
+        end
+    end,
+    GetAlliance = function(quest, agent)
+        quest.param.alliances = quest.param.alliances or {}
+        return table.arraycontains(quest.param.alliances, agent)
+    end,
 
     SetSubdayProgress = function(quest, progress)
         quest.param.sub_day_progress = progress
@@ -897,6 +955,15 @@ local QDEF = QuestDef.Define
             end
         end
         return intel
+    end,
+
+    DeltaGameplayStats = function(quest, id, delta)
+        quest.param.gameplay_stats = quest.param.gameplay_stats or {}
+        quest.param.gameplay_stats[id] = (quest.param.gameplay_stats[id] or 0) + delta
+    end,
+    GetGameplayStats = function(quest, id)
+        quest.param.gameplay_stats = quest.param.gameplay_stats or {}
+        return (quest.param.gameplay_stats[id] or 0)
     end,
 
     -- debug functions
@@ -1008,6 +1075,65 @@ QDEF:AddConvo()
         DemocracyUtil.DoLocationUnlock(cxt, cxt.location:GetContentID())
     end)
 QDEF:AddConvo()
+    :Priority(CONVO_PRIORITY_HIGHEST)
+    :ConfrontState("STATE_HURT", function(cxt)
+        local health = TheGame:GetGameState():GetPlayerAgent().health:GetPercent()
+        local has_graft = TheGame:GetGameState():GetPlayerAgent().graft_owner:HasGraft("democracy_resolve_limiter")
+        return health < 1 and not has_graft
+    end)
+        :Loc{
+            DIALOG_INTRO = [[
+                player:
+                    !left
+                * You really ought to take care of yourself better.
+                player:
+                    !cagey
+                    What? Who said that?
+                * This is your pain receptor talking to you.
+                * You are hurt. And being hurt is very painful.
+                {high_health?
+                    player:
+                        !crossed
+                        Come on, it was just some bruises. Nothing I can't walk off, or sleep off.
+                    * While you can probably survive this ordeal, you will still feel the pain as a reminder to take care of yourself.
+                }
+                {low_health?
+                    player:
+                        !injured
+                        Now that you mention it, it Heshing hurts so much!
+                        But I've handled worse, probably.
+                        And as long as I don't fight, I can just sleep the injury off.
+                    * Sure, you've handled this kind of injury before, but you've never felt this painful while you are actively working on a campaign.
+                }
+                {not (high_health or low_health)?
+                    player:
+                        Now that you mention it, it really does hurt.
+                        Still, I've handled worse.
+                        And as long as I don't fight, I can just sleep the injury off.
+                    * Sure, you've handled this kind of injury before, but you've never felt this painful while you are actively working on a campaign.
+                }
+                * Your resolve will be limited as long as you feel the pain.
+                * You don't want to be unable to focus due to the pain while you are thinking for a counterargument, do you?
+                player:
+                    !shrug
+                    Guess not.
+                * Then you better find a place to heal yourself before you blunder.
+                *** While you are hurt, your resolve will be limited by the proportion of health you have.
+                *** Restore to full health to remove this limit.
+            ]],
+        }
+        :Fn(function(cxt)
+            local health = TheGame:GetGameState():GetPlayerAgent().health:GetPercent()
+            if health >= 0.8 then
+                cxt.enc.scratch.high_health = true
+            elseif health <= 0.5 then
+                cxt.enc.scratch.low_health = true
+            end
+            cxt:Dialog("DIALOG_INTRO")
+            TheGame:GetGameState():GetPlayerAgent().graft_owner:AddGraft(GraftInstance("democracy_resolve_limiter"))
+            StateGraphUtil.AddEndOption(cxt)
+        end)
+QDEF:AddConvo()
     :Priority(CONVO_PRIORITY_LOWEST)
     :ConfrontState("STATE_NO_ADVISOR", function(cxt)
         return cxt.quest.param.alert_advisor_removed
@@ -1039,6 +1165,7 @@ QDEF:AddConvo()
                     * You can no longer rely on your old advisor. It's time to find a new one.
                 }
             ]],
+            OPT_RENOUNCE = "Renounce your campaign",
         }
         :Fn(function(cxt)
             local available_advisors = {}
@@ -1064,13 +1191,16 @@ QDEF:AddConvo()
                 )
                 StateGraphUtil.AddEndOption(cxt)
             else
-                -- You lose lol
-                local flags = {
-                    [cxt.quest.param.alert_advisor_removed] = true,
-                }
-                cxt.quest.param.alert_advisor_removed = nil
-                DemocracyUtil.DoEnding(cxt, "no_more_advisors", flags)
-
+                cxt:Dialog("DIALOG_NO_NEW_ADVISOR")
+                cxt:Opt("OPT_RENOUNCE")
+                    :Fn(function(cxt)
+                        -- You lose lol
+                        local flags = {
+                            [cxt.quest.param.alert_advisor_removed] = true,
+                        }
+                        cxt.quest.param.alert_advisor_removed = nil
+                        DemocracyUtil.DoEnding(cxt, "no_more_advisors", flags)
+                    end)
             end
         end)
 

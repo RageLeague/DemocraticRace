@@ -1,4 +1,5 @@
 local INTERVIEWER_BEHAVIOR = {
+    QUESTION_STACKS = {4, 3, 2, 1},
     OnInit = function( self, difficulty )
         -- self.bog_boil = self:AddCard("bog_boil")
         local relationship_delta = self.agent and (self.agent:GetRelationship() - RELATIONSHIP.NEUTRAL) or 0
@@ -7,16 +8,29 @@ local INTERVIEWER_BEHAVIOR = {
         -- modifier.agents = shallowcopy(self.agents)
         -- modifier:InitModifiers()
         self.cont_question_card = self:AddCard("contemporary_question_card")
+        self.cont_question_card.stacks = self.QUESTION_STACKS[
+            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
+            #self.QUESTION_STACKS) ]
+
         self.modifier_picker = self:MakePicker()
-            :AddArgument("LOADED_QUESTION", 2 + math.max(0, -relationship_delta))
-            :AddArgument("PLEASANT_QUESTION", 2 + math.max(0, relationship_delta))
-            :AddArgument("GENERIC_QUESTION", 4)
-            -- :AddCard(self.cont_question_card, 1)
+
+        local _, card = self.modifier_picker:AddArgument("LOADED_QUESTION", 2 + math.max(0, -relationship_delta))
+        card.stacks = self.QUESTION_STACKS[
+            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
+            #self.QUESTION_STACKS) ]
+        local _, card = self.modifier_picker:AddArgument("PLEASANT_QUESTION", 2 + math.max(0, relationship_delta))
+        card.stacks = self.QUESTION_STACKS[
+            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
+            #self.QUESTION_STACKS) ]
+        local _, card = self.modifier_picker:AddArgument("GENERIC_QUESTION", 4)
+        card.stacks = self.QUESTION_STACKS[
+            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
+            #self.QUESTION_STACKS) ]
+
         if not self.params then self.params = {} end
         self.params.questions_answered = 0
+        self.available_issues = copyvalues(DemocracyConstants.issue_data)
     end,
-    available_issues = copyvalues(DemocracyConstants.issue_data),
-    params = {},
     BasicCycle = function( self, turns )
         -- Double attack every 2 rounds; Single attack otherwise.
         if self.difficulty >= 4 and turns % 2 == 0 then
@@ -208,14 +222,67 @@ local QDEF = QuestDef.Define
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 DemocracyUtil.AddHomeCasts(QDEF)
 QDEF:AddConvo("go_to_interview")
-    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("backroom") end)
+    :Confront(function(cxt)
+        if cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("backroom") then
+            return "STATE_CONFRONT"
+        end
+        if cxt.location == cxt.quest:GetCastMember("theater") then
+            return "STATE_THEATER"
+        end
+    end)
+    :State("STATE_THEATER")
         :Loc{
             DIALOG_INTRO = [[
-                * You arrive at the Grand Theater, and are ushered into a back room. You barely make it into the room before you're ambushed by {primary_advisor}.
+                * You arrived at the Grand Theater.
+                * Looks like the interview hasn't started yet.
+                * You quickly walk into the backroom to meet up with {primary_advisor}.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+            cxt:Opt("OPT_LEAVE_LOCATION")
+                :Fn(function(cxt)
+                    cxt.quest.param.enter_from_theater = true
+                    cxt.encounter:DoLocationTransition(cxt.quest:GetCastMember("backroom"))
+                end)
+                :MakeUnder()
+        end)
+    :State("STATE_CONFRONT")
+        :Loc{
+            DIALOG_INTRO = [[
+                {not enter_from_theater?
+                    * You arrive at the Grand Theater, and are ushered into a back room. You barely make it into the room before you're ambushed by {primary_advisor}.
+                }
+                {enter_from_theater?
+                    * Just as you begin to look for {primary_advisor}, looks like {primary_advisor.heshe} found you first.
+                }
                 player:
                     !left
                 primary_advisor:
                     !right
+                {depressed?
+                    Oh, {player}. You finally arrived.
+                    Are you ready for the interview?
+                player:
+                    Can't say I'm ready, exactly. I am a bit nervous.
+                agent:
+                    !sigh
+                    That's okay, I'm sure whatever you do, you will do better than me.
+                    You don't need a loser to tell you what to do.
+                player:
+                    !dubious
+                    Are you alright? You don't sound like yourself.
+                agent:
+                    !handwave
+                    Nah. Don't worry about a loser like me.
+                    Worry about yourself. The interview is about to start, and you need to prepare.
+                    {has_pet?
+                        And leave your {pet.species} here. You can't bring it into the venue.
+                    }
+                * Regardless of {agent}'s strange episode, {agent.heshe} is right that you need to prepare.
+                * You can ask {agent} about it later. The interview is of the utmost importance.
+                }
+                {not depressed?
                     Alright {player}, tonight is big, so let's run through what you've got really quick.
                     Have you got you're prepared answers?
                 player:
@@ -241,21 +308,48 @@ QDEF:AddConvo("go_to_interview")
                     !facepalm
                     Yes really! I can't believe you didn't realize the importance of such interview.
                     Anyway, you have a few minutes before the interview starts. Try compose yourself before you go.
+                    {has_pet?
+                        And leave your {pet.species} here. You can't bring it into the venue.
+                    }
+                }
             ]],
             OPT_ASK_INTERVIEW = "Ask about the interview",
             DIALOG_ASK_INTERVIEW = [[
                 player:
                     [p] I'm not sure what this interview is about.
                 agent:
+                {depressed?
+                    !sigh
+                    Don't worry, however little you know, you will know it more than me.
+                player:
+                    I don't think that's how it works, given that I have literally no idea what is going on.
+                    Surely you must know something?
+                }
+                {not depressed?
                     !dubious
                     Seriously? You are about to do it, and you don't even know how it works?
                     Unbelievable.
                 player:
                     !crossed
                     I'm busy. Gathering support.
+                }
                 agent:
+                {depressed or not advisor_hostile?
                     !placate
                     Alright.
+                }
+                {advisor_hostile and not depressed?
+                    !hips
+                    Of course.
+                    {accept_limits?
+                        I will happily tell you all about the interview.
+                        Even though I might be the best, I can still give you some useful tips.
+                    }
+                    {not accept_limits?
+                        I can tell you all about the interview.
+                        After all, nobody knows interviews better than me.
+                    }
+                }
                     The interviewer will ask you a bunch of questions, and you want to answer as much question as possible.
                     You can address each question directly, or you can spend some time tailor your answers.
                 player:
@@ -270,17 +364,54 @@ QDEF:AddConvo("go_to_interview")
                     Yeah.
                     They are all eager to hear from you and what you have to say.
                     Some are here to confirm beliefs about you, while others are here to listen to what you have to say before making a decision.
+                {advisor_diplomacy?
+                    Try to be based. Be cool. Appeal to the crowd.
+                player:
+                    Yeah, those are words that definitely mean things.
+                agent:
+                    Just... Know your audience, and say things they want to hear.
+                }
+                {not advisor_diplomacy?
                     Try to tailor your answers based on your audience.
                 player:
                     Alright.
                 agent:
                     Of course, you can always just say something generic that appeals to everyone.
                     But that would take a lot of skills, and sometimes you might want to appeal to a more generic audience.
+                }
+            ]],
+            OPT_ASK_PET = "Ask about pet policy",
+            DIALOG_ASK_PET = [[
+                player:
+                    !crossed
+                    {pet} has a name, you know. And {pet} is a {pet.heshe}.
+                agent:
+                    !point
+                    Doesn't matter. You can't bring {pet.himher} into the venue either way.
+                player:
+                    Why? Why are pets not allowed?
+                agent:
+                    !point
+                    Think about it.
+                    Imagine doing an interview, and the audience just see {pet.a_desc} on the stage.
+                    That would certainly cause chaos, and they can't have that.
+                player:
+                    ...
+                agent:
+                    !handwave
+                    Either way, {pet} isn't going to help you on the stage.
+                ** Your pets will still be in your party, but will not help you in the upcoming negotiation.
             ]],
             DIALOG_LEAVE = [[
                 player:
                     Alright, I'm ready.
                     Moment of truth, here I go.
+                {has_pet?
+                agent:
+                    I will take care of your {pet.species} for you.
+                }
+                agent:
+                    Good luck.
             ]],
         }
         :SetLooping()
@@ -288,12 +419,20 @@ QDEF:AddConvo("go_to_interview")
             if cxt:FirstLoop() then
                 DemocracyUtil.PopulateTheater(cxt.quest, cxt.quest:GetCastMember("theater"), 8)
                 cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
+                cxt.quest.param.party_pets = TheGame:GetGameState():GetCaravan():GetPets()
+                if cxt.quest.param.party_pets and #cxt.quest.param.party_pets > 0 then
+                    cxt.enc.scratch.has_pet = true
+                    cxt:ReassignCastMember("pet", cxt.quest.param.party_pets[1])
+                end
                 cxt:Dialog("DIALOG_INTRO")
                 cxt.quest:Complete("go_to_interview")
                 cxt.quest:Activate("do_interview")
             end
             cxt:Question("OPT_ASK_INTERVIEW", "DIALOG_ASK_INTERVIEW")
             cxt:Question("OPT_ASK_AUDIENCE", "DIALOG_ASK_AUDIENCE")
+            if cxt.enc.scratch.has_pet then
+                cxt:Question("OPT_ASK_PET", "DIALOG_ASK_PET")
+            end
             cxt:Opt("OPT_LEAVE_LOCATION")
                 :Dialog("DIALOG_LEAVE")
                 :Fn(function(cxt)
@@ -416,7 +555,10 @@ QDEF:AddConvo("do_interview")
             cxt:Dialog("DIALOG_UNRECOGNIZE_PEOPLE", unrecognized_descs)
 
             cxt:Dialog("DIALOG_INTERVIEW")
-            cxt:GetAgent():SetTempNegotiationBehaviour(INTERVIEWER_BEHAVIOR)
+
+            local BEHAVIOUR_INSTANCE = shallowcopy(INTERVIEWER_BEHAVIOR)
+            BEHAVIOUR_INSTANCE.params = {}
+            cxt:GetAgent():SetTempNegotiationBehaviour(BEHAVIOUR_INSTANCE)
 
             local function ResolvePostInterview()
                 local agent_response = {}
@@ -463,6 +605,7 @@ QDEF:AddConvo("do_interview")
                     }
 
                     DemocracyUtil.SendMetricsData("DAY_2_BOSS_START", METRIC_DATA)
+                    TheGame:SetTempMusicOverride("DEMOCRATICRACE|event:/democratic_race/music/negotiation/interview", cxt.enc)
                 end)
                 :Negotiation{
                     flags = NEGOTIATION_FLAGS.WORDSMITH,
@@ -470,13 +613,14 @@ QDEF:AddConvo("do_interview")
                         { value = 20, text = cxt:GetLocString("SIT_MOD") }
                     },
                     reason_fn = function(minigame)
-
-                        return loc.format(cxt:GetLocString("NEGOTIATION_REASON"), INTERVIEWER_BEHAVIOR.params.questions_answered or 0 )
+                        return loc.format(cxt:GetLocString("NEGOTIATION_REASON"), BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0 )
                     end,
+                    suppressed = cxt.quest.param.party_pets,
                     on_success = function(cxt, minigame)
+                        local questions_answered = (BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0)
                         cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
                         -- TheGame:GetDebug():CreatePanel(DebugTable(INTERVIEWER_BEHAVIOR))
-                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", (INTERVIEWER_BEHAVIOR.params.questions_answered or 0), "COMPLETED_QUEST")
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", questions_answered, "COMPLETED_QUEST_MAIN")
                         -- Big calculations that happens.
                         ResolvePostInterview()
                         cxt.quest:Complete()
@@ -485,7 +629,7 @@ QDEF:AddConvo("do_interview")
                         local METRIC_DATA =
                         {
                             player_data = TheGame:GetGameState():GetPlayerState(),
-                            questions_answered = INTERVIEWER_BEHAVIOR.params.questions_answered,
+                            questions_answered = questions_answered,
                             num_likes = cxt.quest.param.num_likes,
                             num_dislikes = cxt.quest.param.num_dislikes,
                             result = "WIN",
@@ -495,13 +639,14 @@ QDEF:AddConvo("do_interview")
                         StateGraphUtil.AddEndOption(cxt)
                     end,
                     on_fail = function(cxt)
+                        local questions_answered = (BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0)
                         cxt:Dialog("DIALOG_INTERVIEW_FAIL")
                         DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -20)
                         ResolvePostInterview()
                         local METRIC_DATA =
                         {
                             player_data = TheGame:GetGameState():GetPlayerState(),
-                            questions_answered = INTERVIEWER_BEHAVIOR.params.questions_answered,
+                            questions_answered = questions_answered,
                             num_likes = cxt.quest.param.num_likes,
                             num_dislikes = cxt.quest.param.num_dislikes,
                             result = "LOSE",

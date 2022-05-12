@@ -53,6 +53,7 @@ Content.AddStringTable( "DEM_CONVO", {
                 [p] That sounds good, but actually it's not.
             player:
                 Why?
+            agent:
             {is_problem_ally?
                 You see, you have {1#agent} as your ally.
                 And that is a problem.
@@ -65,7 +66,7 @@ Content.AddStringTable( "DEM_CONVO", {
                 {1#agent} and I look out for each other, and you made {1.himher} mad.
                 So we can't be allies.
             player:
-                In that case, can I ship you two in my OC?
+                In that case, can I ship you two in my fanfic?
             agent:
                 Hesh off!
             }
@@ -228,7 +229,7 @@ Content.AddStringTable( "DEM_CONVO", {
 
         OPT_UNLOCK_NEW_LOCATION = "Unlock new location: {1#location}",
         TT_UNLOCK_NEW_LOCATION = "You can now visit this location during your free time.",
-        
+
         TT_UPDATE_STANCE = "Your stance regarding <b>{1#pol_issue}</> will be updated to <b>{2#pol_stance}</>.",
         TT_UPDATE_STANCE_OLD = "Your stance regarding <b>{1#pol_issue}</> will be updated from <b>{3#pol_stance}</> to <b>{2#pol_stance}</>.",
         TT_UPDATE_STANCE_LOOSE = "Your stance regarding <b>{1#pol_issue}</> will be updated to favoring <b>{2#pol_stance}</>.",

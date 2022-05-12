@@ -765,6 +765,8 @@ QDEF:AddConvo("commission")
                     Looks good. Maybe.
                     But only time will tell whether this is really effective.
             ]],
+
+            NEGOTIATION_REASON = "Create the propaganda poster",
         }
         :Fn(function(cxt)
             if not cxt.quest.param.cards then
@@ -815,6 +817,7 @@ QDEF:AddConvo("commission")
                 :Dialog("DIALOG_START")
                 :Negotiation{
                     no_free_time_cost = true,
+                    reason_fn = function(minigame) return cxt:GetLocString("NEGOTIATION_REASON") end,
                     flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.NO_BACKUP | NEGOTIATION_FLAGS.NO_LOOT,
                     on_start_negotiation = function(minigame)
                         local negotiation_defs = require "negotiation/negotiation_defs"
@@ -831,6 +834,7 @@ QDEF:AddConvo("commission")
                         end
                         minigame:GetOpponentNegotiator():FindCoreArgument().cards_played = recorded_cards
                         minigame:GetPlayerNegotiator():CreateModifier( "TIME_CONSTRAINT", math.max(cxt.quest.param.free_time_actions or 1, 1) )
+                        minigame.player_negotiator:AddModifier("FATIGUED")
                     end,
                     finish_negotiation_anytime = true,
                     on_success = ProcessFn,

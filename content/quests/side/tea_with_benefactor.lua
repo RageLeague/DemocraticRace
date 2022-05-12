@@ -13,10 +13,7 @@ local SIGNATURE_ARGUMENT = {
 }
 
 local score_fn = function(agent, quest)
-    local score = DemocracyUtil.OppositionScore(agent)
-    if agent:HasAspect( "bribed" ) then
-        score = score + 90
-    end
+    local score = DemocracyUtil.SupportScore(agent)
     return score + math.random() * 120
 end
 
@@ -24,10 +21,11 @@ local BENEFACTOR_BEHAVIOR = {
     OnInit = function( self, difficulty )
         -- local modifier
         self.arguments = self:MakePicker()
-            :AddArgument( "ETIQUETTE", 1 )
             :AddArgument( "CAUTIOUS_SPENDER", 1 )
-        -- self.etiquette = self:
-        -- self.cautious_spender = self:
+
+        local _, card = self.arguments:AddArgument( "ETIQUETTE", 1 )
+        card.stacks = 1 + math.floor( difficulty / 2 ) + (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ARGUMENT_PLUS ) and 1 or 0)
+
         if SIGNATURE_ARGUMENT[self.agent:GetContentID()] then
             self.signature = self:AddArgument(SIGNATURE_ARGUMENT[self.agent:GetContentID()])
         end

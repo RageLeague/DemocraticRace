@@ -168,6 +168,25 @@ lines:
     player:
       !shrug
       Fair enough, thanks for the location.
+- tags: [unlock_location, unlock_pearl_park]
+  dialog:
+  - |
+    agent:
+      Ever feel like life moves too fast sometimes?
+    player:
+      !agree
+      Constantly.
+      I mean, I am supposed to build up support and run for president within five days.
+      There's not nearly enough time for me to do what I want.
+    agent:
+      In that case, there is nothing I can do to help you.
+      Unrelated, you should visit the park sometimes.
+      !agree
+      It's a good place to unwind, after spending a whole day hustling.
+      !sigh
+      Plus, it's the only place with greenery nowadays in the Pearl.
+    player:
+      I will keep that in mind, thanks.
 - tags: [unlock_location, unlock_tavern]
   dialog:
   - |
@@ -175,7 +194,14 @@ lines:
       I often drink at a place called {loc_to_unlock#location}.
       It's nothing too special, but you get to visit many interesting people there.
       We should drink at there some time.
-    * You're pretty sure you're not allowed to drink with someone who you already liked, but you don't want to bring it up to ruin your relationship.
+    {liked?
+      * You're pretty sure you're not allowed to drink with someone who you already liked, but you don't want to bring it up to ruin your relationship.
+    }
+    {not liked?
+    player:
+      That sounds like a great plan.
+      When the opportunity arises, of course.
+    }
 - tags: [unlock_location, unlock_shop]
   dialog:
   - |

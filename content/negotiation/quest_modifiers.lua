@@ -344,23 +344,28 @@ local MODIFIERS =
         max_resolve = 3,
         max_stacks = 10,
 
-        -- force_target = true,
+        OnApply = function(self)
+            local count = self.negotiator:GetModifierStacks("CONNECTED_LINE")
+            if count and count ~= 0 then
+                TheGame:GetMusic():SetParameter("radio_layer", 1)
+            end
+        end,
 
-        -- OnInit = function(self)
+        OnUnapply = function(self)
+            local count = self.negotiator:GetModifierStacks("CONNECTED_LINE")
+            if count and count == 0 then
+                TheGame:GetMusic():SetParameter("radio_layer", 0)
+            end
 
-        -- end,
-
-        -- CanPlayCard = function( self, source, engine, target )
-        --     if source:IsAttack() and target:GetNegotiator() == self.negotiator then
-        --         if source.modifier_type == MODIFIER_TYPE.INCEPTION or source:GetNegotiator() ~= self.negotiator then
-        --             if not target.force_target then
-        --                 return false, loc.format( "Must target <b>{1}</b>", self:GetName() )
-        --             end
-        --         end
-        --     end
-
-        --     return true
-        -- end,
+            local phase_3 = self.negotiator:GetModifierStacks("HELP_UNDERWAY") > 0
+            if not phase_3 then
+                local card = Negotiation.Card( "assassin_fight_call_for_help", self.engine:GetPlayer() )
+                if self.stacks > 1 then
+                    card.init_help_count = self.stacks
+                end
+                self.engine:DealCard(card, self.engine:GetDiscardDeck())
+            end
+        end,
 
         CleanUpCard = function(self, card_id)
             local to_expend = {}
@@ -389,15 +394,7 @@ local MODIFIERS =
         OnBounty = function(self, source)
             if source ~= self then
                 self.anti_negotiator:AddModifier("IMPATIENCE", 1)
-
-                local card = Negotiation.Card( "assassin_fight_call_for_help", self.engine:GetPlayer() )
-                if self.stacks > 1 then
-                    card.init_help_count = self.stacks
-                end
-                self.engine:DealCard(card, self.engine:GetDiscardDeck())
             end
-
-            -- self:CleanUpCard("assassin_fight_describe_information")
         end,
         event_handlers =
         {
@@ -454,6 +451,11 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.PERMANENT,
 
         -- turns_left = rawget(_G, "SURVIVAL_TURNS") or 12,
+        OnApply = function(self)
+            self.engine:BroadcastEvent( EVENT.CUSTOM, function( panel )
+                panel:SetMusicPhase(2)
+            end )
+        end,
 
         event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
@@ -463,9 +465,14 @@ local MODIFIERS =
                 else
                     self.negotiator:RemoveModifier(self, 1)
                     self:NotifyChanged()
+                    if self.stacks <= 4 then
+                        self.engine:BroadcastEvent( EVENT.CUSTOM, function( panel )
+                            panel:SetMusicPhase(4)
+                        end )
+                    end
                 end
             end,
-        }
+        },
     },
     DISTRACTION_ENTERTAINMENT =
     {
@@ -552,236 +559,6 @@ local MODIFIERS =
             self.negotiator:AddModifier("FLUSTERED", 2)
 
             CreateNewSelfMod(self)
-        end,
-    },
-
-    LOADED_QUESTION =
-    {
-        name = "Loaded Question",
-        desc = "When destroyed, the player loses support equal to {1}.\n\n"..
-        "When {address_question|addressed}, the player loses {2} support.",
-        loc_strings = {
-            NORMAL = "{1}x the splash damage, rounded up",
-            HALF = "half the splash damage, rounded up",
-            WHOLE = "the splash damage",
-        },
-
-        desc_fn = function(self, fmt_str)
-            local str_id = self.multiplier_strings[self.multiplier] or "NORMAL"
-            local str = loc.format((self.def or self):GetLocalizedString(str_id), self.multiplier)
-            return loc.format( fmt_str, str, self.address_cost)
-        end,
-        icon = "DEMOCRATICRACE:assets/modifiers/loaded_question.png",
-
-        min_persuasion = 2,
-        max_persuasion = 2,
-
-        address_cost = 3,
-        address_cost_scale = {2, 3, 4, 5},
-
-        multiplier_strings = {
-            [0.5] = "HALF",
-            -- [0.75] = "THREE_QUARTER",
-            [1] = "WHOLE",
-        },
-        multiplier = 0.5,
-        multiplier_scale = {0.3, 0.5, 0.75, 1},
-
-        target_enemy = TARGET_ANY_RESOLVE,
-
-        max_stacks = 1,
-
-        modifier_type = MODIFIER_TYPE.ARGUMENT,
-
-        OnInit = function( self )
-            self:SetResolve( 5, MODIFIER_SCALING.MED )
-            if CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
-                self.address_cost = self.address_cost_scale[
-                    math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-                    #self.address_cost_scale)]
-                self.multiplier = self.multiplier_scale[
-                    math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-                    #self.multiplier_scale) ]
-            end
-        end,
-
-        OnBeginTurn = function( self, minigame )
-            self:ApplyPersuasion()
-        end,
-
-        OnBounty = function(self)
-            local mod = self.negotiator:CreateModifier("LOADED_QUESTION_DEATH_TRIGGER")
-            mod.tracked_mod = self
-            mod.multiplier = self.multiplier
-        end,
-
-        AddressQuestion = function(self)
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -self.address_cost)
-        end,
-    },
-    -- Kinda have to do it this way, since removed modifier no longer listens to events that happened because of the removal of self.
-    LOADED_QUESTION_DEATH_TRIGGER =
-    {
-        -- name = "Loaded Question(Death Trigger)",
-        hidden = true,
-        event_handlers =
-        {
-            [ EVENT.SPLASH_RESOLVE ] = function( self, modifier, overflow, params )
-                if self.tracked_mod and self.tracked_mod == modifier then
-                    print("overflow damage:" .. overflow .. ", deal resolve damage")
-                    local support_dmg = math.floor((self.multiplier or 1) * overflow)
-                    DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", support_dmg)
-                end
-                print("triggered lul")
-                self.negotiator:RemoveModifier(self)
-            end
-        },
-    },
-    GENERIC_QUESTION =
-    {
-        name = "Generic Question",
-        desc = "Can be {address_question|addressed}, but does nothing special.",
-        icon = "DEMOCRATICRACE:assets/modifiers/generic_question.png",
-
-        min_persuasion = 2,
-        max_persuasion = 2,
-
-        damage_scale = {1, 2, 2, 3},
-
-        target_enemy = TARGET_ANY_RESOLVE,
-
-        max_stacks = 1,
-
-        modifier_type = MODIFIER_TYPE.ARGUMENT,
-
-        OnInit = function(self)
-            self:SetResolve( 5, MODIFIER_SCALING.MED )
-            if CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
-                local dmg = self.damage_scale[
-                    math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-                    #self.damage_scale)]
-                self.min_persuasion = dmg
-                self.max_persuasion = dmg
-            end
-        end,
-
-        OnBeginTurn = function( self, minigame )
-            self:ApplyPersuasion()
-        end,
-        AddressQuestion = function(self)
-            -- does literally nothing. but this is here to let the game know this is a valid question.
-        end,
-    },
-    PLEASANT_QUESTION =
-    {
-        name = "Pleasant Question",
-        desc = "When destroyed or {address_question|addressed}, the player gains {1} resolve.",
-
-        desc_fn = function(self, fmt_str)
-            return loc.format( fmt_str, self.resolve_gain)
-        end,
-        icon = "DEMOCRATICRACE:assets/modifiers/pleasant_question.png",
-
-        min_persuasion = 2,
-        max_persuasion = 2,
-
-        resolve_gain = 2,
-        resolve_scale = {5, 4, 3, 2},
-
-        target_enemy = TARGET_ANY_RESOLVE,
-
-        max_stacks = 1,
-
-        modifier_type = MODIFIER_TYPE.ARGUMENT,
-
-        OnInit = function( self )
-            self:SetResolve( 5, MODIFIER_SCALING.MED )
-            if CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
-                self.resolve_gain = self.resolve_scale[
-                    math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-                    #self.resolve_scale) ]
-            end
-        end,
-
-        OnBeginTurn = function( self, minigame )
-            self:ApplyPersuasion()
-        end,
-
-        OnBounty = function(self)
-            self.anti_negotiator:RestoreResolve(self.resolve_gain, self)
-        end,
-
-        AddressQuestion = function(self)
-            self.anti_negotiator:RestoreResolve(self.resolve_gain, self)
-        end,
-    },
-    CONTEMPORARY_QUESTION =
-    {
-        name = "Contemporary Question",
-        desc = "The interviewer asks about your opinion on <b>{1}</>.\n\n"..
-            "When {address_question|addressed}, the player must state their opinion on this matter.",
-        icon = "DEMOCRATICRACE:assets/modifiers/contemporary_question.png",
-
-        issue_data = nil,
-
-        loc_strings = {
-            ISSUE_DEFAULT = "a contemporary issue",
-            CHOOSE_AN_ANSWER = "Choose An Answer",
-        },
-
-        max_stacks = 1,
-
-        desc_fn = function(self, fmt_str)
-            return loc.format( fmt_str, self.issue_data and self.issue_data:GetLocalizedName() or self.def:GetLocalizedString("ISSUE_DEFAULT"))
-        end,
-        OnInit = function( self )
-            self:SetResolve( 6 + 2 * (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1), MODIFIER_SCALING.MED )
-        end,
-        min_persuasion = 3,
-        max_persuasion = 3,
-
-        target_enemy = TARGET_ANY_RESOLVE,
-
-        modifier_type = MODIFIER_TYPE.ARGUMENT,
-
-        SetIssue = function(self, issue_data)
-            self.issue_data = issue_data
-        end,
-        AddressQuestion = function(self)
-            if self.issue_data ~= nil then
-                local cards = {}
-                local issue = self.issue_data
-                for id = -2, 2 do
-                    local data = issue.stances[id]
-                    if data then
-                        local card = Negotiation.Card( "question_answer", self.owner )
-                        card.engine = self.engine
-                        card:UpdateIssue(issue, id)
-                        table.insert(cards, card)
-                    end
-                end
-                local pick = self.engine:ChooseCardsFromTable( cards, 1, 1, nil, self.def:GetLocalizedString("CHOOSE_AN_ANSWER") )[1]
-                if pick then
-                    print(pick.name)
-                    if pick.stance then
-                        DemocracyUtil.TryMainQuestFn("UpdateStance", issue.id, pick.stance, false, true)
-                        -- local stance = issue.stances[pick.stance]
-                        -- if stance.faction_support then
-                        --     DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport", stance.faction_support)
-                        -- end
-                        -- if stance.wealth_support then
-                        --     DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport", stance.wealth_support)
-                        -- end
-                    end
-                    self.engine:DealCard(pick, self.engine:GetTrashDeck())
-                    print("should be expended")
-                end
-
-            end
-        end,
-
-        OnBeginTurn = function( self, minigame )
-            self:ApplyPersuasion()
         end,
     },
 
@@ -911,10 +688,13 @@ local MODIFIERS =
     {
         name = "Etiquette",
         icon = "negotiation/modifiers/compromise.tex",
-        desc = "Whenever you play a Hostility card discard a random card.",
+        desc = "Whenever you play a Hostility card, discard a random card.\n\nReduce <b>Etiquette</b> by 1 at the beginning of {1}'s turn.",
+
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOwnerName() )
+        end,
 
         max_resolve = 5,
-        max_stacks = 1,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
         OnInit = function(self)
@@ -930,14 +710,20 @@ local MODIFIERS =
                         self.engine:DiscardCard( card )
                     end
                 end
-            end
+            end,
+
+            [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
+                if negotiator == self.negotiator then
+                    negotiator:RemoveModifier( self, 1 )
+                end
+            end,
         },
     },
     CAUTIOUS_SPENDER  =
     {
         name = "Cautious Spender",
         icon = "negotiation/modifiers/obscurity.tex",
-        desc = "At the begging of each turn, add {1} resolve to all {{2}} bounty.",
+        desc = "At the begging of each turn, add {1} resolve to a random {{2}} bounty.",
 
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.delta_resolve, self.apply_target)
@@ -953,18 +739,22 @@ local MODIFIERS =
 
         OnInit = function(self)
             self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
+            self.delta_resolve = self.engine:GetDifficulty() + 1 + (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ARGUMENT_PLUS ) and 1 or 0)
         end,
 
         event_handlers =
         {
             [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
                 if negotiator == self.negotiator then
+                    local candidates = {}
                     for i, modifier in self.negotiator:ModifierSlots() do
                         if modifier.id == self.apply_target then
-                            modifier:ModifyResolve( self.delta_resolve, self )
-                            self:NotifyTriggered()
+                            table.insert(candidates, modifier)
                         end
                     end
+                    local modifier = table.arraypick(candidates)
+                    modifier:ModifyResolve( self.delta_resolve, self )
+                    self:NotifyTriggered()
                 end
             end
         }
@@ -1769,17 +1559,18 @@ local MODIFIERS =
             CreateNewSelfMod(self)
         end,
     },
-    RELATABLE = {
-        name = "Relatable",
+    FELLOW_GRIFTER = {
+        name = "Fellow Grifter",
         desc = "{UPVOTE|}{CONTRARIAN|}{FAKE_NEWS|}Every {1} cards you play causes Aellon to gain an argument based on the type of the last card. ({2} remaining)",
         desc_fn = function( self, fmt_str )
             return loc.format( fmt_str, self.num_cards or 5, self.count )
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/fellow_grifter.png",
         modifier_type = MODIFIER_TYPE.CORE,
         max_stacks = 1,
-        num_cards = 4,
-        count = 4,
-        icon = "negotiation/modifiers/cool_head.tex",
+        num_cards = 5,
+        count = 5,
+        -- icon = "negotiation/modifiers/cool_head.tex",
 
         event_handlers =
         {
@@ -1802,10 +1593,11 @@ local MODIFIERS =
     },
     CONTRARIAN = {
         name = "Contrarian",
-        desc = "Created by <b>Relatable</> when playing Hostility cards.\nWhen the core takes damage, this argument deals that amount of damage to a random argument.",
+        desc = "Created by <b>Fellow Grifter</> when playing Hostility cards.\nWhen the core takes damage, this argument deals that amount of damage to a random argument.",
+        icon = "DEMOCRATICRACE:assets/modifiers/contrarian.png",
         modifier_type = MODIFIER_TYPE.ARGUMENT,
         max_resolve = 3,
-        icon = "negotiation/abrupt_remark.tex",
+        -- icon = "negotiation/abrupt_remark.tex",
         event_handlers =
         {
             [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
@@ -1827,11 +1619,12 @@ local MODIFIERS =
     },
     UPVOTE = {
         name = "Clout",
-        desc = "Created by <b>Relatable</> when playing Diplomacy cards.\nDeals damage equal to the number of arguments Aellon controls.",
+        desc = "Created by <b>Fellow Grifter</> when playing Diplomacy cards.\nDeals damage equal to the number of arguments Aellon controls.",
+        icon = "DEMOCRATICRACE:assets/modifiers/upvote.png",
         desc_fn = function( self, fmt_str )
             return loc.format(fmt_str, self.max_persuasion)
         end,
-        icon = "negotiation/modifiers/voice_of_the_people.tex",
+        -- icon = "negotiation/modifiers/voice_of_the_people.tex",
         modifier_type = MODIFIER_TYPE.ARGUMENT,
         max_resolve = 3,
 
@@ -1869,56 +1662,57 @@ local MODIFIERS =
             end,
         },
     },
-    SHAD_BAN = {
-        name = "Shadow Ban",
-        max_resolve = 6,
-        modifier_type = MODIFIER_TYPE.ARGUMENT,
-        icon = "negotiation/modifiers/bidder.tex",
-        desc = "At the start of {1}'s turn, add {SHIELDED} to a friendly argument.",
-        desc_fn = function( self, fmt_str )
-            local bonus = self.bonus or 0
-            return loc.format( fmt_str, self:GetOwnerName())
-        end,
+    -- SHAD_BAN = {
+    --     name = "Shadow Ban",
+    --     max_resolve = 6,
+    --     modifier_type = MODIFIER_TYPE.ARGUMENT,
+    --     -- icon = "negotiation/modifiers/bidder.tex",
+    --     desc = "At the start of {1}'s turn, add {SHIELDED} to a friendly argument.",
+    --     desc_fn = function( self, fmt_str )
+    --         local bonus = self.bonus or 0
+    --         return loc.format( fmt_str, self:GetOwnerName())
+    --     end,
 
-        ShieldArgument = function( self, target )
-            if self.last_shield and self.last_shield:IsApplied() then
-                self.last_shield:SetShieldStatus( nil )
-            end
+    --     ShieldArgument = function( self, target )
+    --         if self.last_shield and self.last_shield:IsApplied() then
+    --             self.last_shield:SetShieldStatus( nil )
+    --         end
 
-            if target and target:IsApplied() then
-                target:SetShieldStatus( true )
-                self.last_shield = target
-            end
-        end,
+    --         if target and target:IsApplied() then
+    --             target:SetShieldStatus( true )
+    --             self.last_shield = target
+    --         end
+    --     end,
 
-        OnUnapply = function( self )
-            self:ShieldArgument( nil )
-        end,
+    --     OnUnapply = function( self )
+    --         self:ShieldArgument( nil )
+    --     end,
 
-        event_handlers =
-        {
-            [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
-                if negotiator == self.negotiator then
-                    local targets = {}
-                    for i, modifier in self.negotiator:ModifierSlots() do
-                        if modifier:GetResolve() ~= nil and not modifier:GetShieldStatus() then
-                            table.insert( targets, modifier )
-                        end
-                    end
+    --     event_handlers =
+    --     {
+    --         [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
+    --             if negotiator == self.negotiator then
+    --                 local targets = {}
+    --                 for i, modifier in self.negotiator:ModifierSlots() do
+    --                     if modifier:GetResolve() ~= nil and not modifier:GetShieldStatus() then
+    --                         table.insert( targets, modifier )
+    --                     end
+    --                 end
 
-                    local target = table.arraypick( targets )
-                    if target then
-                        self:NotifyTriggered()
-                        self:ShieldArgument( target )
-                    end
+    --                 local target = table.arraypick( targets )
+    --                 if target then
+    --                     self:NotifyTriggered()
+    --                     self:ShieldArgument( target )
+    --                 end
 
-                end
-            end,
-        },
-    },
+    --             end
+    --         end,
+    --     },
+    -- },
     FAKE_NEWS = {
         name = "Fake News",
-        desc = "Created by <b>Relatable</> when playing Manipulation cards.\nIntents and target previews are hidden. Intents have a 50% chance to do +1 damage.",
+        desc = "Created by <b>Fellow Grifter</> when playing Manipulation cards.\nIntents and target previews are hidden. Intents have a 50% chance to do +1 damage.",
+        icon = "DEMOCRATICRACE:assets/modifiers/fake_news.png",
         max_resolve = 3,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
@@ -1948,28 +1742,28 @@ local MODIFIERS =
             end,
         },
     },
-    TRENDY = {
-        name = "Trending",
-        desc = "When this reaches 5 stacks, Heal all arguments and the core resolve for 5 resolve.",
-        max_resolve = 10,
-        resolve_gain = 5,
-        counter = 5,
-        modifier_type = MODIFIER_TYPE.ARGUMENT,
-        --Wumpus; I'm stumped on this one. Ive tried a lot, but either i
-        event_handlers = {
-            [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
-                local targets = self.engine:CollectAlliedTargets(self.negotiator)
-                if #targets > 0 then
-                    for i,target in ipairs(targets) do
-                        if self.stacks >= self.counter then
-                            target:ModifyResolve(self.resolve_gain, self)
-                            self.negotiator:RemoveModifier( self )
-                        end
-                    end
-                end
-            end,
-        },
-    },
+    -- TRENDY = {
+    --     name = "Trending",
+    --     desc = "When this reaches 5 stacks, Heal all arguments and the core resolve for 5 resolve.",
+    --     max_resolve = 10,
+    --     resolve_gain = 5,
+    --     counter = 5,
+    --     modifier_type = MODIFIER_TYPE.ARGUMENT,
+    --     --Wumpus; I'm stumped on this one. Ive tried a lot, but either i
+    --     event_handlers = {
+    --         [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
+    --             local targets = self.engine:CollectAlliedTargets(self.negotiator)
+    --             if #targets > 0 then
+    --                 for i,target in ipairs(targets) do
+    --                     if self.stacks >= self.counter then
+    --                         target:ModifyResolve(self.resolve_gain, self)
+    --                         self.negotiator:RemoveModifier( self )
+    --                     end
+    --                 end
+    --             end
+    --         end,
+    --     },
+    -- },
     LOGICAL = {
         name = "Logical",
         desc = "If {1}'s opponent has no {SMARTS}, {1} deals +{2} damage.",
@@ -2057,14 +1851,11 @@ local MODIFIERS =
     PESSIMIST =
     {
         name = "Pessimist",
-        desc = "{1} is feeling down.\n\nAt the beginning of {1}'s turn, if this argument has at least an amount of resolve "
-            .. "equal to {1}'s starting resolve, you win the negotiation!\n\n"
-            .. "Otherwise, remove a random attack intent and take damage equal to the damage from the intent.\n\n"
-            .. "Arguments {1} control removes their composure at the end of their turn instead of at the beginning of their turn.",
+        desc = "{1} is feeling down.\n\nAt the beginning of {1}'s turn, if this argument has at least {2} resolve, you win the negotiation!\n\nArguments {1} control removes their composure at the end of their turn instead of at the beginning of their turn.",
 
         desc_fn = function(self, fmt_str )
-
-            return loc.format(fmt_str, self:GetOwnerName())
+            local minigame = self.engine
+            return loc.format(fmt_str, self:GetOwnerName(), minigame and minigame.start_params.enemy_resolve_required or MiniGame.GetPersuasionRequired( TheGame:GetGameState():GetCurrentBaseDifficulty() ))
         end,
         icon = "DEMOCRATICRACE:assets/modifiers/pessimist.png",
         modifier_type = MODIFIER_TYPE.CORE,
@@ -2072,22 +1863,23 @@ local MODIFIERS =
         OnBeginTurn = function( self, minigame )
             if self.resolve >= (minigame.start_params.enemy_resolve_required or MiniGame.GetPersuasionRequired( minigame:GetDifficulty() )) then
                 if not self.engine:CheckGameOver() then
+                    self.engine.restored_full_resolve = true
                     self.engine:Win()
                 end
                 return
             end
-            local intents = {}
-            for i, data in ipairs(self.negotiator:GetIntents()) do
-                if data.min_persuasion and data.max_persuasion then
-                    table.insert(intents, data)
-                end
-            end
+            -- local intents = {}
+            -- for i, data in ipairs(self.negotiator:GetIntents()) do
+            --     if data.min_persuasion and data.max_persuasion then
+            --         table.insert(intents, data)
+            --     end
+            -- end
 
-            if #intents > 0 then
-                local selected_intent = table.arraypick(intents)
-                self.negotiator:DismissIntent(selected_intent)
-                minigame:ApplyPersuasion( self, self, selected_intent.min_persuasion or selected_intent.max_persuasion or 0, selected_intent.max_persuasion or 0 )
-            end
+            -- if #intents > 0 then
+            --     local selected_intent = table.arraypick(intents)
+            --     self.negotiator:DismissIntent(selected_intent)
+            --     minigame:ApplyPersuasion( self, self, selected_intent.min_persuasion or selected_intent.max_persuasion or 0, selected_intent.max_persuasion or 0 )
+            -- end
         end,
         OnEndTurn = function( self, minigame )
             for i, modifier in self.negotiator:Modifiers() do
@@ -2105,7 +1897,7 @@ local MODIFIERS =
         event_handlers =
         {
             [ EVENT.CALC_COMPOSURE_DECAY ] = function( self, decay, source )
-                DBG(source)
+                -- DBG(source)
                 if source.negotiator == self.negotiator then
                     print("Same negotiator as self")
                     decay:ClearValue(self)
@@ -2358,6 +2150,19 @@ local MODIFIERS =
                 self.can_buff = true
             end,
         },
+    },
+    DR_CONTRADICTION_IN_RUMOR =
+    {
+        name = "Contradiction In Rumor",
+        desc = "When destroyed, you lose the negotiation.",
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+
+        max_resolve = 1,
+
+        OnBounty = function(self, source)
+            self.engine:Lose()
+        end,
     },
 }
 for id, def in pairs( MODIFIERS ) do
