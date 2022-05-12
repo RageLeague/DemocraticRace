@@ -1565,6 +1565,7 @@ local MODIFIERS =
         desc_fn = function( self, fmt_str )
             return loc.format( fmt_str, self.num_cards or 5, self.count )
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/fellow_grifter.png",
         modifier_type = MODIFIER_TYPE.CORE,
         max_stacks = 1,
         num_cards = 5,
@@ -1593,6 +1594,7 @@ local MODIFIERS =
     CONTRARIAN = {
         name = "Contrarian",
         desc = "Created by <b>Fellow Grifter</> when playing Hostility cards.\nWhen the core takes damage, this argument deals that amount of damage to a random argument.",
+        icon = "DEMOCRATICRACE:assets/modifiers/contrarian.png",
         modifier_type = MODIFIER_TYPE.ARGUMENT,
         max_resolve = 3,
         -- icon = "negotiation/abrupt_remark.tex",
@@ -1618,6 +1620,7 @@ local MODIFIERS =
     UPVOTE = {
         name = "Clout",
         desc = "Created by <b>Fellow Grifter</> when playing Diplomacy cards.\nDeals damage equal to the number of arguments Aellon controls.",
+        icon = "DEMOCRATICRACE:assets/modifiers/upvote.png",
         desc_fn = function( self, fmt_str )
             return loc.format(fmt_str, self.max_persuasion)
         end,
@@ -1709,6 +1712,7 @@ local MODIFIERS =
     FAKE_NEWS = {
         name = "Fake News",
         desc = "Created by <b>Fellow Grifter</> when playing Manipulation cards.\nIntents and target previews are hidden. Intents have a 50% chance to do +1 damage.",
+        icon = "DEMOCRATICRACE:assets/modifiers/fake_news.png",
         max_resolve = 3,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
