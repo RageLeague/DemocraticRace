@@ -36,7 +36,7 @@ local QDEF = QuestDef.Define
         return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and TheGame:GetGameState():GetMainQuest().param.day >= 2
     end,
     GenerateRumor = function(quest)
-        local chosen = math.random(1,5)
+        local chosen = math.random(1,7)
         return quest:GetLocalizedStr("RUMOR_" .. chosen)
     end,
 }
@@ -50,6 +50,8 @@ local QDEF = QuestDef.Define
     RUMOR_3 = "{target} supports Rentoria's invasion against Havaria.",
     RUMOR_4 = "{target}'s parents bought {target}'s way into a position of power.",
     RUMOR_5 = "{target} wants to meddle with the election.",
+    RUMOR_6 = "{target} likes spineapples on {target.hisher} pizza.",
+    RUMOR_7 = "{target} doesn't likes the word butt.",
 }
 :AddObjective{
     id = "spread_rumor",
@@ -90,30 +92,11 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :Loc{
         DIALOG_INTRO = [[
             primary_advisor:
-                There are two ways to win an election:
-                One, you gather support and increase your votes.
-                Two, you bring your opponent down so they get less votes.
-            player:
-                That sounds good and all, but how could I possibly do that?
-            primary_advisor:
-                It's simple. Tell the voter base something that your opponent doesn't want them to know. Something that can bring down their reputation.
-            player:
-                You have something in mind?
-            primary_advisor:
-                !shrug
-                Not really. But you can easily make this up.
-            {not can_manipulate_truth and not white_lier?
-                It doesn't have to be true. It just has to be plausible enough to bring down the opponent's popularity.
-            }
-            {can_manipulate_truth?
-                After all, facts are subjective.
-                Tell the world what they want to believe, and it will become the truth.
-            }
-            {not can_manipulate_truth and white_lier?
-                The voters don't want absolute facts. They want something that they want to believe.
-                As long as we give the voters what they want, they will be happy to spread our rumor for us.
-            }
-                Which one of your opponents to target is up to you.
+                !hips
+                Y'know, most voters don't choose the president because they like them.
+                They do it to keep the other people out of office.
+                !wring
+                How would you like to do some political mud slinging?
         ]],
     }
     :State("START")
@@ -137,54 +120,61 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
                 !shrug
                 If you say so.
                 Now, if we want to defame {target}, we need to show the people what kind of person {target} truly is.
-                What kind of horrible misdeeds they have done in the past, or what kind of personality traits that are less than desireable.
-                !thought
-                Something that {target} doesn't want the world to know.
-                You have something in mind, don't you?
-                If you do, write your thoughts down.
+                {not can_manipulate_truth and not white_lier?
+                    !point
+                    Doesn't neccesarily have to be true. We just need to get the word out.
+                }
+                {can_manipulate_truth?
+                    !thought
+                    After all, if enough people think it's true, then {target} might as well have already done it!
+                }
+                {not can_manipulate_truth and white_lier?
+                    !wring
+                    Juicy gossip like that oughta rile them up. They'll know who to vote for when their favorite candidate is caught in a scandal.
+                }
+                !give
+                Now, <i>what</> that terrible something is, I'll leave up to you.
         ]],
         DIALOG_TARGET_PST = [[
             * {agent} carefully reads what you've just wrote.
             {advisor_diplomacy?
             agent:
+                Oh my. I knew {target} was a normie but I wasn't expecting {target.himher} to be this Speech 0.
                 !give
-            * Then, {agent} hands the note back to you.
-            agent:
-                Wow, that was certainly a cringe thing for {target} to do, huh?
-                You are going to be so based revealing this information to the world.
+                You've got some really cringe material here. {target} won't know what hit {target.himher}.
             }
             {not advisor_diplomacy?
             agent:
-                !sigh
-            * Then, {agent.heshe} gives up.
-            agent:
-                Man, you really need to work on your handwriting.
-                I don't think whatever you wrote is even Havarian.
+                !chuckle
+                Oh ho ho! {target}, you naughty yote!
+                !give
+                This is a potent story you've got here. It'd be a shame if it got out.
             player:
-                !crossed
-                Hey! That's uncalled for.
-            agent:
-                !sigh
-                I'm sure whatever you wrote is at least a good enough rumor to hopefully sow doubts in the voter base.
+                !wring
+                Yes, a shame indeed.
             }
         ]],
         DIALOG_TARGET_PST_NO_ENTRY = [[
-            * {agent} carefully reads what you've just wrote.
+            * {agent} glances over the blank card you wrote on.
             agent:
-                !dubious
-                Can't think of anything, huh?
-                Okay, how about this:
-                {1}
+                !hips
+                I wasn't expecting nothing. 
+                Have a little fun with it, write something stupid.
+                !give
+                Like this, here.
+                {1}.
             player:
-                !neutral_burp
-                Ooh, I like this one!
+                !chuckle
+                Ooh, that's a good one.
+            agent:
+                !happy
+                I know, right?
         ]],
         DIALOG_TARGET_PST_2 = [[
             agent:
                 !point
-                Now go and tell everyone about it.
-                Make sure to tell people from different backgrounds about it, so this story becomes more believable.
-                And make sure to keep your stories straight.
+                Now go tell as many people as you can.
+                But be sure to get a varied audience, and keep the story straight!
         ]],
 
         POPUP_TITLE = "Make a scandal!",
@@ -233,14 +223,16 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{
         DIALOG_INTRO = [[
             player:
-                !crossed
-                That sounds extremely dirty.
-            primary_advisor:
-                !handwave
-                Please, you are a grifter.
-                You should know the virtue of pursuing your goal using any means necessary.
-                !sigh
-                Nevertheless, I cannot force you if you don't want to do it.
+                !shrug
+                I dunno. I don't really like getting dirty.
+                I just had these clothes dry-cleaned, after all.
+            agent:
+                !intrigue
+                Wait, are you and I talking about the same type of mud slinging?
+            player:
+                !thought
+                I'm pretty sure. I just don't want to get covered in mud.
+                Let's try something else.
         ]],
     }
     :State("START")
@@ -289,19 +281,22 @@ QDEF:AddConvo("spread_rumor")
         DIALOG_CONVINCE = [[
             {is_supporter?
             player:
-                You support {target}, right?
+                !point
+                You're one of {target}'s supporters, aren't you?
             agent:
-                So what? Are you trying to convince me otherwise?
+                !crossed
+                Maybe I am, maybe I'm not. What about it?
             player:
-                I wonder if you still hold the same view after I show you what kind of a person {target} truly is.
+                !chuckle
+                Oh, I'm sure you won't be once you hear this about {target};
             }
             {not is_supporter?
             player:
-                You know {target} is running for president, right?
-                !sigh
-                It's a real shame that this terrible person is still allowed to run.
+                !cagey
+                Hey, have you been keeping up with the election? Nasty rumor going around about {target}.
             agent:
-                What do you mean?
+                !intrigue
+                There's a rumor going around? What's it about?
             }
             player:
                 {1}
@@ -310,21 +305,19 @@ QDEF:AddConvo("spread_rumor")
         ]],
         DIALOG_CONVINCE_SUCCESS = [[
             player:
-                Yep. This is true enough.
+                It all lines up, doesn't it? {target}'s guilty as hell!
             agent:
             {is_supporter?
                 !spit
-                Hesh dammit- To think I ever supported you, {target}.
+                Hesh dammit- To think I ever supported {target}.
             }
             {not is_supporter?
-                !thought
-                This information... The consequences for this would be huge.
-                And certainly bad for {target}.
+                !crossed
+                I didn't think there were more reasons to not support {target}, but this...
             }
                 Thanks for showing me what kind of person {target} truly is.
-            * One more person now believes your little rumor.
-            * And this person can spread this rumor further, to even more people.
-            * This is how your rumor gains traction, to bring down {target}'s reputation.
+            * You've got one more person moving your gossip around their faction.
+            * {target}'s reputation is defintely going to be stained after this.
         ]],
         DIALOG_CONVINCE_FAILURE = [[
             agent:
@@ -448,44 +441,63 @@ QDEF:AddConvo("out_of_time", "primary_advisor")
         ]],
         DIALOG_NO_CONVINCE = [[
             player:
-                [p] I convinced no one.
+                !bashful
+                Well, I thought my wordcraft and ability to move the rumor mill was impeccable.
             {failed_once?
-                In fact, the only person I talked to didn't even believe my story.
+                But my silver coated tounge couldn't convince the first person I talked to.
             agent:
-                Okay, that was really bad.
+                !palm
+                So the rumor's dead in the water? Great.
             }
             {not failed_once?
+                !scaredshrug
+                But it turns out that thought-beam tech is pretty far off in the future. Who knew, right?
             agent:
-                Are you even trying?
+                !angry
+                You didn't even try to talk to people? But you had such an important story!
             }
         ]],
         DIALOG_ONE_CONVINCE = [[
             player:
-                [p] I convinced only one person.
+                I got the idea in one person's head, at least.
             {not failed_once?
             agent:
-                This is not going to be enough.
-                It's not going to be a rumor if only one person believes it.
+                !palm
+                That's not going to be a big enough rumor for {target}'s reputation to be dragged down.
+            player:
+                !point
+                Hey! It's still someone spreading it. Doesn't every voter count?
+            agent:
+                !chuckle
+                Ha! Good one, {player}. If only you were as good at rumor milling as telling jokes.
             }
             {failed_once?
-                But another person didn't even believe my story.
+                At the cost of someone else refusing to believe it.
             agent:
-                This is really bad for us.
+                !angry
+                So the two cancel out, and we're back to square one. That was a productive use of your time.
             }
         ]],
         DIALOG_MORE_CONVINCE = [[
             player:
-                [p] I convinced {1} people.
+                !hips
+                You'll be happy to know I've gotten {1} people talking about it.
             {not failed_once?
             agent:
-                Nice. The more people from different factions are convinced, the more this will gain traction.
-                This will surely hurt {target}'s reputation and boost your own.
+                !happy
+                Yes, yes! Enough factions dispersing the rumor will give it a lot of credibility.
+                !thought
+                I can already see it now. A night down at the Slurping Snail, and the thought on everyone's mind, on the tip of every tounge.
+                "{2}".
             }
             {failed_once?
-                Although a person doesn't seem to believe my story.
+                Although there is a dissenter among them. Don't know how much that'll impact it's credibility.
             agent:
-                This is not ideal, but as long as that person's voice is drowned out by the sea of rumors that we are spreading, we should be fine.
-                This will surely hurt {target}'s reputation and boost your own.
+                !wave
+                That oughta be fine. One or two people who don't believe it won't hurt the rumor too much. 
+                !thought
+                Just think, everyone will be talking about it. {target} won't be able to escape such a powerful rumor that...
+                {2}.
             }
         ]],
     }
@@ -509,7 +521,7 @@ QDEF:AddConvo("out_of_time", "primary_advisor")
                         cxt.quest:Complete()
                     end
                 else
-                    cxt:Dialog("DIALOG_MORE_CONVINCE", count)
+                    cxt:Dialog("DIALOG_MORE_CONVINCE", count, cxt.quest.param.rumor)
                     cxt.quest.param.poor_performance = cxt.quest.param.failed_once
                     cxt.quest:Complete()
                 end
