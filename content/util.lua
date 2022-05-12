@@ -873,13 +873,13 @@ function DemocracyUtil.GetEndorsement(index)
     -- Also this runs at O(1) time, so it doesn't really matter that much.
     -- And this reuses the relationship array. It's kinda redundant having another enum with the same elements
     -- representing similar things.
-    if index >= 75 then
+    if index >= 50 then
         return RELATIONSHIP.LOVED
-    elseif index >= 25 then
+    elseif index >= 20 then
         return RELATIONSHIP.LIKED
-    elseif index > -25 then
+    elseif index > -20 then
         return RELATIONSHIP.NEUTRAL
-    elseif index > -75 then
+    elseif index > -50 then
         return RELATIONSHIP.DISLIKED
     else
         return RELATIONSHIP.HATED
