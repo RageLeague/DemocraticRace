@@ -4,7 +4,7 @@ A pioneer campaign mod for Griftlands, the Democratic Race is a mod for Griftlan
 
 This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
-Version: 0.6.2(Alpha)
+Version: 0.7.0(Alpha)
 
 Author: RageLeague
 
@@ -98,7 +98,55 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Minespatch
 * Sei Bellissima
 
+### Special Thanks
+
+* Flange Finnegan
+
 ## Changelog
+
+### 0.7.0 (World Update)
+
+This is another another minor major update that adds a bunch of miscellaneous features. It introduces many features that fleshes out the world of Havaria (in general and in this mod specifically). Additionally, this update also contains lots of balancing changes.
+
+Below is a summary of the changes. For a full, unorganized changes, see (https://github.com/RageLeague/DemocraticRace/blob/master/CHANGELOG.md).
+
+Major Changes:
+
+* Added new actions to do in locations, such as the Oshnudrome and the Party Supply Store! Some existing actions you can do at locations are changed as well.
+* General support changes from relationship changes are less significant, as well as attacking and killing.
+* Merged tax and welfare policies into one policy: fiscal policy. If you have taken a stance on either policy before this update, you will not take any stance on the new policy.
+* Separated the alliance with an opposition candidate with your relationship with them (UI, consequences needs to be fleshed out).
+* Added a new rally quest. Spread information (or misinformation) about your opponent to defame them.
+* You can now always unlock new locations from your advisor or proprietors of locations. This helps you unlock a bunch of locations early game, when you don't have a lot to do with your free time.
+* Added some debug functions. For debug purposes, and they are not well documented.
+* Your max resolve is now limited by the proportion of health you have, so don't hurt yourself too much.
+* Added a brand new negotiation music for the interview, as well as a temporary music for day 1 end negotiation.
+* Introduced lots of dialogs, for various different situations.
+* Introduced numerous balance changes (see full changelog for details).
+
+Minor Changes:
+
+* Democratic Race's custom provoke negotiation now correctly works with Everyone Dies (https://steamcommunity.com/sharedfiles/filedetails/?id=2596124635)
+* Ctenophorian Mystery now has two new outcomes (one of which is a game over, so try not to get that). Additionally, you will always get a mystery card as a reward, depending on the outcome of the quest.
+* Change My Mind now has options to save your face when you lose a debate, or just want to screw someone over.
+* Limited the number of request quest an agent can spawn to one across the entire game.
+* Reduced the support requirements at the start of days because of general support nerf.
+* Increased unconditional alliance requirement.
+* Added default negotiation behaviour for Vix and Hundruthor, which only shows up in a Democratic Race campaign.
+* Added fatigued to propaganda poster making negotiation.
+* Separated support reason for quests into different categories.
+* Added a marginal support bonus every time you pay someone to shill for you. Additionally, paying for shills is cheaper.
+* Separated once-per-day limit for socializing and unlocking locations.
+* People working at a location will not give you an option to unlock another location of the same type.
+* Different advisors now unlocks different bars.
+* Day 2 opponent will always give you their location when asked, regardless whether you agree with them or not.
+* Pets no longer provide support during the interview or debate. It is sad, I know, but we have to make compromise, otherwise Oolo will just blast everyone in the theater with Bertha.
+* Fixed the plax for the region. Now there is one less gigantic jellyfish and a lot more regular sized jellyfish.
+* Advisor's requests now no longer give cash reward, just like the only other request quest.
+* Hesh is now an MS Paint jellyfish. This is obviously subject to change.
+* Removed Rook finding extra coins (he has flourishes now, so he doesn't need this source of coins).
+* Reduced skinned character spawns. The number of skinned character spawned is cut by half, but they are not culled.
+* Fixed numerous bugs with cards, quests, and the mod in general (see full changelog for details).
 
 ### 0.6.2
 
