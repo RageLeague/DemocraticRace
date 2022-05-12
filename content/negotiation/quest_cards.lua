@@ -199,7 +199,7 @@ local CARDS = {
         end,
 
         OnPostResolve = function( self, engine, targets )
-            local modifier = self.negotiator:CreateModifier("CONTEMPORARY_QUESTION")
+            local modifier = Negotiation.Modifier("CONTEMPORARY_QUESTION", self.negotiator, self.stacks)
             if modifier then
                 modifier:SetIssue(self.issue_data)
             end
@@ -207,6 +207,8 @@ local CARDS = {
                 table.arrayremove(self.negotiator.behaviour.available_issues, self.issue_data)
                 self.issue_data = nil
             end
+
+            self.negotiator:CreateModifier(modifier, nil, self)
         end,
     },
 
@@ -304,8 +306,11 @@ local CARDS = {
             if opposition_data and opposition_data.mini_negotiator then
                 mini_negotiator_id = opposition_data.mini_negotiator
             end
-            local mod = self.negotiator:CreateModifier( mini_negotiator_id, 1, self )
+
+            local mod = Negotiation.Modifier( mini_negotiator_id, self.negotiator )
             mod.candidate_agent = self.owner
+            self.negotiator:CreateModifier( mod )
+
             self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                 panel.last_ev_time = nil
                 panel.speedup_factor = nil
@@ -367,8 +372,11 @@ local CARDS = {
             if opposition_data and opposition_data.mini_negotiator then
                 mini_negotiator_id = opposition_data.mini_negotiator
             end
-            local mod = self.negotiator:CreateModifier( mini_negotiator_id, 1, self )
+
+            local mod = Negotiation.Modifier( mini_negotiator_id, self.negotiator )
             mod.candidate_agent = self.owner
+            self.negotiator:CreateModifier( mod )
+
             self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                 panel.last_ev_time = nil
                 panel.speedup_factor = nil
@@ -401,7 +409,7 @@ local CARDS = {
             return loc.format(fmt_str, self.userdata and self.userdata.linked_quest and self.userdata.linked_quest:GetProvider() and self.userdata.linked_quest:GetProvider():GetName() or (self.def or self):GetLocalizedString("ALT_DESC"))
         end,
 
-        flavour = "This sounds extremely unethical. Then again, if you are ethical, you wouldn't be a grifter.",
+        flavour = "'It sounds like you need this... sideways... eight. Yeah! You need sideways eight in your life!'",
         icon = "DEMOCRATICRACE:assets/cards/promote_product.png",
 
         cost = 1,
@@ -459,17 +467,24 @@ local CARDS = {
     console_opponent =
     {
         name = "Console",
-        desc = "Transfer all composure on target argument you control to your opponent's core argument.",
+        desc = "Apply {1} {COMPOSURE}, then transfer all composure on that argument to your opponent's core argument.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:CalculateComposureText( self.composure_base ))
+        end,
         icon = "negotiation/empathy.tex",
 
         cost = 1,
         flags = CARD_FLAGS.DIPLOMACY | CARD_FLAGS.REPLENISH,
         rarity = CARD_RARITY.UNIQUE,
 
+        composure_base = 2,
+
         target_self = TARGET_ANY_RESOLVE,
 
         OnPostResolve = function( self, minigame, targets )
             for i, target in ipairs(targets) do
+                target:DeltaComposure( self.composure_base, self )
+
                 local delta = target.composure
                 if self.anti_negotiator:FindCoreArgument() then
                     self.anti_negotiator:FindCoreArgument():DeltaComposure(delta, self)
@@ -555,6 +570,19 @@ local CARDS = {
             end
             minigame:InceptCards( cards, self )
         end,
+    },
+    quest_any_card_bonus =
+    {
+        name = "Mystery Card Bonus",
+        desc = "What card bonus will you get? It's a mystery.",
+
+        icon = "negotiation/negotiation_wild.tex",
+
+        flags = CARD_FLAGS.MANIPULATE | CARD_FLAGS.UNPLAYABLE,
+        rarity = CARD_RARITY.UNIQUE,
+        manual_desc = true,
+
+        hide_in_cardex = true
     },
 }
 for i, id, def in sorted_pairs( CARDS ) do

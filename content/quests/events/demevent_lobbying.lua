@@ -21,7 +21,7 @@ QDEF:AddConvo()
         :Loc{
             DIALOG_INTRO = [[
                 * You notice the jingling of shills before you notice the person holding them.
-                * {agent}'s clothing is rich—and rich clothing has deep pockets.
+                * {merchant}'s clothing is rich—and rich clothing has deep pockets.
                 * And the roads are deserted, 'cept for you and your new fri-
                 merchant:
                     !right
@@ -95,7 +95,7 @@ QDEF:AddConvo()
                 cxt.quest.param.chosen_issue = chosen
                 cxt.quest.param.chosen_stance = DemocracyConstants.issue_data[chosen]:GetAgentStanceIndex(cxt:GetCastMember("merchant"))
 
-                cxt:Dialog("DIALOG_INTRO")
+                cxt:Dialog("DIALOG_INTRO", cxt.quest.param.chosen_issue .. "_" .. cxt.quest.param.chosen_stance)
             end
 
             local haggle_count = cxt.player.graft_owner:CountGraftsByID( "haggle_badge" )

@@ -12,6 +12,11 @@ local QDEF = QuestDef.Define
 
     qtype = QTYPE.STORY,
 
+    fill_out_quip_tags = function(quest, tags, agent)
+        if quest.param.did_assassination then
+            table.insert_unique(tags, "did_assassination")
+        end
+    end,
     events = {
         resolve_negotiation = function( quest, minigame, repercussions )
             if repercussions and CheckBits( minigame:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH ) then
@@ -358,6 +363,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
             assassin.in_hiding = false
             assassin:MoveToLocation(cxt.location)
             cxt.enc:SetPrimaryCast(assassin)
+            cxt.quest.param.did_assassination = true
             cxt:Dialog("DIALOG_INTRO")
 
             -- cxt.quest.param.call_time = 3
@@ -366,6 +372,11 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
 
             cxt:Opt("OPT_DISTRACT")
                 :PostText("TT_DISTRACT")
+                :Fn(function(cxt)
+                    -- The theme is sal's night theme for now. Might change up later.
+                    TheGame:SetTempMusicOverride("event:/music/adaptive_negotiation_barter_night", cxt.enc)
+                    -- TheGame:SetTempMusicOverride("DEMOCRATICRACE|event:/democratic_race/music/test_negotiation", cxt.enc)
+                end)
                 :Negotiation{
                     flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE | NEGOTIATION_FLAGS.WORDSMITH, -- this is the boss
                     reason_fn = function(minigame)

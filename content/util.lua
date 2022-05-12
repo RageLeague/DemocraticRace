@@ -213,7 +213,7 @@ local SUPPORT_DELTA = {
 -- likely to be casted.
 function DemocracyUtil.SupportScore(agent)
     return DemocracyUtil.TryMainQuestFn("GetSupportForAgent", agent)
-        + SUPPORT_DELTA[agent:GetRelationship()] + math.random(-50, 50)
+        + SUPPORT_DELTA[agent:GetRelationship()] + math.random(-100, 100)
 end
 
 -- The opposite of SupportScore
@@ -230,7 +230,8 @@ function DemocracyUtil.RandomBystanderCondition(agent)
         and not (agent:GetBrain() and agent:GetBrain():GetWorkPosition() and agent:GetBrain():GetWorkPosition():ShouldBeWorking())
         and not agent:HasQuestMembership()
         -- Kick the auctioneer out of random bystander, as his negotiation behaviour is wack
-        and agent:GetContentID() ~= "HESH_AUCTIONEER"
+        -- Don't worry guys, it's no longer wack anymore
+        -- and agent:GetContentID() ~= "HESH_AUCTIONEER"
 end
 
 function DemocracyUtil.CanVote(agent)
@@ -814,11 +815,7 @@ function DemocracyUtil.GiveBossRewards(cxt)
 end
 
 -- A person's voter intention is a value indicating how likely they will vote for you.
--- As a guideline, if > 50 it means 100% support, while < 50 means 100% against.
--- [-20, 20] is the apathetic range, where they don't care enough to vote.
--- > 20, you have the support, while < 20, people are against you.
--- This can also be used to determine faction support or wealth support.
--- In practice, a value from [-50, 50] will probably be added, to add randomness.
+-- This is based on Gaussian distribution. A G(0,100) offset will be added to this value to add randomness.
 function DemocracyUtil.GetVoterIntentionIndex(data)
     local faction, wealth
     if data.agent then
@@ -838,28 +835,30 @@ function DemocracyUtil.GetVoterIntentionIndex(data)
 
     local delta = DemocracyUtil.TryMainQuestFn("GetGeneralSupport") - DemocracyUtil.TryMainQuestFn("GetCurrentExpectation")
 
-    if delta <= 5 then
-        voter_index = delta
-    else
-        delta = delta - 5
-        if delta >= 20 then
-            voter_index = voter_index + 5
-            delta = delta - 20
-        else
-            voter_index = voter_index + math.round(delta / 2)
-            delta = 0
-        end
-        -- if delta >= 20 then
-        --     voter_index = voter_index + 5
-        --     delta = delta - 20
-        -- else
-        --     voter_index = voter_index + math.round(delta / 4)
-        --     delta = 0
-        -- end
-        if delta > 0 then
-            voter_index = voter_index + math.round(delta / 5)
-        end
-    end
+    -- Removed balancing because we shouldn't care about it, now that we balanced general support gain
+
+    -- if delta <= 5 then
+    --     voter_index = delta
+    -- else
+    --     delta = delta - 5
+    --     if delta >= 20 then
+    --         voter_index = voter_index + 5
+    --         delta = delta - 20
+    --     else
+    --         voter_index = voter_index + math.round(delta / 2)
+    --         delta = 0
+    --     end
+    --     -- if delta >= 20 then
+    --     --     voter_index = voter_index + 5
+    --     --     delta = delta - 20
+    --     -- else
+    --     --     voter_index = voter_index + math.round(delta / 4)
+    --     --     delta = 0
+    --     -- end
+    --     if delta > 0 then
+    --         voter_index = voter_index + math.round(delta / 5)
+    --     end
+    -- end
     if faction then
         voter_index = voter_index + (TheGame:GetGameState():GetMainQuest().param.faction_support[faction] or 0)
     end
@@ -910,15 +909,15 @@ function DemocracyUtil.GetAlliancePotential(candidate_id)
     local candidate_data = oppositions[candidate_id]
     assert(candidate_data, "Invalid candidate_id")
     local score = DemocracyUtil.GetVoterIntentionIndex({faction = candidate_data.main_supporter})
+    local target_candidate = TheGame:GetGameState():GetMainQuest():GetCastMember(candidate_data.cast_id)
     for id, data in pairs(oppositions) do
         if id ~= candidate_id then
             local candidate = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
             if candidate then
-                local rel_with_player = candidate:GetRelationship()
-                local faction_rel = TheGame:GetGameState():GetFactions():GetFactionRelationship(
-                    data.main_supporter, candidate_data.main_supporter )
+                local rel_with_player = math.max(candidate:GetRelationship(), DemocracyUtil.TryMainQuestFn("GetAlliance", candidate) and RELATIONSHIP.LIKED or RELATIONSHIP.HATED)
+                local faction_rel = target_candidate:GetRelationship(candidate)
                 -- Positive when friend with friend, enemy of enemy
-                -- Negative when enemy of friend, enemy of enemy
+                -- Negative when enemy of friend, friend of enemy
                 local fof = (rel_with_player - RELATIONSHIP.NEUTRAL) * (faction_rel - RELATIONSHIP.NEUTRAL)
                 if fof <= -2 then
                     -- This happens when you are liked with hated, loved with disliked,
@@ -990,12 +989,13 @@ function DemocracyUtil.SpawnRequestQuest(agent, allow_placeholder, spawn_param)
     -- assert(false, loc.format("No request quest spawned for {1#agent}", agent))
 end
 function DemocracyUtil.HasRequestQuest(agent)
-    for k,quest in TheGame:GetGameState():ActiveQuests() do
-        if quest:GetProvider() == agent then
-            return true
-        end
-    end
-    return false
+    return agent:HasMemory("ISSUED_REQUEST_QUEST")
+    -- for k,quest in TheGame:GetGameState():ActiveQuests() do
+    --     if quest:GetProvider() == agent then
+    --         return true
+    --     end
+    -- end
+    -- return false
 end
 function DemocracyUtil.DebugSetRandomDeck(seed)
     local DECKS = require "content/quests/experiments/sal_day_4_decks"
@@ -1006,7 +1006,8 @@ function DemocracyUtil.DebugSetRandomDeck(seed)
     local deck = DECKS[deck_idx]
     TheGame:GetGameState():SetDecks(deck)
 end
-function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
+function DemocracyUtil.DoAllianceConvo(cxt, ally, post_fn, potential_offset)
+    post_fn = post_fn or function(cxt) StateGraphUtil.AddEndOption(cxt) end
     potential_offset = potential_offset or 0
     local candidate_data = DemocracyUtil.GetOppositionData(ally)
     cxt:Dialog("DIALOG_ALLIANCE_TALK_INTRO")
@@ -1018,29 +1019,38 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
         local oppo_main_stance = candidate_data.stances[platform]
         local player_main_stance = DemocracyUtil.GetStance(platform) or 0
         cxt.enc.scratch.opposite_spectrum = oppo_main_stance * player_main_stance <= -2
-        if potential and DemocracyUtil.GetEndorsement(potential + potential_offset) > RELATIONSHIP.NEUTRAL then
+        if potential and DemocracyUtil.GetEndorsement(potential + potential_offset) >= RELATIONSHIP.LOVED then
             cxt:Dialog("DIALOG_ALLIANCE_TALK_UNCONDITIONAL")
             if cxt.enc.scratch.opposite_spectrum then
                 cxt:Opt("OPT_ALLIANCE_TALK_AGREE_STANCE")
                     :Dialog("DIALOG_ALLIANCE_TALK_AGREE_STANCE")
                     :UpdatePoliticalStance(platform, oppo_main_stance)
-                    :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
-                    :DoneConvo()
+                    -- :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
+                    :Fn(function(cxt)
+                        DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
+                        post_fn(cxt, true)
+                    end)
+                    -- :DoneConvo()
 
             else
                 cxt:Opt("OPT_ALLIANCE_TALK_ACCEPT")
                     :Dialog("DIALOG_ALLIANCE_TALK_ACCEPT")
                     -- :UpdatePoliticalStance(platform, oppo_main_stance)
-                    :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
-                    :DoneConvo()
+                    -- :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
+                    :Fn(function(cxt)
+                        DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
+                        post_fn(cxt, true)
+                    end)
+                    -- :DoneConvo()
             end
             cxt:Opt("OPT_ALLIANCE_TALK_REJECT_ALLIANCE")
                 :Dialog("DIALOG_ALLIANCE_TALK_REJECT_ALLIANCE")
                 :Fn(function()
                     ally:Remember("REJECTED_ALLIANCE")
+                    post_fn(cxt, false)
                 end)
-                :DoneConvo()
-        elseif potential and DemocracyUtil.GetEndorsement(potential + potential_offset) == RELATIONSHIP.NEUTRAL then
+                -- :DoneConvo()
+        elseif potential and DemocracyUtil.GetEndorsement(potential + potential_offset) >= RELATIONSHIP.NEUTRAL then
             potential = potential + potential_offset
             cxt:Dialog("DIALOG_ALLIANCE_TALK_CONDITIONAL", cxt.enc.scratch.opposite_spectrum and (platform .. "_" .. oppo_main_stance) or nil)
             if cxt.enc.scratch.opposite_spectrum then
@@ -1048,20 +1058,19 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
                     cxt:Opt("OPT_ALLIANCE_TALK_AGREE_STANCE")
                         :Dialog("DIALOG_ALLIANCE_TALK_AGREE_STANCE")
                         :UpdatePoliticalStance(platform, oppo_main_stance)
-                        -- :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
                         :Pop()
                     cxt:Opt("OPT_ALLIANCE_TALK_REJECT_ALLIANCE")
                         :Dialog("DIALOG_ALLIANCE_TALK_REJECT_ALLIANCE")
                         :Fn(function()
                             ally:Remember("REJECTED_ALLIANCE")
+                            post_fn(cxt, false)
                         end)
-                        :DoneConvo()
+                        -- :DoneConvo()
                 end)
             end
-            local rawcost = 250 - potential * 8
-            -- local cost, reasons = CalculatePayment(ally, rawcost)
             local demands, demand_list = ally:HasMemoryFromToday("ALLIANCE_DEMANDS"), ally:HasMemoryFromToday("ALLIANCE_DEMAND_LIST")
             if not demands or not demand_list then
+                local rawcost = 500 - potential * 6
                 demands, demand_list = DemocracyUtil.GenerateDemandList(rawcost, ally, nil, {auto_scale = true})
                 ally:Remember("ALLIANCE_DEMANDS", demands)
                 ally:Remember("ALLIANCE_DEMAND_LIST", demand_list)
@@ -1072,8 +1081,10 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
                 local done_all = DemocracyUtil.AddDemandConvo(cxt, demand_list, demands)
                 if done_all then
                     cxt:Dialog("DIALOG_ALLIANCE_TALK_ACCEPT_CONDITIONAL")
-                    ally:OpinionEvent(OPINION.ALLIED_WITH)
-                    StateGraphUtil.AddEndOption(cxt)
+                    -- ally:OpinionEvent(OPINION.ALLIED_WITH)
+                    DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
+                    -- StateGraphUtil.AddEndOption(cxt)
+                    post_fn(cxt, true)
                     return
                 end
             -- local demand_list = DemocracyUtil.ParseDemandList(demands)
@@ -1081,8 +1092,9 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
                     :Dialog("DIALOG_ALLIANCE_TALK_REJECT_ALLIANCE")
                     :Fn(function()
                         ally:Remember("REJECTED_ALLIANCE")
+                        post_fn(cxt, false)
                     end)
-                    :DoneConvo()
+                    -- :DoneConvo()
             end)
         else
             if problem_agent then
@@ -1091,9 +1103,9 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, potential_offset)
             else
                 cxt:Dialog("DIALOG_ALLIANCE_TALK_REJECT")
             end
-            -- ally:OpinionEvent(OPINION.ALLIED_WITH)
             ally:Remember("REJECTED_ALLIANCE")
-            StateGraphUtil.AddEndOption(cxt)
+            -- StateGraphUtil.AddEndOption(cxt)
+            post_fn(cxt, false)
         end
     end
 end
@@ -1187,6 +1199,11 @@ function DemocracyUtil.RandomGauss( mean, stddev )
     return x
 end
 
+-- Choose a random number in an exponential distribution
+function DemocracyUtil.RandomExp( mean )
+    return - math.log(math.max(math.random(), 1e-3)) * mean
+end
+
 function DemocracyUtil.CalculateStrengthRatio(blue, red, blue_bonus, red_bonus)
     local blue_score = (blue:GetCombatStrength() + (blue:IsBoss() and 4 or 0)) * blue.health:GetPercent() + (blue_bonus or 0)
     local red_score = (red:GetCombatStrength() + (red:IsBoss() and 4 or 0)) * red.health:GetPercent() + (red_bonus or 0)
@@ -1209,6 +1226,52 @@ function DemocracyUtil.SimulateBattle(blue, red, blue_bonus, red_bonus)
         blue.health:SetPercent(blue.health:GetPercent() * math.random(20, 30) * 0.01)
     end
     return result
+end
+
+function DemocracyUtil.QuipStance(cxt, agent, stance, ...)
+    if type(stance) == "string" then
+        local st_issue, st_stance = stance:match("([_%w]+)_([%-%d]+)")
+        st_stance = tonumber(st_stance)
+        if st_issue and st_stance then
+            local issue_data = DemocracyConstants.issue_data[loc.toupper(st_issue)]
+            if issue_data and issue_data.stances[st_stance] then
+                stance = issue_data.stances[st_stance]
+            end
+        end
+    end
+    assert(type(stance) == "table", "Stance must be a table")
+    cxt.enc.scratch.stance = stance
+    local stance_tag
+    if stance.stance_intensity > 0 then
+        stance_tag = "s_pro_" .. stance.issue_id
+    elseif stance.stance_intensity < 0 then
+        stance_tag = "s_anti_" .. stance.issue_id
+    else
+        stance_tag = "s_no_" .. stance.issue_id
+    end
+    cxt:Quip(agent, "stance_quip", stance_tag, ...)
+end
+
+function DemocracyUtil.SplitNullable(str, sep)
+    local sep, fields = sep or " ", {}
+    local pattern = string.format("([^%s]*)[%s]", sep, sep)
+    str = str .. sep
+    str:gsub(pattern, function(c) fields[#fields+1] = c end)
+    return fields
+end
+
+function DemocracyUtil.LoadCSV(path)
+    local file = io.open( path, "r" )
+    if file then
+        local raw_data = file:read("a")
+        local raw_rows = raw_data:split('\n')
+        local result = {}
+        for i, row in ipairs(raw_rows) do
+            local raw_entries = DemocracyUtil.SplitNullable(row, ',')
+            table.insert(result, raw_entries)
+        end
+        return result
+    end
 end
 
 DemocracyUtil.EXCLUDED_WEAPONS = {

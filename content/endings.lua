@@ -7,6 +7,10 @@ local FAIL_ENDINGS = {
         slides = "democracy_fail_no_more_advisors",
         name = "No more advisors",
     },
+    broken_mind = {
+        slides = "democracy_fail_broken_mind",
+        name = "Broken Mind",
+    },
 }
 local SUCCESS_ENDING = {
 
@@ -32,14 +36,14 @@ local function DoEnding(cxt, ending, flags)
     end
     assert(ending_data, "Invalid ending: " .. tostring(ending))
     FillOutEndingFlags(flags)
-    
+
     local slides = ending_data.slides
     if type(slides) == "function" then
         slides = slides(cxt, flags)
     end
     assert(type(slides) == "string", "Invalid ending slides")
     cxt.enc:ShowSlides(slides, flags, function()
-        
+
         -- TheGame:AddGameplayStat("democracy_get_ending_" .. ending, 1)
         if is_win then
             TheGame:Win()

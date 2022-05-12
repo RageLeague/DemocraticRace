@@ -40,7 +40,9 @@ Content.AddStringTable("DEMOCRACY", {
             DEFAULT_UP = "Favorable Action",
             DEFAULT_DOWN = "Unfavorable Action",
 
-            COMPLETED_QUEST = "Quest Completed",
+            COMPLETED_QUEST = "Rally Quest Completed",
+            COMPLETED_QUEST_MAIN = "Main Quest Completed",
+            COMPLETED_QUEST_REQUEST = "Request Quest Completed",
             FAILED_QUEST = "Quest Failed",
             POOR_QUEST = "Poor Quest Result",
 
@@ -53,12 +55,14 @@ Content.AddStringTable("DEMOCRACY", {
             ACCOMPLICE = "Accomplice to Murder",
             NEGLIGENCE = "Negligence",
 
+            PAID_SHILLS = "Paid Shills",
+
             STANCE_TAKEN = "Stance Taken",
             ALLIANCE_FORMED = "Alliance Formed",
             ENEMY_MADE = "Enemy Made",
 
             CONSISTENT_STANCE = "Consistent Stance",
-            INCONSISTENT_STANCE = "Hypocrisy",
+            INCONSISTENT_STANCE = "Inconsistent Stance",
         },
         MAIN_OVERLAY = {
             VIEW_SUPPORT = "<#TITLE>View Support</>\nGeneral support: {1}",
@@ -72,12 +76,10 @@ Content.AddStringTable("DEMOCRACY", {
         {
             AGENT_SUPPORT =
             {
-                TITLE_INCREASE = "Gained {1} Support From {2#agent}",
-                TITLE_DECREASE = "Lost {1} Support From {2#agent}",
-                DETAIL_INCREASE = "General support, support from {3#faction} and among {4#wealth_name} " ..
-                    "are increased by {1} due to {2}.",
-                DETAIL_DECREASE = "General support, support from {3#faction} and among {4#wealth_name} " ..
-                    "are decreased by {1} due to {2}.",
+                TITLE_INCREASE = "Gained Support From {1#agent}",
+                TITLE_DECREASE = "Lost Support From {1#agent}",
+                DETAIL_INCREASE = "Gained {1} general support, {2} support from {4#faction} and among {5#wealth_name} {2} due to {3}.",
+                DETAIL_DECREASE = "Lost {1} general support, {2} support from {4#faction} and among {5#wealth_name} {2} due to {3}.",
             },
             FACTION_SUPPORT =
             {

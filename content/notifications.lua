@@ -51,17 +51,16 @@ AddNotification("DEM_DELTA_WEALTH_SUPPORT",{
 AddNotification("DEM_DELTA_AGENT_SUPPORT",{
     sfx = SoundEvents.notification_relationship_new,
     -- img = DemocracyConstants.icons.support,
-    FormatNotification = function( self, notification, delta, agent, reason )
+    FormatNotification = function( self, notification, general_delta, additional_delta, agent, reason )
         if type(reason) ~= "string" then
-            reason = delta >= 0 and "DEFAULT_UP" or "DEFAULT_DOWN"
+            reason = additional_delta >= 0 and "DEFAULT_UP" or "DEFAULT_DOWN"
         end
 
         local mainquest = TheGame:GetGameState():GetMainQuest()
-        local addendum = delta >= 0 and "INCREASE" or "DECREASE"
+        local addendum = additional_delta >= 0 and "INCREASE" or "DECREASE"
 
-        notification.banner_txt = loc.format(LOC("DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.TITLE_"..addendum), math.abs(delta), agent)
-        notification.details = loc.format(LOC("DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.DETAIL_"..addendum), math.abs(delta),
-            GetReason(reason), agent:GetFaction(), agent)
+        notification.banner_txt = loc.format(LOC("DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.TITLE_"..addendum), agent)
+        notification.details = loc.format(LOC("DEMOCRACY.NOTIFICATION.AGENT_SUPPORT.DETAIL_"..addendum), math.abs(general_delta), math.abs(additional_delta), GetReason(reason), agent:GetFaction(), agent)
 
         notification.img = agent
     end,

@@ -26,7 +26,7 @@ local QDEF = QuestDef.Define
     }
     :Hub(function(cxt, who)
         if who and DemocracyUtil.RandomBystanderCondition(who) then
-            local cost = math.max(30, 15 * who:GetRenown())
+            local cost = math.max(30, 18 + 6 * who:GetRenown())
             if not who:HasAspect( "bribed" ) then
                 cxt:Opt("OPT_BRIBE")
                     :PostText("OPT_BRIBE_TT")
@@ -35,8 +35,10 @@ local QDEF = QuestDef.Define
                     -- :ReqCondition( not bribe_params.disable, bribe_params.disable_reason )
                     :Dialog("DIALOG_BRIBE")
                     :DeliverMoney( cost )
-                    :Fn(function() 
+                    :Fn(function()
                         who:AddAspectStacks("bribed", 2)
+                        DemocracyUtil.DeltaAgentSupport(1, 1, who, "PAID_SHILLS")
+                        DemocracyUtil.DeltaGameplayStats("PAID_SHILLS", 1)
                     end)
             end
         end

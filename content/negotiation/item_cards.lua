@@ -107,7 +107,7 @@ local CARDS = {
         icon = "DEMOCRATICRACE:assets/cards/intimidating_blaster.png",
 
         cost = 1,
-        flags = CARD_FLAGS.ITEM,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.HOSTILE,
         rarity = CARD_RARITY.RARE,
 
         is_artifact = true,
@@ -133,7 +133,7 @@ local CARDS = {
         flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND | CARD_FLAGS.STICKY,
         rarity = CARD_RARITY.UNCOMMON,
 
-        max_charges = 2,
+        max_charges = 3,
 
         loc_strings =
         {
@@ -207,6 +207,7 @@ local CARDS = {
 
         modifier =
         {
+            icon = "DEMOCRATICRACE:assets/modifiers/havarian_thesaurus.png",
             alt_desc = "(Cards played: {1#comma_listing})",
             desc_fn = function(self, fmt_str)
                 if self.cards_played and #self.cards_played > 0 then
@@ -280,6 +281,10 @@ local CARDS = {
                 end
             end,
         },
+
+        OnPostResolve = function( self, minigame, targets )
+            self.negotiator:AddModifier("RENOWN", self.userdata.stacks or 1, self)
+        end,
     },
     vroc_whistle_negotiation =
     {
@@ -379,6 +384,7 @@ local CARDS = {
 
         modifier =
         {
+            icon = "DEMOCRATICRACE:assets/modifiers/pleasant_perfume.png",
             desc = "Whenever you would gain {INFLUENCE} or {RENOWN}, gain <#HILITE>{1}</> additional {1*stack|stacks}.",
             desc_fn = function(self, fmt_str)
                 return loc.format(fmt_str, self.stacks or 1)
@@ -576,7 +582,7 @@ local CARDS = {
         flags = CARD_FLAGS.ITEM,
         rarity = CARD_RARITY.COMMON,
 
-        max_charges = 1,
+        max_charges = 3,
 
         min_persuasion = 9,
         max_persuasion = 12,
@@ -605,7 +611,7 @@ local CARDS = {
         flags = CARD_FLAGS.ITEM,
         rarity = CARD_RARITY.UNCOMMON,
 
-        max_charges = 1,
+        max_charges = 3,
 
         min_persuasion = 6,
         max_persuasion = 9,
@@ -634,7 +640,7 @@ local CARDS = {
         flags = CARD_FLAGS.ITEM,
         rarity = CARD_RARITY.RARE,
 
-        max_charges = 1,
+        max_charges = 3,
 
         min_persuasion = 4,
         max_persuasion = 6,

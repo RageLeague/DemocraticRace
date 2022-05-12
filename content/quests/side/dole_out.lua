@@ -1,12 +1,16 @@
 local function CanFeed(agent, quest)
-    return DemocracyUtil.RandomBystanderCondition(agent)
+    return not (AgentUtil.IsInHiding(agent) or agent:IsRetired() or agent:IsInPlayerParty()
+        or AgentUtil.HasPlotArmour(agent) or not agent:IsSentient())
+        and not agent:HasQuestMembership()
         and not (quest.param.gifted_people and table.arraycontains(quest.param.gifted_people, agent))
         and not (quest.param.rejected_people and table.arraycontains(quest.param.rejected_people, agent))
 end
 
 local QDEF = QuestDef.Define{
     title = "Dole out",
-    desc = "Give Bread to the poor to gain support",
+    desc = "Give Bread to the poor to gain support.",
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/dole_out.png"),
+
     qtype = QTYPE.SIDE,
     rank = {2, 5},
     act_filter = DemocracyUtil.DemocracyActFilter,
@@ -330,7 +334,7 @@ QDEF:AddConvo("dole_out_three")
             table.insert(cxt.quest.param.gifted_people, cxt:GetAgent())
 
             cxt:Opt("OPT_AGREE")
-                :UpdatePoliticalStance("WELFARE", 2, false, true)
+                :UpdatePoliticalStance("FISCAL_POLICY", 2, false, true)
                 :ReceiveOpinion("politic")
                 :Dialog("DIALOG_AGREE")
                 :GoTo("STATE_AGREE")

@@ -634,7 +634,7 @@ local CARDS = {
                         --     source.negotiator:AttackResolve(damage, self)
                         -- end
                         target.composure = target.composure + damage
-                        self.negotiator:DeltaModifier(self, 1, self)
+                        self.negotiator:DeltaModifier(self, -1, self)
                     end
                 end,
 

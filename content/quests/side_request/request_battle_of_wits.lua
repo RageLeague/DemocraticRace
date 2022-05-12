@@ -22,12 +22,6 @@ local DEPRESSION_BEHAVIOUR =
 
         self.negotiator:AddModifier("ENCOURAGEMENT")
 
-        local cards = {}
-        for i = 1, 3 do
-            table.insert(cards, Negotiation.Card( "console_opponent", self.engine:GetPlayer() ))
-        end
-        self.engine:InceptCards( cards, self )
-
         self:SetPattern( self.BasicCycle )
     end,
 
@@ -42,6 +36,18 @@ local DEPRESSION_BEHAVIOUR =
         else
             self:ChooseGrowingNumbers( 2, 1 )
         end
+
+        local candidates = {}
+        for i, card in ipairs(self.prepared_cards) do
+            if card.id == "default" and card.target_enemy then
+                table.insert(candidates, card)
+            end
+        end
+        if #candidates > 0 then
+            local chosen = table.arraypick(candidates)
+            chosen.target_self = TARGET_FLAG.CORE
+            chosen.target_enemy = nil
+        end
 	end,
 }
 
@@ -53,14 +59,14 @@ local QDEF = QuestDef.Define
 {
     title = "Battle of Wits",
     desc = "To prove that nobody is smarter than {giver}, {giver} asks you to find someone who can defeat {giver.himher} in a battle of Grout Bog Flip 'Em.",
-    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/revenge_starving_worker.png"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/battle_of_wits.png"),
 
     qtype = QTYPE.SIDE,
 
     act_filter = DemocracyUtil.DemocracyActFilter,
     focus = QUEST_FOCUS.NEGOTIATION,
     tags = {"REQUEST_JOB"},
-    -- reward_mod = 0,
+    reward_mod = 0,
     can_flush = false,
 
     events = {
@@ -84,13 +90,13 @@ local QDEF = QuestDef.Define
     on_complete = function(quest)
         if not (quest.param.sub_optimal or quest.param.poor_performance) then
             quest:GetCastMember("giver"):OpinionEvent(OPINION.DID_LOYALTY_QUEST)
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 4, "COMPLETED_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 3, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 4, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 3, "COMPLETED_QUEST_REQUEST")
         elseif quest.param.sub_optimal then
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 4, "COMPLETED_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 3, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 4, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 3, "COMPLETED_QUEST_REQUEST")
         elseif quest.param.poor_performance then
             DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2, "POOR_QUEST")
             DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 4, "POOR_QUEST")
@@ -789,6 +795,7 @@ QDEF:AddConvo("go_to_game")
                     Thanks for the shills, though.
                 agent:
                     Get out of here before I change my mind.
+                challenger:
                     !exit
                 * You watch as {challenger} left run off quickly, not wanting to stay for the fallout.
 
@@ -904,6 +911,7 @@ QDEF:AddConvo("go_to_game")
                 :Dialog("DIALOG_ATTACK")
                 :Battle{
                     enemies = {"challenger"},
+                    noncombatants = {cxt.quest:GetCastMember("giver")},
                     on_win = function(cxt)
                         cxt:Dialog("DIALOG_ATTACK_WIN")
                         if cxt:GetAgent():IsDead() then
@@ -964,7 +972,8 @@ QDEF:AddConvo("go_to_game")
                     :Fn(function(cxt)
                         -- Spawn a followup.
                         if cxt:GetCastMember("giver"):GetContentID() == "ADVISOR_HOSTILE" then
-                            cxt.quest:SpawnFollowQuest(FOLLOW_UP.id)
+                            local new_quest = cxt.quest:SpawnFollowQuest(FOLLOW_UP.id)
+                            new_quest.extra_reward, new_quest.extra_reward_data = cxt.quest:GetExtraReward()
                             cxt.quest:Cancel()
                         else
                             cxt.quest:Complete()
@@ -1235,7 +1244,7 @@ FOLLOW_UP = QDEF:AddFollowup({
     },
     fill_out_quip_tags = function(quest, tags, agent)
         if agent == quest:GetCastMember("giver") then
-            table.insert_unique(tags, "dronumph_depressed")
+            table.insert_unique(tags, "depressed")
         end
     end,
 })
@@ -1372,6 +1381,7 @@ FOLLOW_UP:AddConvo("comfort", "giver")
             * It seems like your attempt to brighten {agent}'s mood has worsened the situation.
             * It's too late now. {agent} doesn't even want to talk to you.
         ]],
+        NEGOTIATION_REASON = "Comfort {agent}!",
     }
     :Hub(function(cxt)
         if not cxt.quest.param.tried_comfort then
@@ -1381,6 +1391,15 @@ FOLLOW_UP:AddConvo("comfort", "giver")
                     cxt:GetAgent():SetTempNegotiationBehaviour(DEPRESSION_BEHAVIOUR)
                 end)
                 :Negotiation{
+                    reason_fn = function(minigame) return cxt:GetLocString("NEGOTIATION_REASON") end,
+                    on_start_negotiation = function(minigame)
+                        local n = math.max(1, math.round( minigame.player_negotiator.agent.negotiator:GetCardCount() / 5 ))
+                        for k = 1, n do
+                            local card = Negotiation.Card( "console_opponent", minigame.player_negotiator.agent )
+                            card.show_dealt = true
+                            card:TransferCard(minigame:GetDrawDeck())
+                        end
+                    end,
                     -- This will be a special negotiation.
                     -- giver will start at low resolve, and you must bring their resolve to full to actually win the negotiation.
                     -- Winning negotiation without bringing up resolve, like using damage or oolo's requisition, has bad effect.
@@ -1398,10 +1417,12 @@ FOLLOW_UP:AddConvo("comfort", "giver")
                             -- We win legit
                             cxt:Dialog("DIALOG_COMFORT_SUCCESS")
                             cxt.quest:Complete()
+                            -- You will not get mettle award, because (1) screw mettle (2) we can't without modifying existing code, and I am not willing to screw up with existing code for mettle.
+                            ConvoUtil.GiveQuestRewards(cxt)
                             QDEF.on_complete(cxt.quest)
                             -- This will probably change dronumph's narcissist personality a little, as he accepts that there
                             -- are always people better than him, but that should not be a cause for his depression.
-                            cxt:GetAgent():Remember("ACCEPT_LIMITS")
+                            cxt:GetAgent():AddTag("accept_limits")
                             StateGraphUtil.AddEndOption(cxt)
                         else
                             cxt:Dialog("DIALOG_COMFORT_WIN")
