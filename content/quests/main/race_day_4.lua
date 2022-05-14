@@ -289,3 +289,131 @@ QDEF:AddConvo("starting_out", "primary_advisor")
 
                 end)
         end)
+
+QDEF:AddConvo("get_job")
+    :Loc{
+        OPT_GET_JOB = "Find a way to gather support...",
+        DIALOG_GET_JOB = [[
+            player:
+                !left
+                !thought
+                $neutralThoughtful
+                Here's what I can do...
+        ]],
+    }
+    :Hub_Location(function(cxt)
+        if not cxt.quest:GetCastMember("primary_advisor") then
+            cxt.quest:AssignCastMember("primary_advisor")
+        end
+        if not cxt.quest:GetCastMember("primary_advisor") then
+            cxt:Opt("OPT_GET_JOB")
+                :SetQuestMark()
+                :Fn( function(cxt)
+                    UIHelpers.DoSpecificConvo( nil, cxt.convodef.id, "STATE_GET_JOB" ,nil,nil,cxt.quest)
+                end )
+        end
+    end)
+    :State("STATE_GET_JOB")
+        :Loc{
+            DIALOG_GET_JOB = [[
+                player:
+                    !left
+                    !thought
+                    $neutralThoughtful
+                    Here's what I can do...
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_GET_JOB")
+            cxt:RunLoopingFn(function(cxt)
+                DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB")
+            end)
+        end)
+QDEF:AddConvo("get_job", "primary_advisor")
+    :Loc{
+        OPT_GET_JOB = "Discuss Job...",
+        DIALOG_GET_JOB = [[
+            agent:
+                !thought
+                $neutralThoughtful
+                Here's what we can do...
+        ]],
+    }
+    :Hub(function(cxt)
+        cxt:Opt("OPT_GET_JOB")
+            :SetQuestMark( cxt.quest )
+            :PostText("TT_SKIP_FREE_TIME")
+            :Dialog("DIALOG_GET_JOB")
+            :LoopingFn(function(cxt)
+                DemocracyUtil.TryMainQuestFn("OfferJobs", cxt, 3, "RALLY_JOB", true)
+            end)
+    end)
+QDEF:AddConvo("go_to_sleep", "primary_advisor")
+    :Loc{
+        DIALOG_GO_TO_SLEEP = [[
+            player:
+                Okay, I did all I can do.
+                I'll go to bed.
+            agent:
+                Alright. Good luck tomorrow.
+                Tomorrow is going to be a big day, I can feel it.
+            player:
+                !shrug
+                If you say so.
+            agent:
+                Well then, good night.
+                !exit
+        ]],
+        DIALOG_WAKE = [[
+            * According to {primary_advisor}, today is going to be a big day.
+            * You are not sure if you are excited or nervous.
+        ]],
+    }
+    :Hub(function(cxt)
+        cxt:Opt("OPT_SLEEP")
+            :PreIcon(global_images.sleep)
+            :Dialog("DIALOG_GO_TO_SLEEP")
+            :Fn(function(cxt)
+                local grog = cxt.location
+                cxt.encounter:DoLocationTransition( cxt.quest:GetCastMember("player_room") )
+                grog:SetPlax()
+
+                TheGame:FE():FindScreen( Screen.ConversationScreen ).character_music = nil
+                TheGame:GetMusic():StopCharacterMusic()
+
+                cxt:TalkTo()
+
+                ConvoUtil.DoSleep(cxt, "DIALOG_WAKE")
+
+                DemocracyUtil.DoAlphaMessage()
+
+                cxt:End()
+
+                if true then
+                    return
+                end
+
+                cxt.quest:Complete()
+
+                cxt:Opt("OPT_LEAVE")
+                    :MakeUnder()
+                    :Fn(function()
+                        cxt.encounter:DoLocationTransition( cxt.quest:GetCastMember("home") )
+                        cxt:End()
+                    end)
+
+            end)
+    end)
+    :AttractState("STATE_ATTRACT")
+        :Loc{
+            DIALOG_INTRO = [[
+                agent:
+                    A long day, isn't it?
+                    Wanna go to bed soon?
+                player:
+                    Not yet.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+        end)

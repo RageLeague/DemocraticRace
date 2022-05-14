@@ -46,7 +46,7 @@ local DAY_SCHEDULE = {
     {quest = "RACE_DAY_1", difficulty = 1, support_expectation = {0,10,25}},
     {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {25,40,55}},
     {quest = "RACE_DAY_3", difficulty = 3, support_expectation = {60,80,100}},
-    -- {quest = "RACE_DAY_4", difficulty = 4},
+    {quest = "RACE_DAY_4", difficulty = 4, support_expectation = {110,135,160}},
     -- {quest = "RACE_DAY_5", difficulty = 5},
 }
 local MAX_DAYS = #DAY_SCHEDULE-- 5
@@ -82,6 +82,8 @@ local QDEF = QuestDef.Define
     qtype = QTYPE.STORY,
     desc = "Become the president as you run a democratic campaign.",
     icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/main_icon.png"),
+
+    act_filter = "SAL_DEMOCRATIC_RACE",
 
     max_day = MAX_DAYS,
     get_narrative_progress = function(quest)
@@ -177,15 +179,14 @@ local QDEF = QuestDef.Define
 
         -- TheGame:GetGameState():GetPlayerAgent().graft_owner:AddGraft(GraftInstance("democracy_resolve_limiter"))
 
-        QuestUtil.StartDayQuests(DAY_SCHEDULE, quest)
-
         if quest.param.start_on_day and quest.param.start_on_day >= 2 then
             quest:AssignCastMember("primary_advisor", quest:GetCastMember(quest.param.force_advisor_id or table.arraypick(copykeys(DemocracyUtil.ADVISOR_IDS))))
             print(quest:GetCastMember("primary_advisor"))
             print(quest:GetCastMember("home"))
             print(quest:GetCastMember("player_room"))
             QuestUtil.SpawnQuest("RACE_LIVING_WITH_ADVISOR")
-            quest:DefFn("DeltaGeneralSupport", (quest.param.init_support_level or 0) * (quest.param.start_on_day - 1))
+            quest:DefFn("DeltaGeneralSupport", quest:DefFn("GetCurrentExpectation", quest.param.start_on_day))
+            quest.param.enable_support_screen = true
         end
 
         QuestUtil.SpawnQuest("CAMPAIGN_SHILLING")
@@ -226,7 +227,7 @@ local QDEF = QuestDef.Define
         end
 
         -- DBG(population_count)
-
+        QuestUtil.StartDayQuests(DAY_SCHEDULE, quest)
         QuestUtil.DoNextDay(DAY_SCHEDULE, quest, quest.param.start_on_day )
         quest:DefFn("on_post_load")
         DoAutoSave()
@@ -954,15 +955,15 @@ local QDEF = QuestDef.Define
 
         DemocracyUtil.SendMetricsData("STORY_PROGRESS", METRIC_DATA)
     end,
-    GetCurrentExpectationArray = function(quest)
-        return DAY_SCHEDULE[math.min(#DAY_SCHEDULE, quest.param.day or 1)].support_expectation
+    GetCurrentExpectationArray = function(quest, day)
+        return DAY_SCHEDULE[math.min(#DAY_SCHEDULE, day or quest.param.day or 1)].support_expectation
     end,
-    GetCurrentExpectation = function(quest)
-        local arr = quest:DefFn("GetCurrentExpectationArray")
+    GetCurrentExpectation = function(quest, day)
+        local arr = quest:DefFn("GetCurrentExpectationArray", day)
         return math.round(arr[math.min(#arr, quest.param.sub_day_progress or 1)] * DemocracyUtil.GetModSetting("support_requirement_multiplier")) -- - 100
     end,
-    GetDayEndExpectation = function(quest)
-        local arr = quest:DefFn("GetCurrentExpectationArray")
+    GetDayEndExpectation = function(quest, day)
+        local arr = quest:DefFn("GetCurrentExpectationArray", day)
         return math.round(arr[#arr] * DemocracyUtil.GetModSetting("support_requirement_multiplier"))
     end,
     GetStanceIntel = function(quest)

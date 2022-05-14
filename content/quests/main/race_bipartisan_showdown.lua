@@ -15,9 +15,9 @@ local QDEF = QuestDef.Define
     end,
 
     postcondition = function(quest)
-        local parent_quest = cxt.quest.param.parent_quest
+        local parent_quest = quest.param.parent_quest
         if parent_quest then
-            cxt.quest.param.previous_bad_debate = parent_quest.param.previous_bad_debate
+            quest.param.previous_bad_debate = parent_quest.param.previous_bad_debate
         end
         local valid_candidates = {}
         for id, data in pairs(DemocracyConstants.opposition_data) do
@@ -31,7 +31,7 @@ local QDEF = QuestDef.Define
             -- How did you even get to this point?
         else
             quest:AssignCastMember("opponent", TheGame:GetGameState():GetMainQuest():GetCastMember(valid_candidates[1]))
-            if #valid_candidates >= 2 and cxt.quest.param.previous_bad_debate then
+            if #valid_candidates >= 2 and quest.param.previous_bad_debate then
                 quest:AssignCastMember("secondary_opponent", TheGame:GetGameState():GetMainQuest():GetCastMember(valid_candidates[2]))
             end
         end
@@ -395,6 +395,10 @@ QDEF:AddConvo("do_debate")
         :Loc{
             DIALOG_INTRO = [[
                 * [p] You see your opponent.
+                player:
+                    !left
+                opponent:
+                    !right
                 * You have some choice of words with {opponent}.
                 opponent:
                     %pre_dual_argument
@@ -415,7 +419,7 @@ QDEF:AddConvo("do_debate")
             cxt:TalkTo("opponent")
             cxt:Dialog("DIALOG_INTRO")
             cxt:GetCastMember("opponent"):OpinionEvent(OPINION.DISLIKE_IDEOLOGY_II)
-            local RESOLVE = {70, 100, 120, 140}
+            local RESOLVE = {60, 90, 110, 130}
             local resolve_required = RESOLVE[GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY )]
 
             cxt:Opt("OPT_DEBATE")
