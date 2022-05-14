@@ -795,7 +795,23 @@ local QDEF = QuestDef.Define
             quest.param.opposition_support[agent] = (quest.param.opposition_support[agent] or 0) + delta
         end
     end,
-
+    GetOppositionViability = function(quest, agent)
+        if type(agent) == "table" then
+            agent = DemocracyUtil.GetOppositionID(agent)
+        end
+        if agent then
+            local faction = DemocracyConstants.opposition_data[agent].main_supporter
+            return quest:DefFn("GetOppositionSupport", agent) - (quest.param.faction_support[faction] or 0)
+        end
+    end,
+    IsCandidateInRace = function(quest, agent)
+        quest.param.quitted_candidates = quest.param.quitted_candidates or {}
+        return DemocracyUtil.GetOppositionID(agent) and not table.arraycontains(quest.param.quitted_candidates, agent)
+    end,
+    DropCandidate = function(quest, agent)
+        quest.param.quitted_candidates = quest.param.quitted_candidates or {}
+        table.insert_unique(quest.param.quitted_candidates, agent)
+    end,
     -- At certain points in the story, random people dislikes you for no reason.
     -- call this function to do so.
     DoRandomOpposition = function(quest, num_to_do)
