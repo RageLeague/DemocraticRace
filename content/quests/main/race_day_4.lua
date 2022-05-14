@@ -129,7 +129,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             player:
                 Yeah, what else is new?
             agent:
-            {previous_good_debate?
+            {not previous_bad_debate?
                 Your performance yesterday shows that you are a very capable candidate.
                 As such, you are invited to tonight's one-on-one debate against another candidate.
             player:
@@ -138,7 +138,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 I don't know. I guess wait until tonight to find out.
                 Make sure you are prepared for that.
             }
-            {not previous_good_debate?
+            {previous_bad_debate?
                 There is supposedly a one-on-one debate between two candidates today.
                 However, I haven't received any invitations for us.
             player:
@@ -172,6 +172,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
     }
     :Fn(function(cxt)
         -- Generate advisor favor
+        cxt.quest.param.previous_bad_debate = TheGame:GetGameState():GetMainQuest() and (TheGame:GetGameState():GetMainQuest().param.good_debate_scrum == false)
         do
             cxt.enc.scratch.advisor_favor = cxt:GetCastMember("primary_advisor")
                 and cxt:GetCastMember("primary_advisor"):GetRelationship() == RELATIONSHIP.LIKED

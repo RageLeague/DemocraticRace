@@ -791,7 +791,9 @@ local QDEF = QuestDef.Define
         if type(agent) == "table" then
             agent = DemocracyUtil.GetOppositionID(agent)
         end
-        quest.param.opposition_support[agent] = (quest.param.opposition_support[agent] or 0) + delta
+        if agent then
+            quest.param.opposition_support[agent] = (quest.param.opposition_support[agent] or 0) + delta
+        end
     end,
 
     -- At certain points in the story, random people dislikes you for no reason.
