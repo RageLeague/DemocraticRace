@@ -320,14 +320,15 @@ local QDEF = QuestDef.Define
             local support_delta = DELTA_SUPPORT[new_rel] - DELTA_SUPPORT[old_rel]
 
             if support_delta ~= 0 then
-                local opposition_data = DemocracyUtil.GetOppositionData(agent)
-                if opposition_data then
-                    quest:DefFn("DeltaGeneralSupport", (new_rel - old_rel) * 8, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE")
-                    quest:DefFn("DeltaGroupFactionSupport", opposition_data.faction_support, new_rel - old_rel, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE" )
-                    quest:DefFn("DeltaGroupWealthSupport", opposition_data.wealth_support, new_rel - old_rel, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE" )
-                else
-                    quest:DefFn("DeltaAgentSupport", math.floor(support_delta / 3), support_delta, agent, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
-                end
+                -- local opposition_data = DemocracyUtil.GetOppositionData(agent)
+                -- if opposition_data then
+                --     quest:DefFn("DeltaGeneralSupport", (new_rel - old_rel) * 8, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE")
+                --     quest:DefFn("DeltaGroupFactionSupport", opposition_data.faction_support, new_rel - old_rel, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE" )
+                --     quest:DefFn("DeltaGroupWealthSupport", opposition_data.wealth_support, new_rel - old_rel, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE" )
+                -- else
+                --
+                -- end
+                quest:DefFn("DeltaAgentSupport", math.floor(support_delta / 3), support_delta, agent, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
             end
             -- if new_rel == RELATIONSHIP.LOVED and old_rel ~= RELATIONSHIP.LOVED then
             --     TheGame:GetGameState():GetCaravan():DeltaMaxResolve(1)
