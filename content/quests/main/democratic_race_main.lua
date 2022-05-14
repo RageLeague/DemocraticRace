@@ -806,6 +806,9 @@ local QDEF = QuestDef.Define
     end,
     IsCandidateInRace = function(quest, agent)
         quest.param.quitted_candidates = quest.param.quitted_candidates or {}
+        if type(agent) == "string" then
+            agent = quest:GetCastMember(agent)
+        end
         return DemocracyUtil.GetOppositionID(agent) and not agent:IsRetired() and not table.arraycontains(quest.param.quitted_candidates, agent)
     end,
     DropCandidate = function(quest, agent)
