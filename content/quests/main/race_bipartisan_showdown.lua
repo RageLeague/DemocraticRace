@@ -396,6 +396,8 @@ QDEF:AddConvo("do_debate")
             DIALOG_INTRO = [[
                 * [p] You see your opponent.
                 * You have some choice of words with {opponent}.
+                opponent:
+                    %pre_dual_argument
                 * They hate you, and now it's time for you to debate.
             ]],
             OPT_DEBATE = "Debate!",
@@ -413,11 +415,20 @@ QDEF:AddConvo("do_debate")
             cxt:TalkTo("opponent")
             cxt:Dialog("DIALOG_INTRO")
             cxt:GetCastMember("opponent"):OpinionEvent(OPINION.DISLIKE_IDEOLOGY_II)
+            local RESOLVE = {70, 100, 120, 140}
+            local resolve_required = RESOLVE[GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY )]
+
             cxt:Opt("OPT_DEBATE")
                 :Negotiation{
-
+                    suppressed = cxt.quest.param.party_pets,
+                    difficulty = 5,
+                    flags = NEGOTIATION_FLAGS.WORDSMITH,
+                    enemy_resolve_required = resolve_required,
+                    on_start_negotiation = function(minigame)
+                    end,
                 }:OnSuccess()
                     :Dialog("DIALOG_DEBATE_SUCCESS")
+                    :CompleteQuest()
                     :DoneConvo()
                 :OnFailure()
                     :Dialog("DIALOG_DEBATE_FAILURE")

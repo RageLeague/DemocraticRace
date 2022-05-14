@@ -18,7 +18,7 @@ local QDEF = QuestDef.Define
 }
 :AddSubQuest{
     id = "do_debate",
-    quest_id = "RACE_DEBATE_SCRUM",
+    quest_id = "RACE_BIPARTISAN_SHOWDOWN",
     -- mark = {"primary_advisor"},
     on_activate = function(quest)
         UIHelpers.PassTime(DAY_PHASE.NIGHT)
