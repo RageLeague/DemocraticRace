@@ -12,6 +12,9 @@ local QDEF = QuestDef.Define
 
     on_destroy = function(quest)
         quest:GetCastMember("primary_advisor"):GetBrain():SendToWork()
+        if quest.param.parent_quest then
+            quest.param.parent_quest.param.did_final_debate = true
+        end
     end,
 
     postcondition = function(quest)

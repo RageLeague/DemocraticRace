@@ -355,18 +355,15 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                 Okay, I did all I can do.
                 I'll go to bed.
             agent:
-                Alright. Good luck tomorrow.
-                Tomorrow is going to be a big day, I can feel it.
-            player:
-                !shrug
-                If you say so.
-            agent:
-                Well then, good night.
+                Alright.
+                Tomorrow is the big day. That's when the voting happens.
+                Sleep well. There will be a lot of work tomorrow.
                 !exit
         ]],
         DIALOG_WAKE = [[
-            * According to {primary_advisor}, today is going to be a big day.
-            * You are not sure if you are excited or nervous.
+            * Today is voting day. Havarians will be swarming the voting booths.
+            * Havaria's future will be decided today, one way or another.
+            * I hope you are ready.
         ]],
     }
     :Hub(function(cxt)
@@ -410,8 +407,6 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                 agent:
                     A long day, isn't it?
                     Wanna go to bed soon?
-                player:
-                    Not yet.
             ]],
         }
         :Fn(function(cxt)
