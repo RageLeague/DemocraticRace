@@ -93,7 +93,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
                 !hips
                 Y'know, most voters don't choose the president because they like them.
                 They do it to keep the other people out of office.
-                !wring
+                !handwring
                 How would you like to do some political mud slinging?
         ]],
     }
@@ -166,7 +166,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
                 !give
                 This is a potent story you've got here. It'd be a shame if it got out.
             player:
-                !wring
+                !handwring
                 Yes, a shame indeed.
             }
         ]],
