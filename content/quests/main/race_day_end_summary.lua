@@ -245,7 +245,7 @@ QDEF:AddConvo("summary", "primary_advisor")
             local rank = CalculateRank(cxt)
 
             cxt.enc.scratch.loved = cxt:GetAgent():GetRelationship() == RELATIONSHIP.LOVED
-            cxt.enc.scratch.general_support_good = general_support > expectation
+            cxt.enc.scratch.general_support_good = DemocracyUtil.GetGeneralSupport() > DemocracyUtil.GetCurrentExpectation()
             cxt:Quip(
                 cxt:GetAgent(),
                 "summary_banter",
@@ -298,6 +298,7 @@ QDEF:AddConvo("summary", "primary_advisor")
                 cxt:GoTo("STATE_FAILURE")
             else
                 -- cxt:GoTo("STATE_PAY")
+                cxt.quest:Complete("summary")
                 cxt.quest:Activate("ask_pay")
             end
         end)
