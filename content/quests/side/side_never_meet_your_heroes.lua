@@ -118,7 +118,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
                 !shrug
                 If you say so.
                 Now, if we want to defame {target}, we need to show the people what kind of person {target} truly is.
-                {not can_manipulate_truth and not white_lier?
+                {not can_manipulate_truth and not white_liar?
                     !point
                     Doesn't necessarily have to be true. We just need to get the word out.
                 }
@@ -126,7 +126,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
                     !thought
                     After all, if people believe it's true, then to the world, it might as well be true!
                 }
-                {not can_manipulate_truth and white_lier?
+                {not can_manipulate_truth and white_liar?
                     !handwring
                     The masses love a juicy gossip, so let's tell them what they want to hear!
                 }

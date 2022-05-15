@@ -660,7 +660,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                             cxt.quest.extra_reward_data = "white_lie"
                             cxt.quest:Complete()
                             ConvoUtil.GiveQuestRewards(cxt)
-                            cxt:GetCastMember("giver"):AddTag("white_lier")
+                            cxt:GetCastMember("giver"):AddTag("white_liar")
                             cxt:Dialog("DIALOG_BENNI_INTERFERE_PST")
                         else
                             cxt:Dialog("DIALOG_NO_INTERFERE")
