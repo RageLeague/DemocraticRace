@@ -36,7 +36,7 @@ local QDEF = QuestDef.Define
         return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and TheGame:GetGameState():GetMainQuest().param.day >= 2
     end,
     GenerateRumor = function(quest)
-        local chosen = math.random(1,7)
+        local chosen = math.random(1,5)
         return quest:GetLocalizedStr("RUMOR_" .. chosen)
     end,
 }
@@ -50,8 +50,6 @@ local QDEF = QuestDef.Define
     RUMOR_3 = "{target} supports Rentoria's invasion against Havaria.",
     RUMOR_4 = "{target}'s parents bought {target}'s way into a position of power.",
     RUMOR_5 = "{target} wants to meddle with the election.",
-    RUMOR_6 = "{target} likes spineapples on {target.hisher} pizza.",
-    RUMOR_7 = "{target} doesn't likes the word butt.",
 }
 :AddObjective{
     id = "spread_rumor",
@@ -122,15 +120,15 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
                 Now, if we want to defame {target}, we need to show the people what kind of person {target} truly is.
                 {not can_manipulate_truth and not white_lier?
                     !point
-                    Doesn't neccesarily have to be true. We just need to get the word out.
+                    Doesn't necessarily have to be true. We just need to get the word out.
                 }
                 {can_manipulate_truth?
                     !thought
-                    After all, if enough people think it's true, then {target} might as well have already done it!
+                    After all, if people believe it's true, then to the world, it might as well be true!
                 }
                 {not can_manipulate_truth and white_lier?
-                    !wring
-                    Juicy gossip like that oughta rile them up. They'll know who to vote for when their favorite candidate is caught in a scandal.
+                    !handwring
+                    The masses love a juicy gossip, so let's tell them what they want to hear!
                 }
                 !give
                 Now, <i>what</> that terrible something is, I'll leave up to you.
@@ -138,11 +136,29 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
         DIALOG_TARGET_PST = [[
             * {agent} carefully reads what you've just wrote.
             {advisor_diplomacy?
+            * Then, {agent} hands the note back to you.
             agent:
-                Oh my. I knew {target} was a normie but I wasn't expecting {target.himher} to be this Speech 0.
-                !give
-                You've got some really cringe material here. {target} won't know what hit {target.himher}.
+                Wow, that was certainly a cringe thing for {target} to do, huh?
+                You are going to be so based revealing this information to the world.
             }
+            {not advisor_diplomacy?
+            agent:
+                !sigh
+            * Then, {agent.heshe} gives up.
+            agent:
+                Man, you really need to work on your handwriting.
+                I don't think whatever you wrote is even Havarian.
+            player:
+                !crossed
+                Hey! That's uncalled for.
+            agent:
+                !sigh
+                I'm sure whatever you wrote is at least a good enough rumor to hopefully sow doubts in the voter base.
+            }
+        ]],
+        -- Might use this later
+        DIALOG_TARGET_PST_HAVARIAN = [[
+            * {agent} carefully reads what you've just wrote.
             {not advisor_diplomacy?
             agent:
                 !chuckle
@@ -158,11 +174,12 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
             * {agent} glances over the blank card you wrote on.
             agent:
                 !hips
-                I wasn't expecting nothing. 
-                Have a little fun with it, write something stupid.
-                !give
-                Like this, here.
-                {1}.
+                I wasn't expecting nothing.
+                !think
+                Okay... Let me think of a believable rumor.
+                !eureka
+                Oh! I got this.
+                {1}
             player:
                 !chuckle
                 Ooh, that's a good one.
@@ -178,7 +195,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
         ]],
 
         POPUP_TITLE = "Make a scandal!",
-        POPUP_SUBTITLE = "Write something down that might be condemning to {target}!",
+        POPUP_SUBTITLE = "Write something down that might be condemning to {target}! Use full sentence, including punctuations.",
     }
     :State("START")
         :Fn(function(cxt)
@@ -228,7 +245,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
                 I just had these clothes dry-cleaned, after all.
             agent:
                 !intrigue
-                Wait, are you and I talking about the same type of mud slinging?
+                Wait, are we talking about the same type of mud slinging?
             player:
                 !thought
                 I'm pretty sure. I just don't want to get covered in mud.
@@ -288,7 +305,7 @@ QDEF:AddConvo("spread_rumor")
                 Maybe I am, maybe I'm not. What about it?
             player:
                 !chuckle
-                Oh, I'm sure you won't be once you hear this about {target};
+                Oh, I'm sure you won't be once you hear this about {target}.
             }
             {not is_supporter?
             player:
@@ -305,7 +322,7 @@ QDEF:AddConvo("spread_rumor")
         ]],
         DIALOG_CONVINCE_SUCCESS = [[
             player:
-                It all lines up, doesn't it? {target}'s guilty as hell!
+                It all lines up, doesn't it? {target}'s guilty as Hesh!
             agent:
             {is_supporter?
                 !spit
@@ -317,7 +334,7 @@ QDEF:AddConvo("spread_rumor")
             }
                 Thanks for showing me what kind of person {target} truly is.
             * You've got one more person moving your gossip around their faction.
-            * {target}'s reputation is defintely going to be stained after this.
+            * {target}'s reputation is definitely going to be stained after this.
         ]],
         DIALOG_CONVINCE_FAILURE = [[
             agent:
@@ -444,13 +461,13 @@ QDEF:AddConvo("out_of_time", "primary_advisor")
                 !bashful
                 Well, I thought my wordcraft and ability to move the rumor mill was impeccable.
             {failed_once?
-                But my silver coated tounge couldn't convince the first person I talked to.
+                But my silver coated tongue couldn't convince the first person I talked to.
             agent:
                 !palm
                 So the rumor's dead in the water? Great.
             }
             {not failed_once?
-                !scaredshrug
+                !scared_shrug
                 But it turns out that thought-beam tech is pretty far off in the future. Who knew, right?
             agent:
                 !angry
@@ -487,17 +504,17 @@ QDEF:AddConvo("out_of_time", "primary_advisor")
                 !happy
                 Yes, yes! Enough factions dispersing the rumor will give it a lot of credibility.
                 !thought
-                I can already see it now. A night down at the Slurping Snail, and the thought on everyone's mind, on the tip of every tounge.
-                "{2}".
+                I can already see it now. A night down at the Slurping Snail, and the thought on everyone's mind, on the tip of every tongue.
+                "{2}"
             }
             {failed_once?
                 Although there is a dissenter among them. Don't know how much that'll impact it's credibility.
             agent:
                 !wave
-                That oughta be fine. One or two people who don't believe it won't hurt the rumor too much. 
+                That oughta be fine. One or two people who don't believe it won't hurt the rumor too much.
                 !thought
                 Just think, everyone will be talking about it. {target} won't be able to escape such a powerful rumor that...
-                {2}.
+                {2}
             }
         ]],
     }
