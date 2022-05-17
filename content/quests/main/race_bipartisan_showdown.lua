@@ -155,6 +155,13 @@ local QDEF = QuestDef.Define
     on_complete = function(quest)
     end,
 }
+:AddOpinionEvents{
+    interrupted_event =
+    {
+        delta = OPINION_DELTAS.DIMINISH,
+        txt = "Rudely interrupted their event",
+    },
+}
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 DemocracyUtil.AddHomeCasts(QDEF)
 
@@ -442,4 +449,82 @@ QDEF:AddConvo("do_debate")
                     :Fn(function(cxt)
                         DemocracyUtil.AddAutofail(cxt, false)
                     end)
+        end)
+QDEF:AddConvo("do_debate_double")
+    :ConfrontState("STATE_CONFRONT", function(cxt) return cxt.location == cxt.quest:GetCastMember("theater") end)
+        :Loc{
+            DIALOG_INTRO = [[
+                * [p] You see your opponents.
+                secondary_opponent:
+                    !left
+                opponent:
+                    !right
+                * Looks like the debate is about to start.
+                * You object, surprising everyone.
+                * The host is pretty annoyed you disrupted the debate.
+                * But this isn't about the host, it's about the two candidates who took your spotlight.
+            ]],
+            OPT_DEBATE = "Debate {1#agent}",
+            DIALOG_DEBATE = [[
+                player:
+                    !left
+                opponent:
+                    !right
+                * [p] You address {opponent}.
+                * {opponent} hates you.
+                * {secondary_opponent} gets annoyed of you for taking {secondary_opponent.hisher} spotlight, so {secondary_opponent.heshe} heckles you!
+            ]],
+            DIALOG_DEBATE_SUCCESS = [[
+                * [p] Cool, you won the debate.
+                * But in truth, in the end, nobody won.
+                * Nobody learned anything about you or your opponent other than you can argue well.
+            ]],
+            DIALOG_DEBATE_FAILURE = [[
+                * [p] You get very agitated and break down on the stand.
+                * You lose!
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+
+            cxt:GetCastMember("host"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("interrupted_event"))
+
+            local function CreateDebateOption(opponent, other_opponent)
+
+                local RESOLVE = {60, 90, 110, 130}
+                local resolve_required = RESOLVE[GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY )]
+
+                cxt:Opt("OPT_DEBATE", opponent)
+                    :Fn(function(cxt)
+                        cxt.quest:UnassignCastMember("opponent")
+                        cxt.quest:UnassignCastMember("secondary_opponent")
+                        cxt.quest:AssignCastMember("opponent", opponent)
+                        cxt.quest:AssignCastMember("secondary_opponent", other_opponent)
+
+                        cxt:TalkTo("opponent")
+                    end)
+                    :Dialog("DIALOG_DEBATE")
+                    :ReceiveOpinion(OPINION.DISLIKE_IDEOLOGY_II, nil, opponent)
+                    :Negotiation{
+                        target_agent = opponent,
+                        hinders = { other_opponent },
+                        suppressed = cxt.quest.param.party_pets,
+                        difficulty = 5,
+                        flags = NEGOTIATION_FLAGS.WORDSMITH,
+                        enemy_resolve_required = resolve_required,
+                        on_start_negotiation = function(minigame)
+                        end,
+                    }:OnSuccess()
+                        :Dialog("DIALOG_DEBATE_SUCCESS")
+                        :CompleteQuest()
+                        :DoneConvo()
+                    :OnFailure()
+                        :Dialog("DIALOG_DEBATE_FAILURE")
+                        :Fn(function(cxt)
+                            DemocracyUtil.AddAutofail(cxt, false)
+                        end)
+            end
+
+            CreateDebateOption(cxt:GetCastMember("opponent"), cxt:GetCastMember("secondary_opponent"))
+            CreateDebateOption(cxt:GetCastMember("secondary_opponent"), cxt:GetCastMember("opponent"))
         end)
