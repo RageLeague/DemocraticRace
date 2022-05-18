@@ -4,7 +4,7 @@ A pioneer campaign mod for Griftlands, the Democratic Race is a mod for Griftlan
 
 This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
-Version: 0.7.0(Alpha)
+Version: 0.7.1(Alpha)
 
 Author: RageLeague
 
@@ -103,6 +103,12 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Flange Finnegan
 
 [h2]Changelog[/h2]
+
+[h3]0.7.1[/h3]
+
+* Fixed softlock when you get a new advisor during the summary.
+* Updated dialog for Never Meet Your Heroes.
+* Fixed typo for a character tag.
 
 [h3]0.7.0 (World Update)[/h3]
 
