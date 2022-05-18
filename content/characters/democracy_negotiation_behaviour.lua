@@ -87,6 +87,30 @@ local NEW_BEHAVIOURS = {
             self.modifier_picker:ChooseCards(additional_questions)
         end,
     },
+    MURDER_BAY_ADMIRALTY_CONTACT =
+    {
+        OnInitDemocracy = function(self, old_init, ...)
+            return old_init(self, ...)
+        end,
+    },
+    SPARK_CONTACT =
+    {
+        OnInitDemocracy = function(self, old_init, ...)
+            return old_init(self, ...)
+        end,
+    },
+    KALANDRA =
+    {
+        OnInitDemocracy = function(self, old_init, ...)
+            return old_init(self, ...)
+        end,
+    },
+    ANDWANETTE =
+    {
+        OnInitDemocracy = function(self, old_init, ...)
+            return old_init(self, ...)
+        end,
+    },
 }
 
 for id, data in pairs(NEW_BEHAVIOURS) do
