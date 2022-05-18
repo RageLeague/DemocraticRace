@@ -20,11 +20,29 @@ local QDEF = QuestDef.Define
     desc = "Finish the summary with the new advisor.",
     mark = {"primary_advisor"},
 }
+:AddObjective{
+    id = "ask_pay",
+    title = "Ask for pay",
+    desc = "Ask your advisor for the campaign funding of the day.",
+    mark = {"primary_advisor"},
+}
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 
 local RANKS = {
     "S","A","B","C","D","F"
 }
+
+local function CalculateRank(cxt)
+    local general_support = DemocracyUtil.GetGeneralSupport()
+    local agent_support = DemocracyUtil.GetSupportForAgent(cxt:GetAgent())
+    local support_level = general_support * .75 + agent_support * .25
+    local expectation = DemocracyUtil.GetCurrentExpectation()
+    local delta = support_level - expectation
+
+
+    local RANGE = 5 + 5 * cxt.quest:GetRank()
+    return clamp( math.round((RANGE * #RANKS / 2 - delta) / RANGE) ,1, #RANKS)
+end
 
 QDEF:AddConvo("summary", "primary_advisor")
     :AttractState("STATE_SUMMARY")
@@ -224,17 +242,10 @@ QDEF:AddConvo("summary", "primary_advisor")
             -- the idea here is that the advisor check how much they support you
             -- instead of the general public to further their agenda
             -- but the bias would be too obvious
-            local general_support = DemocracyUtil.GetGeneralSupport()
-            local agent_support = DemocracyUtil.GetSupportForAgent(cxt:GetAgent())
-            local support_level = general_support * .75 + agent_support * .25
-            local expectation = DemocracyUtil.GetCurrentExpectation()
-            local delta = support_level - expectation
-
-            local RANGE = 5 + 5 * cxt.quest:GetRank()
-            local rank = clamp( math.round((RANGE * #RANKS / 2 - delta) / RANGE) ,1, #RANKS)
+            local rank = CalculateRank(cxt)
 
             cxt.enc.scratch.loved = cxt:GetAgent():GetRelationship() == RELATIONSHIP.LOVED
-            cxt.enc.scratch.general_support_good = general_support > expectation
+            cxt.enc.scratch.general_support_good = DemocracyUtil.GetGeneralSupport() > DemocracyUtil.GetCurrentExpectation()
             cxt:Quip(
                 cxt:GetAgent(),
                 "summary_banter",
@@ -243,16 +254,6 @@ QDEF:AddConvo("summary", "primary_advisor")
                 cxt.enc.scratch.loved and "loved"
             )
             cxt:Dialog("DIALOG_INTRO")
-            -- for rank, data in pairs(RANKS) do
-            --     if (not data.min or delta >= data.min) and (not data.max or delta <= data.max) then
-
-            --         cxt:Dialog("DIALOG_" .. rank)
-            --         if not cxt.enc.scratch.loved then
-            --             cxt:GetAgent():OpinionEvent(OPINION["SUPPORT_EXPECTATION_" .. rank])
-            --         end
-            --         break
-            --     end
-            -- end
             cxt:Wait()
             TheGame:FE():InsertScreen( DemocracyClass.Screen.SupportScreen(nil, function(screen)
                 cxt.enc:ResumeEncounter()
@@ -296,7 +297,9 @@ QDEF:AddConvo("summary", "primary_advisor")
             if cxt:GetAgent():GetRelationship() == RELATIONSHIP.HATED then
                 cxt:GoTo("STATE_FAILURE")
             else
-                cxt:GoTo("STATE_PAY")
+                -- cxt:GoTo("STATE_PAY")
+                cxt.quest:Complete("summary")
+                cxt.quest:Activate("ask_pay")
             end
         end)
     :State("STATE_FAILURE")
@@ -361,129 +364,173 @@ QDEF:AddConvo("summary", "primary_advisor")
                     TheGame:GetGameState():GetOptions().is_custom_mode = true
                 end)
                 :Dialog("DIALOG_LAST_CHANCE")
-                :GoTo("STATE_PAY")
+                :ActivateQuest("ask_pay")
+                -- :GoTo("STATE_PAY")
             -- DemocracyUtil.AddAutofail(cxt, function(cxt)
             --     cxt:Dialog("DIALOG_LAST_CHANCE")
             --     cxt:GoTo("STATE_PAY")
             -- end)
         end)
-    :State("STATE_PAY")
+QDEF:AddConvo("ask_pay", "primary_advisor")
+    -- :State("STATE_PAY")
+    :Loc{
+        OPT_ASK_FOR_PAY = "Ask for pay",
+        DIALOG_PAY = [[
+            agent:
+                !permit
+                Here's your pay of the day.
+                Spend it wisely.
+        ]],
+        DIALOG_PAY_PST = [[
+            player:
+                !take
+                Thanks.
+            agent:
+                You still have some free time.
+                Go to bed when you're ready.
+        ]],
+        OPT_BETTER_DEAL = "<b>[{1#graft}]</b> Negotiate for more funding...",
+        DIALOG_PRE_NEGOTIATE = [[
+            player:
+                This is clearly not enough funding.
+                I know you pocketed some extra money. We can't have that if we want to win.
+        ]],
+        DIALOG_SUCCESS_NO_BONUS = [[
+            agent:
+                Cool story.
+                I would have given you extra funding for the campaign, if I had any.
+                But I don't, so you get nothing extra.
+        ]],
+        DIALOG_SUCCESS = [[
+            agent:
+                Fine. Seems like you really do need some extra help from me.
+                I'll give you an extra {1#money}. Straight out of my pocket to help your campaign.
+            player:
+                !happy
+                Right, <i>your</> pocket.
+            agent:
+                I wonder what you will do without me.
+        ]],
+        DIALOG_FAILURE = [[
+            agent:
+                !angry
+                What, you think shills grow on trees?
+                If you want more funding, you should've gotten more support instead of asking for handouts!
+                !neutral
+        ]],
+        NEGOTIATION_REASON = "Convince {agent} to pay you more (will gain {1#money} on win)",
+    }
+    :Hub(function(cxt)
+        cxt:Opt("OPT_ASK_FOR_PAY")
+            :PreIcon( global_images.hire )
+            :SetQuestMark(cxt.quest)
+            :Fn(function(cxt)
+                cxt:Dialog("DIALOG_PAY")
+                local money = DemocracyUtil.TryMainQuestFn("CalculateFunding")
+                local haggle_count = cxt.player.graft_owner:CountGraftsByID( "haggle_badge" )
+                cxt.enc:GainMoney(money)
+                cxt:Dialog("DIALOG_PAY_PST")
+                cxt.quest:Complete()
+                if haggle_count > 0 then
+                    local won_bonuses = {10} --give a default 10 shills.
+
+                    cxt:Opt("OPT_BETTER_DEAL", "haggle_badge" )
+                        --:PostText( "OPT_BETTER_DEAL_TT", math.round(BONUS_PERCENT*quest.param.rewards), math.round((1+BONUS_PERCENT)*quest.param.rewards) )
+                        -- :SetQuestMark(quest)
+                        :Dialog("DIALOG_PRE_NEGOTIATE")
+                        :Fn(function()
+                            -- quest.param.has_tried_to_negotiate_better_reward = true
+                        end)
+                        :Negotiation{
+                            on_start_negotiation = function(minigame)
+
+                                local amounts = {}
+                                local val = money
+                                table.insert(amounts, math.ceil( val*math.randomGauss(.1, .2 )))
+                                for i = 1, haggle_count do
+                                    table.insert(amounts, math.ceil( val*math.randomGauss(.15, .25) ))
+                                    table.insert(amounts, math.ceil( val*math.randomGauss(.2, .35) ))
+                                end
+
+                                for k,amt in ipairs(amounts) do
+                                    local mod = minigame.opponent_negotiator:CreateModifier( "bonus_payment", amt )
+                                    mod.result_table = won_bonuses
+                                end
+                            end,
+                            flags = NEGOTIATION_FLAGS.NO_AUTOFAIL,
+                            --reason = "NEGOTIATION_REASON",
+
+                            reason_fn = function(minigame)
+                                local total_amt = 0
+                                for k,v in pairs(won_bonuses) do
+                                    total_amt = total_amt + v
+                                end
+                                return loc.format(cxt:GetLocString("NEGOTIATION_REASON"), total_amt )
+                            end,
+
+                            enemy_resolve_required = 10 * cxt.quest:GetRank(),
+
+                            -- difficulty = quest:GetRank(),
+                            on_success = function()
+                                local total_bonus = 0
+                                for k,v in ipairs(won_bonuses) do
+                                    total_bonus = total_bonus + v
+                                end
+
+                                -- quest.param.reward_negotiated_bonus = total_bonus
+                                -- quest:VerifyRewards()
+                                cxt.enc:GainMoney(total_bonus)
+                                if total_bonus == 0 then
+                                    cxt:Dialog("DIALOG_SUCCESS_NO_BONUS")
+                                else
+                                    cxt:Dialog("DIALOG_SUCCESS", total_bonus )
+                                end
+                                StateGraphUtil.AddEndOption(cxt)
+                            end,
+                            on_fail = function()
+                                cxt:Dialog("DIALOG_FAILURE")
+                                StateGraphUtil.AddEndOption(cxt)
+                            end,
+                        }
+                end
+                -- DemocracyUtil.StartFreeTime()
+                StateGraphUtil.AddEndOption(cxt)
+            end)
+    end)
+
+QDEF:AddConvo("new_advisor", "primary_advisor")
+    :AttractState("STATE_SUMMARY")
         :Loc{
-            DIALOG_PAY = [[
+            DIALOG_INTRO = [[
                 agent:
-                    !permit
-                    Here's your pay of the day.
-                    Spend it wisely.
+                    Alright, let's talk about your situation.
+                    From my understanding, your advisor abandoned you because your support level is bad.
+                {bad_support?
+                    I mean... Yeah it's bad. But it's still salvageable.
+                    You need to work extra hard tomorrow if you want to catch up.
+                }
+                {not bad_support?
+                    It's not even that bad, honestly.
+                    {advisor_manipulate?
+                        Your advisor simply chose to go with their feelings when they judged you.
+                        But facts don't care about your feelings. And the fact is that your support level is not terrible.
+                    }
+                    {not advisor_manipulate?
+                        Your advisor simply doesn't like your political ideologies.
+                        {advisor_diplomacy?
+                            Abandoning someone just because you don't like their ideologies? That's cringe.
+                        }
+                    }
+                    As long as you work hard tomorrow, you should be able to catch up.
+                }
+                    But we can worry about all that tomorrow.
+                    For now, I am giving you a place to sleep, and a base of operation.
             ]],
-            DIALOG_PAY_PST = [[
-                player:
-                    !take
-                    Thanks.
-                agent:
-                    You still have some free time.
-                    Go to bed when you're ready.
-            ]],
-            OPT_BETTER_DEAL = "<b>[{1#graft}]</b> Negotiate for more funding...",
-            DIALOG_PRE_NEGOTIATE = [[
-                player:
-                    This is clearly not enough funding.
-                    I know you pocketed some extra money. We can't have that if we want to win.
-            ]],
-            DIALOG_SUCCESS_NO_BONUS = [[
-                agent:
-                    Cool story.
-                    I would have given you extra funding for the campaign, if I had any.
-                    But I don't, so you get nothing extra.
-            ]],
-            DIALOG_SUCCESS = [[
-                agent:
-                    Fine. Seems like you really do need some extra help from me.
-                    I'll give you an extra {1#money}. Straight out of my pocket to help your campaign.
-                player:
-                    !happy
-                    Right, <i>your</> pocket.
-                agent:
-                    I wonder what you will do without me.
-            ]],
-            DIALOG_FAILURE = [[
-                agent:
-                    !angry
-                    What, you think shills grow on trees?
-                    If you want more funding, you should've gotten more support instead of asking for handouts!
-                    !neutral
-            ]],
-            NEGOTIATION_REASON = "Convince {agent} to pay you more (will gain {1#money} on win)",
         }
         :Fn(function(cxt)
-            cxt:Dialog("DIALOG_PAY")
-            local money = DemocracyUtil.TryMainQuestFn("CalculateFunding")
-            local haggle_count = cxt.player.graft_owner:CountGraftsByID( "haggle_badge" )
-            cxt.enc:GainMoney(money)
-            cxt:Dialog("DIALOG_PAY_PST")
-            cxt.quest:Complete()
-            if haggle_count > 0 then
-                local won_bonuses = {10} --give a default 10 shills.
-
-                cxt:Opt("OPT_BETTER_DEAL", "haggle_badge" )
-                    --:PostText( "OPT_BETTER_DEAL_TT", math.round(BONUS_PERCENT*quest.param.rewards), math.round((1+BONUS_PERCENT)*quest.param.rewards) )
-                    -- :SetQuestMark(quest)
-                    :Dialog("DIALOG_PRE_NEGOTIATE")
-                    :Fn(function()
-                        -- quest.param.has_tried_to_negotiate_better_reward = true
-                    end)
-                    :Negotiation{
-                        on_start_negotiation = function(minigame)
-
-                            local amounts = {}
-                            local val = money
-                            table.insert(amounts, math.ceil( val*math.randomGauss(.1, .2 )))
-                            for i = 1, haggle_count do
-                                table.insert(amounts, math.ceil( val*math.randomGauss(.15, .25) ))
-                                table.insert(amounts, math.ceil( val*math.randomGauss(.2, .35) ))
-                            end
-
-                            for k,amt in ipairs(amounts) do
-                                local mod = minigame.opponent_negotiator:CreateModifier( "bonus_payment", amt )
-                                mod.result_table = won_bonuses
-                            end
-                        end,
-                        flags = NEGOTIATION_FLAGS.NO_AUTOFAIL,
-                        --reason = "NEGOTIATION_REASON",
-
-                        reason_fn = function(minigame)
-                            local total_amt = 0
-                            for k,v in pairs(won_bonuses) do
-                                total_amt = total_amt + v
-                            end
-                            return loc.format(cxt:GetLocString("NEGOTIATION_REASON"), total_amt )
-                        end,
-
-                        enemy_resolve_required = 10 * cxt.quest:GetRank(),
-
-                        -- difficulty = quest:GetRank(),
-                        on_success = function()
-                            local total_bonus = 0
-                            for k,v in ipairs(won_bonuses) do
-                                total_bonus = total_bonus + v
-                            end
-
-                            -- quest.param.reward_negotiated_bonus = total_bonus
-                            -- quest:VerifyRewards()
-                            cxt.enc:GainMoney(total_bonus)
-                            if total_bonus == 0 then
-                                cxt:Dialog("DIALOG_SUCCESS_NO_BONUS")
-                            else
-                                cxt:Dialog("DIALOG_SUCCESS", total_bonus )
-                            end
-                            StateGraphUtil.AddEndOption(cxt)
-                        end,
-                        on_fail = function()
-                            cxt:Dialog("DIALOG_FAILURE")
-                            StateGraphUtil.AddEndOption(cxt)
-                        end,
-                    }
-            end
-            -- DemocracyUtil.StartFreeTime()
-            StateGraphUtil.AddEndOption(cxt)
-
+            local rank = CalculateRank(cxt)
+            cxt.enc.scratch.bad_support = rank >= 5
+            cxt:Dialog("DIALOG_INTRO")
+            cxt.quest:Complete("new_advisor")
+            cxt.quest:Activate("ask_pay")
         end)
