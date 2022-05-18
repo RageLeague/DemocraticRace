@@ -280,8 +280,8 @@ QDEF:AddConvo("summary", "primary_advisor")
             if cxt.enc.scratch.general_support_good and rank >= 4 then
                 cxt:Dialog("DIALOG_GOOD_SUPPORT_BAD_PERSONAL")
             end
-            if cxt.quest.param.parent_quest then
-                local parent_quest = cxt.quest.param.parent_quest
+            local parent_quest = cxt.quest.param.parent_quest
+            if parent_quest then
                 -- If you did interview on a particular day, comment on that
                 if parent_quest.param.did_interview then
                     cxt.quest.param.good_interview = parent_quest.param.good_interview
@@ -308,7 +308,7 @@ QDEF:AddConvo("summary", "primary_advisor")
                 cxt:GetAgent():OpinionEvent(OPINION["SUPPORT_EXPECTATION_" .. RANKS[rank]])
             end
 
-            if parent_quest.did_final_debate then
+            if parent_quest and parent_quest.did_final_debate then
                 cxt:Dialog("DIALOG_POST_FINAL_DEBATE")
                 if cxt:GetAgent():GetRelationship() == RELATIONSHIP.HATED then
                     cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("hope_for_campaign"))
