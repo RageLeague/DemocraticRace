@@ -11,11 +11,11 @@ function DemocracyUtil.AddDemocracyNegotiationBehaviour(id, additional_data)
 
     local old_init = char_data.negotiation_data.behaviour.OnInit
 
-    char_data.negotiation_data.behaviour.OnInit = function(...)
+    char_data.negotiation_data.behaviour.OnInit = function(self, ...)
         if DemocracyUtil.IsDemocracyCampaign() then
-            return char_data.negotiation_data.behaviour.OnInitDemocracy(...)
+            return char_data.negotiation_data.behaviour.OnInitDemocracy(self, old_init, ...)
         else
-            return old_init(...)
+            return old_init(self, ...)
         end
     end
 end
@@ -24,7 +24,7 @@ local NEW_BEHAVIOURS = {
     VIXMALLI =
     {
         -- Use standard priest negotiation
-        OnInitDemocracy = function(self, ...)
+        OnInitDemocracy = function(self, old_init, ...)
             local res = Content.GetCharacterDef( "PRIEST" ).negotiation_data.behaviour.OnInit(self, ...)
             self:SetPattern( self.DemocracyDefaultCycle )
             return res
@@ -36,7 +36,7 @@ local NEW_BEHAVIOURS = {
     },
     HESH_AUCTIONEER =
     {
-        OnInitDemocracy = function(self, difficulty)
+        OnInitDemocracy = function(self, old_init, difficulty)
             local relationship_delta = self.agent and (self.agent:GetRelationship() - RELATIONSHIP.NEUTRAL) or 0
             self:SetPattern( self.BasicCycle )
             local modifier = self.negotiator:AddModifier("INTERVIEWER")
