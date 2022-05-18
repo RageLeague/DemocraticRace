@@ -46,7 +46,7 @@ local DAY_SCHEDULE = {
     {quest = "RACE_DAY_1", difficulty = 1, support_expectation = {0,10,25}},
     {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {25,40,55}},
     {quest = "RACE_DAY_3", difficulty = 3, support_expectation = {60,80,100}},
-    -- {quest = "RACE_DAY_4", difficulty = 4},
+    {quest = "RACE_DAY_4", difficulty = 4, support_expectation = {110,135,150}},
     -- {quest = "RACE_DAY_5", difficulty = 5},
 }
 local MAX_DAYS = #DAY_SCHEDULE-- 5
@@ -82,6 +82,8 @@ local QDEF = QuestDef.Define
     qtype = QTYPE.STORY,
     desc = "Become the president as you run a democratic campaign.",
     icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/main_icon.png"),
+
+    act_filter = "SAL_DEMOCRATIC_RACE",
 
     max_day = MAX_DAYS,
     get_narrative_progress = function(quest)
@@ -177,15 +179,14 @@ local QDEF = QuestDef.Define
 
         -- TheGame:GetGameState():GetPlayerAgent().graft_owner:AddGraft(GraftInstance("democracy_resolve_limiter"))
 
-        QuestUtil.StartDayQuests(DAY_SCHEDULE, quest)
-
         if quest.param.start_on_day and quest.param.start_on_day >= 2 then
             quest:AssignCastMember("primary_advisor", quest:GetCastMember(quest.param.force_advisor_id or table.arraypick(copykeys(DemocracyUtil.ADVISOR_IDS))))
             print(quest:GetCastMember("primary_advisor"))
             print(quest:GetCastMember("home"))
             print(quest:GetCastMember("player_room"))
             QuestUtil.SpawnQuest("RACE_LIVING_WITH_ADVISOR")
-            quest:DefFn("DeltaGeneralSupport", (quest.param.init_support_level or 0) * (quest.param.start_on_day - 1))
+            quest:DefFn("DeltaGeneralSupport", quest:DefFn("GetCurrentExpectation", quest.param.start_on_day))
+            quest.param.enable_support_screen = true
         end
 
         QuestUtil.SpawnQuest("CAMPAIGN_SHILLING")
@@ -226,7 +227,7 @@ local QDEF = QuestDef.Define
         end
 
         -- DBG(population_count)
-
+        QuestUtil.StartDayQuests(DAY_SCHEDULE, quest)
         QuestUtil.DoNextDay(DAY_SCHEDULE, quest, quest.param.start_on_day )
         quest:DefFn("on_post_load")
         DoAutoSave()
@@ -319,14 +320,15 @@ local QDEF = QuestDef.Define
             local support_delta = DELTA_SUPPORT[new_rel] - DELTA_SUPPORT[old_rel]
 
             if support_delta ~= 0 then
-                local opposition_data = DemocracyUtil.GetOppositionData(agent)
-                if opposition_data then
-                    quest:DefFn("DeltaGeneralSupport", (new_rel - old_rel) * 8, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE")
-                    quest:DefFn("DeltaGroupFactionSupport", opposition_data.faction_support, new_rel - old_rel, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE" )
-                    quest:DefFn("DeltaGroupWealthSupport", opposition_data.wealth_support, new_rel - old_rel, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE" )
-                else
-                    quest:DefFn("DeltaAgentSupport", math.floor(support_delta / 3), support_delta, agent, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
-                end
+                -- local opposition_data = DemocracyUtil.GetOppositionData(agent)
+                -- if opposition_data then
+                --     quest:DefFn("DeltaGeneralSupport", (new_rel - old_rel) * 8, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE")
+                --     quest:DefFn("DeltaGroupFactionSupport", opposition_data.faction_support, new_rel - old_rel, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE" )
+                --     quest:DefFn("DeltaGroupWealthSupport", opposition_data.wealth_support, new_rel - old_rel, support_delta > 0 and "ALLIANCE_FORMED" or "ENEMY_MADE" )
+                -- else
+                --
+                -- end
+                quest:DefFn("DeltaAgentSupport", math.floor(support_delta / 3), support_delta, agent, support_delta > 0 and "RELATIONSHIP_UP" or "RELATIONSHIP_DOWN")
             end
             -- if new_rel == RELATIONSHIP.LOVED and old_rel ~= RELATIONSHIP.LOVED then
             --     TheGame:GetGameState():GetCaravan():DeltaMaxResolve(1)
@@ -774,6 +776,47 @@ local QDEF = QuestDef.Define
     GetSupportForAgent = function(quest, agent)
         return quest:DefFn("GetCompoundSupport", agent:GetFactionID(), agent:GetRenown() or 1)
     end,
+    -- This represents how popular an opposition candidate is
+    GetOppositionSupport = function(quest, agent)
+        if not quest.param.opposition_support then
+            quest.param.opposition_support = {}
+        end
+        if type(agent) == "table" then
+            agent = DemocracyUtil.GetOppositionID(agent)
+        end
+        return quest.param.opposition_support[agent] or 0
+    end,
+    DeltaOppositionSupport = function(quest, agent, delta)
+        if not quest.param.opposition_support then
+            quest.param.opposition_support = {}
+        end
+        if type(agent) == "table" then
+            agent = DemocracyUtil.GetOppositionID(agent)
+        end
+        if agent then
+            quest.param.opposition_support[agent] = (quest.param.opposition_support[agent] or 0) + delta
+        end
+    end,
+    GetOppositionViability = function(quest, agent)
+        if type(agent) == "table" then
+            agent = DemocracyUtil.GetOppositionID(agent)
+        end
+        if agent then
+            local faction = DemocracyConstants.opposition_data[agent].main_supporter
+            return quest:DefFn("GetOppositionSupport", agent) - (quest.param.faction_support[faction] or 0)
+        end
+    end,
+    IsCandidateInRace = function(quest, agent)
+        quest.param.quitted_candidates = quest.param.quitted_candidates or {}
+        if type(agent) == "string" then
+            agent = quest:GetCastMember(agent)
+        end
+        return DemocracyUtil.GetOppositionID(agent) and not agent:IsRetired() and not table.arraycontains(quest.param.quitted_candidates, agent)
+    end,
+    DropCandidate = function(quest, agent)
+        quest.param.quitted_candidates = quest.param.quitted_candidates or {}
+        table.insert_unique(quest.param.quitted_candidates, agent)
+    end,
     -- At certain points in the story, random people dislikes you for no reason.
     -- call this function to do so.
     DoRandomOpposition = function(quest, num_to_do)
@@ -913,15 +956,15 @@ local QDEF = QuestDef.Define
 
         DemocracyUtil.SendMetricsData("STORY_PROGRESS", METRIC_DATA)
     end,
-    GetCurrentExpectationArray = function(quest)
-        return DAY_SCHEDULE[math.min(#DAY_SCHEDULE, quest.param.day or 1)].support_expectation
+    GetCurrentExpectationArray = function(quest, day)
+        return DAY_SCHEDULE[math.min(#DAY_SCHEDULE, day or quest.param.day or 1)].support_expectation
     end,
-    GetCurrentExpectation = function(quest)
-        local arr = quest:DefFn("GetCurrentExpectationArray")
+    GetCurrentExpectation = function(quest, day)
+        local arr = quest:DefFn("GetCurrentExpectationArray", day)
         return math.round(arr[math.min(#arr, quest.param.sub_day_progress or 1)] * DemocracyUtil.GetModSetting("support_requirement_multiplier")) -- - 100
     end,
-    GetDayEndExpectation = function(quest)
-        local arr = quest:DefFn("GetCurrentExpectationArray")
+    GetDayEndExpectation = function(quest, day)
+        local arr = quest:DefFn("GetCurrentExpectationArray", day)
         return math.round(arr[#arr] * DemocracyUtil.GetModSetting("support_requirement_multiplier"))
     end,
     GetStanceIntel = function(quest)

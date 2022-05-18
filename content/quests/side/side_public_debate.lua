@@ -436,6 +436,10 @@ QDEF:AddConvo("meet_opponent")
                     agent:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("disliked_debate"))
                 end
             end
+            local opposition_id = DemocracyUtil.GetOppositionID(cxt:GetCastMember("opponent"))
+            if opposition_id then
+                DemocracyUtil.TryMainQuestFn("DeltaOppositionSupport", opposition_id, (cxt.quest.param.audience_stage - 2) * 4)
+            end
             if cxt.quest.param.lost_negotiation or cxt.quest.param.audience_stage <= 0 then
                 cxt.quest:Fail()
             else
