@@ -353,7 +353,8 @@ local MODIFIERS =
 
         OnUnapply = function(self)
             local count = self.negotiator:GetModifierStacks("CONNECTED_LINE")
-            if count and count == 0 then
+            local help_count = self.negotiator:GetModifierStacks("HELP_UNDERWAY")
+            if count and count == self.stacks and help_count and help_count == 0 then
                 TheGame:GetMusic():SetParameter("radio_layer", 0)
             end
 
