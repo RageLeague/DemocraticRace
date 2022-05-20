@@ -835,30 +835,6 @@ function DemocracyUtil.GetVoterIntentionIndex(data)
 
     local delta = DemocracyUtil.TryMainQuestFn("GetGeneralSupport") - DemocracyUtil.TryMainQuestFn("GetCurrentExpectation")
 
-    -- Removed balancing because we shouldn't care about it, now that we balanced general support gain
-
-    -- if delta <= 5 then
-    --     voter_index = delta
-    -- else
-    --     delta = delta - 5
-    --     if delta >= 20 then
-    --         voter_index = voter_index + 5
-    --         delta = delta - 20
-    --     else
-    --         voter_index = voter_index + math.round(delta / 2)
-    --         delta = 0
-    --     end
-    --     -- if delta >= 20 then
-    --     --     voter_index = voter_index + 5
-    --     --     delta = delta - 20
-    --     -- else
-    --     --     voter_index = voter_index + math.round(delta / 4)
-    --     --     delta = 0
-    --     -- end
-    --     if delta > 0 then
-    --         voter_index = voter_index + math.round(delta / 5)
-    --     end
-    -- end
     if faction then
         voter_index = voter_index + (TheGame:GetGameState():GetMainQuest().param.faction_support[faction] or 0)
     end
@@ -893,6 +869,71 @@ function DemocracyUtil.GetWealthEndorsement(wealth)
 end
 function DemocracyUtil.GetAgentEndorsement(agent)
     return DemocracyUtil.GetEndorsement(DemocracyUtil.GetVoterIntentionIndex{agent = agent})
+end
+function DemocracyUtil.GetAllOppositions(ignore_dropped_out)
+    local t = {}
+    for id, data in pairs(DemocracyConstants.opposition_data) do
+        if ignore_dropped_out or DemocracyUtil.IsCandidateInRace(data.cast_id) then
+            table.insert(t, data.cast_id)
+        end
+    end
+    return t
+end
+function DemocracyUtil.GetOppositionVoterSupport(agent, opponent_id, base_support)
+    if type(opponent_id) == "table" then
+        opponent_id = DemocracyUtil.GetOppositionID(opponent_id)
+    end
+    local support = (base_support or DemocracyUtil.GetCurrentExpectation()) + DemocracyUtil.GetOppositionSupport(agent)
+    local opposition_data = DemocracyConstants.opposition_data[opponent_id]
+    if opposition_data then
+        if opposition_data.faction_support and opposition_data.faction_support[agent:GetFactionID()] then
+            support = support + 4 * opposition_data.faction_support[agent:GetFactionID()]
+        end
+        if opposition_data.wealth_support and opposition_data.wealth_support[DemocracyUtil.GetWealth(agent)] then
+            support = support + 4 * opposition_data.wealth_support[DemocracyUtil.GetWealth(agent)]
+        end
+    end
+    return support
+end
+function DemocracyUtil.SimulateVoterChoice(agent, available_opponents)
+    local choice_table = {}
+    table.insert(choice_table, { TheGame:GetGameState():GetPlayerAgent(), DemocracyUtil.GetSupportForAgent(agent) + SUPPORT_DELTA[agent:GetRelationship()] + DemocracyUtil.RandomGauss(0, 100) })
+    for i, id in ipairs(available_opponents or DemocracyUtil.GetAllOppositions()) do
+        local opponent = TheGame:GetGameState():GetMainQuest():GetCastMember(id)
+        table.insert(choice_table, { opponent, DemocracyUtil.GetOppositionVoterSupport(agent, id) + SUPPORT_DELTA[agent:GetRelationship(opponent)] + DemocracyUtil.RandomGauss(0, 100) })
+    end
+    table.sort(choice_table, function(a, b) return a[2] > b[2] end)
+    if #choice_table == 0 then
+        return false -- No choice at all
+    elseif #choice_table == 1 then
+        return choice_table[1][1] -- Lmao one candidate
+    elseif choice_table[1][2] - choice_table[#choice_table][2] <= 80 then
+        return false -- Voter apathy
+    else
+        return choice_table[1][1]
+    end
+end
+function DemocracyUtil.SimulateVoting(available_opponents)
+    local result = {}
+    for i, agent in TheGame:GetGameState():Agents() do
+        if DemocracyUtil.CanVote(agent) then
+            result[agent] = DemocracyUtil.SimulateVoterChoice(agent, available_opponents)
+        end
+    end
+    return result
+end
+function DemocracyUtil.SummarizeVotes(voting_results)
+    local result = {
+        vote_count = {},
+        raw_data = voting_results,
+    }
+    for agent, vote in pairs(voting_results) do
+        result.vote_count[vote] = (result.vote_count[vote] or 0) + 1
+    end
+    return result
+end
+function DemocracyUtil.DBGVoting(available_opponents)
+    DBG(DemocracyUtil.SummarizeVotes(DemocracyUtil.SimulateVoting(available_opponents)))
 end
 function DemocracyUtil.CalculatePartyStrength(members)
     if is_instance(members, Party) then

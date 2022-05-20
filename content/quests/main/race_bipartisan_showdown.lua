@@ -22,12 +22,7 @@ local QDEF = QuestDef.Define
         if parent_quest then
             quest.param.previous_bad_debate = parent_quest.param.previous_bad_debate
         end
-        local valid_candidates = {}
-        for id, data in pairs(DemocracyConstants.opposition_data) do
-            if DemocracyUtil.IsCandidateInRace(data.cast_id) then
-                table.insert(valid_candidates, data.cast_id)
-            end
-        end
+        local valid_candidates = DemocracyUtil.GetAllOppositions()
         table.sort(valid_candidates, function(a,b) return DemocracyUtil.GetOppositionViability(a) > DemocracyUtil.GetOppositionViability(a) end)
 
         if #valid_candidates == 0 then
