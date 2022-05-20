@@ -897,20 +897,39 @@ function DemocracyUtil.GetOppositionVoterSupport(agent, opponent_id, base_suppor
 end
 function DemocracyUtil.SimulateVoterChoice(agent, available_opponents)
     local choice_table = {}
-    table.insert(choice_table, { TheGame:GetGameState():GetPlayerAgent(), DemocracyUtil.GetSupportForAgent(agent) + SUPPORT_DELTA[agent:GetRelationship()] + DemocracyUtil.RandomGauss(0, 100) })
+    local loved_person = nil
+    -- Will always vote a loved person, and will never vote a hated person
+    if agent:GetRelationship() > RELATIONSHIP.HATED then
+        table.insert(choice_table, { TheGame:GetGameState():GetPlayerAgent(), DemocracyUtil.GetSupportForAgent(agent) + SUPPORT_DELTA[agent:GetRelationship()] + DemocracyUtil.RandomGauss(0, 100) })
+        if agent:GetRelationship() >= RELATIONSHIP.LOVED then
+            loved_person = TheGame:GetGameState():GetPlayerAgent()
+        end
+    end
     for i, id in ipairs(available_opponents or DemocracyUtil.GetAllOppositions()) do
         local opponent = TheGame:GetGameState():GetMainQuest():GetCastMember(id)
-        table.insert(choice_table, { opponent, DemocracyUtil.GetOppositionVoterSupport(agent, id) + SUPPORT_DELTA[agent:GetRelationship(opponent)] + DemocracyUtil.RandomGauss(0, 100) })
+        if agent:GetRelationship(opponent) > RELATIONSHIP.HATED then
+            table.insert(choice_table, { opponent, DemocracyUtil.GetOppositionVoterSupport(agent, id) + SUPPORT_DELTA[agent:GetRelationship(opponent)] + DemocracyUtil.RandomGauss(0, 100) })
+            if agent:GetRelationship(opponent) >= RELATIONSHIP.LOVED then
+                if loved_person then
+                    return false, "CONFLICTING_LOVED" -- If love two candidates somehow, don't vote
+                else
+                    loved_person = opponent
+                end
+            end
+        end
+    end
+    if loved_person then
+        return loved_person, "LOVED_VOTE"
     end
     table.sort(choice_table, function(a, b) return a[2] > b[2] end)
     if #choice_table == 0 then
-        return false -- No choice at all
+        return false, "NO_GOOD_CHOICES" -- No choice at all
     elseif #choice_table == 1 then
-        return choice_table[1][1] -- Lmao one candidate
+        return choice_table[1][1], "SINGLE_CANDIDATE" -- Lmao one candidate
     elseif choice_table[1][2] - choice_table[#choice_table][2] <= 80 then
-        return false -- Voter apathy
+        return false, "VOTER_APATHY" -- Voter apathy
     else
-        return choice_table[1][1]
+        return choice_table[1][1], "VOTE_CASTED"
     end
 end
 function DemocracyUtil.SimulateVoting(available_opponents, include_phantoms)
