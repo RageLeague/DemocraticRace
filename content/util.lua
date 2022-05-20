@@ -271,7 +271,7 @@ end
 
 -- Get wealth based on renown.
 function DemocracyUtil.GetWealth(renown)
-    if is_instance(renown, Agent) then
+    if type(renown) == "table" then
         renown = renown:GetRenown() -- + (renown:HasTag("wealthy") and 1 or 0)
     end
     renown = renown or 1
@@ -883,7 +883,7 @@ function DemocracyUtil.GetOppositionVoterSupport(agent, opponent_id, base_suppor
     if type(opponent_id) == "table" then
         opponent_id = DemocracyUtil.GetOppositionID(opponent_id)
     end
-    local support = (base_support or DemocracyUtil.GetCurrentExpectation()) + DemocracyUtil.GetOppositionSupport(agent)
+    local support = (base_support or DemocracyUtil.GetCurrentExpectation()) + DemocracyUtil.GetOppositionSupport(opponent_id)
     local opposition_data = DemocracyConstants.opposition_data[opponent_id]
     if opposition_data then
         if opposition_data.faction_support and opposition_data.faction_support[agent:GetFactionID()] then
@@ -913,11 +913,22 @@ function DemocracyUtil.SimulateVoterChoice(agent, available_opponents)
         return choice_table[1][1]
     end
 end
-function DemocracyUtil.SimulateVoting(available_opponents)
+function DemocracyUtil.SimulateVoting(available_opponents, include_phantoms)
     local result = {}
     for i, agent in TheGame:GetGameState():Agents() do
         if DemocracyUtil.CanVote(agent) then
             result[agent] = DemocracyUtil.SimulateVoterChoice(agent, available_opponents)
+        end
+    end
+    if include_phantoms then
+        -- Also add phantom votes
+        for i, id in ipairs(TheGame:GetGameState().region:GetContent().population) do
+            local phantom_agent = DemocracyClass.PhantomAgent(id)
+            for i = 1, 6 - phantom_agent:GetRenown() do
+                local agent = DemocracyClass.PhantomAgent(id)
+                print(agent)
+                result[agent] = DemocracyUtil.SimulateVoterChoice(agent, available_opponents)
+            end
         end
     end
     return result
@@ -932,8 +943,8 @@ function DemocracyUtil.SummarizeVotes(voting_results)
     end
     return result
 end
-function DemocracyUtil.DBGVoting(available_opponents)
-    DBG(DemocracyUtil.SummarizeVotes(DemocracyUtil.SimulateVoting(available_opponents)))
+function DemocracyUtil.DBGVoting(available_opponents, include_phantoms)
+    DBG(DemocracyUtil.SummarizeVotes(DemocracyUtil.SimulateVoting(available_opponents, include_phantoms)))
 end
 function DemocracyUtil.CalculatePartyStrength(members)
     if is_instance(members, Party) then
