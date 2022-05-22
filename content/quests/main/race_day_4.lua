@@ -53,7 +53,7 @@ local QDEF = QuestDef.Define
 }
 :AddObjective{
     id = "starting_out",
-    title = "Talk to {primary_advisor} about the plan.",
+    title = "Talk to {primary_advisor} about the plan",
     mark = {"primary_advisor"},
     on_complete = function(quest)
         quest:Activate("get_job")
@@ -211,21 +211,34 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     cxt.enc.scratch.abstained_votes = count
                 end
             end
-            table.sort(vote_result, function(a, b) return a[2] > b[2] end)
+            table.sort(vote_result, function(a, b)
+                if a[2] ~= b[2] then
+                    return a[2] > b[2]
+                end
+                return b[1] ~= cxt.player
+            end)
             cxt.quest.param.vote_result = vote_result
             cxt.enc.scratch.total_votes = total_votes
             if #vote_result > 0 then
                 local best_votes = vote_result[2]
                 local low_vote_candidates = {}
-                for i = 3, #vote_result do
+                local conflicting_allies = {}
+                local seen_player = false
+                for i = 1, #vote_result do
                     if vote_result[i][1] == cxt.player then
-                        cxt.quest.param.low_player_votes = true
-                    end
-                    if vote_result[i][2] < 0.6 * best_votes then
-                        if vote_result[i][1] == cxt.player then
-
-                        else
+                        seen_player = true
+                        if i >= 3 then
+                            cxt.quest.param.low_player_votes = true
+                        end
+                    else
+                        if i >= 3 and vote_result[i][2] < 0.6 * best_votes then
                             table.insert(low_vote_candidates, vote_result[i][1])
+                        elseif DemocracyUtil.GetAlliance(vote_result[i][1]) then
+                            if not seen_player or i <= 2 then
+                                table.insert(conflicting_allies, vote_result[i][1])
+                            else
+                                table.insert(low_vote_candidates, vote_result[i][1])
+                            end
                         end
                     end
                 end
@@ -238,7 +251,11 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 if #low_vote_candidates > 0 then
                     cxt.quest.param.has_potential_ally = true
                     cxt.enc.scratch.low_vote_candidates = low_vote_candidates
-                    cxt.enc.scratch.potential_ally = low_vote_candidates[#low_vote_candidates]
+                    -- cxt.enc.scratch.potential_ally = low_vote_candidates[#low_vote_candidates]
+                end
+                if #conflicting_allies > 0 then
+                    cxt.quest.param.has_potential_ally = true
+                    cxt.enc.scratch.conflicting_allies = conflicting_allies
                 end
             end
         end
@@ -264,7 +281,26 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         end
         cxt:Dialog("DIALOG_END")
         if cxt.quest.param.has_potential_ally then
-            cxt:GoTo("STATE_ALLIANCE")
+            -- Okay let's figure out which case the potential ally is
+            -- If one of your allies is still strong enough to be in the race, go to conflicting allies
+            if cxt.enc.scratch.conflicting_allies then
+                cxt:GoTo("STATE_CONFLICTING_ALLIES")
+            else
+                for i, agent in ipairs(cxt.enc.scratch.low_vote_candidates) do
+                    if DemocracyUtil.GetAlliance(agent) then
+                        cxt.enc.scratch.dropped_ally = agent
+                        cxt:GoTo("STATE_ALLIED_DROP")
+                        return
+                    end
+                end
+                cxt.enc.scratch.potential_ally = cxt.enc.scratch.low_vote_candidates[#cxt.enc.scratch.low_vote_candidates]
+                local potential = DemocracyUtil.GetAlliancePotential(DemocracyUtil.GetOppositionID(cxt.enc.scratch.potential_ally))
+                if DemocracyUtil.GetEndorsement(potential) >= RELATIONSHIP.LIKED then
+                    cxt:GoTo("STATE_ALLIANCE")
+                else
+                    cxt:GoTo("STATE_INFORM")
+                end
+            end
         elseif cxt.enc.scratch.advisor_favor then
             cxt:GoTo("STATE_FAVOR")
         else
