@@ -369,7 +369,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 player:
                     Hi.
                 opponent:
-                    With that vote, I can't possibly win the campaign by my own.
+                    With that note, I can't possibly win the campaign by my own.
                     But with our powers combined, we might have a chance.
                     Which is why I dropped out of the campaign.
                 player:
@@ -380,6 +380,31 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         }
         :Fn(function(cxt)
             cxt:ReassignCastMember("opponent", cxt.enc.scratch.dropped_ally)
+            cxt:GetCastMember("opponent"):MoveToLocation(cxt:GetCastMember("home"))
+            cxt:Dialog("DIALOG_INTRO")
+
+            cxt.quest:Complete("starting_out")
+            StateGraphUtil.AddLeaveLocation(cxt)
+        end)
+    :State("STATE_INFORM")
+        :Loc{
+            DIALOG_INTRO = [[
+                opponent:
+                    !right
+                    [p] Sup.
+                player:
+                    Hi.
+                opponent:
+                    With that note, I can't possibly win the campaign.
+                    I'm dropping out of the campaign.
+                player:
+                    Cool.
+                * A few candidates will drop out of the campaign.
+                * Better pay attention.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:ReassignCastMember("opponent", cxt.enc.scratch.potential_ally)
             cxt:GetCastMember("opponent"):MoveToLocation(cxt:GetCastMember("home"))
             cxt:Dialog("DIALOG_INTRO")
 
