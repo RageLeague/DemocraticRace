@@ -38,10 +38,8 @@ local QDEF = QuestDef.Define
                     end
                 end
             end
-            if has_primary then
-                quest.param.previous_bad_debate = parent_quest.param.low_player_votes
-                return true
-            end
+            quest.param.previous_bad_debate = parent_quest.param.low_player_votes
+            return true
         end
         -- This is used as a fallback in case the new system fails, or if the parent quest does not have enough info.
         if parent_quest then
