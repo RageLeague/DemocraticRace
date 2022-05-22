@@ -475,7 +475,7 @@ QDEF:AddConvo("tell_giver")
                 cxt:BasicNegotiation("NEGOTIATE_TERMS", {
                     on_start_negotiation = function(minigame)
 
-                        local amounts = {80, 50, 30}
+                        local amounts = {30, 50, 80}
 
                         local haggle_count = cxt.player.graft_owner:CountGraftsByID( "haggle_badge" )
                         for i = 1, haggle_count do
