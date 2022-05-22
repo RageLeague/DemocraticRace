@@ -1098,7 +1098,7 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, post_fn, potential_offset)
             end)
         else
             if problem_agent then
-                cxt.enc.scratch.is_problem_ally = problem_agent:GetRelationship() > RELATIONSHIP.NEUTRAL
+                cxt.enc.scratch.is_problem_ally = math.max(problem_agent:GetRelationship(), DemocracyUtil.TryMainQuestFn("GetAlliance", problem_agent) and RELATIONSHIP.LIKED or RELATIONSHIP.HATED) > RELATIONSHIP.NEUTRAL
                 cxt:Dialog("DIALOG_ALLIANCE_TALK_BAD_ALLY", problem_agent)
             else
                 cxt:Dialog("DIALOG_ALLIANCE_TALK_REJECT")
