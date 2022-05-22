@@ -59,6 +59,7 @@ Content.AddStringTable("DEMOCRACY", {
 
             STANCE_TAKEN = "Stance Taken",
             ALLIANCE_FORMED = "Alliance Formed",
+            ALLIANCE_BROKEN = "Alliance Broken",
             ENEMY_MADE = "Enemy Made",
 
             CONSISTENT_STANCE = "Consistent Stance",
