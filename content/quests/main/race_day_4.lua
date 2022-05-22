@@ -129,44 +129,59 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             player:
                 Yeah, what else is new?
             agent:
-            {not previous_bad_debate?
-                Your performance yesterday shows that you are a very capable candidate.
-                As such, you are invited to tonight's one-on-one debate against another candidate.
-            player:
-                Who am I up against?
+                After yesterday's debate, they conducted a poll to see who the people support.
+                They asked {1} {1*person|people}. {2} responded.
+        ]],
+        DIALOG_TOTAL = [[
             agent:
-                I don't know. I guess wait until tonight to find out.
-                Make sure you are prepared for that.
-            }
-            {previous_bad_debate?
-                There is supposedly a one-on-one debate between two candidates today.
-                However, I haven't received any invitations for us.
-            player:
-                Do you know who are invited?
+                They asked {1} {1*person|people}. {2} responded.
+        ]],
+        DIALOG_TOTAL_NO_ABSTAIN = [[
             agent:
-                No idea.
-                I guess right now, we wait and see if anything is changed.
-                Either way, it's best if you still prepare for it, just in case they have a change of plan.
+                They asked {1} {1*person|people}, and everyone responded.
+        ]],
+        DIALOG_VOTE = [[
+            agent:
+                {1} {1*person|people} voted for {2#agent}.
+        ]],
+        DIALOG_VOTE_PLAYER = [[
+            agent:
+                {1} {1*person|people} voted for you.
+        ]],
+        DIALOG_PST_VOTES_GOOD = [[
+            agent:
+                [p] The Grand Theater noticed your popularity, so they invited you to a one-on-one debate tonight.
+            player:
+                Cool.
+        ]],
+        DIALOG_PST_VOTES_BAD = [[
+            agent:
+                [p] There is supposed to be a one-on-one debate tonight at the Grand Theater, but you aren't invited because you aren't popular enough.
+            player:
+                What are we supposed to do, then?
+            agent:
+                We can't just ignore this prime opportunity.
+                Just come tonight anyway. We will figure it out from here.
+        ]],
+        DIALOG_END = [[
+            agent:
+            {not has_potential_ally?
+                {not advisor_favor?
+                    Anyway, with that out of the way, let's go back to gathering support.
+                    You have a long day ahead of you.
+                }
+                {advisor_favor?
+                    Anyway, with that out of the way, there is something I want to ask you.
+                }
             }
             {has_potential_ally?
+                {not advisor_favor?
+                    Anyway, with that out of the way, let's go back to gathering support...
+                }
                 {advisor_favor?
-                    Oh, that reminds me.
-                    There is something I want to ask of you...
-                    |
-                    Well, get to work...
+                    Anyway, with that out of the way, there is something I want to ask you...
                 }
                 * Before {agent} finishes {agent.hisher} sentence, you are interrupted by someone visiting.
-            }
-            {not has_potential_ally and advisor_favor?
-                Oh, that reminds me.
-                There is something I want to ask of you.
-            player:
-                Oh, what is it?
-            }
-            {not has_potential_ally and not advisor_favor?
-                Well, get to work.
-                The support is not going to gain itself.
-            * {agent} leaves you to your own accord.
             }
         ]],
     }
@@ -186,44 +201,68 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         end
         -- Generate opposition alliance
         do
-            local best_characters = {}
-            local best_score = RELATIONSHIP.LIKED
-            for id, data in pairs(DemocracyConstants.opposition_data) do
-                local main_faction = data.main_supporter or "FEUD_CITIZEN"
-                local val, reason = DemocracyUtil.GetAlliancePotential(id)
-                -- quest:Trace("[%s] Val=%d, Reason=%s", id, val, reason)
-                if val then
-                    local endorsement = DemocracyUtil.GetEndorsement(val)
-                    if endorsement >= best_score then
-
-                        if endorsement > best_score then
-                            best_score = endorsement
-                            best_characters = {}
-                        end
-
-                        table.insert(best_characters, data)
-                    end
+            local result = DemocracyUtil.SummarizeVotes(DemocracyUtil.SimulateVoting())
+            local vote_result = {}
+            local total_votes = 0
+            for candidate, count in pairs(result.vote_count) do
+                if candidate then
+                    table.insert(vote_result, {candidate, count})
+                else
+                    cxt.enc.scratch.abstained_votes = count
                 end
             end
-            if #best_characters > 0 then
-                local data = table.arraypick(best_characters)
-                local agent = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
-                cxt.enc.scratch.potential_ally = agent
-                cxt.enc.scratch.ally_work_pos = data.workplace
-                cxt.enc.scratch.ally_platform = data.platform
-                cxt.enc.scratch.has_potential_ally = true
-
-                if cxt.enc.scratch.ally_platform then
-                    cxt.enc.scratch.stance_index = data.stances[cxt.enc.scratch.ally_platform]
-                    if cxt.enc.scratch.ally_platform and cxt.enc.scratch.stance_index then
-                        cxt.enc.scratch.ally_stance = cxt.enc.scratch.ally_platform .. "_" .. cxt.enc.scratch.stance_index
+            table.sort(vote_result, function(a, b) return a[2] > b[2] end)
+            cxt.quest.param.vote_result = vote_result
+            cxt.enc.scratch.total_votes = total_votes
+            if #vote_result > 0 then
+                local best_votes = vote_result[2]
+                local low_vote_candidates = {}
+                for i = 3, #vote_result do
+                    if vote_result[i][1] == cxt.player then
+                        cxt.quest.param.low_player_votes = true
                     end
+                    if vote_result[i][2] < 0.6 * best_votes then
+                        if vote_result[i][1] == cxt.player then
+
+                        else
+                            table.insert(low_vote_candidates, vote_result[i][1])
+                        end
+                    end
+                end
+                if #low_vote_candidates == 0 and #vote_result >= 3 then
+                    table.insert(low_vote_candidates, vote_result[i][1])
+                end
+                for i, agent in ipairs(low_vote_candidates) do
+                    DemocracyUtil.DropCandidate(agent)
+                end
+                if #low_vote_candidates > 0 then
+                    cxt.quest.param.has_potential_ally = true
+                    cxt.enc.scratch.low_vote_candidates = low_vote_candidates
+                    cxt.enc.scratch.potential_ally = low_vote_candidates[#low_vote_candidates]
                 end
             end
         end
         cxt:Dialog("DIALOG_INTRO")
         DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 3)
         cxt:Dialog("DIALOG_INTRO_PST")
+        if cxt.enc.scratch.abstained_votes then
+            cxt:Dialog("DIALOG_TOTAL", cxt.enc.scratch.total_votes, cxt.enc.scratch.total_votes - cxt.enc.scratch.abstained_votes)
+        else
+            cxt:Dialog("DIALOG_TOTAL_NO_ABSTAIN", cxt.enc.scratch.total_votes)
+        end
+        for i, data in ipairs(cxt.quest.param.vote_result) do
+            if data[1] == cxt.player then
+                cxt:Dialog("DIALOG_VOTE_PLAYER", data[2])
+            else
+                cxt:Dialog("DIALOG_VOTE", data[2], data[1])
+            end
+        end
+        if cxt.quest.param.low_player_votes then
+            cxt:Dialog("DIALOG_PST_VOTES_BAD")
+        else
+            cxt:Dialog("DIALOG_PST_VOTES_GOOD")
+        end
+        cxt:Dialog("DIALOG_END")
         if cxt.quest.param.has_potential_ally then
             cxt:GoTo("STATE_ALLIANCE")
         elseif cxt.enc.scratch.advisor_favor then
