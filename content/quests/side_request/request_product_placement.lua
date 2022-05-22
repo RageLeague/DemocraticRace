@@ -479,7 +479,7 @@ QDEF:AddConvo("tell_giver")
 
                         local haggle_count = cxt.player.graft_owner:CountGraftsByID( "haggle_badge" )
                         for i = 1, haggle_count do
-                            table.insert(amount, 80)
+                            table.insert(amounts, 80)
                         end
 
                         for k,amt in ipairs(amounts) do
