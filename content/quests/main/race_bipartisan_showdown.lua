@@ -19,6 +19,31 @@ local QDEF = QuestDef.Define
 
     postcondition = function(quest)
         local parent_quest = quest.param.parent_quest
+        if parent_quest and parent_quest.param.vote_result then
+            local has_primary = false
+            local result = parent_quest.param.vote_result
+            if result[1] and result[1][1] then
+                if result[1][1] ~= TheGame:GetGameState():GetPlayerAgent() then
+                    has_primary = true
+                    quest:AssignCastMember("opponent", result[1][1])
+                end
+            end
+            if result[2] and result[2][1] then
+                if result[2][1] ~= TheGame:GetGameState():GetPlayerAgent() then
+                    if not has_primary then
+                        has_primary = true
+                        quest:AssignCastMember("opponent", result[2][1])
+                    else
+                        quest:AssignCastMember("secondary_opponent", result[2][1])
+                    end
+                end
+            end
+            if has_primary then
+                quest.param.previous_bad_debate = parent_quest.param.low_player_votes
+                return true
+            end
+        end
+        -- This is used as a fallback in case the new system fails, or if the parent quest does not have enough info.
         if parent_quest then
             quest.param.previous_bad_debate = parent_quest.param.previous_bad_debate
         end
