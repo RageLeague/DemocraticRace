@@ -4,7 +4,7 @@ A pioneer campaign mod for Griftlands, the Democratic Race is a mod for Griftlan
 
 This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
-Version: 0.7.1(Alpha)
+Version: 0.7.2(Alpha)
 
 Author: RageLeague
 
@@ -103,6 +103,11 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Flange Finnegan
 
 [h2]Changelog[/h2]
+
+[h3]0.7.2[/h3]
+
+* Fixed crash when trying to negotiate better stock prices while having Haggle Badges.
+* Fixed incorrect dialog when negotiate for alliance, but you are already allied with someone they hate (while having a neutral relationship).
 
 [h3]0.7.1[/h3]
 
