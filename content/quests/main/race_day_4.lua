@@ -357,6 +357,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                         DemocracyUtil.SetAlliance(agent, false)
                     end
                     cxt.quest:Complete("starting_out")
+                    cxt:GetCastMember("opponent"):MoveToLimbo()
                     StateGraphUtil.AddLeaveLocation(cxt)
                 end)
         end)
@@ -384,6 +385,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             cxt:Dialog("DIALOG_INTRO")
 
             cxt.quest:Complete("starting_out")
+            cxt:GetCastMember("opponent"):MoveToLimbo()
             StateGraphUtil.AddLeaveLocation(cxt)
         end)
     :State("STATE_INFORM")
@@ -409,7 +411,47 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             cxt:Dialog("DIALOG_INTRO")
 
             cxt.quest:Complete("starting_out")
+            cxt:GetCastMember("opponent"):MoveToLimbo()
             StateGraphUtil.AddLeaveLocation(cxt)
+        end)
+    :State("STATE_ALLIANCE")
+        :Loc{
+            DIALOG_INTRO = [[
+                agent:
+                    !right
+                    [p] 'Sup.
+                    I'm dropping out of the campaign because I can't win the campaign.
+                    However, our platforms are very similar to each other.
+                    Perhaps it's a good time to strike an alliance?
+            ]],
+            DIALOG_CHOOSE_PST = [[
+                {allied?
+                agent:
+                    Feel free to visit me at {ally_work_pos#location}.
+                player:
+                    Thanks.
+                }
+                {not allied?
+                agent:
+                    Well, if you ever change your mind, visit me at {ally_work_pos#location}.
+                player:
+                    I'll keep that in mind, thanks.
+                }
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt.enc.scratch.potential_ally:MoveToLocation(cxt.location)
+            cxt:TalkTo(cxt.enc.scratch.potential_ally)
+            cxt:Dialog("DIALOG_INTRO")
+
+            DemocracyUtil.DoAllianceConvo(cxt, cxt.enc.scratch.potential_ally, function(cxt, allied)
+                cxt.enc.scratch.allied = allied
+                cxt:Dialog("DIALOG_CHOOSE_PST")
+                DemocracyUtil.DoLocationUnlock(cxt, cxt.enc.scratch.ally_work_pos)
+                cxt.quest:Complete("starting_out")
+                cxt.enc.scratch.potential_ally:MoveToLimbo()
+                StateGraphUtil.AddLeaveLocation(cxt)
+            end, 15)
         end)
     :State("STATE_FAVOR")
         :Loc{
