@@ -341,6 +341,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         }
         :Fn(function(cxt)
             cxt:ReassignCastMember("opponent", cxt.enc.scratch.conflicting_allies[1])
+            cxt:GetCastMember("opponent"):MoveToLocation(cxt:GetCastMember("home"))
             cxt:Dialog("DIALOG_INTRO")
 
             cxt:Opt("OPT_AGREE")
@@ -358,6 +359,32 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     cxt.quest:Complete("starting_out")
                     StateGraphUtil.AddLeaveLocation(cxt)
                 end)
+        end)
+    :State("STATE_ALLIED_DROP")
+        :Loc{
+            DIALOG_INTRO = [[
+                opponent:
+                    !right
+                    [p] Sup.
+                player:
+                    Hi.
+                opponent:
+                    With that vote, I can't possibly win the campaign by my own.
+                    But with our powers combined, we might have a chance.
+                    Which is why I dropped out of the campaign.
+                player:
+                    Cool.
+                * A few candidates will drop out of the campaign.
+                * Better pay attention.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:ReassignCastMember("opponent", cxt.enc.scratch.dropped_ally)
+            cxt:GetCastMember("opponent"):MoveToLocation(cxt:GetCastMember("home"))
+            cxt:Dialog("DIALOG_INTRO")
+
+            cxt.quest:Complete("starting_out")
+            StateGraphUtil.AddLeaveLocation(cxt)
         end)
     :State("STATE_FAVOR")
         :Loc{
