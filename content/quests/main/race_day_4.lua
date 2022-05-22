@@ -130,7 +130,6 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 Yeah, what else is new?
             agent:
                 After yesterday's debate, they conducted a poll to see who the people support.
-                They asked {1} {1*person|people}. {2} responded.
         ]],
         DIALOG_TOTAL = [[
             agent:
@@ -205,6 +204,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             local vote_result = {}
             local total_votes = 0
             for candidate, count in pairs(result.vote_count) do
+                total_votes = total_votes + count
                 if candidate then
                     table.insert(vote_result, {candidate, count})
                 else
@@ -215,12 +215,12 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 if a[2] ~= b[2] then
                     return a[2] > b[2]
                 end
-                return b[1] ~= cxt.player
+                return b[1] ~= cxt.player and a[1] == cxt.player
             end)
             cxt.quest.param.vote_result = vote_result
             cxt.enc.scratch.total_votes = total_votes
             if #vote_result > 0 then
-                local best_votes = vote_result[2]
+                local best_votes = vote_result[1][2]
                 local low_vote_candidates = {}
                 local conflicting_allies = {}
                 local seen_player = false
@@ -243,7 +243,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     end
                 end
                 if #low_vote_candidates == 0 and #vote_result >= 3 then
-                    table.insert(low_vote_candidates, vote_result[i][1])
+                    table.insert(low_vote_candidates, vote_result[#vote_result][1])
                 end
                 for i, agent in ipairs(low_vote_candidates) do
                     DemocracyUtil.DropCandidate(agent)

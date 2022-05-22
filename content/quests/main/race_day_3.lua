@@ -446,13 +446,13 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
 
                 ConvoUtil.DoSleep(cxt, "DIALOG_WAKE")
 
-                DemocracyUtil.DoAlphaMessage()
+                -- DemocracyUtil.DoAlphaMessage()
 
                 cxt:End()
 
-                if true then
-                    return
-                end
+                -- if true then
+                --     return
+                -- end
 
                 cxt.quest:Complete()
 

@@ -187,6 +187,10 @@ local QDEF = QuestDef.Define
             QuestUtil.SpawnQuest("RACE_LIVING_WITH_ADVISOR")
             quest:DefFn("DeltaGeneralSupport", quest:DefFn("GetCurrentExpectation", quest.param.start_on_day))
             quest.param.enable_support_screen = true
+            if quest.param.start_on_day >= 3 then
+                QuestUtil.SpawnQuest("CAMPAIGN_NEGOTIATE_ALLIANCES")
+                QuestUtil.SpawnQuest("CAMPAIGN_BODYGUARD")
+            end
         end
 
         QuestUtil.SpawnQuest("CAMPAIGN_SHILLING")
