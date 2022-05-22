@@ -308,6 +308,57 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             StateGraphUtil.AddLeaveLocation(cxt)
         end
     end)
+    :State("STATE_CONFLICTING_ALLIES")
+        :Loc{
+            DIALOG_INTRO = [[
+                opponent:
+                    !right
+                    [p] Sup.
+                player:
+                    Hi.
+                opponent:
+                    We are allies, right?
+                    So do you mind if you just drop out of the race? We can get more votes this way.
+            ]],
+            OPT_AGREE = "Agree to drop out of the race",
+            DIALOG_AGREE = [[
+                player:
+                    [p] Okay I agree.
+                opponent:
+                    Very well then. We can do great things together.
+                * Great! You made an ally.
+                * A shame that this campaign is about you, not {opponent}.
+                * Dropping out of the race means you lose.
+            ]],
+            OPT_REFUSE = "Refuse to drop out",
+            DIALOG_REFUSE = [[
+                player:
+                    [p] Nah, I like my odds.
+                opponent:
+                    You don't share my vision? Fine.
+                    This means we can't be allies anymore.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:ReassignCastMember("opponent", cxt.enc.scratch.conflicting_allies[1])
+            cxt:Dialog("DIALOG_INTRO")
+
+            cxt:Opt("OPT_AGREE")
+                :Dialog("DIALOG_AGREE")
+                :Fn(function(cxt)
+                    DemocracyUtil.AddAutofail(cxt, false)
+                end)
+
+            cxt:Opt("OPT_REFUSE")
+                :Dialog("DIALOG_REFUSE")
+                :Fn(function(cxt)
+                    for i, agent in ipairs(cxt.enc.scratch.conflicting_allies) do
+                        DemocracyUtil.SetAlliance(agent, false)
+                    end
+                    cxt.quest:Complete("starting_out")
+                    StateGraphUtil.AddLeaveLocation(cxt)
+                end)
+        end)
     :State("STATE_FAVOR")
         :Loc{
             DIALOG_INTRO = [[
