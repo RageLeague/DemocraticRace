@@ -187,6 +187,10 @@ local QDEF = QuestDef.Define
             QuestUtil.SpawnQuest("RACE_LIVING_WITH_ADVISOR")
             quest:DefFn("DeltaGeneralSupport", quest:DefFn("GetCurrentExpectation", quest.param.start_on_day))
             quest.param.enable_support_screen = true
+            if quest.param.start_on_day >= 3 then
+                QuestUtil.SpawnQuest("CAMPAIGN_NEGOTIATE_ALLIANCES")
+                QuestUtil.SpawnQuest("CAMPAIGN_BODYGUARD")
+            end
         end
 
         QuestUtil.SpawnQuest("CAMPAIGN_SHILLING")
@@ -928,9 +932,25 @@ local QDEF = QuestDef.Define
         end
         quest.param.alliances = quest.param.alliances or {}
         if turn_on then
-            table.insert_unique(quest.param.alliances, agent)
+            if not table.arraycontains(quest.param.alliances, agent) then
+                table.insert(quest.param.alliances, agent)
+                quest:DefFn("DeltaGeneralSupport", 8, "ALLIANCE_FORMED")
+                local opposition_data = DemocracyUtil.GetOppositionData(agent)
+                if opposition_data then
+                    quest:DefFn("DeltaGroupFactionSupport", opposition_data.faction_support, 2, "ALLIANCE_FORMED" )
+                    quest:DefFn("DeltaGroupWealthSupport", opposition_data.wealth_support, 2, "ALLIANCE_FORMED" )
+                end
+            end
         else
-            table.arrayremove(quest.param.alliances, agent)
+            if table.arraycontains(quest.param.alliances, agent) then
+                table.arrayremove(quest.param.alliances, agent)
+                quest:DefFn("DeltaGeneralSupport", -8, "ALLIANCE_BROKEN")
+                local opposition_data = DemocracyUtil.GetOppositionData(agent)
+                if opposition_data then
+                    quest:DefFn("DeltaGroupFactionSupport", opposition_data.faction_support, -2, "ALLIANCE_BROKEN" )
+                    quest:DefFn("DeltaGroupWealthSupport", opposition_data.wealth_support, -2, "ALLIANCE_BROKEN" )
+                end
+            end
         end
     end,
     GetAlliance = function(quest, agent)

@@ -19,15 +19,33 @@ local QDEF = QuestDef.Define
 
     postcondition = function(quest)
         local parent_quest = quest.param.parent_quest
+        if parent_quest and parent_quest.param.vote_result then
+            local has_primary = false
+            local result = parent_quest.param.vote_result
+            if result[1] and result[1][1] then
+                if result[1][1] ~= TheGame:GetGameState():GetPlayerAgent() then
+                    has_primary = true
+                    quest:AssignCastMember("opponent", result[1][1])
+                end
+            end
+            if result[2] and result[2][1] then
+                if result[2][1] ~= TheGame:GetGameState():GetPlayerAgent() then
+                    if not has_primary then
+                        has_primary = true
+                        quest:AssignCastMember("opponent", result[2][1])
+                    else
+                        quest:AssignCastMember("secondary_opponent", result[2][1])
+                    end
+                end
+            end
+            quest.param.previous_bad_debate = parent_quest.param.low_player_votes
+            return true
+        end
+        -- This is used as a fallback in case the new system fails, or if the parent quest does not have enough info.
         if parent_quest then
             quest.param.previous_bad_debate = parent_quest.param.previous_bad_debate
         end
-        local valid_candidates = {}
-        for id, data in pairs(DemocracyConstants.opposition_data) do
-            if DemocracyUtil.IsCandidateInRace(data.cast_id) then
-                table.insert(valid_candidates, data.cast_id)
-            end
-        end
+        local valid_candidates = DemocracyUtil.GetAllOppositions()
         table.sort(valid_candidates, function(a,b) return DemocracyUtil.GetOppositionViability(a) > DemocracyUtil.GetOppositionViability(a) end)
 
         if #valid_candidates == 0 then
