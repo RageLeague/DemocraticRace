@@ -6660,7 +6660,7 @@ return {
           enter_x = 0,
           enter_y = 0,
           id = 231,
-          location_name = "GB_CAFFY ",
+          location_name = "GB_CAFFY",
           location_tags = "",
           node_type = "LOCATION",
           plax_flags = 119,
