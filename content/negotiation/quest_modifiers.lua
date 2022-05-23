@@ -2165,6 +2165,60 @@ local MODIFIERS =
             self.engine:Lose()
         end,
     },
+    FELLEMO_SLIPPERY =
+    {
+        name = "Slippery",
+        desc = "For every {1*card|{1} cards} played, one of {2}'s attack intents changes its target.",
+        alt_desc = " ({1} {1*card|cards} remaining)",
+        desc_fn = function(self, fmt_str)
+            if self.change_threshold == 1 then
+                return loc.format(fmt_str, self.change_threshold, self:GetOwnerName())
+            else
+                if self.cards_played then
+                    return loc.format(fmt_str, self.change_threshold, self:GetOwnerName()) .. loc.format((self.def or self):GetLocalizedString("ALT_DESC"), self.change_threshold - self.cards_played)
+                else
+                    return loc.format(fmt_str, self.change_threshold, self:GetOwnerName())
+                end
+            end
+        end,
+
+        change_threshold = 3,
+        change_threshold_scale = {4, 3, 2, 1},
+        -- cards_played = 0,
+
+        modifier_type = MODIFIER_TYPE.CORE,
+
+        OnInit = function( self )
+            local boss_scale = GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2
+            if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                self.change_threshold = self.change_threshold_scale[clamp(boss_scale, 1, #self.change_threshold_scale)]
+            end
+            self.cards_played = 0
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.POST_RESOLVE ] = function(self, minigame, card)
+                if card.negotiator == self.anti_negotiator then
+                    self.cards_played = (self.cards_played or 0) + 1
+                    if self.cards_played >= self.change_threshold then
+                        self.cards_played = 0
+                        local candidates = {}
+                        for i, card in ipairs(self.negotiator.prepared_cards) do
+                            if card.min_persuasion and card.max_persuasion then
+                                table.insert(candidates, card)
+                            end
+                        end
+                        if #candidates > 0 then
+                            local chosen = table.arraypick(candidates)
+                            chosen.target = nil
+                        end
+                        self:NotifyTriggered()
+                    end
+                end
+            end,
+        },
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )

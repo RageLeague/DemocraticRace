@@ -38,7 +38,7 @@ local NEW_BEHAVIOURS = {
     {
         OnInitDemocracy = function(self, old_init, difficulty)
             local relationship_delta = self.agent and (self.agent:GetRelationship() - RELATIONSHIP.NEUTRAL) or 0
-            self:SetPattern( self.BasicCycle )
+            self:SetPattern( self.DemocracyBasicCycle )
             local modifier = self.negotiator:AddModifier("INTERVIEWER")
             -- modifier.agents = shallowcopy(self.agents)
             -- modifier:InitModifiers()
@@ -58,7 +58,7 @@ local NEW_BEHAVIOURS = {
             self.params.questions_answered = 0
             self.available_issues = copyvalues(DemocracyConstants.issue_data)
         end,
-        BasicCycle = function( self, turns )
+        DemocracyBasicCycle = function( self, turns )
             -- Double attack every 2 rounds; Single attack otherwise.
             if self.difficulty >= 4 and turns % 2 == 0 then
                 self:ChooseGrowingNumbers( 3, -1 )
@@ -96,7 +96,21 @@ local NEW_BEHAVIOURS = {
     SPARK_CONTACT =
     {
         OnInitDemocracy = function(self, old_init, ...)
+            if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                self.negotiator:AddModifier("FELLEMO_SLIPPERY")
+                self:SetPattern( self.DemocracyBossCycle )
+                return
+            end
             return old_init(self, ...)
+        end,
+        DemocracyBossCycle = function( self, turns )
+            if turns % 4 == 1 then
+                self:ChooseGrowingNumbers( 2, 0, 0.75 )
+            elseif turns % 4 == 3 then
+                self:ChooseGrowingNumbers( 3, 0, 0.6 )
+            else
+                self:ChooseGrowingNumbers( 1, -1 )
+            end
         end,
     },
     KALANDRA =
