@@ -2219,6 +2219,46 @@ local MODIFIERS =
             end,
         },
     },
+    WAIVERS =
+    {
+        name = "Waivers",
+        desc = "When {1} creates an argument, destroy it.\n\nWhen destroyed, add a number of {bad_deal} cards to the draw pile equal to the number of remaining stacks on this argument.\n\nReduce <b>Waivers</b> by 1 at the beginning of {2}'s turn.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOpponentName(), self:GetOwnerName())
+        end,
+
+        max_resolve = 4,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        OnBounty = function(self)
+            if self.stacks > 0 then
+                local cards = {}
+                for i = 1, self.stacks do
+                    local card = Negotiation.Card( "bad_deal", self.engine:GetPlayer() )
+                    table.insert( cards, card )
+                end
+                self.engine:InceptCards( cards, self )
+            end
+        end,
+
+        OnInit = function(self)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
+                if negotiator == self.negotiator then
+                    negotiator:RemoveModifier( self, 1 )
+                end
+            end,
+            [ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
+                if source and source.negotiator == self.anti_negotiator and modifier.modifier_type == MODIFIER_TYPE.ARGUMENT then
+                    modifier.negotiator:DestroyModifier(modifier, self)
+                end
+            end,
+        },
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )

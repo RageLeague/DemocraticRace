@@ -95,9 +95,16 @@ local NEW_BEHAVIOURS = {
     },
     SPARK_CONTACT =
     {
+        WAIVERS_STACKS = {1, 2, 2, 3},
         OnInitDemocracy = function(self, old_init, ...)
             if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                local boss_scale = GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2
+
                 self.negotiator:AddModifier("FELLEMO_SLIPPERY")
+
+                self.waivers = self:AddArgument( "WAIVERS" )
+                self.waivers.stacks = self.WAIVERS_STACKS[clamp(boss_scale, 1, #self.WAIVERS_STACKS)]
+
                 self:SetPattern( self.DemocracyBossCycle )
                 return
             end
@@ -110,6 +117,10 @@ local NEW_BEHAVIOURS = {
                 self:ChooseGrowingNumbers( 3, 0, 0.6 )
             else
                 self:ChooseGrowingNumbers( 1, -1 )
+            end
+
+            if turns % 4 == 2 then
+                self:ChooseCard(self.waivers)
             end
         end,
     },
