@@ -1054,6 +1054,9 @@ QDEF:AddConvo("do_debate")
                     main_quest.param.good_debate_scrum = true
                 end
             end
+            if main_quest then
+                main_quest.param.debate_scrum_result = cxt.quest.param.popularity_rankings
+            end
 
             local METRIC_DATA =
             {

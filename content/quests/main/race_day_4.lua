@@ -187,6 +187,8 @@ QDEF:AddConvo("starting_out", "primary_advisor")
     :Fn(function(cxt)
         -- Generate advisor favor
         cxt.quest.param.previous_bad_debate = TheGame:GetGameState():GetMainQuest() and (TheGame:GetGameState():GetMainQuest().param.good_debate_scrum == false)
+        cxt.quest.param.debate_scrum_result = TheGame:GetGameState():GetMainQuest() and TheGame:GetGameState():GetMainQuest().param.debate_scrum_result
+
         do
             cxt.enc.scratch.advisor_favor = cxt:GetCastMember("primary_advisor")
                 and cxt:GetCastMember("primary_advisor"):GetRelationship() == RELATIONSHIP.LIKED
@@ -200,7 +202,17 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         end
         -- Generate opposition alliance
         do
-            local result = DemocracyUtil.SummarizeVotes(DemocracyUtil.SimulateVoting())
+            local result = DemocracyUtil.SummarizeVotes(DemocracyUtil.SimulateVoting({
+                score_bias = function(val, agent)
+                    if cxt.quest.param.debate_scrum_result then
+                        local idx = table.arrayfind(cxt.quest.param.debate_scrum_result, agent)
+                        if idx then
+                            return val + math.floor(20 / idx)
+                        end
+                    end
+                    return val
+                end,
+            }))
             local vote_result = {}
             local total_votes = 0
             for candidate, count in pairs(result.vote_count) do
