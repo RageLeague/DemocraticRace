@@ -895,12 +895,17 @@ function DemocracyUtil.GetOppositionVoterSupport(agent, opponent_id, base_suppor
     end
     return support
 end
-function DemocracyUtil.SimulateVoterChoice(agent, available_opponents)
+function DemocracyUtil.SimulateVoterChoice(agent, param)
     local choice_table = {}
     local loved_person = nil
+    param = param or {}
+    local available_opponents = param.available_opponents
+    local score_bias = param.score_bias or function(x) return x end
     -- Will always vote a loved person, and will never vote a hated person
     if agent:GetRelationship() > RELATIONSHIP.HATED then
-        table.insert(choice_table, { TheGame:GetGameState():GetPlayerAgent(), DemocracyUtil.GetSupportForAgent(agent) + SUPPORT_DELTA[agent:GetRelationship()] + DemocracyUtil.RandomGauss(0, 100) })
+        local score = DemocracyUtil.GetSupportForAgent(agent) + SUPPORT_DELTA[agent:GetRelationship()] + DemocracyUtil.RandomGauss(0, 100)
+        score = score_bias(score, TheGame:GetGameState():GetPlayerAgent())
+        table.insert(choice_table, { TheGame:GetGameState():GetPlayerAgent(), score })
         if agent:GetRelationship() >= RELATIONSHIP.LOVED then
             loved_person = TheGame:GetGameState():GetPlayerAgent()
         end
@@ -908,7 +913,9 @@ function DemocracyUtil.SimulateVoterChoice(agent, available_opponents)
     for i, id in ipairs(available_opponents or DemocracyUtil.GetAllOppositions()) do
         local opponent = TheGame:GetGameState():GetMainQuest():GetCastMember(id)
         if agent:GetRelationship(opponent) > RELATIONSHIP.HATED then
-            table.insert(choice_table, { opponent, DemocracyUtil.GetOppositionVoterSupport(agent, id) + SUPPORT_DELTA[agent:GetRelationship(opponent)] + DemocracyUtil.RandomGauss(0, 100) })
+            local score = DemocracyUtil.GetOppositionVoterSupport(agent, id) + SUPPORT_DELTA[agent:GetRelationship(opponent)] + DemocracyUtil.RandomGauss(0, 100)
+            score = score_bias(score, opponent)
+            table.insert(choice_table, { opponent, score })
             if agent:GetRelationship(opponent) >= RELATIONSHIP.LOVED then
                 if loved_person then
                     return false, "CONFLICTING_LOVED" -- If love two candidates somehow, don't vote
@@ -932,11 +939,11 @@ function DemocracyUtil.SimulateVoterChoice(agent, available_opponents)
         return choice_table[1][1], "VOTE_CASTED"
     end
 end
-function DemocracyUtil.SimulateVoting(available_opponents, include_phantoms)
+function DemocracyUtil.SimulateVoting(param, include_phantoms)
     local result = {}
     for i, agent in TheGame:GetGameState():Agents() do
         if DemocracyUtil.CanVote(agent) then
-            result[agent] = DemocracyUtil.SimulateVoterChoice(agent, available_opponents)
+            result[agent] = DemocracyUtil.SimulateVoterChoice(agent, param)
         end
     end
     if include_phantoms then
@@ -946,7 +953,7 @@ function DemocracyUtil.SimulateVoting(available_opponents, include_phantoms)
             for i = 1, 6 - phantom_agent:GetRenown() do
                 local agent = DemocracyClass.PhantomAgent(id)
                 print(agent)
-                result[agent] = DemocracyUtil.SimulateVoterChoice(agent, available_opponents)
+                result[agent] = DemocracyUtil.SimulateVoterChoice(agent, param)
             end
         end
     end
@@ -962,8 +969,8 @@ function DemocracyUtil.SummarizeVotes(voting_results)
     end
     return result
 end
-function DemocracyUtil.DBGVoting(available_opponents, include_phantoms)
-    DBG(DemocracyUtil.SummarizeVotes(DemocracyUtil.SimulateVoting(available_opponents, include_phantoms)))
+function DemocracyUtil.DBGVoting(param, include_phantoms)
+    DBG(DemocracyUtil.SummarizeVotes(DemocracyUtil.SimulateVoting(param, include_phantoms)))
 end
 function DemocracyUtil.CalculatePartyStrength(members)
     if is_instance(members, Party) then
