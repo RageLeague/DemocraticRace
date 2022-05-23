@@ -2183,7 +2183,7 @@ local MODIFIERS =
         end,
 
         change_threshold = 3,
-        change_threshold_scale = {4, 3, 2, 1},
+        change_threshold_scale = {5, 4, 3, 2},
         -- cards_played = 0,
 
         modifier_type = MODIFIER_TYPE.CORE,
