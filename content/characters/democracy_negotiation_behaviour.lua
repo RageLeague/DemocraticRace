@@ -123,7 +123,7 @@ local NEW_BEHAVIOURS = {
                 self:ChooseGrowingNumbers( 1, -1 )
             end
 
-            if turns % 4 == 2 then
+            if turns % 4 == 1 then
                 self:ChooseCard(self.waivers)
             end
 

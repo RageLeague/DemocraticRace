@@ -2222,7 +2222,7 @@ local MODIFIERS =
     WAIVERS =
     {
         name = "Waivers",
-        desc = "When {1} creates an argument, destroy it.\n\nWhen destroyed, add a number of {bad_deal} cards to the draw pile equal to the number of remaining stacks on this argument.\n\nReduce <b>Waivers</b> by 1 at the beginning of {2}'s turn.",
+        desc = "When {1} creates an argument, remove it.\n\nWhen destroyed, add a number of {bad_deal} cards to the draw pile equal to the number of remaining stacks on this argument.\n\nReduce <b>Waivers</b> by 1 at the beginning of {2}'s turn.",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOpponentName(), self:GetOwnerName())
         end,
@@ -2254,7 +2254,7 @@ local MODIFIERS =
             end,
             [ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
                 if source and source.negotiator == self.anti_negotiator and modifier.modifier_type == MODIFIER_TYPE.ARGUMENT then
-                    modifier.negotiator:DestroyModifier(modifier, self)
+                    modifier.negotiator:RemoveModifier(modifier, modifier.stacks, self)
                 end
             end,
         },
