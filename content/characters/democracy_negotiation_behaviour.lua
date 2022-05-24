@@ -105,6 +105,10 @@ local NEW_BEHAVIOURS = {
                 self.waivers = self:AddArgument( "WAIVERS" )
                 self.waivers.stacks = self.WAIVERS_STACKS[clamp(boss_scale, 1, #self.WAIVERS_STACKS)]
 
+                self.attacks = self:MakePicker()
+                self.attacks:AddID( "straw_man", 1 )
+                self.attacks:AddID( "ai_appropriate_card", 1 )
+
                 self:SetPattern( self.DemocracyBossCycle )
                 return
             end
@@ -122,6 +126,8 @@ local NEW_BEHAVIOURS = {
             if turns % 4 == 2 then
                 self:ChooseCard(self.waivers)
             end
+
+            self.attacks:ChooseCard()
         end,
     },
     KALANDRA =
