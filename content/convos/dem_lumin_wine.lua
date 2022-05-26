@@ -1,13 +1,36 @@
 Convo("DEM_LUMIN_WINE")
     :Priority(CONVO_PRIORITY_HIGH)
+    :Quips{
+        tags = "buy_wine",
+        [[
+            player:
+                !intrigue
+                Got any more of that blue for me?
+            agent:
+                !give
+                Haven't run out yet. Have a bottle.
+        ]],
+        [[
+            player:
+                !happy
+                How's another bottle for me? I'll pay!
+            agent:
+                !give
+                It's your my friend, as long as you have enough shills.
+        ]],
+        [[
+            player:
+                !point
+                Top shelf, my bartender, top shelf!
+            agent:
+                !give
+                I hear ya, I hear ya. Have some wine.
+        ]],
+    }
     :Loc{
         OPT_BUY = "Buy {1#card}",
         DIALOG_BUY_LUMIN_WINE = [[
-            player:
-                [p] Can I buy some Lumin Wine?
-            agent:
-                !permit
-                It's yours, my friend.
+            %buy_wine
         ]],
     }
     :Hub(function(cxt, who)
