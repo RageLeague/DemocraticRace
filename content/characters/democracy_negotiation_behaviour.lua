@@ -118,11 +118,11 @@ local NEW_BEHAVIOURS = {
         end,
         DemocracyBossCycle = function( self, turns )
             if turns % 4 == 1 then
-                self:ChooseGrowingNumbers( 2, 0, 0.8 )
+                self:ChooseGrowingNumbers( 2, -1 )
             elseif turns % 4 == 3 then
-                self:ChooseGrowingNumbers( 3, 0, 0.7 )
+                self:ChooseGrowingNumbers( 3, 0, 0.8 )
             else
-                self:ChooseGrowingNumbers( 1, -1 )
+                self:ChooseGrowingNumbers( 1, 0 )
             end
 
             if turns % 4 == 1 then
@@ -132,6 +132,9 @@ local NEW_BEHAVIOURS = {
                 local stacks = self.negotiator:GetModifierInstances( "EXPLOITATION" )
                 if stacks == 0 then
                     self:ChooseCard(self.exploitation)
+                    self:ChooseComposure( 1, 2, 3 )
+                else
+                    self:ChooseComposure( 1, 3, 7 )
                 end
             end
 
