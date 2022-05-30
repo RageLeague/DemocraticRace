@@ -2259,6 +2259,61 @@ local MODIFIERS =
             end,
         },
     },
+    EXPLOITATION =
+    {
+        name = "Exploitation",
+        desc = "If this argument causes resolve loss and this argument is not destroyed yet, {INCEPT} {1} {VULNERABILITY}.\n\nWhen destroyed, remove half of {2}'s {VULNERABILITY} and deal double that damage to a random argument controlled by {2}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.vulnerability_count, self:GetOpponentName())
+        end,
+
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        min_persuasion = 1,
+        max_persuasion = 3,
+
+        max_persuasion_scale = {2, 3, 4, 5},
+
+        max_resolve = 5,
+
+        vulnerability_count = 2,
+        vulnerability_scale = {1, 2, 2, 3},
+
+        target_enemy = TARGET_ANY_RESOLVE,
+
+        OnBeginTurn = function( self, minigame )
+            self:ApplyPersuasion()
+        end,
+
+        OnInit = function( self )
+            local boss_scale = GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2
+            if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                self.max_persuasion = self.max_persuasion_scale[clamp(boss_scale, 1, #self.max_persuasion_scale)]
+                self.vulnerability_count = self.vulnerability_scale[clamp(boss_scale, 1, #self.vulnerability_scale)]
+            end
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
+        end,
+
+        OnBounty = function(self)
+            local count = self.anti_negotiator:GetModifierStacks("VULNERABILITY")
+            local delta_count = math.ceil(count / 2)
+            if delta_count > 0 then
+                self.anti_negotiator:DeltaModifier("VULNERABILITY", -delta_count, self)
+                self.target = nil
+                self.engine:ApplyPersuasion(self, nil, 2 * delta_count, 2 * delta_count)
+            end
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+                if source == self and damage > defended then
+                    self:NotifyTriggered()
+                    target.negotiator:AddModifier("VULNERABILITY", self.vulnerability_count, self)
+                end
+            end,
+        },
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )

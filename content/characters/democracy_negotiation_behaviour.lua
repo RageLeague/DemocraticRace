@@ -105,6 +105,8 @@ local NEW_BEHAVIOURS = {
                 self.waivers = self:AddArgument( "WAIVERS" )
                 self.waivers.stacks = self.WAIVERS_STACKS[clamp(boss_scale, 1, #self.WAIVERS_STACKS)]
 
+                self.exploitation = self:AddArgument( "EXPLOITATION" )
+
                 self.attacks = self:MakePicker()
                 self.attacks:AddID( "straw_man", 1 )
                 self.attacks:AddID( "ai_appropriate_card", 1 )
@@ -116,15 +118,21 @@ local NEW_BEHAVIOURS = {
         end,
         DemocracyBossCycle = function( self, turns )
             if turns % 4 == 1 then
-                self:ChooseGrowingNumbers( 2, 0, 0.75 )
+                self:ChooseGrowingNumbers( 2, 0, 0.8 )
             elseif turns % 4 == 3 then
-                self:ChooseGrowingNumbers( 3, 0, 0.6 )
+                self:ChooseGrowingNumbers( 3, 0, 0.7 )
             else
                 self:ChooseGrowingNumbers( 1, -1 )
             end
 
             if turns % 4 == 1 then
                 self:ChooseCard(self.waivers)
+            end
+            if turns % 2 == 0 then
+                local stacks = self.negotiator:GetModifierInstances( "EXPLOITATION" )
+                if stacks == 0 then
+                    self:ChooseCard(self.exploitation)
+                end
             end
 
             self.attacks:ChooseCard()
