@@ -130,11 +130,11 @@ local NEW_BEHAVIOURS = {
             end
             if turns % 2 == 0 then
                 local stacks = self.negotiator:GetModifierInstances( "EXPLOITATION" )
-                if stacks == 0 then
+                if stacks < 2 then
                     self:ChooseCard(self.exploitation)
-                    self:ChooseComposure( 1, 2, 3 )
+                    self:ChooseComposure( 1, 2, 6 )
                 else
-                    self:ChooseComposure( 1, 3, 7 )
+                    self:ChooseComposure( 1, 4, 10 )
                 end
             end
 
