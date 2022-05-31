@@ -112,7 +112,7 @@ QDEF:AddConvo()
             ]],
             DIALOG_INTRO_UNDERDOG_GOOD = [[
                 * {1#agent} may not have a history as impressive as the other oshnus, but {1.heshe} has shocked everyone with {1.hisher} performance in recent races.
-                * Perhaps {1.himher} can pull off the same stunt as the previous race.
+                * Perhaps {1.heshe} can pull off the same stunt as the previous race.
             ]],
             DIALOG_INTRO_UNDERDOG = [[
                 * {1#agent} is a newcomer eager to make a name for {1.himher}self. You can see {1.hisher} zeal from up here in the gallery.
@@ -136,6 +136,8 @@ QDEF:AddConvo()
             cxt:Dialog("DIALOG_INTRO")
             for i, snail in ipairs(cxt.quest.param.snails) do
                 cxt:Dialog("DIALOG_INTRO_" .. cxt.quest.param.snail_traits[i], snail)
+                --assigning them a role just so they can be used in the quips later.
+                cxt:ReassignCastMember("snail" .. i, snail)
             end
             cxt:GoTo("STATE_BET")
         end)
@@ -230,52 +232,69 @@ QDEF:AddConvo()
                 tags = "race_pt1",
                 [[
                     agent:
+						!clap
                         And there off! This is one exciting race we have!
                         {snail1} pulls ahead, {snail2} in close competition.
                 ]],
                 [[
                     agent:
+						!intrigue
                         The race starts, though it appears {snail3}'s rider is asleep at the reins.
+						...
                         Folks, it appears the {snail3} is tired of waiting and is just starting the race themself.
                 ]],
                 [[
                     agent:
+						!angry
                         On your mark, get set-
+						!surprised
                         Wait, {snail3} is already speeding ahead of the others!
                         The other racers are quick to catch up though. This cheat didn't earn them that much of a lead. 
                 ]],
+			},
+			{
                 tags = "race_pt2",
                 [[
                     agent:
                         While we let the racers coast, it's a good time to talk about this Race's sponsor.
+						!neutral
                         This race was sponsored by Rai-
-                        !surprised
+                        !point
                         Hold that thought, folks! There's been an upset in the race!
                 ]],
                 [[
                     agent:
+						!eureka
                         {snail1} seems to be falling back, but not out of the race yet!
-                        {snail2} is taking that chence, and going ahead-
+                        {snail2} is taking that chance, and going ahead-
+						!happy
                         Oh, and streaking up to the front is {snail3} by turning on the rocket thrusters!
                 ]],
                 [[
                     agent:
+						!point
                         It appears the race is going steady, except wait!
                         It seems {snail2}'s racer has stopped their snail to eat a sandwich! 
+						!intrigue
                         And it looks like they're done, and have lost a surprisingly small amount of distance on the other races.
                 ]],
+			},
+			{
                 tags = "race_pt3",
                 [[
                     agent:
+						!happy
                         All of the snails crossed the finish at the same time! I can't believe it myself, folks!
                         Our referees are determining the victor now...
                         And, by just an eye stalk, the winner is...
                 ]],
                 [[
                     agent:
+						!point
                         {snail3} has the impressive advantage but wait, what's this?
                         !scared
                         {snail3} has seen a bird and is chasing after it! Their rider is corraling them back, but this will cost them.
+						!happy
                         It's close, but the winner is crossing the line now, and it's...
                 ]],
                 [[
@@ -284,6 +303,7 @@ QDEF:AddConvo()
                         Or it would be, if {snail2}'s rider wasn't racing away last night's drink.
                         !flinch
                         Oh, and it's a snail crash into the wall. That's gonna cost them distance.
+						!happy
                         All of them are pulling into the finish line, and the winner is...
                 ]],
             },
@@ -307,8 +327,7 @@ QDEF:AddConvo()
                 *** The snail you bet on lost! You don't get any money.
             ]],
             DIALOG_WIN = [[
-                * You glance down at your ticket with an excited smile.
-                * You give the Bookie your winning ticket and receive a massive pile of shills.
+                * You stride over to the booth and turn your ticket into tons of cash.
                 *** The snail you bet on won! You got your bet and then some!
             ]],
         }
