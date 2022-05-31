@@ -107,7 +107,7 @@ QDEF:AddConvo()
                 Money alone doesn't get you the good wares. 
                 !hips
                 You've gotta be the right kind of person. Someone trustworthy.
-                Now if you're done asking about the back room, I've got tons of things <i>you're</> allowed to take.
+                Now if you're done asking about the back room, I've got tons of things <i>you're</> allowed to buy.
         ]],
 
         OPT_VISIT_THE_PARTY = "Get access to the back room",
