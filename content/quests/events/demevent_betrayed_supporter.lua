@@ -68,11 +68,25 @@ QDEF:AddConvo()
             ]],
             DIALOG_CONVINCE_SUCCESS = [[
                 player:
+                    !thumb
+                    [p] Look, I can't appease everyone with everything I do.
+                    But sometimes we all need to make compromises in order to achieve things we want.
                     !overthere
-                    [p] And that's why, with {bad_stance#pol_stance}, Havaria will be a better place overall.
+                    Just look at all the other candidates. All corrupt or outright criminal.
+                    But me? I am your only realistic choice.
+                    If you want someone who actually cares about the Havarian people in the office, you need to look past your narrow view and at the bigger picture.
                 supporter:
-                    !suspicious
-                    I'm still not entirely convinced that {bad_stance#pol_stance} is good, but you seem to know what you're doing. I trust you to make it work.
+                    !sigh
+                    As much as it pains me to admit, you are absolutely right.
+                    We can't always get what we want, so we make compromises.
+                player:
+                    !cruel
+                    I trust you would continue to support me?
+                supporter:
+                    Yeah, even if it means supporting someone who supports {bad_stance#pol_stance}.
+                player:
+                    !happy
+                    That's what I like to hear.
             ]],
             DIALOG_CONVINCE_FAILURE = [[
                 player:
