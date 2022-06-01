@@ -11,11 +11,11 @@ function DemocracyUtil.AddDemocracyNegotiationBehaviour(id, additional_data)
 
     local old_init = char_data.negotiation_data.behaviour.OnInit
 
-    char_data.negotiation_data.behaviour.OnInit = function(...)
+    char_data.negotiation_data.behaviour.OnInit = function(self, ...)
         if DemocracyUtil.IsDemocracyCampaign() then
-            return char_data.negotiation_data.behaviour.OnInitDemocracy(...)
+            return char_data.negotiation_data.behaviour.OnInitDemocracy(self, old_init, ...)
         else
-            return old_init(...)
+            return old_init(self, ...)
         end
     end
 end
@@ -24,7 +24,7 @@ local NEW_BEHAVIOURS = {
     VIXMALLI =
     {
         -- Use standard priest negotiation
-        OnInitDemocracy = function(self, ...)
+        OnInitDemocracy = function(self, old_init, ...)
             local res = Content.GetCharacterDef( "PRIEST" ).negotiation_data.behaviour.OnInit(self, ...)
             self:SetPattern( self.DemocracyDefaultCycle )
             return res
@@ -36,9 +36,9 @@ local NEW_BEHAVIOURS = {
     },
     HESH_AUCTIONEER =
     {
-        OnInitDemocracy = function(self, difficulty)
+        OnInitDemocracy = function(self, old_init, difficulty)
             local relationship_delta = self.agent and (self.agent:GetRelationship() - RELATIONSHIP.NEUTRAL) or 0
-            self:SetPattern( self.BasicCycle )
+            self:SetPattern( self.DemocracyBasicCycle )
             local modifier = self.negotiator:AddModifier("INTERVIEWER")
             -- modifier.agents = shallowcopy(self.agents)
             -- modifier:InitModifiers()
@@ -58,7 +58,7 @@ local NEW_BEHAVIOURS = {
             self.params.questions_answered = 0
             self.available_issues = copyvalues(DemocracyConstants.issue_data)
         end,
-        BasicCycle = function( self, turns )
+        DemocracyBasicCycle = function( self, turns )
             -- Double attack every 2 rounds; Single attack otherwise.
             if self.difficulty >= 4 and turns % 2 == 0 then
                 self:ChooseGrowingNumbers( 3, -1 )
@@ -85,6 +85,72 @@ local NEW_BEHAVIOURS = {
             end
             additional_questions = math.min(additional_questions + math.floor((self.difficulty - 1 + (turns % 2)) / 2), 3)
             self.modifier_picker:ChooseCards(additional_questions)
+        end,
+    },
+    MURDER_BAY_ADMIRALTY_CONTACT =
+    {
+        OnInitDemocracy = function(self, old_init, ...)
+            return old_init(self, ...)
+        end,
+    },
+    SPARK_CONTACT =
+    {
+        WAIVERS_STACKS = {1, 2, 2, 3},
+        OnInitDemocracy = function(self, old_init, ...)
+            if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                local boss_scale = GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2
+
+                self.negotiator:AddModifier("FELLEMO_SLIPPERY")
+
+                self.waivers = self:AddArgument( "WAIVERS" )
+                self.waivers.stacks = self.WAIVERS_STACKS[clamp(boss_scale, 1, #self.WAIVERS_STACKS)]
+
+                self.exploitation = self:AddArgument( "EXPLOITATION" )
+
+                self.attacks = self:MakePicker()
+                self.attacks:AddID( "straw_man", 1 )
+                self.attacks:AddID( "ai_appropriate_card", 1 )
+
+                self:SetPattern( self.DemocracyBossCycle )
+                return
+            end
+            return old_init(self, ...)
+        end,
+        DemocracyBossCycle = function( self, turns )
+            if turns % 4 == 1 then
+                self:ChooseGrowingNumbers( 2, -1 )
+            elseif turns % 4 == 3 then
+                self:ChooseGrowingNumbers( 3, 0, 0.8 )
+            else
+                self:ChooseGrowingNumbers( 1, 0 )
+            end
+
+            if turns % 4 == 1 then
+                self:ChooseCard(self.waivers)
+            end
+            if turns % 2 == 0 then
+                local stacks = self.negotiator:GetModifierInstances( "EXPLOITATION" )
+                if stacks < 2 then
+                    self:ChooseCard(self.exploitation)
+                    self:ChooseComposure( 1, 2, 5 )
+                else
+                    self:ChooseComposure( 2, 4, 10 )
+                end
+            end
+
+            self.attacks:ChooseCard()
+        end,
+    },
+    KALANDRA =
+    {
+        OnInitDemocracy = function(self, old_init, ...)
+            return old_init(self, ...)
+        end,
+    },
+    ANDWANETTE =
+    {
+        OnInitDemocracy = function(self, old_init, ...)
+            return old_init(self, ...)
         end,
     },
 }

@@ -88,6 +88,32 @@ lines:
   dialog:
   - |
     The invisible hand will correct the economy by itself! We should not disrupt its magic!
+- tags: [exclaim, s_pro_independence]
+  dialog:
+  - |
+    Havaria is an independent nation!
+  - |
+    Havaria must be free from Deltree's grasp!
+- tags: [exclaim, s_anti_independence]
+  dialog:
+  - |
+    Havaria is nothing without Deltree!
+  - |
+    Havaria is always part of Deltree, and anyone saying otherwise is a separationist!
+- tags: [exclaim, s_pro_security]
+  dialog:
+  - |
+    Someone needs to deal with the rampant crimes in Havaria!
+  - |
+    Havaria is a lawless land without order!
+  - |
+    Havaria people deserves to be protected from criminals!
+- tags: [exclaim, s_anti_security]
+  dialog:
+  - |
+    The Admiralty cares about no one but themselves!
+  - |
+    The people need to protect themselves! Not just from criminals, but also from the government!
 
 - tags: [exclaim, insult, s_pro_labor_law]
   dialog:

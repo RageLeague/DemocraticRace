@@ -1,8 +1,105 @@
 tag_scores:
   democratic_race: 0
+  many_paid_shills: 0
 lines:
 - push: [smalltalk]
 
+- tags: [democratic_race]
+  dialog:
+  - |
+    agent:
+      I must say, the upcoming election is certainly a change of pace.
+      !hips
+      Maybe the power struggle between factions will finally end, and things can finally get better.
+    player:
+      I really hope this is going to be the case as well.
+      !thumb
+      This is the goal of my campaign. To fight for a better future for Havaria.
+    agent:
+      !agree
+      Thanks, {player}. I knew I could count on you.
+  - |
+    agent:
+      !thought
+      The upcoming election is certainly going to be interesting.
+      I mean, we never had anything like this before, and I don't know what to think of it.
+      Only time will tell if this... democracy... is good for Havaria.
+    player:
+      !agree
+      I sure hope so too.
+      I will do everything in my power to make Havaria a better place.
+      !thumb
+      You have my word.
+    agent:
+      Thanks. That might be the confidence I needed.
+  - |
+    agent:
+      !suspicious
+      This entire democracy thing just sounds sketchy to me.
+      !permit
+      I mean, it's Havaria we are talking about.
+      You expect me to believe that everyone just decides to play nice and letting the people choose their own leader?
+      !thought
+      I wonder if there is some sort of hidden agenda going on.
+    player:
+      !thought
+      That is... indeed a possibility.
+      Still, it doesn't mean we shouldn't try, right?
+      I am going to keep on campaigning for presidency.
+      Even if there is some sort of agenda going on, I am going to put a wrench in their plans when I win the election.
+    agent:
+      !agree
+      That sounds like an agreeable arrangement to me.
+  - |
+    agent:
+      !thought
+      Something is troubling me.
+      I've heard stories of politicians paying other people to spread their ideologies.
+      !shrug
+      "Shilling", or so it's called.
+      When someone say something, I don't know if it's their genuine opinion or if they are paid to say that.
+      And the scary thing is, it might be working.
+      !sigh
+      Sometimes I wonder how much of my opinion is my own, and how much is influenced by these people.
+    {primary_advisor_diplomacy?
+    player:
+      !thought
+      The memes...
+    agent:
+      Uh... What?
+    player:
+      !facepalm
+      Just... I've spent too much time with someone, and now I'm starting to picking up his speech patterns.
+    }
+    {not primary_advisor_diplomacy?
+    player:
+      !thought
+      I never recognized how impactful shilling is, or how rampant it is.
+      There is a lot to take in.
+    }
+    agent:
+      Anyway, thanks for listening to my rant.
+- tags: [democratic_race, many_paid_shills]
+  notags: [bribed]
+  dialog:
+  - |
+    agent:
+      I heard you've been paying people to spread your ideology for you.
+      !hips
+      Why don't I get paid for doing so?
+    player:
+      !bashful
+      Uh...
+    agent:
+      !chuckle
+      Kidding, of course.
+      I am perfectly happy supporting your cause, if only to make Havaria a better place for all of us.
+    player:
+      !agree
+      Well said.
+    agent:
+      !neutral
+      But seriously though, if you want to pay me to spread your ideology, I would be more than happy to do so.
 - tags: [laborer, democratic_race, pro_labor_law]
   notags: [primary_advisor_diplomacy]
   dialog:

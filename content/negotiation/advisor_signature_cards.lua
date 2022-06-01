@@ -607,7 +607,7 @@ local CARDS = {
         icon = "DEMOCRATICRACE:assets/cards/talk_over.png",
 
         advisor = "ADVISOR_HOSTILE",
-        flags = CARD_FLAGS.HOSTILE,
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND,
         cost = 1,
 
         count = 1,
@@ -634,7 +634,7 @@ local CARDS = {
                         --     source.negotiator:AttackResolve(damage, self)
                         -- end
                         target.composure = target.composure + damage
-                        self.negotiator:DeltaModifier(self, 1, self)
+                        self.negotiator:DeltaModifier(self, -1, self)
                     end
                 end,
 
@@ -646,7 +646,7 @@ local CARDS = {
     },
     advisor_hostile_talk_over_plus = {
         name = "Sticky Talk Over",
-        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.STICKY,
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.STICKY | CARD_FLAGS.EXPEND,
     },
     advisor_hostile_talk_over_plus2 = {
         name = "Boosted Talk Over",

@@ -135,7 +135,7 @@ QDEF:AddConvo()
         end
     end)
     :Hub_Location( function(cxt)
-        if (cxt.location == cxt.quest:GetCastMember("shop")) then
+        if (cxt.location == cxt.quest:GetCastMember("shop")) and cxt.quest.param.access_granted then
             cxt:Opt("OPT_VISIT_THE_PARTY")
                 :Fn(function()
                     cxt:End()

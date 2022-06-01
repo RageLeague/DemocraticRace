@@ -230,7 +230,8 @@ function DemocracyUtil.RandomBystanderCondition(agent)
         and not (agent:GetBrain() and agent:GetBrain():GetWorkPosition() and agent:GetBrain():GetWorkPosition():ShouldBeWorking())
         and not agent:HasQuestMembership()
         -- Kick the auctioneer out of random bystander, as his negotiation behaviour is wack
-        and agent:GetContentID() ~= "HESH_AUCTIONEER"
+        -- Don't worry guys, it's no longer wack anymore
+        -- and agent:GetContentID() ~= "HESH_AUCTIONEER"
 end
 
 function DemocracyUtil.CanVote(agent)
@@ -270,7 +271,7 @@ end
 
 -- Get wealth based on renown.
 function DemocracyUtil.GetWealth(renown)
-    if is_instance(renown, Agent) then
+    if type(renown) == "table" then
         renown = renown:GetRenown() -- + (renown:HasTag("wealthy") and 1 or 0)
     end
     renown = renown or 1
@@ -834,30 +835,6 @@ function DemocracyUtil.GetVoterIntentionIndex(data)
 
     local delta = DemocracyUtil.TryMainQuestFn("GetGeneralSupport") - DemocracyUtil.TryMainQuestFn("GetCurrentExpectation")
 
-    -- Removed balancing because we shouldn't care about it, now that we balanced general support gain
-
-    -- if delta <= 5 then
-    --     voter_index = delta
-    -- else
-    --     delta = delta - 5
-    --     if delta >= 20 then
-    --         voter_index = voter_index + 5
-    --         delta = delta - 20
-    --     else
-    --         voter_index = voter_index + math.round(delta / 2)
-    --         delta = 0
-    --     end
-    --     -- if delta >= 20 then
-    --     --     voter_index = voter_index + 5
-    --     --     delta = delta - 20
-    --     -- else
-    --     --     voter_index = voter_index + math.round(delta / 4)
-    --     --     delta = 0
-    --     -- end
-    --     if delta > 0 then
-    --         voter_index = voter_index + math.round(delta / 5)
-    --     end
-    -- end
     if faction then
         voter_index = voter_index + (TheGame:GetGameState():GetMainQuest().param.faction_support[faction] or 0)
     end
@@ -872,13 +849,13 @@ function DemocracyUtil.GetEndorsement(index)
     -- Also this runs at O(1) time, so it doesn't really matter that much.
     -- And this reuses the relationship array. It's kinda redundant having another enum with the same elements
     -- representing similar things.
-    if index >= 75 then
+    if index >= 50 then
         return RELATIONSHIP.LOVED
-    elseif index >= 25 then
+    elseif index >= 20 then
         return RELATIONSHIP.LIKED
-    elseif index > -25 then
+    elseif index > -20 then
         return RELATIONSHIP.NEUTRAL
-    elseif index > -75 then
+    elseif index > -50 then
         return RELATIONSHIP.DISLIKED
     else
         return RELATIONSHIP.HATED
@@ -892,6 +869,108 @@ function DemocracyUtil.GetWealthEndorsement(wealth)
 end
 function DemocracyUtil.GetAgentEndorsement(agent)
     return DemocracyUtil.GetEndorsement(DemocracyUtil.GetVoterIntentionIndex{agent = agent})
+end
+function DemocracyUtil.GetAllOppositions(ignore_dropped_out)
+    local t = {}
+    for id, data in pairs(DemocracyConstants.opposition_data) do
+        if ignore_dropped_out or DemocracyUtil.IsCandidateInRace(data.cast_id) then
+            table.insert(t, data.cast_id)
+        end
+    end
+    return t
+end
+function DemocracyUtil.GetOppositionVoterSupport(agent, opponent_id, base_support)
+    if type(opponent_id) == "table" then
+        opponent_id = DemocracyUtil.GetOppositionID(opponent_id)
+    end
+    local support = (base_support or DemocracyUtil.GetCurrentExpectation()) + DemocracyUtil.GetOppositionSupport(opponent_id)
+    local opposition_data = DemocracyConstants.opposition_data[opponent_id]
+    if opposition_data then
+        if opposition_data.faction_support and opposition_data.faction_support[agent:GetFactionID()] then
+            support = support + 4 * opposition_data.faction_support[agent:GetFactionID()]
+        end
+        if opposition_data.wealth_support and opposition_data.wealth_support[DemocracyUtil.GetWealth(agent)] then
+            support = support + 4 * opposition_data.wealth_support[DemocracyUtil.GetWealth(agent)]
+        end
+    end
+    return support
+end
+function DemocracyUtil.SimulateVoterChoice(agent, param)
+    local choice_table = {}
+    local loved_person = nil
+    param = param or {}
+    local available_opponents = param.available_opponents
+    local score_bias = param.score_bias or function(x) return x end
+    -- Will always vote a loved person, and will never vote a hated person
+    if agent:GetRelationship() > RELATIONSHIP.HATED then
+        local score = DemocracyUtil.GetSupportForAgent(agent) + SUPPORT_DELTA[agent:GetRelationship()] + DemocracyUtil.RandomGauss(0, 100)
+        score = score_bias(score, TheGame:GetGameState():GetPlayerAgent())
+        table.insert(choice_table, { TheGame:GetGameState():GetPlayerAgent(), score })
+        if agent:GetRelationship() >= RELATIONSHIP.LOVED then
+            loved_person = TheGame:GetGameState():GetPlayerAgent()
+        end
+    end
+    for i, id in ipairs(available_opponents or DemocracyUtil.GetAllOppositions()) do
+        local opponent = TheGame:GetGameState():GetMainQuest():GetCastMember(id)
+        if agent:GetRelationship(opponent) > RELATIONSHIP.HATED then
+            local score = DemocracyUtil.GetOppositionVoterSupport(agent, id) + SUPPORT_DELTA[agent:GetRelationship(opponent)] + DemocracyUtil.RandomGauss(0, 100)
+            score = score_bias(score, opponent)
+            table.insert(choice_table, { opponent, score })
+            if agent:GetRelationship(opponent) >= RELATIONSHIP.LOVED then
+                if loved_person then
+                    return false, "CONFLICTING_LOVED" -- If love two candidates somehow, don't vote
+                else
+                    loved_person = opponent
+                end
+            end
+        end
+    end
+    if loved_person then
+        return loved_person, "LOVED_VOTE"
+    end
+    table.sort(choice_table, function(a, b) return a[2] > b[2] end)
+    if #choice_table == 0 then
+        return false, "NO_GOOD_CHOICES" -- No choice at all
+    elseif #choice_table == 1 then
+        return choice_table[1][1], "SINGLE_CANDIDATE" -- Lmao one candidate
+    elseif choice_table[1][2] - choice_table[#choice_table][2] <= 80 then
+        return false, "VOTER_APATHY" -- Voter apathy
+    else
+        return choice_table[1][1], "VOTE_CASTED"
+    end
+end
+function DemocracyUtil.SimulateVoting(param, include_phantoms)
+    local result = {}
+    for i, agent in TheGame:GetGameState():Agents() do
+        if DemocracyUtil.CanVote(agent) then
+            result[agent] = DemocracyUtil.SimulateVoterChoice(agent, param)
+        end
+    end
+    if include_phantoms then
+        -- Also add phantom votes
+        for i, id in ipairs(TheGame:GetGameState().region:GetContent().population) do
+            local phantom_agent = DemocracyClass.PhantomAgent(id)
+            for i = 1, 6 - phantom_agent:GetRenown() do
+                local agent = DemocracyClass.PhantomAgent(id)
+                print(agent)
+                result[agent] = DemocracyUtil.SimulateVoterChoice(agent, param)
+            end
+        end
+    end
+    return result
+end
+function DemocracyUtil.SummarizeVotes(voting_results)
+    local result = {
+        vote_count = {},
+        raw_data = voting_results,
+    }
+    for agent, vote in pairs(voting_results) do
+        result.vote_count[vote] = (result.vote_count[vote] or 0) + 1
+    end
+    return result
+end
+function DemocracyUtil.DBGVoting(param, include_phantoms)
+    DBG(DemocracyUtil.SummarizeVotes(DemocracyUtil.SimulateVoting(param, include_phantoms)))
 end
 function DemocracyUtil.CalculatePartyStrength(members)
     if is_instance(members, Party) then
@@ -1097,7 +1176,7 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, post_fn, potential_offset)
             end)
         else
             if problem_agent then
-                cxt.enc.scratch.is_problem_ally = problem_agent:GetRelationship() > RELATIONSHIP.NEUTRAL
+                cxt.enc.scratch.is_problem_ally = math.max(problem_agent:GetRelationship(), DemocracyUtil.TryMainQuestFn("GetAlliance", problem_agent) and RELATIONSHIP.LIKED or RELATIONSHIP.HATED) > RELATIONSHIP.NEUTRAL
                 cxt:Dialog("DIALOG_ALLIANCE_TALK_BAD_ALLY", problem_agent)
             else
                 cxt:Dialog("DIALOG_ALLIANCE_TALK_REJECT")

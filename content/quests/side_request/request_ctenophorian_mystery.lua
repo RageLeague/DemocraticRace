@@ -40,7 +40,7 @@ local QDEF = QuestDef.Define
     act_filter = DemocracyUtil.DemocracyActFilter,
     focus = QUEST_FOCUS.NEGOTIATION,
     tags = {"REQUEST_JOB"},
-    -- reward_mod = 0,
+    reward_mod = 0,
     can_flush = false,
 
     events = {
@@ -49,6 +49,13 @@ local QDEF = QuestDef.Define
         end,
 
     },
+
+    postcondition = function(quest)
+        quest.extra_reward = EXTRA_QUEST_REWARD.FREE_ITEM
+        quest.extra_reward_data = "quest_any_card_bonus"
+        -- print("The reward is replaced, brother")
+        return true
+    end,
 
     on_start = function(quest)
         quest:Activate("ask_info")
@@ -575,9 +582,60 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 !exit
                 * it is the sand of the beach you are confined to, the sand that you cannot go beyond, as the creature of your dreams slips further into the murky blue.
                 * Its face still shifts between identities, but you were so close to understanding, if only you could reach beyond the sand, if only you could see, IF ONLY-
-                * Yet you cannot, and you are plagued with those thoughts for the rest of the night, unable to decipher anything.
+                * Yet you cannot, and you are plagued with those thoughts, unable to decipher anything.
+            ]],
+            DIALOG_NO_INTERFERE = [[
+                * Every time you tried to decipher what you have seen, your mind frays further and further.
+                * As such, your mind is consumed by Hesh's madness.
             ]],
             OPT_LOSE = "Embrace the madness",
+            DIALOG_BENNI_INTERFERE = [[
+                * Yet just before you get completely consumed by Hesh's madness, you wake up, with {giver} violently shaking you.
+                player:
+                    !left
+                    !scared
+                giver:
+                    !right
+                    !scared
+                    {player}!
+                player:
+                    !surprised
+                    Wha-
+                giver:
+                    Calm down! Everything is fine!
+                player:
+                    Hesh- It-
+                giver:
+                    You are going to be fine!
+                    I will not lose another person I care about to Hesh's madness!
+                    !exit
+                player:
+                    !exit
+                * After a while, you finally calmed down.
+                giver:
+                    !right
+                player:
+                    !left
+                    !sigh
+                    Okay, I'm fine now.
+                giver:
+                    !agree
+                    That's a relief.
+                    Now, forget about the whole Hesh business. Drop the investigation into Hesh's taxonomy.
+                    !sigh
+                    Sometimes, absolute FACTS and LOGIC is not worth the price we pay.
+                    FACTS don't care about your feelings. But I do.
+            ]],
+            DIALOG_BENNI_INTERFERE_PST = [[
+                giver:
+                    Now, let's get you back to sleep.
+                    !hesh_greeting
+                    May you have a pleasant dream.
+                    !exit
+                player:
+                    !exit
+                * That night, you didn't have any more dreams, which is quite a relief.
+            ]],
         }
         :Fn(function(cxt)
             cxt:TalkTo(TheGame:GetGameState():AddSkinnedAgent("COGNITIVE_HESH"))
@@ -594,12 +652,24 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                         -- You earn a special card or something.
                         cxt.quest.param.went_crazy = true
                         -- cxt.caravan:DeltaMaxResolve(-5)
+                        cxt:ForceTakeCards{"status_fracturing_mind"}
 
-                        -- Nah you just lose lol
-                        cxt:Opt("OPT_LOSE")
-                            :Fn(function(cxt)
-                                DemocracyUtil.DoEnding(cxt, "broken_mind", {})
-                            end)
+                        if cxt:GetCastMember("giver") == TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and cxt:GetCastMember("giver"):GetContentID() == "ADVISOR_MANIPULATE" and cxt:GetCastMember("giver"):GetRelationship() >= RELATIONSHIP.LIKED then
+                            cxt:Dialog("DIALOG_BENNI_INTERFERE")
+                            cxt.quest.extra_reward = EXTRA_QUEST_REWARD.FREE_ITEM
+                            cxt.quest.extra_reward_data = "white_lie"
+                            cxt.quest:Complete()
+                            ConvoUtil.GiveQuestRewards(cxt)
+                            cxt:GetCastMember("giver"):AddTag("white_liar")
+                            cxt:Dialog("DIALOG_BENNI_INTERFERE_PST")
+                        else
+                            cxt:Dialog("DIALOG_NO_INTERFERE")
+                            -- Nah you just lose lol
+                            cxt:Opt("OPT_LOSE")
+                                :Fn(function(cxt)
+                                    DemocracyUtil.DoEnding(cxt, "broken_mind", {})
+                                end)
+                        end
                     end)
                     -- :CompleteQuest("ask_info")
                     -- :ActivateQuest("tell_result")
@@ -655,7 +725,11 @@ QDEF:AddConvo("tell_result", "giver")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
+            cxt.quest.extra_reward = EXTRA_QUEST_REWARD.FREE_ITEM
+            -- TODO: Change the reward
+            cxt.quest.extra_reward_data = "advisor_manipulate_gaslighting"
             cxt.quest:Complete()
+            ConvoUtil.GiveQuestRewards(cxt)
             cxt:GetCastMember("giver"):AddTag("can_manipulate_truth")
         end)
 -- local BAD_EVENT = QuestDef.Define{
@@ -1011,15 +1085,17 @@ QDEF:AddConvo("rat_out_aftermath")
             if tei and tei:IsAlive() then
                 if cxt.location == cxt:GetCastMember("giver"):GetHomeLocation() and
                     cxt.location == cxt:GetCastMember("giver"):GetLocation() then
-
                     return "STATE_BENNI_TEI_DIALOG"
-                else
+                end
+            else
+                if (quest.time_left or 0) <= 0 and cxt.location:HasTag("in_transit") then
                     return "STATE_ARREST"
                 end
             end
-        end
-        if (quest.time_left or 0) <= 0 and cxt.location:HasTag("in_transit") then
-            return "STATE_ARREST"
+        else
+            if (quest.time_left or 0) <= 0 and cxt.location:HasTag("in_transit") then
+                return "STATE_ARREST"
+            end
         end
     end)
     :State("STATE_BENNI_TEI_DIALOG")

@@ -22,12 +22,6 @@ local DEPRESSION_BEHAVIOUR =
 
         self.negotiator:AddModifier("ENCOURAGEMENT")
 
-        local cards = {}
-        for i = 1, 3 do
-            table.insert(cards, Negotiation.Card( "console_opponent", self.engine:GetPlayer() ))
-        end
-        self.engine:InceptCards( cards, self )
-
         self:SetPattern( self.BasicCycle )
     end,
 
@@ -41,6 +35,18 @@ local DEPRESSION_BEHAVIOUR =
             self:ChooseGrowingNumbers( 3, 0 )
         else
             self:ChooseGrowingNumbers( 2, 1 )
+        end
+
+        local candidates = {}
+        for i, card in ipairs(self.prepared_cards) do
+            if card.id == "default" and card.target_enemy then
+                table.insert(candidates, card)
+            end
+        end
+        if #candidates > 0 then
+            local chosen = table.arraypick(candidates)
+            chosen.target_self = TARGET_FLAG.CORE
+            chosen.target_enemy = nil
         end
 	end,
 }
@@ -60,7 +66,7 @@ local QDEF = QuestDef.Define
     act_filter = DemocracyUtil.DemocracyActFilter,
     focus = QUEST_FOCUS.NEGOTIATION,
     tags = {"REQUEST_JOB"},
-    -- reward_mod = 0,
+    reward_mod = 0,
     can_flush = false,
 
     events = {
@@ -966,7 +972,8 @@ QDEF:AddConvo("go_to_game")
                     :Fn(function(cxt)
                         -- Spawn a followup.
                         if cxt:GetCastMember("giver"):GetContentID() == "ADVISOR_HOSTILE" then
-                            cxt.quest:SpawnFollowQuest(FOLLOW_UP.id)
+                            local new_quest = cxt.quest:SpawnFollowQuest(FOLLOW_UP.id)
+                            new_quest.extra_reward, new_quest.extra_reward_data = cxt.quest:GetExtraReward()
                             cxt.quest:Cancel()
                         else
                             cxt.quest:Complete()
@@ -1374,7 +1381,7 @@ FOLLOW_UP:AddConvo("comfort", "giver")
             * It seems like your attempt to brighten {agent}'s mood has worsened the situation.
             * It's too late now. {agent} doesn't even want to talk to you.
         ]],
-        NEGOTIATION_REASON = "Comfort {agent}'s spirit!",
+        NEGOTIATION_REASON = "Comfort {agent}!",
     }
     :Hub(function(cxt)
         if not cxt.quest.param.tried_comfort then
@@ -1385,6 +1392,14 @@ FOLLOW_UP:AddConvo("comfort", "giver")
                 end)
                 :Negotiation{
                     reason_fn = function(minigame) return cxt:GetLocString("NEGOTIATION_REASON") end,
+                    on_start_negotiation = function(minigame)
+                        local n = math.max(1, math.round( minigame.player_negotiator.agent.negotiator:GetCardCount() / 5 ))
+                        for k = 1, n do
+                            local card = Negotiation.Card( "console_opponent", minigame.player_negotiator.agent )
+                            card.show_dealt = true
+                            card:TransferCard(minigame:GetDrawDeck())
+                        end
+                    end,
                     -- This will be a special negotiation.
                     -- giver will start at low resolve, and you must bring their resolve to full to actually win the negotiation.
                     -- Winning negotiation without bringing up resolve, like using damage or oolo's requisition, has bad effect.
@@ -1402,6 +1417,8 @@ FOLLOW_UP:AddConvo("comfort", "giver")
                             -- We win legit
                             cxt:Dialog("DIALOG_COMFORT_SUCCESS")
                             cxt.quest:Complete()
+                            -- You will not get mettle award, because (1) screw mettle (2) we can't without modifying existing code, and I am not willing to screw up with existing code for mettle.
+                            ConvoUtil.GiveQuestRewards(cxt)
                             QDEF.on_complete(cxt.quest)
                             -- This will probably change dronumph's narcissist personality a little, as he accepts that there
                             -- are always people better than him, but that should not be a cause for his depression.

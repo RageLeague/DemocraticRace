@@ -39,7 +39,7 @@ local region = {
         "PEARL_OSHNUDROME", --
         "PEARL_PARK", --
         "PEARL_CULT_COMPOUND", --
-        "CONTRACT_CHAPEL", --
+        -- "CONTRACT_CHAPEL", --
 
         -- unique location for mod
         "DIPL_PRES_OFFICE",

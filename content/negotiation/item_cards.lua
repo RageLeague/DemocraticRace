@@ -107,7 +107,7 @@ local CARDS = {
         icon = "DEMOCRATICRACE:assets/cards/intimidating_blaster.png",
 
         cost = 1,
-        flags = CARD_FLAGS.ITEM,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.HOSTILE,
         rarity = CARD_RARITY.RARE,
 
         is_artifact = true,
@@ -133,7 +133,7 @@ local CARDS = {
         flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND | CARD_FLAGS.STICKY,
         rarity = CARD_RARITY.UNCOMMON,
 
-        max_charges = 2,
+        max_charges = 3,
 
         loc_strings =
         {
@@ -582,7 +582,7 @@ local CARDS = {
         flags = CARD_FLAGS.ITEM,
         rarity = CARD_RARITY.COMMON,
 
-        max_charges = 1,
+        max_charges = 3,
 
         min_persuasion = 9,
         max_persuasion = 12,
@@ -611,7 +611,7 @@ local CARDS = {
         flags = CARD_FLAGS.ITEM,
         rarity = CARD_RARITY.UNCOMMON,
 
-        max_charges = 1,
+        max_charges = 3,
 
         min_persuasion = 6,
         max_persuasion = 9,
@@ -640,7 +640,7 @@ local CARDS = {
         flags = CARD_FLAGS.ITEM,
         rarity = CARD_RARITY.RARE,
 
-        max_charges = 1,
+        max_charges = 3,
 
         min_persuasion = 4,
         max_persuasion = 6,

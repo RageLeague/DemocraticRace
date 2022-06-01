@@ -467,17 +467,24 @@ local CARDS = {
     console_opponent =
     {
         name = "Console",
-        desc = "Transfer all composure on target argument you control to your opponent's core argument.",
+        desc = "Apply {1} {COMPOSURE}, then transfer all composure on that argument to your opponent's core argument.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:CalculateComposureText( self.composure_base ))
+        end,
         icon = "negotiation/empathy.tex",
 
         cost = 1,
         flags = CARD_FLAGS.DIPLOMACY | CARD_FLAGS.REPLENISH,
         rarity = CARD_RARITY.UNIQUE,
 
+        composure_base = 2,
+
         target_self = TARGET_ANY_RESOLVE,
 
         OnPostResolve = function( self, minigame, targets )
             for i, target in ipairs(targets) do
+                target:DeltaComposure( self.composure_base, self )
+
                 local delta = target.composure
                 if self.anti_negotiator:FindCoreArgument() then
                     self.anti_negotiator:FindCoreArgument():DeltaComposure(delta, self)
@@ -562,6 +569,73 @@ local CARDS = {
                 table.insert( cards, card )
             end
             minigame:InceptCards( cards, self )
+        end,
+    },
+    quest_any_card_bonus =
+    {
+        name = "Mystery Card Bonus",
+        desc = "What card bonus will you get? It's a mystery.",
+
+        icon = "negotiation/negotiation_wild.tex",
+
+        flags = CARD_FLAGS.MANIPULATE | CARD_FLAGS.UNPLAYABLE,
+        rarity = CARD_RARITY.UNIQUE,
+        manual_desc = true,
+
+        hide_in_cardex = true
+    },
+    ai_appropriate_card =
+    {
+        name = "Appropriate",
+
+        cost = 1,
+        flags = CARD_FLAGS.OPPONENT,
+        rarity = CARD_RARITY.UNIQUE,
+
+        count = 1,
+
+        MIN_TO_LEAVE = 5,
+
+        GetStealCount = function( self )
+            return GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ARGUMENT_PLUS ) and 2 or 1
+        end,
+
+        CanPlayCard = function( self, card, engine, target )
+            if card == self then
+                local MAX_STOLEN = 3 * self:GetStealCount()
+                local MIN_TO_LEAVE = self.MIN_TO_LEAVE
+
+                local num_stolen = 0
+                for i,modifier in self.negotiator:ModifierSlots() do
+                    if modifier.id == "APPROPRIATED" then
+                        num_stolen = num_stolen + modifier:GetStolenCount()
+                    end
+                end
+                if num_stolen < MAX_STOLEN then
+                    local cards = self.engine:GetAllPlayerCards(function(card) return not CheckBits( card.flags, CARD_FLAGS.STATUS ) end)
+                    if #cards > MIN_TO_LEAVE then
+                        return true
+                    end
+                end
+            end
+        end,
+
+        OnPostResolve  = function( self, minigame )
+            local cards = self.engine:GetAllPlayerCards(function(card) return not CheckBits( card.flags, CARD_FLAGS.STATUS ) end)
+            local count = math.min( #cards - self.MIN_TO_LEAVE, self:GetStealCount() )
+            cards = table.multipick(cards, count)
+            local approp
+            if count > 1 then
+                approp = self.negotiator:CreateModifier("APPROPRIATED_plus", 1, self )
+            else
+                approp = self.negotiator:CreateModifier("APPROPRIATED", 1, self )
+            end
+            for i, card in ipairs( cards ) do
+                if approp:IsApplied() then -- veryify that it still exists
+                    print( self.negotiator, "appropriated", card, "from", card.deck )
+                    approp:AppropriateCard( card )
+                end
+            end
         end,
     },
 }

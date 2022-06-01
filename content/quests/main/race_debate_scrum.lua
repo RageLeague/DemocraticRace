@@ -524,6 +524,7 @@ QDEF:AddConvo("go_to_debate")
                 :Fn(function(cxt)
                     cxt.encounter:DoLocationTransition(cxt.quest:GetCastMember("theater"))
                 end)
+                :Pop()
                 :MakeUnder()
         end)
 QDEF:AddConvo("do_debate")
@@ -972,8 +973,8 @@ QDEF:AddConvo("do_debate")
                 agent:
                     !right
                     That is all, folks!
-                * Wow, that was a handful. Quite literally if you are a human or a phicket.
-                * We don't discriminate phickets around here.
+                * Wow, that was a handful. If you are a shroke or a kradeshi.
+                * For anyone else, ehh...
                 * Anyway, let's see how you do!
             ]],
             DIALOG_CHEER = [[
@@ -1004,7 +1005,8 @@ QDEF:AddConvo("do_debate")
             for i, agent in ipairs(cxt.quest.param.popularity_rankings) do
                 if agent:IsPlayer() then
                     cxt.quest.param.player_rank = i
-                    break
+                else
+                    DemocracyUtil.TryMainQuestFn("DeltaOppositionSupport", DemocracyUtil.GetOppositionID(agent), (cxt.quest.param.popularity[agent:GetID()] or 0) - 15)
                 end
             end
             if not cxt.quest.param.player_rank then
@@ -1035,12 +1037,25 @@ QDEF:AddConvo("do_debate")
             cxt.quest:Complete("do_debate")
 
             local your_score = cxt.quest.param.popularity[cxt.player:GetID()] or 0
+            local main_quest = TheGame:GetGameState():GetMainQuest()
             if cxt.quest.param.good_debate then
                 DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.5), "COMPLETED_QUEST_MAIN")
+                if main_quest then
+                    main_quest.param.good_debate_scrum = true
+                end
             elseif cxt.quest.param.bad_debate then
                 DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.25), "COMPLETED_QUEST_MAIN")
+                if main_quest then
+                    main_quest.param.good_debate_scrum = false
+                end
             else
                 DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.35), "COMPLETED_QUEST_MAIN")
+                if main_quest then
+                    main_quest.param.good_debate_scrum = true
+                end
+            end
+            if main_quest then
+                main_quest.param.debate_scrum_result = cxt.quest.param.popularity_rankings
             end
 
             local METRIC_DATA =
@@ -1243,7 +1258,7 @@ QDEF:AddConvo("talk_to_candidates")
                         :Dialog("DIALOG_APOLOGIZE_FAILURE")
                 cxt:Opt("OPT_IGNORE_CONCERN")
                     :Dialog("DIALOG_IGNORE_CONCERN")
-            elseif cxt.quest.param.candidate_opinion and cxt.quest.param.candidate_opinion[who:GetID()] >= 2 then
+            elseif cxt.quest.param.candidate_opinion and (cxt.quest.param.candidate_opinion[who:GetID()] or 0) >= 2 then
                 cxt:Dialog("DIALOG_SUPPORT")
                 if who:GetRelationship() < RELATIONSHIP.NEUTRAL then
                     who:OpinionEvent(OPINION.SHARE_IDEOLOGY)

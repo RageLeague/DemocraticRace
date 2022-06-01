@@ -194,7 +194,14 @@ lines:
       I often drink at a place called {loc_to_unlock#location}.
       It's nothing too special, but you get to visit many interesting people there.
       We should drink at there some time.
-    * You're pretty sure you're not allowed to drink with someone who you already liked, but you don't want to bring it up to ruin your relationship.
+    {liked?
+      * You're pretty sure you're not allowed to drink with someone who you already liked, but you don't want to bring it up to ruin your relationship.
+    }
+    {not liked?
+    player:
+      That sounds like a great plan.
+      When the opportunity arises, of course.
+    }
 - tags: [unlock_location, unlock_shop]
   dialog:
   - |
@@ -202,6 +209,33 @@ lines:
       There's a cool shop that I like to visit called {loc_to_unlock#location}.
       They sell a lot of useful items. You definite want to stock up on some.
       You should definitely check it out when you have time.
+
+- tags: [pre_dual_argument]
+  dialog:
+  - |
+    agent:
+      !hips
+      So, you must be one of the grifters who thinks they can run a campaign, let alone a country?
+    player:
+      !crossed
+      I don't <i>think</> that, I <i>know</> that for a fact.
+    agent:
+      Yeah, right.
+      Do you even have a plan once you win? Do you know how to run a country?
+      You only got this far because of your charisma and bravado.
+      But it takes more than that to run a country. You are delusional to think otherwise.
+    player:
+      !angry_shrug
+      Delusional? You think I am delusional?
+      !angry_accuse
+      The real delusional one is you! People who think that the Havarian people are blind to the injustice and chaos of this land!
+      People like you who made Havaria the dump it is today!
+      !angry_shrug
+      But guess what? The people have spoken, and they have chose me to speak for them!
+    agent:
+      I don't know how you got this far by spouting nonsense like this.
+      !angry_accuse
+      But it's time for someone to give you a wake-up call!
 
 - tags: [confront_argument]
   dialog:

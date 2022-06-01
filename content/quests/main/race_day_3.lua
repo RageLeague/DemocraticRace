@@ -248,7 +248,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 * {agent} leaves, leaving you with {primary_advisor}.
             ]],
 
-            DIALOG_CHOOSE_PST = [[
+            DIALOG_CHOOSE_PST2 = [[
                 agent:
                     !right
                 * Your advisor comes to you.
@@ -288,7 +288,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 cxt:Dialog("DIALOG_CHOOSE_PST")
                 DemocracyUtil.DoLocationUnlock(cxt, cxt.enc.scratch.ally_work_pos)
                 cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
-                cxt:Dialog("DIALOG_CHOOSE_PST")
+                cxt:Dialog("DIALOG_CHOOSE_PST2")
                 cxt.quest:Complete("starting_out")
                 cxt.enc.scratch.potential_ally:MoveToLimbo()
                 StateGraphUtil.AddLeaveLocation(cxt)
@@ -446,13 +446,13 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
 
                 ConvoUtil.DoSleep(cxt, "DIALOG_WAKE")
 
-                DemocracyUtil.DoAlphaMessage()
+                -- DemocracyUtil.DoAlphaMessage()
 
                 cxt:End()
 
-                if true then
-                    return
-                end
+                -- if true then
+                --     return
+                -- end
 
                 cxt.quest:Complete()
 

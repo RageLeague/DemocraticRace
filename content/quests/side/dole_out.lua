@@ -1,12 +1,14 @@
 local function CanFeed(agent, quest)
-    return DemocracyUtil.RandomBystanderCondition(agent)
+    return not (AgentUtil.IsInHiding(agent) or agent:IsRetired() or agent:IsInPlayerParty()
+        or AgentUtil.HasPlotArmour(agent) or not agent:IsSentient())
+        and not agent:HasQuestMembership()
         and not (quest.param.gifted_people and table.arraycontains(quest.param.gifted_people, agent))
         and not (quest.param.rejected_people and table.arraycontains(quest.param.rejected_people, agent))
 end
 
 local QDEF = QuestDef.Define{
     title = "Dole out",
-    desc = "Give Bread to the poor to gain support",
+    desc = "Give Bread to the poor to gain support.",
     icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/dole_out.png"),
 
     qtype = QTYPE.SIDE,

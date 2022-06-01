@@ -13,10 +13,7 @@ local SIGNATURE_ARGUMENT = {
 }
 
 local score_fn = function(agent, quest)
-    local score = DemocracyUtil.OppositionScore(agent)
-    if agent:HasAspect( "bribed" ) then
-        score = score + 90
-    end
+    local score = DemocracyUtil.SupportScore(agent)
     return score + math.random() * 120
 end
 
