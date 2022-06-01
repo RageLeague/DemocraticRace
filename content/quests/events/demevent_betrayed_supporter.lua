@@ -53,21 +53,33 @@ QDEF:AddConvo()
             OPT_CHANGE = "Change to {good_stance#pol_stance} to appease {supporter}",
             DIALOG_CHANGE = [[
                 player:
-                    [p] You know what? You're right. {good_stance#pol_stance} is what is right for Havaria, and that is what I will campaign for from here on out.
-                * Assuming you don't just flip-flop on this issue again.
+                    [p] I made a severe lapse of judgement.
+                    That was never my intention at all.
+            ]],
+            DIALOG_CHANGE_PST = [[
+                player:
+                    That much is certain.
                 supporter:
-                    !happy
-                    I knew I could count on you!
+                    Of course, I know admitting your mistakes can be hard.
+                    !agree
+                    But at least you have the courage to admit you're wrong.
+                    I can respect that.
             ]],
             OPT_DENY = "Insist on {bad_stance#pol_stance}",
             DIALOG_DENY = [[
                 player:
                     !hips
-                    [p] {bad_stance#pol_stance} is the right choice for Havaria, like it or not.
+                    [p] I certainly did not make a mistake.
+            ]],
+            DIALOG_DENY_PST = [[
+                player:
+                    And if you can't agree with that... Then I'm sorry.
                 supporter:
-                    !disappoint
-                    Is that so? Then maybe {player} is not the right choice for me. Goodbye.
-                    !exit
+                    ...
+                    So, this is how you really think, is it?
+                    I thought you are going to be different. I thought you actually have the Havarian people in mind with your policies.
+                    !sigh
+                    But now, I see your true colors. And I don't know if I can support you anymore.
             ]],
             OPT_CONVINCE = "Convince {supporter} to look past this issue",
             DIALOG_CONVINCE = [[
@@ -135,10 +147,18 @@ QDEF:AddConvo()
 
             cxt:Opt("OPT_CHANGE")
                 :Dialog("DIALOG_CHANGE")
+                :Fn(function(cxt)
+                    DemocracyUtil.QuipStance(cxt, cxt.player, cxt.quest.param.good_stance, "statement")
+                end)
+                :Dialog("DIALOG_CHANGE_PST")
                 :UpdatePoliticalStance(issue, stance)
                 :Travel()
             cxt:Opt("OPT_DENY")
                 :Dialog("DIALOG_DENY")
+                :Fn(function(cxt)
+                    DemocracyUtil.QuipStance(cxt, cxt.player, cxt.quest.param.bad_stance, "statement")
+                end)
+                :Dialog("DIALOG_DENY_PST")
                 :ReceiveOpinion(OPINION.DISLIKE_IDEOLOGY)
                 :Travel()
             cxt:BasicNegotiation("CONVINCE", {
