@@ -834,6 +834,7 @@ function DemocracyUtil.GetVoterIntentionIndex(data)
     local voter_index = 0
 
     local delta = DemocracyUtil.TryMainQuestFn("GetGeneralSupport") - DemocracyUtil.TryMainQuestFn("GetCurrentExpectation")
+    voter_index = voter_index + delta
 
     if faction then
         voter_index = voter_index + (TheGame:GetGameState():GetMainQuest().param.faction_support[faction] or 0)
