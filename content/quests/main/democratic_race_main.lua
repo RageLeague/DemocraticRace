@@ -872,7 +872,7 @@ local QDEF = QuestDef.Define
             if stance_delta == 0 or (not strict and (quest.param.stances[issue] > 0) == (val > 0) and (quest.param.stances[issue] < 0) == (val < 0)) then
                 -- A little bonus for being consistent with your ideology.
                 quest:DefFn("DeltaGeneralSupport", 1, "CONSISTENT_STANCE")
-                quest.param.stance_change[issue] = math.max(0, quest.param.stance_change[issue] - 1)
+                quest.param.stance_change[issue] = math.max(0, quest.param.stance_change[issue] - 0.5)
                 quest.param.stance_change_freebie[issue] = false
             else
                 if quest.param.stance_change_freebie[issue]
@@ -880,12 +880,15 @@ local QDEF = QuestDef.Define
                     and (quest.param.stances[issue] < 0) == (val < 0) then
 
                     quest:DefFn("DeltaGeneralSupport", 1, "CONSISTENT_STANCE")
-                    quest.param.stance_change[issue] = math.max(0, quest.param.stance_change[issue] - 1)
+                    quest.param.stance_change[issue] = math.max(0, quest.param.stance_change[issue] - 0.5)
                     -- quest.param.stances[issue] = val
                 else
                     -- Penalty for being inconsistent.
-                    quest.param.stance_change[issue] = quest.param.stance_change[issue] + math.abs(stance_delta)
-                    quest:DefFn("DeltaGeneralSupport", -math.max(0, quest.param.stance_change[issue]), "INCONSISTENT_STANCE")
+                    -- If on the same side or going to/from neutral, add 1 to penalty
+                    -- If on opposite side, add 2 to penalty
+                    local penalty = (val * quest.param.stances[issue]) >= 0 and 1 or 2
+                    quest.param.stance_change[issue] = quest.param.stance_change[issue] + penalty
+                    quest:DefFn("DeltaGeneralSupport", -math.max(0, math.ceil(quest.param.stance_change[issue])), "INCONSISTENT_STANCE")
                 end
                 quest.param.stances[issue] = val
                 quest.param.stance_change_freebie[issue] = not strict
