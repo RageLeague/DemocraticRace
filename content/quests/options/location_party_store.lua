@@ -53,46 +53,63 @@ QDEF:AddConvo()
             }
             {liked?
                 !thought
-                Although I am a bit curious. I never told you about them.
-                How did you found out, anyway?
+                A bit finer than your finances, from what I've deduced.
+                Come to think of it, how'd you hear about this?
             }
             player:
                 !shrug
-                Let's just say... I have my ways.
-            * To be honest, you have no idea where you get this information.
-            * <i>I mean</>, {player} has no idea where {player.heshe} got this information.
-            * <i>You</> played Smith's campaign, probably.
+                Well, the bright strobe lights from your backroom aren't exactly subtle.
+                So is the sound of party-poppers and the ocassional "PARTY" yelled from there.
             agent:
+                !palm
+                Hesh damn it, {steven}.
             {not liked?
-                !dubious
-                Now that sounds very suspicious.
+                !crossed
+                Look, no one gets in unless I say so, got that?
             }
             {liked?
-                !shrug
-                If you say so.
                 !overthere
-                The goods are right this way.
+                Well, friend to friend, I'll let you back there.
+                Keep the bad tomfoolery to a minimum.
             }
         ]],
 
         OPT_CONVINCE = "Convince {agent} that you're cool",
         DIALOG_CONVINCE = [[
             player:
-                [p] I assure you, it's all perfectly legitimate.
+                C'mon, I'm perfect for whatever shenanigans you've got back there.
         ]],
 
         DIALOG_CONVINCE_SUCCESS = [[
+            player:
+                !thumb
+                I'm actually one of the "partygoers", if you didn't know.
             agent:
-                [p] I am convinced!
-                The goods are back this way.
+                !question
+                Partygoers?
+            player:
+                !shrug
+                Sure I am. Got invited by that guy screaming party back there.
+                !angryshrug
+                Are you gonna keep holding me up or do you want to deal with him?
+            agent:
+                !scared
+                Oh, you're one of {steven}'s chosen...
+                !overthere
+                Right this way, {player}. Sorry for the hold up.
         ]],
 
         DIALOG_CONVINCE_FAILURE = [[
+            player:
+                I've got the money to pay, don't I?
             agent:
-                [p] I am not convinced!
-                The exit is right this way.
-            * You aren't really getting kicked out, though. But you can't access the back end goods.
-            * Not right now, at least. Come back and ask later.
+                !handwave
+                Money alone doesn't get you the good wares.
+                !hips
+                You've gotta be the right kind of person. Someone trustworthy.
+                Now if you're done asking about the back room, I've got tons of things <i>you're</> allowed to buy.
+            * Seems like you are not going to get into the backroom right now.
+            * If you insist on going there, you need to come back later and ask again.
         ]],
 
         OPT_VISIT_THE_PARTY = "Get access to the back room",
