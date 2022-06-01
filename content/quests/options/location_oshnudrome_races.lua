@@ -321,9 +321,10 @@ QDEF:AddConvo()
                 agent:
                     !clap
                     {winner}! Give it up for the snail, everyone!
+                * That was an exciting race! It certainly helped you unwind.
             ]],
             DIALOG_LOST = [[
-                * You become painfully aware of the lightness in your pocket.
+                * However, you soon become painfully aware of the lightness in your pocket.
                 *** The snail you bet on lost! You don't get any money.
             ]],
             DIALOG_WIN = [[
