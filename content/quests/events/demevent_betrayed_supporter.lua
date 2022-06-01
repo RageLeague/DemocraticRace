@@ -10,8 +10,11 @@ local QDEF = QuestDef.Define
         if agent:GetRelationship() < RELATIONSHIP.NEUTRAL then
             return false, "Bad relationship"
         end
-        if DemocracyUtil.GetAgentEndorsement(agent) <= RELATIONSHIP.NEUTRAL then
-            return false, "Bad endorsement: " .. DemocracyUtil.GetVoterIntentionIndex({agent = agent})
+        if DemocracyUtil.GetAgentEndorsement(agent) < RELATIONSHIP.NEUTRAL then
+            return false, "Bad endorsement"
+        end
+        if agent:GetRelationship() < RELATIONSHIP.NEUTRAL and DemocracyUtil.GetAgentEndorsement(agent) < RELATIONSHIP.NEUTRAL then
+            return false, "Uninteresting relationship/endorsement"
         end
 
         for id, data in pairs(DemocracyConstants.issue_data) do
