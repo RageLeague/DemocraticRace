@@ -7,17 +7,22 @@ local QDEF = QuestDef.Define
 :AddCast{
     cast_id = "supporter",
     condition = function(agent, quest)
-        if agent:GetRelationship() >= RELATIONSHIP.NEUTRAL and DemocracyUtil.GetAgentEndorsement(agent) > RELATIONSHIP.NEUTRAL then
-            for id, data in pairs(DemocracyConstants.issue_data) do
-                local stance = data:GetAgentStanceIndex(agent)
-                local player_stance = DemocracyUtil.TryMainQuestFn("GetStance", id) or 0
-                if stance * player_stance < 0 then --looking for opposing stances by multiplying into a negative. two same signs or any zeroes will make this false
-                    print(agent.name, id, stance, player_stance)
-                    return true
-                end
+        if agent:GetRelationship() < RELATIONSHIP.NEUTRAL then
+            return false, "Bad relationship"
+        end
+        if DemocracyUtil.GetAgentEndorsement(agent) <= RELATIONSHIP.NEUTRAL then
+            return false, "Bad endorsement: " .. DemocracyUtil.GetVoterIntentionIndex({agent = agent})
+        end
+
+        for id, data in pairs(DemocracyConstants.issue_data) do
+            local stance = data:GetAgentStanceIndex(agent)
+            local player_stance = DemocracyUtil.TryMainQuestFn("GetStance", id) or 0
+            if stance * player_stance < 0 then --looking for opposing stances by multiplying into a negative. two same signs or any zeroes will make this false
+                print(agent.name, id, stance, player_stance)
+                return true
             end
         end
-        return false
+        return false, "No valid stance"
     end,
 }
 
