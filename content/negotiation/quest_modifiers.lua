@@ -2165,6 +2165,156 @@ local MODIFIERS =
             self.engine:Lose()
         end,
     },
+    FELLEMO_SLIPPERY =
+    {
+        name = "Slippery",
+        desc = "For every {1*card|{1} cards} played, one of {2}'s attack intents changes its target.",
+        alt_desc = " ({1} {1*card|cards} remaining)",
+        desc_fn = function(self, fmt_str)
+            if self.change_threshold == 1 then
+                return loc.format(fmt_str, self.change_threshold, self:GetOwnerName())
+            else
+                if self.cards_played then
+                    return loc.format(fmt_str, self.change_threshold, self:GetOwnerName()) .. loc.format((self.def or self):GetLocalizedString("ALT_DESC"), self.change_threshold - self.cards_played)
+                else
+                    return loc.format(fmt_str, self.change_threshold, self:GetOwnerName())
+                end
+            end
+        end,
+
+        change_threshold = 3,
+        change_threshold_scale = {5, 4, 3, 2},
+        -- cards_played = 0,
+
+        modifier_type = MODIFIER_TYPE.CORE,
+
+        OnInit = function( self )
+            local boss_scale = GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2
+            if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                self.change_threshold = self.change_threshold_scale[clamp(boss_scale, 1, #self.change_threshold_scale)]
+            end
+            self.cards_played = 0
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.POST_RESOLVE ] = function(self, minigame, card)
+                if card.negotiator == self.anti_negotiator then
+                    self.cards_played = (self.cards_played or 0) + 1
+                    if self.cards_played >= self.change_threshold then
+                        self.cards_played = 0
+                        local candidates = {}
+                        for i, card in ipairs(self.negotiator.prepared_cards) do
+                            if card.min_persuasion and card.max_persuasion then
+                                table.insert(candidates, card)
+                            end
+                        end
+                        if #candidates > 0 then
+                            local chosen = table.arraypick(candidates)
+                            chosen.target = nil
+                        end
+                        self:NotifyTriggered()
+                    end
+                end
+            end,
+        },
+    },
+    WAIVERS =
+    {
+        name = "Waivers",
+        desc = "When {1} creates an argument, remove it.\n\nWhen destroyed, add a number of {bad_deal} cards to the draw pile equal to the number of remaining stacks on this argument.\n\nReduce <b>Waivers</b> by 1 at the beginning of {2}'s turn.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOpponentName(), self:GetOwnerName())
+        end,
+
+        max_resolve = 4,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        OnBounty = function(self)
+            if self.stacks > 0 then
+                local cards = {}
+                for i = 1, self.stacks do
+                    local card = Negotiation.Card( "bad_deal", self.engine:GetPlayer() )
+                    table.insert( cards, card )
+                end
+                self.engine:InceptCards( cards, self )
+            end
+        end,
+
+        OnInit = function(self)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
+                if negotiator == self.negotiator then
+                    negotiator:RemoveModifier( self, 1 )
+                end
+            end,
+            [ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
+                if source and source.negotiator == self.anti_negotiator and modifier.modifier_type == MODIFIER_TYPE.ARGUMENT then
+                    modifier.negotiator:RemoveModifier(modifier, modifier.stacks, self)
+                end
+            end,
+        },
+    },
+    EXPLOITATION =
+    {
+        name = "Exploitation",
+        desc = "If this argument causes resolve loss and this argument is not destroyed yet, {INCEPT} {1} {VULNERABILITY}.\n\nWhen destroyed, remove half of {2}'s {VULNERABILITY} and deal double that damage to a random argument controlled by {2}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.vulnerability_count, self:GetOpponentName())
+        end,
+
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        min_persuasion = 1,
+        max_persuasion = 3,
+
+        max_persuasion_scale = {2, 3, 4, 5},
+
+        max_resolve = 5,
+        max_stacks = 1,
+
+        vulnerability_count = 2,
+        vulnerability_scale = {1, 2, 2, 3},
+
+        target_enemy = TARGET_ANY_RESOLVE,
+
+        OnBeginTurn = function( self, minigame )
+            self:ApplyPersuasion()
+        end,
+
+        OnInit = function( self )
+            local boss_scale = GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2
+            if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                self.max_persuasion = self.max_persuasion_scale[clamp(boss_scale, 1, #self.max_persuasion_scale)]
+                self.vulnerability_count = self.vulnerability_scale[clamp(boss_scale, 1, #self.vulnerability_scale)]
+            end
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
+        end,
+
+        OnBounty = function(self)
+            local count = self.anti_negotiator:GetModifierStacks("VULNERABILITY")
+            local delta_count = math.ceil(count / 2)
+            if delta_count > 0 then
+                self.anti_negotiator:DeltaModifier("VULNERABILITY", -delta_count, self)
+                self.target = nil
+                self.engine:ApplyPersuasion(self, nil, 2 * delta_count, 2 * delta_count)
+            end
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+                if source == self and damage > defended then
+                    self:NotifyTriggered()
+                    target.negotiator:AddModifier("VULNERABILITY", self.vulnerability_count, self)
+                end
+            end,
+        },
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )

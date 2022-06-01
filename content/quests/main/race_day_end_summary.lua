@@ -382,15 +382,16 @@ QDEF:AddConvo("summary", "primary_advisor")
                 :FailQuest("summary")
                 :ActivateQuest("new_advisor")
                 :DoneConvo()
-
-            cxt:Opt("OPT_DEBUG_BYPASS_HARD_CHECK")
-                :PostText("TT_DEBUG_BYPASS_HARD_CHECK")
-                :Fn(function()
-                    TheGame:GetGameState():GetOptions().is_custom_mode = true
-                end)
-                :Dialog("DIALOG_LAST_CHANCE")
-                :ActivateQuest("ask_pay")
-                -- :GoTo("STATE_PAY")
+            if TheGame:GetLocalSettings().DEBUG then
+                cxt:Opt("OPT_DEBUG_BYPASS_HARD_CHECK")
+                    :PostText("TT_DEBUG_BYPASS_HARD_CHECK")
+                    :Fn(function()
+                        TheGame:GetGameState():GetOptions().is_custom_mode = true
+                    end)
+                    :Dialog("DIALOG_LAST_CHANCE")
+                    :ActivateQuest("ask_pay")
+                    -- :GoTo("STATE_PAY")
+            end
             -- DemocracyUtil.AddAutofail(cxt, function(cxt)
             --     cxt:Dialog("DIALOG_LAST_CHANCE")
             --     cxt:GoTo("STATE_PAY")
