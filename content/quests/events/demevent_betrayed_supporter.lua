@@ -38,12 +38,17 @@ QDEF:AddConvo()
                     !left
                 supporter:
                     !right
-                    !angry_accuse
-                    {player}! What in Hesh's name?!
+                    !dubious
+                    {player}? Is what I heard true?
+            ]],
+            DIALOG_INTRO_PST = [[
                 player:
-                    What has you so riled up?
+                    !placate
+                    Hold on. This came out of nowhere.
+                    What is this all about?
                 supporter:
-                    I supported you in the belief that you'd make the right decisions for Havaria, but I've just heard you argue for {bad_stance#pol_stance}? Unbelievable!
+                    I supported you in the belief that you'd make the right decisions for Havaria, but I've just heard you argue for {bad_stance#pol_stance}?
+                    Surely that must be a mistake, right? You don't <i>actually</> support {bad_stance#pol_stance}, do you?
             ]],
             OPT_CHANGE = "Change to {good_stance#pol_stance} to appease {supporter}",
             DIALOG_CHANGE = [[
@@ -72,7 +77,7 @@ QDEF:AddConvo()
             DIALOG_CONVINCE_SUCCESS = [[
                 player:
                     !thumb
-                    [p] Look, I can't appease everyone with everything I do.
+                    Look, I can't appease everyone with everything I do.
                     But sometimes we all need to make compromises in order to achieve things we want.
                     !overthere
                     Just look at all the other candidates. All corrupt or outright criminal.
@@ -125,6 +130,9 @@ QDEF:AddConvo()
                 sit_mod = { value = 20, text = cxt:GetLocString("SIT_MOD_VERY_BAD") }
             end
             cxt:Dialog("DIALOG_INTRO")
+            DemocracyUtil.QuipStance(cxt, cxt:GetCastMember("supporter"), cxt.quest.param.good_stance, "question", "loaded")
+            cxt:Dialog("DIALOG_INTRO_PST")
+
             cxt:Opt("OPT_CHANGE")
                 :Dialog("DIALOG_CHANGE")
                 :UpdatePoliticalStance(issue, stance)
