@@ -145,7 +145,7 @@ QDEF:AddConvo()
         :Loc{
             DIALOG_BETTING = [[
                 * Before you get too comfy, you hear the bookie for this race calling for bets.
-                * You could throw some money on the line, if you're feeling confident. 
+                * You could throw some money on the line, if you're feeling confident.
             ]],
             OPT_NO_BET = "Don't bet on anyone",
             DIALOG_NO_BET = [[
@@ -166,7 +166,7 @@ QDEF:AddConvo()
 
             DIALOG_NO_MONEY = [[
                 * You hear the race's bookie calling out for bets, though you only blankly notice it.
-                * You're fairly certain they won't take bets in pocket lint and sandwich crumbs.  
+                * You're fairly certain they won't take bets in pocket lint and sandwich crumbs.
             ]],
 
             POPUP_TITLE_INVALID = "Invalid input",
@@ -232,69 +232,69 @@ QDEF:AddConvo()
                 tags = "race_pt1",
                 [[
                     agent:
-						!clap
-                        And there off! This is one exciting race we have!
+                        !clap
+                        And they're off! This is one exciting race we have!
                         {snail1} pulls ahead, {snail2} in close competition.
                 ]],
                 [[
                     agent:
-						!intrigue
+                        !intrigue
                         The race starts, though it appears {snail3}'s rider is asleep at the reins.
-						...
-                        Folks, it appears the {snail3} is tired of waiting and is just starting the race themself.
+                        ...
+                        Folks, it appears the {snail3} is tired of waiting and is just starting the race {snail3.himher}self.
                 ]],
                 [[
                     agent:
-						!angry
+                        !angry
                         On your mark, get set-
-						!surprised
+                        !surprised
                         Wait, {snail3} is already speeding ahead of the others!
-                        The other racers are quick to catch up though. This cheat didn't earn them that much of a lead. 
+                        The other racers are quick to catch up though. This cheat didn't earn {snail3.himher} that much of a lead.
                 ]],
-			},
-			{
+            },
+            {
                 tags = "race_pt2",
                 [[
                     agent:
-                        While we let the racers coast, it's a good time to talk about this Race's sponsor.
-						!neutral
+                        While we let the racers coast, it's a good time to talk about this race's sponsor.
+                        !neutral
                         This race was sponsored by Rai-
                         !point
                         Hold that thought, folks! There's been an upset in the race!
                 ]],
                 [[
                     agent:
-						!eureka
+                        !eureka
                         {snail1} seems to be falling back, but not out of the race yet!
                         {snail2} is taking that chance, and going ahead-
-						!happy
+                        !happy
                         Oh, and streaking up to the front is {snail3} by turning on the rocket thrusters!
                 ]],
                 [[
                     agent:
-						!point
+                        !point
                         It appears the race is going steady, except wait!
-                        It seems {snail2}'s racer has stopped their snail to eat a sandwich! 
-						!intrigue
+                        It seems {snail2}'s racer has stopped their snail to eat a sandwich!
+                        !intrigue
                         And it looks like they're done, and have lost a surprisingly small amount of distance on the other races.
                 ]],
-			},
-			{
+            },
+            {
                 tags = "race_pt3",
                 [[
                     agent:
-						!happy
+                        !happy
                         All of the snails crossed the finish at the same time! I can't believe it myself, folks!
                         Our referees are determining the victor now...
                         And, by just an eye stalk, the winner is...
                 ]],
                 [[
                     agent:
-						!point
+                        !point
                         {snail3} has the impressive advantage but wait, what's this?
                         !scared
-                        {snail3} has seen a bird and is chasing after it! Their rider is corraling them back, but this will cost them.
-						!happy
+                        {snail3} has seen a bird and is chasing after it! {snail3.HisHer} rider is corralling {snail3.himher} back, but this will cost {snail3.himher}.
+                        !happy
                         It's close, but the winner is crossing the line now, and it's...
                 ]],
                 [[
@@ -303,7 +303,7 @@ QDEF:AddConvo()
                         Or it would be, if {snail2}'s rider wasn't racing away last night's drink.
                         !flinch
                         Oh, and it's a snail crash into the wall. That's gonna cost them distance.
-						!happy
+                        !happy
                         All of them are pulling into the finish line, and the winner is...
                 ]],
             },

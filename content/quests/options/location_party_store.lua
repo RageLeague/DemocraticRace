@@ -104,10 +104,12 @@ QDEF:AddConvo()
                 I've got the money to pay, don't I?
             agent:
                 !handwave
-                Money alone doesn't get you the good wares. 
+                Money alone doesn't get you the good wares.
                 !hips
                 You've gotta be the right kind of person. Someone trustworthy.
                 Now if you're done asking about the back room, I've got tons of things <i>you're</> allowed to buy.
+            * Seems like you are not going to get into the backroom right now.
+            * If you insist on going there, you need to come back later and ask again.
         ]],
 
         OPT_VISIT_THE_PARTY = "Get access to the back room",

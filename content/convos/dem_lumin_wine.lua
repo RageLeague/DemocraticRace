@@ -16,7 +16,7 @@ Convo("DEM_LUMIN_WINE")
                 How's another bottle for me? I'll pay!
             agent:
                 !give
-                It's your my friend, as long as you have enough shills.
+                It's yours my friend, as long as you have enough shills.
         ]],
         [[
             player:
