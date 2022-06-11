@@ -119,14 +119,14 @@ QDEF:AddConvo("starting_out", "primary_advisor")
     :ConfrontState("STATE_CONFRONT")
     :Loc{
         DIALOG_INTRO = [[
-            * [p] You wake to your advisor.
-            agent:
-                Good morning.
-                Tomorrow is the big day, so everyone is pushing really hard for a final stretch.
-                You will need to get whatever support you can for today.
+            * The day greets you to a hot cup of coffee and the dread of another day of work.
+            primary_advisor:
+                !hips
+                You're up. Drink that quick, you've got a lot to do today.
         ]],
         DIALOG_INTRO_PST = [[
             player:
+                !handwave
                 Yeah, what else is new?
             agent:
                 After yesterday's debate, they conducted a poll to see who the people support.
@@ -149,36 +149,50 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         ]],
         DIALOG_PST_VOTES_GOOD = [[
             agent:
-                [p] The Grand Theater noticed your popularity, so they invited you to a one-on-one debate tonight.
+                !hips
+                You've done good. The Grand Theater's asked for a debate between you and the other largest candidate.
             player:
-                Cool.
+                !sigh
+                It's always a new thing at the Theater, isn't it?
+            agent:
+                !happy
+                Of course.
         ]],
         DIALOG_PST_VOTES_BAD = [[
             agent:
-                [p] There is supposed to be a one-on-one debate tonight at the Grand Theater, but you aren't invited because you aren't popular enough.
+                Your polling average hasn't gotten you into the special debate happening tonight.
+                !eureka
+                But I've got an idea to make up for that and still get you on that highly publicized debate.
             player:
-                What are we supposed to do, then?
+                !intrigue
+                Could I <i>know</> this plan ahead of time, or is this on a Need to Know basis?
             agent:
-                We can't just ignore this prime opportunity.
-                Just come tonight anyway. We will figure it out from here.
+                !clap
+                In due time...and certainly not because I just thought of walking in there.
         ]],
         DIALOG_END = [[
             agent:
             {not has_potential_ally?
                 {not advisor_favor?
-                    Anyway, with that out of the way, let's go back to gathering support.
-                    You have a long day ahead of you.
+                    !eureka
+                    But, to business. We've got to drum up as much traffic to that debate we can.
+                    I've already got some schemes cooked up for that, but we'll discuss that in a bit.
                 }
                 {advisor_favor?
-                    Anyway, with that out of the way, there is something I want to ask you.
+                    Anyway, to business...
+                    !point
+                    Actually, there's something that's been bugging me for a bit. Do you mind hearing me out? 
                 }
             }
             {has_potential_ally?
                 {not advisor_favor?
-                    Anyway, with that out of the way, let's go back to gathering support...
+                    !eureka
+                    But, to business. We've got to drum up as much-
                 }
                 {advisor_favor?
-                    Anyway, with that out of the way, there is something I want to ask you...
+                    Anyway, to business...
+                    !point
+                    Actually-
                 }
                 * Before {agent} finishes {agent.hisher} sentence, you are interrupted by someone visiting.
             }
@@ -325,30 +339,53 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             DIALOG_INTRO = [[
                 opponent:
                     !right
-                    [p] Sup.
                 player:
-                    Hi.
+                    !chuckle
+                    Oh look, it's everyone favorite political ally, {opponent}.
                 opponent:
-                    We are allies, right?
-                    So do you mind if you just drop out of the race? We can get more votes this way.
+                    Drop out of the race.
+                player:
+                    !crossed
+                    Wow. Some ally you turned out to be.
+                opponent:
+                    !thumb
+                    I'm serious, {player}. We both know you don't have enough votes to win this race.
+                    !permit
+                    But you drop out. We combine our supporters, and suddenly we'll both have a chance at this.
+                    I promise you'll be treated right once I win, you just have to trust me.
             ]],
             OPT_AGREE = "Agree to drop out of the race",
             DIALOG_AGREE = [[
                 player:
-                    [p] Okay I agree.
+                    !sigh
+                    You're not wrong. Our chances combined would be much better to get us in office.
                 opponent:
-                    Very well then. We can do great things together.
-                * Great! You made an ally.
-                * A shame that this campaign is about you, not {opponent}.
-                * Dropping out of the race means you lose.
+                    !intrigue
+                    So that's a yes? You'll drop out of the race for me?
+                player:
+                    !angryshrug
+                    No need to rub it in, but yes. You'll get your free supporters.
+                opponent:
+                    !eureka
+                    Alright, thank you {player}. You won't regret this choice.
             ]],
             OPT_REFUSE = "Refuse to drop out",
             DIALOG_REFUSE = [[
                 player:
-                    [p] Nah, I like my odds.
+                    !chuckle
+                    You seriously, <i>seriously</> doubt the power of political engingeering.
+                    My chances are fine, thank you very much.
                 opponent:
-                    You don't share my vision? Fine.
-                    This means we can't be allies anymore.
+                    !disappoint
+                    Well, that's a shame. Truly it is.
+                    !angrypoint
+                    The only way this can turn out now is us fighting each other in the race instead.
+                player:
+                    !sigh
+                    So it seems.
+                opponent:
+                    !permit
+                    For what it's worth, I sincerely hope you win if I lose. 
             ]],
         }
         :Fn(function(cxt)
@@ -377,18 +414,25 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         :Loc{
             DIALOG_INTRO = [[
                 opponent:
-                    !right
-                    [p] Sup.
+                    !crossed
+                    {player}, I came to tell you some news.
                 player:
-                    Hi.
+                    !happy
+                    Did they replace the hot sauce at the Slurping Snail?
                 opponent:
-                    With that note, I can't possibly win the campaign by my own.
-                    But with our powers combined, we might have a chance.
-                    Which is why I dropped out of the campaign.
+                    !point
+                    Not that I know of, though I'll check.
+                    but the actual, <i>important</> news is that I've dropped out of the race.
                 player:
-                    Cool.
-                * A few candidates will drop out of the campaign.
-                * Better pay attention.
+                    !surprised
+                    Oh wow. Didn't take you for someone who would've bailed.
+                opponent:
+                    !overthere
+                    Well, I've seen the averages. My chances to be elected are being shoveled out with the oshnu dung at this point.
+                    !point
+                    But you and I are allies. I've told my supporters you're their next best option.
+                    !clap
+                    With that, I'm gonna retire. I'll be rooting for you.
             ]],
         }
         :Fn(function(cxt)
