@@ -408,12 +408,12 @@ do
                     end
                 else
                     local label = first_row[j]
-                    print("\"" .. label .. "\"")
-                    print(type(label))
-                    print(string.find(label, "^[:].*[:]$"))
-                    if label == ":Total:" then
-                        print(":Total: found")
-                    end
+                    -- print("\"" .. label .. "\"")
+                    -- print(type(label))
+                    -- print(string.find(label, "^[:].*[:]$"))
+                    -- if label == ":Total:" then
+                    --     print(":Total: found")
+                    -- end
                     if label == "" or string.find(label, ":.*:") then
                     else
                         if entry == "" then
