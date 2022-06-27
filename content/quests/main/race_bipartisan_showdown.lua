@@ -448,7 +448,7 @@ QDEF:AddConvo("do_debate")
             cxt:Dialog("DIALOG_INTRO")
             cxt:GetCastMember("opponent"):OpinionEvent(OPINION.DISLIKE_IDEOLOGY_II)
             local RESOLVE = {60, 90, 110, 130}
-            local resolve_required = RESOLVE[GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY )]
+            local resolve_required = DemocracyUtil.CalculateBossScale(RESOLVE)
 
             cxt:Opt("OPT_DEBATE")
                 :Negotiation{
@@ -510,7 +510,7 @@ QDEF:AddConvo("do_debate_double")
             local function CreateDebateOption(opponent, other_opponent)
 
                 local RESOLVE = {60, 90, 110, 130}
-                local resolve_required = RESOLVE[GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY )]
+                local resolve_required = DemocracyUtil.CalculateBossScale(RESOLVE)
 
                 cxt:Opt("OPT_DEBATE", opponent)
                     :Fn(function(cxt)

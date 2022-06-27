@@ -1353,10 +1353,11 @@ function DemocracyUtil.LoadCSV(path)
     end
 end
 
-function DemocracyUtil.SetBossScale(mod, base_name, scale_name)
-    mod[base_name] = mod[scale_name][math.min(
-        #mod[scale_name],
-        GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1)]
+function DemocracyUtil.CalculateBossScale(boss_scale)
+    return boss_scale[clamp(
+        GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2,
+        1,
+        #boss_scale)]
 end
 
 DemocracyUtil.EXCLUDED_WEAPONS = {

@@ -131,12 +131,10 @@ local NEW_BEHAVIOURS = {
         WAIVERS_STACKS = {1, 2, 2, 3},
         OnInitDemocracy = function(self, old_init, ...)
             if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
-                local boss_scale = GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2
-
                 self.negotiator:AddModifier("FELLEMO_SLIPPERY")
 
                 self.waivers = self:AddArgument( "WAIVERS" )
-                self.waivers.stacks = self.WAIVERS_STACKS[clamp(boss_scale, 1, #self.WAIVERS_STACKS)]
+                self.waivers.stacks = DemocracyUtil.CalculateBossScale(self.WAIVERS_STACKS)
 
                 self.exploitation = self:AddArgument( "EXPLOITATION" )
 

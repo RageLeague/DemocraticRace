@@ -289,10 +289,7 @@ local MINI_NEGOTIATOR =
         if self.negotiator:IsPlayer() then
             self.max_resolve = 30
         else
-            self.max_resolve = self.resolve_scale[
-                math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2,
-                #self.resolve_scale)
-            ]
+            self.max_resolve = DemocracyUtil.CalculateBossScale(self.resolve_scale)
         end
         self.resolve = self.max_resolve
         -- if not self.negotiator:IsPlayer() then

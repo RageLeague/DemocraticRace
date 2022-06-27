@@ -8,24 +8,16 @@ local INTERVIEWER_BEHAVIOR = {
         -- modifier.agents = shallowcopy(self.agents)
         -- modifier:InitModifiers()
         self.cont_question_card = self:AddCard("contemporary_question_card")
-        self.cont_question_card.stacks = self.QUESTION_STACKS[
-            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-            #self.QUESTION_STACKS) ]
+        self.cont_question_card.stacks = DemocracyUtil.CalculateBossScale(self.QUESTION_STACKS)
 
         self.modifier_picker = self:MakePicker()
 
         local _, card = self.modifier_picker:AddArgument("LOADED_QUESTION", 2 + math.max(0, -relationship_delta))
-        card.stacks = self.QUESTION_STACKS[
-            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-            #self.QUESTION_STACKS) ]
+        card.stacks = DemocracyUtil.CalculateBossScale(self.QUESTION_STACKS)
         local _, card = self.modifier_picker:AddArgument("PLEASANT_QUESTION", 2 + math.max(0, relationship_delta))
-        card.stacks = self.QUESTION_STACKS[
-            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-            #self.QUESTION_STACKS) ]
+        card.stacks = DemocracyUtil.CalculateBossScale(self.QUESTION_STACKS)
         local _, card = self.modifier_picker:AddArgument("GENERIC_QUESTION", 4)
-        card.stacks = self.QUESTION_STACKS[
-            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-            #self.QUESTION_STACKS) ]
+        card.stacks = DemocracyUtil.CalculateBossScale(self.QUESTION_STACKS)
 
         if not self.params then self.params = {} end
         self.params.questions_answered = 0

@@ -38,10 +38,7 @@ end
 local function CalculateBonusScale(self)
     if self.bonus_scale and type(self.bonus_scale) == "table" then
         if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
-            return self.bonus_scale[
-                math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-                #self.bonus_scale)
-            ]
+            return DemocracyUtil.CalculateBossScale(self.bonus_scale)
         else
             return self.bonus_scale[1]
         end
@@ -580,9 +577,7 @@ local MODIFIERS =
         target_scale = {1, 2, 3, 4},
 
         OnInit = function( self )
-            self.composure_targets = self.target_scale[math.min(
-                #self.target_scale,
-                GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1)]
+            self.composure_targets = DemocracyUtil.CalculateBossScale(self.target_scale)
         end,
 
         OnEndTurn = function(self)
@@ -1144,9 +1139,8 @@ local MODIFIERS =
 
         bonus_resolve = {2, 3, 4, 5},
         GetBonusResolve = function(self)
-            local boss_scale = GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2
             if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
-                return self.bonus_resolve[math.min(#self.bonus_resolve, boss_scale)]
+                return DemocracyUtil.CalculateBossScale(self.bonus_resolve)
             end
             return self.bonus_resolve[2]
         end,
@@ -1769,8 +1763,8 @@ local MODIFIERS =
         name = "Logical",
         desc = "If {1}'s opponent has no {SMARTS}, {1} deals +{2} damage.",
         desc_fn = function( self, fmt_str )
-                    return loc.format(fmt_str, self:GetOwnerName(), self.damage_bonus[math.min(GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1, #self.damage_bonus)])
-            end,
+            return loc.format(fmt_str, self:GetOwnerName(), DemocracyUtil.CalculateBossScale(self.damage_bonus))
+        end,
         damage_bonus = { 1, 1, 1, 2 },
         modifier_type = MODIFIER_TYPE.CORE,
         max_stacks = 1,
@@ -1781,7 +1775,7 @@ local MODIFIERS =
         {
             [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
                 if source.negotiator == self.negotiator and self.bonus_count and self.bonus_count > 0 then
-                    local bonus = self.damage_bonus[math.min(GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1, #self.damage_bonus)]
+                    local bonus = DemocracyUtil.CalculateBossScale(self.damage_bonus)
                     persuasion:AddPersuasion( bonus * self.bonus_count, bonus * self.bonus_count, self )
                 end
             end,
@@ -1992,7 +1986,7 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.CORE,
 
         GetDamageMultiplier = function(self)
-            return self.multiplier_scale[math.min(#self.multiplier_scale, GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1)]
+            return DemocracyUtil.CalculateBossScale(self.multiplier_scale)
         end,
 
         multiplier_scale = {1, 1, 2, 2},
@@ -2189,9 +2183,8 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.CORE,
 
         OnInit = function( self )
-            local boss_scale = GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2
             if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
-                self.change_threshold = self.change_threshold_scale[clamp(boss_scale, 1, #self.change_threshold_scale)]
+                self.change_threshold = DemocracyUtil.CalculateBossScale(self.change_threshold_scale)
             end
             self.cards_played = 0
         end,
@@ -2287,10 +2280,9 @@ local MODIFIERS =
         end,
 
         OnInit = function( self )
-            local boss_scale = GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2
             if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
-                self.max_persuasion = self.max_persuasion_scale[clamp(boss_scale, 1, #self.max_persuasion_scale)]
-                self.vulnerability_count = self.vulnerability_scale[clamp(boss_scale, 1, #self.vulnerability_scale)]
+                self.max_persuasion = DemocracyUtil.CalculateBossScale(self.max_persuasion_scale)
+                self.vulnerability_count = DemocracyUtil.CalculateBossScale(self.vulnerability_scale)
             end
             self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
         end,
@@ -2330,10 +2322,7 @@ local MODIFIERS =
         additional_reduction = 1,
 
         OnInit = function(self)
-            -- self.base_reduction = self.base_reduction_scale[math.min(
-            --     #self.base_reduction_scale,
-            --     GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1)]
-            DemocracyUtil.SetBossScale(self, "base_reduction", "base_reduction_scale")
+            self.base_reduction = DemocracyUtil.CalculateBossScale(self.base_reduction_scale)
         end,
 
         CalculateDamageReduction = function(self)
@@ -2373,7 +2362,7 @@ local MODIFIERS =
         resolve_scale = { 3, 4, 5, 6 },
 
         OnInit = function(self)
-            DemocracyUtil.SetBossScale(self, "resolve_count", "resolve_scale")
+            self.resolve_count = DemocracyUtil.CalculateBossScale(self.resolve_scale)
         end,
 
         OnBounty = function(self)
@@ -2405,7 +2394,7 @@ local MODIFIERS =
         status_count_scale = { 1, 1, 1, 2 },
 
         OnInit = function(self)
-            DemocracyUtil.SetBossScale(self, "status_count", "status_count_scale")
+            self.status_count = DemocracyUtil.CalculateBossScale(self.status_count_scale)
         end,
 
         OnBounty = function(self)
