@@ -2315,6 +2315,83 @@ local MODIFIERS =
             end,
         },
     },
+    DEVOTED_MIND =
+    {
+        name = "Devoted Mind",
+        desc = "Take {1} less damage from {3}'s cards and arguments (excluding splash damage). Additionally, take {2} less damage this way for each argument {1} has with {FAITH_IN_HESH}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.base_reduction, self.additional_reduction, self:GetOwnerName(), self:GetOpponentName())
+        end,
+
+        modifier_type = MODIFIER_TYPE.CORE,
+        base_reduction = 2,
+        base_reduction_scale = { 1, 2, 3, 4 },
+        additional_reduction = 1,
+
+        OnInit = function(self)
+            self.base_reduction = self.base_reduction_scale[math.min(
+                #self.base_reduction_scale,
+                GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1)]
+        end,
+
+        CalculateDamageReduction = function(self)
+            local faith_count = 0
+            for i, data in self.negotiator:Modifiers() do
+                if data.faith_in_hesh then
+                    faith_count = faith_count + 1
+                end
+            end
+            return self.base_reduction + faith_count * self.additional_reduction
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+                if target == self and source.negotiator == self.anti_negotiator then
+                    target.composure = target.composure + math.min(damage, self:CalculateDamageReduction())
+                end
+            end,
+        },
+    },
+    INDIFFERENCE_OF_HESH =
+    {
+        name = "Indifference Of Hesh",
+        desc = "{FAITH_IN_HESH}\n\nAt the beginning of {1}'s turn, each other argument {1} has restores {2} resolve.",
+        faith_in_hesh = true,
+
+        resolve_count = 4,
+        resolve_scale = { 3, 4, 5, 6 },
+    },
+    INCOMPREHENSIBILITY_OF_HESH =
+    {
+        name = "Incomprehensibility Of Hesh",
+        desc = "{FAITH_IN_HESH}\n\nWhen one of {1}'s arguments is destroyed, add {2} {status_fracturing_mind} to the draw pile.",
+        faith_in_hesh = true,
+
+        status_count = 1,
+        status_count_scale = { 1, 1, 1, 2 },
+    },
+    INSATIABILITY_OF_HESH =
+    {
+        name = "Insatiability Of Hesh",
+        desc = "{FAITH_IN_HESH}\n\nAttacks an opponent argument at the beginning of {3}'s turn for {1}-{2} damage. Increase this argument's max damage by 1 when any argument is destroyed.",
+        desc_fn = function(self, fmt_str)
+            local min_persuasion, max_persuasion, details = self.min_persuasion, self.max_persuasion
+            if minigame then
+                min_persuasion, max_persuasion, details = minigame:PreviewPersuasion( self, true )
+            end
+        end,
+        faith_in_hesh = true,
+
+        min_persuasion = 2,
+        max_persuasion = 3,
+    },
+    DESPERATION_FOR_FAITH =
+    {
+        name = "Desperation For Faith",
+        desc = "{FAITH_IN_HESH}\n\nAt the beginning of {1}'s turn, apply {2} {COMPOSURE} to {1}'s core argument.",
+        faith_in_hesh = true,
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
@@ -2339,6 +2416,11 @@ local FEATURES = {
             end
             return fmt_str
         end,
+    },
+    FAITH_IN_HESH =
+    {
+        name = "Faith In Hesh",
+        desc = "When destroyed, gain 4 {DOUBT}.",
     },
 }
 for id, data in pairs(FEATURES) do
