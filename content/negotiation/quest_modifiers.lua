@@ -2364,11 +2364,16 @@ local MODIFIERS =
 
         resolve_count = 4,
         resolve_scale = { 3, 4, 5, 6 },
+
+        OnBounty = function(self)
+            local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
+            feature:DoFaithBounty(self)
+        end,
     },
     INCOMPREHENSIBILITY_OF_HESH =
     {
         name = "Incomprehensibility Of Hesh",
-        desc = "{FAITH_IN_HESH}\n\nWhen one of {1}'s arguments is destroyed, add {2} {status_fracturing_mind} to the draw pile.",
+        desc = "{FAITH_IN_HESH}\n\nWhen another one of {1}'s arguments is destroyed, add {2} {status_fracturing_mind} to the draw pile.",
         faith_in_hesh = true,
 
         max_resolve = 20,
@@ -2376,6 +2381,11 @@ local MODIFIERS =
 
         status_count = 1,
         status_count_scale = { 1, 1, 1, 2 },
+
+        OnBounty = function(self)
+            local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
+            feature:DoFaithBounty(self)
+        end,
     },
     INSATIABILITY_OF_HESH =
     {
@@ -2396,6 +2406,11 @@ local MODIFIERS =
 
         min_persuasion = 2,
         max_persuasion = 3,
+
+        OnBounty = function(self)
+            local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
+            feature:DoFaithBounty(self)
+        end,
     },
     DESPERATION_FOR_FAITH =
     {
@@ -2406,6 +2421,10 @@ local MODIFIERS =
         max_resolve = 10,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
+        OnBounty = function(self)
+            local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
+            feature:DoFaithBounty(self)
+        end,
     },
 }
 for id, def in pairs( MODIFIERS ) do
@@ -2435,7 +2454,29 @@ local FEATURES = {
     FAITH_IN_HESH =
     {
         name = "Faith In Hesh",
-        desc = "When destroyed, gain 4 {DOUBT}.",
+        desc = "When destroyed, gain {1} {DOUBT}. Increase this amount by {2} for each arguments with <b>Faith In Hesh</> destroyed.",
+        desc_fn = function(self, fmt_str, stacks, engine)
+            local delta_count = self:GetDeltaCount(engine)
+            if delta_count ~= self.base_count then
+                return loc.format(fmt_str, "<#BONUS>" .. delta_count .. "</>", self.delta_count)
+            else
+                return loc.format(fmt_str, delta_count, self.delta_count)
+            end
+        end,
+        base_count = 2,
+        delta_count = 2,
+
+        GetDeltaCount = function(self, engine)
+            local destroy_count = engine and engine.faith_in_hesh_destroyed or 0
+            return self.base_count + destroy_count * self.delta_count
+        end,
+
+        DoFaithBounty = function(self, modifier)
+            modifier.negotiator:AddModifier("DOUBT", self:GetDeltaCount(modifier.engine), modifier)
+            if modifier.engine then
+                modifier.engine.faith_in_hesh_destroyed = (modifier.engine.faith_in_hesh_destroyed or 0) + 1
+            end
+        end,
     },
 }
 for id, data in pairs(FEATURES) do
