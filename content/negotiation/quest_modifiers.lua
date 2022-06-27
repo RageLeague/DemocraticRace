@@ -2359,6 +2359,9 @@ local MODIFIERS =
         desc = "{FAITH_IN_HESH}\n\nAt the beginning of {1}'s turn, each other argument {1} has restores {2} resolve.",
         faith_in_hesh = true,
 
+        max_resolve = 20,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
         resolve_count = 4,
         resolve_scale = { 3, 4, 5, 6 },
     },
@@ -2367,6 +2370,9 @@ local MODIFIERS =
         name = "Incomprehensibility Of Hesh",
         desc = "{FAITH_IN_HESH}\n\nWhen one of {1}'s arguments is destroyed, add {2} {status_fracturing_mind} to the draw pile.",
         faith_in_hesh = true,
+
+        max_resolve = 20,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
 
         status_count = 1,
         status_count_scale = { 1, 1, 1, 2 },
@@ -2377,11 +2383,16 @@ local MODIFIERS =
         desc = "{FAITH_IN_HESH}\n\nAttacks an opponent argument at the beginning of {3}'s turn for {1}-{2} damage. Increase this argument's max damage by 1 when any argument is destroyed.",
         desc_fn = function(self, fmt_str)
             local min_persuasion, max_persuasion, details = self.min_persuasion, self.max_persuasion
-            if minigame then
-                min_persuasion, max_persuasion, details = minigame:PreviewPersuasion( self, true )
+            if self.engine then
+                min_persuasion, max_persuasion, details = self.engine:PreviewPersuasion( self, true )
             end
+            return loc.format(fmt_str, min_persuasion, max_persuasion, self:GetOwnerName())
         end,
         faith_in_hesh = true,
+        no_damage_tt = true,
+
+        max_resolve = 20,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
 
         min_persuasion = 2,
         max_persuasion = 3,
@@ -2391,6 +2402,10 @@ local MODIFIERS =
         name = "Desperation For Faith",
         desc = "{FAITH_IN_HESH}\n\nAt the beginning of {1}'s turn, apply {2} {COMPOSURE} to {1}'s core argument.",
         faith_in_hesh = true,
+
+        max_resolve = 10,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
     },
 }
 for id, def in pairs( MODIFIERS ) do

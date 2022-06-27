@@ -25,13 +25,46 @@ local NEW_BEHAVIOURS = {
     {
         -- Use standard priest negotiation
         OnInitDemocracy = function(self, old_init, ...)
-            local res = Content.GetCharacterDef( "PRIEST" ).negotiation_data.behaviour.OnInit(self, ...)
-            self:SetPattern( self.DemocracyDefaultCycle )
-            return res
+            if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                self.negotiator:AddModifier("DEVOTED_MIND")
+
+                self.negotiator:CreateModifier( "INDIFFERENCE_OF_HESH", 1, self )
+                self.negotiator:CreateModifier( "INCOMPREHENSIBILITY_OF_HESH", 1, self )
+                self.negotiator:CreateModifier( "INSATIABILITY_OF_HESH", 1, self )
+
+                self.desperation = self:AddArgument( "DESPERATION_FOR_FAITH" )
+
+                self:SetPattern( self.DemocracyBossCycle )
+            else
+                local res = Content.GetCharacterDef( "PRIEST" ).negotiation_data.behaviour.OnInit(self, ...)
+                self:SetPattern( self.DemocracyDefaultCycle )
+                return res
+            end
         end,
 
         DemocracyDefaultCycle = function(self, ...)
             return Content.GetCharacterDef( "PRIEST" ).negotiation_data.behaviour.Cycle(self, ...)
+        end,
+
+        DemocracyBossCycle = function(self, ...)
+            local faith_count = 0
+            for i, data in self.negotiator:Modifiers() do
+                if data.faith_in_hesh then
+                    faith_count = faith_count + 1
+                end
+            end
+            if faith_count == 0 then
+                -- Do a mass attack, and create desperation
+                self:ChooseNumbersFromTotal( 1, 4 )
+                for i, card in ipairs(self.prepared_cards) do
+                    if card.id == "default" and card.target_enemy then
+                        card.target_mod = TARGET_MOD.TEAM
+                        card.max_persuasion = card.max_persuasion + 2
+                    end
+                end
+                self:ChooseCard(self.desperation)
+            else
+            end
         end,
     },
     HESH_AUCTIONEER =
