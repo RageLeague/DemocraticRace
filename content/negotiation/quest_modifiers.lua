@@ -2318,9 +2318,10 @@ local MODIFIERS =
     DEVOTED_MIND =
     {
         name = "Devoted Mind",
-        desc = "Take {1} less damage from {3}'s cards and arguments (excluding splash damage). Additionally, take {2} less damage this way for each argument {1} has with {FAITH_IN_HESH}.",
+        desc = "Take {1} less damage from {4}'s cards and arguments (excluding splash damage). Increase this amount by {2} for each argument {3} has with {FAITH_IN_HESH}.",
         desc_fn = function(self, fmt_str)
-            return loc.format(fmt_str, self.base_reduction, self.additional_reduction, self:GetOwnerName(), self:GetOpponentName())
+            local count = self:CalculateDamageReduction()
+            return loc.format(fmt_str, count == self.base_reduction and count or loc.format("<#BONUS>{1}</>", count), self.additional_reduction, self:GetOwnerName(), self:GetOpponentName())
         end,
 
         modifier_type = MODIFIER_TYPE.CORE,
@@ -2329,16 +2330,19 @@ local MODIFIERS =
         additional_reduction = 1,
 
         OnInit = function(self)
-            self.base_reduction = self.base_reduction_scale[math.min(
-                #self.base_reduction_scale,
-                GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1)]
+            -- self.base_reduction = self.base_reduction_scale[math.min(
+            --     #self.base_reduction_scale,
+            --     GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1)]
+            DemocracyUtil.SetBossScale(self, "base_reduction", "base_reduction_scale")
         end,
 
         CalculateDamageReduction = function(self)
             local faith_count = 0
-            for i, data in self.negotiator:Modifiers() do
-                if data.faith_in_hesh then
-                    faith_count = faith_count + 1
+            if self.negotiator then
+                for i, data in self.negotiator:Modifiers() do
+                    if data.faith_in_hesh then
+                        faith_count = faith_count + 1
+                    end
                 end
             end
             return self.base_reduction + faith_count * self.additional_reduction
@@ -2355,8 +2359,11 @@ local MODIFIERS =
     },
     INDIFFERENCE_OF_HESH =
     {
-        name = "Indifference Of Hesh",
+        name = "Indifference of Hesh",
         desc = "{FAITH_IN_HESH}\n\nAt the beginning of {1}'s turn, each other argument {1} has restores {2} resolve.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOwnerName(), self.resolve_count)
+        end,
         faith_in_hesh = true,
 
         max_resolve = 20,
@@ -2365,15 +2372,30 @@ local MODIFIERS =
         resolve_count = 4,
         resolve_scale = { 3, 4, 5, 6 },
 
+        OnInit = function(self)
+            DemocracyUtil.SetBossScale(self, "resolve_count", "resolve_scale")
+        end,
+
         OnBounty = function(self)
             local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
             feature:DoFaithBounty(self)
         end,
+
+        OnBeginTurn = function(self)
+            for i, mod in self.negotiator:Modifiers() do
+                if mod ~= self and mod:GetResolve() ~= nil then
+                    mod:RestoreResolve(self.resolve_count, self)
+                end
+            end
+        end,
     },
     INCOMPREHENSIBILITY_OF_HESH =
     {
-        name = "Incomprehensibility Of Hesh",
-        desc = "{FAITH_IN_HESH}\n\nWhen another one of {1}'s arguments is destroyed, add {2} {status_fracturing_mind} to the draw pile.",
+        name = "Incomprehensibility of Hesh",
+        desc = "{FAITH_IN_HESH}\n\nWhen another one of {1}'s arguments is destroyed by {2}, add {3} {status_fracturing_mind} to the draw pile.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOwnerName(), self:GetOpponentName(), self.status_count)
+        end,
         faith_in_hesh = true,
 
         max_resolve = 20,
@@ -2382,14 +2404,32 @@ local MODIFIERS =
         status_count = 1,
         status_count_scale = { 1, 1, 1, 2 },
 
+        OnInit = function(self)
+            DemocracyUtil.SetBossScale(self, "status_count", "status_count_scale")
+        end,
+
         OnBounty = function(self)
             local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
             feature:DoFaithBounty(self)
         end,
+
+        event_handlers =
+        {
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, card )
+                if modifier.negotiator == self.negotiator and card and card.negotiator == self.anti_negotiator then
+                    local cards = {}
+                    for i = 1, self.status_count do
+                        local card = Negotiation.Card( "status_fracturing_mind", self.engine:GetPlayer() )
+                        table.insert( cards, card )
+                    end
+                    self.engine:InceptCards( cards, self )
+                end
+            end,
+        },
     },
     INSATIABILITY_OF_HESH =
     {
-        name = "Insatiability Of Hesh",
+        name = "Insatiability of Hesh",
         desc = "{FAITH_IN_HESH}\n\nAttacks an opponent argument at the beginning of {3}'s turn for {1}-{2} damage. Increase this argument's max damage by 1 when any argument is destroyed.",
         desc_fn = function(self, fmt_str)
             local min_persuasion, max_persuasion, details = self.min_persuasion, self.max_persuasion
@@ -2406,11 +2446,26 @@ local MODIFIERS =
 
         min_persuasion = 2,
         max_persuasion = 3,
+        target_enemy = TARGET_ANY_RESOLVE,
 
         OnBounty = function(self)
             local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
             feature:DoFaithBounty(self)
         end,
+
+        OnBeginTurn = function( self, minigame )
+            self:ApplyPersuasion()
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, card )
+                if modifier.resolve and modifier.stacks > 0 then
+                    self.max_persuasion = self.max_persuasion + 1
+                    self:NotifyTriggered()
+                end
+            end,
+        },
     },
     DESPERATION_FOR_FAITH =
     {
