@@ -2365,6 +2365,11 @@ local MODIFIERS =
             self.resolve_count = DemocracyUtil.CalculateBossScale(self.resolve_scale)
         end,
 
+        CanPlayCard = function( self, source, engine, target )
+            local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
+            return feature:CanPlayCardFaith(self, source, target)
+        end,
+
         OnBounty = function(self)
             local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
             feature:DoFaithBounty(self)
@@ -2395,6 +2400,11 @@ local MODIFIERS =
 
         OnInit = function(self)
             self.status_count = DemocracyUtil.CalculateBossScale(self.status_count_scale)
+        end,
+
+        CanPlayCard = function( self, source, engine, target )
+            local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
+            return feature:CanPlayCardFaith(self, source, target)
         end,
 
         OnBounty = function(self)
@@ -2437,6 +2447,11 @@ local MODIFIERS =
         max_persuasion = 3,
         target_enemy = TARGET_ANY_RESOLVE,
 
+        CanPlayCard = function( self, source, engine, target )
+            local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
+            return feature:CanPlayCardFaith(self, source, target)
+        end,
+
         OnBounty = function(self)
             local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
             feature:DoFaithBounty(self)
@@ -2460,14 +2475,28 @@ local MODIFIERS =
     {
         name = "Desperation For Faith",
         desc = "{FAITH_IN_HESH}\n\nAt the beginning of {1}'s turn, apply {2} {COMPOSURE} to {1}'s core argument.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(self:GetOwnerName(), self.composure_gain)
+        end,
         faith_in_hesh = true,
 
         max_resolve = 10,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
+        composure_gain = 3,
+
+        CanPlayCard = function( self, source, engine, target )
+            local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
+            return feature:CanPlayCardFaith(self, source, target)
+        end,
+
         OnBounty = function(self)
             local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
             feature:DoFaithBounty(self)
+        end,
+
+        OnBeginTurn = function( self, minigame )
+            self.negotiator:FindCoreArgument():DeltaComposure( self.composure_gain, self )
         end,
     },
 }
@@ -2498,7 +2527,7 @@ local FEATURES = {
     FAITH_IN_HESH =
     {
         name = "Faith In Hesh",
-        desc = "When destroyed, gain {1} {DOUBT}. Increase this amount by {2} for each arguments with <b>Faith In Hesh</> destroyed.",
+        desc = "Cannot be targeted by {DOUBT}.\n\nWhen destroyed, gain {1} {DOUBT}. Increase this amount by {2} for each arguments with <b>Faith In Hesh</> destroyed.",
         desc_fn = function(self, fmt_str, stacks, engine)
             local delta_count = self:GetDeltaCount(engine)
             if delta_count ~= self.base_count then
@@ -2507,8 +2536,8 @@ local FEATURES = {
                 return loc.format(fmt_str, delta_count, self.delta_count)
             end
         end,
-        base_count = 2,
-        delta_count = 2,
+        base_count = 3,
+        delta_count = 3,
 
         GetDeltaCount = function(self, engine)
             local destroy_count = engine and engine.faith_in_hesh_destroyed or 0
@@ -2520,6 +2549,14 @@ local FEATURES = {
             if modifier.engine then
                 modifier.engine.faith_in_hesh_destroyed = (modifier.engine.faith_in_hesh_destroyed or 0) + 1
             end
+        end,
+
+        CanPlayCardFaith = function( self, modifier, source, target )
+            if source and source.id == "DOUBT" and target == modifier then
+                return false
+            end
+
+            return true
         end,
     },
 }
