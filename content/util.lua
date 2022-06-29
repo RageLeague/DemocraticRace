@@ -1353,6 +1353,13 @@ function DemocracyUtil.LoadCSV(path)
     end
 end
 
+function DemocracyUtil.CalculateBossScale(boss_scale)
+    return boss_scale[clamp(
+        GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2,
+        1,
+        #boss_scale)]
+end
+
 DemocracyUtil.EXCLUDED_WEAPONS = {
     "makeshift_dagger", "makeshift_dagger_plus"
 }
