@@ -32,11 +32,11 @@ local QDEF = QuestDef.Define
     end,
 
     on_start = function(quest)
-        local location = Location( LOCATION_DEF.id )
-        assert(location)
-        TheGame:GetGameState():AddLocation(location)
-        quest:AssignCastMember("junction", location )
-        quest:Activate("meet_opponent")
+        -- local location = Location( LOCATION_DEF.id )
+        -- assert(location)
+        -- TheGame:GetGameState():AddLocation(location)
+        -- quest:AssignCastMember("junction", location )
+        -- quest:Activate("meet_opponent")
     end,
     on_destroy = function( quest )
         if quest:GetCastMember("junction") then
@@ -188,6 +188,11 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
+            local location = Location( LOCATION_DEF.id )
+            assert(location)
+            TheGame:GetGameState():AddLocation(location)
+            cxt.quest:AssignCastMember("junction", location )
+            cxt.quest:Activate("meet_opponent")
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{
