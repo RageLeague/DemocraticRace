@@ -34,6 +34,10 @@ local NEW_BEHAVIOURS = {
 
                 self.desperation = self:AddArgument( "DESPERATION_FOR_FAITH" )
 
+                self.attacks = self:MakePicker()
+                self.attacks:AddArgument( "prayer_of_hesh", 1 )
+                self.attacks:AddArgument( "wrath_of_hesh", 1 )
+
                 self:SetPattern( self.DemocracyBossCycle )
             else
                 local res = Content.GetCharacterDef( "PRIEST" ).negotiation_data.behaviour.OnInit(self, ...)
@@ -46,7 +50,7 @@ local NEW_BEHAVIOURS = {
             return Content.GetCharacterDef( "PRIEST" ).negotiation_data.behaviour.Cycle(self, ...)
         end,
 
-        DemocracyBossCycle = function(self, ...)
+        DemocracyBossCycle = function(self, turns)
             local faith_count = 0
             for i, data in self.negotiator:Modifiers() do
                 if data.faith_in_hesh then
@@ -64,6 +68,14 @@ local NEW_BEHAVIOURS = {
                 end
                 self:ChooseCard(self.desperation)
             else
+                -- Do normal attacks
+                if turns % 2 == 0 then
+                    self:ChooseGrowingNumbers(1, 0)
+                    self.attacks:ChooseCard()
+                else
+                    self:ChooseGrowingNumbers(1, 1)
+                    self:ChooseComposure( 1, 3, 7 )
+                end
             end
         end,
     },
