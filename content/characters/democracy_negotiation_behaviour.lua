@@ -25,20 +25,65 @@ local NEW_BEHAVIOURS = {
     {
         -- Use standard priest negotiation
         OnInitDemocracy = function(self, old_init, ...)
-            local res = Content.GetCharacterDef( "PRIEST" ).negotiation_data.behaviour.OnInit(self, ...)
-            self:SetPattern( self.DemocracyDefaultCycle )
-            return res
+            if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                self.negotiator:AddModifier("DEVOTED_MIND")
+
+                self.negotiator:CreateModifier( "INDIFFERENCE_OF_HESH", 1, self )
+                self.negotiator:CreateModifier( "INCOMPREHENSIBILITY_OF_HESH", 1, self )
+                self.negotiator:CreateModifier( "INSATIABILITY_OF_HESH", 1, self )
+
+                self.desperation = self:AddArgument( "DESPERATION_FOR_FAITH" )
+
+                self.attacks = self:MakePicker()
+                self.attacks:AddArgument( "prayer_of_hesh", 1 )
+                self.attacks:AddArgument( "wrath_of_hesh", 1 )
+
+                self:SetPattern( self.DemocracyBossCycle )
+            else
+                local res = Content.GetCharacterDef( "PRIEST" ).negotiation_data.behaviour.OnInit(self, ...)
+                self:SetPattern( self.DemocracyDefaultCycle )
+                return res
+            end
         end,
 
         DemocracyDefaultCycle = function(self, ...)
             return Content.GetCharacterDef( "PRIEST" ).negotiation_data.behaviour.Cycle(self, ...)
+        end,
+
+        DemocracyBossCycle = function(self, turns)
+            local faith_count = 0
+            for i, data in self.negotiator:Modifiers() do
+                if data.faith_in_hesh then
+                    faith_count = faith_count + 1
+                end
+            end
+            if faith_count == 0 then
+                -- Do a mass attack, and create desperation
+                self:ChooseNumbersFromTotal( 1, 4 )
+                for i, card in ipairs(self.prepared_cards) do
+                    if card.id == "default" and card.target_enemy then
+                        card.target_mod = TARGET_MOD.TEAM
+                        card.max_persuasion = card.max_persuasion + 2
+                    end
+                end
+                self:ChooseCard(self.desperation)
+            else
+                -- Do normal attacks
+                if turns % 2 == 0 then
+                    self:ChooseGrowingNumbers(1, 0)
+                    self.attacks:ChooseCard()
+                else
+                    self:ChooseGrowingNumbers(1, 1)
+                    self:ChooseComposure( 1, 3, 7 )
+                end
+            end
         end,
     },
     HESH_AUCTIONEER =
     {
         OnInitDemocracy = function(self, old_init, difficulty)
             local relationship_delta = self.agent and (self.agent:GetRelationship() - RELATIONSHIP.NEUTRAL) or 0
-            self:SetPattern( self.BasicCycle )
+            self:SetPattern( self.DemocracyBasicCycle )
             local modifier = self.negotiator:AddModifier("INTERVIEWER")
             -- modifier.agents = shallowcopy(self.agents)
             -- modifier:InitModifiers()
@@ -58,7 +103,7 @@ local NEW_BEHAVIOURS = {
             self.params.questions_answered = 0
             self.available_issues = copyvalues(DemocracyConstants.issue_data)
         end,
-        BasicCycle = function( self, turns )
+        DemocracyBasicCycle = function( self, turns )
             -- Double attack every 2 rounds; Single attack otherwise.
             if self.difficulty >= 4 and turns % 2 == 0 then
                 self:ChooseGrowingNumbers( 3, -1 )
@@ -95,8 +140,48 @@ local NEW_BEHAVIOURS = {
     },
     SPARK_CONTACT =
     {
+        WAIVERS_STACKS = {1, 2, 2, 3},
         OnInitDemocracy = function(self, old_init, ...)
+            if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                self.negotiator:AddModifier("FELLEMO_SLIPPERY")
+
+                self.waivers = self:AddArgument( "WAIVERS" )
+                self.waivers.stacks = DemocracyUtil.CalculateBossScale(self.WAIVERS_STACKS)
+
+                self.exploitation = self:AddArgument( "EXPLOITATION" )
+
+                self.attacks = self:MakePicker()
+                self.attacks:AddID( "straw_man", 1 )
+                self.attacks:AddID( "ai_appropriate_card", 1 )
+
+                self:SetPattern( self.DemocracyBossCycle )
+                return
+            end
             return old_init(self, ...)
+        end,
+        DemocracyBossCycle = function( self, turns )
+            if turns % 4 == 1 then
+                self:ChooseGrowingNumbers( 2, -1 )
+            elseif turns % 4 == 3 then
+                self:ChooseGrowingNumbers( 3, 0, 0.8 )
+            else
+                self:ChooseGrowingNumbers( 1, 0 )
+            end
+
+            if turns % 4 == 1 then
+                self:ChooseCard(self.waivers)
+            end
+            if turns % 2 == 0 then
+                local stacks = self.negotiator:GetModifierInstances( "EXPLOITATION" )
+                if stacks < 2 then
+                    self:ChooseCard(self.exploitation)
+                    self:ChooseComposure( 1, 2, 5 )
+                else
+                    self:ChooseComposure( 2, 4, 10 )
+                end
+            end
+
+            self.attacks:ChooseCard()
         end,
     },
     KALANDRA =

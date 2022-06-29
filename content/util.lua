@@ -834,6 +834,7 @@ function DemocracyUtil.GetVoterIntentionIndex(data)
     local voter_index = 0
 
     local delta = DemocracyUtil.TryMainQuestFn("GetGeneralSupport") - DemocracyUtil.TryMainQuestFn("GetCurrentExpectation")
+    voter_index = voter_index + delta
 
     if faction then
         voter_index = voter_index + (TheGame:GetGameState():GetMainQuest().param.faction_support[faction] or 0)
@@ -1350,6 +1351,13 @@ function DemocracyUtil.LoadCSV(path)
         end
         return result
     end
+end
+
+function DemocracyUtil.CalculateBossScale(boss_scale)
+    return boss_scale[clamp(
+        GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2,
+        1,
+        #boss_scale)]
 end
 
 DemocracyUtil.EXCLUDED_WEAPONS = {

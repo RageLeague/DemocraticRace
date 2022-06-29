@@ -584,6 +584,60 @@ local CARDS = {
 
         hide_in_cardex = true
     },
+    ai_appropriate_card =
+    {
+        name = "Appropriate",
+
+        cost = 1,
+        flags = CARD_FLAGS.OPPONENT,
+        rarity = CARD_RARITY.UNIQUE,
+
+        count = 1,
+
+        MIN_TO_LEAVE = 5,
+
+        GetStealCount = function( self )
+            return GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ARGUMENT_PLUS ) and 2 or 1
+        end,
+
+        CanPlayCard = function( self, card, engine, target )
+            if card == self then
+                local MAX_STOLEN = 3 * self:GetStealCount()
+                local MIN_TO_LEAVE = self.MIN_TO_LEAVE
+
+                local num_stolen = 0
+                for i,modifier in self.negotiator:ModifierSlots() do
+                    if modifier.id == "APPROPRIATED" then
+                        num_stolen = num_stolen + modifier:GetStolenCount()
+                    end
+                end
+                if num_stolen < MAX_STOLEN then
+                    local cards = self.engine:GetAllPlayerCards(function(card) return not CheckBits( card.flags, CARD_FLAGS.STATUS ) end)
+                    if #cards > MIN_TO_LEAVE then
+                        return true
+                    end
+                end
+            end
+        end,
+
+        OnPostResolve  = function( self, minigame )
+            local cards = self.engine:GetAllPlayerCards(function(card) return not CheckBits( card.flags, CARD_FLAGS.STATUS ) end)
+            local count = math.min( #cards - self.MIN_TO_LEAVE, self:GetStealCount() )
+            cards = table.multipick(cards, count)
+            local approp
+            if count > 1 then
+                approp = self.negotiator:CreateModifier("APPROPRIATED_plus", 1, self )
+            else
+                approp = self.negotiator:CreateModifier("APPROPRIATED", 1, self )
+            end
+            for i, card in ipairs( cards ) do
+                if approp:IsApplied() then -- veryify that it still exists
+                    print( self.negotiator, "appropriated", card, "from", card.deck )
+                    approp:AppropriateCard( card )
+                end
+            end
+        end,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     if not def.series then

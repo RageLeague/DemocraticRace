@@ -40,12 +40,8 @@ local MODIFIERS = {
         OnInit = function( self )
             self:SetResolve( 4, MODIFIER_SCALING.HIGH )
             if CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
-                self.address_cost = self.address_cost_scale[
-                    math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-                    #self.address_cost_scale)]
-                self.multiplier = self.multiplier_scale[
-                    math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-                    #self.multiplier_scale) ]
+                self.address_cost = DemocracyUtil.CalculateBossScale(self.address_cost_scale)
+                self.multiplier = DemocracyUtil.CalculateBossScale(self.multiplier_scale)
             end
         end,
 
@@ -136,9 +132,7 @@ local MODIFIERS = {
         OnInit = function( self )
             self:SetResolve( 4, MODIFIER_SCALING.HIGH )
             if CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
-                self.resolve_gain = self.resolve_scale[
-                    math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-                    #self.resolve_scale) ]
+                self.resolve_gain = DemocracyUtil.CalculateBossScale(self.resolve_scale)
             end
         end,
 

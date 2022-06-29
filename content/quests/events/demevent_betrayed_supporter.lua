@@ -7,17 +7,25 @@ local QDEF = QuestDef.Define
 :AddCast{
     cast_id = "supporter",
     condition = function(agent, quest)
-        if agent:GetRelationship() >= RELATIONSHIP.NEUTRAL and DemocracyUtil.GetAgentEndorsement(agent) > RELATIONSHIP.NEUTRAL then
-            for id, data in pairs(DemocracyConstants.issue_data) do
-                local stance = data:GetAgentStanceIndex(agent)
-                local player_stance = DemocracyUtil.TryMainQuestFn("GetStance", id) or 0
-                if stance * player_stance < 0 then --looking for opposing stances by multiplying into a negative. two same signs or any zeroes will make this false
-                    print(agent.name, id, stance, player_stance)
-                    return true
-                end
+        if agent:GetRelationship() < RELATIONSHIP.NEUTRAL then
+            return false, "Bad relationship"
+        end
+        if DemocracyUtil.GetAgentEndorsement(agent) < RELATIONSHIP.NEUTRAL then
+            return false, "Bad endorsement"
+        end
+        if agent:GetRelationship() < RELATIONSHIP.NEUTRAL and DemocracyUtil.GetAgentEndorsement(agent) < RELATIONSHIP.NEUTRAL then
+            return false, "Uninteresting relationship/endorsement"
+        end
+
+        for id, data in pairs(DemocracyConstants.issue_data) do
+            local stance = data:GetAgentStanceIndex(agent)
+            local player_stance = DemocracyUtil.TryMainQuestFn("GetStance", id) or 0
+            if stance * player_stance < 0 then --looking for opposing stances by multiplying into a negative. two same signs or any zeroes will make this false
+                print(agent.name, id, stance, player_stance)
+                return true
             end
         end
-        return false
+        return false, "No valid stance"
     end,
 }
 
@@ -30,31 +38,48 @@ QDEF:AddConvo()
                     !left
                 supporter:
                     !right
-                    !angry_accuse
-                    {player}! What in Hesh's name?!
+                    !dubious
+                    {player}? Is what I heard true?
+            ]],
+            DIALOG_INTRO_PST = [[
                 player:
-                    What has you so riled up?
+                    !placate
+                    Hold on. This came out of nowhere.
+                    What is this all about?
                 supporter:
-                    I supported you in the belief that you'd make the right decisions for Havaria, but I've just heard you argue for {bad_stance#pol_stance}? Unbelievable!
+                    I supported you in the belief that you'd make the right decisions for Havaria, but I've just heard you argue for {bad_stance#pol_stance}?
+                    Surely that must be a mistake, right? You don't <i>actually</> support {bad_stance#pol_stance}, do you?
             ]],
             OPT_CHANGE = "Change to {good_stance#pol_stance} to appease {supporter}",
             DIALOG_CHANGE = [[
                 player:
-                    [p] You know what? You're right. {good_stance#pol_stance} is what is right for Havaria, and that is what I will campaign for from here on out.
-                * Assuming you don't just flip-flop on this issue again.
+                    [p] I made a severe lapse of judgement.
+                    That was never my intention at all.
+            ]],
+            DIALOG_CHANGE_PST = [[
+                player:
+                    That much is certain.
                 supporter:
-                    !happy
-                    I knew I could count on you!
+                    Of course, I know admitting your mistakes can be hard.
+                    !agree
+                    But at least you have the courage to admit you're wrong.
+                    I can respect that.
             ]],
             OPT_DENY = "Insist on {bad_stance#pol_stance}",
             DIALOG_DENY = [[
                 player:
                     !hips
-                    [p] {bad_stance#pol_stance} is the right choice for Havaria, like it or not.
+                    [p] I certainly did not make a mistake.
+            ]],
+            DIALOG_DENY_PST = [[
+                player:
+                    And if you can't agree with that... Then I'm sorry.
                 supporter:
-                    !disappoint
-                    Is that so? Then maybe {player} is not the right choice for me. Goodbye.
-                    !exit
+                    ...
+                    So, this is how you really think, is it?
+                    I thought you are going to be different. I thought you actually have the Havarian people in mind with your policies.
+                    !sigh
+                    But now, I see your true colors. And I don't know if I can support you anymore.
             ]],
             OPT_CONVINCE = "Convince {supporter} to look past this issue",
             DIALOG_CONVINCE = [[
@@ -63,11 +88,25 @@ QDEF:AddConvo()
             ]],
             DIALOG_CONVINCE_SUCCESS = [[
                 player:
+                    !thumb
+                    Look, I can't appease everyone with everything I do.
+                    But sometimes we all need to make compromises in order to achieve things we want.
                     !overthere
-                    [p] And that's why, with {bad_stance#pol_stance}, Havaria will be a better place overall.
+                    Just look at all the other candidates. All corrupt or outright criminal.
+                    But me? I am your only realistic choice.
+                    If you want someone who actually cares about the Havarian people in the office, you need to look past your narrow view and at the bigger picture.
                 supporter:
-                    !suspicious
-                    I'm still not entirely convinced that {bad_stance#pol_stance} is good, but you seem to know what you're doing. I trust you to make it work.
+                    !sigh
+                    As much as it pains me to admit, you are absolutely right.
+                    We can't always get what we want, so we make compromises.
+                player:
+                    !cruel
+                    I trust you would continue to support me?
+                supporter:
+                    Yeah, even if it means supporting someone who supports {bad_stance#pol_stance}.
+                player:
+                    !happy
+                    That's what I like to hear.
             ]],
             DIALOG_CONVINCE_FAILURE = [[
                 player:
@@ -103,12 +142,23 @@ QDEF:AddConvo()
                 sit_mod = { value = 20, text = cxt:GetLocString("SIT_MOD_VERY_BAD") }
             end
             cxt:Dialog("DIALOG_INTRO")
+            DemocracyUtil.QuipStance(cxt, cxt:GetCastMember("supporter"), cxt.quest.param.good_stance, "question", "loaded")
+            cxt:Dialog("DIALOG_INTRO_PST")
+
             cxt:Opt("OPT_CHANGE")
                 :Dialog("DIALOG_CHANGE")
+                :Fn(function(cxt)
+                    DemocracyUtil.QuipStance(cxt, cxt.player, cxt.quest.param.good_stance, "statement")
+                end)
+                :Dialog("DIALOG_CHANGE_PST")
                 :UpdatePoliticalStance(issue, stance)
                 :Travel()
             cxt:Opt("OPT_DENY")
                 :Dialog("DIALOG_DENY")
+                :Fn(function(cxt)
+                    DemocracyUtil.QuipStance(cxt, cxt.player, cxt.quest.param.bad_stance, "statement")
+                end)
+                :Dialog("DIALOG_DENY_PST")
                 :ReceiveOpinion(OPINION.DISLIKE_IDEOLOGY)
                 :Travel()
             cxt:BasicNegotiation("CONVINCE", {
