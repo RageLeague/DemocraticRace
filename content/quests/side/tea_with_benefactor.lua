@@ -87,7 +87,7 @@ local QDEF = QuestDef.Define
         -- quest.param.unconvinced_people = {}
     end,
     on_start = function(quest)
-        quest:Activate("go_to_diner")
+        -- quest:Activate("go_to_diner")
     end,
     collect_agent_locations = function(quest, t)
         -- if quest:IsActive("contact_informant") or quest:IsActive("extract_informant") then
@@ -354,7 +354,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-
+            cxt.quest:Activate("go_to_diner")
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{

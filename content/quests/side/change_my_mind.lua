@@ -44,9 +44,9 @@ local QDEF = QuestDef.Define
         quest.param.debated_people = 0
         quest.param.crowd = {}
     end,
-    on_start = function(quest)
-        quest:Activate("go_to_junction")
-    end,
+    -- on_start = function(quest)
+    --     quest:Activate("go_to_junction")
+    -- end,
     on_destroy = function( quest )
         if quest:GetCastMember("junction") then
             TheGame:GetGameState():MarkLocationForDeletion(quest:GetCastMember("junction"))
@@ -932,7 +932,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-            -- cxt.quest:Activate("go_to_junction")
+            cxt.quest:Activate("go_to_junction")
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{
