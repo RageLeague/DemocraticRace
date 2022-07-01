@@ -384,14 +384,14 @@ local CARDS = {
             end)
         end,
     },
-	faction_negotiation_hinder =
-	{
+    faction_negotiation_hinder =
+    {
         name = "Faction Hinder",
         show_dealt = false,
         quip = "support",
         rarity = CARD_RARITY.UNIQUE,
         flags = CARD_FLAGS.BYSTANDER,
-		resolve_scale = {20, 25, 30, 35},
+        resolve_scale = {20, 25, 30, 35},
         OnPostResolve = function( self )
             local core_id = "POWER_ABUSE"
             local opposition_data = DemocracyUtil.GetOppositionData(self.owner)
@@ -400,7 +400,7 @@ local CARDS = {
             end
             local mod = Negotiation.Modifier( core_id, self.negotiator )
             self.negotiator:CreateModifier( mod )
-			mod:SetResolve(DemocracyUtil.CalculateBossScale(self.resolve_scale))
+            mod:SetResolve(DemocracyUtil.CalculateBossScale(self.resolve_scale))
 
             self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                 panel.last_ev_time = nil
@@ -408,7 +408,7 @@ local CARDS = {
                 panel:RefreshCardSpeed()
             end)
         end,
-	},
+    },
     appeal_to_crowd_quest =
     {
         name = "Appeal to the Crowd",
@@ -684,6 +684,6 @@ local FEATURES = {
     },
 }
 for id, data in pairs(FEATURES) do
-	local def = NegotiationFeatureDef(id, data)
-	Content.AddNegotiationCardFeature(id, def)
+    local def = NegotiationFeatureDef(id, data)
+    Content.AddNegotiationCardFeature(id, def)
 end
