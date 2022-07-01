@@ -2567,6 +2567,8 @@ local MODIFIERS =
                 self.engine.revolution_activated = true
             end
             self.custom_name = (self.def or self):GetLocalizedString("NAME_2")
+            self.min_persuasion = self.damage_amt
+            self.max_persuasion = self.damage_amt
             self:NotifyChanged()
         end,
 
@@ -2587,13 +2589,10 @@ local MODIFIERS =
                     end
                 else
                     if modifier.stacks > 0 then
-                        self.min_persuasion = self.damage_amt
-                        self.max_persuasion = self.damage_amt
+                        -- TODO: rework how this functions. We can destroy multiple arguments with this at a time, and that might cause issues.
                         self.target_self = TARGET_ANY_RESOLVE
                         self.target_enemy = TARGET_ANY_RESOLVE
                         self:ApplyPersuasion()
-                        self.min_persuasion = nil
-                        self.max_persuasion = nil
                         self.target_self = nil
                         self.target_enemy = nil
                     end
