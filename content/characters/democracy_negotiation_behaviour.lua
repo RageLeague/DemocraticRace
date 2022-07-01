@@ -187,8 +187,25 @@ local NEW_BEHAVIOURS = {
     KALANDRA =
     {
         OnInitDemocracy = function(self, old_init, ...)
+            if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                self.negotiator:AddModifier("LEADER_OF_THE_PEOPLE")
+
+                self.voice = self:AddArgument( "VOICE_OF_THE_PEOPLE_KALANDRA" )
+
+                self:SetPattern( self.DemocracyUnrestCycle )
+                return
+            end
             return old_init(self, ...)
         end,
+        DemocracyUnrestCycle = function( self, turns, ... )
+            if self.engine and self.engine.revolution_activated then
+                self:SetPattern( self.DemocracyUnrestCycle )
+                self:DemocracyRevolutionCycle(turns, ...)
+                return
+            end
+        end,
+        DemocracyRevolutionCycle = function(self, turns)
+        end
     },
     ANDWANETTE =
     {

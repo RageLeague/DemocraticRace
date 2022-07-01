@@ -2499,6 +2499,108 @@ local MODIFIERS =
             self.negotiator:FindCoreArgument():DeltaComposure( self.composure_gain, self )
         end,
     },
+    VOICE_OF_THE_PEOPLE_KALANDRA =
+    {
+        name = "Voice of the People",
+        desc = "This argument's resolve damage doubles for each stack.",
+        target_enemy = TARGET_ANY_RESOLVE,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        OnSetStacks = function( self, old_stacks )
+            self.min_persuasion = math.floor(math.pow(2, self.stacks))
+            self.max_persuasion = self.min_persuasion
+        end,
+
+        max_resolve = 4,
+
+        OnInit = function(self)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
+        end,
+
+        min_persuasion = 2,
+        max_persuasion = 2,
+
+        target_enemy = TARGET_ANY_RESOLVE,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        OnBeginTurn = function(self)
+            self:ApplyPersuasion()
+        end,
+    },
+    UNREST_KALANDRA =
+    {
+        name = "Unrest",
+        desc = "The real revolution begins when <b>Unrest</> reaches {1} {1*stack|stacks}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.revolution_threshold)
+        end,
+
+        revolution_threshold = 3,
+
+        modifier_type = MODIFIER_TYPE.PERMANENT,
+    },
+    LEADER_OF_THE_PEOPLE =
+    {
+        name = "Leader of the People",
+        desc = "When {1}'s {VOICE_OF_THE_PEOPLE_KALANDRA} argument is destroyed, gain an <b>Unrest</>. The real revolution begins when <b>Unrest</> reaches {2} {2*stack|stacks}.",
+        loc_strings =
+        {
+            name_2 = "Leader of the Revolution",
+            desc_2 = "When any argument is destroyed, deal {1} damage to every argument.",
+        },
+        desc_fn = function(self, fmt_str)
+            if not (self.engine and self.engine.revolution_activated) then
+                return loc.format(fmt_str, self:GetOwnerName(), self.revolution_threshold)
+            else
+                return loc.format((self.def or self):GetLocalizedString("DESC_2"), self.damage_amt)
+            end
+        end,
+
+        revolution_threshold = 3,
+        damage_amt = 1,
+        modifier_type = MODIFIER_TYPE.CORE,
+
+        target_mod = TARGET_MOD.TEAM,
+
+        ActivateRevolution = function(self)
+            if self.engine then
+                self.engine.revolution_activated = true
+            end
+            self.custom_name = (self.def or self):GetLocalizedString("NAME_2")
+            self:NotifyChanged()
+        end,
+
+        OnEndTurn = function(self)
+            local count = self.negotiator:GetModifierStacks("UNREST_KALANDRA")
+            if count and count >= self.revolution_threshold then
+                self.negotiator:RemoveModifier("UNREST_KALANDRA", count, self)
+                self:ActivateRevolution()
+            end
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier )
+                if not (self.engine and self.engine.revolution_activated) then
+                    if modifier.id == "VOICE_OF_THE_PEOPLE_KALANDRA" and modifier.stacks > 0 then
+                        self.negotiator:AddModifier("UNREST_KALANDRA", 1, self)
+                    end
+                else
+                    if modifier.stacks > 0 then
+                        self.min_persuasion = self.damage_amt
+                        self.max_persuasion = self.damage_amt
+                        self.target_self = TARGET_ANY_RESOLVE
+                        self.target_enemy = TARGET_ANY_RESOLVE
+                        self:ApplyPersuasion()
+                        self.min_persuasion = nil
+                        self.max_persuasion = nil
+                        self.target_self = nil
+                        self.target_enemy = nil
+                    end
+                end
+            end,
+        },
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
