@@ -384,6 +384,31 @@ local CARDS = {
             end)
         end,
     },
+	faction_negotiation_hinder =
+	{
+        name = "Faction Hinder",
+        show_dealt = false,
+        quip = "support",
+        rarity = CARD_RARITY.UNIQUE,
+        flags = CARD_FLAGS.BYSTANDER,
+		resolve_scale = {20, 25, 30, 35},
+        OnPostResolve = function( self )
+            local core_id = "POWER_ABUSE"
+            local opposition_data = DemocracyUtil.GetOppositionData(self.owner)
+            if opposition_data and opposition_data.faction_core then
+                core_id = opposition_data.faction_core
+            end
+            local mod = Negotiation.Modifier( core_id, self.negotiator )
+            self.negotiator:CreateModifier( mod )
+			mod:SetResolve(DemocracyUtil.CalculateBossScale(self.resolve_scale))
+
+            self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
+                panel.last_ev_time = nil
+                panel.speedup_factor = nil
+                panel:RefreshCardSpeed()
+            end)
+        end,
+	},
     appeal_to_crowd_quest =
     {
         name = "Appeal to the Crowd",
