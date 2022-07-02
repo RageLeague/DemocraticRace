@@ -363,7 +363,6 @@ local CARDS = {
         },
         name = "Debater Hinder",
         show_dealt = false,
-        quip = "support",
         rarity = CARD_RARITY.UNIQUE,
         flags = CARD_FLAGS.BYSTANDER,
         OnPostResolve = function( self )
@@ -376,19 +375,32 @@ local CARDS = {
             local mod = Negotiation.Modifier( mini_negotiator_id, self.negotiator )
             mod.candidate_agent = self.owner
             self.negotiator:CreateModifier( mod )
-
-            self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
-                panel.last_ev_time = nil
-                panel.speedup_factor = nil
-                panel:RefreshCardSpeed()
-            end)
         end,
     },
     faction_negotiation_hinder =
     {
+        quips =
+        {
+            {
+                [[
+                    [p] I'm a boss and you're wrong.
+                ]],
+            },
+            {
+                tags = "liked",
+                [[
+                    [p] Why?
+                ]],
+            },
+            {
+                tags = "disliked",
+                [[
+                    [p] I'm this close to hating you!
+                ]],
+            },
+        },
         name = "Faction Hinder",
         show_dealt = false,
-        quip = "support",
         rarity = CARD_RARITY.UNIQUE,
         flags = CARD_FLAGS.BYSTANDER,
         resolve_scale = {20, 25, 30, 35},
