@@ -375,6 +375,12 @@ local CARDS = {
             local mod = Negotiation.Modifier( mini_negotiator_id, self.negotiator )
             mod.candidate_agent = self.owner
             self.negotiator:CreateModifier( mod )
+
+            self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
+                panel.last_ev_time = nil
+                panel.speedup_factor = nil
+                panel:RefreshCardSpeed()
+            end)
         end,
     },
     faction_negotiation_hinder =
@@ -413,12 +419,6 @@ local CARDS = {
             local mod = Negotiation.Modifier( core_id, self.negotiator )
             self.negotiator:CreateModifier( mod )
             mod:SetResolve(DemocracyUtil.CalculateBossScale(self.resolve_scale))
-
-            self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
-                panel.last_ev_time = nil
-                panel.speedup_factor = nil
-                panel:RefreshCardSpeed()
-            end)
         end,
     },
     appeal_to_crowd_quest =
