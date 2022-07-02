@@ -188,9 +188,12 @@ local NEW_BEHAVIOURS = {
     {
         OnInitDemocracy = function(self, old_init, ...)
             if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
-                self.negotiator:AddModifier("LEADER_OF_THE_PEOPLE")
+                self.negotiator:AddModifier("SPARK_OF_REVOLUTION")
 
                 self.voice = self:AddArgument( "VOICE_OF_THE_PEOPLE_KALANDRA" )
+                self.handout = self:AddArgument("RISE_HANDOUT")
+                local handout_scale = { 1, 2, 2, 3 }
+                self.handout.stacks = DemocracyUtil.CalculateBossScale(handout_scale)
 
                 self:SetPattern( self.DemocracyUnrestCycle )
                 return
@@ -203,9 +206,25 @@ local NEW_BEHAVIOURS = {
                 self:DemocracyRevolutionCycle(turns, ...)
                 return
             end
+            self:ChooseCard(self.voice)
+            if turns % 3 == 1 then
+                self:ChooseGrowingNumbers(1, -1)
+                self:ChooseCard(self.handout)
+            elseif turns % 3 == 2 then
+                self:ChooseGrowingNumbers(1, 0)
+                self:ChooseComposure(1, 3, 7)
+            else
+                self:ChooseGrowingNumbers(2, 0)
+            end
         end,
         DemocracyRevolutionCycle = function(self, turns)
-        end
+            self.revolution_turns = (self.revolution_turns or 0) + 1
+            if self.revolution_turns % 2 == 1 then
+                self:ChooseGrowingNumbers(3, 0)
+            else
+                self:ChooseGrowingNumbers(2, 2)
+            end
+        end,
     },
     ANDWANETTE =
     {

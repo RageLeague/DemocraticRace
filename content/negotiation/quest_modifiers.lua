@@ -2539,13 +2539,13 @@ local MODIFIERS =
 
         modifier_type = MODIFIER_TYPE.PERMANENT,
     },
-    LEADER_OF_THE_PEOPLE =
+    SPARK_OF_REVOLUTION =
     {
-        name = "Leader of the People",
+        name = "Spark of Revolution",
         desc = "When {1}'s {VOICE_OF_THE_PEOPLE_KALANDRA} argument is destroyed, gain an <b>Unrest</>. The real revolution begins when <b>Unrest</> reaches {2} {2*stack|stacks}.",
         loc_strings =
         {
-            name_2 = "Leader of the Revolution",
+            name_2 = "Flames of Revolution",
             desc_2 = "When any argument is destroyed, deal {1} damage to every argument.",
         },
         desc_fn = function(self, fmt_str)
@@ -2558,9 +2558,14 @@ local MODIFIERS =
 
         revolution_threshold = 3,
         damage_amt = 1,
+        damage_scale = {1, 1, 2, 2},
         modifier_type = MODIFIER_TYPE.CORE,
 
         target_mod = TARGET_MOD.TEAM,
+
+        OnInit = function(self)
+            self.damage_amt = DemocracyUtil.CalculateBossScale(self.damage_scale)
+        end,
 
         ActivateRevolution = function(self)
             if self.engine then
@@ -2580,6 +2585,23 @@ local MODIFIERS =
             end
         end,
 
+        DoAOESequence = function(self)
+            if not self.performing_aoe then
+                self.performing_aoe = true
+
+                self.target_self = TARGET_ANY_RESOLVE
+                self.target_enemy = TARGET_ANY_RESOLVE
+                while self.aoe_count > 0 and self:IsApplied() do
+                    self.aoe_count = self.aoe_count - 1
+                    self:ApplyPersuasion()
+                end
+                self.target_self = nil
+                self.target_enemy = nil
+
+                self.performing_aoe = false
+            end
+        end,
+
         event_handlers =
         {
             [ EVENT.MODIFIER_REMOVED ] = function( self, modifier )
@@ -2589,12 +2611,8 @@ local MODIFIERS =
                     end
                 else
                     if modifier.stacks > 0 then
-                        -- TODO: rework how this functions. We can destroy multiple arguments with this at a time, and that might cause issues.
-                        self.target_self = TARGET_ANY_RESOLVE
-                        self.target_enemy = TARGET_ANY_RESOLVE
-                        self:ApplyPersuasion()
-                        self.target_self = nil
-                        self.target_enemy = nil
+                        self.aoe_count = (self.aoe_count or 0) + 1
+                        self:DoAOESequence()
                     end
                 end
             end,
