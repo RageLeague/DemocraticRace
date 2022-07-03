@@ -363,7 +363,6 @@ local CARDS = {
         },
         name = "Debater Hinder",
         show_dealt = false,
-        quip = "support",
         rarity = CARD_RARITY.UNIQUE,
         flags = CARD_FLAGS.BYSTANDER,
         OnPostResolve = function( self )
@@ -382,6 +381,56 @@ local CARDS = {
                 panel.speedup_factor = nil
                 panel:RefreshCardSpeed()
             end)
+        end,
+    },
+    faction_negotiation_hinder =
+    {
+        quips =
+        {
+            {
+                [[
+                    This is no place for a grifter like you!
+                ]],
+                [[
+                    This is our debate! Not yours!
+                ]],
+                [[
+                    Come to steal my glory, {player}?
+                ]],
+                [[
+                    Hey! You are not supposed to be here!
+                ]],
+            },
+            {
+                tags = "liked",
+                [[
+                    What are you doing, {player}? You should let me handle this?
+                ]],
+                [[
+                    Why are you doing this to me, {player}?
+                ]],
+            },
+            {
+                tags = "disliked",
+                [[
+                    Make a nuisance of yourself somewhere else, {player}.
+                ]],
+            },
+        },
+        name = "Faction Hinder",
+        show_dealt = false,
+        rarity = CARD_RARITY.UNIQUE,
+        flags = CARD_FLAGS.BYSTANDER,
+        resolve_scale = {20, 25, 30, 35},
+        OnPostResolve = function( self )
+            local core_id = "POWER_ABUSE"
+            local opposition_data = DemocracyUtil.GetOppositionData(self.owner)
+            if opposition_data and opposition_data.faction_core then
+                core_id = opposition_data.faction_core
+            end
+            local mod = Negotiation.Modifier( core_id, self.negotiator )
+            self.negotiator:CreateModifier( mod )
+            mod:SetResolve(DemocracyUtil.CalculateBossScale(self.resolve_scale))
         end,
     },
     appeal_to_crowd_quest =
@@ -659,6 +708,6 @@ local FEATURES = {
     },
 }
 for id, data in pairs(FEATURES) do
-	local def = NegotiationFeatureDef(id, data)
-	Content.AddNegotiationCardFeature(id, def)
+    local def = NegotiationFeatureDef(id, data)
+    Content.AddNegotiationCardFeature(id, def)
 end
