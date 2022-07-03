@@ -389,19 +389,31 @@ local CARDS = {
         {
             {
                 [[
-                    [p] I'm a boss and you're wrong.
+                    This is no place for a grifter like you!
+                ]],
+                [[
+                    This is our debate! Not yours!
+                ]],
+                [[
+                    Come to steal my glory, {player}?
+                ]],
+                [[
+                    Hey! You are not supposed to be here!
                 ]],
             },
             {
                 tags = "liked",
                 [[
-                    [p] Why?
+                    What are you doing, {player}? You should let me handle this?
+                ]],
+                [[
+                    Why are you doing this to me, {player}?
                 ]],
             },
             {
                 tags = "disliked",
                 [[
-                    [p] I'm this close to hating you!
+                    Make a nuisance of yourself somewhere else, {player}.
                 ]],
             },
         },
