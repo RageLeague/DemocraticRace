@@ -191,6 +191,7 @@ local NEW_BEHAVIOURS = {
                 self.negotiator:AddModifier("SPARK_OF_REVOLUTION")
 
                 self.voice = self:AddArgument( "VOICE_OF_THE_PEOPLE_KALANDRA" )
+                self.fury = self:AddArgument( "BURNING_FURY" )
                 self.handout = self:AddArgument("RISE_HANDOUT")
                 local handout_scale = { 1, 2, 2, 3 }
                 self.handout.stacks = DemocracyUtil.CalculateBossScale(handout_scale)
@@ -223,6 +224,15 @@ local NEW_BEHAVIOURS = {
                 self:ChooseGrowingNumbers(3, 0)
             else
                 self:ChooseGrowingNumbers(2, 2)
+            end
+            local fury_stacks = self.negotiator:GetModifierInstances( "BURNING_FURY" )
+            if fury_stacks == 0 then
+                if self.skip_fury_turn then
+                    self.skip_fury_turn = false
+                else
+                    self:ChooseCard(self.fury)
+                    self.skip_fury_turn = true
+                end
             end
         end,
     },

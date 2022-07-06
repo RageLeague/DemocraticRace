@@ -2618,6 +2618,76 @@ local MODIFIERS =
             end,
         },
     },
+    BURNING_FURY =
+    {
+        name = "Burning Fury",
+        desc = "At the start of {1}'s turn, after card draw, {2*a random card|{2} random cards} in {1}'s hand gains {FERVOR}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOpponentName(), self.burn_count)
+        end,
+
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+        max_resolve = 4,
+
+        burn_count = 1,
+        burn_scale = { 1, 1, 2, 2 },
+
+        max_stacks = 1,
+
+        OnInit = function(self)
+            self.burn_count = DemocracyUtil.CalculateBossScale(self.burn_scale)
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.HAND_DRAWN ] = function( self, minigame )
+                local options = shallowcopy(minigame:GetHandDeck().cards)
+                local i = 0
+                local fervor_feature = Content.GetNegotiationCardFeature( "FERVOR" )
+                while i < self.burn_count * self.stacks and #options > 0 do
+                    local chosen = table.arraypick(options)
+                    if chosen then
+                        table.arrayremove(options, chosen)
+                        if not (chosen.features and (chosen.features.FERVOR or 0) > 0) then
+                            fervor_feature:ApplyFervor(chosen, minigame)
+                            i = i + 1
+                        end
+                    end
+                end
+            end,
+        },
+    },
+    FERVOR_TRACKER =
+    {
+        hidden = true,
+
+        event_priorities =
+        {
+            [ EVENT.POST_RESOLVE ] = EVENT_PRIORITY_CLAMP,
+        },
+
+        event_handlers =
+        {
+            [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
+                if card.features and (card.features.FERVOR or 0) > 0 then
+                    -- Play it again.
+                    self.negotiator:RemoveModifier( self, 1 )
+                    card:SetFlags( CARD_FLAGS.EXPEND )
+                    minigame:PlayCard( card )
+                end
+            end,
+            [ EVENT.END_PLAYER_TURN ] = function( self, minigame )
+                for i, card in minigame:GetHandDeck():Cards() do
+                    if card.features and (card.features.FERVOR or 0) > 0 then
+                        card:NotifyTriggeredPre()
+                        minigame:ApplyPersuasion( card, card.negotiator, 3, 3 )
+                        card:NotifyTriggeredPost()
+                        card.features.FERVOR = nil
+                    end
+                end
+            end,
+        },
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
@@ -2676,6 +2746,20 @@ local FEATURES = {
             end
 
             return true
+        end,
+    },
+    FERVOR =
+    {
+        name = "Fervor",
+        desc = "When this card is played, play it again, then {EXPEND} it.\n\nIf this card is in your hand at the end of your turn, remove <b>Fervor</> and take 3 resolve damage.",
+        feature_desc = "{FERVOR}",
+
+        ApplyFervor = function(self, card, minigame)
+            if minigame:GetPlayerNegotiator() and minigame:GetPlayerNegotiator():GetModifierInstances( "FERVOR_TRACKER" ) == 0 then
+                minigame:GetPlayerNegotiator():CreateModifier("FERVOR_TRACKER")
+            end
+            card.features = card.features or {}
+            card.features.FERVOR = 1
         end,
     },
 }
