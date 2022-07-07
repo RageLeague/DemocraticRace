@@ -2627,15 +2627,17 @@ local MODIFIERS =
         end,
 
         modifier_type = MODIFIER_TYPE.ARGUMENT,
-        max_resolve = 4,
+        max_resolve = 8,
 
         burn_count = 1,
         burn_scale = { 1, 1, 2, 2 },
+        max_resolve_scale = { 6, 8, 10, 12 },
 
         max_stacks = 1,
 
         OnInit = function(self)
             self.burn_count = DemocracyUtil.CalculateBossScale(self.burn_scale)
+            self:SetResolve(DemocracyUtil.CalculateBossScale(self.max_resolve_scale))
         end,
 
         event_handlers =
