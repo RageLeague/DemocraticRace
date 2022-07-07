@@ -2683,6 +2683,9 @@ local MODIFIERS =
                         minigame:ApplyPersuasion( card, card.negotiator, 3, 3 )
                         card:NotifyTriggeredPost()
                         card.features.FERVOR = nil
+                        self.engine:BroadcastEvent( EVENT.CUSTOM, function( panel )
+                            card.remove_fervor_display = true
+                        end )
                     end
                 end
             end,

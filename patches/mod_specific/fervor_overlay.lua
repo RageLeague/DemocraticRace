@@ -10,10 +10,16 @@ function Widget.CardWidget:RefreshSlime(...)
                 local upgrade_idx = table.arrayfind( self.contents.children, self.upgrade_overlay )
                 self.fervor_widget = self.contents:AddChild( Widget.Image( fervor_overlay ), upgrade_idx and (upgrade_idx + 1) )
             end
+            if self.card.remove_fervor_display then
+                self.card.remove_fervor_display = nil
+            end
         else
             if self.fervor_widget then
-                self.fervor_widget:Remove()
-                self.fervor_widget = nil
+                if self.card.remove_fervor_display then
+                    self.fervor_widget:Remove()
+                    self.fervor_widget = nil
+                    self.card.remove_fervor_display = nil
+                end
             end
         end
     end
