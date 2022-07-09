@@ -2321,6 +2321,7 @@ local MODIFIERS =
             local count = self:CalculateDamageReduction()
             return loc.format(fmt_str, count == self.base_reduction and count or loc.format("<#BONUS>{1}</>", count), self.additional_reduction, self:GetOwnerName(), self:GetOpponentName())
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/devoted_mind.png",
 
         modifier_type = MODIFIER_TYPE.CORE,
         base_reduction = 2,
@@ -2359,6 +2360,7 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName(), self.resolve_count)
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/indifference_of_hesh.png",
         faith_in_hesh = true,
 
         max_resolve = 20,
@@ -2396,6 +2398,7 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName(), self:GetOpponentName(), self.status_count)
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/incomprehensibility_of_hesh.png",
         faith_in_hesh = true,
 
         max_resolve = 20,
@@ -2443,6 +2446,7 @@ local MODIFIERS =
             end
             return loc.format(fmt_str, min_persuasion, max_persuasion, self:GetOwnerName())
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/insatiability_of_hesh.png",
         faith_in_hesh = true,
         no_damage_tt = true,
 
@@ -2484,6 +2488,7 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName(), self.composure_gain)
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/desperation_for_faith.png",
         faith_in_hesh = true,
 
         max_resolve = 10,
