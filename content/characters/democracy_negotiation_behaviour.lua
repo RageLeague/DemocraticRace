@@ -70,10 +70,10 @@ local NEW_BEHAVIOURS = {
             else
                 -- Do normal attacks
                 if turns % 2 == 0 then
-                    self:ChooseGrowingNumbers(1, 0)
+                    self:ChooseGrowingNumbers(1, -1)
                     self.attacks:ChooseCard()
                 else
-                    self:ChooseGrowingNumbers(1, 1)
+                    self:ChooseGrowingNumbers(1, 0)
                     self:ChooseComposure( 1, 3, 7 )
                 end
             end
@@ -140,7 +140,7 @@ local NEW_BEHAVIOURS = {
     },
     SPARK_CONTACT =
     {
-        WAIVERS_STACKS = {1, 2, 2, 3},
+        WAIVERS_STACKS = {1, 2, 3, 4},
         OnInitDemocracy = function(self, old_init, ...)
             if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
                 self.negotiator:AddModifier("FELLEMO_SLIPPERY")
@@ -187,7 +187,53 @@ local NEW_BEHAVIOURS = {
     KALANDRA =
     {
         OnInitDemocracy = function(self, old_init, ...)
+            if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                self.negotiator:AddModifier("SPARK_OF_REVOLUTION")
+
+                self.voice = self:AddArgument( "VOICE_OF_THE_PEOPLE_KALANDRA" )
+                self.fury = self:AddArgument( "BURNING_FURY" )
+                self.handout = self:AddArgument("RISE_HANDOUT")
+                local handout_scale = { 1, 2, 2, 3 }
+                self.handout.stacks = DemocracyUtil.CalculateBossScale(handout_scale)
+
+                self:SetPattern( self.DemocracyUnrestCycle )
+                return
+            end
             return old_init(self, ...)
+        end,
+        DemocracyUnrestCycle = function( self, turns, ... )
+            if self.engine and self.engine.revolution_activated then
+                self:SetPattern( self.DemocracyUnrestCycle )
+                self:DemocracyRevolutionCycle(turns, ...)
+                return
+            end
+            self:ChooseCard(self.voice)
+            if turns % 3 == 1 then
+                self:ChooseGrowingNumbers(1, -1)
+                self:ChooseCard(self.handout)
+            elseif turns % 3 == 2 then
+                self:ChooseGrowingNumbers(1, 0)
+                self:ChooseComposure(1, 3, 7)
+            else
+                self:ChooseGrowingNumbers(2, 0)
+            end
+        end,
+        DemocracyRevolutionCycle = function(self, turns)
+            self.revolution_turns = (self.revolution_turns or 0) + 1
+            if self.revolution_turns % 2 == 1 then
+                self:ChooseGrowingNumbers(3, 0, 1.25)
+            else
+                self:ChooseGrowingNumbers(2, 1)
+            end
+            local fury_stacks = self.negotiator:GetModifierInstances( "BURNING_FURY" )
+            if fury_stacks == 0 then
+                if self.skip_fury_turn then
+                    self.skip_fury_turn = false
+                else
+                    self:ChooseCard(self.fury)
+                    self.skip_fury_turn = true
+                end
+            end
         end,
     },
     ANDWANETTE =
