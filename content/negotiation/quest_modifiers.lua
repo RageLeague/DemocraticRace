@@ -2478,7 +2478,7 @@ local MODIFIERS =
         name = "Desperation For Faith",
         desc = "{FAITH_IN_HESH}\n\nAt the beginning of {1}'s turn, apply {2} {COMPOSURE} to {1}'s core argument.",
         desc_fn = function(self, fmt_str)
-            return loc.format(self:GetOwnerName(), self.composure_gain)
+            return loc.format(fmt_str, self:GetOwnerName(), self.composure_gain)
         end,
         faith_in_hesh = true,
 
