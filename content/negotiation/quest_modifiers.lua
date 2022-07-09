@@ -2175,6 +2175,7 @@ local MODIFIERS =
                 end
             end
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/slippery.png",
 
         change_threshold = 3,
         change_threshold_scale = {5, 4, 3, 2},
@@ -2261,6 +2262,7 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.vulnerability_count, self:GetOpponentName())
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/exploitation.png",
 
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
