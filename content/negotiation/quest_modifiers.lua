@@ -1133,6 +1133,7 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetBonusResolve())
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/debate_scrum_tracker.png",
 
         modifier_type = MODIFIER_TYPE.CORE,
         max_stacks = 1,
@@ -2150,6 +2151,7 @@ local MODIFIERS =
     {
         name = "Contradiction In Rumor",
         desc = "When destroyed, you lose the negotiation.",
+        icon = "DEMOCRATICRACE:assets/modifiers/contradiction_in_rumor.png",
 
         modifier_type = MODIFIER_TYPE.BOUNTY,
 
@@ -2539,6 +2541,7 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.revolution_threshold)
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/unrest_kalandra.png",
 
         revolution_threshold = 3,
 
@@ -2560,6 +2563,7 @@ local MODIFIERS =
                 return loc.format((self.def or self):GetLocalizedString("DESC_2"), self.damage_amt)
             end
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/spark_of_revolution.png",
 
         revolution_threshold = 3,
         damage_amt = 1,
@@ -2579,6 +2583,8 @@ local MODIFIERS =
             self.custom_name = (self.def or self):GetLocalizedString("NAME_2")
             self.min_persuasion = self.damage_amt
             self.max_persuasion = self.damage_amt
+            self.icon = engine.asset.Texture("DEMOCRATICRACE:assets/modifiers/flames_of_revolution.png")
+            self.engine:BroadcastEvent( EVENT.UPDATE_MODIFIER_ICON, self)
             self:NotifyChanged()
         end,
 
@@ -2640,6 +2646,7 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOpponentName(), self.burn_count)
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/burning_fury.png",
 
         modifier_type = MODIFIER_TYPE.ARGUMENT,
         max_resolve = 8,
