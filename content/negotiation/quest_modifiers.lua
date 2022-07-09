@@ -2215,7 +2215,7 @@ local MODIFIERS =
     WAIVERS =
     {
         name = "Waivers",
-        desc = "When {1} creates an argument, remove it.\n\nWhen destroyed, add a number of {bad_deal} cards to the draw pile equal to the number of remaining stacks on this argument.\n\nReduce <b>Waivers</b> by 1 at the beginning of {2}'s turn.",
+        desc = "When {1} creates an argument, remove it and one <b>Waivers</>.\n\nWhen destroyed, incept a number of {VULNERABILITY} equal to the number of remaining stacks on this argument.\n\nReduce <b>Waivers</b> by 1 at the beginning of {2}'s turn.",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOpponentName(), self:GetOwnerName())
         end,
@@ -2225,29 +2225,31 @@ local MODIFIERS =
 
         OnBounty = function(self)
             if self.stacks > 0 then
-                local cards = {}
-                for i = 1, self.stacks do
-                    local card = Negotiation.Card( "bad_deal", self.engine:GetPlayer() )
-                    table.insert( cards, card )
-                end
-                self.engine:InceptCards( cards, self )
+                -- local cards = {}
+                -- for i = 1, self.stacks do
+                --     local card = Negotiation.Card( "bad_deal", self.engine:GetPlayer() )
+                --     table.insert( cards, card )
+                -- end
+                -- self.engine:InceptCards( cards, self )
+                self.anti_negotiator:InceptModifier("VULNERABILITY", self.stacks, self)
             end
         end,
 
         OnInit = function(self)
-            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.LOW)
         end,
 
         event_handlers =
         {
             [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
                 if negotiator == self.negotiator then
-                    negotiator:RemoveModifier( self, 1 )
+                    negotiator:RemoveModifier( self, 1, self )
                 end
             end,
             [ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
                 if source and source.negotiator == self.anti_negotiator and modifier.modifier_type == MODIFIER_TYPE.ARGUMENT then
                     modifier.negotiator:RemoveModifier(modifier, modifier.stacks, self)
+                    negotiator:RemoveModifier( self, 1, self )
                 end
             end,
         },
@@ -2284,7 +2286,7 @@ local MODIFIERS =
                 self.max_persuasion = DemocracyUtil.CalculateBossScale(self.max_persuasion_scale)
                 self.vulnerability_count = DemocracyUtil.CalculateBossScale(self.vulnerability_scale)
             end
-            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.LOW)
         end,
 
         OnBounty = function(self)
