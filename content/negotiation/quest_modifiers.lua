@@ -2269,7 +2269,7 @@ local MODIFIERS =
 
         max_persuasion_scale = {2, 3, 4, 5},
 
-        max_resolve = 5,
+        max_resolve = 3,
         max_stacks = 1,
 
         vulnerability_count = 2,

@@ -70,10 +70,10 @@ local NEW_BEHAVIOURS = {
             else
                 -- Do normal attacks
                 if turns % 2 == 0 then
-                    self:ChooseGrowingNumbers(1, 0)
+                    self:ChooseGrowingNumbers(1, -1)
                     self.attacks:ChooseCard()
                 else
-                    self:ChooseGrowingNumbers(1, 1)
+                    self:ChooseGrowingNumbers(1, 0)
                     self:ChooseComposure( 1, 3, 7 )
                 end
             end
@@ -140,7 +140,7 @@ local NEW_BEHAVIOURS = {
     },
     SPARK_CONTACT =
     {
-        WAIVERS_STACKS = {1, 2, 2, 3},
+        WAIVERS_STACKS = {1, 2, 3, 4},
         OnInitDemocracy = function(self, old_init, ...)
             if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
                 self.negotiator:AddModifier("FELLEMO_SLIPPERY")
@@ -221,9 +221,9 @@ local NEW_BEHAVIOURS = {
         DemocracyRevolutionCycle = function(self, turns)
             self.revolution_turns = (self.revolution_turns or 0) + 1
             if self.revolution_turns % 2 == 1 then
-                self:ChooseGrowingNumbers(3, 0)
+                self:ChooseGrowingNumbers(3, 0, 1.25)
             else
-                self:ChooseGrowingNumbers(2, 2)
+                self:ChooseGrowingNumbers(2, 1)
             end
             local fury_stacks = self.negotiator:GetModifierInstances( "BURNING_FURY" )
             if fury_stacks == 0 then
