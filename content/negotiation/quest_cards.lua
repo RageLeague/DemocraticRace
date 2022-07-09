@@ -354,7 +354,7 @@ local CARDS = {
             {
                 tags = "disliked",
                 [[
-                    Words coming out of your mouth is automatically wrong.
+                    Any words coming out of your mouth are automatically wrong.
                 ]],
                 [[
                     Heh. Of course you would believe that.
