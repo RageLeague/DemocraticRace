@@ -480,6 +480,7 @@ local CARDS = {
             desc_fn = function(self, fmt_str)
                 return loc.format(fmt_str, self.linked_quest and self.linked_quest:GetProvider():GetName() or (self.def or self):GetLocalizedString("ALT_DESC"))
             end,
+            icon = "DEMOCRATICRACE:assets/modifiers/promote_product.png",
 
             modifier_type = MODIFIER_TYPE.ARGUMENT,
             max_resolve = 5,

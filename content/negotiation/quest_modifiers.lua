@@ -2507,6 +2507,7 @@ local MODIFIERS =
     {
         name = "Voice of the People",
         desc = "This argument's resolve damage doubles for each stack.",
+        icon = "negotiation/modifiers/voice_of_the_people.tex",
         target_enemy = TARGET_ANY_RESOLVE,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
