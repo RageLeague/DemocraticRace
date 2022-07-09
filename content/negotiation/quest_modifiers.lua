@@ -2546,7 +2546,7 @@ local MODIFIERS =
         loc_strings =
         {
             name_2 = "Flames of Revolution",
-            desc_2 = "When any argument is destroyed, deal {1} damage to every argument.",
+            desc_2 = "When any argument is destroyed, deal {1} damage to every argument. This amount cannot be modified.",
         },
         desc_fn = function(self, fmt_str)
             if not (self.engine and self.engine.revolution_activated) then
@@ -2602,6 +2602,11 @@ local MODIFIERS =
             end
         end,
 
+        event_priorities =
+        {
+            [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_CLAMP,
+        },
+
         event_handlers =
         {
             [ EVENT.MODIFIER_REMOVED ] = function( self, modifier )
@@ -2614,6 +2619,11 @@ local MODIFIERS =
                         self.aoe_count = (self.aoe_count or 0) + 1
                         self:DoAOESequence()
                     end
+                end
+            end,
+            [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
+                if source == self then
+                    persuasion:ModifyPersuasion(self.damage_amt, self.damage_amt, self)
                 end
             end,
         },
