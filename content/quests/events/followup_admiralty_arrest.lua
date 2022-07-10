@@ -240,7 +240,7 @@ QDEF:AddConvo("action")
             player:
                 !left
                 Alright, you two have had your fun.
-                how about you let {agent} go and you can all go home?
+                How about you let {agent} go and you can all go home?
             admiralty:
             {not unplanned?
                 !surprised
@@ -365,13 +365,16 @@ QDEF:AddConvo("action")
 
         DIALOG_DEMORALIZE_SUCCESS = [[
             player:
+                !cruel
                 You might be able to take on {admiralty}, but us both? You won't stand a chance.
             agent:
-                Oh no I'm scared.
+                !scared
+                Oh no! I'm scared.
                 Okay, you win.
                 I'll take my chances.
             admiralty:
                 !right
+                !hips
                 Wow, that actually worked.
         ]],
 
@@ -403,7 +406,7 @@ QDEF:AddConvo("action")
                 {is_ad?
                     Must've been eyeing that promotion pretty hard, if you're stooping this low.
                 admiralty:
-                    !angryshrug
+                    !angry_shrug
                     If you don't want me stooping this low, don't be such an easy target.
                 }
                 {rival_faction?
@@ -436,13 +439,13 @@ QDEF:AddConvo("action")
                     Grifter! I need help! Just get me away from this cop!
                 }
                 {disliked?
-                    !injuredpalm
+                    !injured_palm
                     I swear, icing on the Heshing cake...
                     What do <i>you</> want, {player}?
                 }
 
             ]],
-            --not disliked, planned; I thought of the player and admiralty being as aggressively tounge in cheek as possible.
+            --not disliked, planned; I thought of the player and admiralty being as aggressively tongue in cheek as possible.
             OPT_TAUNT = "{unplanned?Stand Aside|Taunt {target}}",
             DIALOG_TAUNT = [[
                 {disliked?
@@ -511,7 +514,7 @@ QDEF:AddConvo("action")
                     admiralty:
                         !right
                         Hey, back health is important. You take your time getting ready.
-                        !angrypoint
+                        !angry_point
                         I'll just haul this criminal back to the station in the meantime.
                     * You step aside as {admiralty} takes a shocked {agent} away.
                     }
@@ -812,7 +815,6 @@ QDEF:AddConvo("action")
                 player:
                     !left
                     !fight
-
                     Fine, let's rumble.
             ]],
             DIALOG_TARGET_FIGHT_WON = [[
@@ -1064,17 +1066,17 @@ QDEF:AddConvo("action")
             DIALOG_INTRO = [[
                 {is_unlawful?
                     * You find an ironic scene, an officer of the Admiralty underneath the foot of {target}.
-                admiralty:
-                    !left
-                    !injured
-                target:
-                    !right
-                    !angry
-                    Made a damn big mistake, crossing me, switch.
+                    admiralty:
+                        !left
+                        !injured
+                    target:
+                        !right
+                        !angry
+                        Made a damn big mistake, crossing me, switch.
                 }
                 {is_ad?
                     * You find {admiralty} dealing with some..."special clerical work".
-                admiralty:
+                    admiralty:
                         !left
                         !injured
                     target:
@@ -1100,7 +1102,7 @@ QDEF:AddConvo("action")
                 target:
                     !right
                     !angry
-                    Y'see, Big Brother? Y'see what happens when you mess with the little guys like me?
+                    Y'see, switch? Y'see what happens when you mess with the little guys like me?
                 }
                 * Fortunately, {target}'s monologuing has given you a chance to strike or a chance to leave.
             ]],
@@ -1166,7 +1168,7 @@ QDEF:AddConvo("action")
                     !interest
                     Think about your <i>soul</>.
                 target:
-                    !wave
+                    !handwave
                     Oh please.
                     I have no soul.
             ]],
@@ -1309,7 +1311,7 @@ QDEF:AddConvo("action")
                         You'll be a witness! Living proof that I did this single-handed!
                     }
                     |
-                    I'll toast a strong cup of plonk to you while I'm celebrating..
+                    I'll toast a strong cup of plonk to you while I'm celebrating.
                 }
                 {interrupted?
                     Even though you tried to interfere in the end.
