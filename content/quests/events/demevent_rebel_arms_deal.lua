@@ -314,7 +314,7 @@ QDEF:AddConvo()
                             cxt:GoTo("STATE_PAY")
                         else
                             cxt:GetCastMember("jakes"):OpinionEvent(OPINION.HELP_COMPLETE_DEAL)
-                            StateGraphUtil.AddLeaveLocation()
+                            StateGraphUtil.AddLeaveLocation(cxt)
                         end
                     end)
 
