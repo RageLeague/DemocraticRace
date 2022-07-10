@@ -37,7 +37,8 @@ local QDEF = QuestDef.Define
         OPT_ASK_ABOUT_LOCATION = "Ask for a place to visit...",
         TT_REDUCED_ACTION_COST = "<#BONUS>This option has reduced action cost because you asked for an invalid location today.</>",
 
-        REQ_NOT_SOCIALIZED = "You can only socialize with a person once per day.",
+        REQ_NOT_SOCIALIZED = "You can only ask a person about new locations once per day.",
+        REQ_NO_COMPETITOR = "{agent} will not recommend a competitor location.",
 
         OPT_BAR = "Ask for a restaurant or bar",
         DIALOG_BAR = [[
@@ -90,24 +91,28 @@ local QDEF = QuestDef.Define
         ]],
     }
     :Hub(function(cxt, who)
-        if DemocracyUtil.IsDemocracyCampaign() and who and who:GetRelationship() > RELATIONSHIP.NEUTRAL then
+        if not (DemocracyUtil.IsDemocracyCampaign() and who and who:IsSentient()) then
+            return
+        end
+        if (cxt.location and cxt.location:GetProprietor() == who and who:GetRelationship() >= RELATIONSHIP.NEUTRAL) or (who:GetRelationship() > RELATIONSHIP.NEUTRAL or who == TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")) then
             cxt:Opt("OPT_ASK_ABOUT_LOCATION")
-                :ReqCondition(not who:HasMemoryFromToday("OFFERED_BOON"), "REQ_NOT_SOCIALIZED")
+                :ReqCondition(not who:HasMemoryFromToday("OFFERED_LOCATION"), "REQ_NOT_SOCIALIZED")
                 :RequireFreeTimeAction(2, true)
                 :LoopingFn(function(cxt)
                     local function AddLocationOption(opt_id, unlock_type, preicon)
                         if who:HasMemory("ASKED_OPT_" .. opt_id) then
                             return
                         end
+                        local workplace = who:GetBrain() and who:GetBrain():GetWorkplace()
                         local opt = cxt:Opt("OPT_"..opt_id)
-                            -- :RequireFreeTimeAction(who:HasMemoryFromToday("WASTED_LOCATION_UNLOCK") and 1 or 2)
+                            :ReqCondition(not unlock_type or not workplace or not table.arraycontains(unlocks.UNLOCK_LOCATIONS[unlock_type], workplace:GetContentID()), "REQ_NO_COMPETITOR")
                             :Dialog("DIALOG_"..opt_id)
                         if preicon then
                             opt:PreIcon(preicon)
                         end
-                        if who:HasMemoryFromToday("WASTED_LOCATION_UNLOCK") then
-                            opt:PostText("TT_REDUCED_ACTION_COST")
-                        end
+                        -- if who:HasMemoryFromToday("WASTED_LOCATION_UNLOCK") then
+                        --     opt:PostText("TT_REDUCED_ACTION_COST")
+                        -- end
                         opt:Fn(function(cxt)
                             who:Remember("ASKED_OPT_" .. opt_id)
                             cxt.quest.param.loc_to_unlock = PickLocationUnlockForAgent(who, unlock_type)
@@ -117,7 +122,7 @@ local QDEF = QuestDef.Define
                                     cxt:Dialog("DIALOG_ALREADY_UNLOCKED")
                                     cxt:GetAgent():Remember("WASTED_LOCATION_UNLOCK")
                                 else
-                                    cxt:GetAgent():Remember("OFFERED_BOON")
+                                    cxt:GetAgent():Remember("OFFERED_LOCATION")
                                     local unlock_location = TheGame:GetGameState():GetLocation(cxt.quest.param.loc_to_unlock)
                                     local location_tags = unlock_location:FillOutQuipTags()
                                     location_tags = table.map(location_tags, function(str) return "unlock_" .. str end)

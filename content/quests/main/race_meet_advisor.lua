@@ -140,6 +140,23 @@ local function GetAdvisorFn(advisor_id)
     end
 end
 
+local function ShowRaceTutorial()
+    local screen = TheGame:FE():GetTopScreen()
+    TheGame:GetGameProfile():SetHasSeenMessage("democracy_race_tutorial")
+    TheGame:FE():InsertScreen( Screen.YesNoPopup(LOC"UI.RACE_TUTORIAL_TITLE", LOC"UI.RACE_TUTORIAL_BODY", nil, nil, LOC"UI.NEGOTIATION_PANEL.TUTORIAL_NO" ))
+        :SetFn(function(v)
+            if v == Screen.YesNoPopup.YES then
+                local coro = screen:StartCoroutine(function()
+                    local advance = false
+                    TheGame:FE():PushScreen( Screen.SlideshowScreen( "democracy_race_tutorial", function() advance = true end ):SetAutoAdvance(false) )
+                    while not advance do
+                        coroutine.yield()
+                    end
+                end )
+            end
+        end)
+end
+
 QDEF:AddConvo("go_to_bar")
     :Confront(function(cxt)
         if cxt.location == cxt.quest:GetCastMember("noodle_shop") then
@@ -213,7 +230,7 @@ QDEF:AddConvo("go_to_bar")
                     Bunch of normies.
                 player:
                     !left
-                    Can any of you explain what's happenening?
+                    Can any of you explain what's happening?
                 advisor_hostile:
                     !right
                     Look, you pick one of us to be your advisor.
@@ -404,6 +421,12 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
             ]],
         }
         :Fn(function(cxt)
+            local unlocks = {
+                ADVISOR_DIPLOMACY = "GB_NEUTRAL_BAR",
+                ADVISOR_MANIPULATE = "MOREEF_BAR",
+                ADVISOR_HOSTILE = "GROG_N_DOG",
+            }
+            cxt.quest.param.free_bar_location = unlocks[cxt:GetAgent():GetContentID()] or "GROG_N_DOG"
             cxt:Dialog("DIALOG_INTRO")
             local profile = TheGame:GetGameProfile()
             cxt:Opt("OPT_YES")
@@ -412,7 +435,8 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 :Dialog("DIALOG_YES")
                 :Fn(function(cxt)
                     DemocracyUtil.TryMainQuestFn("DoRandomOpposition", OPPO_COUNT)
-                    DemocracyUtil.DoLocationUnlock(cxt, "GROG_N_DOG")
+                    DemocracyUtil.DoLocationUnlock(cxt, cxt.quest.param.free_bar_location)
+                    TheGame:GetGameState():GetMainQuest().param.enable_support_screen = true
                 end)
                 :GoTo("STATE_COMPLETE_DIALOG")
             cxt:Opt("OPT_NO")
@@ -430,9 +454,9 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
             OPT_SUPPORT = "Ask about support level",
             DIALOG_SUPPORT = [[
                 agent:
-                    The first step of running a campaign is to realize that being a polititian is a hard job.
+                    The first step of running a campaign is to realize that being a politician is a hard job.
                     There are different ways of approaching problems in the society, and people have different opinions on these approaches.
-                    Natually, some people will dislike you simply because of your ideology.
+                    Naturally, some people will dislike you simply because of your ideology.
                 * As if on cue, you see a notification showing people disliking you.
             ]],
             DIALOG_SUPPORT_PST = [[
@@ -444,6 +468,8 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                     Remember, people who like you or love you will most likely vote for you, and people who dislike or hate you will most likely vote against you.
                     But the support level affects your popularity among swing voters.
                     At the same time, you should make people like you more, since they will help your with negotiation and solidifies their votes for you.
+                    Check out this tutorial for more information.
+                * {agent} handed you a pamphlet, which you promptly pocketed after reading it (or not).
             ]],
             OPT_FUNDING = "Ask about funding",
             DIALOG_FUNDING = [[
@@ -474,10 +500,52 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                     You can go visit locations you have learned through various means and socialize with your supporters once per day.
                     Sometimes you will learn new locations from them, sometimes they will provide a random benefit for you.
                 {not unlocked_grog?
-                    To show you how it works, I'll tell you a location you don't know yet.
-                    A great place to visit is the Grog n' Dog.
-                    All kinds of people visit there, so you can make friends from different factions easily there.
-                    The owner, Fssh, is very friendly, and doesn't mind who visits her bar.
+                    {advisor_manipulate?
+                        Let's say, that hypothetically, that you don't know where the Hideaway.
+                    player:
+                        !crossed
+                        It's not really a hypothetical, as I really don't know where it is.
+                    agent:
+                        !handwave
+                        Doesn't matter.
+                        And let's say, hypothetically, you talk to me, and I know where it is.
+                        I know this because I frequent it, as it provides humid air and superb drinks.
+                        Then, when you ask me about where to find it, I will tell you to go past the Heshian compound, walk towards the Sea, until you see a bar sitting near a cliff.
+                        !shrug
+                        Now, you would know where it is.
+                    player:
+                        !dubious
+                        You know, you can just drop the hypotheticals and just tell me about it.
+                        Like normal people.
+                    agent:
+                        ...
+                    }
+                    {advisor_diplomacy?
+                        !point
+                        I know of a place that you should visit.
+                        It's called the Last Stand.
+                        The drinks are chill, and the people there are based. Mostly.
+                        That would be a good place for you to start.
+                    }
+                    {advisor_hostile?
+                        !hips
+                        Luckily, nobody knows about locations more than me.
+                    player:
+                        !humoring
+                        If you know so much about locations, why don't you recommend me one.
+                    agent:
+                        Alright.
+                        !permit
+                        There is a bar called the Grog n' Dog.
+                        All kinds of people, from different faction visits there.
+                        It's a good place to visit if you want to expand your campaign horizon.
+                    }
+                    {not (advisor_diplomacy or advisor_manipulate or advisor_hostile)?
+                        !permit
+                        There is a bar called the Grog n' Dog.
+                        All kinds of people, from different faction visits there.
+                        It's a good place to visit if you want to expand your campaign horizon.
+                    }
                 }
             ]],
             -- OPT_NEW_LOCATION = "Unlock new location: {1#location}",
@@ -490,6 +558,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
         }
         :SetLooping()
         :Fn(function(cxt)
+            local bar_location = cxt.quest.param.free_bar_location
             if not cxt.quest.param.did_opposition then
                 cxt:Opt("OPT_SUPPORT")
                     :Dialog("DIALOG_SUPPORT")
@@ -499,6 +568,10 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                         TheGame:GetGameProfile():AcquireUnlock("DONE_POLITICS_OPPOSITION")
                     end)
                     :Dialog("DIALOG_SUPPORT_PST")
+                    :Fn(function(cxt)
+                        TheGame:GetGameState():GetMainQuest().param.enable_support_screen = true
+                        ShowRaceTutorial()
+                    end)
             end
             if not cxt.quest.param.did_funding then
                 cxt:Opt("OPT_FUNDING")
@@ -509,14 +582,14 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                     end)
                     -- :Dialog("DIALOG_SUPPORT_PST")
             end
-            cxt.quest.param.unlocked_grog = table.arraycontains(TheGame:GetGameState():GetMainQuest().param.unlocked_locations, "GROG_N_DOG")
+            cxt.quest.param.unlocked_grog = table.arraycontains(TheGame:GetGameState():GetMainQuest().param.unlocked_locations, bar_location)
             if not cxt.quest.param.did_free_time then
                 cxt:Opt("OPT_FREE_TIME")
                     :Dialog("DIALOG_FREE_TIME")
                     :Fn(function(cxt)
                         cxt.quest.param.did_free_time = true
                         if not cxt.quest.param.unlocked_grog then
-                            DemocracyUtil.DoLocationUnlock(cxt, "GROG_N_DOG")
+                            DemocracyUtil.DoLocationUnlock(cxt, bar_location)
                         end
                         TheGame:GetGameProfile():AcquireUnlock("DONE_POLITICS_FREE_TIME")
                     end)
@@ -528,7 +601,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                         DemocracyUtil.TryMainQuestFn("DoRandomOpposition", OPPO_COUNT)
                         cxt.quest.param.did_opposition = true
                         cxt:Dialog("DIALOG_SKIP_OPPOSITION")
-
+                        TheGame:GetGameState():GetMainQuest().param.enable_support_screen = true
                     end
                     cxt:GoTo("STATE_COMPLETE_DIALOG")
                 end)
@@ -572,10 +645,12 @@ QDEF:AddConvo("visit_office")
                 primary_advisor:
                     There's still some time before we need to continue our campaign, so feel free to do whatever you want.
                     Once you're ready for the afternoon, talk to me about the next step.
+                *** {home} is now your new base of operation. Return to {primary_advisor} after the free time.
             ]],
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Complete()
             QuestUtil.SpawnQuest("RACE_LIVING_WITH_ADVISOR")
+            StateGraphUtil.AddEndOption(cxt)
         end)

@@ -1,6 +1,6 @@
 Convo("DEM_CONVINCE_FIRE")
     :Loc{
-        OPT_CONVINCE_FIRE = "Convince {agent} to fire an employee...",
+        OPT_CONVINCE_FIRE = "Convince {agent} to fire an employee from {1#location}...",
         TT_CONVINCE_FIRE = "Firing someone will cause them to hate you, but it will strip them of their influence temporarily.",
 
         REQ_ALREADY_FIRED = "Already fired someone today.",
@@ -98,7 +98,7 @@ Convo("DEM_CONVINCE_FIRE")
         ]],
         REQ_HIGH_RENOWN = "{agent} is in no position to fire {1#agent}.",
 
-        SIT_MOD_PRESTIGEOUS = "{1#agent} is {2:of little importance|of some importance|of high importance|of very high repute|known by all}.",
+        SIT_MOD_PRESTIGIOUS = "{1#agent} is {2:of little importance|of some importance|of high importance|of very high repute|known by all}.",
         SIT_MOD_TRIED_FIRE_BEFORE = "You already tried to fire someone before.",
         SIT_MOD_SAME_FACTION = "{1#agent} has support from the faction at this location.",
         SIT_MOD_FRIENDLY = "{1#agent} is a friend of {agent}.",
@@ -121,7 +121,7 @@ Convo("DEM_CONVINCE_FIRE")
                 end
             end
             if #fire_targets > 0 then
-                cxt:Opt("OPT_CONVINCE_FIRE")
+                cxt:Opt("OPT_CONVINCE_FIRE", workplace)
                     :PreIcon( global_images.order )
                     :PostText("TT_CONVINCE_FIRE")
                     :ReqCondition(not who:HasMemoryFromToday("CONVINCED_FIRE_EMPLOYEE"), "REQ_ALREADY_FIRED")
@@ -132,7 +132,7 @@ Convo("DEM_CONVINCE_FIRE")
                         end
                         for i, agent in ipairs(fire_targets) do
                             local sit_mod = {}
-                            table.insert(sit_mod, {value = 5 * (agent:GetRenown() - 1), text = loc.format(cxt:GetLocString("SIT_MOD_PRESTIGEOUS", agent, agent:GetRenown()))})
+                            table.insert(sit_mod, {value = 5 * (agent:GetRenown() - 1), text = loc.format(cxt:GetLocString("SIT_MOD_PRESTIGIOUS", agent, agent:GetRenown()))})
 
                             if who:HasMemory("CONVINCED_FIRE_EMPLOYEE") then
                                 table.insert(sit_mod, {value = 10, text = cxt:GetLocString("SIT_MOD_TRIED_FIRE_BEFORE")})

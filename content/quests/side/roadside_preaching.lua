@@ -68,7 +68,7 @@ local QDEF = QuestDef.Define
         quest.param.unconvinced_people = {}
     end,
     on_start = function(quest)
-        quest:Activate("go_to_junction")
+        -- quest:Activate("go_to_junction")
     end,
     -- icon = engine.asset.Texture("icons/quests/bounty_hunt.tex"),
 
@@ -98,7 +98,7 @@ local QDEF = QuestDef.Define
     desc = "Go to {junction#location} to preach there.",
     mark = { "junction" },
     state = QSTATUS.ACTIVE,
-    
+
     on_activate = function( quest)
         local location = Location( LOCATION_DEF.id )
         assert(location)
@@ -124,7 +124,7 @@ local QDEF = QuestDef.Define
     -- score_fn = score_fn,
 }
 :AddOpinionEvents{
-    convinced_political_idea =  
+    convinced_political_idea =
     {
         delta = OPINION_DELTAS.LIKE,
         txt = "Enlightened them with your ideology.",
@@ -137,7 +137,7 @@ local QDEF = QuestDef.Define
 DemocracyUtil.AddPrimaryAdvisor(QDEF)
 
 QDEF:AddConvo("go_to_junction")
-    
+
     :Confront(function(cxt)
         if cxt.location == cxt.quest:GetCastMember("junction") then
             return "STATE_INTRO"
@@ -151,7 +151,7 @@ QDEF:AddConvo("go_to_junction")
             ]],
             OPT_PREACH = "Preach!",
             REASON_PREACH = "Convince as many people as you can to join your side!",
-            
+
             DIALOG_CONVINCED_PEOPLE = [[
                 * You count about {1} {1*person|people} staying close, cheering on your beliefs.
                 * {1:Not great, but that's something.|That's a good start.|Well done!}
@@ -160,7 +160,7 @@ QDEF:AddConvo("go_to_junction")
                 player:
 		  Hear ye, Hear ye! I bring free thoughts on the-
                   Wait...where are you going?
-		* The crowd around you disperses. It's clear you haven't enticed them further than the inital interest.
+		* The crowd around you disperses. It's clear you haven't enticed them further than the initial interest.
 		* With their leave, you leave as well. You wonder if you simply needed a better technique.
             ]],
         }
@@ -176,7 +176,7 @@ QDEF:AddConvo("go_to_junction")
             cxt.quest:Complete("go_to_junction")
             cxt.quest:Activate("preach")
             cxt.enc:SetPrimaryCast(cxt.quest.param.crowd[1])
-            
+
             CROWD_BEHAVIOR.agents = cxt.quest.param.crowd
             cxt:GetAgent():SetTempNegotiationBehaviour(CROWD_BEHAVIOR)
 
@@ -186,7 +186,7 @@ QDEF:AddConvo("go_to_junction")
                 cxt.quest.param.unconvinced_people = core and core.ignored_agents or {}
 
                 -- local undestroyedPeople = {}
-                
+
                 for i, modifier in minigame:GetPlayerNegotiator():Modifiers() do
                     if modifier.id == "PREACH_TARGET_INTERESTED" and modifier.target_agent then
                         table.insert( cxt.quest.param.convinced_people, modifier.target_agent )
@@ -200,7 +200,7 @@ QDEF:AddConvo("go_to_junction")
                 -- for i, agent in ipairs(minigame:GetOpponentNegotiator():FindCoreArgument().agents) do
                 --     table.insert( undestroyedPeople, agent )
                 -- end
-                
+
                 -- for i, agent in ipairs(cxt.quest.param.crowd) do
                 --     if not agent:HasAspect("bribed") and not table.arraycontains(cxt.quest.param.convinced_people, agent) and not table.arraycontains(undestroyedPeople, agent) then
                 --         table.insert(cxt.quest.param.unconvinced_people, agent)
@@ -297,7 +297,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-            
+            cxt.quest:Activate("go_to_junction")
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{
@@ -317,7 +317,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-            
+
         end)
 -- QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
 --     :Loc{

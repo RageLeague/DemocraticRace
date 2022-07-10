@@ -1,42 +1,142 @@
 tag_scores:
   democratic_race: 0
+  many_paid_shills: 0
 lines:
 - push: [smalltalk]
 
+- tags: [democratic_race]
+  dialog:
+  - |
+    agent:
+      I must say, the upcoming election is certainly a change of pace.
+      !hips
+      Maybe the power struggle between factions will finally end, and things can finally get better.
+    player:
+      I really hope this is going to be the case as well.
+      !thumb
+      This is the goal of my campaign. To fight for a better future for Havaria.
+    agent:
+      !agree
+      Thanks, {player}. I knew I could count on you.
+  - |
+    agent:
+      !thought
+      The upcoming election is certainly going to be interesting.
+      I mean, we never had anything like this before, and I don't know what to think of it.
+      Only time will tell if this... democracy... is good for Havaria.
+    player:
+      !agree
+      I sure hope so too.
+      I will do everything in my power to make Havaria a better place.
+      !thumb
+      You have my word.
+    agent:
+      Thanks. That might be the confidence I needed.
+  - |
+    agent:
+      !suspicious
+      This entire democracy thing just sounds sketchy to me.
+      !permit
+      I mean, it's Havaria we are talking about.
+      You expect me to believe that everyone just decides to play nice and letting the people choose their own leader?
+      !thought
+      I wonder if there is some sort of hidden agenda going on.
+    player:
+      !thought
+      That is... indeed a possibility.
+      Still, it doesn't mean we shouldn't try, right?
+      I am going to keep on campaigning for presidency.
+      Even if there is some sort of agenda going on, I am going to put a wrench in their plans when I win the election.
+    agent:
+      !agree
+      That sounds like an agreeable arrangement to me.
+  - |
+    agent:
+      !thought
+      Something is troubling me.
+      I've heard stories of politicians paying other people to spread their ideologies.
+      !shrug
+      "Shilling", or so it's called.
+      When someone say something, I don't know if it's their genuine opinion or if they are paid to say that.
+      And the scary thing is, it might be working.
+      !sigh
+      Sometimes I wonder how much of my opinion is my own, and how much is influenced by these people.
+    {primary_advisor_diplomacy?
+    player:
+      !thought
+      The memes...
+    agent:
+      Uh... What?
+    player:
+      !facepalm
+      Just... I've spent too much time with someone, and now I'm starting to picking up his speech patterns.
+    }
+    {not primary_advisor_diplomacy?
+    player:
+      !thought
+      I never recognized how impactful shilling is, or how rampant it is.
+      There is a lot to take in.
+    }
+    agent:
+      Anyway, thanks for listening to my rant.
+- tags: [democratic_race, many_paid_shills]
+  notags: [bribed]
+  dialog:
+  - |
+    agent:
+      I heard you've been paying people to spread your ideology for you.
+      !hips
+      Why don't I get paid for doing so?
+    player:
+      !bashful
+      Uh...
+    agent:
+      !chuckle
+      Kidding, of course.
+      I am perfectly happy supporting your cause, if only to make Havaria a better place for all of us.
+    player:
+      !agree
+      Well said.
+    agent:
+      !neutral
+      But seriously though, if you want to pay me to spread your ideology, I would be more than happy to do so.
 - tags: [laborer, democratic_race, pro_labor_law]
   notags: [primary_advisor_diplomacy]
   dialog:
   - |
     agent:
       !sigh
-      [p] Another day of toil.
-      The rich just gets richer, and the poor stays poor.
+      Another day of toil.
+      The rich get richer, and the poor stay poor.
+      There really is no hope for us common folk, is there?
     player:
-      That's rough, buddy.
-      You know, I plan to change that once I'm in office.
+      I'm sorry to hear that.
+      I won't let this stand if I'm elected.
+      The working class will finally rise, out from under the boot of the oppressors.
     agent:
       !happy
-      Thanks.
-      Glad someone considers the common folks.
+      This is why you'll have my vote, {player}.
+      Finally, someone's looking out for us.
   - |
     agent:
-      [p] Have I told you before that I worked for this Spark Baron.
-      Always rambling about wanting to be relatable to the common folks.
-      His idea of "being relatable" seems way different from how everyone else thinks.
+      There was this Spark Baron I worked for, once.
+      Always rambling about wanting to be relatable to the common folk.
+      But he went about it very strangely.
     player:
       Really? How so?
     agent:
       He seems to think using obscure and confusing words somehow makes him relatable.
-      First off, nobody talks like that.
-      Second, he isn't actually concerned with the common folks' well-being.
-      He wouldn't give a second thought to giving demerits to workers who miss their quota for something that is not their fault.
+      Nobody actually talks like that! He just made himself into more of a fool.
+      Besides, he wasn't actually concerned with workers' well-being.
+      Even if it wasn't your fault, if you missed your quota, you got a demerit.
+      He would just talk over anybody who protested.
     player:
       !shrug
-      What can you expect from a Spark Baron, though.
+      That's a Spark Baron for you.
     agent:
-      True.
+      if that ain't the truth.
       !happy
-      Anyway, thanks for listening to my rambling. It has really lighten up my day.
+      Anyway, thanks for listening. Feels like a weight off my chest.
 - tags: [poor_merchant, democratic_race]
   dialog:
   - |
@@ -57,7 +157,7 @@ lines:
       Same thing can be said to you, my friend.
   - |
     agent:
-      [p] Have you heard of the tale of Gunter Trunoomiel?
+      [Have you heard of the tale of Gunter Trunoomiel?
     player:
       !thought
       Can't say I have, no.
@@ -74,12 +174,12 @@ lines:
     player:
       !shrug
       Yeah... Good luck with that.
-- tags: [priest, democratic_race]
+- tags: [heshian, democratic_race]
   notags: [primary_advisor_manipulate]
   dialog:
   - |
     player:
-      [p] How hard it is to pass the priest school?
+      How hard it is to pass the priest school?
     agent:
       You would imagine it's pretty hard.
       You gotta pay a lot of tithes to get in, and even after that, it is extremely hard to pass.
@@ -95,3 +195,117 @@ lines:
       You are right.
       Hesh's will is unpredictable, and I shouldn't let my prejudice to cloud my judgement.
       I'm just a bit salty that I need to attempt the test multiple times to pass, that is all.
+- tags: [clerk, democratic_race]
+  notags: [primary_advisor_diplomacy]
+  dialog:
+  - |
+    agent:
+      And this is why we need mandatory citizenship.
+      Just the other day, someone came to the Admiralty headquarters asking for some paperwork.
+      What was his name again? Al- El-? I can't exactly remember.
+      It's obviously a fake name. Never in Havaria have I heard of this name.
+    player:
+      Uhh... What's the point?
+    agent:
+      The point is! There is no way for either of us to prove whether he is Havarian, or that is his real name.
+      And we are powerless against that! We then have no choice but to authorize the paperwork to this person with an obvious fake name.
+      If we have mandatory citizenship, then we can easily check, and prevent this from happening in the first place.
+    player:
+    {anti_independence?
+      I, of course, fully support this notion.
+      This is a serious issue if we allow people using pseudonyms in official documents.
+    agent:
+      Thank you. I knew I supported the right person.
+    }
+    {not anti_independence?
+      This does sound like a serious issue. I will give it some thought.
+      See if I can find a good way to deal with it.
+    agent:
+      !agree
+      Of course. I knew I could count on you!
+    }
+- tags: [wealthy, democratic_race]
+  notags: [primary_advisor_hostile]
+  dialog:
+  - |
+    agent:
+      Ever feel like you sometimes live under your parents' shadow?
+    player:
+    {player_rook?
+      You are talking to a retired Admiralty officer.
+      I don't live under anyone's shadow.
+    agent:
+      This is merely a rhetorical question. I am still going to tell whatever it is that I am going to tell.
+    player:
+      Oh, Hesh.
+    }
+    {player_sal or player_smith?
+      If I will be honest? Constantly.
+      People place a lot of expectation on me when they learned who my parents are, and that feels like a lot of pressure sometimes.
+    agent:
+      Then, you are not alone.
+    }
+    {not (player_rook or player_sal or player_smith)?
+      Not really.
+      People usually care about who I am rather than who my parents are.
+    agent:
+      That's good. At least you don't have to deal with this problem.
+    }
+    agent:
+      A friend of my friend is a highly successful merchant.
+      He built a business empire from the ground up, which is pretty impressive.
+      !sigh
+      But his son... He always feels like everyone only cares about his father's achievement, not his.
+    player:
+      Well? What happens next?
+    agent:
+      He wants to be as successful as his father.
+      In fact, more than that. He wants to be good at everything, no matter what.
+      And it seems like he truly believes that, even though it is physically impossible to do so.
+      That makes him insufferable, and people generally don't want to work with him.
+    player:
+      That seems extreme.
+    agent:
+      The point is, a lot of people might have some huge expectations from you.
+      But don't go and try something unrealistic because of that, alright?
+      Lest you walk the same path as him.
+- tags: [spark_barons, democratic_race]
+  notags: [primary_advisor_manipulate]
+  dialog:
+  - |
+    agent:
+      The Cult of Hesh is filled with a bunch of lunatics, worshipping a giant jellyfish that is probably going to kill us all.
+    player:
+      Wow, what a conversation starter!
+    {not pro_religious_policy?
+      But surely you can't just make gross generalizations like this! I'm sure there must be some level-headed people in the Cult.
+    }
+    {pro_religious_policy?
+      But I'm pretty sure there are level headed people in the Cult, and you should probably not underestimate them.
+    }
+    agent:
+      You know, it's funny that you said that.
+      I know of a priest who is very collected and logical.
+      She is probably more logical than some of my colleagues.
+      Which makes me wonder: Why would such a logical person join the Cult, where logic is punished and only mindless fanaticism is accepted?
+    player:
+    {pro_religious_policy?
+      Maybe she is right, and maybe the illogical one here is you.
+      Have you considered that possibility?
+    agent:
+      It pains me to admit it, but maybe there really is something to this.
+      I need to think about this a bit more.
+      Thanks for the talk, by the way.
+    }
+    {not pro_religious_policy?
+      Maybe there is an ulterior motive?
+      There are plenty of reason to join the Cult other than worship.
+      Money? Power? Or something else they seek inside the Cult?
+    agent:
+      You are probably right.
+      Hey, do you think I should join the Cult?
+    player:
+      Nah. Based on your history with the Barons, they will probably kill you outright.
+    agent:
+      Yeah, you're right.
+    }

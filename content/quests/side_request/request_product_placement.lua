@@ -4,14 +4,14 @@ local QDEF = QuestDef.Define
 {
     title = "Product Placement",
     desc = "{giver} wants you to endorse {giver.hisher} product and asks you to advertise them to the people.",
-    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/revenge_starving_worker.png"),
+    icon = engine.asset.Texture("icons/quests/special_delivery.tex"),
 
     qtype = QTYPE.SIDE,
 
     act_filter = DemocracyUtil.DemocracyActFilter,
     focus = QUEST_FOCUS.NEGOTIATION,
     tags = {"REQUEST_JOB"},
-    -- reward_mod = 0,
+    reward_mod = 0,
     can_flush = false,
 
     events = {
@@ -29,13 +29,13 @@ local QDEF = QuestDef.Define
     on_complete = function(quest)
         if not (quest.param.sub_optimal or quest.param.poor_performance) then
             quest:GetProvider():OpinionEvent(OPINION.DID_LOYALTY_QUEST)
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 4, "COMPLETED_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 3, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 4, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 3, "COMPLETED_QUEST_REQUEST")
         elseif quest.param.sub_optimal then
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 4, "COMPLETED_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 3, "COMPLETED_QUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 4, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 3, "COMPLETED_QUEST_REQUEST")
         elseif quest.param.poor_performance then
             DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2, "POOR_QUEST")
             DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 4, "POOR_QUEST")
@@ -136,19 +136,21 @@ QDEF:AddIntro(
         player:
             Is the job any bigger than what you've had me doing all this time?
         agent:
-            Not really. What I need you to do is promote some <b>S.T.O.N.K.S.</>.
+            Not really. What I need you to do is promote some <b>M.E.T.A.</>.
         player:
             !dubious
             Bless you?
         agent:
-            That's the name of the product. <b>S.T.O.N.K.S.</>.
-            It stands for "Synthetic Transform Of Neural-Kinesis System".
+            That's the name of the product. <b>M.E.T.A.</>.
+            It stands for "Meritocratic Emulation Transposition Apparatus".
         player:
             That's a very...odd naming convention.
         agent:
-            But snappy, yes? Really rolls off the tounge, like the word "based" or "cringe".
-            <b>S.T.O.N.K.S.</>.
+            But snappy, yes? Really rolls off the tongue, like the word "based" or "cringe".
+            <b>M.E.T.A.</>.
+            I will admit that I didn't came up with it. A talking vroc told me about it in a dream.
         player:
+            Uh huh.
             So do you want me to advertise it to the people during my campaign?
         agent:
             If you find the time, then yes.
@@ -190,13 +192,13 @@ QDEF:AddConvo("sell", "giver")
             player:
                 So, uhh... I kinda just forgot the sales pitch you told me.
             agent:
-                !surprise
+                !surprised
                 You WHAT?
-            {advisor?
+            {primary_advisor?
                 I guess I did told you to focus on the election.
                 Still, if you are just going to forget the things I tell you to do, you shouldn't have accepted my request in the first place!
             }
-            {not advisor?
+            {not primary_advisor?
                 How did that even happen?
             player:
                 That is a question I'm wondering myself.
@@ -261,21 +263,40 @@ QDEF:AddConvo("advertise_poster")
         OPT_POSTER = "Post an advertisement here",
         DIALOG_POSTER = [[
             player:
-                [p] Can you post an ad?
+                Do you mind if I post an advertisement here?
             agent:
-                I don't know, can you?
+                Why should I let you do it? Give me a good reason.
         ]],
         DIALOG_POSTER_SUCCESS = [[
             player:
-                [p] I think I can.
+                !point
+                It's not like you are using this board for anything else.
+                And it's not like I am competing against you.
+                The things I am selling is completely unrelated to what you are selling.
             agent:
-                Well then.
+                !thought
+                I guess there is no harm to let you post here.
+                And it beats arguing with you to no end.
+                Alright, you can post here.
+            * You posted the advertisement at this location. Hopefully enough people see this.
         ]],
         DIALOG_POSTER_FAILURE = [[
-            agent:
-                [p] I don't think you can.
             player:
-                Crap.
+                This is a public place. Why shouldn't I be able to post my advertisement here?
+            agent:
+                !angry
+                It might be public, but <i>I</> am still the owner here.
+                Don't feel like you are entitled to this place just because it's public.
+            player:
+                ...
+                !dubious
+                Is that a yes?
+            agent:
+                Of course not!
+            player:
+                !shrug
+                Well, it's worth a shot.
+            * That is an embarrassment. Maybe you should look for somewhere else?
         ]],
     }
     :Hub(function(cxt, who)
@@ -298,100 +319,145 @@ QDEF:AddConvo("tell_giver")
     end)
         :Loc{
             DIALOG_INTRO = [[
-                * As you travel, you encounter a Heshian.
+                * As you travel, you are approached by a Heshian.
                 player:
                     !left
                 agent:
                     !right
-                    [p] Yo.
-                    I heard you are selling <b>S.T.O.N.K.S</>.
-                    I would like to purchase a share.
-                    I'm sure {giver} won't mind.
+                    !hesh_greeting
+                    Greetings.
+                    You must be {player}, right?
+                player:
+                    !crossed
+                    If you want to collect my tithe, I'm afraid I have already paid.
+                agent:
+                    !placate
+                    What? I am not here to collect anything.
+                    I am simply offering you an opportunity.
+                    You are representing the owner of <i>M.E.T.A.</>, correct?
+                player:
+                    Yeah?
+                agent:
+                    And I presume you like money?
+                player:
+                    !crossed
+                    Nobody hates money.
+                    What is this about?
+                agent:
+                    It just so happens the cult wish to invest in it, as well.
+                    We will provide you with money, and in return, we will receive some shares for <i>M.E.T.A.</>.
             ]],
             OPT_ASK_SHARE = "Ask about shares",
             DIALOG_ASK_SHARE = [[
                 player:
-                    [p] Wdym "buy share"?
+                    You keep talking about "shares", and I am not sure what this means.
                 agent:
-                    Basically, if you sell it to me, we own that amount of your product.
-                    Of course, you will be compensated heavily.
+                    Basically, we own a part of the operation for <i>M.E.T.A.</>.
+                    We receive part of the profits, and we play in some roles in management.
+                    You will be compensated heavily, of course.
             ]],
             OPT_ASK_OWNERSHIP = "Ask about ownership",
             DIALOG_ASK_OWNERSHIP = [[
                 player:
-                    [p] If I sell it to you, then I don't own half of the product.
+                    !surprised
+                    Wait, if I sell shares to you, then {giver} doesn't own it anymore.
                     That seems bad.
                 agent:
-                    Don't worry about it.
-                    You can still control the operation. We just get a cut.
-                    And you get a lot of funding, so it's a win-win situation.
-                    There's literally no downsides to doing this, trust me bro.
-                *** Don't trust {agent.himher}, bro.
+                    !permit
+                    It's not as bad as you think.
+                    You are still in control of the operation. We just get a cut of the profit.
+                    If you wish for your operation to succeed, you will need significant funding.
+                    I can provide you with the funding, and you still get to control the operation.
+                    There are no downside for you. It's all benefits.
+                player:
+                    !dubious
+                    That sounds too good to be true...
+                agent:
+                    It's a common practice among the merchants to sell a share of their operation.
+                    Why do you think they do that, if this is bad for them?
             ]],
             OPT_SELL_THIRD = "Sell a third of the share",
             DIALOG_SELL_THIRD = [[
                 player:
-                    [p] I need the money.
+                    This does sound lucrative.
+                    !agree
+                    Fine, you have a deal.
+                    !give
                     Here, you can have a minority share.
                 agent:
+                    !take
                     That will do.
                     Glad to do business with you.
-                * {giver} may not like it, but this is probably for the best.
-                * You have the money, and you still maintain most profits and control.
-                * It's a win-win, if you can convince {giver} such.
+                * This seems like the ideal situation, for you and M.E.T.A.
+                * If you can convince {giver} such, that is.
             ]],
             OPT_SELL_TWO_THIRD = "Sell two thirds of the share",
             DIALOG_SELL_TWO_THIRD = [[
                 player:
-                    [p] I need the money.
-                    Here, you can have the majority share.
+                    This does sound lucrative.
+                    !agree
+                    Fine, you have a deal.
+                    !give
+                    Here, you can have a majority share.
                 agent:
+                    !surprised
                     Really?
+                    !happy
                     I mean, excellent!
                     Glad to do business with you.
                 * That was a golden opportunity, and you saw it and took it.
-                * Now you own a load of cash, and some Heshian owns the finantial decision power of {giver}'s product.
+                * Now you own a load of cash, and some Heshian owns the financial decision power for {giver}'s product.
                 * You wonder how {giver} would react given that you basically sold the majority of {giver.hisher} business without {giver.hisher} permission.
             ]],
             OPT_SELL_ALL = "Sell ALL of the share",
             DIALOG_SELL_ALL = [[
                 player:
-                    [p] What could go wrong?
+                    !shrug
+                    What could go wrong?
+                    !give
                     Here, take my money.
+                    !thought
                     Or, rather, take my goods.
                 agent:
+                    !surprised
                     Really?
+                    !happy
                     I mean, excellent!
                     Glad to do business with you.
                 * Wow, you actually sold out {giver}'s entire business to some Heshian.
-                * Now {giver} worked hard for the product and now {giver.heshe} owns nothing, finantially speaking.
+                * All the hard work done by {giver} are all for naught, thanks to your poor financial decision.
                 * What are you, crazy?
             ]],
             OPT_SELL_NOTHING = "Sell nothing",
             DIALOG_SELL_NOTHING = [[
                 player:
-                    [p] I'm not giving you Heshian anything!
+                    !angry
+                    I'm not giving you Heshian anything!
                 agent:
+                    !shrug
                     Fine. At least I tried.
                 * You are wondering if you protected your integrity, or you just passed up a golden opportunity.
-                * Either way, you did what {giver} asked you to do. Time to tell them what you did.
+                * Either way, you did what {giver} asked you to do. Time to tell {giver.himher} what you did.
             ]],
 
             OPT_NEGOTIATE_TERMS = "Negotiate share price...",
             DIALOG_NEGOTIATE_TERMS = [[
                 player:
-                    [p] You think I'm willing to sell you for this low?
+                    !crossed
+                    You think I'm willing to sell it to you for this low?
                     You gotta go higher.
             ]],
             DIALOG_NEGOTIATE_TERMS_SUCCESS = [[
                 agent:
-                    [p] Fine, I will increase my prices.
+                    !sigh
+                    Fine, I will increase my prices.
             ]],
             DIALOG_NEGOTIATE_TERMS_FAILURE = [[
                 agent:
-                    [p] No. You either take it or leave it.
+                    !crossed
+                    No. You either take it or leave it.
             ]],
-            NEGOTIATION_REASON = "Negotiate better terms (increase the price of all shares by {1#money} on win)",
+            NEGOTIATION_REASON = "Negotiate better terms (increase the price of 100% share by {1#money} on win)",
         }
         :SetLooping(true)
         :Fn(function(cxt)
@@ -409,11 +475,11 @@ QDEF:AddConvo("tell_giver")
                 cxt:BasicNegotiation("NEGOTIATE_TERMS", {
                     on_start_negotiation = function(minigame)
 
-                        local amounts = {80, 50, 30}
+                        local amounts = {30, 50, 80}
 
                         local haggle_count = cxt.player.graft_owner:CountGraftsByID( "haggle_badge" )
                         for i = 1, haggle_count do
-                            table.insert(amount, 80)
+                            table.insert(amounts, 80)
                         end
 
                         for k,amt in ipairs(amounts) do
@@ -505,7 +571,7 @@ QDEF:AddConvo("tell_giver")
                     !left
                 agent:
                     !right
-                    [p] Nice going! Thanks for letting everyone know of our product.
+                    Nice going! Thanks for letting everyone know of our product.
                     It is really popular.
                 player:
                     Thanks.
@@ -538,7 +604,8 @@ QDEF:AddConvo("tell_giver")
                     !left
                 agent:
                     !right
-                    [p] I was informed that some Heshian now owns a third of my shares.
+                    !angry
+                    I was informed that some Heshian now owns a third of my shares.
                     Care to explain?
             ]],
             DIALOG_INTRO_SELL_TWO_THIRD = [[
@@ -548,25 +615,31 @@ QDEF:AddConvo("tell_giver")
                 agent:
                     !right
                     !angry
-                    [p] I was informed that some Heshian now owns a majority of my shares.
+                    I was informed that some Heshian now owns a majority of my shares.
                     Why the Hesh did you do that?
                 {advisor_diplomacy?
                     player:
+                        !bashful
                         I just thought we need the money, that's all.
                     agent:
+                        !angry_shrug
                         Really?
                         Is money all you think about?
                     player:
                         Well, I mean it's important-
                     agent:
+                        !surprised
                         What?!
-                        I've got plenty money. I don't need to sell <b>S.T.O.N.K.S</> to get more!
+                        !angry_accuse
+                        I've got plenty money. I don't need to sell <b>M.E.T.A.</> to get more!
                         No. What I need is a product that can change the world!
+                        !angry_shrug
                         How am I supposed to do that now that a Heshian owns a majority share?
                         Them owning a majority share means that they have the executive power on this product!
                     player:
                         They did promise the autonomy of your operation-
                     agent:
+                        !angry_shrug
                         Those are just empty promises.
                         They are not on paper, so they don't count.
                         Now that the Heshian owns a majority, Hesh knows what they will do with this product!
@@ -575,7 +648,9 @@ QDEF:AddConvo("tell_giver")
                         Vagrant Age?
                     agent:
                         Doesn't matter!
-                        I thought we are on the same page, {player}.
+                        !angry_accuse
+                        I thought you are going to be different, {player}. I thought you are going to be based.
+                        !sigh
                         But it appears, you are but another cringe normie.
                         I will still help you with the campaign, as promised.
                         But don't expect me to do you any favors!
@@ -589,23 +664,23 @@ QDEF:AddConvo("tell_giver")
                 agent:
                     !right
                     !angry
-                    $angryseething
+                    $angrySeething
                     You no-good scoundrel!
                 player:
                     !dubious
                     No-good scoundrel? Sure you can't be a little more creative?
                 agent:
                     No, {player}, I can't be a little more creative for <i>your</> sake.
-                    I've been too busy fuming about the fact that a damned heshie owns my entire vagrant age product line!
+                    I've been too busy fuming about the fact that a damned Heshie owns my entire vagrant age product line!
                 player:
                     !taken_aback
                     Vagrant age?!
                 agent:
-                    !angrypoint
-                {advisor?
+                    !angry_accuse
+                {primary_advisor?
                     Grab your damn things, and get out of my damn office!
                 }
-                {not advisor?
+                {not primary_advisor?
                     Get out of my sight!
                 }
                 * Then {agent} rants, {agent} hates you, blah blah blah.
@@ -661,14 +736,14 @@ QDEF:AddConvo("tell_giver")
                 {not majority_share?
                  agent:
                     I suppose so. I do have a few other projects that I could tinker with.
-                    Just don't pull this same kind of stunt on any of your political allies, and i'll let this one slide.
+                    Just don't pull this same kind of stunt on any of your political allies, and I'll let this one slide.
                 }
                 {majority_share?
                  agent:
                     !question
                     I suppose that is a lot of money this pulled in from selling just the shares.
                     But the product would've made more. I'm sure of it.
-                    !angrypoint
+                    !angry_accuse
                     You come to me next time you try to pull this same kind of stunt, understand?
                 }
             ]],
@@ -678,21 +753,21 @@ QDEF:AddConvo("tell_giver")
                 agent:
                     You mean money <i>you</> have now.
                     Money that I didn't get a say in how you obtained.
-                {advisor?
+                {primary_advisor?
                     player:
                         Because you take half the campaign funding from me and put it in your own pockets!
                     agent:
                         That doesn't mean you get to shoot my hopes and dreams in the foot!
-                        !angrypoint
+                        !angry_accuse
                         Look, you better work like a vroc once you get in office to make up for this.
                 }
-                {not advisor?
+                {not primary_advisor?
                     player:
                         Well-
                     agent:
                         I know I shouldn't rely on a grifter to handle my business.
                     {not majority_share?
-                        At least I still have the finantial autonomy, so maybe I can still work with this.
+                        At least I still have the financial autonomy, so maybe I can still work with this.
                         But don't expect me to do you any favors in the future!
                     }
                     {majority_share?
@@ -709,7 +784,7 @@ QDEF:AddConvo("tell_giver")
             DIALOG_BRUSH_OFF = [[
                 * [p] You brush off {agent}'s concern.
                 * Obviously {agent} doesn't buy it.
-                * Why do you think the other option has a negitiation, hmm?
+                * Why do you think the other option has a negotiation, hmm?
             ]],
         }
         :Fn(function(cxt)

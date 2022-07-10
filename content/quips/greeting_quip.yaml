@@ -9,6 +9,9 @@ tag_scores:
   advisor: 5
   democratic_race: 0
   fssh: 5
+  kalandra: 5
+  spark_contact: 5
+  vixmalli: 5
 
 lines:
 - push: [greeting]
@@ -51,3 +54,76 @@ lines:
       Ah, of course.
       My days of glory are over. Now I'm just trying to get by and make some shills.
       Still, feel free to stay and have a drink.
+- tags: [player_sal, kalandra, democratic_race]
+  notags: [met]
+  dialog:
+  - |
+    agent:
+      !surprised
+      {player}?
+    player:
+      Got it in one. How-
+    * Then, you froze.
+    * Even though you haven't seen each other for ten years, you can still recognize {agent.himher} clearly.
+    player:
+      Prindo, is that you?
+      !happy
+      How long has it been? Ten years?
+    agent:
+      !agree
+      Too long to keep track of.
+      What brought you here? I presume that you have taken an interest in the election?
+    player:
+      Yeah. I plan to run as a candidate.
+    agent:
+      It looks like only one of us can succeed, then.
+      We might be competitors, but I will do whatever I can to help you.
+    player:
+      Thanks.
+    agent:
+      In the mean time, is there anything you need?
+- tags: [player_rook, spark_contact, democratic_race]
+  notags: [met]
+  dialog:
+  - |
+    agent:
+      Didn't expect to see you here, old chum!
+    player:
+      !crossed
+      I will have you know that I am running for president, so me being here is completely expected.
+    agent:
+      You will need more than stealth and espionage if you want to win the election.
+      !chuckle
+      But I guess, in that aspect, we are in the same boat.
+      Anyway, if you need anything, I will see what I can do to help.
+- tags: [player_smith, vixmalli, democratic_race]
+  notags: [met]
+  dialog:
+  - |
+    agent:
+      What are you doing here? Shouldn't you be drinking in some rundown bar or something?
+    player:
+      !angry_accuse
+      Hey! I will have you know that I am running for president!
+    agent:
+      !agree
+      If you are speaking the truth, then perhaps it's finally time for you to do something useful.
+      Of course, I am not going to make it easier for you.
+      I actually want to win.
+    player:
+      You say that, but just wait until I beat you and win.
+- tags: [player_arint, spark_contact, democratic_race]
+  notags: [met]
+  dialog:
+  - |
+    agent:
+      !crossed
+      Didn't I say I can do this by myself?
+      Why did you show up now, all of a sudden?
+    player:
+      I'm not here to help you win, per se.
+      I am running for president as well, so that the Barons don't put all their eggs in one basket.
+      This way, even if one of us loses the election, the other person can still win.
+    agent:
+      !sigh
+      I suppose that is a fair arrangement.

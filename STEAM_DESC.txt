@@ -1,27 +1,24 @@
 [h1]The Democratic Race[/h1]
 
-A pioneer campaign mod for the (currently) Early Access game Griftlands, the Democratic Race is a mod for Griftlands that adds a negotiation based campaign mode to the game for ALL characters*, in contrast to the direct combat. Your goal in this campaign is to campaign and gain support among the people so you can be voted in as president. This story is heavily negotiation focused, and combat is only necessary if you failed certain negotiations.
+A pioneer campaign mod for Griftlands, the Democratic Race is a mod for Griftlands that adds a negotiation based campaign mode to the game for ALL characters*, in contrast to the direct combat. Your goal in this campaign is to campaign and gain support among the people so you can be voted in as president. This story is heavily negotiation focused, and combat is only necessary if you failed certain negotiations.
 
 This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
-\*Note: If you have modded characters, it has to be loaded before this mod for it to have this campaign.
-
-Version: 0.5.2(Alpha)
+Version: 0.7.2(Alpha)
 
 Author: RageLeague
 
 Load order:
 
 * Loads After: Cross Character Campaign (https://steamcommunity.com/sharedfiles/filedetails/?id=2219176890)
-* Loads After: Shel's Adventure (https://steamcommunity.com/sharedfiles/filedetails/?id=2217590179) or Shel's Adventure Expansion (https://steamcommunity.com/sharedfiles/filedetails/?id=2245060394)
-* Loads After: Rise of Kashio (https://steamcommunity.com/sharedfiles/filedetails/?id=2266976421)
-* Loads After: Arint's Last Day (https://steamcommunity.com/sharedfiles/filedetails/?id=2256085147)
 
-(The load order is specified for certain other mods because these modify the game's code, or add new characters to the game.)
+(The load order is specified for certain other mods because these modify the game's code.)
 
 This mod is based on this post that is now archived: https://forums.kleientertainment.com/forums/topic/120281-democracy-mode/.
 
 Supported Languages: English (Right now Simplified/Traditional Chinese is not supported because this is only an Alpha, and lots are bound to change, but it probably will be supported eventually)
+
+Discuss the mod at the discord server: https://discord.gg/g2gU3G8Qwv
 
 [h2]New Contents[/h2]
 
@@ -29,7 +26,7 @@ Supported Languages: English (Right now Simplified/Traditional Chinese is not su
 * [b]A detailed Support mechanic![/b] Gain as much support as possible, as it determines many factors in this campaign, from the funding you get each day to how likely someone will vote for you. Gain support from various means, by completing quests, befriending people, and making popular decisions.
 * [b]Know your voter base![/b] Each person in Griftlands has some allegiance with certain factions, and has different wealth levels. This determines what this person cares about politically. Do you hope to win by getting support from the Admiralty, or will you win by appealing to the lower class? Your choice.
 * [b]Take your stances![/b] Havaria has many problems, and different people have different opinions on certain subjects. Will you increase funding for the Admiralty to win them over, or support better worker rights? Be careful, if you change your stances too much, you will be seen as hypocritical!
-* [b]Pick your advisor![/b] You get to choose from 3 unique advisors, each specializes in one area of negotiation, and whose resemblence to any entity in real life, living or dead, is totally coincidental! They will help you with your campaign, but make sure to keep them happy, or they will stop supporting you!
+* [b]Pick your advisor![/b] You get to choose from 3 unique advisors, each specializes in one area of negotiation, and whose resemblance to any entity in real life, living or dead, is totally coincidental! They will help you with your campaign, but make sure to keep them happy, or they will stop supporting you!
 * [b]Know your rivals![/b] You are not the only one running for the election. Other Havarian bigshots, like Oolo or Kalandra, are also running for the election. You can choose to work together, or you can run against someone. Be careful who you work with, though, as the candidates more or less hate each other, and will not ally with you if you allied with the wrong person.
 * [b]Spend your time wisely![/b] You will get free time during certain points in the story, during which you can do whatever you want. Will you spend those time socializing with your supporters, or will you learn the location of the market to buy good grafts?
 * [b]Visit an updated Pearl-on-Foam![/b] The new campaign takes place in the modified version of Pearl-on-Foam, which contains iconic locations throughout Havaria. Meet familiar people, and visit familiar places. Some places even have added functionalities!
@@ -54,11 +51,13 @@ Of course, other forms of feedbacks are welcome.
 
 You can leave feedbacks either on the Steam workshop page (https://steamcommunity.com/sharedfiles/filedetails/?id=2291214111), Klei's forum (DM me or https://forums.kleientertainment.com/forums/topic/123481-the-democratic-racealpha-available/), or on GitHub (https://github.com/RageLeague/DemocraticRace).
 
+You may also submit your feedback at the discord server: https://discord.gg/g2gU3G8Qwv
+
 [h2]Voluntary Deck Collection Program[/h2]
 
 A brand new deck collection program is open to help me gather decks and balance the mod. For more information, visit
 https://forms.gle/2YWzmuUgN8KmTcJj9. If you are from a region where Google is not supported, I have
-to say, under such environment, actually very probematic, not gonna lie.
+to say, under such environment, actually very problematic, not gonna lie.
 
 [h2]How to install?[/h2]
 
@@ -99,7 +98,110 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Minespatch
 * Sei Bellissima
 
+[h3]Special Thanks[/h3]
+
+* Flange Finnegan
+
 [h2]Changelog[/h2]
+
+[h3]0.7.2[/h3]
+
+* Fixed crash when trying to negotiate better stock prices while having Haggle Badges.
+* Fixed incorrect dialog when negotiate for alliance, but you are already allied with someone they hate (while having a neutral relationship).
+
+[h3]0.7.1[/h3]
+
+* Fixed softlock when you get a new advisor during the summary.
+* Updated dialog for Never Meet Your Heroes.
+* Fixed typo for a character tag.
+
+[h3]0.7.0 (World Update)[/h3]
+
+This is another another minor major update that adds a bunch of miscellaneous features. It introduces many features that fleshes out the world of Havaria (in general and in this mod specifically). Additionally, this update also contains lots of balancing changes.
+
+Below is a summary of the changes. For a full, unorganized changes, see (https://github.com/RageLeague/DemocraticRace/blob/master/CHANGELOG.md).
+
+Major Changes:
+
+* Added new actions to do in locations, such as the Oshnudrome and the Party Supply Store! Some existing actions you can do at locations are changed as well.
+* General support changes from relationship changes are less significant, as well as attacking and killing.
+* Merged tax and welfare policies into one policy: fiscal policy. If you have taken a stance on either policy before this update, you will not take any stance on the new policy.
+* Separated the alliance with an opposition candidate with your relationship with them (UI, consequences needs to be fleshed out).
+* Added a new rally quest. Spread information (or misinformation) about your opponent to defame them.
+* You can now always unlock new locations from your advisor or proprietors of locations. This helps you unlock a bunch of locations early game, when you don't have a lot to do with your free time.
+* Added some debug functions. For debug purposes, and they are not well documented.
+* Your max resolve is now limited by the proportion of health you have, so don't hurt yourself too much.
+* Added a brand new negotiation music for the interview, as well as a temporary music for day 1 end negotiation.
+* Introduced lots of dialogs, for various different situations.
+* Introduced numerous balance changes (see full changelog for details).
+
+Minor Changes:
+
+* Democratic Race's custom provoke negotiation now correctly works with Everyone Dies (https://steamcommunity.com/sharedfiles/filedetails/?id=2596124635)
+* Ctenophorian Mystery now has two new outcomes (one of which is a game over, so try not to get that). Additionally, you will always get a mystery card as a reward, depending on the outcome of the quest.
+* Change My Mind now has options to save your face when you lose a debate, or just want to screw someone over.
+* Limited the number of request quest an agent can spawn to one across the entire game.
+* Reduced the support requirements at the start of days because of general support nerf.
+* Increased unconditional alliance requirement.
+* Added default negotiation behaviour for Vix and Hundruthor, which only shows up in a Democratic Race campaign.
+* Added fatigued to propaganda poster making negotiation.
+* Separated support reason for quests into different categories.
+* Added a marginal support bonus every time you pay someone to shill for you. Additionally, paying for shills is cheaper.
+* Separated once-per-day limit for socializing and unlocking locations.
+* People working at a location will not give you an option to unlock another location of the same type.
+* Different advisors now unlocks different bars.
+* Day 2 opponent will always give you their location when asked, regardless whether you agree with them or not.
+* Pets no longer provide support during the interview or debate. It is sad, I know, but we have to make compromise, otherwise Oolo will just blast everyone in the theater with Bertha.
+* Fixed the plax for the region. Now there is one less gigantic jellyfish and a lot more regular sized jellyfish.
+* Advisor's requests now no longer give cash reward, just like the only other request quest.
+* Hesh is now an MS Paint jellyfish. This is obviously subject to change.
+* Removed Rook finding extra coins (he has flourishes now, so he doesn't need this source of coins).
+* Reduced skinned character spawns. The number of skinned character spawned is cut by half, but they are not culled.
+* Fixed numerous bugs with cards, quests, and the mod in general (see full changelog for details).
+
+[h3]0.6.2[/h3]
+
+* (From HOTFIX) Added nil-check for the giver's brain in "Battle of Wits".
+* Added a clarifying side objective for "Dole Out", telling you that you can request funds from your advisor.
+* Fixed some hard to catch typos.
+
+[h3]0.6.1[/h3]
+
+* Fixed the victory condition for a certain negotiation in the quest "Battle of Wits".
+* Removed the debug table popup for this negotiation.
+
+[h3]0.6.0 (A General Update)[/h3]
+
+This is another minor major update that adds a bunch of miscellaneous features that improves the overall experience of the mod. Also replaced a lot of placeholder dialogs (not all of them, though).
+
+Major Changes:
+
+* Added tutorial slides for support level. (This is subject to changes).
+* Negotiation and battle now cost free time actions proportional to the number of turns spent (4 turns = 1 action, rounded up).
+* Added new notification for when actions are spent during free time events.
+* Added a new negotiation behaviour for Aellon.
+* Added a button that brings up the support screen (will show up once you select an advisor).
+* Added an option to ask someone unlawful to attack another person. They may either kill the target or cause the target to lose influence.
+* Added a theme music for Aellon "the Based".
+* Added two new events regarding the Rentorian and Deltrean dignitaries.
+* Increased support threshold requirement for each day.
+
+Minor Changes:
+
+* Added icons for many cards.
+* Replaced lots of placeholder dialogs and spellchecked a lot of them.
+* Removed intro for Benni and Dronumph's theme.
+* Changed flavour text of some cards.
+* Added some more smalltalk entries (not "Smalltalk", the pedagogically easiest language to learn(TM) (R)).
+* Transferred raw audio assets to a new repo (the raw FMOD project will not show up in the mod anymore).
+* Made various fixed, dialog replacement and addition to the Battle of Wits quest.
+* Added a special check in the relationship support update for non-voters.
+* Added negotiation counterparts for spicy noodles and hearty noodles.
+* Checking for bodyguards now also checks whether that person is also involved in the current quest.
+* Nerfed Rapid Speaker (6,10 -> 4,6 attacks).
+* Added tip on how to appease your advisor during the day end summary.
+* Moved act addition to OnPostLoad so it doesn't care if a character mod is loaded before this mod.
+* Removed load order for character mods (they aren't necessary anymore with the current setup).
 
 [h3]0.5.2[/h3]
 

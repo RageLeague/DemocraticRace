@@ -13,9 +13,9 @@ Convo("DEM_ADMIRALTY_ARREST")
 
         REQ_NO_TARGETS = "There are no targets.",
         REQ_CANT_DO = "{agent} isn't at the Admiralty Headquarters and isn't your friend.",
-        
+
         OPT_CHOOSE = "Investigate {1#agent}",
-        
+
         DIALOG_BACK = [[
             player:
                 Never mind.
@@ -150,7 +150,7 @@ Convo("DEM_ADMIRALTY_ARREST")
                     Okay, I'll do it.
                 }
                 {not liked?
-                    Guess {1#agent} just hands them out like lolipops, huh?
+                    Guess {1#agent} just hands them out like lollipops, huh?
                     !facepalm
                     Fine, I'll do it.
                 }
@@ -180,7 +180,7 @@ Convo("DEM_ADMIRALTY_ARREST")
                     Wait, the investigation isn't a battle or a negotiation.
                 player:
                     Simple.
-                    This modpack allows more uses of {1#graft} other than asking people to help me.
+                    This mod allows more uses of {1#graft} other than asking people to help me.
                     This is a way to buff {1#graft} and make it more useful.
                 agent:
                     !shrug
@@ -195,7 +195,7 @@ Convo("DEM_ADMIRALTY_ARREST")
                     Never mind.
                 agent:
                     Okay...?
-            ]], 
+            ]],
         }
         :Fn(function(cxt)
             local target = cxt:GetCastMember("target")
@@ -216,7 +216,7 @@ Convo("DEM_ADMIRALTY_ARREST")
             end
             arrest_params.investigate_difficulty = arrest_params.investigate_difficulty + RELATIONSHIP.NEUTRAL - cxt:GetAgent():GetRelationship()
             -- if cxt:GetAgent():GetRelationship() >= RELATIONSHIP.LIKED then
-                
+
             -- end
             if target:GetFaction():IsUnlawful() then
                 cxt.enc.scratch.is_unlawful = true
@@ -247,7 +247,7 @@ Convo("DEM_ADMIRALTY_ARREST")
             end
             if arrest_params.arrest_difficulty > 5 then
                 cxt.enc.scratch.hard_arrest = true
-            end 
+            end
 
             cxt:Dialog("DIALOG_SELECT")
 
@@ -287,7 +287,7 @@ Convo("DEM_ADMIRALTY_ARREST")
                         else
                             cxt:Dialog("DIALOG_USE_AUTHORIZATION", graft_provider)
                         end
-                        graft:GetDef().StartCooldown( graft ) 
+                        graft:GetDef().StartCooldown( graft )
                         AddFollowup()
                     end)
             end

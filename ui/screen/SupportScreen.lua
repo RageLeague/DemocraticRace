@@ -25,6 +25,8 @@ local function CycleScreenMode(mode)
     return mode
 end
 
+SupportScreen.IS_NAV_SCREEN = true
+
 SupportScreen.CONTROL_MAP = {
     {
         hint = function(self, left, right)
@@ -65,7 +67,7 @@ function SupportScreen:init( owner, on_end_fn )
     self:SetAnchors( "center", "center" )
 
     self.support_screen_mode = SUPPORT_SCREEN_MODE.DEFAULT
-    
+
     -- self.locked = locked
 
     -- Start assembling our screen
@@ -149,7 +151,7 @@ function SupportScreen:init( owner, on_end_fn )
     -- if self.issue_trackers.widget_list[1] then
     --     self.issue_trackers.widget_list[1]:SetFocusDir("up",self.wealth_support.widget_list[4], true)
     -- end
-    
+
 
     -- self.test_track = self.content:AddChild(DemocracyClass.Widget.PoliticalIssueTrack()
     --     :SetIssue("SECURITY")
@@ -162,14 +164,14 @@ function SupportScreen:init( owner, on_end_fn )
     --     :AddAgent(TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_jakes"))
     -- Back button
     self.bottom_left = self:AddChild( Widget() ):SetAnchors( "left", "bottom" )
-    self.close_button = self.bottom_left:AddChild( Widget.IconButton( LOC"UI.OVERLAYS.CLOSE", 
+    self.close_button = self.bottom_left:AddChild( Widget.IconButton( LOC"UI.OVERLAYS.CLOSE",
         function()
             self:OnClickClose()
         end ) )
     self.close_button:SetIcon( global_images.close )
     self.close_button:LayoutBounds( "left", "above", 60, 60 )
 
-    self.mode_button = self.bottom_left:AddChild( Widget.IconButton( LOC"DEMOCRACY.SUPPORT_SCREEN.SWITCH_MODE", 
+    self.mode_button = self.bottom_left:AddChild( Widget.IconButton( LOC"DEMOCRACY.SUPPORT_SCREEN.SWITCH_MODE",
         function()
             self:OnModeSwitch()
         end ) )
@@ -178,7 +180,7 @@ function SupportScreen:init( owner, on_end_fn )
         :Offset(SPACING.M1, 0)
 
     self.on_end_fn = on_end_fn
-    
+
     self:Refresh()
 
     print("Testloal", self.wealth_support.widget_list[1]:GetFocusDir("down"))
@@ -197,10 +199,6 @@ end
 
 function SupportScreen:OnClickClose()
     AUDIO:PlayEvent( SoundEvents.card_select_screen_close )
-
-    if self.on_end_fn then
-        self.on_end_fn( self )
-    end
 
     self:Close()
 end
@@ -275,7 +273,7 @@ function SupportScreen:OnScreenModeChange( sm )
 
     self.title:SetAutoSize(content_w)
     self.subtitle:SetAutoSize(content_w)
-    
+
     self.general_support:SetWidth(content_w)
     self.faction_support:SetWidth(content_w)
     self.wealth_support:SetWidth(content_w)
@@ -323,6 +321,10 @@ end
 
 function SupportScreen:OnClose()
     SupportScreen._base.OnClose( self )
+
+    if self.on_end_fn then
+        self.on_end_fn( self )
+    end
 
     self.screen_loop:Stop()
     self.screen_loop:Release()

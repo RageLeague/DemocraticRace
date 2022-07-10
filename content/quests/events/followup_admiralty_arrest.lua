@@ -30,7 +30,7 @@ local QDEF = QuestDef.Define
 :AddCast{
     cast_id = "admiralty",
     -- no_validation = true,
-    
+
     -- The admiralty kinda has to work on this quest. it should be important for them.
     -- otherwise our quest detector won't detect it.
     -- unimportant = true,
@@ -63,7 +63,7 @@ local QDEF = QuestDef.Define
         end
         if agent:GetFactionID() == "SPARK_BARON" or agent:GetFactionID() == "CULT_OF_HESH" then
             quest.param.rival_faction = true
-            
+
         end
         if agent:GetFaction():IsUnlawful() then
             quest.param.unlawful = true
@@ -86,7 +86,7 @@ local QDEF = QuestDef.Define
     hide_in_overlay = true,
     state = QSTATUS.ACTIVE,
 
-    events = 
+    events =
     {
         action_clock_advance = function(quest, location)
             -- if quest.param.dormant_start_time ~= Now() then
@@ -171,10 +171,10 @@ local QDEF = QuestDef.Define
         end
     end,
     mark = {"station"},
-    
+
 }
 :AddOpinionEvents{
-    
+
     wasted_their_time = {
         delta = OPINION_DELTAS.DIMINISH,
         txt = "Wasted their time on a false lead",
@@ -477,7 +477,7 @@ QDEF:AddConvo("action")
                 {not disliked?
                 player:
                     {not unplanned?
-                        !wave 
+                        !wave
                         Hello officer! I see you're doing your civic duty today.
                     admiralty:
                         !right
@@ -485,7 +485,7 @@ QDEF:AddConvo("action")
                         !burp
                         A bit of the rabble, you could say.
                     agent:
-                        Hey! I'm a part of this conversation too! 
+                        Hey! I'm a part of this conversation too!
                         {player}, help me!
                     player:
                         Well I'll just leave you to it, {admiralty}.
@@ -812,7 +812,7 @@ QDEF:AddConvo("action")
                 player:
                     !left
                     !fight
-                    
+
                     Fine, let's rumble.
             ]],
             DIALOG_TARGET_FIGHT_WON = [[
@@ -880,7 +880,7 @@ QDEF:AddConvo("action")
                     Do you even know where it is?
                 player:
                     Conveniently, I do.
-                    !throadcut
+                    !throatcut
                     As I was saying, you are coming with me!
             ]],
             OPT_FINISH_OFF = "Finish off {target}",
@@ -947,7 +947,7 @@ QDEF:AddConvo("action")
                                     cxt:Opt("OPT_FINISH_OFF")
                                         :Dialog("DIALOG_FINISH_OFF")
                                         :Fn(function(cxt)
-                                            AgentUtil.CommitMurder(target) 
+                                            AgentUtil.CommitMurder(target)
                                             target:Kill()
                                         end)
                                         :CompleteQuest()
@@ -1020,8 +1020,8 @@ QDEF:AddConvo("action")
                     else
                         cxt:Dialog("DIALOG_STAND_ASIDE_LOSE")
                         cxt.quest:GetCastMember("admiralty"):Kill()
-                        DemocracyUtil.DeltaAgentSupport(-5, cxt.quest:GetCastMember("admiralty"), "NEGLIGENCE")
-                        
+                        DemocracyUtil.DeltaAgentSupport(-2, -5, cxt.quest:GetCastMember("admiralty"), "NEGLIGENCE")
+
                         -- if  then
                             -- cxt.quest:GetCastMember("target"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("abandoned"))
                         cxt:Opt(cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL and "OPT_DEFEND" or "OPT_ATTACK")
@@ -1045,12 +1045,12 @@ QDEF:AddConvo("action")
                                     cxt:Opt("OPT_FINISH_OFF")
                                         :Dialog("DIALOG_FINISH_OFF")
                                         :Fn(function(cxt)
-                                            AgentUtil.CommitMurder(target) 
+                                            AgentUtil.CommitMurder(target)
                                             target:Kill()
                                         end)
                                         :CompleteQuest()
                                         :Travel()
-                                
+
                                 end)
                         -- else
                         --     cxt.quest:GetCastMember("target"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("abandoned"))
@@ -1083,7 +1083,7 @@ QDEF:AddConvo("action")
                         How's that promotion looking now? I bet it's looking mighty fine now.
                 }
                 {rival_faction?
-                    * You come across {target} speaking power to power with {admiralty}. 
+                    * You come across {target} speaking power to power with {admiralty}.
                     admiralty:
                         !left
                         !injured
@@ -1176,7 +1176,7 @@ QDEF:AddConvo("action")
             DIALOG_LEAVE = [[
                 player:
                     Ah, I see this is the common Havarian Handshake.
-                    Didn't realize I was trying to interupt tradition around here.
+                    Didn't realize I was trying to interrupt tradition around here.
                     Well, don't let me bother you two. Carry on.
                     !exit
                 target:
@@ -1229,7 +1229,7 @@ QDEF:AddConvo("action")
             local admiralty = cxt.quest:GetCastMember("admiralty")
             --Fight if you fail negotiations
             local function AttackPhase(cxt)
-                --always have fight option 
+                --always have fight option
                 cxt:Opt("OPT_ATTACK")
                     :Dialog("DIALOG_ATTACK")
                     :Battle{
@@ -1244,7 +1244,7 @@ QDEF:AddConvo("action")
                         :Dialog("DIALOG_LEAVE")
                         :Fn(function(cxt)
                             cxt.quest:GetCastMember("admiralty"):Kill()
-                            DemocracyUtil.DeltaAgentSupport(-5, cxt.quest:GetCastMember("admiralty"), "NEGLIGENCE")
+                            DemocracyUtil.DeltaAgentSupport(-2, -5, cxt.quest:GetCastMember("admiralty"), "NEGLIGENCE")
                         end)
                         :FailQuest()
                         :Travel()
@@ -1349,7 +1349,7 @@ QDEF:AddConvo("action")
                     Nah, thinking of heading elsewhere for now.
                 agent:
                     !shrug
-                    Suit yourself. 
+                    Suit yourself.
             ]],
 
             DIALOG_END = [[
@@ -1375,7 +1375,7 @@ QDEF:AddConvo("action")
         }
         :Fn(function(cxt)
             cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("admiralty"))
-            
+
             if cxt.quest.param.high_bounty then
                 cxt:Dialog("DIALOG_PROMOTION")
                 if cxt.quest.param.interrupted then
@@ -1559,7 +1559,7 @@ QDEF:AddConvo("innocent", "admiralty")
                 Oh no, it's not that.
                 !scared
                 It's that I've tried <i>Everything</> to arrest {target}!
-                I've tried getting a warrant, I've planted evidence on {target.himher}, I've even tried just flat out dogging {target} in case {target.heshe} littered! 
+                I've tried getting a warrant, I've planted evidence on {target.himher}, I've even tried just flat out dogging {target} in case {target.heshe} littered!
                 Grifter, either this target's a saint or Hesh itself. Either way, I can't do anything.
                 I've spent too much time on {target.himher}. I'm going to do something that might actually get me promoted.
         ]],
@@ -1633,7 +1633,7 @@ QDEF:AddConvo("escort")
                     I'm not the Admiralty, so I really have no place to arrest you.
                 agent:
                     Seriously?
-                    After all that, and you're just lettimg me go?
+                    After all that, and you're just letting me go?
                 player:
                     Well, yeah.
                 agent:
@@ -1680,7 +1680,7 @@ QDEF:AddConvo("escort")
                     {not target_dead?
                         agent:
                             !crossed
-                            What's schleped through the door this time?
+                            What schlepped through the door this time?
                         player:
                             A criminal in cuffs. {admiralty} and I took {target.himher} down.
                         agent:
@@ -1700,12 +1700,12 @@ QDEF:AddConvo("escort")
                     {target_dead?
                         agent:
                             !disgust
-                            Okay...you dragged a corpse into here <i>why?</>
+                            Okay... You dragged a corpse into here <i>why</>?
                         admiralty:
                             !left
                             We killed {target}. Had to bring the body as proof, as per protocol.
                         agent:
-                            I get that but...we could've had this interaction <i>outside</> instead of here.
+                            I get that but... we could've had this interaction <i>outside</> instead of here.
                             Agh, whatever. Put it somewhere it won't stink up the place.
                         {high_bounty?
                             Only thing stronger than the smell must've been the fight. We've had an eye on {target} for a long while, for good reason.

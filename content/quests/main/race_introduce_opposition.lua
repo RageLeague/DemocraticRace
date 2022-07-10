@@ -84,45 +84,6 @@ local QDEF = QuestDef.Define
 DemocracyUtil.AddPrimaryAdvisor(QDEF)
 DemocracyUtil.AddHomeCasts(QDEF)
 
--- QDEF:AddConvo("go_to_bar")
---     :ConfrontState("STATE_CONFRONT", function(cxt) return cxt:GetCastMember("primary_advisor") and cxt.location == cxt.quest:GetCastMember("noodle_shop") end)
---         :Loc{
---             DIALOG_INTRO = [[
---                 * You arrive at the noodle shop.
---                 player:
---                     !left
---                 primary_advisor:
---                     !right
---                     The interview isn't the only thing I set up last night.
---                     I set up a meet and greet with another one of the candidates in the Race.
---                     You'd do well to gather some intel from them.
---                 * {opposition} walks up to you and extends a hand.
---                 opposition:
---                     !right
---                     Hello there. My name is {opposition}. You may have heard of me already down the grapevine.
---                 player:
---                     {player}. Charmed to meet you, {opposition.sirma'am}.
---                 opposition:
---                     !happy
---                     Respectful to their future leader? I like that in a loser.
---                 primary_advisor:
---                     !right
---                     Don't pay them any mind. With luck, they'll fall off the weighside when the pressure mounts.
---                 player:
---                     So why am I gathering intel on a loser, then?
---                 primary_advisor:
---                     Well, I said with luck.
---                     You're not the only one in the election. Neither are they your only opposition.
---                     There's many candidates out there, vying for presidency over Havaria.
---                     You'll have to deal with the tug and pull of supporters with these guys.
---                     I'll clam up. Go ingratiate yourself to them, see if they'll spill any beans.
---             ]],
---         }
---         :Fn(function(cxt)
---             cxt.quest:Complete("go_to_bar")
---             cxt:Dialog("DIALOG_INTRO")
---             DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 3)
---         end)
 QDEF:AddConvo("meet_opposition", "opposition")
     :Loc{
         DIALOG_GREET_PST = [[
@@ -142,20 +103,141 @@ QDEF:AddConvo("meet_opposition", "opposition")
             :GoTo("STATE_QUESTIONS")
     end)
     :AttractState("STATE_ATTRACT", function(cxt) return not cxt.quest.param.greeted end)
+        :Quips{
+            {
+                tags = "oppo_greeting",
+                [[
+                    * You walk up to {agent}.
+                    * {agent} extends a hand to greet you.
+                    agent:
+                        !right
+                        Hello there. My name is {agent}. You may have heard of me already down the grapevine.
+                    player:
+                        {player}. Charmed to meet you, {agent.honorific}.
+                        So I believe we should introduce ourselves a little bit better.
+                        If you're going to win, surely you've nothing to hide from your opponents.
+                    agent:
+                        Nothing I couldn't tell you about me that the public doesn't already.
+                        Ask away.
+                ]],
+            },
+            {
+                tags = "oppo_greeting, met",
+                [[
+                    * You walk up to {agent}.
+                    * {agent} looks around the office, observing.
+                    agent:
+                        !right
+                        So, this is your campaign office, huh?
+                        A pretty nice place, if I do say so myself.
+                    player:
+                        Ah, {agent}. Fancy seeing you here.
+                        Last time we meet, we haven't properly talked about the campaign yet.
+                        Do you mind if I ask you some questions?
+                    agent:
+                        Of course, ask away.
+                ]],
+            },
+            {
+                tags = "oppo_greeting, player_sal, kalandra",
+                [[
+                    * You walk up to {agent}.
+                    * {agent} looks at you in shock.
+                    agent:
+                        !right
+                        !surprised
+                        {player}?
+                    * Even though you haven't seen each other for ten years, you can still recognize {agent.himher} clearly.
+                    player:
+                        Prindo, is that you?
+                        !happy
+                        How long has it been? Ten years?
+                    agent:
+                        !agree
+                        Too long to keep track of.
+                    player:
+                        Anyway, we can catch up later.
+                        Right now, there are a few things I'd like to know about your campaign.
+                    agent:
+                        Don't worry. Ask ahead.
+                ]],
+            },
+            {
+                tags = "oppo_greeting, player_arint, spark_contact",
+                [[
+                    * You walk up to {agent}.
+                    * {agent} looks at you in dismay.
+                    agent:
+                        !right
+                        Oh, {player}. You followed me, after all.
+                        !crossed
+                        Didn't I say I can do this by myself?
+                        Why did you show up now, all of a sudden?
+                    player:
+                        I'm not here to help you win, per se.
+                        I am running for president as well, so that the Barons don't put all their eggs in one basket.
+                        This way, even if one of us loses the election, the other person can still win.
+                    agent:
+                        !sigh
+                        I suppose that is a fair arrangement.
+                    player:
+                        Anyway, if you don't mind, I'd like to ask some questions. To see if you have a plan.
+                    agent:
+                        !agree
+                        Oh, I sure do have a plan, alright. Just go ahead and ask.
+                ]],
+            },
+            {
+                tags = "oppo_greeting, player_rook, spark_contact",
+                [[
+                    * You walk up to {agent}.
+                    * {agent} seems glad to see you.
+                    agent:
+                        !right
+                        !happy
+                        Didn't expect to see you here, old chum!
+                    player:
+                        !crossed
+                        I will have you know that I am running for president, so me being here is completely expected.
+                    agent:
+                        You will need more than stealth and espionage if you want to win the election.
+                        !chuckle
+                        But I guess, in that aspect, we are in the same boat.
+                    player:
+                        Speaking of which, there are some questions I'd like to ask you about your campaign.
+                    agent:
+                        Of course, go ahead and ask.
+                ]],
+            },
+            {
+                tags = "oppo_greeting, player_smith, vixmalli",
+                [[
+                    * You walk up to {agent}.
+                    * {agent} looks at you in disbelief.
+                    agent:
+                        !right
+                        What are you doing here? Shouldn't you be drinking in some rundown bar or something?
+                    player:
+                        !angry_accuse
+                        Hey! I will have you know that I am running for president!
+                    agent:
+                        !agree
+                        If you are speaking the truth, then perhaps it's finally time for you to do something useful.
+                        Of course, I am not going to make it easier for you.
+                        I actually want to win.
+                    player:
+                        If you're going to win, surely you've nothing to hide from your opponents.
+                        There are some questions I'd like to ask of you.
+                    agent:
+                        !shrug
+                        Eh, what's the harm? Sure.
+                ]],
+            },
+        }
         :Loc{
             DIALOG_GREET = [[
-                * You walk up to {agent}.
-                * {agent} extends a hand to greet you.
                 agent:
-                    !right
-                    Hello there. My name is {agent}. You may have heard of me already down the grapevine.
-                player:
-                    {player}. Charmed to meet you, {agent.honorific}.
-                    So I believe we should introduce ourselves a scoche bit better.
-                    If you're going to win, surely you've nothing to hide from your opponents.
-                agent:
-                    Nothing I couldn't tell you about me that the public doesn't already.
-                    Ask away.
+                    %oppo_greeting
                 player:
                     What's your goal in the race? What drives you forward?
                 agent:
@@ -163,9 +245,18 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 * {agent} clears {agent.hisher} throat loudly.
                     %opposition_intro idea_monologue {opposition_id}
                 player:
-                    I must say, i'm stunned by your rhetoric.
+                {not spark_contact?
+                    I must say, I'm stunned by your rhetoric.
                 agent:
                     I bet you are!
+                }
+                {spark_contact?
+                    Wow, that... definitely is one of the speeches I've ever heard.
+                agent:
+                    I'm glad you liked it.
+                }
+                agent:
+                    !permit
                     What say you? Are you persuaded by my speech?
             ]],
             OPT_AGREE = "Agree",
@@ -286,38 +377,27 @@ QDEF:AddConvo("meet_opposition", "opposition")
             player:
                 If I want to find you, where should I go?
             agent:
-            {(agreed or liked) and not disliked?
-                Since we have similar, I guess I'll tell you.
+            {agreed?
+                Since we have similar goals, I guess I'll tell you.
                 You can find me at {oppo_location#location}. That's where my base is.
                 The people there may or may not like you, I can't make any promises.
                 If you want to talk about potential alliance, meet me there.
             player:
                 That sounds very reassuring.
             }
-            {not ((agreed or liked) and not disliked)?
-                !angry_shrug
-                What? So you can send an assassin to my door?
+            {not agreed?
+                If you ever change your mind about your political position, you can find me at {oppo_location#location}.
+                There, we can discuss our potential alliance.
+                !crossed
+                Provided you can prove yourself first, of course.
             player:
-                !placate
-                That's not what I-
-            agent:
-                {not disliked?
-                    !sigh
-                    It's just a precaution, you see.
-                    I don't know you, you don't know me. Gotta be careful.
-                    It's nothing personal, I assure you.
-                }
-                {disliked?
-                    Better be careful than sorry, you know?
-                    It's nothing personal.
-                    Nah, who am I kidding, it totally is.
-                }
+                !handwave
+                Yeah, what else is new?
             }
         ]],
         function(cxt)
-            local learnlocation = ((cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL) or cxt.quest.param.agreed)
-                and not (cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL)
-            if learnlocation then
+            local learn_location = true-- ((cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL) or cxt.quest.param.agreed) and not (cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL)
+            if learn_location then
                 DemocracyUtil.DoLocationUnlock(cxt, cxt.quest.param.oppo_location)
             end
         end,
@@ -356,36 +436,47 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             DIALOG_INTRO = [[
                 {not greeted?
                     agent:
-                        [p] if you haven't talked to {opposition} already, you should probably do so.
-                        you might gain some insights as to what other candidates are up to.
+                        If you haven't talked to {opposition} already, you should probably do so.
+                        You might gain some insights as to what other candidates are up to.
                 }
                 {greeted?
                     agent:
-                        [p] so you talked to {opposition}. What do you make of {opposition.himher}?
+                        So you talked to {opposition}. What do you make of {opposition.himher}?
                     player:
-                        {opposition.HeShe}'s fine, i guess.
+                        {opposition.HeShe} is an interesting character, certainly.
                     {agreed?
-                        we more or less have the same ideology. we could probably get along.
+                        We have a lot of similarities in terms of ideology. We could probably get along.
                     agent:
-                        glad to hear that.
-                        but don't let that fool you. you're still opponents.
-                        there can only be one.
-                        Still, feel free to negotiate an alliance between you two.
-                        You are going to need it if you want to win.
+                        !agree
+                        Glad you found a potential ally so quickly.
+                        But remember, you are still political opponents, so don't get to attached to {opposition.himher}.
+                        Eventually, only one of you can become the president, and it should be you.
+                    player:
+                        !thought
+                        ...
+                    agent:
+                        Still, it is good to find an ally if you can. You can't win this election alone.
+                        You can ask {opposition} about potential alliances.
+                        Or go ask around and see if you can find other candidates with similar ideologies. That might be a start.
                     }
                     {disagreed?
-                        we have some ideological differences, but we might still get along.
+                        We have some ideological differences, but we might still get along.
                     agent:
-                        great. now you know how other's think, you need to use that to your advantage.
-                        Feel free to find an ally.
-                        You are going to need them if you want to win.
+                        !thought
+                        Hmm... If this keeps up, you two might eventually clash against each other.
+                        And you can't do this all by yourself, even with my help.
+                        If you want to win, you will need allies.
+                        Go ask around and see if you can find candidates with similar ideologies. That might be a start.
                     }
                     {not (agreed or disagreed)?
                     agent:
-                        you don't sound so sure.
-                        oh well.
-                        Just in case, if you find someone who share an ideology with you, try negotiating an alliance.
-                        You must do it if you want to win.
+                        You don't sound so sure.
+                    player:
+                        I don't know what to make of {opposition.himher}.
+                    agent:
+                        Don't worry about it. You can make up your mind after you interacted with the candidates more.
+                        But just remember: if you want to win the election, you will need allies.
+                        Go ask around and see if you can find candidates with similar ideologies. That might be a start.
                     }
                     ** You can now talk to other candidates with similar interests and form an alliance!
                 }
@@ -440,6 +531,12 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 I have some questions regarding the other candidates...
         ]],
         function(cxt)
+            -- A hack to allow you to ask again. Not really elegant
+            for optdata, _ in pairs(cxt.enc.scratch.STATE_QUESTIONS_HISTORY) do
+                if optdata.opt_id == "OPT_2" then
+                    cxt.enc.scratch.STATE_QUESTIONS_HISTORY[optdata] = nil
+                end
+            end
             cxt:GoTo("STATE_OPPOSITION_QUESTIONS")
         end,
     })
@@ -477,41 +574,49 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 He's running on <!pol_stance_independence_2>Havarian Independence</>.
                 The Spree likes it because they can be more lawless, but it is popular among other voting groups as well.
                 People are fed up with Deltree's reach, especially towards the Admiralty for controlling their lives.
-                Although the more prestegious people would rather have Havaria be totally annexed.
+                Although the more prestigious people would rather have Havaria be totally annexed.
         ]],
         nil,
         nil,
         "Ask about the Spark Baron candidate",
         [[
+            {player_arint?
             player:
-                Someone in the Spark Barons has got to be running.
+                I'm assuming that Fellemo is running.
+                Is there anyone else from the Spark Baron running as well?
             agent:
-                Of course.
+                As far as I am aware, other than you and him, there is no one else from the Spark Baron running.
+                Seems you already know Fellemo, huh?
+            player:
+                !sigh
+                All too well.
+            }
+            {not player_arint?
+            player:
+                There must be someone from the Spark Barons running, right?
+            agent:
+                !agree
+                There sure is.
                 Their candidate is Lellyn Fellemo, a retired Admiralty solider, who now is a regional officer managing Grout Bog.
-                Although I'm not sure how competent he really is.
-                Seems like he's in just because his lieutenant really wants the Spark Barons to play a part in this.
-            player:
-                Uh huh.
-            {spark_barons?
-                Then why didn't you run, seeing as no one competent in the Spark Barons is running?
-            agent:
-                !crossed
-                ...
-                I have my reasons.
+                !cagey
+                Although... if I'm honest, I am not sure if he is really a capable candidate.
+                He doesn't seem to have a concrete plan, and he doesn't seem to put a lot of work into the campaign.
             }
             player:
                 What's Fellemo's angle, then?
             agent:
-                He wants to <!pol_stance_tax_policy_-2>aboilsh taxes</>.
+                He wants a <!pol_stance_fiscal_policy_-2>Laissez Faire</> approach to the economy.
+                Basically, the government leaves the economy alone by removing government services and taxes.
                 Of course, many people would want that, especially the Spark Barons.
                 They don't want their hard-earned money to go to leeches that is the state.
-                But it would mean that the state can't get fundings this way.
+                But it would mean that the government can't get much funding through taxes.
+                And I suppose can't get the help they need from the government, but that is the reality of Havaria.
             player:
                 How does he plan to make Havaria function if he abolish taxes?
             agent:
                 No clue.
-                State industries, maybe?
                 You should ask him about it.
+                Although I doubt you will get a straight answer from him.
         ]],
         nil,
         nil,
@@ -546,14 +651,13 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         nil,
         nil,
         "Ask about the Cult candidate",
-        -- haven't figure out whether to use vixmali or the bishop
         [[
             player:
                 So who's representing the Cult of Hesh?
             agent:
                 It's Vixmalli Banquod.
             {player_smith?
-                He's a member of one of the most prestegious-
+                He's a member of one of the most prestigious-
             player:
                 Yeah, I know who he is.
                 !thought
@@ -561,14 +665,14 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 Anyway, what does he want?
             }
             {not player_smith?
-                He's a member of one of the most prestegious families in Havaria.
+                He's a member of one of the most prestigious families in Havaria.
                 He basically bought his way to the top of the Cult's Hierarchy.
             player:
                 Well, that sounds good and all, but what does he want?
             }
             {not cult_of_hesh?
                 It's the cult. They always want more power.
-                But they dont really have anything that jives with the public voting blocks.
+                But they don't really have anything that jives with the public voting blocks.
                 Well, everything except <!pol_stance_religious_policy_2>preserve artifacts</>.
                 They'll likely just start preaching about Hesh declaring them the president.
                 Their supporters are going to be rigidly pro-cult unless you stoop to their level.
@@ -595,7 +699,7 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 Actually, no.
                 The Jakes is a worker union. They don't have a hierarchy like other factions, so they don't have a particular candidate.
                 However, there is a candidate trying to levy support from the Jakes in particular.
-                Her name's Andwannette. Big character in the foam before, but now she's got a fire in her belly to take it to new heights.
+                Her name's Andwanette. Big character in the foam before, but now she's got a fire in her belly to take it to new heights.
             player:
                 So what are her actual viewpoints, or is she just waffling to the Jakes?
             agent:

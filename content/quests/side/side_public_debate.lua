@@ -18,7 +18,7 @@ local QDEF = QuestDef.Define
     qtype = QTYPE.SIDE,
     desc = [[{opponent} is hosting a public debate, you might be able to make use of the large audience by swaying them to your side.]],
     rank = {1, 5},
-    icon = engine.asset.Texture("icons/quests/handler_admiralty_find_bandit_informant.tex"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/public_debate.png"),
 
     reward_mod = 0,
     tags = {"RALLY_JOB"},
@@ -32,11 +32,11 @@ local QDEF = QuestDef.Define
     end,
 
     on_start = function(quest)
-        local location = Location( LOCATION_DEF.id )
-        assert(location)
-        TheGame:GetGameState():AddLocation(location)
-        quest:AssignCastMember("junction", location )
-        quest:Activate("meet_opponent")
+        -- local location = Location( LOCATION_DEF.id )
+        -- assert(location)
+        -- TheGame:GetGameState():AddLocation(location)
+        -- quest:AssignCastMember("junction", location )
+        -- quest:Activate("meet_opponent")
     end,
     on_destroy = function( quest )
         if quest:GetCastMember("junction") then
@@ -188,6 +188,11 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
+            local location = Location( LOCATION_DEF.id )
+            assert(location)
+            TheGame:GetGameState():AddLocation(location)
+            cxt.quest:AssignCastMember("junction", location )
+            cxt.quest:Activate("meet_opponent")
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{
@@ -232,7 +237,7 @@ QDEF:AddConvo("meet_opponent")
                 opponent:
                     !right
                     !chuckle
-                    haha your argument bad, mine good
+                    Is that all you've got? Come on! You gotta try harder than that!
                 laughing_stock:
                     !scared
                     ...I'll take my leave now.
@@ -240,13 +245,13 @@ QDEF:AddConvo("meet_opponent")
                     * {laughing_stock} sulks off the stage.
                 player:
                     !left
-                    * Undaunted by this, you walk up to the other microphone.
+                * Undaunted by this, you walk up to the other microphone.
                     Got time for one more?
-                    * Already, the audience is riled up and angry.
+                * Already, the audience is riled up and angry.
                     !wince
-                    * One member even manages to throw an empty bowl of noodles directly against your forehead.
-                    * Such aim.
-                    * This is clearly going to be an uphill battle.
+                * One member even manages to throw an empty bowl of noodles directly against your forehead.
+                * Such aim.
+                * This is clearly going to be an uphill battle.
             ]],
 
             OPT_DEBATE = "Try to win over the audience",
@@ -295,7 +300,7 @@ QDEF:AddConvo("meet_opponent")
             DIALOG_LOSS = [[
                 player:
                     !angry
-                    * Your argument is extremely unconvicing.
+                    * Your argument is extremely unconvincing.
                     * This doesn't look good for you.
                 opponent:
                     !chuckle
@@ -337,7 +342,7 @@ QDEF:AddConvo("meet_opponent")
                     * Your reception is better than when you first walked on stage, but clearly the audience is still angry.
                 opponent:
                     !point
-                    I don't have to listen to someone who decided they were a politican like a day ago!
+                    I don't have to listen to someone who decided they were a politician like a day ago!
                 player:
                     !dubious
                     And when did you start?
@@ -435,6 +440,10 @@ QDEF:AddConvo("meet_opponent")
                 elseif #(cxt.quest.param.crowd or {}) - i < lose_supporter then
                     agent:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("disliked_debate"))
                 end
+            end
+            local opposition_id = DemocracyUtil.GetOppositionID(cxt:GetCastMember("opponent"))
+            if opposition_id then
+                DemocracyUtil.TryMainQuestFn("DeltaOppositionSupport", opposition_id, (cxt.quest.param.audience_stage - 2) * 4)
             end
             if cxt.quest.param.lost_negotiation or cxt.quest.param.audience_stage <= 0 then
                 cxt.quest:Fail()

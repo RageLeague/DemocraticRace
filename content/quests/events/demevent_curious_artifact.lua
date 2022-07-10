@@ -115,7 +115,7 @@ FOLLOW_QUEST:AddConvo()
                 And above all else means...what?
             agent:
                 !shrug
-                Above the riff-raff, I suppose. It's eyecatching, if nothing else.
+                Above the riff-raff, I suppose. It's eye catching, if nothing else.
             }
             {intimidating_blaster?
                 It's a small firearm.
@@ -125,7 +125,7 @@ FOLLOW_QUEST:AddConvo()
             agent:
                 Yes, right around here. It's a bit smudged, but if you can notice the-
             player:
-                Ah, now I see it. 
+                Ah, now I see it.
             }
         ]],
     }
@@ -169,10 +169,10 @@ FOLLOW_QUEST:AddConvo()
             DIALOG_ACCEPT = [[
                 player:
                     !give
-                    Don't know how I can appreciate it if i'm giving it for free, but here.
+                    Don't know how I can appreciate it if I'm giving it for free, but here.
                 agent:
                     !take
-                    It's a small token, but i'm sure Hesh will favor you someday, in exchange for this.
+                    It's a small token, but I'm sure Hesh will favor you someday, in exchange for this.
             ]],
             OPT_REJECT = "Reject the deal",
             DIALOG_REJECT = [[
@@ -210,7 +210,7 @@ FOLLOW_QUEST:AddConvo()
             DIALOG_ACCEPT = [[
                 player:
                     !give
-                    If you put it to better use than I can, i'll take those shills off your hands.
+                    If you put it to better use than I can, I'll take those shills off your hands.
                 agent:
                     !take
                     I'm sure we'll find a way to weaponize it.
@@ -218,10 +218,10 @@ FOLLOW_QUEST:AddConvo()
             OPT_REJECT = "Reject the deal",
             DIALOG_REJECT = [[
                 player:
-                    I think i'll test it out a little, see if it's worth that market value.
+                    I think I'll test it out a little, see if it's worth that market value.
                 agent:
                     !placate
-                    Hey friend, no skin off my nose. If you ever want to pawn it off, though, i'll always be here. 
+                    Hey friend, no skin off my nose. If you ever want to pawn it off, though, I'll always be here.
             ]],
         }
         :Fn(function(cxt)

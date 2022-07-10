@@ -11,8 +11,9 @@ local function OnNewGame( mod, game_state )
     end
 end
 
-local function OnLoad( mod )
+local function OnPostLoad( mod )
     rawset(_G, "CURRENT_MOD_ID", mod.id)
+
     local STARTING_MONEY = 125
 
     local FORBIDDEN_CONVO = {
@@ -62,6 +63,17 @@ local function OnLoad( mod )
         }
     }
 
+    for id, data in pairs(GetAllPlayerBackgrounds()) do
+        local act_data = shallowcopy(ACT_DATA)
+        act_data.id = data.id .. "_" .. act_data.id
+        data:AddAct(act_data)
+        Content.internal.ACT_DATA[act_data.id] = data.acts[#data.acts]
+    end
+end
+
+local function OnLoad( mod )
+    rawset(_G, "CURRENT_MOD_ID", mod.id)
+
     local function LoadConvoLua( filename )
         package.loaded[ filename ] = nil
         local ok, result = xpcall( require, generic_error, filename )
@@ -73,8 +85,8 @@ local function OnLoad( mod )
 
     require "DEMOCRATICRACE:content/string_table"
 
-    rawset(_G, "DemocracyConstants", require("DEMOCRATICRACE:content/constants"))
     require "DEMOCRATICRACE:content/util"
+    rawset(_G, "DemocracyConstants", require("DEMOCRATICRACE:content/constants"))
     -- rawset(_G, "DemocracyUtil", )
 
     -- Patch existing files first
@@ -107,6 +119,7 @@ local function OnLoad( mod )
     require "DEMOCRATICRACE:content/grifts"
     require "DEMOCRATICRACE:content/more_boon_services"
     require "DEMOCRATICRACE:content/combat_parties"
+    require "DEMOCRATICRACE:content/debug_commands"
     -- we load slides before we load act data. who knows what would happen if we didn't?
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:content/slides/", "*.lua", true )) do
         local name = filepath:match( "(.+)[.]lua$" )
@@ -118,13 +131,6 @@ local function OnLoad( mod )
                 Content.AddSlideShow("democracy_" .. id, slides_data)
             end
         end
-    end
-
-    for id, data in pairs(GetAllPlayerBackgrounds()) do
-        local act_data = shallowcopy(ACT_DATA)
-        act_data.id = data.id .. "_" .. act_data.id
-        data:AddAct(act_data)
-        Content.internal.ACT_DATA[act_data.id] = data.acts[#data.acts]
     end
 
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:ui/", "*.lua", true )) do
@@ -203,6 +209,7 @@ local function OnLoad( mod )
 
     -- print(string.match("C:/Users/adfafaf", "^.+[:]([^/\\].+)$"))
     -- print(string.match("DemRace:lalala", "^.+[:]([^/\\].+)$"))
+    return OnPostLoad
 end
 
 local function OnPreLoad( mod )
@@ -244,7 +251,7 @@ local function OnPreLoad( mod )
 end
 
 local function OnGlobalEvent(mod, event_name, ...)
-    print("I'm listening...")
+    -- print("I'm listening...")
     if event_name == "allow_dual_purpose_cards" then
         local card, param = ...
         if DemocracyUtil.GetModSetting("allow_dual_purpose_cards") then
@@ -259,21 +266,21 @@ local function OnGlobalEvent(mod, event_name, ...)
             end
         end
     elseif event_name == "get_work_availability" then
-        print("Found event")
+        -- print("Found event")
         local location, work_data = ...
         if location and work_data then
             for id, data in pairs(work_data) do
                 print(id, data)
                 if type(data) == "table" and data.is_democracy_job then
-                    print("Found job for democracy", id)
+                    -- print("Found job for democracy", id)
                     if not DemocracyUtil.IsDemocracyCampaign() then
-                        print("Not in democracy. Disable job", id)
+                        -- print("Not in democracy. Disable job", id)
                         work_data[id] = nil
                     end
                 elseif type(data) == "table" and data.disable_for_democracy then
-                    print("Found job disabled for democracy", id)
+                    -- print("Found job disabled for democracy", id)
                     if DemocracyUtil.IsDemocracyCampaign() then
-                        print("In democracy. Disable job", id)
+                        -- print("In democracy. Disable job", id)
                         work_data[id] = nil
                     end
                 end
@@ -283,7 +290,7 @@ local function OnGlobalEvent(mod, event_name, ...)
 end
 
 local function OnGameStart( mod )
-    print("I am actually listening")
+    -- print("I am actually listening")
     TheGame:GetEvents():ListenForEvents( mod, "allow_dual_purpose_cards", "card_added", "get_work_availability" )
 end
 
@@ -350,7 +357,7 @@ local MOD_OPTIONS =
 }
 -- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {
-    version = "0.5.2",
+    version = "0.7.2",
     alias = "DEMOCRATICRACE",
 
     OnLoad = OnLoad,
@@ -377,10 +384,10 @@ return {
         -- New characters
         -----------------------------------------
         -- For shel's adventure and expanded version
-        "LOSTPASSAGE",
+        -- "LOSTPASSAGE",
         -- For rise of kashio
-        "RISE", -- ffs, can you use a more unique alias?
+        -- "RISE", -- ffs, can you use a more unique alias?
         -- Arint mod
-        "ARINTMOD",
+        -- "ARINTMOD",
     },
 }

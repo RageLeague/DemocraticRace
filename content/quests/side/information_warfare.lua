@@ -48,9 +48,8 @@ local QDEF = QuestDef.Define
     reward_mod = 0,
     extra_reward = false,
     on_start = function(quest)
-        quest:Activate("commission")
-        -- quest.param.actions = math.round(DemocracyUtil.GetBaseFreeTimeActions() * 1.5)
-        quest:Activate("time_left")
+        -- quest:Activate("commission")
+        -- quest:Activate("time_left")
     end,
     -- events =
     -- {
@@ -641,9 +640,6 @@ QDEF:AddConvo("commission")
                     end
                 end
 
-
-                -- DBG(cxt.enc.scratch.demand_list)
-                -- cxt.enc.scratch.testlol = true
                 if IsPotentiallyArtist(who) then
                     cxt.quest.param.demand_list = cxt.quest.param.artist_demands[who:GetID()].demand_list
                     cxt:Dialog("DIALOG_ASK_COMMISSION")
@@ -768,6 +764,8 @@ QDEF:AddConvo("commission")
                     Looks good. Maybe.
                     But only time will tell whether this is really effective.
             ]],
+
+            NEGOTIATION_REASON = "Create the propaganda poster",
         }
         :Fn(function(cxt)
             if not cxt.quest.param.cards then
@@ -777,7 +775,7 @@ QDEF:AddConvo("commission")
             cxt:Question("OPT_HINT", "DIALOG_HINT")
 
             local recorded_cards = {}
-            -- yeah havent figured out what to do with it.
+
             local function ProcessFn(cxt, minigame)
                 local stacks = minigame:GetPlayerNegotiator():GetModifierStacks("TIME_CONSTRAINT")
                 cxt.quest.param.free_time_actions = stacks
@@ -818,6 +816,7 @@ QDEF:AddConvo("commission")
                 :Dialog("DIALOG_START")
                 :Negotiation{
                     no_free_time_cost = true,
+                    reason_fn = function(minigame) return cxt:GetLocString("NEGOTIATION_REASON") end,
                     flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.NO_BACKUP | NEGOTIATION_FLAGS.NO_LOOT,
                     on_start_negotiation = function(minigame)
                         local negotiation_defs = require "negotiation/negotiation_defs"
@@ -834,6 +833,7 @@ QDEF:AddConvo("commission")
                         end
                         minigame:GetOpponentNegotiator():FindCoreArgument().cards_played = recorded_cards
                         minigame:GetPlayerNegotiator():CreateModifier( "TIME_CONSTRAINT", math.max(cxt.quest.param.free_time_actions or 1, 1) )
+                        minigame.player_negotiator:AddModifier("FATIGUED")
                     end,
                     finish_negotiation_anytime = true,
                     on_success = ProcessFn,
@@ -876,6 +876,8 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
+            cxt.quest:Activate("commission")
+            cxt.quest:Activate("time_left")
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{

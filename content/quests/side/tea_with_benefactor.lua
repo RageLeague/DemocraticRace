@@ -9,14 +9,11 @@ local BENEFACTOR_DEFS = {
 -- for balancing reasons
 local SIGNATURE_ARGUMENT = {
     WEALTHY_MERCHANT = "TRIBUTE",
-    PRIEST = "prayer_of_hesh", -- why this is lower case, i have no idea
+    PRIEST = "prayer_of_hesh", -- why this is lower case, I have no idea
 }
 
 local score_fn = function(agent, quest)
-    local score = DemocracyUtil.OppositionScore(agent)
-    if agent:HasAspect( "bribed" ) then
-        score = score + 90
-    end
+    local score = DemocracyUtil.SupportScore(agent)
     return score + math.random() * 120
 end
 
@@ -24,10 +21,11 @@ local BENEFACTOR_BEHAVIOR = {
     OnInit = function( self, difficulty )
         -- local modifier
         self.arguments = self:MakePicker()
-            :AddArgument( "ETIQUETTE", 1 )
             :AddArgument( "CAUTIOUS_SPENDER", 1 )
-        -- self.etiquette = self:
-        -- self.cautious_spender = self:
+
+        local _, card = self.arguments:AddArgument( "ETIQUETTE", 1 )
+        card.stacks = 1 + math.floor( difficulty / 2 ) + (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ARGUMENT_PLUS ) and 1 or 0)
+
         if SIGNATURE_ARGUMENT[self.agent:GetContentID()] then
             self.signature = self:AddArgument(SIGNATURE_ARGUMENT[self.agent:GetContentID()])
         end
@@ -89,7 +87,7 @@ local QDEF = QuestDef.Define
         -- quest.param.unconvinced_people = {}
     end,
     on_start = function(quest)
-        quest:Activate("go_to_diner")
+        -- quest:Activate("go_to_diner")
     end,
     collect_agent_locations = function(quest, t)
         -- if quest:IsActive("contact_informant") or quest:IsActive("extract_informant") then
@@ -188,7 +186,7 @@ QDEF:AddConvo("go_to_diner")
         :Loc{
             DIALOG_INTRO = [[
                 * You arrive at the diner looking for the benefactor.
-                * One person watches you intensly and points to an empty chair.
+                * One person watches you intensely and points to an empty chair.
             ]],
 
         }
@@ -207,7 +205,7 @@ QDEF:AddConvo("go_to_diner", "benefactor")
                 I don't mind free drinks, but I'm going to wager that isn't why we're here today.
             agent:
                 Afraid not. I hear that you're running for president.
-		        And I didn't amass my wealth by ignoring opportunites.
+		        And I didn't amass my wealth by ignoring opportunities.
 	    	    Lets get down to brass tacks. Tell me why my shills of indiscriminate origin should go to you.
 	        * The drinks arrive.
         ]],
@@ -218,7 +216,7 @@ QDEF:AddConvo("go_to_diner", "benefactor")
             * {agent} pauses for a moment, taking one last taste of {agent.hisher} tea.
             agent:
                 We are in business, {player}.
-                None of the other candidtates have shown as much promise for my bank account as you have.
+                None of the other candidates have shown as much promise for my bank account as you have.
             player:
                 Hey, Biggest shill gets the shills, am I right?
             agent:
@@ -230,7 +228,7 @@ QDEF:AddConvo("go_to_diner", "benefactor")
         DIALOG_BENEFACTOR_POOR = [[
             agent:
                 You show promise...but atop that promise is much bluster.
-		        I can't give you Havaria, but i'm willing to give you {funds#money}.
+		        I can't give you Havaria, but I'm willing to give you {funds#money}.
             player:
                 I guess this is better than nothing.
             * You have secured a bit of financial support, though it could be a lot better.
@@ -271,14 +269,14 @@ QDEF:AddConvo("go_to_diner", "benefactor")
 
                 on_start_negotiation = function(minigame)
                     -- just so you get at least something on win instead of nothing.
-                    minigame.player_negotiator:CreateModifier("SECURED_INVESTEMENTS", 5)
+                    minigame.player_negotiator:CreateModifier("SECURED_INVESTMENTS", 5)
                     minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 5)
                     minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 10)
                     minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 20)
                 end,
 
                 on_success = function(cxt, minigame)
-                    cxt.quest.param.funds = minigame:GetPlayerNegotiator():GetModifierStacks( "SECURED_INVESTEMENTS" )
+                    cxt.quest.param.funds = minigame:GetPlayerNegotiator():GetModifierStacks( "SECURED_INVESTMENTS" )
                     cxt.quest.param.poor_performance = cxt.quest.param.funds < 20 + 10 * cxt.quest:GetRank()
                     if cxt.quest.param.poor_performance then
                         cxt:Dialog("DIALOG_BENEFACTOR_POOR")
@@ -356,7 +354,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-
+            cxt.quest:Activate("go_to_diner")
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{

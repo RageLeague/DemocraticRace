@@ -15,12 +15,15 @@ Content.AddCharacterDef
     {
         base_def = "MONSTER",
         name = "Hesh of the Dark",
-        title = "Transphylum Deity",
+        title = "Interphylum Leviathan",
         -- Can't figure this out.
-        build = "luminthian",
-        head = "head_luminari",
+        build = "cognitive_hesh_build",
+        -- head = "head_luminari",
+        scale_adjust = 2,
 
         gender = GENDER.UNDISCLOSED, -- GENDER.UNDISCLOSED,
+
+        compendium_offset = { -200, 0 },
 
         combat_strength = 3,
         boss = true,
@@ -31,6 +34,12 @@ Content.AddCharacterDef
 
         negotiation_data =
         {
+            ring_offset =
+            {
+                x = 0,
+                y = 600,
+                z = 0,
+            },
             behaviour =
             {
                 OnInit = function( self, difficulty )

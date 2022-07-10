@@ -53,8 +53,6 @@ QDEF:AddConvo()
                 player:
                     Ah, Hesh. Here we go again.
                 }
-                supporter:
-                    Do you agree that {stance#pol_stance} is the best solution to {topic#pol_issue}?
             ]],
             OPT_AGREE = "Agree without question",
             DIALOG_AGREE = [[
@@ -106,6 +104,7 @@ QDEF:AddConvo()
             cxt.quest.param.topic = cxt.quest.param.issue_list[cxt.quest.param.current_issue_number]
             cxt.quest.param.stance = cxt.quest.param.topic .. "_" .. cxt.quest.param.stance_list[cxt.quest.param.current_issue_number]
             cxt:Dialog("DIALOG_QUESTION", cxt.quest.param.current_issue_number)
+            DemocracyUtil.QuipStance(cxt, cxt:GetCastMember("supporter"), cxt.quest.param.stance, "question")
 
             cxt:Opt("OPT_AGREE")
                 :Dialog("DIALOG_AGREE")
@@ -126,18 +125,15 @@ QDEF:AddConvo()
                 supporter:
                     ...
                     Is this supposed to be an answer?
-                    Do you really hate the good people of Havaria?
-                player:
-                    Well...
             ]],
             OPT_DISAGREE = "Disagree outright",
             DIALOG_DISAGREE = [[
                 player:
                     [p] The thing is, I literally support the opposite of that.
-                    So if that's what you mean by "hating the good people of Havaria", I do.
+                    So to answer your question. Yes.
                 supporter:
                     Wow that's a straightforward answer.
-                    And my straightforward is that I dislike you now.
+                    And my straightforward answer is that I dislike you now.
             ]],
             OPT_JUSTIFY = "Justify the silence",
             DIALOG_JUSTIFY = [[
@@ -161,6 +157,7 @@ QDEF:AddConvo()
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_EVADE")
+            DemocracyUtil.QuipStance(cxt, cxt:GetCastMember("supporter"), cxt.quest.param.stance, "question", "loaded")
 
             cxt:Opt("OPT_DISAGREE")
                 :Dialog("DIALOG_DISAGREE")

@@ -117,11 +117,7 @@ local CARDS = {
     {
         name = "Question answer",
         name_fn = function(self, fmt_str)
-            -- print("wololo")
-            -- print(self.issue_data)
-            -- print(self.stance)
             if self.issue_data and self.stance then
-                -- print("narvini")
                 return self.issue_data.stances[self.stance]:GetLocalizedName()
             end
             return loc.format(fmt_str)
@@ -203,7 +199,7 @@ local CARDS = {
         end,
 
         OnPostResolve = function( self, engine, targets )
-            local modifier = self.negotiator:CreateModifier("CONTEMPORARY_QUESTION")
+            local modifier = Negotiation.Modifier("CONTEMPORARY_QUESTION", self.negotiator, self.stacks)
             if modifier then
                 modifier:SetIssue(self.issue_data)
             end
@@ -211,6 +207,8 @@ local CARDS = {
                 table.arrayremove(self.negotiator.behaviour.available_issues, self.issue_data)
                 self.issue_data = nil
             end
+
+            self.negotiator:CreateModifier(modifier, nil, self)
         end,
     },
 
@@ -308,8 +306,11 @@ local CARDS = {
             if opposition_data and opposition_data.mini_negotiator then
                 mini_negotiator_id = opposition_data.mini_negotiator
             end
-            local mod = self.negotiator:CreateModifier( mini_negotiator_id, 1, self )
+
+            local mod = Negotiation.Modifier( mini_negotiator_id, self.negotiator )
             mod.candidate_agent = self.owner
+            self.negotiator:CreateModifier( mod )
+
             self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                 panel.last_ev_time = nil
                 panel.speedup_factor = nil
@@ -353,7 +354,7 @@ local CARDS = {
             {
                 tags = "disliked",
                 [[
-                    Words coming out of your mouth is automatically wrong.
+                    Any words coming out of your mouth are automatically wrong.
                 ]],
                 [[
                     Heh. Of course you would believe that.
@@ -362,7 +363,6 @@ local CARDS = {
         },
         name = "Debater Hinder",
         show_dealt = false,
-        quip = "support",
         rarity = CARD_RARITY.UNIQUE,
         flags = CARD_FLAGS.BYSTANDER,
         OnPostResolve = function( self )
@@ -371,13 +371,66 @@ local CARDS = {
             if opposition_data and opposition_data.mini_negotiator then
                 mini_negotiator_id = opposition_data.mini_negotiator
             end
-            local mod = self.negotiator:CreateModifier( mini_negotiator_id, 1, self )
+
+            local mod = Negotiation.Modifier( mini_negotiator_id, self.negotiator )
             mod.candidate_agent = self.owner
+            self.negotiator:CreateModifier( mod )
+
             self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                 panel.last_ev_time = nil
                 panel.speedup_factor = nil
                 panel:RefreshCardSpeed()
             end)
+        end,
+    },
+    faction_negotiation_hinder =
+    {
+        quips =
+        {
+            {
+                [[
+                    This is no place for a grifter like you!
+                ]],
+                [[
+                    This is our debate! Not yours!
+                ]],
+                [[
+                    Come to steal my glory, {player}?
+                ]],
+                [[
+                    Hey! You are not supposed to be here!
+                ]],
+            },
+            {
+                tags = "liked",
+                [[
+                    What are you doing, {player}? You should let me handle this?
+                ]],
+                [[
+                    Why are you doing this to me, {player}?
+                ]],
+            },
+            {
+                tags = "disliked",
+                [[
+                    Make a nuisance of yourself somewhere else, {player}.
+                ]],
+            },
+        },
+        name = "Faction Hinder",
+        show_dealt = false,
+        rarity = CARD_RARITY.UNIQUE,
+        flags = CARD_FLAGS.BYSTANDER,
+        resolve_scale = {20, 25, 30, 35},
+        OnPostResolve = function( self )
+            local core_id = "POWER_ABUSE"
+            local opposition_data = DemocracyUtil.GetOppositionData(self.owner)
+            if opposition_data and opposition_data.faction_core then
+                core_id = opposition_data.faction_core
+            end
+            local mod = Negotiation.Modifier( core_id, self.negotiator )
+            self.negotiator:CreateModifier( mod )
+            mod:SetResolve(DemocracyUtil.CalculateBossScale(self.resolve_scale))
         end,
     },
     appeal_to_crowd_quest =
@@ -405,7 +458,8 @@ local CARDS = {
             return loc.format(fmt_str, self.userdata and self.userdata.linked_quest and self.userdata.linked_quest:GetProvider() and self.userdata.linked_quest:GetProvider():GetName() or (self.def or self):GetLocalizedString("ALT_DESC"))
         end,
 
-        flavour = "This sounds extremely unethical. Then again, if you are ethical, you wouldn't be a grifter.",
+        flavour = "'It sounds like you need this... sideways... eight. Yeah! You need sideways eight in your life!'",
+        icon = "DEMOCRATICRACE:assets/cards/promote_product.png",
 
         cost = 1,
         flags = CARD_FLAGS.MANIPULATE | CARD_FLAGS.EXPEND,
@@ -426,6 +480,7 @@ local CARDS = {
             desc_fn = function(self, fmt_str)
                 return loc.format(fmt_str, self.linked_quest and self.linked_quest:GetProvider():GetName() or (self.def or self):GetLocalizedString("ALT_DESC"))
             end,
+            icon = "DEMOCRATICRACE:assets/modifiers/promote_product.png",
 
             modifier_type = MODIFIER_TYPE.ARGUMENT,
             max_resolve = 5,
@@ -462,17 +517,24 @@ local CARDS = {
     console_opponent =
     {
         name = "Console",
-        desc = "Transfer all composure on target argument you control to your opponent's core argument.",
+        desc = "Apply {1} {COMPOSURE}, then transfer all composure on that argument to your opponent's core argument.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:CalculateComposureText( self.composure_base ))
+        end,
         icon = "negotiation/empathy.tex",
 
         cost = 1,
         flags = CARD_FLAGS.DIPLOMACY | CARD_FLAGS.REPLENISH,
         rarity = CARD_RARITY.UNIQUE,
 
+        composure_base = 2,
+
         target_self = TARGET_ANY_RESOLVE,
 
         OnPostResolve = function( self, minigame, targets )
             for i, target in ipairs(targets) do
+                target:DeltaComposure( self.composure_base, self )
+
                 local delta = target.composure
                 if self.anti_negotiator:FindCoreArgument() then
                     self.anti_negotiator:FindCoreArgument():DeltaComposure(delta, self)
@@ -559,6 +621,73 @@ local CARDS = {
             minigame:InceptCards( cards, self )
         end,
     },
+    quest_any_card_bonus =
+    {
+        name = "Mystery Card Bonus",
+        desc = "What card bonus will you get? It's a mystery.",
+
+        icon = "negotiation/negotiation_wild.tex",
+
+        flags = CARD_FLAGS.MANIPULATE | CARD_FLAGS.UNPLAYABLE,
+        rarity = CARD_RARITY.UNIQUE,
+        manual_desc = true,
+
+        hide_in_cardex = true
+    },
+    ai_appropriate_card =
+    {
+        name = "Appropriate",
+
+        cost = 1,
+        flags = CARD_FLAGS.OPPONENT,
+        rarity = CARD_RARITY.UNIQUE,
+
+        count = 1,
+
+        MIN_TO_LEAVE = 5,
+
+        GetStealCount = function( self )
+            return GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ARGUMENT_PLUS ) and 2 or 1
+        end,
+
+        CanPlayCard = function( self, card, engine, target )
+            if card == self then
+                local MAX_STOLEN = 3 * self:GetStealCount()
+                local MIN_TO_LEAVE = self.MIN_TO_LEAVE
+
+                local num_stolen = 0
+                for i,modifier in self.negotiator:ModifierSlots() do
+                    if modifier.id == "APPROPRIATED" then
+                        num_stolen = num_stolen + modifier:GetStolenCount()
+                    end
+                end
+                if num_stolen < MAX_STOLEN then
+                    local cards = self.engine:GetAllPlayerCards(function(card) return not CheckBits( card.flags, CARD_FLAGS.STATUS ) end)
+                    if #cards > MIN_TO_LEAVE then
+                        return true
+                    end
+                end
+            end
+        end,
+
+        OnPostResolve  = function( self, minigame )
+            local cards = self.engine:GetAllPlayerCards(function(card) return not CheckBits( card.flags, CARD_FLAGS.STATUS ) end)
+            local count = math.min( #cards - self.MIN_TO_LEAVE, self:GetStealCount() )
+            cards = table.multipick(cards, count)
+            local approp
+            if count > 1 then
+                approp = self.negotiator:CreateModifier("APPROPRIATED_plus", 1, self )
+            else
+                approp = self.negotiator:CreateModifier("APPROPRIATED", 1, self )
+            end
+            for i, card in ipairs( cards ) do
+                if approp:IsApplied() then -- veryify that it still exists
+                    print( self.negotiator, "appropriated", card, "from", card.deck )
+                    approp:AppropriateCard( card )
+                end
+            end
+        end,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     if not def.series then
@@ -580,6 +709,6 @@ local FEATURES = {
     },
 }
 for id, data in pairs(FEATURES) do
-	local def = NegotiationFeatureDef(id, data)
-	Content.AddNegotiationCardFeature(id, def)
+    local def = NegotiationFeatureDef(id, data)
+    Content.AddNegotiationCardFeature(id, def)
 end

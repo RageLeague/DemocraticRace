@@ -40,7 +40,9 @@ Content.AddStringTable("DEMOCRACY", {
             DEFAULT_UP = "Favorable Action",
             DEFAULT_DOWN = "Unfavorable Action",
 
-            COMPLETED_QUEST = "Quest Completed",
+            COMPLETED_QUEST = "Rally Quest Completed",
+            COMPLETED_QUEST_MAIN = "Main Quest Completed",
+            COMPLETED_QUEST_REQUEST = "Request Quest Completed",
             FAILED_QUEST = "Quest Failed",
             POOR_QUEST = "Poor Quest Result",
 
@@ -53,12 +55,18 @@ Content.AddStringTable("DEMOCRACY", {
             ACCOMPLICE = "Accomplice to Murder",
             NEGLIGENCE = "Negligence",
 
+            PAID_SHILLS = "Paid Shills",
+
             STANCE_TAKEN = "Stance Taken",
             ALLIANCE_FORMED = "Alliance Formed",
+            ALLIANCE_BROKEN = "Alliance Broken",
             ENEMY_MADE = "Enemy Made",
 
             CONSISTENT_STANCE = "Consistent Stance",
-            INCONSISTENT_STANCE = "Hypocrisy",
+            INCONSISTENT_STANCE = "Inconsistent Stance",
+        },
+        MAIN_OVERLAY = {
+            VIEW_SUPPORT = "<#TITLE>View Support</>\nGeneral support: {1}",
         },
         METRICS =
         {
@@ -69,12 +77,10 @@ Content.AddStringTable("DEMOCRACY", {
         {
             AGENT_SUPPORT =
             {
-                TITLE_INCREASE = "Gained {1} Support From {2#agent}",
-                TITLE_DECREASE = "Lost {1} Support From {2#agent}",
-                DETAIL_INCREASE = "General support, support from {3#faction} and among {4#wealth_name} " ..
-                    "are increased by {1} due to {2}.",
-                DETAIL_DECREASE = "General support, support from {3#faction} and among {4#wealth_name} " ..
-                    "are decreased by {1} due to {2}.",
+                TITLE_INCREASE = "Gained Support From {1#agent}",
+                TITLE_DECREASE = "Lost Support From {1#agent}",
+                DETAIL_INCREASE = "Gained {1} general support, {2} support from {4#faction} and among {5#wealth_name} {2} due to {3}.",
+                DETAIL_DECREASE = "Lost {1} general support, {2} support from {4#faction} and among {5#wealth_name} {2} due to {3}.",
             },
             FACTION_SUPPORT =
             {
@@ -103,6 +109,19 @@ Content.AddStringTable("DEMOCRACY", {
                 DETAIL_INCREASE = "Your support among {1#wealth_name_list} are increased.",
                 DETAIL_DECREASE = "Your support among {1#wealth_name_list} are decreased.",
                 DETAIL_BOTH = "Your support among {1#wealth_name_list} are increased, while your support among {2#wealth_name_list} are decreased.",
+            },
+            TIME_PASSED =
+            {
+                TITLE = "{1} {1*Action|Actions} Spent",
+                DETAIL = "You have spent {1} {1*action|actions} on {2}. You have {3} {3*action|actions} left for this free time.",
+                DETAIL_NO_FREE = "You have spent {1} {1*action|actions} on {2}. You have no more free time.",
+                REASON =
+                {
+                    ACTION = "performing a task",
+                    NEGOTIATION = "negotiation",
+                    BATTLE = "battle",
+                    TRAVEL = "travelling",
+                },
             },
             UPDATE_STANCE =
             {
@@ -187,6 +206,14 @@ Content.AddStringTable("DEMOCRACY", {
         RELATIONSHIP_SCREEN = {
             SUPPRESSED = "SUPPRESSED",
         },
+        MAINMENU = {
+            RACE_TUTORIAL = "The Democratic Race",
+        },
+        PAUSEMENU = {
+            RACE_TUTORIAL = "DEMOCRATIC RACE",
+        },
+        RACE_TUTORIAL_TITLE = "Democratic Race Tutorial: Support",
+        RACE_TUTORIAL_BODY = "Would you like to see a quick tutorial on support levels? You can review it at any time from the pause menu.",
     },
     MISC =
     {

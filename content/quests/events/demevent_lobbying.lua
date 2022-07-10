@@ -20,47 +20,65 @@ QDEF:AddConvo()
     :ConfrontState("CONF")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] You are stopped by a person.
-                player:
-                    !left
+                * You notice the jingling of shills before you notice the person holding them.
+                * {merchant}'s clothing is rich—and rich clothing has deep pockets.
+                * And the roads are deserted, 'cept for you and your new fri-
                 merchant:
                     !right
-                    Yo, I heard you are running a campaign.
-                    So I would like to provide some funds for you.
+                    !point
+                    I'm going to stop you right there before you try to rob me.
                 player:
-                    What's the catch?
+                    !left
+                    What, do you really think I, a professional politician, would resort to petty theft?
                 merchant:
-                    The catch is that you must support my position.
+                    !crossed
+                    ...
+                player:
+                    ...
+                    !hips
+                    Alright, what's the deal?
+                merchant:
+                    The deal you presume I want is something simple.
+                    If you publicly support {1#pol_stance} for me, I'll provide you some campaign funds.
             ]],
             OPT_ACCEPT = "Accept",
             DIALOG_ACCEPT = [[
                 player:
-                    [p] I wouldn't turn away free money.
+                    !take
+                    You give me money and all I have to do is give you my word. Seems like a great deal!
                 merchant:
-                    Excellent! That's the sort of stuff I like to see.
+                    !wink
+                    Your word is quite valuable.
             ]],
             OPT_DECLINE = "Decline",
             DIALOG_DECLINE = [[
                 player:
-                    [p] Nah I don't think I will take it.
+                    I've still got some dignity. I'll pass on this.
                 merchant:
-                    I thought you are shrewd.
+                    !shrug
+                    Well, I guess you just want to let this money fall into your opponent's hands.
+                    !exit
+                * {merchant} walks away, jingling the large sum of shills in {merchant.hisher} pockets louder just to spite you.
             ]],
             OPT_ASK_FOR_MORE = "Ask for more money",
             DIALOG_ASK_FOR_MORE = [[
                 player:
-                    [p] I am frankly insulted to think that you can bribe me with this little money.
-                    How much are you willing to offer, hmm?
+                    Listen, I'm flattered, but you understand the impact this will have on my voting base, correct?
+                    I'll need a bit more to help keep my campaign afloat.
             ]],
             DIALOG_ASK_FOR_MORE_SUCCESS = [[
+                player:
+                    !eureka
+                    If I end up losing, this would be a wasted investment. If I have enough money, I'll be able to stay in the race longer.
                 merchant:
-                    [p] Ah, of course.
-                    Here, how does {1#money} sound?
+                    !question
+                    A fine point. How about {1#money}?
             ]],
             DIALOG_ASK_FOR_MORE_FAILURE = [[
                 merchant:
-                    [p] You get {1#money} exactly.
-                    No more, no less.
+                    !hips
+                    I wouldn't be here if I didn't think you already had a good chance of winning.
+                    Your campaign will be fine, regardless of how much money I give you, which I still offer {1#money}.
             ]],
         }
         :SetLooping(true)
@@ -77,7 +95,7 @@ QDEF:AddConvo()
                 cxt.quest.param.chosen_issue = chosen
                 cxt.quest.param.chosen_stance = DemocracyConstants.issue_data[chosen]:GetAgentStanceIndex(cxt:GetCastMember("merchant"))
 
-                cxt:Dialog("DIALOG_INTRO")
+                cxt:Dialog("DIALOG_INTRO", cxt.quest.param.chosen_issue .. "_" .. cxt.quest.param.chosen_stance)
             end
 
             local haggle_count = cxt.player.graft_owner:CountGraftsByID( "haggle_badge" )

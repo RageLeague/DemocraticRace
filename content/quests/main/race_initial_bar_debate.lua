@@ -215,7 +215,7 @@ QDEF:AddConvo("win_argument")
             WORSHIPPER_BAD_OPINION = [[
                 !hesh_greeting
                 All shall tremble before the mighty Hesh!
-                Believe in Hesh, and your life will be happy and propserous!
+                Believe in Hesh, and your life will be happy and prosperous!
                 Disregard Hesh, and your life will be filled with misery!
                 We must devote every hour of our life to Hesh!
                 All heretics must be executed!
@@ -243,7 +243,12 @@ QDEF:AddConvo("win_argument")
             ]],
 
             DIALOG_INTRO = [[
-                * Hopefully you can find some work here, and maybe even find a place to live in.
+                {not player_arint?
+                    * Hopefully you can find some work here, and maybe even find a place to live in.
+                }
+                {player_arint?
+                    * Hopefully you can find Fellemo somewhere and talk some sense into him.
+                }
                 * Just as you start to get comfortable, you hear a rather loud patron causing a commotion at the bar.
                 agent:
                     !right
@@ -269,18 +274,22 @@ QDEF:AddConvo("win_argument")
             ]],
             DIALOG_DEBATE_WIN = [[
                 player:
-                    And that's why your opinion is stupid.
-                    You sound like a baby having a tantrum problem.
-                    Your idea's are too out of touch with reality.
-                    Many people are suffering, and you choose to spout useless drivel in the middle of a restaurant?
+                    !angry
+                    This is one of the most stupid things that I've heard.
+                    Have you heard yourself speak at all? I can't believe anyone would stoop this low!
+                    Maybe instead of babbling about in public and utterly humiliate yourself, you should get a life and talk to actual people.
+                    Then maybe you can be an actual functioning member of the society and have a less awful opinion.
                 agent:
-                    ...
-                    !sigh
-                    Alas, you're right. My opinion is too extreme.
-                    That's the nature of ideas, isn't it?
-                    If you don't speak out about it, the society won't change.
+                    !scared
+                    I... You... Dare...?
+                player:
+                    !cruel
+                    What's the matter? Vroc got your tongue?
+                agent:
+                    !angry
+                    I will remember this!
                     !exit
-                * {agent} left the shop. You hope that {agent} actually learned {agent.hisher} lesson, and not just finding trouble at another shop.
+                * Then, {agent} storms out of the noodle shop, in the most humiliating manner possible.
             ]],
             DIALOG_DEBATE_LOST = [[
                 player:
@@ -367,7 +376,7 @@ QDEF:AddConvo("win_argument")
                         cxt:Dialog("DIALOG_DEBATE_WIN")
                         cxt.quest:GetCastMember("heckler"):OpinionEvent(OPINION.INSULT)
                         cxt.enc:GetPrimaryCast():GetBrain():MoveToHome()
-                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10)
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST_MAIN")
                         -- cxt:GoTo("STATE_PICK_SIDE")
                         cxt:GoTo("STATE_DEVELOP_IDEA")
                     end,
@@ -394,17 +403,26 @@ QDEF:AddConvo("win_argument")
                     Wow, I can't believe how good I am at political debates.
                     Maybe I should use my power for good.
                     Like running for the president.
-                * Wait...is there ANY democracy in Havaria?
-                * Let's just say there is one.
-                * Do you really want a lore justification?
-                * Let's just say that the people in power decide to let the people vote for a president instead of constantly fighting for power.
+                * That's right, Havaria is a democracy now.
+                * In fact, it is a very recent development, and the election is coming up in a few days.
                 player:
-                    Now, if I were to run for president, first I need to establish myself in the political world.
-                    I need to let people know that I'm running for president.
-                    And I also have to gain support while doing so.
+                {not player_arint?
+                    Here I thought this is all just another grift for me.
+                    But now, I am going to pull the biggest grift of all: running for presidency.
+                }
+                {player_arint?
+                    The Spark Barons need another choice.
+                    Someone who is less impulsive and actually has a plan.
+                    It's decided: I am running for presidency.
+                }
+                    !thought
+                    Now, to run a campaign, I need to gather some support.
+                    And I might know just the thing...
+                *** After the successful debate, you decide to run for presidency.
             ]],
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Complete()
+            StateGraphUtil.AddEndOption(cxt)
         end)

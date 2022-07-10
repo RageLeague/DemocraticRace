@@ -5,7 +5,7 @@ local function PlainDescFn(self, fmt_str)
     return fmt_str
 end
 local CARDS = {
-    advisor_diplomacy_relatable = 
+    advisor_diplomacy_relatable =
     {
         name = "Relatable",
         desc = "Gain bonus damage equal to half your {INFLUENCE}, rounded up.\nGain {1} {INFLUENCE}.",
@@ -14,7 +14,7 @@ local CARDS = {
         end,
         flavour = "'Being relatable to your target is important to gain their trust, remember that. That's why you should use hip languages around others.'",
         icon = "DEMOCRATICRACE:assets/cards/relatable.png",
-        
+
         advisor = "ADVISOR_DIPLOMACY",
         flags = CARD_FLAGS.DIPLOMACY,
         cost = 1,
@@ -57,17 +57,17 @@ local CARDS = {
         name = "Boosted Relatable",
         influence_gain = 2,
     },
-    advisor_diplomacy_virtue_signal = 
+    advisor_diplomacy_virtue_signal =
     {
         name = "Virtue Signal",
         desc = "If you have {1} or more {2}, instead destroy the target if it is an argument or bounty.",
         desc_fn = function(self, fmt_str)
-            return loc.format(fmt_str, AutoUpgradeText(self, "modifier_threshold", true), 
+            return loc.format(fmt_str, AutoUpgradeText(self, "modifier_threshold", true),
                 AutoUpgradeText(self, "req_argument_id", false, function(x) return "{" .. x .. "}" end))
         end,
         flavour = "'Look at me, I am doing good things by gifting people with money. Now vote for me.'\n'What? You don't? Then I guess you must hate the poor.'",
         icon = "DEMOCRATICRACE:assets/cards/virtue_signal.png",
-        
+
         advisor = "ADVISOR_DIPLOMACY",
         flags = CARD_FLAGS.DIPLOMACY,
         cost = 1,
@@ -178,7 +178,7 @@ local CARDS = {
         OnPostResolve = function(self, minigame, targets)
             self.negotiator:CreateModifier(self.argument_id, 1, self)
         end,
-        modifier = 
+        modifier =
         {
             desc = "At the end of your turn, deal damage equal to the number of arguments, bounties, and inceptions you have to a random opponent argument.",
             icon = "DEMOCRATICRACE:assets/modifiers/hive_mind.png",
@@ -195,8 +195,8 @@ local CARDS = {
             CalculateDamage = function(self)
                 local count = 0
                 for i, mod in self.negotiator:Modifiers() do
-                    if mod.modifier_type == MODIFIER_TYPE.ARGUMENT or 
-                        mod.modifier_type == MODIFIER_TYPE.BOUNTY or 
+                    if mod.modifier_type == MODIFIER_TYPE.ARGUMENT or
+                        mod.modifier_type == MODIFIER_TYPE.BOUNTY or
                         mod.modifier_type == MODIFIER_TYPE.INCEPTION then
 
                         count = count + 1
@@ -235,16 +235,16 @@ local CARDS = {
             CalculateDamage = function(self)
                 local count = 0
                 for i, mod in self.negotiator:Modifiers() do
-                    if mod.modifier_type == MODIFIER_TYPE.ARGUMENT or 
-                        mod.modifier_type == MODIFIER_TYPE.BOUNTY or 
+                    if mod.modifier_type == MODIFIER_TYPE.ARGUMENT or
+                        mod.modifier_type == MODIFIER_TYPE.BOUNTY or
                         mod.modifier_type == MODIFIER_TYPE.INCEPTION then
 
                         count = count + 1
                     end
                 end
                 for i, mod in self.anti_negotiator:Modifiers() do
-                    if mod.modifier_type == MODIFIER_TYPE.ARGUMENT or 
-                        mod.modifier_type == MODIFIER_TYPE.BOUNTY or 
+                    if mod.modifier_type == MODIFIER_TYPE.ARGUMENT or
+                        mod.modifier_type == MODIFIER_TYPE.BOUNTY or
                         mod.modifier_type == MODIFIER_TYPE.INCEPTION then
 
                         count = count + 1
@@ -313,7 +313,7 @@ local CARDS = {
         name = "Enhanced Underdog",
         damage_bonus = 2,
     },
-    advisor_manipulate_straw_army = 
+    advisor_manipulate_straw_army =
     {
         name = "Straw Army",
         desc = "{INCEPT} {1} separate {straw_man} arguments.",
@@ -322,7 +322,7 @@ local CARDS = {
         end,
         flavour = "'You know the straw man argument, the one that the Barons likes to use? We're better than that.'",
         icon = "DEMOCRATICRACE:assets/cards/straw_army.png",
-        
+
         advisor = "ADVISOR_MANIPULATE",
         flags = CARD_FLAGS.MANIPULATE,
         cost = 2,
@@ -335,12 +335,12 @@ local CARDS = {
             end
         end,
     },
-    advisor_manipulate_straw_army_plus = 
+    advisor_manipulate_straw_army_plus =
     {
         name = "Boosted Straw Army",
         strawman_count = 5,
     },
-    advisor_manipulate_straw_army_plus2 = 
+    advisor_manipulate_straw_army_plus2 =
     {
         name = "Initial Straw Army",
         flags = CARD_FLAGS.MANIPULATE | CARD_FLAGS.AMBUSH,
@@ -423,7 +423,7 @@ local CARDS = {
             end
         end,
     },
-    advisor_manipulate_moreef_defense = 
+    advisor_manipulate_moreef_defense =
     {
         name = "Moreef Defense",
         desc = "Create {1} separate {advisor_manipulate_moreef_defense}.",
@@ -509,7 +509,7 @@ local CARDS = {
         min_persuasion = 1,
         max_persuasion = 1,
 
-        attack_count = 6,
+        attack_count = 4,
         target_mod = TARGET_MOD.RANDOM1,
         OnPostResolve = function( self, minigame, targets )
             for i=2, self.attack_count do
@@ -525,7 +525,7 @@ local CARDS = {
     advisor_manipulate_rapid_speaker_plus2 =
     {
         name = "Very Rapid Speaker",
-        attack_count = 10,
+        attack_count = 6,
     },
     advisor_manipulate_projection =
     {
@@ -534,7 +534,7 @@ local CARDS = {
         flavour = "'You try to argue with me, but deep down, you know that I'm right.'",
         icon = "DEMOCRATICRACE:assets/cards/projection.png",
         desc_fn = function(self, fmt_str)
-            return loc.format(fmt_str, 
+            return loc.format(fmt_str,
                 AutoUpgradeText(self, "improvise_count", false, function(x)
                     if x > 3 then
                         return "{IMPROVISE_PLUS}"
@@ -597,7 +597,7 @@ local CARDS = {
         change_to_discard = true,
     },
 
-    advisor_hostile_talk_over = 
+    advisor_hostile_talk_over =
     {
         name = "Talk Over",
         desc = "Prevent the next source of damage dealt to any of your arguments.",
@@ -605,9 +605,9 @@ local CARDS = {
         flavour = "The best way to win is to not giving the opponent the chance to speak.",
 
         icon = "DEMOCRATICRACE:assets/cards/talk_over.png",
-        
+
         advisor = "ADVISOR_HOSTILE",
-        flags = CARD_FLAGS.HOSTILE,
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND,
         cost = 1,
 
         count = 1,
@@ -634,7 +634,7 @@ local CARDS = {
                         --     source.negotiator:AttackResolve(damage, self)
                         -- end
                         target.composure = target.composure + damage
-                        self.negotiator:DeltaModifier(self, 1, self)
+                        self.negotiator:DeltaModifier(self, -1, self)
                     end
                 end,
 
@@ -646,7 +646,7 @@ local CARDS = {
     },
     advisor_hostile_talk_over_plus = {
         name = "Sticky Talk Over",
-        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.STICKY,
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.STICKY | CARD_FLAGS.EXPEND,
     },
     advisor_hostile_talk_over_plus2 = {
         name = "Boosted Talk Over",
@@ -663,7 +663,7 @@ local CARDS = {
         end,
         flavour = "'Your opinion would've matter a lot more if you aren't poor.'",
         icon = "DEMOCRATICRACE:assets/cards/ivory_tower.png",
-        
+
         advisor = "ADVISOR_HOSTILE",
         flags = CARD_FLAGS.HOSTILE,
         cost = 1,
@@ -726,7 +726,7 @@ local CARDS = {
         cost = 0,
 
         OnPostResolve = function( self, minigame, targets )
-            local chosen_card = minigame:ChooseCard( 
+            local chosen_card = minigame:ChooseCard(
                 function(card)
                     if card:IsFlagged(CARD_FLAGS.VARIABLE_COST) then
                         return false
@@ -735,22 +735,22 @@ local CARDS = {
                         return false
                     end
                     return true
-                end, 
+                end,
                 self.def:GetLocalizedString("CHOOSE_IMPRINT")
             )
-            
+
             if chosen_card then
                 minigame:ModifyActionCount(-minigame:CalculateActionCost(chosen_card))
-                
+
                 local mod = Negotiation.Modifier( "advisor_hostile_duckspeak", self.negotiator )
                 mod.imprinted_card = chosen_card
                 self.negotiator:CreateModifier( mod )
-                
+
                 chosen_card:RemoveCard()
 
                 self.engine:BroadcastEvent( EVENT.CARD_STOLEN, chosen_card, mod )
             end
-            
+
         end,
 
         modifier = {
@@ -762,7 +762,7 @@ local CARDS = {
                 return fmt_str
             end,
             icon = "DEMOCRATICRACE:assets/modifiers/duckspeak.png",
-            
+
             modifier_type = MODIFIER_TYPE.ARGUMENT,
             max_resolve = 3,
 
@@ -816,9 +816,9 @@ local CARDS = {
         OnPostResolve = function(self)
             self.negotiator:AddModifier("advisor_hostile_whataboutism", self.gain_count, self)
         end,
-        modifier = 
+        modifier =
         {
-            
+
             desc = "Whenever one of your arguments is destroyed, deal {1} damage to a random opponent argument.\n\nWhen an opponent argument is destroyed, gain 1 stacks.",
             alt_desc = "Whenever one of your arguments is destroyed, deal damage equal to the number of stacks of this argument to a random opponent argument.\n\nWhen an opponent argument is destroyed, gain 1 stacks.",
             desc_fn = function(self, fmt_str)
@@ -832,7 +832,7 @@ local CARDS = {
             modifier_type = MODIFIER_TYPE.ARGUMENT,
             max_resolve = 4,
 
-            event_handlers = 
+            event_handlers =
             {
                 [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, source )
                     if modifier.stacks > 0 then
