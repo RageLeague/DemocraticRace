@@ -2,29 +2,6 @@ local negotiation_defs = require "negotiation/negotiation_defs"
 local CARD_FLAGS = negotiation_defs.CARD_FLAGS
 local EVENT = negotiation_defs.EVENT
 
--- local ALLY_IMAGES = {
---     RISE_AUTOMECH = engine.asset.Texture( "negotiation/modifiers/recruit_rise_cobblebot.tex"),
---     RISE_AUTODOG = engine.asset.Texture( "negotiation/modifiers/recruit_rise_cobbledog.tex"),
---     RISE_RADICAL = engine.asset.Texture( "negotiation/modifiers/recruit_rise_radical.tex"),
---     RISE_REBEL = engine.asset.Texture( "negotiation/modifiers/recruit_rise_rebel.tex"),
---     RISE_PAMPHLETEER = engine.asset.Texture( "negotiation/modifiers/recruit_rise_pamphleteer.tex"),
---     SPARK_BARON_AUTOMECH = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_automech.tex"),
---     AUTODOG = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_autodog.tex"),
---     SPARK_BARON_PROFESSIONAL = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_professional.tex"),
---     SPARK_BARON_GOON = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_goon.tex"),
---     SPARK_BARON_TASKMASTER = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_taskmaster.tex"),
---     COMBAT_DRONE = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_drone.tex"),
-
---     VROC = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_vroc.tex"),
---     ADMIRALTY_CLERK = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_clerk.tex"),
---     ADMIRALTY_GOON = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_goon.tex"),
---     ADMIRALTY_GUARD = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_guard.tex"),
---     ADMIRALTY_PATROL_LEADER = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_patrol_leader.tex"),
---     JAKES_RUNNER = engine.asset.Texture( "negotiation/modifiers/recruit_jake_runner.tex"),
---     WEALTHY_MERCHANT = engine.asset.Texture( "negotiation/modifiers/recruit_civilian_wealthy_merchant.tex"),
---     HEAVY_LABORER = engine.asset.Texture( "negotiation/modifiers/recruit_civilian_heavy_laborer.tex"),
--- }
-
 local function CreateNewSelfMod(self)
     local newmod = self.negotiator:CreateModifier(self.id, self.stacks, self)
     if newmod then
