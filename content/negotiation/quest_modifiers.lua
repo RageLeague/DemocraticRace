@@ -680,11 +680,11 @@ local MODIFIERS =
             CreateNewSelfMod(self)
         end,
     },
-    ETIQUETTE =
+    HOSPITALITY =
     {
-        name = "Etiquette",
+        name = "Hospitality",
         icon = "negotiation/modifiers/compromise.tex",
-        desc = "Whenever you play a Hostility card, discard a random card.\n\nReduce <b>Etiquette</b> by 1 at the beginning of {1}'s turn.",
+        desc = "Whenever you play a Hostility card, discard a random card.\n\nReduce <b>Hospitality</b> by 1 at the beginning of {1}'s turn.",
 
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName() )

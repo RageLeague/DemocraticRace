@@ -23,7 +23,7 @@ local BENEFACTOR_BEHAVIOR = {
         self.arguments = self:MakePicker()
             :AddArgument( "CAUTIOUS_SPENDER", 1 )
 
-        local _, card = self.arguments:AddArgument( "ETIQUETTE", 1 )
+        local _, card = self.arguments:AddArgument( "HOSPITALITY", 1 )
         card.stacks = 1 + math.floor( difficulty / 2 ) + (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ARGUMENT_PLUS ) and 1 or 0)
 
         if SIGNATURE_ARGUMENT[self.agent:GetContentID()] then
@@ -37,12 +37,7 @@ local BENEFACTOR_BEHAVIOR = {
     end,
     agents = {},
 
-	-- Will probably get unique core argument (POSITION OF POWER) and possibly argument that spawns every x (4) turns
     BasicCycle = function( self, turns )
-        -- This will trigger every turn, and we don't want that
-        -- local etiquette = self:AddArgument( "ETIQUETTE" )
-
-        -- Also, remove unnecessary checks
         if turns % 3 == 0 then
             self:ChooseGrowingNumbers(2, -1)
         else
