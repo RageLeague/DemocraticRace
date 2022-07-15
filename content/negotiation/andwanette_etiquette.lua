@@ -72,4 +72,6 @@ end
 Content.AddNegotiationModifier("ETIQUETTE", {
     name = "Etiquette",
     desc = "At the beginning of your turn, the rule text for <b>Etiquette</> changes.",
+
+    modifier_type = MODIFIER_TYPE.CORE,
 })
