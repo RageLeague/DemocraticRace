@@ -309,3 +309,57 @@ lines:
     agent:
       Yeah, you're right.
     }
+- tags: [democratic_race, astal] # Not implemented in code, but it's listed here
+  dialog:
+  - |
+    agent:
+    {primary_advisor_diplomacy?
+      Aellon... He's your advisor, is he not?
+    }
+    {not primary_advisor_diplomacy?
+      Aellon... You've met the guy, did you not?
+    }
+    player:
+      !agree
+      Yeah. Kind of an eccentric guy, I must admit.
+    agent:
+      Did you know that he is one of the richest barons out there?
+    player:
+      !surprised
+      Really? I have no idea!
+    agent:
+      !thought
+      To think... When he was first found, he had no family, no friends, no assets.
+      But nobody cares about that anymore. Everyone knows him as a rich baron, with an eccentric speech pattern.
+    player:
+      !dubious
+      Why are you telling me this now? What is your point?
+    agent:
+      People don't care about who you were in the past. They only care about who you are right now.
+      This is the Spark Baron way. The Havarian way.
+      So don't let your past drag you down, alright?
+      Let the world remember who you are: a capable leader, able to bring Havaria to the right path.
+
+- tags: [democratic_race, nand] # Not implemented in code, but it's listed here
+  dialog:
+  - |
+    agent:
+      Now that we <i>actually</> live in a democracy, I am thinking about running for leadership.
+      !sigh
+      Only... I don't know if I should actually run for it, really.
+    player:
+      !dubious
+      Really? How come?
+    agent:
+      There are already so many strong candidates, like Oolo, and I feel like I don't stand a chance against them.
+      Plus, if I do run, I will just be taking votes away to people who I would rather win.
+    player:
+      Is that so? You want to give up before you even begin to try?
+      People aren't going to elect you if you don't do anything.
+      !point
+      Tell people about your plans, spread your ideas, make yourself known in the political world.
+      Even if you don't get elected, you will still gain experience and influence.
+      When the next election comes, maybe you will stand a better chance.
+    agent:
+      That... Does make a lot of sense.
+      Thanks for the chat, {player}. That was enlightening.
