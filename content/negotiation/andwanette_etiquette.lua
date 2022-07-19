@@ -59,7 +59,7 @@ local EFFECTS =
             return loc.format(fmt_str, self.heal_count)
         end,
 
-        heal_count = 1,
+        heal_count = 10,
         heal_scale = {7, 10, 10, 15},
     },
 }
@@ -132,7 +132,7 @@ local TRIGGERS =
     },
     ETIQUETTE_TRIGGER_MATCHING =
     {
-        desc = "Whenever you play {1} {1*card|cards} of the same type in a row, {2}.",
+        desc = "Whenever you play {1} {1*card|cards} of the same type in a row, {2}. Reset count when triggered.",
         desc_fn = function(self, fmt_str, ...)
             return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...))
         end,
@@ -214,8 +214,18 @@ local TRIGGERS =
             return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...))
         end,
 
-        card_count = 3,
-        card_scale = {3, 3, 2, 2},
+        card_count = 2,
+        card_scale = {2, 2, 1, 1},
+    },
+    ETIQUETTE_TRIGGER_FOCUS_ATTACK =
+    {
+        desc = "Whenever you use cards to attack the same argument {1} times in a row, {2}. Reset count when triggered.",
+        desc_fn = function(self, fmt_str, ...)
+            return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...))
+        end,
+
+        card_count = 4,
+        card_scale = {4, 4, 3, 3},
     },
 }
 for id, def in pairs( TRIGGERS ) do

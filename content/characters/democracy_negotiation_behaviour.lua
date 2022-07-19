@@ -239,6 +239,10 @@ local NEW_BEHAVIOURS = {
     ANDWANETTE =
     {
         OnInitDemocracy = function(self, old_init, ...)
+            if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                self.negotiator:AddModifier("ETIQUETTE")
+                return
+            end
             return old_init(self, ...)
         end,
     },
