@@ -10,13 +10,35 @@ local EFFECTS =
 {
     ETIQUETTE_EFFECT_BONUS_DAMAGE =
     {
-        desc = "{1}'s attacks deal {2} bonus damage",
+        desc = "{1}'s attacks deal {2} bonus damage while this rule is in effect",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName(), self.damage_bonus)
         end,
 
         damage_bonus = 2,
         damage_scale = {2, 3, 3, 4},
+
+        OnInit = function(self)
+            self.damage_bonus = DemocracyUtil.CalculateBossScale(self.damage_scale)
+        end,
+
+        OnEffectTriggered = function(self)
+            self.triggered_count = (self.triggered_count or 0) + 1
+        end,
+
+        event_priorities =
+        {
+            [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_ADDITIVE,
+        },
+
+        event_handlers =
+        {
+            [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
+                if source.negotiator == self.negotiator and self.triggered_count then
+                    persuasion:ModifyPersuasion(self.damage_bonus * self.triggered_count, self.damage_bonus * self.triggered_count, self)
+                end
+            end,
+        },
     },
     ETIQUETTE_EFFECT_FLAT_DAMAGE =
     {
@@ -27,6 +49,21 @@ local EFFECTS =
 
         damage_bonus = 5,
         damage_scale = {3, 5, 5, 8},
+
+        OnInit = function(self)
+            self.damage_bonus = DemocracyUtil.CalculateBossScale(self.damage_scale)
+        end,
+
+        target_enemy = TARGET_ANY_RESOLVE,
+
+        OnEffectTriggered = function(self)
+            local source = self.linked_core or self
+            local targets = self.engine:CollectAllTargets(self)
+            local target = table.arraypick( targets )
+            if target then
+                self.engine:ApplyPersuasion( source, edge_target, self.damage_bonus, self.damage_bonus )
+            end
+        end,
     },
     ETIQUETTE_EFFECT_DISCARD =
     {
@@ -37,6 +74,19 @@ local EFFECTS =
 
         discard_count = 1,
         discard_scale = {1, 1, 1, 2},
+
+        OnInit = function(self)
+            self.discard_count = DemocracyUtil.CalculateBossScale(self.discard_scale)
+        end,
+
+        OnEffectTriggered = function(self)
+            for i = 1, self.discard_count do
+                local card = self.engine:GetHandDeck():PeekRandom()
+                if card then
+                    self.engine:DiscardCard( card )
+                end
+            end
+        end,
     },
     ETIQUETTE_EFFECT_DESTROY_ARGUMENT =
     {
@@ -59,8 +109,18 @@ local EFFECTS =
             return loc.format(fmt_str, self.heal_count)
         end,
 
-        heal_count = 10,
-        heal_scale = {7, 10, 10, 15},
+        heal_count = 8,
+        heal_scale = {6, 8, 8, 10},
+    },
+    ETIQUETTE_EFFECT_SHIELD =
+    {
+        desc = "{SHIELDED|Shield} a random unshielded argument {1} has until the start of {1}'s turn",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOwnerName())
+        end,
+
+        heal_count = 8,
+        heal_scale = {6, 8, 8, 10},
     },
 }
 for id, def in pairs( EFFECTS ) do
@@ -97,8 +157,9 @@ local TRIGGER_BASE =
             local chosen = table.arraypick(choices)
             table.arrayremove(choices, chosen)
             local modifier_def = Content.GetNegotiationModifier(chosen)
-            if modifier_def and (not modifier_def.spawn_condition or modifier_def:spawn_condition(self)) then
+            if modifier_def and (not modifier_def.spawn_condition or modifier_def:spawn_condition(self.engine, self)) then
                 self.linked_effect = self.negotiator:CreateModifier( chosen, 1, self )
+                self.linked_effect.linked_core = self.linked_core
                 return
             end
         end
@@ -116,6 +177,11 @@ local TRIGGER_BASE =
     end,
     OnUnapply = function(self)
         self:UnlinkEffect()
+    end,
+    TriggerEffect = function(self)
+        if self.linked_effect and self.linked_effect.OnEffectTriggered then
+            self.linked_effect:OnEffectTriggered()
+        end
     end,
 }
 local TRIGGERS =
@@ -268,8 +334,9 @@ Content.AddNegotiationModifier("ETIQUETTE", {
             local chosen = table.arraypick(choices)
             table.arrayremove(choices, chosen)
             local modifier_def = Content.GetNegotiationModifier(chosen)
-            if modifier_def and (not modifier_def.spawn_condition or modifier_def:spawn_condition(self)) then
+            if modifier_def and (not modifier_def.spawn_condition or modifier_def:spawn_condition(self.engine, self)) then
                 self.linked_effect = self.negotiator:CreateModifier( chosen, 1, self )
+                self.linked_effect.linked_core = self
                 return
             end
         end
