@@ -239,6 +239,9 @@ local TRIGGER_BASE =
         if self.linked_effect and self.linked_effect.OnEffectTriggered then
             self.linked_effect:OnEffectTriggered()
         end
+        if self.linked_core then
+            self.linked_core:NotifyTriggered()
+        end
     end,
 }
 local TRIGGERS =
@@ -246,22 +249,68 @@ local TRIGGERS =
     ETIQUETTE_TRIGGER_CARDS =
     {
         desc = "Whenever you play {1} {1*card|cards} this turn, {2}. Reset count when triggered.",
+        loc_strings =
+        {
+            CARDS_REMAINING = "({1} {1*card|cards} remaining)",
+        },
         desc_fn = function(self, fmt_str, ...)
+            if self.cards_played then
+                return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...)) .. "\n\n" .. loc.format((self.def or self):GetLocalizedString("CARDS_REMAINING"), self.card_count - self.cards_played)
+            end
             return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...))
         end,
 
         card_count = 6,
         card_scale = {6, 6, 4, 4},
+
+        event_handlers =
+        {
+            [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
+                if card.negotiator == self.anti_negotiator then
+                    self.cards_played = (self.cards_played or 0) + 1
+                    if self.cards_played >= self.card_count then
+                        self.cards_played = 0
+                        self:TriggerEffect()
+                    end
+                end
+            end,
+        },
     },
     ETIQUETTE_TRIGGER_MATCHING =
     {
         desc = "Whenever you play {1} {1*card|cards} of the same type in a row, {2}. Reset count when triggered.",
+        loc_strings =
+        {
+            CARDS_REMAINING = "({1} {2} {1*card|cards} remaining)",
+        },
         desc_fn = function(self, fmt_str, ...)
+            if self.cards_played then
+                return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...)) .. "\n\n" .. loc.format((self.def or self):GetLocalizedString("CARDS_REMAINING"), self.card_count - self.cards_played, GetCardTypeString( self.chained_type ))
+            end
             return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...))
         end,
 
         card_count = 3,
         card_scale = {3, 3, 2, 2},
+
+        event_handlers =
+        {
+            [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
+                if card.negotiator == self.anti_negotiator then
+                    local card_type = GetCardType( card )
+                    if self.chained_type == card_type then
+                        self.cards_played = (self.cards_played or 0) + 1
+                        if self.cards_played >= self.card_count then
+                            self.cards_played = 0
+                            self:TriggerEffect()
+                        end
+                    else
+                        self.chained_type = card_type
+                        self.cards_played = 1
+                    end
+                end
+            end,
+        },
     },
     ETIQUETTE_TRIGGER_DESTROY_ARGUMENT =
     {
@@ -303,42 +352,130 @@ local TRIGGERS =
     ETIQUETTE_TRIGGER_DIPLOMACY =
     {
         desc = "Whenever you play {1} Diplomacy {1*card|cards} this turn, {2}. Reset count when triggered.",
+        loc_strings =
+        {
+            CARDS_REMAINING = "({1} {1*card|cards} remaining)",
+        },
         desc_fn = function(self, fmt_str, ...)
+            if self.cards_played then
+                return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...)) .. "\n\n" .. loc.format((self.def or self):GetLocalizedString("CARDS_REMAINING"), self.card_count - self.cards_played)
+            end
             return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...))
         end,
 
         card_count = 3,
         card_scale = {3, 3, 2, 2},
+
+        required_type = CARD_FLAGS.DIPLOMACY,
+
+        event_handlers =
+        {
+            [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
+                if card.negotiator == self.anti_negotiator and CheckBits( card.flags, self.required_type ) then
+                    self.cards_played = (self.cards_played or 0) + 1
+                    if self.cards_played >= self.card_count then
+                        self.cards_played = 0
+                        self:TriggerEffect()
+                    end
+                end
+            end,
+        },
     },
     ETIQUETTE_TRIGGER_MANIPULATE =
     {
         desc = "Whenever you play {1} Manipulate {1*card|cards} this turn, {2}. Reset count when triggered.",
+        loc_strings =
+        {
+            CARDS_REMAINING = "({1} {1*card|cards} remaining)",
+        },
         desc_fn = function(self, fmt_str, ...)
+            if self.cards_played then
+                return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...)) .. "\n\n" .. loc.format((self.def or self):GetLocalizedString("CARDS_REMAINING"), self.card_count - self.cards_played)
+            end
             return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...))
         end,
 
         card_count = 3,
         card_scale = {3, 3, 2, 2},
+
+        required_type = CARD_FLAGS.MANIPULATE,
+
+        event_handlers =
+        {
+            [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
+                if card.negotiator == self.anti_negotiator and CheckBits( card.flags, self.required_type ) then
+                    self.cards_played = (self.cards_played or 0) + 1
+                    if self.cards_played >= self.card_count then
+                        self.cards_played = 0
+                        self:TriggerEffect()
+                    end
+                end
+            end,
+        },
     },
     ETIQUETTE_TRIGGER_HOSTILE =
     {
         desc = "Whenever you play {1} Hostile {1*card|cards} this turn, {2}. Reset count when triggered.",
+        loc_strings =
+        {
+            CARDS_REMAINING = "({1} {1*card|cards} remaining)",
+        },
         desc_fn = function(self, fmt_str, ...)
+            if self.cards_played then
+                return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...)) .. "\n\n" .. loc.format((self.def or self):GetLocalizedString("CARDS_REMAINING"), self.card_count - self.cards_played)
+            end
             return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...))
         end,
 
         card_count = 3,
         card_scale = {3, 3, 2, 2},
+
+        required_type = CARD_FLAGS.HOSTILE,
+
+        event_handlers =
+        {
+            [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
+                if card.negotiator == self.anti_negotiator and CheckBits( card.flags, self.required_type ) then
+                    self.cards_played = (self.cards_played or 0) + 1
+                    if self.cards_played >= self.card_count then
+                        self.cards_played = 0
+                        self:TriggerEffect()
+                    end
+                end
+            end,
+        },
     },
     ETIQUETTE_TRIGGER_ITEM =
     {
         desc = "Whenever you play {1} Item {1*card|cards} this turn, {2}. Reset count when triggered.",
+        loc_strings =
+        {
+            CARDS_REMAINING = "({1} {1*card|cards} remaining)",
+        },
         desc_fn = function(self, fmt_str, ...)
+            if self.cards_played then
+                return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...)) .. "\n\n" .. loc.format((self.def or self):GetLocalizedString("CARDS_REMAINING"), self.card_count - self.cards_played)
+            end
             return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...))
         end,
 
         card_count = 2,
         card_scale = {2, 2, 1, 1},
+
+        required_type = CARD_FLAGS.ITEM,
+
+        event_handlers =
+        {
+            [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
+                if card.negotiator == self.anti_negotiator and CheckBits( card.flags, self.required_type ) then
+                    self.cards_played = (self.cards_played or 0) + 1
+                    if self.cards_played >= self.card_count then
+                        self.cards_played = 0
+                        self:TriggerEffect()
+                    end
+                end
+            end,
+        },
     },
     ETIQUETTE_TRIGGER_FOCUS_ATTACK =
     {
