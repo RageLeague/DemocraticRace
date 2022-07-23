@@ -91,6 +91,16 @@ local EFFECTS =
     ETIQUETTE_EFFECT_DESTROY_ARGUMENT =
     {
         desc = "destroy one of your non-core arguments",
+        target_enemy = TARGET_FLAG.ARGUMENT | TARGET_FLAG.BOUNTY,
+
+        OnEffectTriggered = function(self)
+            local source = self.linked_core or self
+            local targets = self.engine:CollectAllTargets(self)
+            local target = table.arraypick( targets )
+            if target then
+                self.anti_negotiator:DestroyModifier( target, source )
+            end
+        end,
     },
     ETIQUETTE_EFFECT_FLUSTER =
     {
@@ -101,16 +111,27 @@ local EFFECTS =
 
         flustered_count = 1,
         flustered_scale = {1, 1, 1, 2},
+
+        OnEffectTriggered = function(self)
+            local source = self.linked_core or self
+            self.anti_negotiator:InceptModifier("FLUSTERED", self.flustered_count, source)
+        end,
     },
     ETIQUETTE_EFFECT_RESTORE_RESOLVE =
     {
-        desc = "restore {1} resolve to <b>Etiquette</>",
+        desc = "<b>Etiquette</> gains {1} resolve",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.heal_count)
         end,
 
         heal_count = 8,
         heal_scale = {6, 8, 8, 10},
+        OnEffectTriggered = function(self)
+            local source = self.linked_core or self
+            if self.linked_core then
+                self.linked_core:ModifyResolve(self.heal_count, source)
+            end
+        end,
     },
     ETIQUETTE_EFFECT_SHIELD =
     {
@@ -118,9 +139,45 @@ local EFFECTS =
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName())
         end,
+        loc_strings =
+        {
+            SHELL_DEFENSE_DESC = "{SHIELDED}. This argument is shielded until the start of {1}'s turn!",
+        },
 
-        heal_count = 8,
-        heal_scale = {6, 8, 8, 10},
+        target_self = TARGET_ANY_RESOLVE,
+
+        OnEffectTriggered = function(self)
+            local source = self.linked_core or self
+            local targets = self.engine:CollectAllTargets(self)
+            while #targets > 0 then
+                local target = table.arraypick( targets )
+                table.arrayremove(targets, target)
+                if target and not target:GetShieldStatus() then
+                    self.shielded_arguments = self.shielded_arguments or {}
+                    table.insert(self.shielded_arguments, target)
+                    target:SetShieldStatus( true, loc.format(self.def:GetLocalizedString("SHELL_DEFENSE_DESC"), self:GetOwnerName()) )
+                end
+            end
+        end,
+
+        ClearShields = function(self)
+            if self.shielded_arguments then
+                for i, target in ipairs(self.shielded_arguments) do
+                    if target:IsApplied() then
+                        target:SetShieldStatus(false)
+                    end
+                end
+            end
+            self.shielded_arguments = nil
+        end,
+
+        OnBeginTurn = function(self)
+            self:ClearShields()
+        end,
+
+        OnUnapply = function(self)
+            self:ClearShields()
+        end,
     },
 }
 for id, def in pairs( EFFECTS ) do
