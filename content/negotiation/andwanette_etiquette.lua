@@ -318,16 +318,15 @@ local TRIGGERS =
         desc_fn = function(self, fmt_str, ...)
             return loc.format(fmt_str, self:GetOwnerName(), self:GetEffectDesc(...))
         end,
-    },
-    ETIQUETTE_TRIGGER_COMPOSURE_TARGET =
-    {
-        desc = "Whenever you use a card to attack an argument with at least {1} {COMPOSURE}, {2}.",
-        desc_fn = function(self, fmt_str, ...)
-            return loc.format(fmt_str, self.composure_threshold, self:GetEffectDesc(...))
-        end,
 
-        composure_threshold = 3,
-        composure_scale = {3, 3, 1, 1},
+        event_handlers =
+        {
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, card )
+                if modifier.negotiator == self.negotiator and card and card.negotiator == self.anti_negotiator and modifier.resolve and modifier.stacks > 0 then
+                    self:TriggerEffect()
+                end
+            end,
+        },
     },
     ETIQUETTE_TRIGGER_CARD_DRAW =
     {
