@@ -2697,6 +2697,46 @@ local MODIFIERS =
             end,
         },
     },
+    OPULENCE =
+    {
+        name = "Opulence",
+        desc = "When <b>Opulence</> or another non-core, non-bounty argument {1} has is destroyed, {2} gains {3#money}.\n\nWhen {2} plays a card, {2} loses {4#money}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOwnerName(), self:GetOpponentName(), self.money_bonus, self.money_cost)
+        end,
+
+        money_bonus = 30,
+        money_cost = 5,
+
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+        max_resolve = 4,
+
+        OnInit = function(self)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MID)
+        end,
+
+        RewardMoney = function(self)
+            self.engine:ModifyMoney( self.money_bonus, self )
+        end,
+
+        OnBounty = function(self)
+            self:RewardMoney()
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, card )
+                if modifier ~= self and modifier.negotiator == self.negotiator and modifier.modifier_type == MODIFIER_TYPE.ARGUMENT and modifier.stacks > 0 then
+                    self:RewardMoney()
+                end
+            end,
+            [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
+                if card.negotiator == self.anti_negotiator then
+                    self.engine:ModifyMoney( -self.money_cost, self )
+                end
+            end,
+        },
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
