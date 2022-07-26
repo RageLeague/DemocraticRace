@@ -112,6 +112,10 @@ local EFFECTS =
         flustered_count = 1,
         flustered_scale = {1, 1, 1, 2},
 
+        OnInit = function(self)
+            self.flustered_count = DemocracyUtil.CalculateBossScale(self.flustered_scale)
+        end,
+
         OnEffectTriggered = function(self)
             local source = self.linked_core or self
             self.anti_negotiator:InceptModifier("FLUSTERED", self.flustered_count, source)
@@ -126,6 +130,11 @@ local EFFECTS =
 
         heal_count = 8,
         heal_scale = {6, 8, 8, 10},
+
+        OnInit = function(self)
+            self.heal_count = DemocracyUtil.CalculateBossScale(self.heal_scale)
+        end,
+
         OnEffectTriggered = function(self)
             local source = self.linked_core or self
             if self.linked_core then
@@ -149,13 +158,14 @@ local EFFECTS =
         OnEffectTriggered = function(self)
             local source = self.linked_core or self
             local targets = self.engine:CollectAllTargets(self)
-            while #targets > 0 then
+            while #targets > 0 do
                 local target = table.arraypick( targets )
                 table.arrayremove(targets, target)
                 if target and not target:GetShieldStatus() then
                     self.shielded_arguments = self.shielded_arguments or {}
                     table.insert(self.shielded_arguments, target)
                     target:SetShieldStatus( true, loc.format(self.def:GetLocalizedString("SHELL_DEFENSE_DESC"), self:GetOwnerName()) )
+                    return
                 end
             end
         end,
@@ -263,6 +273,10 @@ local TRIGGERS =
         card_count = 6,
         card_scale = {6, 6, 4, 4},
 
+        OnInit = function(self)
+            self.card_count = DemocracyUtil.CalculateBossScale(self.card_scale)
+        end,
+
         event_handlers =
         {
             [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
@@ -292,6 +306,10 @@ local TRIGGERS =
 
         card_count = 3,
         card_scale = {3, 3, 2, 2},
+
+        OnInit = function(self)
+            self.card_count = DemocracyUtil.CalculateBossScale(self.card_scale)
+        end,
 
         event_handlers =
         {
@@ -330,13 +348,37 @@ local TRIGGERS =
     },
     ETIQUETTE_TRIGGER_CARD_DRAW =
     {
-        desc = "Whenever you draw {1} or more cards this turn, {2}.{1*| Reset count when triggered.}",
+        desc = "Whenever you draw {1} cards this turn after the initial draw, {2}.{1*| Reset count when triggered.}",
+        loc_strings =
+        {
+            CARDS_REMAINING = "({1} {1*card|cards} remaining)",
+        },
         desc_fn = function(self, fmt_str, ...)
+            if self.cards_played then
+                return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...)) .. "\n\n" .. loc.format((self.def or self):GetLocalizedString("CARDS_REMAINING"), self.card_count - self.cards_played)
+            end
             return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...))
         end,
 
         card_count = 2,
-        card_scale = {2, 2, 1, 1},
+        card_scale = {4, 4, 3, 3},
+
+        OnInit = function(self)
+            self.card_count = DemocracyUtil.CalculateBossScale(self.card_scale)
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.DRAW_CARD ] = function( self, minigame, card, start_of_turn )
+                if card.negotiator == self.anti_negotiator and not start_of_turn then
+                    self.cards_played = (self.cards_played or 0) + 1
+                    if self.cards_played >= self.card_count then
+                        self.cards_played = 0
+                        self:TriggerEffect()
+                    end
+                end
+            end,
+        },
     },
     ETIQUETTE_TRIGGER_CARD_LEFT =
     {
@@ -347,6 +389,24 @@ local TRIGGERS =
 
         card_count = 3,
         card_scale = {3, 3, 2, 2},
+
+        OnInit = function(self)
+            self.card_count = DemocracyUtil.CalculateBossScale(self.card_scale)
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.END_PLAYER_TURN ] = function( self, minigame )
+                local count = 0
+                for i, card in minigame:GetHandDeck():Cards() do
+                    count = count + 1
+                end
+                local trigger_count = math.floor(count / self.card_count)
+                for i = 1, trigger_count do
+                    self:TriggerEffect()
+                end
+            end
+        },
     },
     ETIQUETTE_TRIGGER_DIPLOMACY =
     {
@@ -366,6 +426,10 @@ local TRIGGERS =
         card_scale = {3, 3, 2, 2},
 
         required_type = CARD_FLAGS.DIPLOMACY,
+
+        OnInit = function(self)
+            self.card_count = DemocracyUtil.CalculateBossScale(self.card_scale)
+        end,
 
         event_handlers =
         {
@@ -399,6 +463,10 @@ local TRIGGERS =
 
         required_type = CARD_FLAGS.MANIPULATE,
 
+        OnInit = function(self)
+            self.card_count = DemocracyUtil.CalculateBossScale(self.card_scale)
+        end,
+
         event_handlers =
         {
             [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
@@ -431,6 +499,10 @@ local TRIGGERS =
 
         required_type = CARD_FLAGS.HOSTILE,
 
+        OnInit = function(self)
+            self.card_count = DemocracyUtil.CalculateBossScale(self.card_scale)
+        end,
+
         event_handlers =
         {
             [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
@@ -446,7 +518,7 @@ local TRIGGERS =
     },
     ETIQUETTE_TRIGGER_ITEM =
     {
-        desc = "Whenever you play {1} Item {1*card|cards} this turn, {2}. Reset count when triggered.",
+        desc = "Whenever you play {1} Item {1*card|cards} this turn, {2}.{1*| Reset count when triggered.}",
         loc_strings =
         {
             CARDS_REMAINING = "({1} {1*card|cards} remaining)",
@@ -462,6 +534,10 @@ local TRIGGERS =
         card_scale = {2, 2, 1, 1},
 
         required_type = CARD_FLAGS.ITEM,
+
+        OnInit = function(self)
+            self.card_count = DemocracyUtil.CalculateBossScale(self.card_scale)
+        end,
 
         event_handlers =
         {
@@ -479,12 +555,48 @@ local TRIGGERS =
     ETIQUETTE_TRIGGER_FOCUS_ATTACK =
     {
         desc = "Whenever you use cards to attack the same argument {1} times in a row, {2}. Reset count when triggered.",
+        loc_strings =
+        {
+            CARDS_REMAINING = "({1} {1*attack|attacks} targeting {2} remaining)",
+        },
         desc_fn = function(self, fmt_str, ...)
+            if self.cards_played and self.tracked_argument then
+                return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...)) .. "\n\n" .. loc.format((self.def or self):GetLocalizedString("CARDS_REMAINING"), self.card_count - self.cards_played, self.tracked_argument:GetName())
+            end
             return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...))
         end,
 
         card_count = 4,
         card_scale = {4, 4, 3, 3},
+
+        OnInit = function(self)
+            self.card_count = DemocracyUtil.CalculateBossScale(self.card_scale)
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+                if source and source.negotiator == self.anti_negotiator and is_instance( source, Negotiation.Card ) then
+                    if target and target == self.tracked_argument then
+                        self.cards_played = (self.cards_played or 0) + 1
+                        if self.cards_played >= self.card_count then
+                            self.cards_played = nil
+                            self.tracked_argument = nil
+                            self:TriggerEffect()
+                        end
+                    else
+                        self.cards_played = 1
+                        self.tracked_argument = target
+                    end
+                end
+            end,
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, source )
+                if self.tracked_argument and modifier == self.tracked_argument then
+                    self.cards_played = nil
+                    self.tracked_argument = nil
+                end
+            end,
+        },
     },
 }
 for id, def in pairs( TRIGGERS ) do
