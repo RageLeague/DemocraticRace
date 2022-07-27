@@ -100,7 +100,7 @@ local CARDS = {
     {
         name = "Intimidating Blaster",
         flavour = "'A weak firearm, used more for self-defense than active violence. Whoever you point this at may not know that, though.'",
-        desc = "{INCEPT} {1} {intimidated}.\nDraw a card.",
+        desc = "Counts as a Hostility cards for effects that cares about Hostility cards.\n{INCEPT} {1} {intimidated}.\nDraw a card.",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.intimidated_stack)
         end,

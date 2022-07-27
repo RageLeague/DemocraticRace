@@ -2,29 +2,6 @@ local negotiation_defs = require "negotiation/negotiation_defs"
 local CARD_FLAGS = negotiation_defs.CARD_FLAGS
 local EVENT = negotiation_defs.EVENT
 
--- local ALLY_IMAGES = {
---     RISE_AUTOMECH = engine.asset.Texture( "negotiation/modifiers/recruit_rise_cobblebot.tex"),
---     RISE_AUTODOG = engine.asset.Texture( "negotiation/modifiers/recruit_rise_cobbledog.tex"),
---     RISE_RADICAL = engine.asset.Texture( "negotiation/modifiers/recruit_rise_radical.tex"),
---     RISE_REBEL = engine.asset.Texture( "negotiation/modifiers/recruit_rise_rebel.tex"),
---     RISE_PAMPHLETEER = engine.asset.Texture( "negotiation/modifiers/recruit_rise_pamphleteer.tex"),
---     SPARK_BARON_AUTOMECH = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_automech.tex"),
---     AUTODOG = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_autodog.tex"),
---     SPARK_BARON_PROFESSIONAL = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_professional.tex"),
---     SPARK_BARON_GOON = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_goon.tex"),
---     SPARK_BARON_TASKMASTER = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_taskmaster.tex"),
---     COMBAT_DRONE = engine.asset.Texture( "negotiation/modifiers/recruit_spark_baron_drone.tex"),
-
---     VROC = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_vroc.tex"),
---     ADMIRALTY_CLERK = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_clerk.tex"),
---     ADMIRALTY_GOON = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_goon.tex"),
---     ADMIRALTY_GUARD = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_guard.tex"),
---     ADMIRALTY_PATROL_LEADER = engine.asset.Texture( "negotiation/modifiers/recruit_admiralty_patrol_leader.tex"),
---     JAKES_RUNNER = engine.asset.Texture( "negotiation/modifiers/recruit_jake_runner.tex"),
---     WEALTHY_MERCHANT = engine.asset.Texture( "negotiation/modifiers/recruit_civilian_wealthy_merchant.tex"),
---     HEAVY_LABORER = engine.asset.Texture( "negotiation/modifiers/recruit_civilian_heavy_laborer.tex"),
--- }
-
 local function CreateNewSelfMod(self)
     local newmod = self.negotiator:CreateModifier(self.id, self.stacks, self)
     if newmod then
@@ -680,11 +657,11 @@ local MODIFIERS =
             CreateNewSelfMod(self)
         end,
     },
-    ETIQUETTE =
+    HOSPITALITY =
     {
-        name = "Etiquette",
+        name = "Hospitality",
         icon = "negotiation/modifiers/compromise.tex",
-        desc = "Whenever you play a Hostility card, discard a random card.\n\nReduce <b>Etiquette</b> by 1 at the beginning of {1}'s turn.",
+        desc = "Whenever you play a Hostility card, discard a random card.\n\nReduce <b>Hospitality</b> by 1 at the beginning of {1}'s turn.",
 
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName() )
@@ -2716,6 +2693,47 @@ local MODIFIERS =
                             card.remove_fervor_display = true
                         end )
                     end
+                end
+            end,
+        },
+    },
+    OPULENCE =
+    {
+        name = "Opulence",
+        desc = "When <b>Opulence</> or another non-core, non-bounty argument {1} has is destroyed, {2} gains {3#money}.\n\nWhen {2} plays a card, {2} loses {4#money}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOwnerName(), self:GetOpponentName(), self.money_bonus, self.money_cost)
+        end,
+        icon = "negotiation/modifiers/coin_juggler.tex",
+
+        money_bonus = 30,
+        money_cost = 5,
+
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+        max_resolve = 4,
+
+        OnInit = function(self)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
+        end,
+
+        RewardMoney = function(self)
+            self.engine:ModifyMoney( self.money_bonus, self )
+        end,
+
+        OnBounty = function(self)
+            self:RewardMoney()
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, card )
+                if modifier ~= self and modifier.negotiator == self.negotiator and modifier.modifier_type == MODIFIER_TYPE.ARGUMENT and modifier.stacks > 0 then
+                    self:RewardMoney()
+                end
+            end,
+            [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
+                if card.negotiator == self.anti_negotiator then
+                    self.engine:ModifyMoney( -self.money_cost, self )
                 end
             end,
         },

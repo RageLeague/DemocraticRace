@@ -530,7 +530,7 @@ local CARDS = {
     advisor_manipulate_projection =
     {
         name = "Projection",
-        desc = "{1} a card from your {2}. {INCEPT} {3} {FLUSTERED} if it's a diplomacy card, {4} {DOUBT} if it's a manipulate card, and {5} {VULNERABILITY} if it's a hostile card.",
+        desc = "{1} a card from your {2}. {INCEPT} {3} {FLUSTERED} if it's a Diplomacy card, {4} {DOUBT} if it's a Manipulate card, and {5} {VULNERABILITY} if it's a Hostility card.",
         flavour = "'You try to argue with me, but deep down, you know that I'm right.'",
         icon = "DEMOCRATICRACE:assets/cards/projection.png",
         desc_fn = function(self, fmt_str)
