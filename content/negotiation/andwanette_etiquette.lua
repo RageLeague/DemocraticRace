@@ -612,6 +612,7 @@ Content.AddNegotiationModifier("ETIQUETTE", {
         end
         return fmt_str
     end,
+    icon = "DEMOCRATICRACE:assets/modifiers/etiquette.png",
 
     modifier_type = MODIFIER_TYPE.CORE,
     GetEffectDesc = function(self, ...)
