@@ -2704,6 +2704,7 @@ local MODIFIERS =
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName(), self:GetOpponentName(), self.money_bonus, self.money_cost)
         end,
+        icon = "negotiation/modifiers/coin_juggler.tex",
 
         money_bonus = 30,
         money_cost = 5,
@@ -2712,7 +2713,7 @@ local MODIFIERS =
         max_resolve = 4,
 
         OnInit = function(self)
-            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MID)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
         end,
 
         RewardMoney = function(self)

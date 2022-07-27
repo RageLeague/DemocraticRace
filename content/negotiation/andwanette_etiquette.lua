@@ -61,7 +61,7 @@ local EFFECTS =
             local targets = self.engine:CollectAllTargets(self)
             local target = table.arraypick( targets )
             if target then
-                self.engine:ApplyPersuasion( source, edge_target, self.damage_bonus, self.damage_bonus )
+                self.engine:ApplyPersuasion( source, target, self.damage_bonus, self.damage_bonus )
             end
         end,
     },

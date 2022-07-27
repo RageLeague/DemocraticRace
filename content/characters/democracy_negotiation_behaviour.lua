@@ -241,12 +241,31 @@ local NEW_BEHAVIOURS = {
         OnInitDemocracy = function(self, old_init, ...)
             if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
                 self.negotiator:AddModifier("ETIQUETTE")
+
+                self.opulence = self:AddArgument( "OPULENCE" )
+                self.attacks = self:MakePicker()
+                self.attacks:AddArgument( "ploy", 1 )
+                self.attacks:AddArgument( "SNARE", 1 )
                 self:SetPattern( self.DemocracyBossCycle )
                 return
             end
             return old_init(self, ...)
         end,
         DemocracyBossCycle = function( self, turns )
+            if turns == 1 then
+                self:ChooseCard(self.opulence)
+            elseif turns % 2 == 0 then
+                self.attacks:ChooseCard()
+            end
+            if turns % 3 == 1 then
+                self:ChooseGrowingNumbers(1, 0)
+                self:ChooseComposure(1, 3, 7)
+            elseif turns % 3 == 2 then
+                self:ChooseGrowingNumbers(1, 2)
+            else
+                self:ChooseGrowingNumbers(2, -1)
+                self:ChooseComposure(1, 2, 5)
+            end
         end,
     },
 }
