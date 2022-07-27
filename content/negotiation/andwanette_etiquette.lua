@@ -482,7 +482,7 @@ local TRIGGERS =
     },
     ETIQUETTE_TRIGGER_HOSTILE =
     {
-        desc = "Whenever you play {1} Hostile {1*card|cards} this turn, {2}. Reset count when triggered.",
+        desc = "Whenever you play {1} Hostility {1*card|cards} this turn, {2}. Reset count when triggered.",
         loc_strings =
         {
             CARDS_REMAINING = "({1} {1*card|cards} remaining)",
