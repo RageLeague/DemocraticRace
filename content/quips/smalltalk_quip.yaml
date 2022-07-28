@@ -309,7 +309,7 @@ lines:
     agent:
       Yeah, you're right.
     }
-- tags: [democratic_race, astal] # Not implemented in code, but it's listed here
+- tags: [democratic_race, astal]
   dialog:
   - |
     agent:
@@ -329,7 +329,7 @@ lines:
       Really? I have no idea!
     agent:
       !thought
-      To think... When he was first found, he had no family, no friends, no assets.
+      To think... When he was first found, he had no family, no friends, no money.
       But nobody cares about that anymore. Everyone knows him as a rich baron, with an eccentric speech pattern.
     player:
       !dubious
@@ -340,7 +340,7 @@ lines:
       So don't let your past drag you down, alright?
       Let the world remember who you are: a capable leader, able to bring Havaria to the right path.
 
-- tags: [democratic_race, nand] # Not implemented in code, but it's listed here
+- tags: [democratic_race, nand]
   dialog:
   - |
     agent:
@@ -363,3 +363,49 @@ lines:
     agent:
       That... Does make a lot of sense.
       Thanks for the chat, {player}. That was enlightening.
+
+- tags: [democratic_race, hiqu]
+  dialog:
+  - |
+    {indoors?
+      * You saw {agent} scribbling something on the wall.
+    }
+    {not indoors?
+      * You saw {agent} scribbling something on a shipping container.
+    }
+    player:
+      What are you writing?
+    agent:
+      !hips
+      It's my latest work!
+      Want to see it?
+    player:
+      !shrug
+      Sure, why not?
+    * Upon examination, you saw what appears to be a poem about the diets of animals in Havaria.
+    {not (player_rook)?
+      * You don't read poetry, so you can't really say anything else about it.
+      player:
+        !point
+        You and Nadan can probably get along well.
+      agent:
+        Why do you think I joined the Spree?
+    }
+    {player_rook?
+      * An allegory for the nature of Havaria, where those without power get exploited by those with slightly more power, while they themselves get exploited by people with even higher power, forming a chain of exploitation.
+      * At the top, the apex predator, feeds on them all.
+      player:
+      {not pro_labor_law?
+        !shrug
+        This is how the world works. Nothing we can do about it.
+      }
+      {pro_labor_law?
+        !sigh
+        This is the reality we live in.
+      }
+        !agree
+        Anyway, that was a good read.
+      agent:
+        !happy
+        Thanks. Glad to find another person who enjoys a good poetry.
+    }
