@@ -389,7 +389,7 @@ lines:
         !point
         You and Nadan can probably get along well.
       agent:
-        Why do you think I joined the Spree?
+        Why do you think I got where I am the Spree?
     }
     {player_rook?
       * An allegory for the nature of Havaria, where those without power get exploited by those with slightly more power, while they themselves get exploited by people with even higher power, forming a chain of exploitation.
