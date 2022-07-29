@@ -45,7 +45,13 @@ local QDEF = QuestDef.Define
 :AddCast{
     cast_id = "assassin",
     cast_fn = function(quest, t)
-        local boss_def = TheGame:GetGameProfile():GetNoStreakRandom("SAL_DAY_2_BOSS_PICK", {"JAKES_ASSASSIN", "JAKES_ASSASSIN2"}, 2)
+        local boss_def = TheGame:GetGameProfile():GetNoStreakRandom("SAL_DAY_2_BOSS_PICK", {
+            "JAKES_ASSASSIN",
+            "JAKES_ASSASSIN2",
+            "HESH_BOSS",
+            "MERCENARY_BOSS"
+            -- Don't include the rentorian boss because it doesn't make sense for them to be here
+        }, 2)
         local assassin = quest:CreateSkinnedAgent( boss_def )
 
         table.insert(t, assassin)
@@ -127,15 +133,44 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     You're the new politician in the election?
                 player:
                     Got it in one.
+                {not (player_rook and (hesh_boss or mercenary_boss))?
                 agent:
                     Someone very powerful decided you we're a threat to their bottom line.
                     !fight
                     I assume you won't go without a scuffle.
                 player:
-                    !fight
                     Contract killing, eh?
+                    !hips
                     I used to do that for a living. Of course, that was before I became a politician.
+                    !fight
                     Anyway, you wanna dance? Let's dance.
+                }
+                {player_rook?
+                    {hesh_boss?
+                        agent:
+                            Someone very powerful decided you we're a threat to their bottom line.
+                            !fight
+                            Lucky for me. Time to settle an old score.
+                        player:
+                            Didn't think you would be the kind to take assassination contracts.
+                            !cruel
+                            You must fell off pretty hard to stoop this low.
+                            !fight
+                            Let me end your miserable existence, if you wish to die that much.
+                    }
+                    {mercenary_boss?
+                        agent:
+                            Someone very powerful decided you we're a threat to their bottom line.
+                            !fight
+                            Lucky for me. You should've paid for what you did ages ago.
+                        player:
+                            !sigh
+                            Still, you never learn anything do you?
+                            Blaming others for your shortcoming, when you have only yourself to blame.
+                            !fight
+                            Let's see where your childish tantrum gets you, eh?
+                    }
+                }
                 * Just as you prepare your weapon, something just occurred to you.
                 player:
                     !scared
