@@ -2195,10 +2195,11 @@ local MODIFIERS =
     WAIVERS =
     {
         name = "Waivers",
-        desc = "When {1} creates an argument, remove it and one <b>Waivers</>.\n\nWhen destroyed, incept a number of {VULNERABILITY} equal to the number of remaining stacks on this argument.\n\nReduce <b>Waivers</b> by 1 at the beginning of {2}'s turn.",
+        desc = "When {1} creates an argument, remove it and one <b>Waivers</>.\n\nWhen destroyed, {INCEPT} a number of {VULNERABILITY} equal to the number of remaining stacks on this argument.\n\nReduce <b>Waivers</b> by 1 at the beginning of {2}'s turn.",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOpponentName(), self:GetOwnerName())
         end,
+        icon = "DEMOCRATICRACE:assets/modifiers/waivers.png",
 
         max_resolve = 4,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
