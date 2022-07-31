@@ -365,8 +365,8 @@ QDEF:AddConvo("spread_rumor")
                 * This does not look good for you.
             }
         ]],
-        SIT_MOD_POS = "{agent} supports {target}.",
-        SIT_MOD_NEG = "{agent} opposes {target}.",
+        SIT_MOD_POS = "{agent} supports {target}",
+        SIT_MOD_NEG = "{agent} opposes {target}",
 
         REQ_DIFFERENT_FACTION = "You already spread this rumor among {agent}'s faction",
     }
