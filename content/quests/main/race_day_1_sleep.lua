@@ -893,6 +893,9 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
             if not cxt.quest.param.no_assassin then
                 cxt:Dialog("DIALOG_SLEEP_INTRO")
             end
+            if cxt.quest.param.no_assassin and TheGame:GetGameState():GetMainQuest() then
+                TheGame:GetGameState():GetMainQuest().param.no_day_1_assassin = true
+            end
             cxt:Opt("OPT_SLEEP")
                 :PreIcon(global_images.sleep)
                 :Fn(function(cxt)
