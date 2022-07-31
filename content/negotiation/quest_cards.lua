@@ -443,6 +443,10 @@ local CARDS = {
         flags = CARD_FLAGS.DIPLOMACY,
         rarity = CARD_RARITY.UNIQUE,
 
+        CanPlayCard = function( self, card, engine, target )
+            return engine:GetOpponentNegotiator():GetModifierStacks("CROWD_OPINION") < 5
+        end,
+
         OnPostResolve = function( self, minigame, targets )
             if minigame:GetOpponentNegotiator():GetModifierStacks("CROWD_OPINION") < 5 then
                 minigame:GetOpponentNegotiator():AddModifier("CROWD_OPINION", 1, self)
