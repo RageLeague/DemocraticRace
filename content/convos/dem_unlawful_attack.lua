@@ -23,7 +23,7 @@ Convo("DEM_UNLAWFUL_ATTACK")
                 !cagey
                 Say...I need some dirty deeds done dirt cheap, if you know what I mean.
             agent:
-                Yeah, I get you. 
+                Yeah, I get you.
                 Whose going to be hit?
         ]],
 
@@ -166,8 +166,12 @@ Convo("DEM_UNLAWFUL_ATTACK")
                                 hire_amt = cost,
                             },
                         }
-                        local quest = QuestUtil.SpawnQuest("FOLLOWUP_UNLAWFUL_ATTACK", overrides)
-                        quest:Activate()
+                        local quest, err = QuestUtil.SpawnQuest("FOLLOWUP_UNLAWFUL_ATTACK", overrides)
+                        if quest then
+                            quest:Activate()
+                        else
+                            DBG(err)
+                        end
                     end)
                     :DoneConvo()
             end

@@ -289,6 +289,8 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     * {agent.HeShe} dropped something while scrambling to get away.
                     * {responder} doesn't seem to care if {agent} is running away, though.
                     * Instead, {responder.heshe} addresses you.
+                    player:
+                        !left
                     responder:
                         !right
                     {not player_arint?
@@ -374,6 +376,8 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     * {agent.HeShe} dropped something while scrambling to get away.
                     * {responder} doesn't seem to care if {agent} is running away, though.
                     * Instead, {responder.heshe} addresses you.
+                    player:
+                        !left
                     responder:
                         !right
                     {not player_arint?
