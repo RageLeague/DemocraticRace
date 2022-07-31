@@ -52,18 +52,36 @@ local QDEF = QuestDef.Define
             "MERCENARY_BOSS"
             -- Don't include the rentorian boss because it doesn't make sense for them to be here
         }, 2)
-        local assassin = quest:CreateSkinnedAgent( boss_def )
-
-        table.insert(t, assassin)
+        local assassin = AgentUtil.GetOrSpawnAgentbyAlias(boss_def)
+        if assassin and not assassin:IsRetired() then
+            table.insert(t, assassin)
+        end
     end,
     on_assign = function(quest, agent)
         agent.in_hiding = true
     end,
     no_validation = true,
+    optional = true,
 }
-:AddDefCast("dispatcher","ADMIRALTY_CLERK")
-
-:AddDefCast( "responder", "ADMIRALTY_PATROL_LEADER" )
+:AddCast{
+    cast_id = "responder",
+    cast_fn = function(quest, t)
+        local primary_advisor = TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor")
+        local responder_def = "ADMIRALTY_PATROL_LEADER"
+        if primary_advisor then
+            if primary_advisor:GetFactionID() == "SPARK_BARONS" then
+                responder_def = "SPARK_BARON_PROFESSIONAL"
+                quest.param.baron_responder = true
+            elseif primary_advisor:GetFactionID() == "CULT_OF_HESH" then
+                responder_def = "LUMINARI"
+                quest.param.cult_responder = true
+            end
+        end
+        local choice = AgentUtil.GetFreeAgent(responder_def)
+        table.insert(t, choice)
+    end,
+    no_validation = true,
+}
 
 -- :AddObjective{
 --     id = "meet_advisor",
@@ -117,6 +135,21 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
             :Dialog("DIALOG_GO_TO_SLEEP")
             :GoTo("STATE_ASSASSINATION")
     end)
+    :State("STATE_NO_ASSASSIN")
+        :Loc{
+            DIALOG_INTRO = [[
+                * Sike, that's not happening. There's an assassin in this room, whom you couldn't pretend not to hear.
+                * Is what you would say normally, given your experience with this kind of situation.
+                * But, given your brilliant foresight, you have dispatched the would-be assassin before they become a problem.
+                * Now you can rest safely, knowing that you solved a problem before it occurs.
+                * You are not getting any boss relics, though.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+            cxt.quest.param.no_assassin = true
+            cxt:GoTo("STATE_RESUME_SLEEP")
+        end)
     :State("STATE_ASSASSINATION")
         :Loc{
             DIALOG_INTRO = [[
@@ -206,32 +239,80 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                 agent:
                     Oh yeah? Why should I?
                 player:
-                    Because, you see.
+                    Because, you see...
                     You're under arrest.
-                * As if on cue, the Admiralty responder enters your room.
-                responder:
-                    !left
-                    What's going on?
-                    !fight
-                    Freeze! Under the authority of the Admiralty, you're under arrest for breaking and entering!
-                agent:
-                    !surprised
-                    Oh, Hesh.
-                    !reach_weapon
-                    Time to bounce!
-                    !exit
-                * {agent} fled the scene. How typical.
-                * {agent.HeShe} dropped something while scrambling to get away.
-                responder:
-                    !fight
-                    Oh no you don't!
-                    !exit
-                * {responder} runs after {agent}.
-                * Finally, after a long day, you're all by yourself, safe from assassinations.
-                * Except this cool graft that {agent} dropped!
-                player:
-                    !left
-                    Sweet!
+                {not baron_responder?
+                    * As if on cue, the {cult_responder?Cult patrol|Admiralty responder} enters your room.
+                    responder:
+                        !left
+                        What's going on?
+                        !fight
+                        {not cult_responder?
+                            Freeze! Under the authority of the Admiralty, you're under arrest for breaking and entering!
+                        }
+                        {cult_responder?
+                            Heretics! You are trespassing on sacred ground!
+                        }
+                    agent:
+                        !surprised
+                        Oh, Hesh.
+                        !reach_weapon
+                        Time to bounce!
+                        !exit
+                    * {agent} fled the scene. How typical.
+                    * {agent.HeShe} dropped something while scrambling to get away.
+                    responder:
+                        !fight
+                        Oh no you don't!
+                        !exit
+                    * {responder} runs after {agent}.
+                    * Finally, after a long day, you're all by yourself, safe from assassinations.
+                    * Except this cool graft that {agent} dropped!
+                    player:
+                        !left
+                        Sweet!
+                }
+                {baron_responder?
+                    * As if on cue, the Admiralty responder enters your room.
+                    responder:
+                        !left
+                        What's going on?
+                        !fight
+                        You are trespassing on private property! Surrender now!
+                    agent:
+                        !surprised
+                        Oh, Hesh.
+                        !reach_weapon
+                        Time to bounce!
+                        !exit
+                    * {agent} fled the scene. How typical.
+                    * {agent.HeShe} dropped something while scrambling to get away.
+                    * {responder} doesn't seem to care if {agent} is running away, though.
+                    * Instead, {responder.heshe} addresses you.
+                    responder:
+                        !right
+                    {not player_arint?
+                        What are you doing here? You are not a Baron.
+                    }
+                    {player_arint?
+                        Lieutenant, what are you doing here? This isn't the Grout Bog.
+                    }
+                    player:
+                        {primary_advisor} allowed me to stay here.
+                    responder:
+                        Is that so?
+                        Well, in that case, {primary_advisor} will be charged for this response.
+                        {primary_advisor.HeShe} should receive a bill for it tomorrow morning.
+                        !salute
+                        If there is no more issues, I'll be taking my leave.
+                        !exit
+                    * You are not sure how {primary_advisor} would react to a surprise bill.
+                    * But at least you are alive. All by yourself. Safe from assassinations.
+                    * Except this cool graft that {agent} dropped!
+                    player:
+                        !left
+                        Sweet!
+                }
             ]],
             DIALOG_HELP_ARRIVE_FIGHT = [[
                 player:
@@ -245,30 +326,78 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     $happyCocky
                     If only it were that simple for you.
                     But I'm afraid our time is going to be cut short.
-                * As if on cue, the Admiralty responder enters your room.
-                responder:
-                    !left
-                    What's going on?
-                    !fight
-                    Freeze! Under the authority of the Admiralty, you're under arrest for attempted murder!
-                agent:
-                    !surprised
-                    Oh, Hesh.
-                    !reach_weapon
-                    Time to bounce!
-                    !exit
-                * {agent} fled the scene. How typical.
-                * {agent.HeShe} dropped something while scrambling to get away.
-                responder:
-                    !fight
-                    Oh no you don't!
-                    !exit
-                * {responder} runs after {agent}.
-                * Finally, after a long day, you're all by yourself, safe from assassinations.
-                * Except this cool graft that {agent} dropped!
-                player:
-                    !left
-                    Sweet!
+                {not baron_responder?
+                    * As if on cue, the {cult_responder?Cult patrol|Admiralty responder} enters your room.
+                    responder:
+                        !left
+                        What's going on?
+                        !fight
+                        {not cult_responder?
+                            Freeze! Under the authority of the Admiralty, you're under arrest for attempted murder!
+                        }
+                        {cult_responder?
+                            Heretics! You are trespassing on sacred ground!
+                        }
+                    agent:
+                        !surprised
+                        Oh, Hesh.
+                        !reach_weapon
+                        Time to bounce!
+                        !exit
+                    * {agent} fled the scene. How typical.
+                    * {agent.HeShe} dropped something while scrambling to get away.
+                    responder:
+                        !fight
+                        Oh no you don't!
+                        !exit
+                    * {responder} runs after {agent}.
+                    * Finally, after a long day, you're all by yourself, safe from assassinations.
+                    * Except this cool graft that {agent} dropped!
+                    player:
+                        !left
+                        Sweet!
+                }
+                {baron_responder?
+                    * As if on cue, the Admiralty responder enters your room.
+                    responder:
+                        !left
+                        What's going on?
+                        !fight
+                        You are trespassing on private property! Surrender now!
+                    agent:
+                        !surprised
+                        Oh, Hesh.
+                        !reach_weapon
+                        Time to bounce!
+                        !exit
+                    * {agent} fled the scene. How typical.
+                    * {agent.HeShe} dropped something while scrambling to get away.
+                    * {responder} doesn't seem to care if {agent} is running away, though.
+                    * Instead, {responder.heshe} addresses you.
+                    responder:
+                        !right
+                    {not player_arint?
+                        What are you doing here? You are not a Baron.
+                    }
+                    {player_arint?
+                        Lieutenant, what are you doing here? This isn't the Grout Bog.
+                    }
+                    player:
+                        {primary_advisor} allowed me to stay here.
+                    responder:
+                        Is that so?
+                        Well, in that case, {primary_advisor} will be charged for this response.
+                        {primary_advisor.HeShe} should receive a bill for it tomorrow morning.
+                        !salute
+                        If there is no more issues, I'll be taking my leave.
+                        !exit
+                    * You are not sure how {primary_advisor} would react to a surprise bill.
+                    * But at least you are alive. All by yourself. Safe from assassinations.
+                    * Except this cool graft that {agent} dropped!
+                    player:
+                        !left
+                        Sweet!
+                }
             ]],
 
             DIALOG_FIGHT_PHRASE = [[
@@ -326,11 +455,29 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     player:
                         Uh... Aren't you going to chase after {agent.himher}?
                     responder:
+                    {not baron_responder?
                         Oh, yes. Of course. Good night and good luck.
                         !exit
+                        * {responder} leaves, presumably chasing {agent}.
+                    }
+                    {baron_responder?
+                        Not really. I get paid to protect Baron property, not arrest people.
+                        Speaking of getting paid, is this {primary_advisor}'s office?
+                    player:
+                        !dubious
+                        Yes...? What about it?
+                    responder:
+                        Well, in that case, {primary_advisor} will be charged for this response.
+                        {primary_advisor.HeShe} should receive a bill for it tomorrow morning.
+                        !salute
+                        If there is no more issues, I'll be taking my leave.
+                        !exit
+                    * You are not sure how {primary_advisor} would react to a surprise bill.
+                    * But that is not an issue until tomorrow.
+                    }
                 }
                 * Finally, after a long day, you're all by yourself, safe from assassinations.
-                * Except this cool graft that {agent} dropped!
+                * Except this cool graft that {agent} gave you!
                 player:
                     !left
                     Sweet!
@@ -346,19 +493,32 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                         By the-
                         !angry
                         What did you do?
-                    * I have to say, the way the scene is set up, it does look like you killed {agent}.
+                    * I have to say, the way the scene is set up, it does look like you murdered {agent}.
                         {not responder_liked?
                             player:
                                 I had a...bit of a scuffle with {agent}. It got slightly out of hand.
                             responder:
                                 A likely story. In fact, it's likely true.
+                                !angry_accuse
                                 You broke into {primary_advisor}'s office and killed {agent} in cold blood!
+                            {not baron_responder and not cult_responder?
+                                !fight
                                 I'm taking you to the station for questioning.
+                            }
+                            {baron_responder?
+                                !fight
+                                Prepare to die, trespasser!
+                            }
+                            {cult_responder?
+                                !fight
+                                This is the end of you, heretic!
+                            }
                         }
                         {responder_liked?
                             player:
                                 {agent} and I got into a fight because they came to kill me.
                                 You got to believe me! They came at me first.
+                            {not baron_responder and not cult_responder?
                             responder:
                                 !thought
                                 Well, standard procedure says I have to take you to be badgered and questioned in an Admiralty office.
@@ -370,6 +530,38 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                                 Really?
                             responder:
                                 Don't be so surprised.
+                            }
+                            {baron_responder?
+                            responder:
+                                !shrug
+                                Sure, I'll take your word for it.
+                            player:
+                                !surprised
+                                Really?
+                            responder:
+                                I mean, my job is to keep ruffians out of Baron property.
+                                I'm not here to play detective. I get paid either way.
+                                !point
+                                By {primary_advisor}, by the way. {primary_advisor.HeShe} will receive a bill tomorrow morning for this.
+                            player:
+                                Oh.
+                            }
+                            {cult_responder?
+                            responder:
+                                !hesh_greeting
+                                ...
+                                Very well.
+                            player:
+                                !surprised
+                                Huh?
+                            responder:
+                                Hesh thinks you are trustworthy. I simply follow its will.
+                            player:
+                                !shrug
+                                If you say so.
+                            * You've interacted with Heshians long enough to know not to question them when they claim that they are "following Hesh's will".
+                            }
+                            responder:
                                 I'm getting rid of this body.
                                 Here. For your troubles.
                             * {responder.HeShe} hands you a graft found on the body.
@@ -454,6 +646,9 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
 
                         cxt:Dialog("DIALOG_HELP_ARRIVE")
                         cxt.quest:GetCastMember("assassin"):MoveToLimbo()
+                        if cxt.quest.param.baron_responder and cxt:GetCastMember("primary_advisor") then
+                            cxt:GetCastMember("primary_advisor"):Remember("BILLED_BARON_RESPONSE")
+                        end
                         DemocracyUtil.GiveBossRewards(cxt)
                         cxt:GoTo("STATE_RESUME_SLEEP")
                     end,
@@ -517,7 +712,9 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                                 end
                                 cxt.quest:GetCastMember("responder"):MoveToLimbo()
                                 if cxt.quest.param.help_called then
-                                    cxt.player:Remember("SAVED_BY_ADMIRALTY", cxt.quest:GetCastMember("responder"))
+                                    if cxt.quest.param.baron_responder and cxt:GetCastMember("primary_advisor") then
+                                        cxt:GetCastMember("primary_advisor"):Remember("BILLED_BARON_RESPONSE")
+                                    end
                                 end
                                 DemocracyUtil.GiveBossRewards(cxt)
                                 cxt:GoTo("STATE_RESUME_SLEEP")
@@ -549,20 +746,17 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     {primary_advisor} agreed to let me stay here for the night.
                     You can immediately check with {primary_advisor} to see if I'm telling the truth.
                 agent:
-                    Okay, then.
-                * {agent} calls {primary_advisor}.
-                agent:
-                    This is {agent} of the Admiralty.
-                    I have a suspicious individual here. {player.HeShe} claims that you allowed {player.himher} to stay in your office for the night.
-                    Is that true?
-                    ...
-                    Is that so?
-                    Well then.
-                    Sorry to bother you.
-                * {agent} hangs up.
-                agent:
-                    In that case, I guess you're telling the truth.
+                    That sounds like a lot of work, and I don't care enough or get paid enough to deal with this.
+                    I'm just going to assume you are telling the truth.
                     I'm disposing this body. Have a good night.
+                    !give
+                    Here. For your troubles.
+                * {responder.HeShe} hands you a graft found on the body.
+                {baron_responder?
+                agent:
+                    !point
+                    And tell {primary_advisor} that this response will be billed.
+                }
                     !exit
                 * Phew! That could've been way worse.
             ]],
@@ -571,13 +765,26 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                 * It's almost as if your tongue is tied.
                 agent:
                     That's it, I've heard enough.
+                {not baron_responder and not cult_responder?
                     You can talk more when you're in the station.
+                }
+                {baron_responder?
+                    Prepare to die, trespasser!
+                }
+                {cult_responder?
+                    Prepare to die, heretic!
+                }
             ]],
-            OPT_RESIST_ARREST = "Resist arrest",
+            OPT_RESIST_ARREST = "Defend yourself!",
             DIALOG_RESIST_ARREST = [[
                 player:
                     !fight
+                {not baron_responder and not cult_responder?
                     You're not taking me in alive!
+                }
+                {baron_responder or cult_responder?
+                    I thought I'm already over this.
+                }
             ]],
             DIALOG_RESIST_ARREST_WIN = [[
                 {dead?
@@ -589,12 +796,26 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     !injured
                 player:
                     !angry
+                {not baron_responder and not cult_responder?
                     I'm not coming.
                     Final offer.
+                }
+                {baron_responder or cult_responder?
+                    I don't appreciate your baseless accusation against me.
+                    Get lost before I change my mind.
+                }
                 agent:
                     You have plenty of energy left for someone who fought of a supposed assassin.
                     Fine. I'll leave.
+                {not baron_responder and not cult_responder?
                     Just you know, assaulting an officer on duty is a crime.
+                }
+                {baron_responder?
+                    Just you know, the Barons will not take lightly of this transgression.
+                }
+                {cult_responder?
+                    Just remember, Hesh never forgets. You best hope it forgives you.
+                }
                 player:
                     Don't know, don't care.
                 agent:
@@ -609,6 +830,8 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     It's going to be clear that I'm innocent, anyway.
                 agent:
                     Yeah, sure.
+                * You are hauled off to an Admiralty holding cell, where you await for interrogation.
+                * This is what you get for going down without a fight.
             ]],
         }
         :RunLoopingFn(function(cxt)
@@ -620,6 +843,9 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
             cxt:BasicNegotiation("EXPLAIN")
                 :OnSuccess()
                 :Fn(function(cxt)
+                    if cxt.quest.param.baron_responder and cxt:GetCastMember("primary_advisor") then
+                        cxt:GetCastMember("primary_advisor"):Remember("BILLED_BARON_RESPONSE")
+                    end
                     cxt.quest:GetCastMember("responder"):MoveToLimbo()
                     DemocracyUtil.GiveBossRewards(cxt)
                 end)
@@ -636,14 +862,16 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                         DemocracyUtil.GiveBossRewards(cxt)
                     end)
                     :GoTo("STATE_RESUME_SLEEP")
-            cxt:Opt("OPT_ACCEPT_ARREST")
-                :Dialog("DIALOG_ACCEPT_ARREST")
-                :Fn(function(cxt)
-                    local flags = {
-                        suspicion_of_murder = true,
-                    }
-                    DemocracyUtil.DoEnding(cxt, "arrested", flags)
-                end)
+            if not cxt.quest.param.baron_responder and not cxt.quest.param.cult_responder then
+                cxt:Opt("OPT_ACCEPT_ARREST")
+                    :Dialog("DIALOG_ACCEPT_ARREST")
+                    :Fn(function(cxt)
+                        local flags = {
+                            suspicion_of_murder = true,
+                        }
+                        DemocracyUtil.DoEnding(cxt, "arrested", flags)
+                    end)
+            end
         end)
     :State("STATE_RESUME_SLEEP")
         :Loc{
@@ -662,8 +890,9 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     {cxt:GetCastMember("assassin"):IsDead() and cxt:GetCastMember("assassin") or nil,
                     cxt:GetCastMember("responder"):IsDead() and cxt:GetCastMember("responder") or nil})
             end
-
-            cxt:Dialog("DIALOG_SLEEP_INTRO")
+            if not cxt.quest.param.no_assassin then
+                cxt:Dialog("DIALOG_SLEEP_INTRO")
+            end
             cxt:Opt("OPT_SLEEP")
                 :PreIcon(global_images.sleep)
                 :Fn(function(cxt)
