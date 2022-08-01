@@ -19,10 +19,10 @@ local QDEF = QuestDef.Define{
     reward_mod = 0,
 
     on_start = function(quest)
-        quest:Activate("dole_out_three")
-        quest:Activate("buy_loaves")
-        quest:Activate("time_countdown")
-        quest:Activate("request_funds")
+        -- quest:Activate("dole_out_three")
+        -- quest:Activate("buy_loaves")
+        -- quest:Activate("time_countdown")
+        -- quest:Activate("request_funds")
     end,
 
     on_complete = function(quest)
@@ -169,7 +169,11 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     }
     :State("START")
         :Fn(function(cxt)
-           cxt:Dialog("DIALOG_INTRO")
+            cxt:Dialog("DIALOG_INTRO")
+            cxt.quest:Activate("dole_out_three")
+            cxt.quest:Activate("buy_loaves")
+            cxt.quest:Activate("time_countdown")
+            cxt.quest:Activate("request_funds")
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{

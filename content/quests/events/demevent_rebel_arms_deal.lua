@@ -147,7 +147,7 @@ QDEF:AddConvo()
                     Pardon my rookie mistake for thinking the armed revolution would be appreciable to a box full of guns.
             ]],
             OPT_CONVINCE_DONATE = "Convince {jakes} to donate weapons to the cause",
-            SIT_MOD_NO_DONATE = "That's not how business works.",
+            SIT_MOD_NO_DONATE = "That's not how business works",
             DIALOG_CONVINCE_DONATE = [[
                 jakes:
                     !right
@@ -314,7 +314,7 @@ QDEF:AddConvo()
                             cxt:GoTo("STATE_PAY")
                         else
                             cxt:GetCastMember("jakes"):OpinionEvent(OPINION.HELP_COMPLETE_DEAL)
-                            StateGraphUtil.AddLeaveLocation()
+                            StateGraphUtil.AddLeaveLocation(cxt)
                         end
                     end)
 

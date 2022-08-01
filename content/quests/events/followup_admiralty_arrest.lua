@@ -239,7 +239,8 @@ QDEF:AddConvo("action")
                 !right
             player:
                 !left
-                Can you reconsider?
+                Alright, you two have had your fun.
+                How about you let {agent} go and you can all go home?
             admiralty:
             {not unplanned?
                 !surprised
@@ -253,8 +254,9 @@ QDEF:AddConvo("action")
         DIALOG_RECONSIDER_SUCCESS = [[
             player:
             {is_ad?
-                It's probably not a good idea to in-fight.
-                You can probably let whatever did slide, right?
+                Whatever bad blood's between you two's only going to get worse if you kill each other.
+                !point
+                And your higher ups in the Admiralty are quite the bloodhounds.
             }
             {rival_faction?
                 I've been reconsidering my positions in the last few days.
@@ -267,8 +269,8 @@ QDEF:AddConvo("action")
                     People will think we are blocking votes or something. That's bad for our reputation.
                 }
                 {impasse?
-                    This fight, if it goes on, will surely end in bloodshed.
-                    I'm sure no one would like that.
+                    Someone's gonna get hurt here, I'm sure of it.
+                    That's gonna be blood in the water, and I'm sure just as many people want your head as {target} does.
                 }
             }
             admiralty:
@@ -303,9 +305,9 @@ QDEF:AddConvo("action")
                 Just, stay out of my way until I bring this scum to the station.
         ]],
         SIT_MOD_BASE = "{admiralty} worked really hard to arrest {target}!",
-        SIT_MOD_AD = "{target} is an Admiralty.",
-        SIT_MOD_RIVAL = "{target} is a rival faction to the admiralty.",
-        SIT_MOD_UNLAWFUL = "{target} is a criminal faction.",
+        SIT_MOD_AD = "{target} is an Admiralty",
+        SIT_MOD_RIVAL = "{target} is a rival faction to the admiralty",
+        SIT_MOD_UNLAWFUL = "{target} is a criminal faction",
         OPT_AD_FIGHT = "Free {target} by force",
         DIALOG_AD_FIGHT = [[
             admiralty:
@@ -363,13 +365,16 @@ QDEF:AddConvo("action")
 
         DIALOG_DEMORALIZE_SUCCESS = [[
             player:
+                !cruel
                 You might be able to take on {admiralty}, but us both? You won't stand a chance.
             agent:
-                Oh no I'm scared.
+                !scared
+                Oh no! I'm scared.
                 Okay, you win.
                 I'll take my chances.
             admiralty:
                 !right
+                !hips
                 Wow, that actually worked.
         ]],
 
@@ -390,7 +395,7 @@ QDEF:AddConvo("action")
     :State("STATE_DOMINATE")
         :Loc{
             DIALOG_INTRO = [[
-                * You see {admiralty} arrested {agent}.
+                * You see {admiralty} has {agent} in cuffs.
                 agent:
                     !right
                     !injured
@@ -399,54 +404,48 @@ QDEF:AddConvo("action")
                     !angry
                 agent:
                 {is_ad?
-                    Why are you doing this?
-                    Aren't we both in the Admiralty?
+                    Must've been eyeing that promotion pretty hard, if you're stooping this low.
                 admiralty:
-                    We might both be, but only one is a criminal.
-                    I've received a tip that you have been abusing your power for so long. It's time to end this.
-                agent:
-                    You talk big, but you are in the same boat, aren't you?
-                    Abuse of power is literally your core argument.
+                    !angry_shrug
+                    If you don't want me stooping this low, don't be such an easy target.
                 }
                 {rival_faction?
-                    You know we have a truce right?
-                    We settle everything peacefully with the election once and for all.
-                    Are you going to resume the war?
+                    This is violating our truce! You'll be sorry!
                 admiralty:
-                    I don't particularly care.
-                    I'm sure the {target_faction#faction} are going to be happy now that I got rid of a criminal for them.
+                    You're talking to the wrong person if you think I didn't cover my tracks.
+                    The most they'll be able to do is get lost in the paperwork if they want to make a war out of an arrest.
                 }
                 {unlawful?
-                    You will regret this, switch.
-                    The {target_faction#faction} will come and save me, and you'll be dead.
+                    Just you wait, switch. You lock me up, and I'll be bounced out by lunch.
+                    And then my friends and I will be coming for you.
                 admiralty:
-                    I don't think so, criminal scum.
-                    They don't care about someone like you.
+                    !notepad
+                    Uh huh. Now, would you like to tell me who these "friends" are now or during the interrogation?
                 }
                 {not (is_ad or rival_faction or unlawful)?
-                    What did I do to deserve this?
+                    What did I do? I've done nothing wrong.
                 admiralty:
-                    I don't know. Committing crime?
-                    If you don't want to get arrested, have you tried not committing any crime?
+                    !chuckle
+                    That's not what your file says.
                 }
                 admiralty:
                     !angry_accuse
-                    Now, are you going to come quiet or not?
-                * {agent} sees you.
+                    You'll be coming with me, back to the station.
+                * As you watch, {agent} flicks {agent.hisher} head at you.
                 player:
                     !left
                 agent:
                 {not disliked?
-                    Please, you have to get me out of here!
+                    Grifter! I need help! Just get me away from this cop!
                 }
                 {disliked?
-                    !angry
-                    Oh, it's you.
-                    Are you happy now, seeing me like this?
+                    !injured_palm
+                    I swear, icing on the Heshing cake...
+                    What do <i>you</> want, {player}?
                 }
 
             ]],
-
+            --not disliked, planned; I thought of the player and admiralty being as aggressively tongue in cheek as possible.
             OPT_TAUNT = "{unplanned?Stand Aside|Taunt {target}}",
             DIALOG_TAUNT = [[
                 {disliked?
@@ -480,39 +479,46 @@ QDEF:AddConvo("action")
                 }
                 {not disliked?
                 player:
-                    !shrug
                     {not unplanned?
-                        Why should I, when <i>I'm</> the one that asked {admiralty} to investigate you.
-                    agent:
-                        !surprised
-                        What? YOU are the one that caused this?
-                        Why?
-                    player:
-                        To send a message, of course.
-                        !cruel
-                        You made way too many enemies because of your action. And actions have consequences.
-                    agent:
-                        Oh, actions have consequences all right.
-
-                    }
-                    {unplanned?
-                        Why should I?
-                        I'm more scared of the Admiralty than I'm scared of <i>you</>.
+                        !wave
+                        Hello officer! I see you're doing your civic duty today.
                     admiralty:
                         !right
-                        I don't know if I like the sound of that, but at least it gets the meaning across.
+                        Yep. Just clearing a bit of the...
+                        !burp
+                        A bit of the rabble, you could say.
                     agent:
+                        Hey! I'm a part of this conversation too!
+                        {player}, help me!
+                    player:
+                        Well I'll just leave you to it, {admiralty}.
+                        !salute
+                        Hail to the admiralty.
+                    admiralty:
+                        !salute
+                        Hail to the admiralty.
+                    * With that, {admiralty} hauls {agent} away, {agent} knitting {agent.hisher}'s brow in conspiratorial thought.
+                    }
+                    {unplanned?
+                        !bashful
+                        Would if I could, buddy.
+                        But I'm not feeling like fighting the Admiralty today.
+                    agent:
+                        !angry
+                        What? I thought you Grifters loved getting into random fights!
+                    player:
+                        !bashful
+                        Ah, but I've got to stretch first, and then I have to pull out my weapons and...
+                        !wave
+                        Well by then you'd already be at the station.
+                    admiralty:
                         !right
-                        Oh, you want a reason for you to be scared?
+                        Hey, back health is important. You take your time getting ready.
+                        !angry_point
+                        I'll just haul this criminal back to the station in the meantime.
+                    * You step aside as {admiralty} takes a shocked {agent} away.
                     }
                 }
-                agent:
-                    I won't forget this.
-                    If I ever got out of jail, I <i>will</> find you, and you <i>will</> regret the day you did this.
-                admiralty:
-                    !left
-                    Witness intimidation, that's going to be a few more years, buddy.
-
             ]],
 
             -- OPT_RECONSIDER = "Convince {admiralty} to reconsider",
@@ -711,13 +717,11 @@ QDEF:AddConvo("action")
                 agent:
                     !left
                     Catch me if you can!
-                * You stood aside, watching those two figure out stuff.
+                * The two stand off and launch into a bloody fight.
             ]],
 
             DIALOG_STAND_ASIDE_WIN = [[
-                * The battle was tough.
-                * Eventually, {admiralty} came out on top.
-                * {admiralty} bounded {agent} before looking at you angrily.
+                * Eventually, {admiralty} puts a large, government issue boot down on {agent}'s throat and claps handcuffs onto {agent.himher}.
                 player:
                     !left
                 admiralty:
@@ -760,13 +764,14 @@ QDEF:AddConvo("action")
             ]],
 
             DIALOG_STAND_ASIDE_LOSE = [[
-                * The battle was tough.
-                * Eventually, {admiralty} died to the hands of {agent}.
+                * It comes to a close, though, with one bone crunching punch to the jaw.
+                * {admiralty} lies on the ground either dead or unconscious. {agent} puts a quick end to that question with one last attack.
                 agent:
                     !right
                 {disliked?
-                    Now that I dealt with that {is_ad?traitor|switch}, now I'll deal with you!
-                    * You will have to defend yourself!
+                    Wasn't expecting that, were ya {is_ad?bloody traitor|switch}?
+                    Well, if I've already got blood on my shoes, might as well make the dry cleaners earn my shills.
+                    * {agent} whips {agent.hisher} weapons towards you.
                 }
                 {not disliked?
                     Thanks for nothing, grifter!
@@ -810,7 +815,6 @@ QDEF:AddConvo("action")
                 player:
                     !left
                     !fight
-
                     Fine, let's rumble.
             ]],
             DIALOG_TARGET_FIGHT_WON = [[
@@ -1060,24 +1064,53 @@ QDEF:AddConvo("action")
     :State("STATE_DEFEATED")
         :Loc{
             DIALOG_INTRO = [[
-                * You arrive at the scene.
-                * Seems that {admiralty} isn't doing too good.
+                {is_unlawful?
+                    * You find an ironic scene, an officer of the Admiralty underneath the foot of {target}.
+                    admiralty:
+                        !left
+                        !injured
+                    target:
+                        !right
+                        !angry
+                        Made a damn big mistake, crossing me, switch.
+                }
+                {is_ad?
+                    * You find {admiralty} dealing with some..."special clerical work".
+                    admiralty:
+                        !left
+                        !injured
+                    target:
+                        !right
+                        !angry
+                        How's that promotion looking now? I bet it's looking mighty fine now.
+                }
+                {rival_faction?
+                    * You come across {target} speaking power to power with {admiralty}.
+                    admiralty:
+                        !left
+                        !injured
+                    target:
+                        !right
+                        !angry
+                        Shouldn't of tried to break the truce that sloppily. Look at where it's gotten you.
+                }
+                {not (is_ad or rival_faction or unlawful)?
+                    * In a surprise twist, you find the ordinary citizen has won out against the Admiralty.
                 admiralty:
                     !left
                     !injured
                 target:
                     !right
                     !angry
-                * They haven't see you yet.
+                    Y'see, switch? Y'see what happens when you mess with the little guys like me?
+                }
+                * Fortunately, {target}'s monologuing has given you a chance to strike or a chance to leave.
             ]],
+            --
             OPT_SLIP_AWAY = "Slip away before anyone notices",
             DIALOG_SLIP_AWAY = [[
-                * You left those two to figure out amongst themselves.
-                admiralty:
-                    !exit
-                * Surely enough, they figured out a solution. And that solution is taking {admiralty}'s head.
-                * There's nothing you can do about it.
-                * At least, that is what you told yourself.
+                * As quickly as you came, you sneak away to let those two bury the hatchet.
+                * <i>Violently</> bury the hatchet. Most likely, in {admiralty}'s face.
             ]],
 
             SIT_MOD_HIGH_MORALE = "{target} just won a battle against {admiralty}",
@@ -1086,7 +1119,8 @@ QDEF:AddConvo("action")
             DIALOG_CONVINCE_SPARE = [[
                 player:
                     !left
-                    Can you leave {admiralty} alone?
+                    Look buddy. I get it. You're gloating.
+                    But you might want to wrap it up before the rest of the admiralty catches wind.
                 target:
                     What?
                     Why should I?
@@ -1096,62 +1130,61 @@ QDEF:AddConvo("action")
             DIALOG_CONVINCE_SPARE_SUCCESS = [[
                 player:
                 {is_ad?
-                    Look, you're both Admiralty right?
-                    So you know {admiralty.heshe}'s just doing {admiralty.hisher} job, you know?
-                    I'm sure {admiralty.heshe} learned {admiralty.hisher} lesson.
-                    No need to get violent.
+                    I get that all of you switches are one big happy family out in those cramped barracks of yours.
+                    !point
+                    But if you kill {admiralty}, something's going to come back to you.
+                    And someone's going to come for your badge all the same as {admiralty} did.
                 target:
                     !sigh
                     True.
                 }
                 {not is_ad?
-                    You kill {admiralty} now, and you commit a crime that the Admiralty can't ignore.
-                    Best let it slide, eh?
-                    I'm sure {admiralty} will turn a blind eye on whatever you did.
+                    If the blood, broken bones, and whimpering hasn't clued you in yet, {admiralty}'s learned {admiralty.hisher} lesson.
+                    Let {admiralty} go, and the lesson oughta spread. Spread like the plague.
+                    The law's not going to mess with you if you can mess up the law.
                 target:
-                    !thought
-                    That sounds way more convenient.
+                    Convincing argument you've got there.
                 }
                 admiralty:
                     !left
                     !injured
                 target:
-                    You know what, how about a deal.
-                    You leave quiet, and I let you actually leave.
+                    Look, if it makes you both shut up, I'll cut a deal.
+                    You stay away from me. You tell people about how I'm not to be messed with.
+                    It's an "You scratch my back, I don't scratch your back like a starving lumicyte." system I want here. Do you understand?
                 admiralty:
-                    I guess I don't have a choice, do I?
+                    I've got nothing else to understand.
                 target:
-                    You can choose to die, if that's what you want.
+                    Good. Let's shake on it.
+                    !give
                 admiralty:
-                    Fine. I'll leave quiet.
-                    !exit
-                * You saved {admiralty}, but you can't deal with {target}.
+                    !give
+                * With that, your chances of removing {target} were sacrificed for {admiralty}'s life.
                 * Maybe this is for the best.
             ]],
             DIALOG_CONVINCE_SPARE_FAILURE = [[
                 player:
-                    Would your conscience allow that?
+                    Don't think about catharsis. Think...
+                    !interest
+                    Think about your <i>soul</>.
                 target:
-                    That's a terrible reason.
+                    !handwave
+                    Oh please.
+                    I have no soul.
             ]],
 
             OPT_LEAVE = "Leave",
-
+            --target doesn't hate you, you leave to let Admiralty be killed.
             DIALOG_LEAVE = [[
                 player:
-                    Sorry for bothering you. I'll see my self out.
-                target:
-                    You'd better be.
-                admiralty:
-                    !right
-                    Wait, where you're going.
-                player:
-                    Leaving.
-                    I don't want to be caught up in this mess.
+                    Ah, I see this is the common Havarian Handshake.
+                    Didn't realize I was trying to interrupt tradition around here.
+                    Well, don't let me bother you two. Carry on.
                     !exit
-                * You left. Immediately after, {target} killed {admiralty}.
-                * At least you're still alive... and you haven't attacked anyone...
-                * ...but was it worth it?
+                target:
+                    That's more like it.
+                    !exit
+                * You tromp away, the last thing you hear being a gurgle before you're out of earshot.
             ]],
 
             OPT_ATTACK = "Attack {target} to save {admiralty}",
@@ -1196,7 +1229,9 @@ QDEF:AddConvo("action")
         :Fn(function(cxt)
             local target = cxt.quest:GetCastMember("target")
             local admiralty = cxt.quest:GetCastMember("admiralty")
+            --Fight if you fail negotiations
             local function AttackPhase(cxt)
+                --always have fight option
                 cxt:Opt("OPT_ATTACK")
                     :Dialog("DIALOG_ATTACK")
                     :Battle{
@@ -1205,6 +1240,7 @@ QDEF:AddConvo("action")
                         :Fn(function(cxt) cxt.quest.param.target_dead = target:IsDead() end)
                         :Dialog("DIALOG_ATTACK_WIN")
                         :GoTo("STATE_PROMOTION")
+                --If the target doesn't hate you and you failed a negotiation.
                 if cxt.quest:GetCastMember("target"):GetRelationship() > RELATIONSHIP.HATED then
                     cxt:Opt("OPT_LEAVE")
                         :Dialog("DIALOG_LEAVE")
@@ -1265,18 +1301,17 @@ QDEF:AddConvo("action")
         :Loc{
             DIALOG_PROMOTION = [[
                 agent:
-                    This person is quite the notorious criminal.
-                    Now I've {target_dead?killed|captured} {target.himher}, I'm going to get promoted.
+                    This one's got a big head on {target.hisher} shoulders. Big head means big bounty.
                 {unplanned?
-                    Thanks for your help back there?
+                    I've got to thank you for giving a hand back there.
                     {dominate?
                     player:
                         But I didn't do anything!
                     agent:
-                        Exactly.
+                        You'll be a witness! Living proof that I did this single-handed!
                     }
                     |
-                    It's all thanks to your lead, {player}.
+                    I'll toast a strong cup of plonk to you while I'm celebrating.
                 }
                 {interrupted?
                     Even though you tried to interfere in the end.
@@ -1298,25 +1333,25 @@ QDEF:AddConvo("action")
             ]],
             DIALOG_LEARN_STATION = [[
                 player:
-                    Wait, I've never been to the Admiralty Headquarters before.
-                    Can you show me the way?
+                    That reminds me...where <i>is</> the Admiralty Headquarters?
                 agent:
-                    Oh, I guess you've never been there before.
-                    Wanna come?
+                    You've never been? I could take you there with {target} here.
             ]],
             OPT_ACCEPT_INVITE = "Accept {admiralty}'s offer",
             DIALOG_ACCEPT_INVITE = [[
                 player:
-                    Sure, why not.
+                    !shrug
+                    I've got nowhere else I need finding.
                 agent:
-                    Follow me.
+                    That's great! You keep an eye out for any of {target}'s friends, come on.
             ]],
             OPT_DECLINE_INVITE = "Decline {admiralty}'s offer",
             DIALOG_DECLINE_INVITE = [[
                 player:
-                    Nah, I have better places to be.
+                    Nah, thinking of heading elsewhere for now.
                 agent:
-                    Oh well. Maybe next time.
+                    !shrug
+                    Suit yourself.
             ]],
 
             DIALOG_END = [[
@@ -1516,19 +1551,19 @@ QDEF:AddConvo("innocent", "admiralty")
         OPT_ASK = "Ask about {agent}",
         DIALOG_ASK = [[
             player:
-                Any progress on {target}?
+                So any updates on {target}?
             agent:
-                Yeah, so turns out {target} is completely innocent.
-                I can't find any dirt on {target.himher}.
-                Thanks for letting me follow a false lead, {player}.
+                I...I can't do it.
             player:
-                Hey, that's not my fault!
-                How am I supposed to know whether {target} is innocent or not?
-                It's supposed to be your job!
+                !dubious
+                Can't arrest someone for the private citizen?
             agent:
-                With this time, I could've did other meaningful things that can get me promoted!
-                Instead, my time is wasted on a wild goose chase.
-                Didn't I tell you? Us Admiralty are getting really busy because of the election.
+                Oh no, it's not that.
+                !scared
+                It's that I've tried <i>Everything</> to arrest {target}!
+                I've tried getting a warrant, I've planted evidence on {target.himher}, I've even tried just flat out dogging {target} in case {target.heshe} littered!
+                Grifter, either this target's a saint or Hesh itself. Either way, I can't do anything.
+                I've spent too much time on {target.himher}. I'm going to do something that might actually get me promoted.
         ]],
     }
     :Hub(function(cxt)
@@ -1646,47 +1681,58 @@ QDEF:AddConvo("escort")
                 {ad_dead?
                     {not target_dead?
                         agent:
-                            [p]Who's this?
+                            !crossed
+                            What schlepped through the door this time?
                         player:
-                            A criminal. {admiralty} and I captured {target.himher} together.
+                            A criminal in cuffs. {admiralty} and I took {target.himher} down.
                         agent:
-                            Speaking of which, where's {admiralty}?
+                            Ah, well, just leave {target.himher} here, I'll take {target} down to a cell.
+                            !chuckle
+                            And I'm sure {admiralty} is going to be doing a lot of paperwork tonight.
                         player:
-                            Well, {admiralty.heshe}'s dead.
+                            !bashful
+                            About that...
                         agent:
-                            What a shame.
-                            We'll handle it from here.
+                            !palm
+                            Figures {admiralty} would clock out like this.
+                            <i>Fine</>. Grifter, leave the inmate, I guess I'll sort things out.
                     }
                 }
                 {not ad_dead?
                     {target_dead?
                         agent:
-                            [p] What's going on?
+                            !disgust
+                            Okay... You dragged a corpse into here <i>why</>?
                         admiralty:
                             !left
-                            We killed {target}.
+                            We killed {target}. Had to bring the body as proof, as per protocol.
                         agent:
-                            Oh nice!
+                            I get that but... we could've had this interaction <i>outside</> instead of here.
+                            Agh, whatever. Put it somewhere it won't stink up the place.
                         {high_bounty?
-                            [p] {admiralty}, you're hereby promoted.
+                            Only thing stronger than the smell must've been the fight. We've had an eye on {target} for a long while, for good reason.
+                            I think once the forms are filled, you'll be seeing a bit of extra blood money in your salary.
                         admiralty:
                             !left
-                            Sweet!
+                            Does that mean a promotion?
+                        agent:
+                            Oh yeah. You at least won't have to be here while the cleaning crew works.
                         }
                     }
                     {not target_dead?
                         agent:
-                            [p] Who's this?
-                        player:
-                            A criminal that {admiralty} and I captured.
-                        agent:
-                            Well done!
-                        {high_bounty?
-                            [p] We've had our eyes on {target} for a while now. I'm glad you can bring {target.himher} in alive.
-                            {admiralty}, you're hereby promoted.
+                            Well then. An officer, a Grifter, and a criminal walk into the headquarters of the Admiralty.
+                            What's the punchline for this joke? Same as usual?
                         admiralty:
                             !left
-                            Sweet!
+                            !salute
+                            Same as usual. Grifter here helped me.
+                        {high_bounty?
+                        agent:
+                            Gotta say, I'm impressed. {target}'s had a bounty that could see over the clouds for a while now.
+                            I think once the arrest forms are sorted, you'll be seeing a bump in pay soon, {admiralty}, and a bump in authority.
+                        admiralty:
+                            That's incredible! Can't wait to start my new duties.
                         }
                         agent:
                             We'll handle it from here.

@@ -12,8 +12,8 @@ local QDEF = QuestDef.Define
     extra_reward = false,
 
     on_start = function(quest)
-        quest:Activate("spread_rumor")
-        quest:Activate("time_countdown")
+        -- quest:Activate("spread_rumor")
+        -- quest:Activate("time_countdown")
     end,
 
     on_complete = function( quest )
@@ -231,6 +231,9 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
                                 cxt:Dialog("DIALOG_TARGET_PST_NO_ENTRY", cxt.quest.param.rumor)
                             end
                             cxt:Dialog("DIALOG_TARGET_PST_2")
+
+                            cxt.quest:Activate("spread_rumor")
+                            cxt.quest:Activate("time_countdown")
                         end)
                 end
             end
@@ -362,8 +365,8 @@ QDEF:AddConvo("spread_rumor")
                 * This does not look good for you.
             }
         ]],
-        SIT_MOD_POS = "{agent} supports {target}.",
-        SIT_MOD_NEG = "{agent} opposes {target}.",
+        SIT_MOD_POS = "{agent} supports {target}",
+        SIT_MOD_NEG = "{agent} opposes {target}",
 
         REQ_DIFFERENT_FACTION = "You already spread this rumor among {agent}'s faction",
     }

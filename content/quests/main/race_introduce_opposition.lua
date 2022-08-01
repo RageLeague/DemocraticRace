@@ -410,11 +410,28 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 [p] I'm done with intel gathering.
             agent:
                 Time for you to do some work.
+            {no_assassin?
             player:
-                The world seems a bit dangerous for me now.
+                [p] I'm a big shot now. What if there are assassins coming after me?
+            agent:
+                If you want to feel safer, hire a bodyguard or something.
+            }
+            {not no_assassin and billed_baron_response?
+            agent:
+                [p] By the way, why do I have a bill for Baron response?
+            player:
+                I'm sorry for looking for help when I am being attacked by assassins, okay?
+            agent:
+                That is not very cash money of you.
+                Hire your own bodyguard. Don't make me pay for your problems.
+            }
+            {not no_assassin and not billed_baron_response?
+            player:
+                [p] The world seems a bit dangerous for me now.
             agent:
                 I guess you're pretty shaken from the yesterday's assassination, huh?
                 If you want to feel safer, hire a bodyguard or something.
+            }
         ]],
     }
     :Hub(function(cxt)
@@ -424,6 +441,10 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             :GoTo("STATE_QUESTIONS")
         cxt:Opt("OPT_DONE_QUEST")
             :SetQuestMark( cxt.quest )
+            :Fn(function(cxt)
+                cxt.quest.param.billed_baron_response = cxt:GetAgent():HasMemory("BILLED_BARON_RESPONSE")
+                cxt.quest.param.no_assassin = TheGame:GetGameState():GetMainQuest() and TheGame:GetGameState():GetMainQuest().param.no_assassin
+            end)
             :Dialog("DIALOG_DONE_QUEST")
             :Fn(function(cxt)
                 QuestUtil.SpawnQuest("CAMPAIGN_BODYGUARD")

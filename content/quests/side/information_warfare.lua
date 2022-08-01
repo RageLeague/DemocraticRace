@@ -48,9 +48,8 @@ local QDEF = QuestDef.Define
     reward_mod = 0,
     extra_reward = false,
     on_start = function(quest)
-        quest:Activate("commission")
-        -- quest.param.actions = math.round(DemocracyUtil.GetBaseFreeTimeActions() * 1.5)
-        quest:Activate("time_left")
+        -- quest:Activate("commission")
+        -- quest:Activate("time_left")
     end,
     -- events =
     -- {
@@ -877,6 +876,8 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
+            cxt.quest:Activate("commission")
+            cxt.quest:Activate("time_left")
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{

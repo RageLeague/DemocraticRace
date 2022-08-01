@@ -354,7 +354,7 @@ local CARDS = {
             {
                 tags = "disliked",
                 [[
-                    Words coming out of your mouth is automatically wrong.
+                    Any words coming out of your mouth are automatically wrong.
                 ]],
                 [[
                     Heh. Of course you would believe that.
@@ -363,7 +363,6 @@ local CARDS = {
         },
         name = "Debater Hinder",
         show_dealt = false,
-        quip = "support",
         rarity = CARD_RARITY.UNIQUE,
         flags = CARD_FLAGS.BYSTANDER,
         OnPostResolve = function( self )
@@ -384,6 +383,56 @@ local CARDS = {
             end)
         end,
     },
+    faction_negotiation_hinder =
+    {
+        quips =
+        {
+            {
+                [[
+                    This is no place for a grifter like you!
+                ]],
+                [[
+                    This is our debate! Not yours!
+                ]],
+                [[
+                    Come to steal my glory, {player}?
+                ]],
+                [[
+                    Hey! You are not supposed to be here!
+                ]],
+            },
+            {
+                tags = "liked",
+                [[
+                    What are you doing, {player}? You should let me handle this?
+                ]],
+                [[
+                    Why are you doing this to me, {player}?
+                ]],
+            },
+            {
+                tags = "disliked",
+                [[
+                    Make a nuisance of yourself somewhere else, {player}.
+                ]],
+            },
+        },
+        name = "Faction Hinder",
+        show_dealt = false,
+        rarity = CARD_RARITY.UNIQUE,
+        flags = CARD_FLAGS.BYSTANDER,
+        resolve_scale = {20, 25, 30, 35},
+        OnPostResolve = function( self )
+            local core_id = "POWER_ABUSE"
+            local opposition_data = DemocracyUtil.GetOppositionData(self.owner)
+            if opposition_data and opposition_data.faction_core then
+                core_id = opposition_data.faction_core
+            end
+            local mod = Negotiation.Modifier( core_id, self.negotiator )
+            self.negotiator:CreateModifier( mod )
+            mod:SetResolve(DemocracyUtil.CalculateBossScale(self.resolve_scale))
+        end,
+    },
     appeal_to_crowd_quest =
     {
         name = "Appeal to the Crowd",
@@ -393,6 +442,10 @@ local CARDS = {
         cost = 1,
         flags = CARD_FLAGS.DIPLOMACY,
         rarity = CARD_RARITY.UNIQUE,
+
+        CanPlayCard = function( self, card, engine, target )
+            return engine:GetOpponentNegotiator():GetModifierStacks("CROWD_OPINION") < 5
+        end,
 
         OnPostResolve = function( self, minigame, targets )
             if minigame:GetOpponentNegotiator():GetModifierStacks("CROWD_OPINION") < 5 then
@@ -431,6 +484,7 @@ local CARDS = {
             desc_fn = function(self, fmt_str)
                 return loc.format(fmt_str, self.linked_quest and self.linked_quest:GetProvider():GetName() or (self.def or self):GetLocalizedString("ALT_DESC"))
             end,
+            icon = "DEMOCRATICRACE:assets/modifiers/promote_product.png",
 
             modifier_type = MODIFIER_TYPE.ARGUMENT,
             max_resolve = 5,
@@ -659,6 +713,6 @@ local FEATURES = {
     },
 }
 for id, data in pairs(FEATURES) do
-	local def = NegotiationFeatureDef(id, data)
-	Content.AddNegotiationCardFeature(id, def)
+    local def = NegotiationFeatureDef(id, data)
+    Content.AddNegotiationCardFeature(id, def)
 end
