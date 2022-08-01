@@ -305,9 +305,9 @@ QDEF:AddConvo("action")
                 Just, stay out of my way until I bring this scum to the station.
         ]],
         SIT_MOD_BASE = "{admiralty} worked really hard to arrest {target}!",
-        SIT_MOD_AD = "{target} is an Admiralty.",
-        SIT_MOD_RIVAL = "{target} is a rival faction to the admiralty.",
-        SIT_MOD_UNLAWFUL = "{target} is a criminal faction.",
+        SIT_MOD_AD = "{target} is an Admiralty",
+        SIT_MOD_RIVAL = "{target} is a rival faction to the admiralty",
+        SIT_MOD_UNLAWFUL = "{target} is a criminal faction",
         OPT_AD_FIGHT = "Free {target} by force",
         DIALOG_AD_FIGHT = [[
             admiralty:

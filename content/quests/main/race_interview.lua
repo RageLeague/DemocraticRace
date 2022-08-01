@@ -483,7 +483,7 @@ QDEF:AddConvo("do_interview")
             ]],
 
             OPT_DO_INTERVIEW = "Do the interview",
-            SIT_MOD = "Has a lot of questions prepared for you.",
+            SIT_MOD = "Has a lot of questions prepared for you",
             NEGOTIATION_REASON = "Survive the interview while answering as many questions as you can!({1} {1*question|questions} answered)",
 
             DIALOG_INTERVIEW_SUCCESS = [[

@@ -261,6 +261,10 @@ local QDEF = QuestDef.Define
                 QuestUtil.SpawnQuest(id)
             end
         end
+
+        if not quest.param.first_primary_advisor and quest:GetCastMember("primary_advisor") then
+            quest.param.first_primary_advisor = quest:GetCastMember("primary_advisor")
+        end
     end,
     fill_out_quip_tags = function(quest, tags, agent)
         table.insert_unique(tags, "democratic_race")
@@ -1075,6 +1079,9 @@ local QDEF = QuestDef.Define
             quest:UnassignCastMember("home")
         end
         quest:AssignCastMember("home")
+        if not quest.param.first_primary_advisor then
+            quest.param.first_primary_advisor = agent
+        end
         -- if quest.param.all_day_quests then
         --     for k,v in ipairs(quest.param.all_day_quests) do
         --         if v:GetQuestDef():GetCast("primary_advisor") then
