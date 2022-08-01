@@ -807,6 +807,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
 
             cxt:Opt("OPT_DISTRACT")
                 :PostText(cxt.quest.param.advisor_intervention and "TT_DISTRACT_ADVISOR" or "TT_DISTRACT")
+                :Dialog("DIALOG_DISTRACT")
                 :Fn(function(cxt)
                     TheGame:SetTempMusicOverride("DEMOCRATICRACE|event:/democratic_race/music/negotiation/assassin", cxt.enc)
                 end)

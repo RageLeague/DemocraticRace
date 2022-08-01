@@ -434,10 +434,9 @@ local MODIFIERS =
 
         event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
-
                 if self.stacks <= 1 then
                     minigame:Win()
-                else
+                elseif minigame.turns > 1 then
                     self.negotiator:RemoveModifier(self, 1)
                     self:NotifyChanged()
                     if self.stacks <= 4 then
