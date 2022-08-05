@@ -12,10 +12,12 @@ local QDEF = QuestDef.Define
         for i = 1, hater_count do
             quest:AssignCastMember("hater")
             if not quest:GetCastMember("hater") then
+                print("Hater not found")
                 break
             end
+            print("Hater: ", quest:GetCastMember("hater"))
             table.insert(quest.param.other_haters, quest:GetCastMember("hater"))
-            quest:UnassignCastMember("hater")
+            quest.cast["hater"] = nil
         end
         return #quest.param.other_haters > 0
     end,
@@ -167,7 +169,14 @@ QDEF:AddConvo()
             end
 
             cxt:Dialog("DIALOG_INTRO")
-
+            DemocracyUtil.QuipStance(cxt, cxt:GetCastMember("hater_leader"), nil, "heckle")
+            cxt:ReassignCastMember("previous_heckler", cxt:GetCastMember("hater_leader"))
+            for i, agent in ipairs(cxt.quest.param.other_haters) do
+                cxt.enc:PresentAgent( agent, SIDE.RIGHT )
+                cxt.enc:Emote( agent, "angry" )
+                DemocracyUtil.QuipStance(cxt, agent, nil, "heckle", "follow_up")
+                cxt:ReassignCastMember("previous_heckler", agent)
+            end
             cxt:Dialog("DIALOG_INTRO_PST")
 
             cxt:Opt("OPT_IGNORE")

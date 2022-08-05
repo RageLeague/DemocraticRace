@@ -38,7 +38,7 @@ lines:
   - |
     L + ratio + no boons + ik-Derrick + Hesh-damned + slurred speech + touch shills!
 ## A person exclaims and heckles (the player).
-- tags: [exclaim, heckle]
+- tags: [heckle]
   dialog:
   - |
     !angry_accuse
@@ -50,12 +50,12 @@ lines:
     Get out of here! Havaria doesn't need the stench coming out of your mouth.
   - |
     {other} is a crook, through and through!
-- tags: [exclaim, heckle, follow_up]
+- tags: [heckle, follow_up]
   dialog:
   - |
     Yeah!
   - |
-    What {previous_heckler} said!
+    What {previous_heckler.heshe} said!
 ## A person ask a leading question supporting an issue.
 - tags: [question]
   dialog:
@@ -227,54 +227,54 @@ lines:
     What do you think of that?
 
 ## Specific heckle lines
-- tags: [exclaim, heckle, disliked]
-  score: 3
+- tags: [heckle, disliked]
+  score: 2
   dialog:
   - |
     You sicken me, {other}!
   - |
     !angry_accuse
     You should be ashamed of yourself!
-- tags: [exclaim, heckle, disliked]
-  notags: [dislike_ideology, dislike_ideology_ii, first_impressions, relatable, elitist_faction_dislike]
-  score: 3
+- tags: [heckle, disliked]
+  notags: [DISLIKE_IDEOLOGY, DISLIKE_IDEOLOGY_II, FAIL_CONVINCE_SUPPORT, FIRST_IMPRESSIONS, RELATABLE, ELITIST_FACTION_DISLIKE]
+  score: 2
   dialog:
   - |
     !angry_accuse
     You ruined my life, {other}! And you dare to show your face?
   - |
     This is the person that ruined my life!
-- tags: [exclaim, heckle, disliked, elitist_faction_dislike]
+- tags: [heckle, disliked, ELITIST_FACTION_DISLIKE]
   dialog:
   - |
     !angry_accuse
     Oh! You think you are so much better than us? Because you are a politician?
   - |
     %stance_quip exclaim heckle
-- tags: [exclaim, heckle, disliked, terrorized]
+- tags: [heckle, disliked, TERRORIZED]
   dialog:
   - |
     !angry_accuse
     You mess with one of us, you mess with all of us!
   - |
     Don't think you can mess with my buddy and get away with it!
-- tags: [exclaim, heckle, disliked, killed_friend]
+- tags: [heckle, disliked, KILLED_FRIEND]
   dialog:
   - |
     !angry_accuse
     You are a murderer, {other}! You are a dirty murderer!
-- tags: [exclaim, heckle, disliked, intimidated]
+- tags: [heckle, disliked, INTIMIDATE]
   dialog:
   - |
     !angry_accuse
     Don't believe for a second that you can act like a bully and expect to walk away with it!
-- tags: [exclaim, heckle, disliked, insult]
+- tags: [heckle, disliked, INSULT]
   dialog:
   - |
     !angry_accuse
     I don't take that kind of disrespect kindly, {other}!
-- tags: [exclaim, heckle, anti_fiscal_policy, s_pro_fiscal_policy]
-  score: 3
+- tags: [heckle, anti_fiscal_policy, s_pro_fiscal_policy]
+  score: 2
   dialog:
   - |
     agent:
@@ -287,14 +287,14 @@ lines:
       The success of a nation is determined by materialistic and socioeconomic factors.
       !angry_accuse
       Read a Hesh-damned book!
-- tags: [exclaim, heckle, player_sal, anti_labor_law, s_pro_labor_law]
-  score: 3
+- tags: [heckle, player_sal, anti_labor_law, s_pro_labor_law]
+  score: 2
   dialog:
   - |
     !angry_accuse
     That is the class traitor!
-- tags: [exclaim, heckle, anti_religious_policy, s_pro_religious_policy]
-  score: 3
+- tags: [heckle, anti_religious_policy, s_pro_religious_policy]
+  score: 2
   dialog:
   - |
     agent:

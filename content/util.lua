@@ -1318,17 +1318,31 @@ function DemocracyUtil.QuipStance(cxt, agent, stance, ...)
             end
         end
     end
-    assert(type(stance) == "table", "Stance must be a table")
+    assert(stance == nil or type(stance) == "table", "Stance must be a table or nil")
     cxt.enc.scratch.stance = stance
-    local stance_tag
-    if stance.stance_intensity > 0 then
-        stance_tag = "s_pro_" .. stance.issue_id
-    elseif stance.stance_intensity < 0 then
-        stance_tag = "s_anti_" .. stance.issue_id
+    local stance_tags = {}
+    if stance then
+        if stance.stance_intensity > 0 then
+            table.insert(stance_tags, "s_pro_" .. loc.tolower( stance.issue_id ))
+        elseif stance.stance_intensity < 0 then
+            table.insert(stance_tags, "s_anti_" .. loc.tolower( stance.issue_id ))
+        else
+            table.insert(stance_tags, "s_no_" .. loc.tolower( stance.issue_id ))
+        end
     else
-        stance_tag = "s_no_" .. stance.issue_id
+        for id, data in pairs(DemocracyConstants.issue_data) do
+            local index = DemocracyUtil.GetAgentStanceIndex(data, agent)
+            if index > 0 then
+                table.insert(stance_tags, "s_pro_" .. loc.tolower( id ))
+            elseif index < 0 then
+                table.insert(stance_tags, "s_anti_" .. loc.tolower( id ))
+            else
+                table.insert(stance_tags, "s_no_" .. loc.tolower( id ))
+            end
+        end
     end
-    cxt:Quip(agent, "stance_quip", stance_tag, ...)
+    local additional_tags = {...}
+    cxt:Quip(agent, "stance_quip", table.unpack(table.merge(stance_tags, additional_tags)))
 end
 
 function DemocracyUtil.SplitNullable(str, sep)
