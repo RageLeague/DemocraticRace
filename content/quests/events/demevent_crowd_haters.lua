@@ -65,7 +65,11 @@ QDEF:AddConvo()
                 * Not a good look admitting that you are {bad_nick}, but it's not like they don't know who this name refers to.
             ]],
             DIALOG_INTRO_PST = [[
+                hater_leader:
+                    !right
+                    !angry
                 * The crowd starts jeering at you. A public gathering this big with this kind of attitude towards you will not reflect well on your image.
+                *** A bunch of people gathered to badmouth you.
             ]],
             OPT_IGNORE = "Ignore the crowd and move on",
             DIALOG_IGNORE = [[
@@ -75,104 +79,221 @@ QDEF:AddConvo()
                     Look everyone, {bad_nick} thinks {player.heshe}'s too good for us! Isn't that right, {bad_nick}?
                 * You tell yourself that if you campaign successfully, you'll earn yourself devoted supporters who'll speak louder than these hecklers can.
                 * Still, you can't help but feel yourself losing resolve after such an intense encounter with so many haters.
+                *** You lost resolve and support from enduring the insults from the crowd!
             ]],
-            OPT_APPEAL = "Appeal to the crowd",
+            OPT_APPEAL = "Convince the crowd to disperse",
             DIALOG_APPEAL = [[
                 player:
-                    Hello! If I may just make a case for myself...
+                    !angry
+                    Will you guys listen!
                 hater_leader:
                     !right
                     It looks like {bad_nick} has something to say! This should be rich.
             ]],
             DIALOG_APPEAL_SUCCESS = [[
                 player:
-                    I'm honestly just trying to make Havaria a better place.
-                hater_face2:
-                    !right
-                    I just feel bad now. I'm leaving.
-                    !exit
-                hater_face:
-                    !right
-                    But, but, it's {bad_nick}!
+                    I know you guys have a lot of opinions about me.
+                    But still, do you think you can just gang up and harass someone you don't like?
+                hater_leader:
+                    !angry_accuse
+                    Yeah! You deserve all that!
                 player:
-                    Are you done yet?
-                hater_face:
-                    Haha... I was just kidding, yeah?
+                    !hips
+                    All you're doing is just making yourselves look like children throwing temper tantrums.
+                    $neutralJoke
+                    "Oh! Look at me! I am a loser who fails at everything at life, so I blame everything on this one politician!"
+                    Is that what you want? Because that seems to be what you are saying.
+                hater_leader:
+                    !crossed
+                    Hmph. This is absurd!
+                * Yet, you can see the crowd is getting a bit uneasy.
+                * Soon, some of the crowd began to leave.
+                hater_leader:
+                    Wait! Where are you all going?
+                    !spit
+                    Hesh damn it, {bad_nick}! You've won this one. For now.
                     !exit
-            ]],
-            DIALOG_APPEAL_PARTIAL_SUCCESS = [[
+                * Then, {hater_leader} leaves as well.
+                * The streets of the Pearl soon become empty, free of any meddling crowds.
                 player:
-                    I'm honestly just trying to make Havaria a better place.
-                hater_face2:
-                    !right
-                    I just feel bad now. I'm leaving.
-                hater_face:
-                    !right
-                    Don't think that your honeyed words can fool the rest of us, {bad_nick}. We're onto you.
+                    !happy
+                * Just the way you like it!
+                *** You dispersed the crowd with your words.
             ]],
             DIALOG_APPEAL_FAILURE = [[
                 player:
-                    I'm not so bad, see?
-                hater_face:
-                    Look at {bad_nick} stumbling over {player.hisher} own words! What a buffoon!
-                * The crowd erupts into laughter, and they're not laughing with you. You have no choice but to slink away with your tail between your legs.
+                    !placate
+                    Let's just be civil alright?
+                hater_leader:
+                    !angry
+                    Civil? You expect us to be civil?
+                    !angry_shrug
+                    After what you did? After what you are going to do to Havaria?
+                    The last thing we want is to be <i>civil</>, and let you get away with all that!
+                * Your attempt to calm the crowd down only seem to have fanned the flames.
+                * You need to try something else!
             ]],
-            OPT_USE_BODYGUARD = "Have your bodyguard disperse the crowd",
+            OPT_USE_BODYGUARD = "Have your bodyguard disperse the crowd...",
             DIALOG_USE_BODYGUARD = [[
-                {guard_human?
+                {guard_sentient?
                     player:
                         !hips
                         {guard}. Clear this crowd for me, thank you.
                     hired:
                         !left
-                        Yes {player.honorific}.}
-                {not guard_human?
+                        !salute
+                        Yes {player.gender?sir|ma'am|boss}!
+                        !overthere
+                        Alright, move along, and nobody gets hurt!
+                }
+                {not guard_sentient and not guard_mech?
                     player:
                         !point
                         {guard}, sic 'em!
                     hired:
                         !left
-                        Grrrr!}
+                        Grrrr!
+                }
+                {not guard_sentient and guard_mech?
+                    player:
+                        !hips
+                        {guard}, disperse the crowd.
+                    hired:
+                        !left
+                        AFFIRMATIVE.
+                }
                 * {guard} efficiently scatters the crowd. That should keep them from talking.
             ]],
             OPT_FIGHT = "Disperse the crowd yourself",
-            WARNING_FIGHT = "Remember: You are a politician, not a trained warrior. This could end poorly.",
             DIALOG_FIGHT = [[
-                * You let out a bloodcurdling scream and rush at the crowd.
-                hater_face:
+                {not tried_negotiation?
+                player:
+                    !fight
+                    This is what you get for calling me {bad_nick}!
+                }
+                {tried_negotiation?
+                player:
+                    !fight
+                    Okay, if you barbarians don't understand what being civil means, then let me speak a language you <b>can</> understand!
+                }
+                hater_leader:
                     !right
-                    !scared
+                    !fight
                     Look out, {bad_nick}'s gone mad! Fend for your lives!
             ]],
+            DIALOG_FIGHT_WIN = [[
+                {not all_dead?
+                    agent:
+                        !right
+                        !injured
+                }
+                player:
+                    Had enough?
+                {all_dead?
+                    * The pile of corpses does not respond.
+                    * How the Hesh did you even manage that?
+                    player:
+                        !dust_off
+                        Typical.
+                    * You leave the scene, covered in the blood of so many people.
+                    * This will send a powerful message to people who want to mess with you.
+                }
+                {not all_dead?
+                    agent:
+                        !injured_palm
+                        Uh. Didn't know that {bad_nick} is a violent psychopath.
+                    player:
+                        !fight
+                        I suggest you shut your trap, unless you want some more of these.
+                    agent:
+                        Grr...
+                        !exit
+                    * You sure established dominance among your enemies!
+                    * Now, your enemies will think twice before messing with you!
+                }
+            ]],
+            DIALOG_FIGHT_RUNAWAY = [[
+                player:
+                    !exit
+                * You run away cowardly.
+                hater_leader:
+                    Yeah! That's right! Get out of my sight, {bad_nick}!
+                * This is not going to be good for your image.
+            ]],
         }
+        :SetLooping()
         :Fn(function(cxt)
-            cxt.quest:Complete()
-            --character-specific nicks
-            cxt.quest.param.bad_nick = cxt.player:GetBadNickName()
+            if cxt:FirstLoop() then
+                cxt.quest:Complete()
+                --character-specific nicks
+                cxt.quest.param.bad_nick = cxt.player:GetBadNickName()
 
-            cxt:Dialog("DIALOG_INTRO")
-            DemocracyUtil.QuipStance(cxt, cxt:GetCastMember("hater_leader"), nil, "heckle")
-            cxt:ReassignCastMember("previous_heckler", cxt:GetCastMember("hater_leader"))
-            for i, agent in ipairs(cxt.quest.param.other_haters) do
-                cxt.enc:PresentAgent( agent, SIDE.RIGHT )
-                cxt.enc:Emote( agent, "angry" )
-                DemocracyUtil.QuipStance(cxt, agent, nil, "heckle", "follow_up")
-                cxt:ReassignCastMember("previous_heckler", agent)
+                cxt:TalkTo(cxt:GetCastMember("hater_leader"))
+
+                cxt:Dialog("DIALOG_INTRO")
+                DemocracyUtil.QuipStance(cxt, cxt:GetCastMember("hater_leader"), nil, "heckle")
+                cxt:ReassignCastMember("previous_heckler", cxt:GetCastMember("hater_leader"))
+                for i, agent in ipairs(cxt.quest.param.other_haters) do
+                    cxt.enc:PresentAgent( agent, SIDE.RIGHT )
+                    cxt.enc:Emote( agent, "angry" )
+                    DemocracyUtil.QuipStance(cxt, agent, nil, "heckle", "follow_up")
+                    cxt:ReassignCastMember("previous_heckler", agent)
+                end
+                cxt:Dialog("DIALOG_INTRO_PST")
             end
-            cxt:Dialog("DIALOG_INTRO_PST")
 
             cxt:Opt("OPT_IGNORE")
                 :Dialog("DIALOG_IGNORE")
-                --lose support and resolve
+                :DeltaSupport(-3)
+                :DeltaResolve(-8)
                 :Travel()
 
             --negotiate
             DemocracyUtil.AddBodyguardOpt(cxt, function(cxt, agent)
                 cxt:ReassignCastMember("guard", agent)
-                cxt.quest.param.guard_human = not agent:IsPet()
+                cxt.quest.param.guard_sentient = not agent:IsPet()
+                cxt.quest.param.guard_mech = agent:GetSpecies() == SPECIES.MECH
                 cxt:Dialog("DIALOG_USE_BODYGUARD")
-                    :Travel()
+
+                StateGraphUtil.AddLeaveLocation(cxt)
             end, "OPT_USE_BODYGUARD")
 
+            if not cxt.quest.param.tried_negotiation then
+                cxt:BasicNegotiation("APPEAL", {
+                    hinders = cxt.quest.param.other_haters,
+                    cooldown = 0
+                })
+                    :OnSuccess()
+                        :Travel()
+                    :OnFailure()
+                        :Fn(function(cxt)
+                            cxt.quest.param.tried_negotiation = true
+                        end)
+            end
             --FIGHT
+            cxt:Opt("OPT_FIGHT")
+                :Dialog("DIALOG_FIGHT")
+                :Battle{
+                    enemies = table.merge({cxt:GetCastMember("hater_leader")}, cxt.quest.param.other_haters),
+                    on_runaway = function( cxt, battle )
+                        cxt:Dialog("DIALOG_FIGHT_RUNAWAY")
+                        StateGraphUtil.DoRunAwayEffects( cxt, battle )
+                        DemocracyUtil.TryMainQuestFn("DeltaSupport", -3)
+                        StateGraphUtil.AddLeaveLocation(cxt)
+                    end,
+                }
+                    :OnWin()
+                        :Fn(function(cxt)
+                            cxt.quest.param.all_dead = true
+                            for i, agent in ipairs(table.merge({cxt:GetCastMember("hater_leader")}, cxt.quest.param.other_haters)) do
+                                if agent:IsAlive() then
+                                    cxt:ReassignCastMember("survivor", agent)
+                                    cxt.quest.param.all_dead = false
+                                    break
+                                end
+                            end
+                            cxt:TalkTo(cxt:GetCastMember("survivor"))
+                        end)
+                        :Dialog("DIALOG_FIGHT_WIN")
+                        :Travel()
         end)
