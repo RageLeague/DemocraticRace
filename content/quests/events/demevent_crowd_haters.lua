@@ -119,7 +119,7 @@ QDEF:AddConvo()
                     !spit
                     Hesh damn it, {bad_nick}! You've won this one. For now.
                     !exit
-                * Then, {hater_leader} leaves as well.
+                * Then, seeing the tides have turned against {hater_leader.himher}, {hater_leader} leaves as well.
                 * The streets of the Pearl soon become empty, free of any meddling crowds.
                 player:
                     !happy
@@ -196,7 +196,7 @@ QDEF:AddConvo()
                     Had enough?
                 {all_dead?
                     * The pile of corpses does not respond.
-                    * How the Hesh did you even manage that?
+                    * How the Hesh did you even manage to kill all of them?
                     player:
                         !dust_off
                         Typical.
