@@ -1,10 +1,9 @@
 local NICKNAMES =
 {
-    SAL = "Recount Dracula",
+    SAL = "Icky-Derrick",
     ROOK = "Crooked {1.name}",
-    SMITH = "Flotsam Banquod",
+    SMITH = "{1.name} Badquod",
     PC_SHEL = "Miss Shills-for-Brains",
-    PC_ARINT = "Spark Karen",
 }
 
 for id, name in pairs(NICKNAMES) do
