@@ -14,6 +14,14 @@ end
 local function OnPostLoad( mod )
     rawset(_G, "CURRENT_MOD_ID", mod.id)
 
+    for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:postload_patches/", "*.lua", true )) do
+        local name = filepath:match( "(.+)[.]lua$" )
+        -- print(name)
+        if name then
+            require(name)
+        end
+    end
+
     local STARTING_MONEY = 125
 
     local FORBIDDEN_CONVO = {

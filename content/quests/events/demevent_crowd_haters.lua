@@ -46,15 +46,6 @@ local QDEF = QuestDef.Define
     end,
 }
 
-local NICK_MAP =
-{
-    SAL = "BAD_NICK_SAL",
-    ROOK = "BAD_NICK_ROOK",
-    SMITH = "BAD_NICK_SMITH",
-    PC_SHEL = "BAD_NICK_SHEL",
-    PC_ARINT = "BAD_NICK_ARINT",
-}
-
 QDEF:AddConvo()
     :ConfrontState("STATE_CONFRONT")
         :Loc{
@@ -153,20 +144,11 @@ QDEF:AddConvo()
                     !scared
                     Look out, {bad_nick}'s gone mad! Fend for your lives!
             ]],
-            BAD_NICK_SAL = "Recount Dracula",
-            BAD_NICK_ROOK = "{player} the Crook",
-            BAD_NICK_SMITH = "Flotsam Banquod",
-            BAD_NICK_SHEL = "Miss Shills-for-Brains",
-            BAD_NICK_ARINT = "Spark Karen",
-            BAD_NICK_OTHER = "the spoiler",
         }
         :Fn(function(cxt)
             cxt.quest:Complete()
             --character-specific nicks
-            cxt.quest.param.bad_nick = cxt:GetLocString("BAD_NICK_OTHER")
-            if NICK_MAP[cxt.player:GetContentID()] then
-                cxt.quest.param.bad_nick = cxt:GetLocString(NICK_MAP[cxt.player:GetContentID()])
-            end
+            cxt.quest.param.bad_nick = cxt.player:GetBadNickName()
 
             cxt:Dialog("DIALOG_INTRO")
             DemocracyUtil.QuipStance(cxt, cxt:GetCastMember("hater_leader"), nil, "heckle")
