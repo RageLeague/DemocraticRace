@@ -62,7 +62,8 @@ QDEF:AddConvo()
                 player:
                     !surprised
                     What? Me?
-                * Not a good look admitting that you are {bad_nick}, but it's not like they don't know who this name refers to.
+                * Oops. Looks like you accidentally confirmed that you are "{bad_nick}".
+                * Lucky for you (in a way), the crowd doesn't seem to require your confirmation to know who this name refers to.
             ]],
             DIALOG_INTRO_PST = [[
                 hater_leader:
