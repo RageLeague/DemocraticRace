@@ -73,12 +73,17 @@ QDEF:AddConvo()
             ]],
             OPT_IGNORE = "Ignore the crowd and move on",
             DIALOG_IGNORE = [[
-                * You don't have time for this. You duck your head and try not to show a reaction as you move past them.
+                {not tried_negotiation?
+                    * You don't have time for this. You duck your head and try not to show a reaction as you move past them.
+                }
+                {tried_negotiation?
+                    * You decide to take the high road. You duck your head and try not to show a reaction as you move past them.
+                }
                 hater_leader:
                     !right
                     Look everyone, {bad_nick} thinks {player.heshe}'s too good for us! Isn't that right, {bad_nick}?
-                * You tell yourself that if you campaign successfully, you'll earn yourself devoted supporters who'll speak louder than these hecklers can.
-                * Still, you can't help but feel yourself losing resolve after such an intense encounter with so many haters.
+                * Everyone just keep throwing insults at you, which makes your mind very uneasy.
+                * Now people will see you as a pathetic politician who can't even handle a bit of opposition!
                 *** You lost resolve and support from enduring the insults from the crowd!
             ]],
             OPT_APPEAL = "Convince the crowd to disperse",
@@ -118,7 +123,6 @@ QDEF:AddConvo()
                 player:
                     !happy
                 * Just the way you like it!
-                *** You dispersed the crowd with your words.
             ]],
             DIALOG_APPEAL_FAILURE = [[
                 player:
@@ -139,10 +143,10 @@ QDEF:AddConvo()
                     player:
                         !hips
                         {guard}. Clear this crowd for me, thank you.
-                    hired:
+                    guard:
                         !left
                         !salute
-                        Yes {player.gender?sir|ma'am|boss}!
+                        You got it, boss!
                         !overthere
                         Alright, move along, and nobody gets hurt!
                 }
@@ -150,7 +154,7 @@ QDEF:AddConvo()
                     player:
                         !point
                         {guard}, sic 'em!
-                    hired:
+                    guard:
                         !left
                         Grrrr!
                 }
@@ -158,7 +162,7 @@ QDEF:AddConvo()
                     player:
                         !hips
                         {guard}, disperse the crowd.
-                    hired:
+                    guard:
                         !left
                         AFFIRMATIVE.
                 }
@@ -217,6 +221,8 @@ QDEF:AddConvo()
                     !exit
                 * You run away cowardly.
                 hater_leader:
+                    !right
+                    !angry_accuse
                     Yeah! That's right! Get out of my sight, {bad_nick}!
                 * This is not going to be good for your image.
             ]],
