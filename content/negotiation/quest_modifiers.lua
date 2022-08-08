@@ -1104,6 +1104,7 @@ local MODIFIERS =
             SCORE_OPPONENT_DESTROYED = "Opponent Refuted",
             SCORE_ARGUMENT_CREATED = "Argument Created",
             SCORE_ARGUMENT_INCEPTED = "Argument Incepted",
+            SCORE_UNDERDOG = "Underdog",
             SCORE_DELTA = "+{1} Pts",
         },
         desc_fn = function(self, fmt_str)
@@ -1217,9 +1218,9 @@ local MODIFIERS =
                     source = self.engine:FindModifierByUID(source)
                 end
             end
-            -- Now only cards can score points. Arguments can't
-            if type(source) == "table" and is_instance(source, Negotiation.Card) then
-                local real_source = source.real_owner
+            -- Now only cards can score points. Arguments can't other than the core
+            if type(source) == "table" and (is_instance(source, Negotiation.Card) or source.candidate_agent) then
+                local real_source = source.candidate_agent and source or source.real_owner
                 if real_source then
                     -- Give the AI an edge. This way we can get away with lower damage output while
                     -- making the score race still a challenge
@@ -1244,7 +1245,7 @@ local MODIFIERS =
                 end
             end
 
-            if is_instance(source, Negotiation.Card) and source.negotiator:IsPlayer() then
+            if source == "PLAYER" or (is_instance(source, Negotiation.Card) and source.negotiator:IsPlayer()) then
 
                 self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                     panel:RefreshReason()
@@ -1307,8 +1308,9 @@ local MODIFIERS =
                         return
                     end
                     -- print(loc.format("{1} dealt damage(real_owner={2})", source, source and source.real_owner))
-                    self:DeltaScore((damage - defended) * 1, source, "SCORE_DAMAGE")
-
+                    if is_instance(source, Negotiation.Card) then
+                        self:DeltaScore((damage - defended) * 1, source, "SCORE_DAMAGE")
+                    end
                     -- if target == self.engine:GetPlayerNegotiator():FindCoreArgument() and not target.real_owner then
                     --     local cmp_delta = math.floor((damage - defended) / 2)
                     --     target.composure = target.composure + cmp_delta
@@ -1329,7 +1331,7 @@ local MODIFIERS =
                             if type(id) == "number" then
                                 self:DeltaScore(math.ceil(damage * multiplier), id, "SCORE_FULL_BLOCK")
                             else
-                                self:DeltaScore(math.ceil(damage * multiplier), nil, "SCORE_FULL_BLOCK")
+                                self:DeltaScore(math.ceil(damage * multiplier), "PLAYER", "SCORE_FULL_BLOCK")
                             end
                         end
                     end
@@ -1401,6 +1403,55 @@ local MODIFIERS =
             end,
             [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
                 self:CheckGameOver()
+            end,
+            [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
+                local player_negotiators = 0
+                local opponent_negotiators = 0
+                local player_seen
+                for i, mod in self.anti_negotiator:Modifiers() do
+                    if mod.modifier_type == MODIFIER_TYPE.CORE then
+                        if mod.candidate_agent then
+                            player_negotiators = player_negotiators + 1
+                        else
+                            player_seen = true
+                        end
+                    end
+                end
+                if player_seen then
+                    player_negotiators = player_negotiators + 1
+                end
+                for i, mod in self.negotiator:Modifiers() do
+                    if mod.modifier_type == MODIFIER_TYPE.CORE then
+                        if mod.candidate_agent then
+                            opponent_negotiators = opponent_negotiators + 1
+                        end
+                    end
+                end
+                if negotiator == self.negotiator then
+                    if opponent_negotiators < player_negotiators then
+                        for i, mod in self.negotiator:Modifiers() do
+                            if mod.modifier_type == MODIFIER_TYPE.CORE then
+                                if mod.candidate_agent then
+                                    self:DeltaScore(10 * (player_negotiators - opponent_negotiators), mod, "SCORE_UNDERDOG")
+                                end
+                            end
+                        end
+                    end
+                else
+                    player_seen = false
+                    if player_negotiators < opponent_negotiators then
+                        for i, mod in self.anti_negotiator:Modifiers() do
+                            if mod.modifier_type == MODIFIER_TYPE.CORE then
+                                if mod.candidate_agent then
+                                    self:DeltaScore(10 * (opponent_negotiators - player_negotiators), mod, "SCORE_UNDERDOG")
+                                elseif not player_seen then
+                                    player_seen = true
+                                    self:DeltaScore(10 * (opponent_negotiators - player_negotiators), "PLAYER", "SCORE_UNDERDOG")
+                                end
+                            end
+                        end
+                    end
+                end
             end,
         },
     },
