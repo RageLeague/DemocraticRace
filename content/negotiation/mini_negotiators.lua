@@ -12,7 +12,7 @@ local ARGUMENT_CREATOR =
     OnPostResolve = function( self, battle, attack)
         local modifier = self.negotiator:CreateModifier( self.argument_to_create or (self.userdata and self.userdata.argument_to_create) or self.id,
             self.stacks_to_create or (self.userdata and self.userdata.stacks_to_create) or 1, self )
-        modifier.real_owner = self.real_owner
+        -- modifier.real_owner = self.real_owner
         -- if modifier.max_resolve then
         --     modifier:ModifyResolve(modifier.max_resolve, self)
         -- end
@@ -28,7 +28,7 @@ local ARGUMENT_INCEPTOR =
     OnPostResolve = function( self, battle, attack)
         local modifier = self.anti_negotiator:CreateModifier( self.argument_to_create or (self.userdata and self.userdata.argument_to_create),
             self.stacks_to_create or (self.userdata and self.userdata.stacks_to_create) or 1, self )
-        modifier.real_owner = self.real_owner
+        -- modifier.real_owner = self.real_owner
     end,
 }
 local MINI_NEGOTIATOR_CARDS =
@@ -173,7 +173,7 @@ local MINI_NEGOTIATOR_CARDS =
                                     local incepted_card = Negotiation.Card("mn_brainwashed", target.owner)
                                     table.insert(target.real_owner.available_cards, incepted_card)
                                 end
-                            elseif target and target:IsPlayerOwner() then
+                            elseif target and target.modifier_type == MODIFIER_TYPE.CORE and target:IsPlayerOwner() then
                                 local incepted_card = Negotiation.Card("mn_brainwashed", target.owner)
                                 self.engine:DealCard( incepted_card, self.engine:GetDrawDeck() )
                             end
@@ -281,7 +281,7 @@ local MINI_NEGOTIATOR =
                 table.insert(self.available_cards, card)
             end
         end
-        self.real_owner = self
+        -- self.real_owner = self
         -- self:PrepareCards()
     end,
     resolve_scale = {50, 60, 70, 80},
@@ -492,7 +492,7 @@ table.extend(MINI_NEGOTIATOR){
 Content.AddNegotiationModifier("SPREE_MINI_NEGOTIATOR",
 table.extend(MINI_NEGOTIATOR){
     name = "Nadan's Short Fuse",
-    alt_desc = "{1.name}'s cards and arguments deals 1 bonus damage for every 2 turns passed.",
+    alt_desc = "{1.name}'s cards deals 1 bonus damage for every 2 turns passed.",
     icon = "DEMOCRATICRACE:assets/modifiers/mini_negotiator/spree.png",
     loc_strings = {
         TOOLTIP = "({1} bonus damage)",
@@ -772,7 +772,7 @@ table.extend(MINI_NEGOTIATOR){
 Content.AddNegotiationModifier("JAKES_MINI_NEGOTIATOR",
 table.extend(MINI_NEGOTIATOR){
     name = "Andwanette's Double Edge",
-    alt_desc = "Whenever {1.name}'s cards deal damage, they gain resolve equal to resolve loss.",
+    alt_desc = "Whenever {1.name}'s cards deal damage, arguments on {1.hisher} side gain total {COMPOSURE} equal to resolve loss.",
     icon = "DEMOCRATICRACE:assets/modifiers/mini_negotiator/jakes.png",
     available_cards_def =
     {
@@ -839,7 +839,7 @@ table.extend(MINI_NEGOTIATOR){
         [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
             self.composure_gain = self.composure_gain or 0
 
-            if self.active and source and source.real_owner == self  then
+            if self.active and source and source.real_owner == self then
                 if damage > defended then
                     local gain = math.min( target:GetResolve(), damage - defended)
                     self.composure_gain = self.composure_gain + gain

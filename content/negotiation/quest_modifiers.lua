@@ -1095,7 +1095,7 @@ local MODIFIERS =
         name = "Debate Host",
         desc = "Defeat ALL opponent negotiators to win this debate!\n\n" ..
             "You cannot play any more cards if your core argument is destroyed, and you lose if your core argument and all your allies' core argument are destroyed.\n\n" ..
-            "Opponents arguments comes in to play with +{1} resolve.\n\n" ..
+            "All splash damage is disabled. Opponents arguments comes in to play with +{1} resolve.\n\n" ..
             "Perform various feats to score points and win the crowd. <#PENALTY>Your allies will also do the same, so score more than your allies to stand out!</>",
         loc_strings = {
             SCORE_DAMAGE = "Damage Dealt",
@@ -1217,33 +1217,34 @@ local MODIFIERS =
                     source = self.engine:FindModifierByUID(source)
                 end
             end
-            if type(source) == "table" then
-                source = source.real_owner
-                if source then
+            -- Now only cards can score points. Arguments can't
+            if type(source) == "table" and is_instance(source, Negotiation.Card) then
+                local real_source = source.real_owner
+                if real_source then
                     -- Give the AI an edge. This way we can get away with lower damage output while
                     -- making the score race still a challenge
                     delta = delta * 2
-                    if not self.scores[source:GetUID()] then
-                        self.scores[source:GetUID()] = {modifier = source, score = 0}
+                    if not self.scores[real_source:GetUID()] then
+                        self.scores[real_source:GetUID()] = {modifier = real_source, score = 0}
                     end
 
-                    if not self.score_widgets[source:GetUID()] then
-                        self.score_widgets[source:GetUID()] = {}
+                    if not self.score_widgets[real_source:GetUID()] then
+                        self.score_widgets[real_source:GetUID()] = {}
                     end
                     self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                         -- panel:RefreshReason()
-                        local source_widget = panel:FindSlotWidget( source )
+                        local source_widget = panel:FindSlotWidget( real_source )
                         if source_widget then
-                            self.scores[source:GetUID()].score = self.scores[source:GetUID()].score + delta
-                            source:NotifyChanged()
-                            panel:StartCoroutine(PopupText, panel, source_widget, 32, UICOLOURS.WHITE, self.score_widgets[source:GetUID()])
+                            self.scores[real_source:GetUID()].score = self.scores[real_source:GetUID()].score + delta
+                            real_source:NotifyChanged()
+                            panel:StartCoroutine(PopupText, panel, source_widget, 32, UICOLOURS.WHITE, self.score_widgets[real_source:GetUID()])
                         end
                     end)
                     return
                 end
             end
-            local is_source_incepted = source and (source.modifier_type == MODIFIER_TYPE.BOUNTY or source.modifier_type == MODIFIER_TYPE.INCEPTION)
-            if source == nil or (source.negotiator:IsPlayer() and not is_source_incepted) or (source.anti_negotiator:IsPlayer() and is_source_incepted) then
+
+            if is_instance(source, Negotiation.Card) and source.negotiator:IsPlayer() then
 
                 self.engine:BroadcastEvent(EVENT.CUSTOM, function(panel)
                     panel:RefreshReason()
@@ -1345,7 +1346,7 @@ local MODIFIERS =
                             modifier.composure_applier[source.real_owner:GetUID()] = (modifier.composure_applier[source.real_owner:GetUID()] or 0) + delta
                             -- Simply register this modifier in case it gets destroyed later.
                             self:DeltaScore(0, modifier, "SCORE_FULL_BLOCK")
-                        elseif source:IsPlayerOwner() then
+                        elseif is_instance(source, Negotiation.Card) and source:IsPlayerOwner() then
                             modifier.composure_applier["PLAYER"] = (modifier.composure_applier["PLAYER"] or 0) + delta
                         end
                     end
@@ -1355,9 +1356,6 @@ local MODIFIERS =
                 end
             end,
             [ EVENT.MODIFIER_ADDED ] = function ( self, modifier, source )
-                if source and source.real_owner then
-                    modifier.real_owner = source.real_owner
-                end
                 if modifier.negotiator == self.negotiator and modifier.modifier_type == MODIFIER_TYPE.ARGUMENT then
                     modifier:ModifyResolve(self:GetBonusResolve(), self)
                 end
@@ -1394,24 +1392,12 @@ local MODIFIERS =
                     else
                         self:DeltaScore(3, source, "SCORE_ARGUMENT_DESTROYED")
                     end
+                elseif modifier.modifier_type == MODIFIER_TYPE.CORE then
+                    self:CheckGameOver()
                 end
             end,
             [ EVENT.SPLASH_RESOLVE ] = function( self, modifier, overflow, params )
-                if modifier.real_owner and modifier.real_owner:IsApplied() and modifier.real_owner.negotiator == modifier.negotiator then
-                    params.splashed_modifier = modifier.real_owner
-                else
-                    if not modifier:IsPlayerOwner() or not modifier.negotiator:FindCoreArgument().real_owner then
-                        local splash_targets = {}
-                        for i, mod in modifier.negotiator:Modifiers() do
-                            if mod.modifier_type == MODIFIER_TYPE.CORE and mod:GetResolve() ~= nil and not mod:GetShieldStatus() then
-                                table.insert(splash_targets, mod)
-                            end
-                        end
-                        if #splash_targets > 0 then
-                            params.splashed_modifier = table.arraypick(splash_targets)
-                        end
-                    end
-                end
+                params.splashed_modifier = nil
             end,
             [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
                 self:CheckGameOver()
