@@ -58,8 +58,14 @@ QDEF:AddConvo("start")
             DIALOG_INTRO = [[
                 player:
                     !left
-                * Wait, hold on a second. {benni} being nice to someone?
-                * {benni}? "Facts don't care about your feelings" {benni}?
+                {not avoid_tei?
+                    * Wait, hold on a second. {benni} being nice to someone?
+                    * {benni}? "Facts don't care about your feelings" {benni}?
+                }
+                {avoid_tei?
+                    * Wait, hold on a second. Why is {benni} trying to prevent you from confronting {tei}?
+                    * Isn't that a bit conspicuous?
+                }
                 player:
                     !cagey
                     What? Who said that?
