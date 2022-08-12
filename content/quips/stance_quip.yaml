@@ -214,7 +214,7 @@ lines:
   - |
     I cannot allow you to desecrate the ancient artifacts! They should not be tarnished with mundane tasks!
   - |
-    My {other.gender?brother|sister|sibling} in Hesh, you caused all your problems because of your lack of faith!
+    My {other.gender:brother|sister|sibling} in Hesh, you caused all your problems because of your lack of faith!
 - tags: [exclaim, insult, s_anti_religious_policy]
   dialog:
   - |

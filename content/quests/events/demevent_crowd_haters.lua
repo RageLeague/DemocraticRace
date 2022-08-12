@@ -106,7 +106,7 @@ QDEF:AddConvo()
                 player:
                     !hips
                     All you're doing is just making yourselves look like children throwing temper tantrums.
-                    $neutralJoke
+                    $miscMocking
                     "Oh! Look at me! I am a loser who fails at everything at life, so I blame everything on this one politician!"
                     Is that what you want? Because that seems to be what you are saying.
                 hater_leader:

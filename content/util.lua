@@ -1189,7 +1189,7 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, post_fn, potential_offset)
     end
 end
 function DemocracyUtil.GenerateGenericOppositionTable()
-    local GENERIC_OPPOSITION = {"GAMBLER", "TEI", "DANGEROUS_STRANGER"}
+    local GENERIC_OPPOSITION = {"GAMBLER", "TEI", "DANGEROUS_STRANGER", "NAND"}
     local player_id = TheGame:GetGameState():GetPlayerAgent():GetContentID()
     if player_id ~= "SAL" then
         table.insert(GENERIC_OPPOSITION, "NPC_SAL")
@@ -1197,9 +1197,12 @@ function DemocracyUtil.GenerateGenericOppositionTable()
     -- if player_id ~= "ROOK" then
     --     table.insert(GENERIC_OPPOSITION, "NPC_ROOK")
     -- end
-    -- if player_id ~= "SMITH" then
-    --     table.insert(GENERIC_OPPOSITION, "NPC_SMITH")
-    -- end
+    if player_id ~= "SMITH" then
+        local def = Content.GetCharacterDef("NPC_SMITH")
+        if def and def.negotiation_data and def.negotiation_data.behaviour and def.negotiation_data.behaviour.Cycle then
+            table.insert(GENERIC_OPPOSITION, "NPC_SMITH")
+        end
+    end
     if player_id ~= "PC_SHEL" then
         table.insert(GENERIC_OPPOSITION, "BRAVE_MERCHANT")
     end
