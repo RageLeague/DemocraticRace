@@ -668,6 +668,7 @@ QDEF:AddConvo()
                 end
                 DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10)
                 DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 10, "ADMIRALTY")
+                DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
             end
 
             cxt:Opt("OPT_INTIMIDATE")
