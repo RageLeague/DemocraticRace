@@ -304,7 +304,7 @@ QDEF:AddConvo()
                             cxt:GetAgent():Retire()
                         end
                         cxt.quest:Complete()
-                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5)
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 3)
                         DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 5, "ADMIRALTY")
                         DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
                         StateGraphUtil.AddLeaveLocation(cxt)
