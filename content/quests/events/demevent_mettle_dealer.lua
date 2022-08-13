@@ -38,12 +38,6 @@ local QDEF = QuestDef.Define
         end,
     },
 }
-:AddLocationCast{
-    cast_id = "station",
-    cast_fn = function(quest, t)
-        table.insert( t, TheGame:GetGameState():GetLocation("ADMIRALTY_BARRACKS"))
-    end,
-}
 :AddObjective{
     id = "intro",
     state = QSTATUS.ACTIVE,
@@ -51,112 +45,8 @@ local QDEF = QuestDef.Define
         quest:SetHideInOverlay(true)
     end,
 }
-:AddObjective{
-    id = "escort",
-    title = "Bring {dealer} to the station",
-    desc = "You arrested {dealer} for selling controlled substances, and you need to bring {dealer.himher} to the station.",
-    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/followup_admiralty_arrest.png"),
-    on_activate = function(quest)
-        quest:SetHideInOverlay(false)
-        quest:GetCastMember("dealer"):Recruit(PARTY_MEMBER_TYPE.CAPTIVE)
 
-    end,
-    mark = {"station"},
-
-}
-:AddOpinionEvents{
-
-    arrested_mettle_dealer = {
-        delta = OPINION_DELTAS.LIKE,
-        txt = "Help them arrest a notorious mettle dealer",
-    },
-}
-
-QDEF:AddConvo("escort")
-    :Priority(CONVO_PRIORITY_HIGHEST)
-    :Confront(function(cxt)
-        if not cxt.location:HasTag("in_transit") then
-            if cxt.location == cxt.quest:GetCastMember("station") then
-                return "STATE_ARRIVE"
-            else
-                return "STATE_OTHER_LOCATION"
-            end
-        end
-    end)
-    :State("STATE_OTHER_LOCATION")
-        :Loc{
-            DIALOG_INTRO = [[
-                player:
-                    !left
-                dealer:
-                    !right
-                    Why am I here?
-                    What do you want?
-            ]],
-            OPT_LET_GO = "Let {dealer} go",
-            DIALOG_LET_GO = [[
-                player:
-                    I'm letting you go.
-                    I don't actually want to arrest you.
-                    I'm just trying to make a political statement you know?
-                    Gotta get those support up.
-                dealer:
-                    I have to say, grifter, your motives are even dodgier than mine.
-                    !exit
-            ]],
-        }
-        :Fn(function(cxt)
-            cxt:Dialog("DIALOG_INTRO")
-            cxt:Opt("OPT_LET_GO")
-                :Dialog("DIALOG_LET_GO")
-                :CompleteQuest()
-                :DoneConvo()
-            StateGraphUtil.AddLeaveLocation(cxt)
-        end)
-    :State("STATE_ARRIVE")
-        :Loc{
-            DIALOG_INTRO = [[
-                player:
-                    !left
-                agent:
-                    !right
-                    Who's this.
-                player:
-                    This is {dealer}, the mettle dealer that tries to sell mettle to me.
-                agent:
-                    Ah, yes, {dealer}.
-                    We've had our eye on {dealer.himher} for quite a while.
-                    Selling highly addictive hallucinogen to people and making them more violent.
-                    We can't have that under our rule, now can we?
-                    Anyway, I'll take it from here.
-                player:
-                    Careful, though, {dealer}'s highly unpredictable.
-                agent:
-                    Oh, our intel already indicated as such. We need to deal with {dealer} in a special way.
-                    Anyway, thanks for your help. Feel free to leave at any time.
-                * You turned in {dealer}. You wonder how permanent the solution is.
-            ]],
-        }
-        :Fn(function(cxt)
-            local ad = TheGame:GetGameState():GetAgent("MURDERBAY_ADMIRALTY_CONTACT")
-            if not ad then
-                -- this really shouldn't happen.
-                ad = cxt.quest:CreateSkinnedAgent( "ADMIRALTY_CLERK" )
-            end
-            ad:MoveToLocation(cxt.quest:GetCastMember("station"))
-            cxt:TalkTo(ad)
-            cxt:Dialog("DIALOG_INTRO")
-            local target = cxt.quest:GetCastMember("dealer")
-            if not target:IsDead() then
-                target:GainAspect("stripped_influence", 5)
-                target:OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
-                target:Retire()
-            end
-            cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("arrested_mettle_dealer"))
-            cxt.quest:Complete()
-            StateGraphUtil.AddEndOption(cxt)
-        end)
-QDEF:AddConvo("intro")
+QDEF:AddConvo()
     :Confront(function(cxt)
         if cxt.location:HasTag("in_transit") then
             return "STATE_CONF"
@@ -368,9 +258,10 @@ QDEF:AddConvo("intro")
                         I assure you, killing me is in no way permanent.
                     player:
                         If I want to kill you, I would've already done so during the fight.
-                        That's why I'm going to arrest you and bring you to the station.
+                        That's why I'm going to arrest you. Send you to an Admiralty prison.
                         Try convince the people there how wonderful your "mettle" is.
-                    * You captured {dealer}.
+                    * You send {agent} off to a nearby Admiralty patrol.
+                    * Now there is one less mettle dealer that walks Havarian streets.
                 }
             ]]
         }
@@ -403,19 +294,19 @@ QDEF:AddConvo("intro")
                     :GoTo("STATE_POST_METTLE")
             end
             cxt:Opt("OPT_ARREST")
-                :ReqCondition(DemocracyUtil.LocationUnlocked("ADMIRALTY_BARRACKS"), "REQ_KNOW_HQ")
                 :Dialog("DIALOG_ARREST")
                 :Battle{
                     on_win = function(cxt)
                         cxt:Dialog("DIALOG_ARREST_WIN")
-                        if cxt:GetAgent():IsDead() then
-                            cxt.quest:Complete()
-                            StateGraphUtil.AddLeaveLocation(cxt)
-                        else
-                            cxt.quest:Complete("intro")
-                            cxt.quest:Activate("escort")
-                            StateGraphUtil.AddLeaveLocation(cxt)
+                        if not cxt:GetAgent():IsDead() then
+                            cxt:GetAgent():GainAspect("stripped_influence", 5)
+                            cxt:GetAgent():OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
+                            cxt:GetAgent():Retire()
                         end
+                        cxt.quest:Complete()
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5)
+                        DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 5, "ADMIRALTY")
+                        StateGraphUtil.AddLeaveLocation(cxt)
                     end,
                 }
             cxt:Opt("OPT_REJECT")
@@ -427,19 +318,19 @@ QDEF:AddConvo("intro")
         :Loc{
             DIALOG_METTLE = [[
                 * You took some mettle.
-                * Nothing visible has changed, but you feel a rush of dopamine as you gain {mettle_gain} mettle.
-                * Now you want more.
-            ]],
-            DIALOG_METTLE_END = [[
-                dealer:
-                    If you want more, just find me!
-                    !exit
-                * You wonder what the consequences of this is.
+                * Nothing visible has changed, but you feel a rush of dopamine as you see numbers go up.
+                player:
+                    !flourish
+                * Incredible! Exhilarating! A whole {mettle_gain} mettle!
+                * Now, you want more, to satisfy your addiction.
+                agent:
+                    Great! Now you have a taste of what mettle is like, go out and get them!
+                    Happy grifting!
+                * Oh yeah, you are definitely going to enjoy collecting mettle.
             ]],
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_METTLE")
-            cxt:Dialog("DIALOG_METTLE_END")
 
             local character_id = cxt.player:GetContentID()
             TheGame:GetGameProfile():UnlockMettle( character_id )
