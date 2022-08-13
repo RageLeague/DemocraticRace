@@ -656,7 +656,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
             DIALOG_PST_FIGHT_DEAD = [[
                 * {agent} lies dead.
                 {help_called?
-                    {no advisor_intervention?
+                    {not advisor_intervention?
                         * {responder} arrives a few minutes later, and sees a dead body.
                         player:
                             !left
