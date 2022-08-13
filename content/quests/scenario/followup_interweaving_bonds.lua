@@ -237,7 +237,7 @@ QDEF:AddConvo("ask", "benni")
                 !bashful
                 Sorry, my bad.
             * I didn't tell you to do that. Doctor People Person did.
-            * I am "logistics", responsible for keeping you on track.
+            * I am Logistitron-1500, responsible for keeping you on track.
             * So, you should do that. Focus on the campaign, I mean.
             *** {agent} tells you to focus on the campaign.
         ]],
