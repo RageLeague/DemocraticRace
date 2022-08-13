@@ -656,16 +656,26 @@ QDEF:AddConvo("action")
                     Thanks for nothing, grifter!
                     !exit
                     * That was a rather horrible turn of event.
+                    * You can leave right now, but do you really want to leave a loose end?
                 }
             ]],
 
+            DIALOG_LEAVE_LOCATION = [[
+                * We will get them next time, you thought.
+            ]],
+
             OPT_STAND_ASIDE_FIGHT = [[
+                {disliked?
                 player:
                     !fight
-                {disliked?
                     As you wish.
                 }
                 {not disliked?
+                agent:
+                    !right
+                    !scared
+                player:
+                    !fight
                     We're not done here.
                 }
             ]],
@@ -862,7 +872,7 @@ QDEF:AddConvo("action")
 
                         -- if  then
                             -- cxt.quest:GetCastMember("target"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("abandoned"))
-                        cxt:Opt(cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL and "OPT_DEFEND" or "OPT_ATTACK")
+                        cxt:Opt(cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL and "OPT_DEFEND" or "OPT_FIGHT")
                             :Dialog("OPT_STAND_ASIDE_FIGHT")
                             :Battle{
                                 flags = cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL and BATTLE_FLAGS.SELF_DEFENCE,
@@ -875,6 +885,13 @@ QDEF:AddConvo("action")
                                     cxt.quest:GetCastMember("target"):Retire()
                                 end)
                                 :Travel()
+                        if cxt:GetAgent():GetRelationship() >= RELATIONSHIP.NEUTRAL then
+                            cxt:Opt("OPT_LEAVE_LOCATION")
+                                :Dialog("DIALOG_LEAVE_LOCATION")
+                                :ReceiveOpinion("abandoned", nil, "target")
+                                :Fn(function(cxt) ConvoUtil.Leave(cxt) end)
+                                :MakeUnder()
+                        end
                     end
                 end)
         end)
