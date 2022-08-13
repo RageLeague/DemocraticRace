@@ -294,6 +294,7 @@ QDEF:AddConvo()
                     :GoTo("STATE_POST_METTLE")
             end
             cxt:Opt("OPT_ARREST")
+                :UpdatePoliticalStance("SECURITY", 2)
                 :Dialog("DIALOG_ARREST")
                 :Battle{
                     on_win = function(cxt)
