@@ -246,7 +246,7 @@ QDEF:AddConvo("find_challenger")
         SIT_MOD = "Bad at Grout Bog Flip 'Em",
     }
     :Hub(function(cxt, who)
-        if who and not AgentUtil.HasPlotArmour(who) and not who == cxt:GetCastMember("giver") then
+        if who and not AgentUtil.HasPlotArmour(who) and who ~= cxt:GetCastMember("giver") then
             if cxt.quest.param.failed_challengers and table.arraycontains(cxt.quest.param.failed_challengers, who) then
                 return
             end
