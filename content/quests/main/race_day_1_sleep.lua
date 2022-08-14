@@ -48,7 +48,8 @@ local QDEF = QuestDef.Define
         local boss_def = TheGame:GetGameProfile():GetNoStreakRandom("SAL_DAY_2_BOSS_PICK", {
             "JAKES_ASSASSIN",
             "JAKES_ASSASSIN2",
-            "HESH_BOSS",
+            -- Remove hesh boss for now because her wordsmith is kinda too strong.
+            -- "HESH_BOSS",
             "MERCENARY_BOSS"
             -- Don't include the rentorian boss because it doesn't make sense for them to be here
         }, 2)
