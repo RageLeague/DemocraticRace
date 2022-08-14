@@ -484,6 +484,7 @@ QDEF:AddConvo("action")
             local function ArrestFn(opt)
                 if not cxt.quest.param.unplanned then
                     opt:ReceiveOpinion(OPINION.SOLD_OUT_TO_ADMIRALTY, nil, "target")
+                    DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
                 end
                 opt:GoTo("STATE_PROMOTION")
             end
@@ -771,6 +772,7 @@ QDEF:AddConvo("action")
                 }):OnSuccess()
                     :Fn(function(cxt)
                         target:OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
+                        DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
                     end)
                     :GoTo("STATE_PROMOTION")
                 :OnFailure()
@@ -788,6 +790,7 @@ QDEF:AddConvo("action")
                         :Fn(function(cxt)
                             cxt.quest.param.target_dead = target:IsDead()
                             cxt.quest.param.ad_dead = admiralty:IsDead()
+                            DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
                             cxt:Dialog("DIALOG_TARGET_FIGHT_WON")
                             if not cxt.quest.param.ad_dead then
                                 if not cxt.quest.param.target_dead then
@@ -865,6 +868,9 @@ QDEF:AddConvo("action")
                         cxt.quest:GetCastMember("target"):GainAspect("stripped_influence", 5)
                         cxt.quest:GetCastMember("target"):Retire()
                         cxt.quest:GetCastMember("admiralty"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("abandoned"))
+                        if not cxt.quest.param.unplanned then
+                            DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
+                        end
                         StateGraphUtil.AddLeaveLocation(cxt)
                     else
                         cxt:Dialog("DIALOG_STAND_ASIDE_LOSE")
@@ -884,6 +890,7 @@ QDEF:AddConvo("action")
                                     cxt.quest:GetCastMember("target"):OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
                                     cxt.quest:GetCastMember("target"):GainAspect("stripped_influence", 5)
                                     cxt.quest:GetCastMember("target"):Retire()
+                                    DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
                                 end)
                                 :Travel()
                         if cxt:GetAgent():GetRelationship() >= RELATIONSHIP.NEUTRAL then
@@ -1073,7 +1080,10 @@ QDEF:AddConvo("action")
                     :Battle{
                         enemies = target:GetParty() and target:GetParty():GetMembers() or {target},
                     }:OnWin()
-                        :Fn(function(cxt) cxt.quest.param.target_dead = target:IsDead() end)
+                        :Fn(function(cxt)
+                            cxt.quest.param.target_dead = target:IsDead()
+                            DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
+                        end)
                         :Dialog("DIALOG_ATTACK_WIN")
                         :GoTo("STATE_PROMOTION")
                 --If the target doesn't hate you and you failed a negotiation.
@@ -1103,6 +1113,9 @@ QDEF:AddConvo("action")
                     helpers = {"admiralty"},
                 }):OnSuccess()
                     :ReceiveOpinion(OPINION.SOLD_OUT_TO_ADMIRALTY, nil, "target")
+                    :Fn(function(cxt)
+                        DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
+                    end)
                     :GoTo("STATE_PROMOTION")
                 :OnFailure()
                     :Fn(function(cxt)
