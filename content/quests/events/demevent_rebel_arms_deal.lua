@@ -666,8 +666,9 @@ QDEF:AddConvo()
                     cxt:GetCastMember("jakes"):OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY, nil, hate_target)
                     cxt:GetCastMember("jakes"):Retire()
                 end
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10)
-                DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 10, "ADMIRALTY")
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 6)
+                DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 8, "ADMIRALTY")
+                DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
             end
 
             cxt:Opt("OPT_INTIMIDATE")

@@ -642,6 +642,7 @@ QDEF:AddConvo("debate_people")
                             debater:GainAspect("stripped_influence", 5)
                             debater:OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
                             debater:Retire()
+                            DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
                             cxt.quest.param.debated_people = cxt.quest.param.debated_people + 1
                         end)
                         :CompleteQuest()

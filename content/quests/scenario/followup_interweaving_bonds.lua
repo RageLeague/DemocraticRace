@@ -32,7 +32,7 @@ local QDEF = QuestDef.Define
     state = QSTATUS.ACTIVE,
     on_complete = function(quest)
         quest:Activate("ask")
-        quest.hide_in_overlay = false
+        quest:SetHideInOverlay(false)
     end,
 }
 :AddObjective{

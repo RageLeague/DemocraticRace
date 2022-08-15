@@ -100,6 +100,27 @@ lines:
     agent:
       !neutral
       But seriously though, if you want to pay me to spread your ideology, I would be more than happy to do so.
+- tags: [democratic_race, admiralty, many_arrests_made]
+  dialog:
+  - |
+    agent:
+      You've done a lot of great work lately, {player}.
+      Cleaning up criminals in the streets, I mean.
+    player:
+      Oh yeah, I guess I've been doing that a lot lately.
+    agent:
+      !agree
+      We need more politicians like you.
+      People who aren't afraid to challenge public opinion and do what must be done to rid Havaria of these scums.
+    {anti_security?
+      !hips
+      I see through your ruse. You might claim otherwise, but your heart belongs to the Admiralty and its goal.
+    * A clever ruse indeed. Or it's what you would like to think.
+    * It's way better than being a giant hypocrite.
+    }
+    {not anti_security?
+      Good work, {player}.
+    }
 - tags: [laborer, democratic_race, pro_labor_law]
   notags: [primary_advisor_diplomacy]
   dialog:

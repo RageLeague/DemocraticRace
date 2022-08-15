@@ -292,6 +292,9 @@ local QDEF = QuestDef.Define
         if quest:DefFn("GetGameplayStats", "PAID_SHILLS") >= 5 then
             table.insert_unique(tags, "many_paid_shills")
         end
+        if quest:DefFn("GetGameplayStats", "ARRESTED_PEOPLE_TIMES") >= 2 then
+            table.insert_unique(tags, "many_arrests_made")
+        end
     end,
     events =
     {

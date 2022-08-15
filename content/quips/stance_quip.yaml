@@ -138,6 +138,8 @@ lines:
     The Admiralty cares about no one but themselves!
   - |
     The people need to protect themselves! Not just from criminals, but also from the government!
+  - |
+    All switches are bastards!
 ## Specific insult lines
 - tags: [exclaim, insult, s_pro_labor_law]
   dialog:
@@ -244,6 +246,50 @@ lines:
     You ruined my life, {other}! And you dare to show your face?
   - |
     This is the person that ruined my life!
+- tags: [heckle, many_paid_shills]
+  notags: [bribed]
+  score: 2
+  dialog:
+  - |
+    !angry_accuse
+    You think we didn't notice you trying to manipulate public opinion with money?
+  - |
+    !angry_accuse
+    You are interfering with the democratic process in Havaria with what you are doing!
+  - |
+    Let's see if your money is going to get you out of this one, {other.bad_nickname}.
+- tags: [heckle, many_arrests_made]
+  notags: [admiralty]
+  score: 2
+  dialog:
+  - |
+    Look at this switch wannabe over here.
+  - |
+    You can't just arrest anyone you don't like! Not if I have anything to say about it!
+- tags: [heckle, many_arrests_made, player_rook]
+  score: 2
+  dialog:
+  - |
+    Once an Admiralty, always an Admiralty. Isn't that right, {other.bad_nickname}?
+- tags: [heckle, many_arrests_made, s_anti_security]
+  notags: [admiralty]
+  score: 2
+  dialog:
+  - |
+    A supporter of the Admiralty is an enemy of mine!
+- tags: [heckle, many_arrests_made, admiralty]
+  score: 2
+  dialog:
+  - |
+    Who do you think you are? Interfering with actual Admiralty work?
+  - |
+    Can't join the Admiralty, so {other.bad_nickname} here decides to be a little vigilante!
+    Guess what? You don't have the badge. You don't have the power.
+- tags: [heckle, many_arrests_made, admiralty, player_rook]
+  score: 2
+  dialog:
+  - |
+    The Admiralty doesn't want you anymore, <i>Captain {other}</>.
 - tags: [heckle, disliked, ELITIST_FACTION_DISLIKE]
   dialog:
   - |
