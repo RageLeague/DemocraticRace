@@ -353,7 +353,7 @@ local QDEF = QuestDef.Define
         end,
         card_added = function( quest, card )
             if card.murder_card then
-                quest:DefFn("DeltaGeneralSupport", DEATH_DELTA, "MURDER")
+                quest:DefFn("DeltaGeneralSupport", t.DEATH_GENERAL_DELTA, "MURDER")
             end
         end,
         resolve_battle = function( quest, battle, primary_enemy, repercussions )
