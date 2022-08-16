@@ -548,14 +548,14 @@ local QDEF = QuestDef.Define
         end)
 
     end,
-    DeltaSupport = function(quest, amt, target, notification)
-        local type, t = DemocracyUtil.DetermineSupportTarget(target)
-        if type == "FACTION" then
-            quest:DefFn("DeltaFactionSupport", amt, t, notification)
-        elseif type == "WEALTH" then
-            quest:DefFn("DeltaWealthSupport", amt, t, notification)
+    DeltaSupport = function(quest, amt, target, ...)
+        local s_type, t = DemocracyUtil.DetermineSupportTarget(target)
+        if s_type == "FACTION" then
+            quest:DefFn("DeltaFactionSupport", amt, t, ...)
+        elseif s_type == "WEALTH" then
+            quest:DefFn("DeltaWealthSupport", amt, t, ...)
         else
-            quest:DefFn("DeltaGeneralSupport", amt, notification)
+            quest:DefFn("DeltaGeneralSupport", amt, ...)
         end
     end,
     DeltaGeneralSupport = function(quest, amt, notification, delta_type)
@@ -563,14 +563,14 @@ local QDEF = QuestDef.Define
         if notification == nil then
             notification = true
         end
+        if not delta_type and type(notification) == "string" then
+            delta_type = notification
+        end
         if notification and amt ~= 0 then
-            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_GENERAL_SUPPORT, amt, quest:DefFn("GetGeneralSupport"), notification )
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_GENERAL_SUPPORT, amt, quest:DefFn("GetGeneralSupport"), delta_type )
         end
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_general_support", amt )
-        end
-        if not delta_type and type(notification) == "string" then
-            delta_type = notification
         end
         quest:DefFn("TrackDeltaGeneralSupport", amt, delta_type)
     end,
@@ -583,14 +583,14 @@ local QDEF = QuestDef.Define
         if notification == nil then
             notification = true
         end
+        if not delta_type and type(notification) == "string" then
+            delta_type = notification
+        end
         if notification and amt ~= 0 then
-            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_FACTION_SUPPORT, amt, quest:DefFn("GetFactionSupport", faction), TheGame:GetGameState():GetFaction(faction), notification )
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_FACTION_SUPPORT, amt, quest:DefFn("GetFactionSupport", faction), TheGame:GetGameState():GetFaction(faction), delta_type )
         end
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_faction_support_" .. faction, amt )
-        end
-        if not delta_type and type(notification) == "string" then
-            delta_type = notification
         end
         quest:DefFn("TrackDeltaFactionSupport", amt, faction, delta_type)
     end,
@@ -603,14 +603,14 @@ local QDEF = QuestDef.Define
         if notification == nil then
             notification = true
         end
+        if not delta_type and type(notification) == "string" then
+            delta_type = notification
+        end
         if notification and amt ~= 0 then
-            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_WEALTH_SUPPORT, amt, quest:DefFn("GetWealthSupport", r), r, notification )
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_WEALTH_SUPPORT, amt, quest:DefFn("GetWealthSupport", r), r, delta_type )
         end
         if amt > 0 then
             TheGame:AddGameplayStat( "gained_wealth_support_" .. r, amt )
-        end
-        if not delta_type and type(notification) == "string" then
-            delta_type = notification
         end
         quest:DefFn("TrackDeltaWealthSupport", amt, r, delta_type)
     end,
@@ -701,18 +701,17 @@ local QDEF = QuestDef.Define
     end,
 
     DeltaAgentSupport = function(quest, general_amt, additional_amt, agent, notification, delta_type)
-
+        if notification == nil then
+            notification = true
+        end
         if not delta_type and type(notification) == "string" then
             delta_type = notification
         end
         quest:DefFn("DeltaGeneralSupport", general_amt, false, delta_type)
         quest:DefFn("DeltaFactionSupport", additional_amt, agent, false, delta_type)
         quest:DefFn("DeltaWealthSupport", additional_amt, agent, false, delta_type)
-        if notification == nil then
-            notification = true
-        end
         if notification and additional_amt then
-            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_AGENT_SUPPORT, general_amt, additional_amt, agent, notification )
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_AGENT_SUPPORT, general_amt, additional_amt, agent, delta_type )
         end
     end,
     -- DeltaFactionSupportAgent = function(quest, amt, agent, ignore_notification)
@@ -722,37 +721,37 @@ local QDEF = QuestDef.Define
     --     quest:DefFn("DeltaWealthSupport", amt, agent:GetRenown() or 1, ignore_notification)
     -- end,
     DeltaGroupFactionSupport = function(quest, group_delta, multiplier, notification, delta_type)
+        if notification == nil then
+            notification = true
+        end
         if not delta_type and type(notification) == "string" then
             delta_type = notification
         end
         multiplier = multiplier or 1
-        if notification == nil then
-            notification = true
-        end
         local actual_group = {}
         for id, val in pairs(group_delta or {}) do
             actual_group[id] = math.round(val * multiplier)
             quest:DefFn("DeltaFactionSupport", actual_group[id], id, false, delta_type)
         end
         if notification then
-            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_GROUP_FACTION_SUPPORT, actual_group, notification)
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_GROUP_FACTION_SUPPORT, actual_group, delta_type)
         end
     end,
     DeltaGroupWealthSupport = function(quest, group_delta, multiplier, notification, delta_type)
+        if notification == nil then
+            notification = true
+        end
         if not delta_type and type(notification) == "string" then
             delta_type = notification
         end
         multiplier = multiplier or 1
-        if notification == nil then
-            notification = true
-        end
         local actual_group = {}
         for id, val in pairs(group_delta or {}) do
             actual_group[id] = math.round(val * multiplier)
             quest:DefFn("DeltaWealthSupport", math.round(val * multiplier), id, false, delta_type)
         end
         if notification then
-            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_GROUP_WEALTH_SUPPORT, actual_group, notification)
+            TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_GROUP_WEALTH_SUPPORT, actual_group, delta_type)
         end
     end,
     -- Getters
@@ -910,10 +909,10 @@ local QDEF = QuestDef.Define
             if issue_data then
                 local stance = issue_data.stances[val]
                 if stance.faction_support then
-                    DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport", stance.faction_support, multiplier, "STANCE_TAKEN")
+                    DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport", stance.faction_support, multiplier, false, "STANCE_TAKEN")
                 end
                 if stance.wealth_support then
-                    DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport", stance.wealth_support, multiplier, "STANCE_TAKEN")
+                    DemocracyUtil.TryMainQuestFn("DeltaGroupWealthSupport", stance.wealth_support, multiplier, false, "STANCE_TAKEN")
                 end
             end
         end
