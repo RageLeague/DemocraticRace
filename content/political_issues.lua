@@ -10,7 +10,43 @@ function IssueStanceLocDef:GetLocalizedTitle()
     return self:GetLocalizedName()
 end
 function IssueStanceLocDef:GetLocalizedBody()
-    return loc.format(LOC"DEMOCRACY.STANCE_FOR_ISSUE", self.issue_id) .. "\n\n" .. self:GetLocalizedDesc()
+    local result = loc.format(LOC"DEMOCRACY.STANCE_INFO.STANCE_FOR_ISSUE", self.issue_id) .. "\n\n" .. self:GetLocalizedDesc()
+    local groups = {}
+    for id, val in pairs(self.faction_support or {}) do
+        if val and val ~= 0 then
+            table.insert(groups, { name = loc.faction(id), val = val })
+        end
+    end
+    for id, val in pairs(self.wealth_support or {}) do
+        if val and val ~= 0 then
+            table.insert(groups, { name = loc.wealth_name(id), val = val })
+        end
+    end
+    table.sort(groups, function(a, b)
+        if a.val ~= b.val then
+            return a.val > b.val
+        end
+        return a.name < b.name
+    end)
+    if #groups > 0 then
+        result = result .. "\n\n" .. LOC"DEMOCRACY.STANCE_INFO.SUPPORT"
+        for id, data in ipairs(groups) do
+            local displayPoints = ""
+            if data.val > 0 then
+                for i = 1, data.val do
+                    displayPoints = displayPoints .. "+"
+                end
+                displayPoints = "<#BONUS>" .. displayPoints .. "</>"
+            else
+                for i = 1, -data.val do
+                    displayPoints = displayPoints .. "-"
+                end
+                displayPoints = "<#PENALTY>" .. displayPoints .. "</>"
+            end
+            result = result .. "\n" .. loc.format(LOC"DEMOCRACY.STANCE_INFO.SUPPORT_DESC", data.name, displayPoints)
+        end
+    end
+    return result
 end
 function IssueStanceLocDef:GetLocPrefix()
     return "POLITICAL_ISSUE." .. string.upper(self.issue_id) .. ".STANCE_" .. self.stance_intensity

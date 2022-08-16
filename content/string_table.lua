@@ -143,6 +143,12 @@ Content.AddStringTable("DEMOCRACY", {
             HATRED = "you hate this person",
             QUEST_REQ = "one or more quests require you to punish this person",
         },
+        STANCE_INFO =
+        {
+            STANCE_FOR_ISSUE = "This is a stance for the issue: {1#pol_issue}.",
+            SUPPORT = "Support from groups:",
+            SUPPORT_DESC = "{1} ({2})",
+        },
         SUPPORT_ENTRY =
         {
             FACTION_SUPPORT = "{1#faction}: {2}",
@@ -199,8 +205,6 @@ Content.AddStringTable("DEMOCRACY", {
             BODY = "Congratulations! You have now finished what the mod has to offer as of right now. Please leave a feedback at the steam workshop page, on GitHub, or on Klei's forum, so I can improve this mod.",
             BUTTON = "I win!",
         },
-        STANCE_FOR_ISSUE = "This is a stance for the issue: {1#pol_issue}.",
-
     },
     UI = {
         RELATIONSHIP_SCREEN = {
