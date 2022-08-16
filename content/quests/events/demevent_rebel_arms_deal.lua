@@ -353,7 +353,7 @@ QDEF:AddConvo()
                 hinders = {"jakes"},
             })
                 :OnSuccess()
-                    :DeltaSupport(10)
+                    :DeltaSupport(4)
                     :Travel()
                 :OnFailure()
                     :Fn(function(cxt)

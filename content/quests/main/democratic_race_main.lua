@@ -250,9 +250,11 @@ local QDEF = QuestDef.Define
         end
         -- For backwards compatibility. Transfer the appropriate fields.
         local change_fields = {"stances", "stance_change", "stance_change_freebie"}
-        for i, field in ipairs(change_fields) do
-            quest.param[field].RELIGIOUS_POLICY = quest.param[field].ARTIFACT_TREATMENT
-            quest.param[field].ARTIFACT_TREATMENT = nil
+        if quest.param.stances.ARTIFACT_TREATMENT then
+            for i, field in ipairs(change_fields) do
+                quest.param[field].RELIGIOUS_POLICY = quest.param[field].ARTIFACT_TREATMENT
+                quest.param[field].ARTIFACT_TREATMENT = nil
+            end
         end
 
         local required_quests = {"CAMPAIGN_SHILLING", "CAMPAIGN_ASK_LOCATION", "LOCATION_OSHNUDROME_RACES", "LOCATION_PARTY_STORE", "SAL_STORY_MERCHANTS"}

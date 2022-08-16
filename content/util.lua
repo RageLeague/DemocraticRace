@@ -1563,20 +1563,34 @@ function ConvoOption:DeltaSupport(amt, target, ignore_notification)
     return self
 end
 
-function ConvoOption:RequireFreeTimeAction(actions, display_only)
-    if actions then
+function ConvoOption:RequireFreeTimeAction(actions, display_only, optional)
+    if actions and not optional then
         self:PostText("TT_FREE_TIME_ACTION_COST", actions)
+    end
+    if actions and optional then
+        self:PostText("TT_FREE_TIME_ACTION_COST_OPTIONAL", actions)
     end
     local freetimeevents = DemocracyUtil.GetFreeTimeQuests()
     -- local q = freetimeevents[1]
-    self:ReqCondition(freetimeevents and #freetimeevents > 0, "REQ_FREE_TIME")
-    if freetimeevents and #freetimeevents > 0 and actions then
-        local q = freetimeevents[1]
-        self:ReqCondition(q.param.free_time_actions >= actions, "REQ_FREE_TIME_ACTIONS")
-        if not display_only then
-            self:Fn(function(cxt)
-                q:DefFn("DeltaActions", -actions)
-            end)
+    if not optional then
+        self:ReqCondition(freetimeevents and #freetimeevents > 0, "REQ_FREE_TIME")
+        if freetimeevents and #freetimeevents > 0 and actions then
+            local q = freetimeevents[1]
+            self:ReqCondition(q.param.free_time_actions >= actions, "REQ_FREE_TIME_ACTIONS")
+            if not display_only then
+                self:Fn(function(cxt)
+                    q:DefFn("DeltaActions", -actions)
+                end)
+            end
+        end
+    else
+        if freetimeevents and #freetimeevents > 0 and actions then
+            local q = freetimeevents[1]
+            if not display_only then
+                self:Fn(function(cxt)
+                    q:DefFn("DeltaActions", -actions)
+                end)
+            end
         end
     end
 
