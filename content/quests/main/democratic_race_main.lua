@@ -65,7 +65,7 @@ t.DELTA_SUPPORT = {
 }
 -- Determines the support level change when an agent is killed.
 t.DEATH_DELTA = -10
-t.DEATH_GENERAL_DELTA = -3
+t.DEATH_GENERAL_DELTA = -5
 
 -- Determines the support level change when an agent is killed in an isolated scenario.
 -- Still reduce support, but people won't know for sure it's you.
