@@ -115,7 +115,7 @@ QDEF:AddConvo("start")
                     !crossed
                     Absolutely not.
                     It's none of my business, anyway.
-                * Fine, {player.gender:Mister|Miss|Master} Professional Politician. Have it your way.
+                * Fine, Your <i>Professional</> Excellency. Have it your way.
                 * If you don't want to know your advisor better so you can work better, it's your loss.
             ]],
         }

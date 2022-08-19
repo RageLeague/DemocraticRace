@@ -288,7 +288,7 @@ QDEF:AddConvo()
                     Doesn't sound like something the Admiralty would particularly care for.
                 }
                 jakes:
-                    Hey, I paid my customs fees! The admiralty got their cut of this deal already.
+                    Hey, I paid my customs fees! The Admiralty got their cut of this deal already.
             ]],
         }
         :SetLooping(true)
@@ -544,12 +544,14 @@ QDEF:AddConvo()
                     And who knows? Maybe you and {rise} will get a bit closer that way.
                 jakes:
                     You're right on one thing, Switch. It'll be a few days in the bin for me. Got the contacts to get out.
-                    !over_there
+                    !point
                     You though. Maybe this'll teach you some manners on how to conduct business.
                 rise:
                     But...but the elect-
                 player:
                     The election is specifically so we don't need radicals like you with weapons like those.
+                    Now come along now. You don't want to make this any worse for yourselves.
+                * You bring these two to a nearby patrol and hand them over.
             ]],
             DIALOG_INTIMIDATE_FAILURE = [[
                 jakes:
@@ -712,7 +714,7 @@ QDEF:AddConvo()
                 agent:Dismiss()
                 DoArrest(cxt, agent)
                 StateGraphUtil.AddLeaveLocation(cxt)
-            end, nil, function(agent) return agent:GetFactionID() == "ADMIRALTY" end)
+            end, nil, function(agent) return agent:GetFactionID() == "ADMIRALTY" and agent:IsSentient() end)
 
             cxt:Opt("OPT_BACK_BUTTON")
                 :Dialog("DIALOG_BACK")
