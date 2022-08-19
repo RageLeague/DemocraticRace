@@ -794,6 +794,66 @@ local CARDS = {
             minigame:DrawCards( 3 )
         end,
     },
+
+    vapor_vial_negotiation =
+    {
+        name = "Vapor Vial",
+        flavour = "'I never told you to drink the Heshing thing, now I'm going to have to make a whole new batch.'",
+        desc = "For the rest of your turn, all of your cards have a random cost between 0 and 2 until they are played.",
+        icon = "battle/vapor_vial.tex",
+
+        cost = 0,
+        max_charges = 3,
+
+        shop_price = 100,
+
+        rarity = CARD_RARITY.UNIQUE,
+        flags = CARD_FLAGS.ITEM,
+
+        battle_counterpart = "vapor_vial",
+
+        OnPostResolve = function( self, battle, attack )
+            self.negotiator:CreateModifier("vapor_vial_negotiation", 1, self)
+        end,
+
+        modifier =
+        {
+            hidden = true,
+
+            OnApply = function( self )
+                self.randomized_costs = {}
+            end,
+
+            event_handlers =
+            {
+                [ EVENT.END_PLAYER_TURN ] = function( self, minigame )
+                    self.negotiator:RemoveModifier(self)
+                end,
+
+                [ EVENT.CALC_ACTION_COST ] = function( self, cost_acc, card, target )
+                    if self.negotiator == card.negotiator and self.randomized_costs then
+                        local cost = self.randomized_costs[ card ]
+                        if cost == nil and not (self.used_cards and table.contains(self.used_cards, card)) then
+                            cost = math.random( 0, 2 )
+                            self.randomized_costs[ card ] = cost
+                        end
+                        if cost then
+                            cost_acc:ModifyValue( cost, self )
+                        end
+                    end
+                end,
+
+                [ EVENT.END_RESOLVE ] = function( self, minigame, card )
+                    if card.negotiator == self.negotiator then
+                        self.used_cards = self.used_cards or {}
+                        table.insert(self.used_cards, card)
+                        self.randomized_costs[card] = nil
+                    end
+                end
+            },
+        },
+    },
+
 }
 for i, id, def in sorted_pairs( CARDS ) do
     def.item_tags = (def.item_tags or 0) | ITEM_TAGS.NEGOTIATION
