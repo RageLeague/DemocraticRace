@@ -249,11 +249,11 @@ local CARDS = {
     business_card =
     {
         name = "Business Card",
-        desc = "Gain {1} {RENOWN}.\n{STACKING}: Increase the stacks gained by 1.",
+        desc = "Gain {1} {RENOWN}.\n{STACKING}: Increase the stacks gained by 2.",
         icon = "DEMOCRATICRACE:assets/cards/business_card.png",
 
         desc_fn = function(self, fmt_str)
-            return loc.format(fmt_str, self.userdata and self.userdata.stacks or 1)
+            return loc.format(fmt_str, 2 * (self.userdata and self.userdata.stacks or 1))
         end,
 
         cost = 0,
@@ -283,7 +283,7 @@ local CARDS = {
         },
 
         OnPostResolve = function( self, minigame, targets )
-            self.negotiator:AddModifier("RENOWN", self.userdata.stacks or 1, self)
+            self.negotiator:AddModifier("RENOWN", 2 * (self.userdata.stacks or 1), self)
         end,
     },
     vroc_whistle_negotiation =

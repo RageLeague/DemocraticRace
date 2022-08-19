@@ -696,7 +696,7 @@ local CARDS = {
     {
         name = "Supporting Rumor",
         flavour = "'The word on the streets is...'",
-        desc = "At the end of your turn, gain 2 {RENOWN}.",
+        desc = "At the end of your turn, gain 3 {RENOWN}.",
         icon = "DEMOCRATICRACE:assets/cards/supporting_rumor.png",
         flags = CARD_FLAGS.MANIPULATE | CARD_FLAGS.UNPLAYABLE | CARD_FLAGS.REPLENISH,
         rarity = CARD_RARITY.UNIQUE,
@@ -706,7 +706,7 @@ local CARDS = {
         {
             [ EVENT.END_PLAYER_TURN ] = function( self, minigame )
                 self:NotifyTriggeredPre()
-                self.negotiator:AddModifier("RENOWN", 2, self )
+                self.negotiator:AddModifier("RENOWN", 3, self )
                 self:NotifyTriggeredPost()
             end
         },
@@ -715,7 +715,7 @@ local CARDS = {
     {
         name = "Conflicting Rumor",
         flavour = "'But what I heard is...'",
-        desc = "At the end of your turn, lose 2 {RENOWN}.",
+        desc = "At the end of your turn, lose 3 {RENOWN}.",
         icon = "DEMOCRATICRACE:assets/cards/conflicting_rumor.png",
         flags = CARD_FLAGS.MANIPULATE | CARD_FLAGS.UNPLAYABLE | CARD_FLAGS.REPLENISH,
         rarity = CARD_RARITY.UNIQUE,
@@ -725,7 +725,7 @@ local CARDS = {
         {
             [ EVENT.END_PLAYER_TURN ] = function( self, minigame )
                 self:NotifyTriggeredPre()
-                self.negotiator:RemoveModifier("RENOWN", 2, self )
+                self.negotiator:RemoveModifier("RENOWN", 3, self )
                 self:NotifyTriggeredPost()
             end
         },
