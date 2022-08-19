@@ -391,7 +391,14 @@ QDEF:AddConvo()
                     What? Where did you came from?
                 guard:
                     !dubious
+                {not (tried_intimidate or tried_convince)?
                     Seriously? I was with {player} the whole time.
+                }
+                {tried_intimidate or tried_convince?
+                    Seriously? I was literally shaking you down a moment ago!
+                }
+                    How did you not notice?
+                * {agent} either has {agent.hisher} head too high up {agent.hisher} arse to notice, or is simply too high.
                     !fight
                     Anyway, you're coming with me!
                 agent:
