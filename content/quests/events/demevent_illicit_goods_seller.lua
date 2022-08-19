@@ -37,7 +37,7 @@ QDEF:AddConvo()
                         Parties are the best! I love them!
                     }
                     {not player_smith?
-                        I assure you, it's all for business.
+                        I assure you, all the drinks I've been having? It's all for business.
                     agent:
                         !handwave
                         Sure. <i>party</> business.
@@ -48,14 +48,14 @@ QDEF:AddConvo()
                         player:
                             Did someone mention parties? I love parties!
                         * When {agent} say "party", {agent.gender:he actually means|she actually means|they actually mean} "drinking alcohol".
-                        * Uncharacteristically, you haven't done that for a while.
+                        * Uncharacteristically, you haven't done a lot of that for a while.
                     }
                     {not player_smith?
                         player:
                             !dubious
                             Wait, when you say "party", do you mean...
                         * Yes, {agent.gender:he does|she does|they do} mean "drinking alcohol".
-                        * You haven't done that for a while, though.
+                        * You haven't done a lot of that for a while, though.
                     }
                 }
                 agent:
