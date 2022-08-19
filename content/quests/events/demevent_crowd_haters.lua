@@ -257,13 +257,14 @@ QDEF:AddConvo()
                 :Travel()
 
             --negotiate
-            DemocracyUtil.AddBodyguardOpt(cxt, function(cxt, agent)
-                cxt:ReassignCastMember("guard", agent)
-                cxt.quest.param.guard_sentient = not agent:IsPet()
-                cxt.quest.param.guard_mech = agent:GetSpecies() == SPECIES.MECH
-                cxt:Dialog("DIALOG_USE_BODYGUARD")
-
-                StateGraphUtil.AddLeaveLocation(cxt)
+            DemocracyUtil.AddBodyguardOpt(cxt, function(opt, agent, is_sentient, is_mech)
+                opt:Fn(function(cxt)
+                    cxt:ReassignCastMember("guard", agent)
+                    cxt.quest.param.guard_sentient = is_sentient
+                    cxt.quest.param.guard_mech = is_mech
+                end)
+                    :Dialog("DIALOG_USE_BODYGUARD")
+                    :Travel()
             end, "OPT_USE_BODYGUARD")
 
             if not cxt.quest.param.tried_negotiation then

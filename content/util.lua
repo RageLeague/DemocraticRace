@@ -1255,10 +1255,8 @@ function DemocracyUtil.AddBodyguardOpt(cxt, fn, opt_id, filter_fn)
         cxt:Opt(opt_id or "OPT_USE_BODYGUARD")
             :LoopingFn(function(cxt)
                 for i, agent in ipairs(candidates) do
-                    cxt:Opt("OPT_SELECT_AGENT", agent)
-                        :Fn(function(cxt)
-                            fn(cxt, agent)
-                        end)
+                    local opt = cxt:Opt("OPT_SELECT_AGENT", agent)
+                    fn(opt, agent, agent:IsSentient(), agent:GetSpecies() == SPECIES.MECH)
                 end
                 StateGraphUtil.AddBackButton(cxt)
             end)

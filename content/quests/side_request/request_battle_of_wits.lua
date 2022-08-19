@@ -926,24 +926,24 @@ QDEF:AddConvo("go_to_game")
                         battle:GetTeam(TEAM.RED):Primary():AddCondition("WANTED_DEAD")
                     end,
                 }
-            DemocracyUtil.AddBodyguardOpt(cxt, function(cxt, hireling)
-                cxt:ReassignCastMember("hired", hireling)
+            DemocracyUtil.AddBodyguardOpt(cxt, function(opt, hireling, is_sentient, is_mech)
+                opt:Fn(function(cxt)
+                    cxt:ReassignCastMember("hired", hireling)
 
-                cxt:TalkTo(cxt:GetCastMember("giver"))
-                if hireling:IsSentient() then
-                    cxt:Dialog("DIALOG_ORDER")
-                else
-                    if hireling:GetSpecies() == SPECIES.MECH then
-                        cxt.enc.scratch.hireling_mech = true
+                    cxt:TalkTo(cxt:GetCastMember("giver"))
+                    if is_sentient then
+                        cxt:Dialog("DIALOG_ORDER")
+                    else
+                        cxt.enc.scratch.hireling_mech = is_mech
+                        cxt:Dialog("DIALOG_ORDER_PET")
                     end
-                    cxt:Dialog("DIALOG_ORDER_PET")
-                end
 
-                cxt:GetCastMember("challenger"):Kill()
+                    cxt:GetCastMember("challenger"):Kill()
 
-                cxt.quest:Complete()
+                    cxt.quest:Complete()
 
-                StateGraphUtil.AddEndOption(cxt)
+                    StateGraphUtil.AddEndOption(cxt)
+                end)
             end, "OPT_ORDER")
 
             cxt:Opt("OPT_CALM")
