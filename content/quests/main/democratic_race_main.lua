@@ -298,6 +298,16 @@ local QDEF = QuestDef.Define
         if quest:DefFn("GetGameplayStats", "ARRESTED_PEOPLE_TIMES") >= 2 then
             table.insert_unique(tags, "many_arrests_made")
         end
+        if (quest.param.drinks_today or 0) == 0 then
+            table.insert_unique(tags, "player_sober_today")
+        end
+        if TheGame:GetGameState():GetPlayerAgent() then
+            local player = TheGame:GetGameState():GetPlayerAgent()
+            local num_drunks = (player.battler and player.battler:GetCardCount("drunk") or 0) + (player.negotiator and player.negotiator:GetCardCount("drunk_player") or 0)
+            if num_drunks >= 3 then
+                table.insert_unique(tags, "player_drunk")
+            end
+        end
     end,
     events =
     {
@@ -424,6 +434,16 @@ local QDEF = QuestDef.Define
         end,
         allow_dual_purpose_cards = function( quest, card, param )
             param.val = true
+        end,
+        had_drink = function( quest, drink_effects )
+            quest.param.drinks_today = (quest.param.drinks_today or 0) + 1
+            quest.param.drinks_total = (quest.param.drinks_total or 0) + 1
+        end,
+        morning_mail = function( quest, cxt )
+            if (quest.param.drinks_today or 0) == 0 then
+                -- Do something special for being sober
+            end
+            quest.param.drinks_today = 0
         end,
     },
     SpawnPoolJob = function(quest, pool_name, excluded_ids, spawn_as_inactive, spawn_as_challenge)
