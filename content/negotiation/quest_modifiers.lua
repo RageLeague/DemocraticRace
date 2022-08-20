@@ -2780,12 +2780,12 @@ local MODIFIERS =
 		name = "Power Player",
 		desc = "{1} gains +1 damage per bounty and inception on the opponent.",
 		desc_fn = function( self, fmt_str )
-            return loc.format( fmt_str, self:GetOwnerName() )
-        end,
+	    	return loc.format( fmt_str, self:GetOwnerName() )
+		end,
 		modifier_type = MODIFIER_TYPE.CORE,
 		icon = "negotiation/modifiers/deadline.tex",
 		event_handlers = 
-        {
+		{
 			[ EVENT.CALC_PERSUASION ] = function( self, source, persuasion )
 				local count = 0
 				for i, modifier in self.anti_negotiator:Modifiers() do
@@ -2794,8 +2794,8 @@ local MODIFIERS =
 					end
 				end
 				persuasion:AddPersuasion(count , count , self)
-            end
-        },
+			end
+		},
 	},
 	
 	OOLO_BADGE_FLASH =
@@ -2824,6 +2824,7 @@ local MODIFIERS =
         end,
 		modifier_type = MODIFIER_TYPE.ARGUMENT,
 		max_resolve = 5,
+		icon = "negotiation/modifiers/wide_influence.tex",
 		event_handlers =
 		{
 			[ EVENT.BEGIN_ENEMY_TURN ] = function(self, minigame, negotiator)
@@ -2847,6 +2848,7 @@ local MODIFIERS =
         desc_fn = function( self, fmt_str )
             return loc.format( fmt_str, self.apply_amt )
         end,
+		icon = "negotiation/modifiers/wide_influence.tex",
 		modifier_type = MODIFIER_TYPE.ARGUMENT,
 		max_resolve = 3,
         apply_amt = 2,
