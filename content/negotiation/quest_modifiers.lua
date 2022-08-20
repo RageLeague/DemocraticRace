@@ -2775,6 +2775,91 @@ local MODIFIERS =
             end,
         },
     },
+    OOLO_WORDSMITH_CORE =
+	{
+		name = "Power Player",
+		desc = "{1} gains +1 damage per bounty and inception on the opponent.",
+		desc_fn = function( self, fmt_str )
+            return loc.format( fmt_str, self:GetOwnerName() )
+        end,
+		modifier_type = MODIFIER_TYPE.CORE,
+		icon = "negotiation/modifiers/deadline.tex",
+		event_handlers = 
+        {
+			[ EVENT.CALC_PERSUASION ] = function( self, source, persuasion )
+				local count = 0
+				for i, modifier in self.anti_negotiator:Modifiers() do
+					if modifier.modifier_type == MODIFIER_TYPE.INCEPTION or modifier.modifier_type == MODIFIER_TYPE.BOUNTY then
+						count = count + 1
+					end
+				end
+				persuasion:AddPersuasion(count , count , self)
+            end
+        },
+	},
+	
+	OOLO_BADGE_FLASH =
+	{
+		name = "Badge Flash",
+		desc = "At the end of {1}'s turn, {INCEPT} {2} {FLUSTERED} and dismiss this argument.",
+		desc_fn = function( self, fmt_str )
+            return loc.format( fmt_str, self:GetOwnerName(), self.baka_amt )
+        end,
+		modifier_type = MODIFIER_TYPE.ARGUMENT,
+		max_resolve = 5,
+		icon = "negotiation/modifiers/fearless.tex",
+		baka_amt = 3,
+		BlowUp = function(self, minigame, negotiator)
+			self.anti_negotiator:InceptModifier("FLUSTERED", self.baka_amt, self)
+			self.negotiator:DestroyModifier(self, self)
+		end,
+	},
+	
+	OOLO_UNITED_FRONT = 
+	{
+		name = "United Front",
+		desc = "At the start of {1}'s turn, all of {1}'s opponent's inceptions and bounties are increased by 1 stack.",
+        desc_fn = function( self, fmt_str )
+            return loc.format( fmt_str, self.apply_amt )
+        end,
+		modifier_type = MODIFIER_TYPE.ARGUMENT,
+		max_resolve = 5,
+		event_handlers =
+		{
+			[ EVENT.BEGIN_ENEMY_TURN ] = function(self, minigame, negotiator)
+				local player_mods = {}
+				for i,modifier in self.anti_negotiator:Modifiers() do
+                    if modifier.modifier_type == MODIFIER_TYPE.INCEPTION or modifier.modifier_type == MODIFIER_TYPE.BOUNTY then
+						table.insert(player_mods, modifier)
+					end
+				end
+				for i, modifier in ipairs(player_mods) do
+					self.anti_negotiator:AddModifier(modifier.id, 1, self)
+				end
+			end,
+		},
+	},	
+	
+	OOLO_SHAKEDOWN =
+	{
+		name = "Shakedown",
+		desc = "Apply {1} {PLANTED_EVIDENCE} to the opponent every turn.",
+        desc_fn = function( self, fmt_str )
+            return loc.format( fmt_str, self.apply_amt )
+        end,
+		modifier_type = MODIFIER_TYPE.ARGUMENT,
+		max_resolve = 3,
+        apply_amt = 2,
+		event_handlers = 
+        {
+            [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
+                if negotiator == self.negotiator then
+					self.anti_negotiator:InceptModifier("PLANTED_EVIDENCE", self.apply_amt, self )
+					self:NotifyTriggered()
+                end
+            end
+        },
+	},
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
