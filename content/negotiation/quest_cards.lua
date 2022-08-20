@@ -685,12 +685,50 @@ local CARDS = {
                 approp = self.negotiator:CreateModifier("APPROPRIATED", 1, self )
             end
             for i, card in ipairs( cards ) do
-                if approp:IsApplied() then -- veryify that it still exists
+                if approp:IsApplied() then -- verify that it still exists
                     print( self.negotiator, "appropriated", card, "from", card.deck )
                     approp:AppropriateCard( card )
                 end
             end
         end,
+    },
+    supporting_rumor =
+    {
+        name = "Supporting Rumor",
+        flavour = "'The word on the streets is...'",
+        desc = "At the end of your turn, gain 3 {RENOWN}.",
+        icon = "DEMOCRATICRACE:assets/cards/supporting_rumor.png",
+        flags = CARD_FLAGS.MANIPULATE | CARD_FLAGS.UNPLAYABLE | CARD_FLAGS.REPLENISH,
+        rarity = CARD_RARITY.UNIQUE,
+        cost = 0,
+
+        event_handlers =
+        {
+            [ EVENT.END_PLAYER_TURN ] = function( self, minigame )
+                self:NotifyTriggeredPre()
+                self.negotiator:AddModifier("RENOWN", 3, self )
+                self:NotifyTriggeredPost()
+            end
+        },
+    },
+    conflicting_rumor =
+    {
+        name = "Conflicting Rumor",
+        flavour = "'But what I heard is...'",
+        desc = "At the end of your turn, lose 3 {RENOWN}.",
+        icon = "DEMOCRATICRACE:assets/cards/conflicting_rumor.png",
+        flags = CARD_FLAGS.MANIPULATE | CARD_FLAGS.UNPLAYABLE | CARD_FLAGS.REPLENISH,
+        rarity = CARD_RARITY.UNIQUE,
+        cost = 0,
+
+        event_handlers =
+        {
+            [ EVENT.END_PLAYER_TURN ] = function( self, minigame )
+                self:NotifyTriggeredPre()
+                self.negotiator:RemoveModifier("RENOWN", 3, self )
+                self:NotifyTriggeredPost()
+            end
+        },
     },
 }
 for i, id, def in sorted_pairs( CARDS ) do
