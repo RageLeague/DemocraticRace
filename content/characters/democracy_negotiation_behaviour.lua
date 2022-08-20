@@ -135,8 +135,41 @@ local NEW_BEHAVIOURS = {
     MURDER_BAY_ADMIRALTY_CONTACT =
     {
         OnInitDemocracy = function(self, old_init, ...)
-            return old_init(self, ...)
+            if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                self.has_badge = false
+                self.negotiator:AddModifier("OOLO_WORDSMITH_CORE")
+                self.unite = self:AddArgument("OOLO_UNITED_FRONT")
+                self.badge = self:AddArgument("OOLO_BADGE_FLASH")
+                self.shake = self:AddArgument("OOLO_SHAKEDOWN")
+                self:SetPattern( self.DemoCycle )
+            end
         end,
+		DemoCycle = function(self, turns)
+			if self.negotiator:HasModifier("OOLO_BADGE_FLASH") then
+				if self.has_badge == false then
+					self.has_badge = true
+					self:ChooseGrowingNumbers(1, 1)
+				else
+					self.negotiator:FindModifier("OOLO_BADGE_FLASH"):BlowUp()
+					for i=1,6 do
+						self:ChooseFlatNumbers( 1, 2 )
+					end
+					self.has_badge = false
+				end
+			else
+				self.has_badge = false
+				self:ChooseGrowingNumbers( 1, 1)
+			end
+			if (turns - 1) % 3 == 0 then
+				self:ChooseCard(self.badge)
+			end
+			if turns % 5 == 0 then
+				self:ChooseCard(self.unite)
+			end
+            if turns % 4 == 0 then
+                self:ChooseCard(self.shake)
+            end
+		end,
     },
     SPARK_CONTACT =
     {
