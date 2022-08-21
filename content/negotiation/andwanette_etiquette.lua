@@ -361,7 +361,7 @@ local TRIGGERS =
         end,
 
         card_count = 2,
-        card_scale = {4, 4, 3, 3},
+        card_scale = {3, 3, 2, 2},
 
         OnInit = function(self)
             self.card_count = DemocracyUtil.CalculateBossScale(self.card_scale)
