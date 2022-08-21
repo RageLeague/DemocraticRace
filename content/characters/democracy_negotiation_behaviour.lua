@@ -135,7 +135,46 @@ local NEW_BEHAVIOURS = {
     MURDER_BAY_ADMIRALTY_CONTACT =
     {
         OnInitDemocracy = function(self, old_init, ...)
+            if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
+                self.has_badge = false
+                self.negotiator:AddModifier("OOLO_WORDSMITH_CORE")
+                self.unite = self:AddArgument("OOLO_UNITED_FRONT")
+                self.badge = self:AddArgument("OOLO_BADGE_FLASH")
+                self.plant_evidence = self:AddCard("oolo_planted_evidence_wordsmith")
+                self.straw_man = self:AddCard("straw_man")
+                self:SetPattern( self.DemoCycle )
+                return
+            end
             return old_init(self, ...)
+        end,
+        DemoCycle = function(self, turns)
+            if turns % 3 == 0 then
+                self:ChooseGrowingNumbers(3, 0, 1)
+            else
+                self:ChooseGrowingNumbers(2, 0)
+            end
+            local max_count = ((GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2) >= 3) and 2 or 1
+            if turns % 2 == 1 then
+                local count = self.player_negotiator:GetModifierInstances( "PLANTED_EVIDENCE" )
+                if count < max_count then
+                    self:ChooseCard(self.plant_evidence)
+                else
+                    self:ChooseComposure(1, 3, 5)
+                end
+            else
+                local count = self.player_negotiator:GetModifierInstances( "straw_man" )
+                if count < max_count then
+                    self:ChooseCard(self.straw_man)
+                else
+                    self:ChooseComposure(1, 3, 5)
+                end
+            end
+            if (turns - 1) % 3 == 0 then
+                self:ChooseCard(self.badge)
+            end
+            if turns % 4 == 2 then
+                self:ChooseCard(self.unite)
+            end
         end,
     },
     SPARK_CONTACT =

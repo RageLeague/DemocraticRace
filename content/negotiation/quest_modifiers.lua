@@ -2775,6 +2775,93 @@ local MODIFIERS =
             end,
         },
     },
+    OOLO_WORDSMITH_CORE =
+    {
+        name = "Power Player",
+        desc = "{1}'s attacks gain +1 damage for each bounty and inception on the opponent.",
+        desc_fn = function( self, fmt_str )
+            return loc.format( fmt_str, self:GetOwnerName() )
+        end,
+        modifier_type = MODIFIER_TYPE.CORE,
+        icon = "negotiation/modifiers/deadline.tex",
+        CalculateInceptCount = function(self)
+            local count = 0
+            for i, modifier in self.anti_negotiator:Modifiers() do
+                if modifier.modifier_type == MODIFIER_TYPE.INCEPTION or modifier.modifier_type == MODIFIER_TYPE.BOUNTY then
+                    count = count + 1
+                end
+            end
+            return count
+        end,
+        OnBeginTurn = function(self, minigame)
+            self.locked_count = self:CalculateInceptCount()
+        end,
+        OnEndTurn = function(self, minigame)
+            self.locked_count = nil
+        end,
+        event_handlers =
+        {
+            [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion )
+                if source and source.negotiator == self.negotiator then
+                    local count = self.locked_count or self:CalculateInceptCount()
+                    persuasion:AddPersuasion(count , count , self)
+                end
+            end
+        },
+    },
+
+    OOLO_BADGE_FLASH =
+    {
+        name = "Badge Flash",
+        desc = "At the end of {1}'s turn, {INCEPT} {2} {FLUSTERED} and reduce <b>Badge Flash</> by 1.",
+        desc_fn = function( self, fmt_str )
+            return loc.format( fmt_str, self:GetOwnerName(), self.flustered_amt )
+        end,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+        max_resolve = 2,
+        icon = "negotiation/modifiers/fearless.tex",
+        flustered_amt = 2,
+        OnInit = function(self)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
+        end,
+        OnBeginTurn = function(self, minigame)
+            self.can_trigger = true
+        end,
+        OnEndTurn = function(self, minigame)
+            if self.can_trigger then
+                self.anti_negotiator:InceptModifier("FLUSTERED", self.flustered_amt, self)
+                self.negotiator:RemoveModifier( self, 1, self )
+            end
+        end,
+    },
+
+    OOLO_UNITED_FRONT =
+    {
+        name = "United Front",
+        desc = "At the start of {1}'s turn, increase all of {2}'s inceptions and bounties by 1 stack.",
+        desc_fn = function( self, fmt_str )
+            return loc.format( fmt_str, self:GetOwnerName(), self:GetOpponentName() )
+        end,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+        max_resolve = 2,
+        icon = "negotiation/modifiers/wide_influence.tex",
+
+        OnInit = function(self)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.HIGH)
+        end,
+
+        OnBeginTurn = function(self, minigame)
+            local player_mods = {}
+            for i,modifier in self.anti_negotiator:Modifiers() do
+                if modifier.modifier_type == MODIFIER_TYPE.INCEPTION or modifier.modifier_type == MODIFIER_TYPE.BOUNTY then
+                    table.insert(player_mods, modifier)
+                end
+            end
+            for i, modifier in ipairs(player_mods) do
+                self.anti_negotiator:AddModifier(modifier, 1, self)
+            end
+        end,
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
