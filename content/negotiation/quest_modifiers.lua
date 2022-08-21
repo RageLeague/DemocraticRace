@@ -2815,18 +2815,21 @@ local MODIFIERS =
         name = "Badge Flash",
         desc = "At the end of {1}'s turn, {INCEPT} {2} {FLUSTERED} and reduce <b>Badge Flash</> by 1.",
         desc_fn = function( self, fmt_str )
-            return loc.format( fmt_str, self:GetOwnerName(), self.baka_amt )
+            return loc.format( fmt_str, self:GetOwnerName(), self.flustered_amt )
         end,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
-        max_resolve = 5,
+        max_resolve = 2,
         icon = "negotiation/modifiers/fearless.tex",
-        baka_amt = 3,
+        flustered_amt = 2,
+        OnInit = function(self)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
+        end,
         OnBeginTurn = function(self, minigame)
             self.can_trigger = true
         end,
         OnEndTurn = function(self, minigame)
             if self.can_trigger then
-                self.anti_negotiator:InceptModifier("FLUSTERED", self.baka_amt, self)
+                self.anti_negotiator:InceptModifier("FLUSTERED", self.flustered_amt, self)
                 self.negotiator:RemoveModifier( self, 1, self )
             end
         end,
@@ -2840,8 +2843,12 @@ local MODIFIERS =
             return loc.format( fmt_str, self:GetOwnerName(), self:GetOpponentName() )
         end,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
-        max_resolve = 5,
+        max_resolve = 2,
         icon = "negotiation/modifiers/wide_influence.tex",
+
+        OnInit = function(self)
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.HIGH)
+        end,
 
         OnBeginTurn = function(self, minigame)
             local player_mods = {}
