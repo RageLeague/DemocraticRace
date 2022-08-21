@@ -986,7 +986,7 @@ end
 function DemocracyUtil.GetAlliancePotential(candidate_id)
     local oppositions =  DemocracyConstants.opposition_data
     local candidate_data = oppositions[candidate_id]
-    assert(candidate_data, "Invalid candidate_id")
+    assert(candidate_data, "Invalid candidate_id:" .. candidate_id)
     local score = DemocracyUtil.GetVoterIntentionIndex({faction = candidate_data.main_supporter})
     local target_candidate = TheGame:GetGameState():GetMainQuest():GetCastMember(candidate_data.cast_id)
     for id, data in pairs(oppositions) do

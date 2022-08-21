@@ -140,36 +140,34 @@ local NEW_BEHAVIOURS = {
                 self.negotiator:AddModifier("OOLO_WORDSMITH_CORE")
                 self.unite = self:AddArgument("OOLO_UNITED_FRONT")
                 self.badge = self:AddArgument("OOLO_BADGE_FLASH")
-                self.shake = self:AddArgument("OOLO_SHAKEDOWN")
+                self.plant_evidence = self:AddCard("oolo_planted_evidence_wordsmith")
                 self:SetPattern( self.DemoCycle )
+                return
+            end
+            return old_init(self, ...)
+        end,
+        DemoCycle = function(self, turns)
+            if turns % 3 == 0 then
+                self:ChooseGrowingNumbers(3, 0, 1)
+            else
+                self:ChooseGrowingNumbers(2, -1)
+            end
+            if turns % 2 == 1 then
+                local count = self.negotiator:GetModifierInstances( "PLANTED_EVIDENCE" )
+                local max_count = (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 2) >= 3 and 2 or 1
+                if count < max_count then
+                    self:ChooseCard(self.plant_evidence)
+                else
+                    self:ChooseComposure(1, 3, 5)
+                end
+            end
+            if (turns - 1) % 3 == 0 then
+                self:ChooseCard(self.badge)
+            end
+            if turns % 4 == 2 then
+                self:ChooseCard(self.unite)
             end
         end,
-		DemoCycle = function(self, turns)
-			if self.negotiator:HasModifier("OOLO_BADGE_FLASH") then
-				if self.has_badge == false then
-					self.has_badge = true
-					self:ChooseGrowingNumbers(1, 1)
-				else
-					self.negotiator:FindModifier("OOLO_BADGE_FLASH"):BlowUp()
-					for i=1,6 do
-						self:ChooseFlatNumbers( 1, 2 )
-					end
-					self.has_badge = false
-				end
-			else
-				self.has_badge = false
-				self:ChooseGrowingNumbers( 1, 1)
-			end
-			if (turns - 1) % 3 == 0 then
-				self:ChooseCard(self.badge)
-			end
-			if turns % 5 == 0 then
-				self:ChooseCard(self.unite)
-			end
-            if turns % 4 == 0 then
-                self:ChooseCard(self.shake)
-            end
-		end,
     },
     SPARK_CONTACT =
     {

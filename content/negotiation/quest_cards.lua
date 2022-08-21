@@ -730,6 +730,21 @@ local CARDS = {
             end
         },
     },
+    oolo_planted_evidence_wordsmith =
+    {
+        name = "Plant Evidence",
+
+        cost = 1,
+        flags = CARD_FLAGS.OPPONENT,
+        rarity = CARD_RARITY.UNIQUE,
+
+        base_incept = { 1, 3, 3, 5 },
+
+        OnPostResolve = function( self, minigame )
+            local incept_count = DemocracyUtil.CalculateBossScale(self.base_incept) + minigame:GetDifficulty()
+            self.anti_negotiator:CreateModifier( "PLANTED_EVIDENCE", incept_count, self )
+        end,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     if not def.series then
