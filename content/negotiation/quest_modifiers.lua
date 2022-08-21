@@ -2266,7 +2266,7 @@ local MODIFIERS =
             [ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
                 if source and source.negotiator == self.anti_negotiator and modifier.modifier_type == MODIFIER_TYPE.ARGUMENT then
                     modifier.negotiator:RemoveModifier(modifier, modifier.stacks, self)
-                    negotiator:RemoveModifier( self, 1, self )
+                    self.negotiator:RemoveModifier( self, 1, self )
                 end
             end,
         },
@@ -2339,11 +2339,13 @@ local MODIFIERS =
 
         modifier_type = MODIFIER_TYPE.CORE,
         base_reduction = 2,
-        base_reduction_scale = { 1, 2, 3, 4 },
+        base_reduction_scale = { 1, 2, 2, 3 },
         additional_reduction = 1,
+        additional_reduction_scale = { 1, 1, 2, 2 },
 
         OnInit = function(self)
             self.base_reduction = DemocracyUtil.CalculateBossScale(self.base_reduction_scale)
+            self.additional_reduction = DemocracyUtil.CalculateBossScale(self.additional_reduction_scale)
         end,
 
         CalculateDamageReduction = function(self)

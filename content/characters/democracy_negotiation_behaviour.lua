@@ -51,6 +51,12 @@ local NEW_BEHAVIOURS = {
         end,
 
         DemocracyBossCycle = function(self, turns)
+            if self.affected_card then
+                for i, card in ipairs(self.affected_card) do
+                    card.target_mod = TARGET_MOD.SINGLE
+                end
+                self.affected_card = nil
+            end
             local faith_count = 0
             for i, data in self.negotiator:Modifiers() do
                 if data.faith_in_hesh then
@@ -59,11 +65,13 @@ local NEW_BEHAVIOURS = {
             end
             if faith_count == 0 then
                 -- Do a mass attack, and create desperation
+                self.affected_card = {}
                 self:ChooseNumbersFromTotal( 1, 4 )
                 for i, card in ipairs(self.prepared_cards) do
                     if card.id == "default" and card.target_enemy then
                         card.target_mod = TARGET_MOD.TEAM
                         card.max_persuasion = card.max_persuasion + 2
+                        table.insert(self.affected_card, card)
                     end
                 end
                 self:ChooseCard(self.desperation)
