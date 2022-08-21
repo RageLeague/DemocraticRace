@@ -552,6 +552,42 @@ local TRIGGERS =
             end,
         },
     },
+    ETIQUETTE_DEALT_CARDS =
+    {
+        desc = "Whenever you gain {1} temporary {1*card|cards} this turn, {2}.{1*| Reset count when triggered.}",
+        loc_strings =
+        {
+            CARDS_REMAINING = "({1} {1*card|cards} remaining)",
+        },
+        desc_fn = function(self, fmt_str, ...)
+            if self.cards_played then
+                return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...)) .. "\n\n" .. loc.format((self.def or self):GetLocalizedString("CARDS_REMAINING"), self.card_count - self.cards_played)
+            end
+            return loc.format(fmt_str, self.card_count, self:GetEffectDesc(...))
+        end,
+
+        card_count = 2,
+        card_scale = {2, 2, 1, 1},
+
+        required_type = CARD_FLAGS.ITEM,
+
+        OnInit = function(self)
+            self.card_count = DemocracyUtil.CalculateBossScale(self.card_scale)
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.CARD_DEALT ] = function( self, card, deck )
+                if card.negotiator == self.anti_negotiator and card:IsTemporary() then
+                    self.cards_played = (self.cards_played or 0) + 1
+                    if self.cards_played >= self.card_count then
+                        self.cards_played = 0
+                        self:TriggerEffect()
+                    end
+                end
+            end,
+        },
+    },
     ETIQUETTE_TRIGGER_FOCUS_ATTACK =
     {
         desc = "Whenever you use cards to attack the same argument {1} times in a row, {2}. Reset count when triggered.",
