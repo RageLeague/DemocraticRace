@@ -7,5 +7,7 @@ local NICKNAMES =
 }
 
 for id, name in pairs(NICKNAMES) do
-    Content.GetCharacterDef( id ).bad_nickname = name
+    if Content.GetCharacterDef( id ) then
+        Content.GetCharacterDef( id ).bad_nickname = name
+    end
 end
