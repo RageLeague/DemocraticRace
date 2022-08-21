@@ -26,7 +26,10 @@ QDEF:AddConvo()
         :Loc{
             DIALOG_INTRO = [[
                 * The bright blue of their robes somehow stand out against the neons of the Pearl.
+                player:
+                    !left
                 agent:
+                    !right
                     !hesh_greeting
                     Greetings, {player}. It's been long since you've paid your tithes.
                 {player_sal?
@@ -51,7 +54,7 @@ QDEF:AddConvo()
                 agent:
                     This isn't about your family's tithes. This is about <i>your</> personal tithes.
                 }
-                {not player_sal? and not player_rook? and not player_smith?
+                {not (player_sal or player_rook or player_smith)?
                 player:
                     !angry_accuse
                     I've paid all my tithes on time, just like the rest of us.
@@ -222,7 +225,7 @@ QDEF:AddConvo()
                     No, I'm not going to pay tithes.
                     I don't care what happens with my soul, I care about the now.
                 agent:
-                    I...see
+                    I... see.
                     !fight
                     Perhaps I'll just shift the "now" to issues of your soul.
                     Witness a fraction of Hesh's wrath.
