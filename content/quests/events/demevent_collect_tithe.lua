@@ -303,7 +303,12 @@ QDEF:AddConvo()
             DIALOG_DEFEND = [[
                 player:
                     !fight
+                {not tried_intimidate?
                     I'm warning you now. You're dealing with a Lumin Shark.
+                }
+                {tried_intimidate?
+                    [p] Let me give you a demonstration.
+                }
             ]],
             DIALOG_DEFEND_WIN = [[
                 {dead?
@@ -324,12 +329,104 @@ QDEF:AddConvo()
                         They always say that, but I'm still here.
                 }
             ]],
+            OPT_INTIMIDATE = "Scare {agent} away",
+            DIALOG_INTIMIDATE = [[
+                player:
+                    [p] Look at me.
+                    I'm scary.
+            ]],
+            DIALOG_INTIMIDATE_SUCCESS_SOLO = [[
+                agent:
+                    [p] Oh no I'm scared!
+                    !exit
+            ]],
+            DIALOG_INTIMIDATE_SUCCESS = [[
+                * [p] {agent}'s followers ran away.
+                agent:
+                    I'll win next time!
+                    !exit
+            ]],
+            DIALOG_INTIMIDATE_OUTNUMBER = [[
+                * [p] Some of {agent}'s followers ran away.
+                agent:
+                    !fight
+                    No matter. I can still win!
+            ]],
+            DIALOG_INTIMIDATE_FAILURE = [[
+                agent:
+                    Wait, this guy isn't that strong.
+                {some_ran?
+                    Come back, you cowards!
+                * The routed followers came back,
+                }
+            ]],
         }
+        :SetLooping(true)
         :Fn(function(cxt)
+
+            if not cxt.quest.param.tried_intimidate then
+                if #cxt.enc.scratch.opfor == 1 then
+                    cxt:Opt("OPT_INTIMIDATE")
+                        :Dialog("DIALOG_INTIMIDATE")
+                        :Negotiation{
+                            cooldown = 0,
+                            flags = NEGOTIATION_FLAGS.INTIMIDATION,
+                        }
+                            :OnSuccess()
+                                :Dialog("DIALOG_INTIMIDATE_SUCCESS_SOLO")
+                                :Travel()
+                            :OnFailure()
+                                :Dialog("DIALOG_INTIMIDATE_FAILURE")
+                                :Fn(function(cxt)
+                                    cxt.quest.param.tried_intimidate = true
+                                end)
+                else
+                    local allies = {}
+                    for i, ally in ipairs(cxt.enc.scratch.opfor) do
+                        if i ~= 1 then
+                            table.insert(allies, ally)
+                        end
+                    end
+                    cxt:Opt("OPT_INTIMIDATE")
+                        :Dialog("DIALOG_INTIMIDATE")
+                        :Negotiation{
+                            cooldown = 0,
+                            flags = NEGOTIATION_FLAGS.INTIMIDATION | NEGOTIATION_FLAGS.ALLY_SCARE,
+                            enemy_resolve_required = 8 + cxt.quest:GetRank() * 10,
+                            fight_allies = allies,
+                            on_success = function(cxt, minigame)
+                                local keep_allies = {}
+                                for i, modifier in minigame:GetOpponentNegotiator():Modifiers() do
+                                    if modifier.id == "FIGHT_ALLY_SCARE" and modifier.ally_agent then
+                                        table.insert( keep_allies, modifier.ally_agent )
+                                    end
+                                end
+
+                                for k,v in pairs(allies) do
+                                    if not table.arrayfind(keep_allies, v) then
+                                        v:MoveToLimbo()
+                                    end
+                                end
+                                if #keep_allies == 0 or (DemocracyUtil.CalculatePartyStrength(cxt.player:GetParty()) >= DemocracyUtil.CalculatePartyStrength(cxt:GetAgent():GetParty()) ) then
+                                    cxt:Dialog("DIALOG_INTIMIDATE_SUCCESS")
+                                    StateGraphUtil.AddLeaveLocation(cxt)
+                                else
+                                    cxt:Dialog("DIALOG_INTIMIDATE_OUTNUMBER")
+                                    cxt.quest.param.tried_intimidate = true
+                                end
+                            end,
+                            on_fail = function(cxt,minigame)
+                                cxt.enc.scratch.some_ran = not (minigame:GetOpponentNegotiator():FindCoreArgument() and minigame:GetOpponentNegotiator():FindCoreArgument():GetShieldStatus())
+                                cxt:Dialog("DIALOG_INTIMIDATE_FAILURE")
+                                cxt.quest.param.tried_intimidate = true
+                            end,
+                        }
+                end
+            end
             cxt:Opt("OPT_DEFEND")
                 :Dialog("DIALOG_DEFEND")
                 :Battle{
-                    enemies = cxt.quest.param.opfor,
+                    -- enemies = cxt.quest.param.opfor,
                     flags = BATTLE_FLAGS.SELF_DEFENCE,
                 }
                 :OnWin()
@@ -340,4 +437,5 @@ QDEF:AddConvo()
                         end
                     end)
                     :Travel()
+
         end)
