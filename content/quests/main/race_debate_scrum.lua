@@ -295,6 +295,7 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
             end
 
             DemocracyUtil.SendMetricsData("DAY_3_BOSS_START", METRIC_DATA)
+            TheGame:SetTempMusicOverride("DEMOCRATICRACE|event:/democratic_race/music/negotiation/debate_scrum", cxt.enc)
         end)
         :Negotiation{
             flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.WORDSMITH | NEGOTIATION_FLAGS.NO_CORE_RESOLVE | NEGOTIATION_FLAGS.NO_LOOT,
