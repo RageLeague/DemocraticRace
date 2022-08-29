@@ -65,7 +65,7 @@ local CARDS = {
             return loc.format(fmt_str, AutoUpgradeText(self, "modifier_threshold", true),
                 AutoUpgradeText(self, "req_argument_id", false, function(x) return "{" .. x .. "}" end))
         end,
-        flavour = "'Look at me, I am doing good things by gifting people with money. Now vote for me.'\n'What? You don't? Then I guess you must hate the poor.'",
+        flavour = "'People like stories where we pull one person out of the gutter more than those where we make it so a thousand more don't have to live in it.'",
         icon = "DEMOCRATICRACE:assets/cards/virtue_signal.png",
 
         advisor = "ADVISOR_DIPLOMACY",
