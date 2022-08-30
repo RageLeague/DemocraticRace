@@ -2160,20 +2160,6 @@ local MODIFIERS =
             end,
         },
     },
-    DR_CONTRADICTION_IN_RUMOR =
-    {
-        name = "Contradiction In Rumor",
-        desc = "When destroyed, you lose the negotiation.",
-        icon = "DEMOCRATICRACE:assets/modifiers/contradiction_in_rumor.png",
-
-        modifier_type = MODIFIER_TYPE.BOUNTY,
-
-        max_resolve = 1,
-
-        OnBounty = function(self, source)
-            self.engine:Lose()
-        end,
-    },
     FELLEMO_SLIPPERY =
     {
         name = "Slippery",
