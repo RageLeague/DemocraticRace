@@ -57,16 +57,16 @@ local CARDS = {
         name = "Boosted Relatable",
         influence_gain = 2,
     },
-    advisor_diplomacy_virtue_signal =
+    advisor_diplomacy_holier_than_thou =
     {
-        name = "Virtue Signal",
-        desc = "If you have {1} or more {2}, instead destroy the target if it is an argument or bounty.",
+        name = "Holier Than Thou",
+        desc = "If you have {1} or more {2}, Destroy the target afterwards if it is an argument or bounty and hasn't been destroyed yet.",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, AutoUpgradeText(self, "modifier_threshold", true),
                 AutoUpgradeText(self, "req_argument_id", false, function(x) return "{" .. x .. "}" end))
         end,
-        flavour = "'People like stories where we pull one person out of the gutter more than those where we make it so a thousand more don't have to live in it.'",
-        icon = "DEMOCRATICRACE:assets/cards/virtue_signal.png",
+        flavour = "Instead of Hesh, some like to believe in their own righteousness.",
+        icon = "DEMOCRATICRACE:assets/cards/holier_than_thou.png",
 
         advisor = "ADVISOR_DIPLOMACY",
         flags = CARD_FLAGS.DIPLOMACY,
@@ -75,7 +75,7 @@ local CARDS = {
         min_persuasion = 2,
         max_persuasion = 3,
 
-        modifier_threshold = 5,
+        modifier_threshold = 3,
         req_argument_id = "INFLUENCE",
 
         PreReq = function( self, minigame )
@@ -92,31 +92,15 @@ local CARDS = {
             end
             -- self.negotiator:AddModifier( "INFLUENCE", self.influence_gain, self )
         end,
-
-        event_priorities =
-        {
-            [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_CLAMP + 100,
-        },
-
-        event_handlers =
-        {
-            [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion, minigame, target )
-                if source == self then
-                    if self:PreReq(minigame) and target and (target.modifier_type == MODIFIER_TYPE.ARGUMENT or target.modifier_type == MODIFIER_TYPE.BOUNTY) then
-                        persuasion:ModifyPersuasion(0, 0, self )
-                    end
-                end
-            end,
-        }
     },
-    advisor_diplomacy_virtue_signal_plus =
+    advisor_diplomacy_holier_than_thou_plus =
     {
-        name = "Pale Virtue Signal",
-        modifier_threshold = 3,
+        name = "Pale Holier Than Thou",
+        modifier_threshold = 1,
     },
-    advisor_diplomacy_virtue_signal_plus2 =
+    advisor_diplomacy_holier_than_thou_plus2 =
     {
-        name = "Twisted Virtue Signal",
+        name = "Twisted Holier Than Thou",
         req_argument_id = "DOMINANCE",
     },
     advisor_diplomacy_smiling_daggers =
