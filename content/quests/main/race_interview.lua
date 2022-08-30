@@ -1,5 +1,5 @@
 local INTERVIEWER_BEHAVIOR = {
-    QUESTION_STACKS = {4, 3, 2, 1},
+    QUESTION_STACKS = {3, 3, 3, 3},
     OnInit = function( self, difficulty )
         -- self.bog_boil = self:AddCard("bog_boil")
         local relationship_delta = self.agent and (self.agent:GetRelationship() - RELATIONSHIP.NEUTRAL) or 0
