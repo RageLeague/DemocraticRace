@@ -75,7 +75,7 @@ local CARDS = {
         min_persuasion = 2,
         max_persuasion = 3,
 
-        modifier_threshold = 3,
+        modifier_threshold = 4,
         req_argument_id = "INFLUENCE",
 
         PreReq = function( self, minigame )
@@ -96,12 +96,13 @@ local CARDS = {
     advisor_diplomacy_holier_than_thou_plus =
     {
         name = "Pale Holier Than Thou",
-        modifier_threshold = 1,
+        modifier_threshold = 2,
     },
     advisor_diplomacy_holier_than_thou_plus2 =
     {
         name = "Twisted Holier Than Thou",
         req_argument_id = "DOMINANCE",
+        modifier_threshold = 2,
     },
     advisor_diplomacy_smiling_daggers =
     {
