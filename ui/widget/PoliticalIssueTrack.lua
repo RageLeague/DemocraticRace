@@ -11,6 +11,16 @@ local assets = {
 local OUTLINE_SIZE = 3
 
 local STANCE_INDICES = { -2, -1.5, -1, 0, 1, 1.5, 2 }
+local STANCE_ALIGNMENT =
+{
+    [-2] = 0,
+    [-1.5] = 0.15,
+    [-1] = 0.3,
+    [0] = 0.5,
+    [1] = 0.7,
+    [1.5] = 0.85,
+    [2] = 1,
+}
 
 local PoliticalIssueTrack = class( "DemocracyClass.Widget.PoliticalIssueTrack", Widget.Clickable )
 
@@ -144,7 +154,8 @@ function PoliticalIssueTrack:Layout()
     self.opinion_track:LayoutBounds("center", "bottom", self.hitbox):Offset(0, self.icon_size + 2 * self.spacing)
     self.issue_title:LayoutBounds("left", "top", self.hitbox):Offset(SPACING.M1, -self.spacing)
     for i, icon in pairs(self.stance_icons) do
-        local percent_align = (i - 1) / 4
+        local percent_align = STANCE_ALIGNMENT[i - 3]
+        assert(percent_align, "Missing alignment data for " .. i)
         icon:LayoutBounds("center", "bottom", self.hitbox):Offset(math.round((self.track_w - self.icon_size) * (percent_align - .5)), self.spacing)
     end
 
