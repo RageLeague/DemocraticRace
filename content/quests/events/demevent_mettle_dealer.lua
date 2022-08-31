@@ -56,32 +56,68 @@ QDEF:AddConvo()
         :Loc{
             DIALOG_INTRO = [[
                 * You are minding your own business when you are confronted by a very dodgy person.
+                {player_plundak?
+                    * Who looks exactly like you, for some reason, except for the hair.
+                }
                 player:
                     !left
                 dealer:
                     !right
-                    There you are!
-                    I was wondering whether you would show up here.
-                {not met?
-                player:
-                    Do I know you?
-                dealer:
-                    Maybe you do, but not in this life.
-                    But I know you, I know that you need some mettle.
-                }
-                {met?
-                    {liked?
-                        player:
-                            Come and try to sell mettle to me again?
-                        dealer:
-                            You know me so well!
+                {not player_plundak?
+                    dealer:
+                        There you are!
+                        I was wondering whether you would show up here.
+                    {not met?
+                    player:
+                        Do I know you?
+                    dealer:
+                        Maybe you do, but not in this life.
+                        But I know you, I know that you need some mettle.
                     }
-                    {not liked?
+                    {met?
+                        {liked?
+                            player:
+                                Come and try to sell mettle to me again?
+                            dealer:
+                                You know me so well!
+                        }
+                        {not liked?
+                            player:
+                                What do you want?
+                            dealer:
+                                You know me, I sell mettle.
+                                And you look like you could use some.
+                        }
+                    }
+                }
+                {player_plundak?
+                    dealer:
+                        There you are!
+                        I was wondering whether I would find you here.
+                    {not met?
+                    player:
+                        Oh. Of course. I don't know why I would expect otherwise.
+                    * Wait, what's going on? Why are there two {dealer.name}s?
+                    * And why do you two have different hair color?
+                    * You better have a good explanation for this.
+                    player:
+                        !shrug
+                        Sorry, no can do, pal.
+                    dealer:
+                        !hips
+                        Talking to the narrator again?
+                        Anyway, we are here to talk business.
+                    player:
+                        What business.
+                    dealer:
+                        You know what.
+                    * Let me guess, mettle?
+                    }
+                    {met?
                         player:
-                            What do you want?
+                            Want to talk business again?
                         dealer:
-                            You know me, I sell mettle.
-                            And you look like you could use some.
+                            You know yourself so well!
                     }
                 }
             ]],
@@ -89,29 +125,47 @@ QDEF:AddConvo()
             DIALOG_ASK_METTLE = [[
                 player:
                     What is mettle?
-                {unlocked_mettle?
-                dealer:
-                    I'm surprised you don't know, considering that you already have it.
-                player:
-                    I do? That's news to me.
-                dealer:
-                    Is that the game we're playing now?
-                    Very well, I shall tell you.
+                {not player_plundak?
+                    {unlocked_mettle?
+                    dealer:
+                        I'm surprised you don't know, considering that you already have it.
+                    player:
+                        I do? That's news to me.
+                    dealer:
+                        Is that the game we're playing now?
+                        Very well, I shall tell you.
+                    }
+                    {not unlocked_mettle?
+                    dealer:
+                        You seriously don't know what that is?
+                        Very well, I shall tell you.
+                    }
+                    dealer:
+                        Mettle is a wonderful substance!
+                        It is all around you, yet only a select few can utilize it!
+                        It can achieve many wonderful things and improve your abilities!
+                    player:
+                        So you're saying it is a performance enhancer?
+                    dealer:
+                        Sure, let's go with that.
+                    *** You learnt that mettle is a performance enhancer.
                 }
-                {not unlocked_mettle?
-                dealer:
-                    You seriously don't know what that is?
-                    Very well, I shall tell you.
+                {player_plundak?
+                    dealer:
+                        !chuckle
+                        Come now! You know fully well what it is!
+                    * Don't you sell those stuff to people yourself?
+                    {not unlocked_mettle?
+                        * Although, for some reason you haven't tried it yourself.
+                        * A drug dealer doesn't do their own stock, so to speak.
+                    }
+                    {unlocked_mettle?
+                        * Gotta share this wonderful drug to every grifter you meet, you know?
+                    }
+                    dealer:
+                        Hey! It's not a drug! It's something better!
+                    * Sure it is.
                 }
-                dealer:
-                    Mettle is a wonderful substance!
-                    It is all around you, yet only a select few can utilize it!
-                    It can achieve many wonderful things and improve your abilities!
-                player:
-                    So you're saying it is a performance enhancer?
-                dealer:
-                    Sure, let's go with that.
-                *** You learnt that mettle is a performance enhancer.
             ]],
             OPT_ACCEPT_METTLE = "Accept mettle",
             DIALOG_ACCEPT_METTLE = [[
@@ -132,10 +186,19 @@ QDEF:AddConvo()
                 dealer:
                     Of course!
                 {did_not_save_scum?
-                    What, do you think I'm a charity? Giving away such a great substance for free?
-                player:
-                    Uhh...
-                * You are not sure how to answer, considering that you know {dealer.himher} from another life who gave you mettle for free.
+                    dealer:
+                        What, do you think I'm a charity? Giving away such a great substance for free?
+                    {not player_plundak?
+                        player:
+                            Uhh...
+                        * You are not sure how to answer, considering that you know {dealer.himher} from another life who gave you mettle for free.
+                    }
+                    {player_plundak?
+                        player:
+                            Come on! I'm literally you!
+                        dealer:
+                            Sorry. I don't give away free stuff, even to myself.
+                    }
                 }
                 {not did_not_save_scum?
                     What, just because you tried to time travel, you think my price will change?
@@ -154,7 +217,12 @@ QDEF:AddConvo()
                     Hey! Mettle is really strong, and not everyone can take it.
                     You should be glad that I'm selling it to you.
                 player:
+                {not player_plundak?
                     No way I'm paying that much for meta currency!
+                }
+                {player_plundak?
+                    No way I'm paying that much for meta currency! To myself no less!
+                }
             ]],
             DIALOG_HAGGLE_SUCCESS = [[
                 dealer:
@@ -224,7 +292,6 @@ QDEF:AddConvo()
                 * {dealer} left, leaving you wondering whether you made the right call.
             ]],
             OPT_ARREST = "Arrest {dealer} on the spot",
-            REQ_KNOW_HQ = "You don't know where the Admiralty HQ is.",
             DIALOG_ARREST = [[
                 player:
                     I'm sorry, {dealer}, but you're under arrest.
@@ -233,35 +300,64 @@ QDEF:AddConvo()
                 player:
                     For selling a dangerous controlled substance.
                 dealer:
-                {not unlocked_mettle?
-                    I'll have you know that mettle is a perfectly fine substance, thank you very much!
+                {not player_plundak?
+                    {not unlocked_mettle?
+                        I'll have you know that mettle is a perfectly fine substance, thank you very much!
+                    }
+                    {unlocked_mettle?
+                        I've gave you a taste of power, and this is how you repay me?
+                    }
                 }
-                {unlocked_mettle?
-                    I've gave you a taste of power, and this is how you repay me?
+                {player_plundak?
+                    Really? Are you going to arrest yourself?
                 }
             ]],
             DIALOG_ARREST_WIN = [[
                 {dead?
-                    * You killed {dealer}, but this might not be the rest you see of {dealer.himher}.
+                    {not player_plundak?
+                        * You killed {dealer}, but this might not be the rest you see of {dealer.himher}.
+                    }
+                    {player_plundak?
+                        * You killed {dealer}. Hope that this doesn't create a paradox.
+                        player:
+                            No it won't.
+                        * If you say so.
+                    }
                 }
                 {not dead?
-                    player:
-                        !angry
-                    agent:
-                        !injured
-                        This is just a temporary setback, you and I both know this.
-                    player:
-                        Oh yeah?
-                        How about let's make it permanent, hmm?
-                    agent:
-                        What, you're going to kill me?
-                        I assure you, killing me is in no way permanent.
-                    player:
-                        If I want to kill you, I would've already done so during the fight.
-                        That's why I'm going to arrest you. Send you to an Admiralty prison.
-                        Try convince the people there how wonderful your "mettle" is.
-                    * You send {agent} off to a nearby Admiralty patrol.
-                    * Now there is one less mettle dealer that walks Havarian streets.
+                    {not player_plundak?
+                        player:
+                            !angry
+                        agent:
+                            !injured
+                            This is just a temporary setback, you and I both know this.
+                        player:
+                            Oh yeah?
+                            How about let's make it permanent, hmm?
+                        agent:
+                            What, you're going to kill me?
+                            I assure you, killing me is in no way permanent.
+                        player:
+                            If I want to kill you, I would've already done so during the fight.
+                            That's why I'm going to arrest you. Send you to an Admiralty prison.
+                            Try convince the people there how wonderful your "mettle" is.
+                        * You send {agent} off to a nearby Admiralty patrol.
+                        * Now there is one less mettle dealer that walks Havarian streets.
+                    }
+                    {player_plundak?
+                        player:
+                            !angry
+                        agent:
+                            !injured
+                            Why are you doing this to me? Why are you doing this to yourself?
+                        player:
+                            Ask yourself.
+                            I understand if you target literally anyone else, but me? Yourself?
+                            Which is why I'm bringing you to an Admiralty prison.
+                            You will have plenty of customers there. If they buy it.
+                        * You send {agent} off to a nearby Admiralty patrol.
+                        * Now there is one less mettle dealer, and one less competition.
+                    }
                 }
             ]]
         }

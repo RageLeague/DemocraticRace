@@ -96,16 +96,16 @@ local NEW_BEHAVIOURS = {
             -- modifier.agents = shallowcopy(self.agents)
             -- modifier:InitModifiers()
             self.cont_question_card = self:AddCard("contemporary_question_card")
-            self.cont_question_card.stacks = 3 - (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ARGUMENT_PLUS ) and 1 or 0)
+            self.cont_question_card.stacks = 3
 
             self.modifier_picker = self:MakePicker()
 
             local _, card = self.modifier_picker:AddArgument("LOADED_QUESTION", 2 + math.max(0, -relationship_delta))
-            card.stacks = 3 - (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ARGUMENT_PLUS ) and 1 or 0)
+            card.stacks = 3
             local _, card = self.modifier_picker:AddArgument("PLEASANT_QUESTION", 2 + math.max(0, relationship_delta))
-            card.stacks = 3 - (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ARGUMENT_PLUS ) and 1 or 0)
+            card.stacks = 3
             local _, card = self.modifier_picker:AddArgument("GENERIC_QUESTION", 4)
-            card.stacks = 3 - (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ARGUMENT_PLUS ) and 1 or 0)
+            card.stacks = 3
 
             if not self.params then self.params = {} end
             self.params.questions_answered = 0

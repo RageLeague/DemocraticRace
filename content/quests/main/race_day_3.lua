@@ -209,7 +209,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         cxt:Dialog("DIALOG_INTRO")
         DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 3)
         cxt:Dialog("DIALOG_INTRO_PST")
-        if cxt.quest.param.has_potential_ally then
+        if cxt.enc.scratch.has_potential_ally then
             cxt:GoTo("STATE_ALLIANCE")
         elseif cxt.enc.scratch.advisor_favor then
             cxt:GoTo("STATE_FAVOR")
@@ -229,6 +229,8 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 primary_advisor:
                     !right
                     I'll leave you to it.
+                agent:
+                    !right
             ]],
             DIALOG_CHOOSE_PST = [[
                 {allied?
