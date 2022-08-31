@@ -58,7 +58,7 @@ local QDEF = QuestDef.Define
             -- Or a softlock, which is what you are going to get
         else
             local chosen = table.arraypick(all_candidates)
-            table.insert(t, DemocracyUtil.GetOppositionByID(chosen))
+            table.insert(t, DemocracyUtil.GetMainQuestCast(chosen))
         end
     end,
     no_validation = true,

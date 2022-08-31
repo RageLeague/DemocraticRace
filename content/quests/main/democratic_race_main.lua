@@ -1075,7 +1075,7 @@ local QDEF = QuestDef.Define
         end
     end,
 
-    GetOppositionByID = function(quest, id)
+    GetMainQuestCast = function(quest, id)
         return quest:GetCastMember(id)
     end,
 }
