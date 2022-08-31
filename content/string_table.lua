@@ -192,6 +192,11 @@ Content.AddStringTable("DEMOCRACY", {
                 RELATIVE_GOAL_DESC = "Shows the support level relative to your support goal of today(2nd value). Useful for not getting kicked out by your advisor.",
             },
         },
+        TUTORIAL =
+        {
+            TUTORIAL_SUPPORT_TITLE = "Democratic Race Tutorial: Support",
+            TUTORIAL_SUPPORT_BODY = "Would you like to see a quick tutorial on support levels? You can review it at any time from the pause menu.",
+        },
         WEALTH_STRING =
         {
             LVL_1 = "Lower Class",
@@ -216,8 +221,6 @@ Content.AddStringTable("DEMOCRACY", {
         PAUSEMENU = {
             RACE_TUTORIAL = "DEMOCRATIC RACE",
         },
-        RACE_TUTORIAL_TITLE = "Democratic Race Tutorial: Support",
-        RACE_TUTORIAL_BODY = "Would you like to see a quick tutorial on support levels? You can review it at any time from the pause menu.",
     },
     MISC =
     {
