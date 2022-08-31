@@ -49,9 +49,19 @@ local QDEF = QuestDef.Define
     mark = {"opposition"},
     state = QSTATUS.ACTIVE,
 }
-:AddCastByAlias{
+:AddCast{
     cast_id = "opposition",
-    alias = available_opposition,
+    cast_fn = function(quest, t)
+        local all_candidates = DemocracyUtil.GetAllOppositions()
+        if #all_candidates == 0 then
+            -- If you get to that point you deserve a prize
+            -- Or a softlock, which is what you are going to get
+        else
+            local chosen = table.arraypick(all_candidates)
+            table.insert(t, DemocracyUtil.GetOppositionByID(chosen))
+        end
+    end,
+    no_validation = true,
     on_assign = function(quest, agent)
         -- if character_map[agent:GetContentID()] then
         --     quest.param[character_map[agent:GetContentID()]] = true

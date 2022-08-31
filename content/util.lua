@@ -871,10 +871,10 @@ end
 function DemocracyUtil.GetAgentEndorsement(agent)
     return DemocracyUtil.GetEndorsement(DemocracyUtil.GetVoterIntentionIndex{agent = agent})
 end
-function DemocracyUtil.GetAllOppositions(ignore_dropped_out)
+function DemocracyUtil.GetAllOppositions(include_dropped_out)
     local t = {}
     for id, data in pairs(DemocracyConstants.opposition_data) do
-        if ignore_dropped_out or DemocracyUtil.IsCandidateInRace(data.cast_id) then
+        if include_dropped_out or DemocracyUtil.IsCandidateInRace(data.cast_id) then
             table.insert(t, data.cast_id)
         end
     end
