@@ -200,7 +200,7 @@ local MODIFIERS = {
                 if pick then
                     print(pick.name)
                     if pick.stance then
-                        DemocracyUtil.TryMainQuestFn("UpdateStance", issue.id, pick.stance, false, true)
+                        DemocracyUtil.TryMainQuestFn("UpdateStance", issue.id, pick.stance, true)
                         -- local stance = issue.stances[pick.stance]
                         -- if stance.faction_support then
                         --     DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport", stance.faction_support)
