@@ -85,7 +85,7 @@ local CARDS = {
         OnPostResolve = function( self, minigame, targets )
             if self:PreReq(minigame) then
                 for i, target in ipairs(targets) do
-                    if (target.modifier_type == MODIFIER_TYPE.ARGUMENT or target.modifier_type == MODIFIER_TYPE.BOUNTY) then
+                    if target:IsApplied() and (target.modifier_type == MODIFIER_TYPE.ARGUMENT or target.modifier_type == MODIFIER_TYPE.BOUNTY) then
                         target.negotiator:DestroyModifier(target, self)
                     end
                 end
