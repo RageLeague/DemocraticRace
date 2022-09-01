@@ -194,8 +194,12 @@ Content.AddStringTable("DEMOCRACY", {
         },
         TUTORIAL =
         {
+            TUTORIAL_SUPPORT_BUTTON = "Democracy: Support",
             TUTORIAL_SUPPORT_TITLE = "Democratic Race Tutorial: Support",
             TUTORIAL_SUPPORT_BODY = "Would you like to see a quick tutorial on support levels? You can review it at any time from the pause menu.",
+            TUTORIAL_STANCES_BUTTON = "Democracy: Stances",
+            TUTORIAL_STANCES_TITLE = "Democratic Race Tutorial: Stances",
+            TUTORIAL_STANCES_BODY = "Would you like to see a quick tutorial on stances? You can review it at any time from the pause menu.",
         },
         WEALTH_STRING =
         {
