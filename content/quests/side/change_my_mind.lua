@@ -224,7 +224,7 @@ QDEF:AddConvo("debate_people")
                     %confront_argument
             ]],
             DIALOG_CONFRONT_ENEMY = [[
-                * Now that {agent} brought {agent.himher}self to you, perhaps you can use this public opportunity to ruin {agent.hisher} life.
+                * Now that {agent} brought {agent.self} to you, perhaps you can use this public opportunity to ruin {agent.hisher} life.
                 * If you do that, though, it will cause a significant disruption that you can't debate anymore.
             ]],
             OPT_DEBATE = "Debate!",

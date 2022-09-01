@@ -175,7 +175,9 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-            QuestUtil.SpawnQuest( "FOLLOWUP_INTERWEAVING_BONDS", { parameters = { avoid_tei = true } } )
+            if cxt:GetCastMember("primary_advisor") and cxt:GetCastMember("primary_advisor"):GetContentID() == "ADVISOR_MANIPULATE" and cxt:GetCastMember("opponent"):GetContentID() == "TEI" then
+                QuestUtil.SpawnQuest( "FOLLOWUP_INTERWEAVING_BONDS", { parameters = { avoid_tei = true } } )
+            end
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :Loc{

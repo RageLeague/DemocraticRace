@@ -172,7 +172,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                 agent:
                     !right
                     Ugh. Fine.
-                * {agent.HeShe} reveals {agent.himher}self.
+                * {agent.HeShe} reveals {agent.self}.
                 agent:
                     You're the new politician in the election?
                 player:

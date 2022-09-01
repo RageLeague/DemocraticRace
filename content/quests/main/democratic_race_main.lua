@@ -1074,6 +1074,10 @@ local QDEF = QuestDef.Define
             quest.param.alert_advisor_removed = change_reason:lower()
         end
     end,
+
+    GetMainQuestCast = function(quest, id)
+        return quest:GetCastMember(id)
+    end,
 }
 :AddCast{
     cast_id = "random_opposition",

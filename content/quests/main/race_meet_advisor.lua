@@ -142,13 +142,13 @@ end
 
 local function ShowRaceTutorial()
     local screen = TheGame:FE():GetTopScreen()
-    TheGame:GetGameProfile():SetHasSeenMessage("democracy_race_tutorial")
-    TheGame:FE():InsertScreen( Screen.YesNoPopup(LOC"UI.RACE_TUTORIAL_TITLE", LOC"UI.RACE_TUTORIAL_BODY", nil, nil, LOC"UI.NEGOTIATION_PANEL.TUTORIAL_NO" ))
+    TheGame:GetGameProfile():SetHasSeenMessage("democracy_tutorial_support")
+    TheGame:FE():InsertScreen( Screen.YesNoPopup(LOC"DEMOCRACY.TUTORIAL.TUTORIAL_SUPPORT_TITLE", LOC"DEMOCRACY.TUTORIAL.TUTORIAL_SUPPORT_BODY", nil, nil, LOC"UI.NEGOTIATION_PANEL.TUTORIAL_NO" ))
         :SetFn(function(v)
             if v == Screen.YesNoPopup.YES then
                 local coro = screen:StartCoroutine(function()
                     local advance = false
-                    TheGame:FE():PushScreen( Screen.SlideshowScreen( "democracy_race_tutorial", function() advance = true end ):SetAutoAdvance(false) )
+                    TheGame:FE():PushScreen( Screen.SlideshowScreen( "democracy_tutorial_support", function() advance = true end ):SetAutoAdvance(false) )
                     while not advance do
                         coroutine.yield()
                     end

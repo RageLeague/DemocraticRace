@@ -85,7 +85,7 @@ Convo("DEM_UNLAWFUL_ATTACK")
                     }
                     {not high_strength?
                         !handwring
-                        Although {target} {target.himher}self ain't that tough. It'll be fun plucking {target.hisher} plumage. See how high n' mighty they are without a goon to throw in the way.
+                        Although {target} {target.self} ain't that tough. It'll be fun plucking {target.hisher} plumage. See how high n' mighty they are without a goon to throw in the way.
                     }
                 }
                 {not high_renown?
