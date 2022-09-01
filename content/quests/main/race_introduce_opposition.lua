@@ -94,6 +94,23 @@ local QDEF = QuestDef.Define
 DemocracyUtil.AddPrimaryAdvisor(QDEF)
 DemocracyUtil.AddHomeCasts(QDEF)
 
+local function ShowStancesTutorial()
+    local screen = TheGame:FE():GetTopScreen()
+    TheGame:GetGameProfile():SetHasSeenMessage("democracy_tutorial_stances")
+    TheGame:FE():InsertScreen( Screen.YesNoPopup(LOC"DEMOCRACY.TUTORIAL.TUTORIAL_STANCES_TITLE", LOC"DEMOCRACY.TUTORIAL.TUTORIAL_STANCES_BODY", nil, nil, LOC"UI.NEGOTIATION_PANEL.TUTORIAL_NO" ))
+        :SetFn(function(v)
+            if v == Screen.YesNoPopup.YES then
+                local coro = screen:StartCoroutine(function()
+                    local advance = false
+                    TheGame:FE():PushScreen( Screen.SlideshowScreen( "democracy_tutorial_stances", function() advance = true end ):SetAutoAdvance(false) )
+                    while not advance do
+                        coroutine.yield()
+                    end
+                end )
+            end
+        end)
+end
+
 QDEF:AddConvo("meet_opposition", "opposition")
     :Loc{
         DIALOG_GREET_PST = [[
@@ -268,6 +285,12 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 agent:
                     !permit
                     What say you? Are you persuaded by my speech?
+                player:
+                    ...
+                    !placate
+                    Wait, hold on. Am I suppose to give my opinion here?
+                agent:
+                    I mean, you don't <i>have to</>, but I would <i>really</> like to hear about your opinion on this matter.
             ]],
             OPT_AGREE = "Agree",
             DIALOG_AGREE = [[
@@ -301,36 +324,85 @@ QDEF:AddConvo("meet_opposition", "opposition")
                     Oh well.
                     Just be warned. You can't deflect the issue forever. Especially on these important issues.
             ]],
+            OPT_ASK_ABOUT = "Ask {primary_advisor} about stance taking",
+            DIALOG_ASK_ABOUT = [[
+                player:
+                    Excuse me for a moment.
+                agent:
+                    Of course.
+                * You turn to {primary_advisor}
+                primary_advisor:
+                    !right
+                player:
+                    !cagey
+                    Wait, what should I say?
+                    I feel like I am compelled to take a side here, and I don't know the consequences of doing that.
+                primary_advisor:
+                    !shrug
+                    Well, as a politician, you will often face dilemma like this where you are compelled to take a side.
+                    Regardless of which side you pick, it's important for you to know what it entails.
+                    !give
+                    Here's a brief explanation on what taking a stance means.
+            ]],
+            DIALOG_ASK_ABOUT_PST = [[
+                primary_advisor:
+                    Remember, while I may have personal opinions on some topics, it's ultimately your campaign, and your decisions to make.
+                    I will support you, regardless of what stances you take.
+                    !cruel
+                    As long as you take the right ones, of course.
+                player:
+                    Of course.
+                agent:
+                    !right
+                    So? What do you think?
+            ]],
         }
+        :SetLooping(true)
         :Fn(function(cxt)
-            cxt:Dialog("DIALOG_GREET")
-            cxt:Opt("OPT_AGREE")
-                :Dialog("DIALOG_AGREE")
-                :UpdatePoliticalStance(cxt.quest.param.oppo_issue, cxt.quest.param.stance_index)
-                :Fn(function(cxt)
-                    cxt.quest.param.greeted = true
-                    cxt.quest.param.agreed = true
-                    cxt:Dialog("DIALOG_GREET_PST")
-                    cxt.quest:Activate("discuss_plan")
-                end)
-            cxt:Opt("OPT_DISAGREE")
-                :Dialog("DIALOG_DISAGREE")
-                :UpdatePoliticalStance(cxt.quest.param.oppo_issue, -cxt.quest.param.stance_index)
-                :Fn(function(cxt)
-                    cxt.quest.param.greeted = true
-                    cxt.quest.param.disagreed = true
-                    cxt:Dialog("DIALOG_GREET_PST")
-                    cxt.quest:Activate("discuss_plan")
-                end)
-            cxt:Opt("OPT_IGNORE")
-                :Dialog("DIALOG_IGNORE")
-                :Fn(function(cxt)
-                    DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport",
-                        -1)
-                    cxt.quest.param.greeted = true
-                    cxt:Dialog("DIALOG_GREET_PST")
-                    cxt.quest:Activate("discuss_plan")
-                end)
+            if cxt:FirstLoop() then
+                cxt:Dialog("DIALOG_GREET")
+                cxt.quest.param.greeted = true
+            end
+            if not cxt.quest.param.asked_stance then
+                cxt:Opt("OPT_ASK_ABOUT")
+                    :Dialog("DIALOG_ASK_ABOUT")
+                    :Fn(function(cxt)
+                        cxt:Wait()
+                        cxt.quest.param.asked_stance = true
+                        TheGame:GetGameProfile():AcquireUnlock("DONE_STANCE_QUESTION")
+                        ShowStancesTutorial()
+                    end)
+                    :Dialog("DIALOG_ASK_ABOUT_PST")
+            end
+            if TheGame:GetGameProfile():HasUnlock("DONE_STANCE_QUESTION") then
+                cxt:Opt("OPT_AGREE")
+                    :Dialog("DIALOG_AGREE")
+                    :UpdatePoliticalStance(cxt.quest.param.oppo_issue, cxt.quest.param.stance_index)
+                    :Fn(function(cxt)
+                        cxt.quest.param.agreed = true
+                        cxt:Dialog("DIALOG_GREET_PST")
+                        cxt.quest:Activate("discuss_plan")
+                    end)
+                    :Pop()
+                cxt:Opt("OPT_DISAGREE")
+                    :Dialog("DIALOG_DISAGREE")
+                    :UpdatePoliticalStance(cxt.quest.param.oppo_issue, -cxt.quest.param.stance_index)
+                    :Fn(function(cxt)
+                        cxt.quest.param.disagreed = true
+                        cxt:Dialog("DIALOG_GREET_PST")
+                        cxt.quest:Activate("discuss_plan")
+                    end)
+                    :Pop()
+                cxt:Opt("OPT_IGNORE")
+                    :Dialog("DIALOG_IGNORE")
+                    :Fn(function(cxt)
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport",
+                            -1)
+                        cxt:Dialog("DIALOG_GREET_PST")
+                        cxt.quest:Activate("discuss_plan")
+                    end)
+                    :Pop()
+            end
         end)
     :AskAboutHubConditions("STATE_QUESTIONS",
     {
