@@ -47,3 +47,14 @@ for i, id in ipairs(QUEST_IDS) do
     --     print("Fail to replace " .. id .. ": " .. message)
     -- end
 end
+
+local qdef = Content.GetQuestDef( "EVENT_FIRST_METTLE" )
+
+local old_cond = qdef.precondition
+
+qdef.precondition = function(...)
+    if DemocracyUtil.IsDemocracyCampaign() then
+        return false, "Democracy campaign does not spawn first mettle quest"
+    end
+    return old_cond(...)
+end
