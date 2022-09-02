@@ -697,29 +697,43 @@ local CARDS = {
     advisor_hostile_duckspeak =
     {
         name = "Duckspeak",
-        desc = "Choose a card from your hand that costs X. Create a {advisor_hostile_duckspeak} and {IMPRINT} that card onto it.",
+        desc = "Choose a playable, non-variable-costed card from your hand that costs X. Create a {advisor_hostile_duckspeak} and {IMPRINT} that card onto it.",
         flavour = "'You keep saying that. I don't think you know what it means.'\n'Who cares? You know I'm right.'",
         icon = "DEMOCRATICRACE:assets/cards/duckspeak.png",
 
         loc_strings =
         {
             CHOOSE_IMPRINT = "Choose a card to <b>Imprint</>",
+            NO_AVAILABLE_CARDS = "No valid card to <b>Imprint</>",
         },
 
         advisor = "ADVISOR_HOSTILE",
         flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND | CARD_FLAGS.VARIABLE_COST,
         cost = 0,
 
+        CanPlayCard = function( self, card, engine, target )
+            for i, hand_card in engine:GetHandDeck():Cards() do
+                if self:CanChooseCard(hand_card) then
+                    return true
+                end
+            end
+            return false, (self.def or self):GetLocalizedString("NO_AVAILABLE_CARDS")
+        end,
+
+        CanChooseCard = function(self, card)
+            if card:IsFlaggedAny(CARD_FLAGS.VARIABLE_COST | CARD_FLAGS.UNPLAYABLE | CARD_FLAGS.AUTOPLAY) then
+                return false
+            end
+            if self.engine:CalculateActionCost(card) > self.engine:GetActionCount() then
+                return false
+            end
+            return true
+        end,
+
         OnPostResolve = function( self, minigame, targets )
             local chosen_card = minigame:ChooseCard(
                 function(card)
-                    if card:IsFlagged(CARD_FLAGS.VARIABLE_COST) then
-                        return false
-                    end
-                    if minigame:CalculateActionCost(card) > minigame:GetActionCount() then
-                        return false
-                    end
-                    return true
+                    return self:CanChooseCard(card)
                 end,
                 self.def:GetLocalizedString("CHOOSE_IMPRINT")
             )
