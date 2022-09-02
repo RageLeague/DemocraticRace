@@ -2550,7 +2550,7 @@ local MODIFIERS =
         end,
         icon = "DEMOCRATICRACE:assets/modifiers/unrest_kalandra.png",
 
-        revolution_threshold = 3,
+        revolution_threshold = 2,
 
         modifier_type = MODIFIER_TYPE.PERMANENT,
     },
@@ -2572,12 +2572,12 @@ local MODIFIERS =
         end,
         icon = "DEMOCRATICRACE:assets/modifiers/spark_of_revolution.png",
 
-        revolution_threshold = 3,
+        revolution_threshold = 2,
         damage_amt = 1,
-        damage_scale = {1, 1, 2, 2},
+        damage_scale = {1, 1, 1, 2},
         modifier_type = MODIFIER_TYPE.CORE,
 
-        target_mod = TARGET_MOD.TEAM,
+        target_mod = TARGET_MOD.ALL,
 
         OnInit = function(self)
             self.damage_amt = DemocracyUtil.CalculateBossScale(self.damage_scale)
@@ -2593,14 +2593,6 @@ local MODIFIERS =
             self.icon = engine.asset.Texture("DEMOCRATICRACE:assets/modifiers/flames_of_revolution.png")
             self.engine:BroadcastEvent( EVENT.UPDATE_MODIFIER_ICON, self)
             self:NotifyChanged()
-        end,
-
-        OnEndTurn = function(self)
-            local count = self.negotiator:GetModifierStacks("UNREST_KALANDRA")
-            if count and count >= self.revolution_threshold then
-                self.negotiator:RemoveModifier("UNREST_KALANDRA", count, self)
-                self:ActivateRevolution()
-            end
         end,
 
         DoAOESequence = function(self)
@@ -2631,6 +2623,11 @@ local MODIFIERS =
                 if not (self.engine and self.engine.revolution_activated) then
                     if modifier.id == "VOICE_OF_THE_PEOPLE_KALANDRA" and modifier.stacks > 0 then
                         self.negotiator:AddModifier("UNREST_KALANDRA", 1, self)
+                        local count = self.negotiator:GetModifierStacks("UNREST_KALANDRA")
+                        if count and count >= self.revolution_threshold then
+                            self.negotiator:RemoveModifier("UNREST_KALANDRA", count, self)
+                            self:ActivateRevolution()
+                        end
                     end
                 else
                     if modifier.stacks > 0 then
