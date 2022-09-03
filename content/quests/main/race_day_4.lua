@@ -161,15 +161,16 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         ]],
         DIALOG_PST_VOTES_BAD = [[
             agent:
-                Your polling average hasn't gotten you into the special debate happening tonight.
+                There's supposed to be a special debate happening tonight, between two of the strongest candidates.
+                However... Your polling average isn't that great, so you aren't invited.
                 !eureka
-                But I've got an idea to make up for that and still get you on that highly publicized debate.
+                With that being said, I've got an idea to make up for that and still get you on that highly publicized debate.
             player:
                 !intrigue
-                Could I <i>know</> this plan ahead of time, or is this on a Need to Know basis?
+                Could I <i>know</> this plan ahead of time, or is this on a need-to-know basis?
             agent:
                 !clap
-                In due time...and certainly not because I just thought of walking in there.
+                In due time... and certainly not because I just thought of walking in there.
         ]],
         DIALOG_END = [[
             agent:
@@ -182,7 +183,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 {advisor_favor?
                     Anyway, to business...
                     !point
-                    Actually, there's something that's been bugging me for a bit. Do you mind hearing me out? 
+                    Actually, there's something that's been bugging me for a bit. Do you mind hearing me out?
                 }
             }
             {has_potential_ally?
@@ -342,15 +343,28 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     !right
                 player:
                     !chuckle
-                    Oh look, it's everyone favorite political ally, {opponent}.
+                    Oh, look at who showed up!
                 opponent:
-                    Drop out of the race.
+                    {player}, I have something to ask of you.
                 player:
+                    !permit
+                    What is it?
+                opponent:
+                    !point
+                    Can you drop out of the race?
+                player:
+                    ...
                     !crossed
-                    Wow. Some ally you turned out to be.
+                    Excuse me? What the Hesh?
                 opponent:
                     !thumb
-                    I'm serious, {player}. We both know you don't have enough votes to win this race.
+                    I'm serious, {player}.
+                    {higher_ranking?
+                        We both know you don't have enough votes to win this race.
+                    }
+                    {not higher_ranking?
+                        You should know that even though you have a lot of votes, it's not enough to win the race.
+                    }
                     !permit
                     But you drop out. We combine our supporters, and suddenly we'll both have a chance at this.
                     I promise you'll be treated right once I win, you just have to trust me.
@@ -364,29 +378,32 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     !intrigue
                     So that's a yes? You'll drop out of the race for me?
                 player:
-                    !angryshrug
+                    !angry_shrug
                     No need to rub it in, but yes. You'll get your free supporters.
                 opponent:
                     !eureka
                     Alright, thank you {player}. You won't regret this choice.
+                * You agree to drop out of the race for {opponent}.
+                * Together, you might achieve victory with {opponent}.
+                * A shame that victory is not going to be yours. This is your campaign, after all.
             ]],
             OPT_REFUSE = "Refuse to drop out",
             DIALOG_REFUSE = [[
                 player:
                     !chuckle
-                    You seriously, <i>seriously</> doubt the power of political engingeering.
+                    You seriously, <i>seriously</> doubt the power of political engineering.
                     My chances are fine, thank you very much.
                 opponent:
                     !disappoint
                     Well, that's a shame. Truly it is.
-                    !angrypoint
+                    !angry_point
                     The only way this can turn out now is us fighting each other in the race instead.
                 player:
                     !sigh
                     So it seems.
                 opponent:
                     !permit
-                    For what it's worth, I sincerely hope you win if I lose. 
+                    For what it's worth, I sincerely hope you win if I lose.
             ]],
             OPT_CONVINCE = "Convince {opponent} to drop out instead",
             DIALOG_CONVINCE = [[
