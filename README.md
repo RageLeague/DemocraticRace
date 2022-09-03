@@ -4,7 +4,7 @@ A pioneer campaign mod for Griftlands, the Democratic Race is a mod for Griftlan
 
 This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
-Version: 0.7.2(Alpha)
+Version: 0.8.0(Alpha)
 
 Author: RageLeague
 
@@ -69,7 +69,7 @@ With the official mod update, you can read about how to set up mods at https://f
 2. Create a new folder called `mods` if you haven't already.
 3. Clone this repository into that folder.
 4. The `modinit.lua` file should be under `.../mods/[insert_repo_name_here]`.
-5. Volia! Now the mod should work.
+5. Voila! Now the mod should work.
 
 Note: The GitHub version will be constantly updated to keep up with new changes. As such, it will be less stable, but will have the latest content. You can also submit pull requests if you want, if you know coding and knows how to fix certain issues or write dialogs.
 
@@ -79,7 +79,7 @@ With the new official workshop support, you can directly install mods from steam
 
 1. Subscribe this item.
 2. Enable it in-game.
-3. Volia!
+3. Voila!
 
 Note: The Steam workshop version of the game will not be constantly updated. It will only be updated if there are game breaking bugs that need to be fixed, or major balance issues, or a major feature update. As such, it will be more stable.
 
@@ -92,6 +92,7 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * WumpusThe19th
 * Playr10
 * SpicyNiceCream
+* codyfun
 
 ### The Artists
 
@@ -103,6 +104,33 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Flange Finnegan
 
 ## Changelog
+
+### 0.8.0 (Day 4 Update)
+
+This is a major update that adds the day 4 of the campaign. And a bunch of other stuff, including 5 new wordsmith negotiation behaviour for oppositions (except Nadan, because he already has one), new events, bug fixes, and balance changes, I guess. This update also breaks backward compatibility quite a bit, so old saves games might not work (profiles would still work, though).
+
+Major Changes:
+
+* Day 4 of the campaign is added.
+* New wordsmith negotiation behaviour for oppositions.
+* New events.
+* Added story mode support for Democratic Race.
+
+Minor Changes:
+
+* Your alliance status with an opponent is independent from your opinion with them.
+* New negotiation music for day 1 and day 3.
+* New tutorials for support and stances.
+* Reduced penalty for inconsistent stances.
+* Renamed old "Etiquette" to "Hospitality", "Etiquette" is now something else.
+* Renamed "Virtue Signal" to "Holier Than Thou", because I have another unimplemented idea for a card with that name, and I need to make room.
+* Added negotiation version of "Vapor Vial"
+* Fralx added as one of the potential bosses you can encounter on day 1.
+* Cleaned up notifications so you get spammed with less notifications, especially when taking stances or making friends/enemies.
+* Support screen now shows stances you are "favoring" and support gain/loss from taking stances.
+* A bunch of bug fixes and balance changes.
+* Reworked faction/wealth support for oppositions.
+* New dialogs, dialog options, and quips. Replaced some temporary dialogs.
 
 ### 0.7.2
 
