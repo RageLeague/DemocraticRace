@@ -396,14 +396,19 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 opponent:
                     !disappoint
                     Well, that's a shame. Truly it is.
-                    !angry_point
-                    The only way this can turn out now is us fighting each other in the race instead.
+                    If you are really my ally, you should know when to make sacrifices for the greater good.
                 player:
-                    !sigh
-                    So it seems.
+                    !crossed
+                    I have my own agenda. I'm not going to give it up just because an "ally" told me to.
                 opponent:
-                    !permit
-                    For what it's worth, I sincerely hope you win if I lose.
+                    !angry_point
+                    If you don't honor the alliance, the only way this can turn out now is us fighting each other in the race instead.
+                player:
+                    If that's the case, then so be it.
+                opponent:
+                    Alright. Suit yourself.
+                    May the best candidate win.
+                    !exit
             ]],
             OPT_CONVINCE = "Convince {opponent} to drop out instead",
             DIALOG_CONVINCE = [[
