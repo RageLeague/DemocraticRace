@@ -5,11 +5,14 @@ local ARTISTS = {
     PRIEST_PROMOTED = 0.65,
     SPARK_BARON_TASKMASTER = 0.35,
     ADMIRALTY_CLERK = 0.5,
+    ADMIRALTY_INVESTIGATOR = 0.65,
     -- SPREE_CAPTAIN = 0.15,
     WEALTHY_MERCHANT = 0.35,
     WEALTHY_MERCHANT_PROMOTED = 0.55,
     POOR_MERCHANT = 0.5,
     JAKES_SMUGGLER = 0.3,
+    PEARLIE = 0.5,
+    RISE_VALET = 0.35,
 }
 local function IsArtist(agent)
     return agent:CalculateProperty("IS_ARTIST", function(agent)
@@ -34,6 +37,15 @@ local DRAFT_BEHAVIOUR = {
         -- literally does nothing.
 	end,
 }
+
+local function CanMakePoster(agent)
+    -- Maybe in the future I can make it so you can ask allies to make a poster for you.
+    -- if DemocracyUtil.GetAlliance(agent) then
+    --     return true
+    -- end
+    return not (AgentUtil.IsInHiding(agent) or agent:IsRetired() or agent:IsInPlayerParty()
+        or AgentUtil.HasPlotArmour(agent) or not agent:IsSentient())
+end
 
 local QDEF = QuestDef.Define
 {
@@ -82,7 +94,7 @@ local QDEF = QuestDef.Define
         if in_location then
             local location = TheGame:GetGameState():GetPlayerAgent():GetLocation()
             for i, agent in location:Agents() do
-                if DemocracyUtil.RandomBystanderCondition(agent) and (not quest.param.artist_demands
+                if CanMakePoster(agent) and (not quest.param.artist_demands
                     or quest.param.artist_demands[agent:GetID()] ~= false) then
                     table.insert(t, agent)
                 end
@@ -600,7 +612,7 @@ QDEF:AddConvo("commission")
         REQ_NOT_ARTIST = "This person won't make a propaganda poster because {agent.heshe} can't.",
     }
     :Hub(function(cxt, who)
-        if who and (DemocracyUtil.RandomBystanderCondition(who) or who == cxt:GetCastMember("known_artist")) then
+        if who and ((CanMakePoster(who) and not DemocracyUtil.GetAlliance(who)) or who == cxt:GetCastMember("known_artist")) then
             cxt.enc.scratch.is_artist = IsArtist(who)
             if not cxt.quest.param.artist_demands then
                 cxt.quest.param.artist_demands = {}

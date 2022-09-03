@@ -43,6 +43,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "go_to_sleep",
     title = "Go to sleep",
+    desc = "It's been a long day. Go to bed when you are ready.",
     mark = {"primary_advisor"},
     on_activate = function(quest)
         DemocracyUtil.StartFreeTime()
@@ -408,11 +409,11 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 end)
 
             cxt:BasicNegotiation("CONVINCE", {
-                target_agent = cxt.quest:GetCastMember("opponent"),
+                target_agent = cxt:GetCastMember("opponent"),
                 flags = NEGOTIATION_FLAGS.WORDSMITH,
                 situation_modifiers = {
                     { value = 20, text = cxt:GetLocString("SIT_MOD") },
-                    cxt.enc.scratch.higher_ranking and { value = math.min(math.ceil((opponent_votes - player_votes) / (player_votes + 1) * 6) * 5, 30), text = cxt:GetLocString("SIT_MOD") }
+                    cxt.enc.scratch.higher_ranking and { value = math.min(math.ceil((opponent_votes - player_votes) / (player_votes + 1) * 6) * 5, 30), text = cxt:GetLocString("SIT_MOD_RANKING") }
                 },
             }):OnSuccess()
                 :Fn(function(cxt)
