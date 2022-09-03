@@ -385,7 +385,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     Alright, thank you {player}. You won't regret this choice.
                 * You agree to drop out of the race for {opponent}.
                 * Together, you might achieve victory with {opponent}.
-                * A shame that victory is not going to be yours. This is your campaign, after all.
+                * A shame that victory is not going to be yours, though. This is your campaign, after all.
             ]],
             OPT_REFUSE = "Refuse to drop out",
             DIALOG_REFUSE = [[
@@ -499,7 +499,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 opponent:
                     !point
                     Not that I know of, though I'll check.
-                    but the actual, <i>important</> news is that I've dropped out of the race.
+                    But the actual, <i>important</> news is that I've dropped out of the race.
                 player:
                     !surprised
                     Oh wow. Didn't take you for someone who would've bailed.
