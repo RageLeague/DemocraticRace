@@ -26,7 +26,7 @@ lines:
 
 - tags: [advisor, advisor_manipulate, met]
   dialog:
-  - By the way, do you know that my {agent.gender:wife|husband|partner} is a doctor?
+  - By the way, do you know that my husband is a doctor?
 
 - tags: [advisor, advisor_hostile]
   dialog:

@@ -100,6 +100,14 @@ local OPINIONS = {
         delta = OPINION_DELTAS.BAD,
         txt = "Publicly denounced them",
     },
+    REFUSED_TO_DROP_OUT = {
+        delta = OPINION_DELTAS.DISLIKE,
+        txt = "Refused to drop out of the race when asked to"
+    },
+    HAD_MEANINGFUL_DISCUSSION = {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Had meaningful discussion with them",
+    },
 }
 
 for id, data in pairs(OPINIONS) do

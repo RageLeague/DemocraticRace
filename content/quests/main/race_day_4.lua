@@ -43,6 +43,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "go_to_sleep",
     title = "Go to sleep",
+    desc = "It's been a long day. Go to bed when you are ready.",
     mark = {"primary_advisor"},
     on_activate = function(quest)
         DemocracyUtil.StartFreeTime()
@@ -257,7 +258,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                             cxt.quest.param.low_player_votes = true
                         end
                     else
-                        if i >= 3 and vote_result[i][2] < 0.6 * best_votes then
+                        if i >= 4 and vote_result[i][2] < 0.6 * best_votes then
                             table.insert(low_vote_candidates, vote_result[i][1])
                         elseif DemocracyUtil.GetAlliance(vote_result[i][1]) then
                             if not seen_player or i <= 2 then
@@ -268,7 +269,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                         end
                     end
                 end
-                if #low_vote_candidates == 0 and #vote_result >= 3 then
+                if #low_vote_candidates == 0 and #vote_result >= 4 then
                     table.insert(low_vote_candidates, vote_result[#vote_result][1])
                 end
                 for i, agent in ipairs(low_vote_candidates) do
@@ -387,10 +388,55 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     !permit
                     For what it's worth, I sincerely hope you win if I lose. 
             ]],
+            OPT_CONVINCE = "Convince {opponent} to drop out instead",
+            DIALOG_CONVINCE = [[
+                player:
+                    [p] I think you should drop out of the race instead.
+                opponent:
+                    Really now?
+                {higher_ranking?
+                    Even though I am more popular than you?
+                }
+            ]],
+            DIALOG_CONVINCE_SUCCESS = [[
+                player:
+                {higher_ranking?
+                    [p] You might be more popular, but people have certain expectations for you.
+                }
+                {not higher_ranking?
+                    [p] Your campaign can only go so far because people have certain expectations for you.
+                }
+                    But me? I am a wildcard. My politics can appeal to anyone, instead of being restricted to one voting group.
+                    We will have a better chance of winning if you drop out of the race.
+                opponent:
+                    Okay fine. I'll drop out instead.
+            ]],
+            DIALOG_CONVINCE_FAILURE = [[
+                player:
+                    [p] Please, it's very important to me.
+                opponent:
+                    It's very important to me as well!
+                    But we must all make sacrifice if we want to still win the election.
+                    So, please, {player}. Consider dropping out of the race.
+            ]],
+            SIT_MOD = "Doesn't want to drop out of the race",
+            SIT_MOD_RANKING = "Is more popular than you",
         }
         :Fn(function(cxt)
             cxt:ReassignCastMember("opponent", cxt.enc.scratch.conflicting_allies[1])
             cxt:GetCastMember("opponent"):MoveToLocation(cxt:GetCastMember("home"))
+
+            local player_votes, opponent_votes
+            for i, data in ipairs(cxt.quest.param.vote_result) do
+                if data[1] == cxt.player then
+                    player_votes = data[2]
+                elseif data[1] == cxt:GetCastMember("opponent") then
+                    opponent_votes = data[2]
+                end
+            end
+            if player_votes < opponent_votes then
+                cxt.enc.scratch.higher_ranking = true
+            end
             cxt:Dialog("DIALOG_INTRO")
 
             cxt:Opt("OPT_AGREE")
@@ -399,12 +445,26 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     DemocracyUtil.AddAutofail(cxt, false)
                 end)
 
+            cxt:BasicNegotiation("CONVINCE", {
+                target_agent = cxt:GetCastMember("opponent"),
+                flags = NEGOTIATION_FLAGS.WORDSMITH,
+                situation_modifiers = {
+                    { value = 20, text = cxt:GetLocString("SIT_MOD") },
+                    cxt.enc.scratch.higher_ranking and { value = math.min(math.ceil((opponent_votes - player_votes) / (player_votes + 1) * 6) * 5, 30), text = cxt:GetLocString("SIT_MOD_RANKING") }
+                },
+            }):OnSuccess()
+                :Fn(function(cxt)
+                    DemocracyUtil.DropCandidate(cxt.quest:GetCastMember("opponent"))
+                    cxt.quest:Complete("starting_out")
+                    cxt:GetCastMember("opponent"):MoveToLimbo()
+                    StateGraphUtil.AddLeaveLocation(cxt)
+                end)
+
             cxt:Opt("OPT_REFUSE")
                 :Dialog("DIALOG_REFUSE")
                 :Fn(function(cxt)
-                    for i, agent in ipairs(cxt.enc.scratch.conflicting_allies) do
-                        DemocracyUtil.SetAlliance(agent, false)
-                    end
+                    DemocracyUtil.SetAlliance(cxt:GetCastMember("opponent"), false)
+                    cxt:GetCastMember("opponent"):OpinionEvent(OPINIONS.REFUSED_TO_DROP_OUT)
                     cxt.quest:Complete("starting_out")
                     cxt:GetCastMember("opponent"):MoveToLimbo()
                     StateGraphUtil.AddLeaveLocation(cxt)

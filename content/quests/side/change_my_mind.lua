@@ -44,9 +44,9 @@ local QDEF = QuestDef.Define
         quest.param.debated_people = 0
         quest.param.crowd = {}
     end,
-    on_start = function(quest)
-        quest:Activate("go_to_junction")
-    end,
+    -- on_start = function(quest)
+    --     quest:Activate("go_to_junction")
+    -- end,
     on_destroy = function( quest )
         if quest:GetCastMember("junction") then
             TheGame:GetGameState():MarkLocationForDeletion(quest:GetCastMember("junction"))
@@ -224,7 +224,7 @@ QDEF:AddConvo("debate_people")
                     %confront_argument
             ]],
             DIALOG_CONFRONT_ENEMY = [[
-                * Now that {agent} brought {agent.himher}self to you, perhaps you can use this public opportunity to ruin {agent.hisher} life.
+                * Now that {agent} brought {agent.self} to you, perhaps you can use this public opportunity to ruin {agent.hisher} life.
                 * If you do that, though, it will cause a significant disruption that you can't debate anymore.
             ]],
             OPT_DEBATE = "Debate!",
@@ -642,6 +642,7 @@ QDEF:AddConvo("debate_people")
                             debater:GainAspect("stripped_influence", 5)
                             debater:OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
                             debater:Retire()
+                            DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
                             cxt.quest.param.debated_people = cxt.quest.param.debated_people + 1
                         end)
                         :CompleteQuest()
@@ -932,7 +933,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-            -- cxt.quest:Activate("go_to_junction")
+            cxt.quest:Activate("go_to_junction")
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{

@@ -147,7 +147,7 @@ QDEF:AddConvo()
                     Pardon my rookie mistake for thinking the armed revolution would be appreciable to a box full of guns.
             ]],
             OPT_CONVINCE_DONATE = "Convince {jakes} to donate weapons to the cause",
-            SIT_MOD_NO_DONATE = "That's not how business works.",
+            SIT_MOD_NO_DONATE = "That's not how business works",
             DIALOG_CONVINCE_DONATE = [[
                 jakes:
                     !right
@@ -288,7 +288,7 @@ QDEF:AddConvo()
                     Doesn't sound like something the Admiralty would particularly care for.
                 }
                 jakes:
-                    Hey, I paid my customs fees! The admiralty got their cut of this deal already.
+                    Hey, I paid my customs fees! The Admiralty got their cut of this deal already.
             ]],
         }
         :SetLooping(true)
@@ -314,7 +314,7 @@ QDEF:AddConvo()
                             cxt:GoTo("STATE_PAY")
                         else
                             cxt:GetCastMember("jakes"):OpinionEvent(OPINION.HELP_COMPLETE_DEAL)
-                            StateGraphUtil.AddLeaveLocation()
+                            StateGraphUtil.AddLeaveLocation(cxt)
                         end
                     end)
 
@@ -353,7 +353,7 @@ QDEF:AddConvo()
                 hinders = {"jakes"},
             })
                 :OnSuccess()
-                    :DeltaSupport(10)
+                    :DeltaSupport(4)
                     :Travel()
                 :OnFailure()
                     :Fn(function(cxt)
@@ -544,12 +544,14 @@ QDEF:AddConvo()
                     And who knows? Maybe you and {rise} will get a bit closer that way.
                 jakes:
                     You're right on one thing, Switch. It'll be a few days in the bin for me. Got the contacts to get out.
-                    !over_there
+                    !point
                     You though. Maybe this'll teach you some manners on how to conduct business.
                 rise:
                     But...but the elect-
                 player:
                     The election is specifically so we don't need radicals like you with weapons like those.
+                    Now come along now. You don't want to make this any worse for yourselves.
+                * You bring these two to a nearby patrol and hand them over.
             ]],
             DIALOG_INTIMIDATE_FAILURE = [[
                 jakes:
@@ -666,8 +668,9 @@ QDEF:AddConvo()
                     cxt:GetCastMember("jakes"):OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY, nil, hate_target)
                     cxt:GetCastMember("jakes"):Retire()
                 end
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10)
-                DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 10, "ADMIRALTY")
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 6)
+                DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 8, "ADMIRALTY")
+                DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
             end
 
             cxt:Opt("OPT_INTIMIDATE")
@@ -705,13 +708,16 @@ QDEF:AddConvo()
                         end)
                         :Travel()
 
-            DemocracyUtil.AddBodyguardOpt(cxt, function(cxt, agent)
-                cxt:ReassignCastMember("guard", agent)
-                cxt:Dialog("DIALOG_USE_BODYGUARD")
-                agent:Dismiss()
-                DoArrest(cxt, agent)
-                StateGraphUtil.AddLeaveLocation(cxt)
-            end, nil, function(agent) return agent:GetFactionID() == "ADMIRALTY" end)
+            DemocracyUtil.AddBodyguardOpt(cxt, function(opt, agent, is_sentient, is_mech)
+                opt:UpdatePoliticalStance("SECURITY", 2)
+                    :Fn(function(cxt)
+                        cxt:ReassignCastMember("guard", agent)
+                        cxt:Dialog("DIALOG_USE_BODYGUARD")
+                        agent:Dismiss()
+                        DoArrest(cxt, agent)
+                        StateGraphUtil.AddLeaveLocation(cxt)
+                    end)
+            end, nil, function(agent) return agent:GetFactionID() == "ADMIRALTY" and agent:IsSentient() end)
 
             cxt:Opt("OPT_BACK_BUTTON")
                 :Dialog("DIALOG_BACK")

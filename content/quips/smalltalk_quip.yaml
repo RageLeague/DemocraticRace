@@ -1,5 +1,5 @@
 tag_scores:
-  democratic_race: 0
+  democratic_race: 1
   many_paid_shills: 0
 lines:
 - push: [smalltalk]
@@ -100,6 +100,27 @@ lines:
     agent:
       !neutral
       But seriously though, if you want to pay me to spread your ideology, I would be more than happy to do so.
+- tags: [democratic_race, admiralty, many_arrests_made]
+  dialog:
+  - |
+    agent:
+      You've done a lot of great work lately, {player}.
+      Cleaning up criminals in the streets, I mean.
+    player:
+      Oh yeah, I guess I've been doing that a lot lately.
+    agent:
+      !agree
+      We need more politicians like you.
+      People who aren't afraid to challenge public opinion and do what must be done to rid Havaria of these scums.
+    {anti_security?
+      !hips
+      I see through your ruse. You might claim otherwise, but your heart belongs to the Admiralty and its goal.
+    * A clever ruse indeed. Or it's what you would like to think.
+    * It's way better than being a giant hypocrite.
+    }
+    {not anti_security?
+      Good work, {player}.
+    }
 - tags: [laborer, democratic_race, pro_labor_law]
   notags: [primary_advisor_diplomacy]
   dialog:
@@ -308,4 +329,104 @@ lines:
       Nah. Based on your history with the Barons, they will probably kill you outright.
     agent:
       Yeah, you're right.
+    }
+- tags: [democratic_race, astal]
+  dialog:
+  - |
+    agent:
+    {primary_advisor_diplomacy?
+      Aellon... He's your advisor, is he not?
+    }
+    {not primary_advisor_diplomacy?
+      Aellon... You've met the guy, did you not?
+    }
+    player:
+      !agree
+      Yeah. Kind of an eccentric guy, I must admit.
+    agent:
+      Did you know that he is one of the richest barons out there?
+    player:
+      !surprised
+      Really? I have no idea!
+    agent:
+      !thought
+      To think... When he was first found, he had no family, no friends, no money.
+      But nobody cares about that anymore. Everyone knows him as a rich baron, with an eccentric speech pattern.
+    player:
+      !dubious
+      Why are you telling me this now? What is your point?
+    agent:
+      People don't care about who you were in the past. They only care about who you are right now.
+      This is the Spark Baron way. The Havarian way.
+      So don't let your past drag you down, alright?
+      Let the world remember who you are: a capable leader, able to bring Havaria to the right path.
+
+- tags: [democratic_race, nand]
+  dialog:
+  - |
+    agent:
+      Now that we <i>actually</> live in a democracy, I am thinking about running for leadership.
+      !sigh
+      Only... I don't know if I should actually run for it, really.
+    player:
+      !dubious
+      Really? How come?
+    agent:
+      There are already so many strong candidates, like Oolo, and I feel like I don't stand a chance against them.
+      Plus, if I do run, I will just be taking votes away to people who I would rather win.
+    player:
+      Is that so? You want to give up before you even begin to try?
+      People aren't going to elect you if you don't do anything.
+      !point
+      Tell people about your plans, spread your ideas, make yourself known in the political world.
+      Even if you don't get elected, you will still gain experience and influence.
+      When the next election comes, maybe you will stand a better chance.
+    agent:
+      That... Does make a lot of sense.
+      Thanks for the chat, {player}. That was enlightening.
+
+- tags: [democratic_race, hiqu]
+  dialog:
+  - |
+    {indoors?
+      * You saw {agent} scribbling something on the wall.
+    }
+    {not indoors?
+      * You saw {agent} scribbling something on a shipping container.
+    }
+    player:
+      What are you writing?
+    agent:
+      !hips
+      It's my latest work!
+      Want to see it?
+    player:
+      !shrug
+      Sure, why not?
+    * Upon examination, you saw what appears to be a poem about the diets of animals in Havaria.
+    {not (player_rook)?
+      * You don't read poetry, so you can't really say anything else about it.
+      player:
+        !point
+        You and Nadan can probably get along well.
+      agent:
+        Why do you think I got where I am the Spree?
+    }
+    {player_rook?
+      * An allegory for the nature of Havaria, where those without power get exploited by those with slightly more power, while they themselves get exploited by people with even higher power, forming a chain of exploitation.
+      * At the top, the apex predator, feeds on them all.
+      player:
+      {not pro_labor_law?
+        !shrug
+        This is how the world works. Nothing we can do about it.
+      }
+      {pro_labor_law?
+        !sigh
+        This is the reality we live in.
+      }
+        !agree
+        Anyway, that was a good read.
+      agent:
+        !happy
+        Thanks. Glad to find another person who enjoys a good poetry.
     }

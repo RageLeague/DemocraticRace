@@ -87,7 +87,7 @@ QDEF:AddConvo()
             cxt:Opt("OPT_WATCH_RACES")
                 :PostText("TT_WATCH_RACES")
                 :RequireFreeTimeAction(2)
-                :ReqCondition(not cxt.location:HasMemory("WATCHED_RACES"), "REQ_WATCHED")
+                :ReqCondition(not cxt.location:HasMemory("WATCHED_RACES", 1), "REQ_WATCHED")
                 :Fn(function(cxt)
                     cxt.location:Remember("WATCHED_RACES")
                 end)
@@ -115,7 +115,7 @@ QDEF:AddConvo()
                 * Perhaps {1.heshe} can pull off the same stunt as the previous race.
             ]],
             DIALOG_INTRO_UNDERDOG = [[
-                * {1#agent} is a newcomer eager to make a name for {1.himher}self. You can see {1.hisher} zeal from up here in the gallery.
+                * {1#agent} is a newcomer eager to make a name for {1.self}. You can see {1.hisher} zeal from up here in the gallery.
             ]],
             DIALOG_INTRO_CHAMPION_BLUNDER = [[
                 * {1#agent} may have been a long time champion, but {1.hisher} recent performances has left much to be desired. Many hope that it was just a blunder, rather than a repeated pattern.
@@ -241,7 +241,7 @@ QDEF:AddConvo()
                         !intrigue
                         The race starts, though it appears {snail3}'s rider is asleep at the reins.
                         ...
-                        Folks, it appears the {snail3} is tired of waiting and is just starting the race {snail3.himher}self.
+                        Folks, it appears the {snail3} is tired of waiting and is just starting the race {snail3.self}.
                 ]],
                 [[
                     agent:

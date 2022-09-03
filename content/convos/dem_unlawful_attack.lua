@@ -23,7 +23,7 @@ Convo("DEM_UNLAWFUL_ATTACK")
                 !cagey
                 Say...I need some dirty deeds done dirt cheap, if you know what I mean.
             agent:
-                Yeah, I get you. 
+                Yeah, I get you.
                 Whose going to be hit?
         ]],
 
@@ -85,7 +85,7 @@ Convo("DEM_UNLAWFUL_ATTACK")
                     }
                     {not high_strength?
                         !handwring
-                        Although {target} {target.himher}self ain't that tough. It'll be fun plucking {target.hisher} plumage. See how high n' mighty they are without a goon to throw in the way.
+                        Although {target} {target.self} ain't that tough. It'll be fun plucking {target.hisher} plumage. See how high n' mighty they are without a goon to throw in the way.
                     }
                 }
                 {not high_renown?
@@ -166,8 +166,12 @@ Convo("DEM_UNLAWFUL_ATTACK")
                                 hire_amt = cost,
                             },
                         }
-                        local quest = QuestUtil.SpawnQuest("FOLLOWUP_UNLAWFUL_ATTACK", overrides)
-                        quest:Activate()
+                        local quest, err = QuestUtil.SpawnQuest("FOLLOWUP_UNLAWFUL_ATTACK", overrides)
+                        if quest then
+                            quest:Activate()
+                        else
+                            DBG(err)
+                        end
                     end)
                     :DoneConvo()
             end

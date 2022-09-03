@@ -54,6 +54,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "go_to_sleep",
     title = "Go to sleep",
+    desc = "It's been a long day. Go to bed when you are ready.",
     mark = {"primary_advisor"},
     on_activate = function(quest)
         DemocracyUtil.StartFreeTime()
@@ -171,17 +172,18 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     Tonight.
                     While you're trying to make yourself look bad, your opponents are already hard at work turning some voters against us.
                     |
-                    That doesn't explain the <i>other</> dead body in Admiralty uniform.
+                    That doesn't explain the <i>other</> dead body.
                 player:
                     !bashful
-                    Oh yeah, I might have... resisted arrest a little.
+                    Uh... Also self defense?
+                    It's entirely their fault for assuming what I did and attacked me without evidence.
                 primary_advisor:
                     What the Hesh, {player}?
                     An interview is coming up, and you're just murdering people left and right!
                     How is anyone going to vote you now?
                 player:
                     !handwave
-                    I'm sure it'll be fine. Not many people like the Admiralty anyway.
+                    I'm sure it'll be fine. People die all the time.
                     But what is this interview you've mentioned?
                 primary_advisor:
                     It is scheduled tonight to interview you on your political opinion.

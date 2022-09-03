@@ -23,7 +23,7 @@ local BENEFACTOR_BEHAVIOR = {
         self.arguments = self:MakePicker()
             :AddArgument( "CAUTIOUS_SPENDER", 1 )
 
-        local _, card = self.arguments:AddArgument( "ETIQUETTE", 1 )
+        local _, card = self.arguments:AddArgument( "HOSPITALITY", 1 )
         card.stacks = 1 + math.floor( difficulty / 2 ) + (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ARGUMENT_PLUS ) and 1 or 0)
 
         if SIGNATURE_ARGUMENT[self.agent:GetContentID()] then
@@ -37,12 +37,7 @@ local BENEFACTOR_BEHAVIOR = {
     end,
     agents = {},
 
-	-- Will probably get unique core argument (POSITION OF POWER) and possibly argument that spawns every x (4) turns
     BasicCycle = function( self, turns )
-        -- This will trigger every turn, and we don't want that
-        -- local etiquette = self:AddArgument( "ETIQUETTE" )
-
-        -- Also, remove unnecessary checks
         if turns % 3 == 0 then
             self:ChooseGrowingNumbers(2, -1)
         else
@@ -87,7 +82,7 @@ local QDEF = QuestDef.Define
         -- quest.param.unconvinced_people = {}
     end,
     on_start = function(quest)
-        quest:Activate("go_to_diner")
+        -- quest:Activate("go_to_diner")
     end,
     collect_agent_locations = function(quest, t)
         -- if quest:IsActive("contact_informant") or quest:IsActive("extract_informant") then
@@ -354,7 +349,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-
+            cxt.quest:Activate("go_to_diner")
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{

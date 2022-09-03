@@ -5,7 +5,7 @@ Convo("DEBUG_ENDING_TEST")
     :Hub(function(cxt)
         if TheGame:GetLocalSettings().DEBUG then
             local RESOLVE = {60, 90, 110, 130}
-            local resolve_required = RESOLVE[GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY )] + 20
+            local resolve_required = DemocracyUtil.CalculateBossScale(RESOLVE) + 20
             cxt:Opt("OPT_TEST")
                 :Negotiation{
                     flags = NEGOTIATION_FLAGS.WORDSMITH,

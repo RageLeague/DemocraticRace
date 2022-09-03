@@ -12,8 +12,8 @@ local QDEF = QuestDef.Define
     extra_reward = false,
 
     on_start = function(quest)
-        quest:Activate("spread_rumor")
-        quest:Activate("time_countdown")
+        -- quest:Activate("spread_rumor")
+        -- quest:Activate("time_countdown")
     end,
 
     on_complete = function( quest )
@@ -54,7 +54,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "spread_rumor",
     title = "Spread the rumor",
-    desc = "Spread your rumor about {target} through different factions to increase the credibility of your claim.",
+    desc = "Spread your rumor about {target} through different factions and locations to increase the credibility of your claim.",
 }
 :AddFreeTimeObjective{
     desc = "Use this time to spread your rumor.",
@@ -231,6 +231,9 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
                                 cxt:Dialog("DIALOG_TARGET_PST_NO_ENTRY", cxt.quest.param.rumor)
                             end
                             cxt:Dialog("DIALOG_TARGET_PST_2")
+
+                            cxt.quest:Activate("spread_rumor")
+                            cxt.quest:Activate("time_countdown")
                         end)
                 end
             end
@@ -362,13 +365,16 @@ QDEF:AddConvo("spread_rumor")
                 * This does not look good for you.
             }
         ]],
-        SIT_MOD_POS = "{agent} supports {target}.",
-        SIT_MOD_NEG = "{agent} opposes {target}.",
+        SIT_MOD_POS = "{agent} supports {target}",
+        SIT_MOD_NEG = "{agent} opposes {target}",
+        SIT_MOD = "Baseless allegation",
 
         REQ_DIFFERENT_FACTION = "You already spread this rumor among {agent}'s faction",
+        REQ_DIFFERENT_LOCATION = "You already spread this rumor at this location",
     }
     :Hub(function(cxt)
         cxt.quest.param.convinced_factions = cxt.quest.param.convinced_factions or {}
+        cxt.quest.param.convinced_locations = cxt.quest.param.convinced_locations or {}
         if cxt:GetAgent() and not cxt:GetAgent():IsCastInQuest(cxt.quest) then
 
             local opposition_data = DemocracyUtil.GetOppositionData(cxt:GetCastMember("target"))
@@ -382,28 +388,31 @@ QDEF:AddConvo("spread_rumor")
                 cxt.enc.scratch.is_supporter = true
             end
 
-            local sit_mod
+            local sit_mod = { { value = 20, text = cxt:GetLocString("SIT_MOD") } }
             if cxt.enc.scratch.target_support ~= 0 then
-                sit_mod = {{ value = cxt.enc.scratch.target_support, text = cxt:GetLocString(cxt.enc.scratch.target_support > 0 and "SIT_MOD_POS" or "SIT_MOD_NEG") }}
+                table.insert(sit_mod, { value = 2 * cxt.enc.scratch.target_support, text = cxt:GetLocString(cxt.enc.scratch.target_support > 0 and "SIT_MOD_POS" or "SIT_MOD_NEG") })
             end
 
             cxt:Opt("OPT_CONVINCE")
                 :PostText("TT_CONVINCE")
                 :ReqCondition(not table.arraycontains(cxt.quest.param.convinced_factions, cxt:GetAgent():GetFactionID()), "REQ_DIFFERENT_FACTION")
+                :ReqCondition(not table.arraycontains(cxt.quest.param.convinced_locations, cxt.location), "REQ_DIFFERENT_LOCATION")
                 :Dialog("DIALOG_CONVINCE", cxt.quest.param.rumor)
                 :Negotiation{
                     on_start_negotiation = function(minigame)
-                        local count = 1 + #cxt.quest.param.convinced_factions
-                        local total_resolve = 6 + 3 * cxt.quest:GetDifficulty()
+                        local count = #cxt.quest.param.convinced_factions
                         if count >= 2 then
                             minigame.player_negotiator:AddModifier("FATIGUED")
                         end
-                        while count >= 1 do
-                            local arg_resolve = math.ceil(total_resolve / count)
-                            local mod = minigame.player_negotiator:CreateModifier("DR_CONTRADICTION_IN_RUMOR")
-                            mod:SetResolve(arg_resolve)
-                            total_resolve = total_resolve - arg_resolve
-                            count = count - 1
+                        for k = 1, count do
+                            local card = Negotiation.Card( "supporting_rumor", minigame.player_negotiator.agent )
+                            card.show_dealt = true
+                            card:TransferCard(minigame:GetDrawDeck())
+                        end
+                        if cxt.quest.param.failed_once then
+                            local card = Negotiation.Card( "conflicting_rumor", minigame.player_negotiator.agent )
+                            card.show_dealt = true
+                            card:TransferCard(minigame:GetDrawDeck())
                         end
                     end,
                     situation_modifiers = sit_mod,
@@ -412,6 +421,7 @@ QDEF:AddConvo("spread_rumor")
                         :Dialog("DIALOG_CONVINCE_SUCCESS")
                         :Fn(function(cxt)
                             table.insert(cxt.quest.param.convinced_factions, cxt:GetAgent():GetFactionID())
+                            table.insert(cxt.quest.param.convinced_locations, cxt.location)
                         end)
                     :OnFailure()
                         :Dialog("DIALOG_CONVINCE_FAILURE")

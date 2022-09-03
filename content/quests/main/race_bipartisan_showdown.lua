@@ -448,7 +448,7 @@ QDEF:AddConvo("do_debate")
             cxt:Dialog("DIALOG_INTRO")
             cxt:GetCastMember("opponent"):OpinionEvent(OPINION.DISLIKE_IDEOLOGY_II)
             local RESOLVE = {60, 90, 110, 130}
-            local resolve_required = RESOLVE[GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY )]
+            local resolve_required = DemocracyUtil.CalculateBossScale(RESOLVE)
 
             cxt:Opt("OPT_DEBATE")
                 :Negotiation{
@@ -510,7 +510,7 @@ QDEF:AddConvo("do_debate_double")
             local function CreateDebateOption(opponent, other_opponent)
 
                 local RESOLVE = {60, 90, 110, 130}
-                local resolve_required = RESOLVE[GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY )]
+                local resolve_required = DemocracyUtil.CalculateBossScale(RESOLVE)
 
                 cxt:Opt("OPT_DEBATE", opponent)
                     :Fn(function(cxt)
@@ -531,6 +531,11 @@ QDEF:AddConvo("do_debate_double")
                         flags = NEGOTIATION_FLAGS.WORDSMITH,
                         enemy_resolve_required = resolve_required,
                         on_start_negotiation = function(minigame)
+                            for i, card in ipairs(minigame.start_params.hinder_cards) do
+                                if DemocracyUtil.GetOppositionData(card.owner) then
+                                    minigame.start_params.hinder_cards[i] = Negotiation.Card("faction_negotiation_hinder", card.owner)
+                                end
+                            end
                         end,
                     }:OnSuccess()
                         :Dialog("DIALOG_DEBATE_SUCCESS")
