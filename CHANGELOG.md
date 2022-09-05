@@ -1,5 +1,112 @@
 # Full Changelog
 
+### 0.8.0
+
+* Day 4 of the campaign is added. It's a rough skeleton. It is subject to heavy changes.
+* Improved debug testing a particular day.
+* Added a system for opponent support and opponent dropping out of the race.
+* Relationship changes with opponents now causes regular support changes instead of a special one. That one might be used for alliance support change in the future.
+* Added additional parameters for negotiation behaviour (technical).
+* Added placeholder behaviours for opponents.
+* Added test decks.
+* Added a new negotiation music for the day 1 end negotiation.
+* Added a brand new system for voting. This is used to calculate how each individual character votes, and determine an outcome based on these factors.
+* Day 4 now has a poll at the beginning of the day that uses this system. It will determine which candidates will drop the race, and what will happen at the end of day 4.
+* Forming or breaking alliances now changes support significantly.
+* Debug spawning on day 3+ now correctly spawns some option quests.
+* Fixed day 3 start dialog.
+* Fixed invalid location for GB_CAFFY.
+* Added Fellemo's wordsmith negotiation behaviour.
+* Added a new event, where one of your supporters is abhorred by your terrible opinion.
+* Talk over now expends.
+* Some debug options are locked behind debug mode.
+* Updated dialog for lumin wine, oshnudrome races, and the party supply place.
+* Fixed voter intention index not considering general support.
+* Penalty for inconsistent stance reduced, but inconsistent stance penalty reduction for consistent stances are also reduced.
+* Added Vixmalli's wordsmith negotiation.
+* Refactored boss scale calculation logic (internal).
+* Fixed bug of request quest activating even if you decline.
+* When an opposition candidate hinders you at the end of day 4, they now create their faction core instead of the default heckler argument.
+* Fixed grammar issue in hinder quip.
+* Added Kalandra's wordsmith negotiation.
+* Reduced strength for wordsmith behaviour for Fellemo and Vixmalli.
+* Fixed description for Desperation for Faith.
+* Added new icons for arguments (most are temporary).
+* Fixed convo ending prematurely after sleep of night 3.
+* Fixed crash in the Jakes vs Rise event.
+* Updated dialog for Admiralty arrest.
+* Pausing while custom music is playing will slightly less likely cause you to go insane (will mute the custom music and play the soothing deck music instead).
+* Fixed minor issue with the day 1 end negotiation music.
+* Add wordsmith behaviour for Andwanette.
+* Changed old "Etiquette" to "Hospitality".
+* Intimidating blaster now specifies that it also counts as a Hostility card.
+* Change the wording for cards that cares about Hostility cards.
+* Replaced some temporary arts.
+* Added unique smalltalk for some skinned generic characters.
+* Added two bosses to day 1 end.
+* Added more variations for day 1 end. The variation changes depends on the advisor you have, and whether or not your advisor kicked you out on day 1.
+* You can only play Appeal to the Crowd if the crowd opinion is less than 5.
+* Removed some punctuation for situation modifiers.
+* Refusing to drop out of the race on day 4 will cause the person to dislike you, thus preventing them from allying with you again.
+* Turned of validation for unlawful attack so you can attack the same target twice using different people. If one succeeds, the money for the other one is refunded.
+* Added a new event, where a bunch of people that dislikes you gang up on you.
+* Added some more stance quips, and a new category of stance quips: heckle.
+* Stance quips can be done without passing in any stances. Doing so will fill out the tags for all the stances the agent has, so that they can find something that contradicts you.
+* Added a custom bad nickname system for calling the player a bad nickname.
+* Added a side objective for those who likes lore and have too much free time to be wasted on a random negotiation.
+* In debate scrum, arguments no longer contribute to scoring (except when candidate explicitly create or destroy arguments with cards).
+* The team with less people gets bonus points every turn for each turn they survive while there are more opponents.
+* Splash damage are now removed for debate scrum, because splash damage has extremely sketchy source, which interfere with scoring.
+* Fixed some issues with certain quips.
+* Added count for how many times you arrested people. This will sometimes affect dialog.
+* Simplify events where you need to bring someone to the Admiralty station. Now, you don't need to physically go to the Admiralty headquarters. Instead, you just bring them to a local patrol instead. Note: This might break backward compatibility if you have one of these events active in your save file.
+* Followup admiralty arrest should now spawn as normal events. Haven't tested it yet, though.
+* Remove day 3 noon generic quest. It has been deprecated for a long time, and since I am breaking backward compatibility, I am removing this as well.
+* Some events are now marked as negative.
+* Made balance changes to some arrest events.
+* Remove Gorgula from day 1 boss pool. Her wordsmith negotiation is a bit too strong.
+* You can no longer ask the giver of Battle of Wits to play Flip 'Em with themselves.
+* Added a new event, where a luminitiate tries to preach to you.
+* Reduced support gain during the rise/jakes event if you call off the deal.
+* Fixed issue where player religious policy gets overwritten on load even there is nothing to overwrite it with.
+* Stance tooltips now includes the support changes of the different groups. Removed notification telling you which factions/wealth classes changed support when your stance changed.
+* Use one notification for relationship support change when the notification doesn't have other text (such as graft added/removed).
+* Decreased support penalty for murder.
+* Added a new event, where a Jakes tries to sell you various illicit substances.
+* Added negotiation form of Vapor Vial.
+* Minor changes to some dialog.
+* Reworked Never Meet Your Heroes quest.
+* Increase renown gain from business card.
+* Added Oolo's Wordsmith behaviour.
+* Fixed bug with Vix's behaviour.
+* Balanced Vix and Andwanette's behaviour.
+* Fixed missing nil check in bad nicknames.
+* Added options to intimidate when Heshians collect tithe from you.
+* Added music for day 3 debate.
+* Renamed "Virtue Signal" to "Holier Than Thou" (I have another idea for "Virtue Signal" that's not implemented yet). Reduced threshold for triggering destroy effect, and destroy target afterwards instead of replacing damage.
+* Interview arguments now always applies with 3 stacks instead of scaling with boss difficulty, to address the difficulty curve.
+* Adjusted faction/wealth supports and stances for oppositions.
+* Replaced temp art for some modifiers.
+* Added special dialog for when Plundak tries to sell mettle to Plundak (might need to wait for the Plundak mod to be updated first for this to be fully working).
+* Fixed alliance convo not triggering on day 3.
+* democratic_race tag for smalltalk quips now counts as one point during scoring, so you are more likely to see custom smalltalk when playing the campaign.
+* Added story mode for Democratic Race.
+* Fixed Oshnudrome not refreshing even after time passed.
+* Added custom patron logic for Democratic Race.
+* Reworked tutorial for support. Added tutorial for stances.
+* Disable first mettle event in Democratic Race.
+* Stances formed during interview are now "strict".
+* Fixed bug on day 2 of spawning duplicate oppositions.
+* Fixed bug of a side quest incorrectly spawning when accepting "Never Meet Your Heroes".
+* Stances on support screen now shows "favored" stances as between two stances.
+* Changed dialog.
+* Fixed issues with Duckspeak.
+* Cleaned up temp art for the fervor overlay.
+* Adjusted Spark of Revolution.
+* Added description for going to sleep.
+* Fixed bug when convincing an ally to drop out.
+* More people can make posters in Information Warfare.
+
 ### 0.7.0
 
 * Added a new stance quip system: In certain scenarios, a person will try to argue for their position using actual arguments instead of a generic statement. Current affected events are: "Fanatic Supporter" and "Political Dilemma".
