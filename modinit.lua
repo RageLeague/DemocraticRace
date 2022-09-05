@@ -14,6 +14,14 @@ end
 local function OnPostLoad( mod )
     rawset(_G, "CURRENT_MOD_ID", mod.id)
 
+    for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:postload_patches/", "*.lua", true )) do
+        local name = filepath:match( "(.+)[.]lua$" )
+        -- print(name)
+        if name then
+            require(name)
+        end
+    end
+
     local STARTING_MONEY = 125
 
     local FORBIDDEN_CONVO = {
@@ -37,7 +45,13 @@ local function OnPostLoad( mod )
         colour_text = "0xC3FFBFff",
         colour_background = "0x47FF31ff",
 
+        story_image = engine.asset.Texture("DEMOCRATICRACE:assets/icons/campaign_icon.png"),
+        story_colour_frame = "0x05faeeff",
+        story_colour_text = "0xcdfefcff",
+        story_colour_background = "0x05e1d6ff",
+
         world_region = "democracy_pearl",
+        story_mode = true,
 
         main_quest = "DEMOCRATIC_RACE_MAIN",
         game_type = GAME_TYPE.CAMPAIGN,
@@ -357,7 +371,7 @@ local MOD_OPTIONS =
 }
 -- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {
-    version = "0.7.2",
+    version = "0.8.0",
     alias = "DEMOCRATICRACE",
 
     OnLoad = OnLoad,

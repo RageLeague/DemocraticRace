@@ -10,6 +10,7 @@ local PERKS =
     {
         name = "Vaccinated",
         desc = "When you gain a new parasite card, immediately remove it without health penalty.",
+        img = "DEMOCRATICRACE:assets/perks/perk_vaccinated.png",
         tier = 6,
 
         event_handlers =

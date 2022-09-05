@@ -8,11 +8,11 @@ function DoPromoteAdmiralty(cxt)
     end
 end
 
--- this is a followup of a convo option. Can't automatically spawn
 local QDEF = QuestDef.Define
 {
     qtype = QTYPE.EVENT,
     act_filter = DemocracyUtil.DemocracyActFilter,
+    spawn_event_mask = QEVENT_TRIGGER.TRAVEL,
     on_destroy = function(quest)
         if quest:GetCastMember("admiralty"):IsInPlayerParty() then
             quest:GetCastMember("admiralty"):Dismiss()
@@ -37,9 +37,6 @@ local QDEF = QuestDef.Define
     condition = function(agent, quest)
         return agent:GetFactionID() == "ADMIRALTY"
     end,
-    -- cast_fn = function(quest, t)
-    --     -- can't automatically spawn
-    -- end,
     events = {
         agent_retired = function(quest, agent)
             quest:Fail()
@@ -50,9 +47,6 @@ local QDEF = QuestDef.Define
     cast_id = "target",
     -- no_validation = true,
     unimportant = true,
-    -- cast_fn = function(quest, t)
-    --     -- can't automatically spawn
-    -- end,
     on_assign = function(quest, agent)
         quest.param.target_faction = agent:GetFactionID()
         if agent:GetRenown() + agent:GetCombatStrength() >= math.random(3,8) then
@@ -75,12 +69,6 @@ local QDEF = QuestDef.Define
         end,
     },
 }
-:AddLocationCast{
-    cast_id = "station",
-    cast_fn = function(quest, t)
-        table.insert( t, TheGame:GetGameState():GetLocation("ADMIRALTY_BARRACKS"))
-    end,
-}
 :AddObjective{
     id = "wait",
     hide_in_overlay = true,
@@ -89,21 +77,14 @@ local QDEF = QuestDef.Define
     events =
     {
         action_clock_advance = function(quest, location)
-            -- if quest.param.dormant_start_time ~= Now() then
             quest.param.dormant_timer = (quest.param.dormant_timer or 0) - 1
             if math.random() < 0.3 then
                 quest.param.dormant_timer = quest.param.dormant_timer + 1
             end
             if quest.param.dormant_timer <= 0 then
                 quest:Complete("wait")
-                -- if math.random(1, 10) <= quest.param.guilt_score then
-                    quest:Activate("action")
-                -- else
-                --     quest:Activate("innocent")
-                -- end
+                quest:Activate("action")
             end
-
-            -- end
         end,
     },
 
@@ -134,51 +115,7 @@ local QDEF = QuestDef.Define
         end
     end,
 }
-:AddObjective{
-    id = "innocent",
-}
-:Loc{
-    DESC_AD_AND_TARGET = "Follow {admiralty} and bring {target} to {station#location}",
-    DESC_AD = "Follow {admiralty} to {station#location}",
-    DESC_TARGET = "Bring {target} to {station#location}"
-}
-:AddObjective{
-    id = "escort",
-    title = "Go to the station",
-    desc = "Go to {station}",
-    desc_fn = function(quest, fmt_str)
-        if quest.param.ad_dead then
-            if not quest.param.target_dead then
-                return quest:GetLocalizedStr( "DESC_TARGET" )
-            end
-        else
-            if quest.param.target_dead then
-                return quest:GetLocalizedStr( "DESC_AD" )
-            else
-                return quest:GetLocalizedStr( "DESC_AD_AND_TARGET" )
-            end
-        end
-        return fmt_str
-    end,
-    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/followup_admiralty_arrest.png"),
-    on_activate = function(quest)
-        quest:SetHideInOverlay(false)
-        if quest:GetCastMember("admiralty"):IsAlive() then
-            quest:GetCastMember("admiralty"):Recruit(PARTY_MEMBER_TYPE.ESCORT)
-        end
-        if quest:GetCastMember("target"):IsAlive() then
-            quest:GetCastMember("target"):Recruit(PARTY_MEMBER_TYPE.CAPTIVE)
-        end
-    end,
-    mark = {"station"},
-
-}
 :AddOpinionEvents{
-
-    wasted_their_time = {
-        delta = OPINION_DELTAS.DIMINISH,
-        txt = "Wasted their time on a false lead",
-    },
     suspects_setup = {
         delta = OPINION_DELTAS.BAD,
         txt = "Suspects you set them up",
@@ -239,7 +176,8 @@ QDEF:AddConvo("action")
                 !right
             player:
                 !left
-                Can you reconsider?
+                Alright, you two have had your fun.
+                How about you let {agent} go and you can all go home?
             admiralty:
             {not unplanned?
                 !surprised
@@ -253,8 +191,9 @@ QDEF:AddConvo("action")
         DIALOG_RECONSIDER_SUCCESS = [[
             player:
             {is_ad?
-                It's probably not a good idea to in-fight.
-                You can probably let whatever did slide, right?
+                Whatever bad blood's between you two's only going to get worse if you kill each other.
+                !point
+                And your higher ups in the Admiralty are quite the bloodhounds.
             }
             {rival_faction?
                 I've been reconsidering my positions in the last few days.
@@ -267,8 +206,8 @@ QDEF:AddConvo("action")
                     People will think we are blocking votes or something. That's bad for our reputation.
                 }
                 {impasse?
-                    This fight, if it goes on, will surely end in bloodshed.
-                    I'm sure no one would like that.
+                    Someone's gonna get hurt here, I'm sure of it.
+                    That's gonna be blood in the water, and I'm sure just as many people want your head as {target} does.
                 }
             }
             admiralty:
@@ -303,9 +242,9 @@ QDEF:AddConvo("action")
                 Just, stay out of my way until I bring this scum to the station.
         ]],
         SIT_MOD_BASE = "{admiralty} worked really hard to arrest {target}!",
-        SIT_MOD_AD = "{target} is an Admiralty.",
-        SIT_MOD_RIVAL = "{target} is a rival faction to the admiralty.",
-        SIT_MOD_UNLAWFUL = "{target} is a criminal faction.",
+        SIT_MOD_AD = "{target} is an Admiralty",
+        SIT_MOD_RIVAL = "{target} is a rival faction to the admiralty",
+        SIT_MOD_UNLAWFUL = "{target} is a criminal faction",
         OPT_AD_FIGHT = "Free {target} by force",
         DIALOG_AD_FIGHT = [[
             admiralty:
@@ -363,13 +302,16 @@ QDEF:AddConvo("action")
 
         DIALOG_DEMORALIZE_SUCCESS = [[
             player:
+                !cruel
                 You might be able to take on {admiralty}, but us both? You won't stand a chance.
             agent:
-                Oh no I'm scared.
+                !scared
+                Oh no! I'm scared.
                 Okay, you win.
                 I'll take my chances.
             admiralty:
                 !right
+                !hips
                 Wow, that actually worked.
         ]],
 
@@ -390,7 +332,7 @@ QDEF:AddConvo("action")
     :State("STATE_DOMINATE")
         :Loc{
             DIALOG_INTRO = [[
-                * You see {admiralty} arrested {agent}.
+                * You see {admiralty} has {agent} in cuffs.
                 agent:
                     !right
                     !injured
@@ -399,54 +341,48 @@ QDEF:AddConvo("action")
                     !angry
                 agent:
                 {is_ad?
-                    Why are you doing this?
-                    Aren't we both in the Admiralty?
+                    Must've been eyeing that promotion pretty hard, if you're stooping this low.
                 admiralty:
-                    We might both be, but only one is a criminal.
-                    I've received a tip that you have been abusing your power for so long. It's time to end this.
-                agent:
-                    You talk big, but you are in the same boat, aren't you?
-                    Abuse of power is literally your core argument.
+                    !angry_shrug
+                    If you don't want me stooping this low, don't be such an easy target.
                 }
                 {rival_faction?
-                    You know we have a truce right?
-                    We settle everything peacefully with the election once and for all.
-                    Are you going to resume the war?
+                    This is violating our truce! You'll be sorry!
                 admiralty:
-                    I don't particularly care.
-                    I'm sure the {target_faction#faction} are going to be happy now that I got rid of a criminal for them.
+                    You're talking to the wrong person if you think I didn't cover my tracks.
+                    The most they'll be able to do is get lost in the paperwork if they want to make a war out of an arrest.
                 }
                 {unlawful?
-                    You will regret this, switch.
-                    The {target_faction#faction} will come and save me, and you'll be dead.
+                    Just you wait, switch. You lock me up, and I'll be bounced out by lunch.
+                    And then my friends and I will be coming for you.
                 admiralty:
-                    I don't think so, criminal scum.
-                    They don't care about someone like you.
+                    !notepad
+                    Uh huh. Now, would you like to tell me who these "friends" are now or during the interrogation?
                 }
                 {not (is_ad or rival_faction or unlawful)?
-                    What did I do to deserve this?
+                    What did I do? I've done nothing wrong.
                 admiralty:
-                    I don't know. Committing crime?
-                    If you don't want to get arrested, have you tried not committing any crime?
+                    !chuckle
+                    That's not what your file says.
                 }
                 admiralty:
                     !angry_accuse
-                    Now, are you going to come quiet or not?
-                * {agent} sees you.
+                    You'll be coming with me, back to the station.
+                * As you watch, {agent} flicks {agent.hisher} head at you.
                 player:
                     !left
                 agent:
                 {not disliked?
-                    Please, you have to get me out of here!
+                    Grifter! I need help! Just get me away from this cop!
                 }
                 {disliked?
-                    !angry
-                    Oh, it's you.
-                    Are you happy now, seeing me like this?
+                    !injured_palm
+                    I swear, icing on the Heshing cake...
+                    What do <i>you</> want, {player}?
                 }
 
             ]],
-
+            --not disliked, planned; I thought of the player and admiralty being as aggressively tongue in cheek as possible.
             OPT_TAUNT = "{unplanned?Stand Aside|Taunt {target}}",
             DIALOG_TAUNT = [[
                 {disliked?
@@ -480,98 +416,47 @@ QDEF:AddConvo("action")
                 }
                 {not disliked?
                 player:
-                    !shrug
                     {not unplanned?
-                        Why should I, when <i>I'm</> the one that asked {admiralty} to investigate you.
-                    agent:
-                        !surprised
-                        What? YOU are the one that caused this?
-                        Why?
-                    player:
-                        To send a message, of course.
-                        !cruel
-                        You made way too many enemies because of your action. And actions have consequences.
-                    agent:
-                        Oh, actions have consequences all right.
-
-                    }
-                    {unplanned?
-                        Why should I?
-                        I'm more scared of the Admiralty than I'm scared of <i>you</>.
+                        !wave
+                        Hello officer! I see you're doing your civic duty today.
                     admiralty:
                         !right
-                        I don't know if I like the sound of that, but at least it gets the meaning across.
+                        Yep. Just clearing a bit of the...
+                        !burp
+                        A bit of the rabble, you could say.
                     agent:
+                        Hey! I'm a part of this conversation too!
+                        {player}, help me!
+                    player:
+                        Well I'll just leave you to it, {admiralty}.
+                        !salute
+                        Hail to the admiralty.
+                    admiralty:
+                        !salute
+                        Hail to the admiralty.
+                    * With that, {admiralty} hauls {agent} away, {agent} knitting {agent.hisher}'s brow in conspiratorial thought.
+                    }
+                    {unplanned?
+                        !bashful
+                        Would if I could, buddy.
+                        But I'm not feeling like fighting the Admiralty today.
+                    agent:
+                        !angry
+                        What? I thought you Grifters loved getting into random fights!
+                    player:
+                        !bashful
+                        Ah, but I've got to stretch first, and then I have to pull out my weapons and...
+                        !wave
+                        Well by then you'd already be at the station.
+                    admiralty:
                         !right
-                        Oh, you want a reason for you to be scared?
+                        Hey, back health is important. You take your time getting ready.
+                        !angry_point
+                        I'll just haul this criminal back to the station in the meantime.
+                    * You step aside as {admiralty} takes a shocked {agent} away.
                     }
                 }
-                agent:
-                    I won't forget this.
-                    If I ever got out of jail, I <i>will</> find you, and you <i>will</> regret the day you did this.
-                admiralty:
-                    !left
-                    Witness intimidation, that's going to be a few more years, buddy.
-
             ]],
-
-            -- OPT_RECONSIDER = "Convince {admiralty} to reconsider",
-
-            -- DIALOG_RECONSIDER = [[
-            --     admiralty:
-            --         !right
-            --     player:
-            --         !left
-            --         Can you reconsider?
-            --     admiralty:
-            --         !surprised
-            --         Wait, what? This isn't part of the plan!
-            -- ]],
-
-            -- DIALOG_RECONSIDER_SUCCESS = [[
-            --     player:
-            --     {is_ad?
-            --         It's probably not a good idea to in-fight.
-            --         You can probably let whatever did slide, right?
-            --     }
-            --     {rival_faction?
-            --         I've been reconsidering my positions in the last few days.
-            --         Then I realized now it's not a good time to start a war with the {target_faction#faction}.
-            --         That's what the election is trying to <i>prevent</>.
-            --     }
-            --     {not (is_ad or rival_faction)?
-            --         The elections are coming soon, and we don't want to start arresting people now.
-            --         People will think we are blocking votes or something. That's bad for our reputation.
-            --     }
-            --     admiralty:
-            --         Fine, you win.
-            --         You're free to go.
-            --     target:
-            --         !left
-            --         What, really?
-            --     admiralty:
-            --         Just go. Forget this ever happened.
-            --         I have enough trouble as it is.
-            --         !exit
-            --         Stupid grifters and their elections.
-            --     * {admiralty} left.
-            -- ]],
-
-            -- DIALOG_RECONSIDER_FAILURE = [[
-            --     player:
-            --         You should probably let {target.himher} go.
-            --     admiralty:
-            --         Why should I, {player}?
-            --         You told me to investigate {target} and I did.
-            --     target:
-            --         !right
-            --         !surprised
-            --         You what?
-            --     admiralty:
-            --         !right
-            --         This took me way too much time. I'm not going to back away just because you said so.
-            --         Just, stay out of my way until I bring this scum to the station.
-            -- ]],
 
             OPT_ACCEPT = "Allow {admiralty} to take {target}",
             DIALOG_ACCEPT = [[
@@ -599,9 +484,11 @@ QDEF:AddConvo("action")
             local function ArrestFn(opt)
                 if not cxt.quest.param.unplanned then
                     opt:ReceiveOpinion(OPINION.SOLD_OUT_TO_ADMIRALTY, nil, "target")
+                    DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
                 end
                 opt:GoTo("STATE_PROMOTION")
             end
+            cxt.quest:Complete()
             cxt.quest:GetCastMember("target"):ClearParty()
             cxt.quest:GetCastMember("target").health:SetPercent(math.random() * 0.2 + 0.4)
             cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("target"))
@@ -711,13 +598,11 @@ QDEF:AddConvo("action")
                 agent:
                     !left
                     Catch me if you can!
-                * You stood aside, watching those two figure out stuff.
+                * The two stand off and launch into a bloody fight.
             ]],
 
             DIALOG_STAND_ASIDE_WIN = [[
-                * The battle was tough.
-                * Eventually, {admiralty} came out on top.
-                * {admiralty} bounded {agent} before looking at you angrily.
+                * Eventually, {admiralty} puts a large, government issue boot down on {agent}'s throat and claps handcuffs onto {agent.himher}.
                 player:
                     !left
                 admiralty:
@@ -760,28 +645,39 @@ QDEF:AddConvo("action")
             ]],
 
             DIALOG_STAND_ASIDE_LOSE = [[
-                * The battle was tough.
-                * Eventually, {admiralty} died to the hands of {agent}.
+                * It comes to a close, though, with one bone crunching punch to the jaw.
+                * {admiralty} lies on the ground either dead or unconscious. {agent} puts a quick end to that question with one last attack.
                 agent:
                     !right
                 {disliked?
-                    Now that I dealt with that {is_ad?traitor|switch}, now I'll deal with you!
-                    * You will have to defend yourself!
+                    Wasn't expecting that, were ya {is_ad?bloody traitor|switch}?
+                    Well, if I've already got blood on my shoes, might as well make the dry cleaners earn my shills.
+                    * {agent} whips {agent.hisher} weapons towards you.
                 }
                 {not disliked?
                     Thanks for nothing, grifter!
                     !exit
                     * That was a rather horrible turn of event.
+                    * You can leave right now, but do you really want to leave a loose end?
                 }
             ]],
 
+            DIALOG_LEAVE_LOCATION = [[
+                * We will get them next time, you thought.
+            ]],
+
             OPT_STAND_ASIDE_FIGHT = [[
+                {disliked?
                 player:
                     !fight
-                {disliked?
                     As you wish.
                 }
                 {not disliked?
+                agent:
+                    !right
+                    !scared
+                player:
+                    !fight
                     We're not done here.
                 }
             ]],
@@ -798,7 +694,9 @@ QDEF:AddConvo("action")
                     agent:
                         Guess so.
                     player:
-                        Now what do I do with you?
+                        I'm handing you to an Admiralty patrol.
+                        Have fun rotting in an Admiralty cell, scum!
+                    * You bring {target} to a nearby Admiralty patrol. {target} is their problem now.
                 }
             ]],
 
@@ -810,7 +708,6 @@ QDEF:AddConvo("action")
                 player:
                     !left
                     !fight
-
                     Fine, let's rumble.
             ]],
             DIALOG_TARGET_FIGHT_WON = [[
@@ -831,10 +728,15 @@ QDEF:AddConvo("action")
                         target:
                             !right
                             !injured
+                            You are a real scumbag, {player}. Siding with that {is_ad?traitor|switch} overthere.
                         admiralty:
                             !left
+                            !hips
+                            The real scum here is you. Trying to get away with committing a crime.
+                            !angry_accuse
                             Now, are you going to come or not?
                         target:
+                            !spit
                             Fine, I'll comply.
                     }
                     {ad_dead?
@@ -843,58 +745,21 @@ QDEF:AddConvo("action")
                             !injured
                             What now?
                             Your Admiralty friend is dead. What will you do?
+                        player:
+                            !hips
+                            Yeah, like there is only one Admiralty ever around.
+                            Have fun rotting in an Admiralty cell, scum!
+                        * You bring {target} to a nearby Admiralty patrol. {target} is their problem now.
                     }
                 }
             ]],
-
-            OPT_LET_GO = "Let {target} go",
-            DIALOG_LET_GO = [[
-                player:
-                    Go.
-                target:
-                    !surprised
-                    What?
-                player:
-                    It's not my job to arrest you.
-                target:
-                    Seriously?
-                player:
-                    Seriously.
-                target:
-                    You made a huge mistake, letting me go.
-                    !exit
-            ]],
-            OPT_BRING_TO_STATION = "Bring {target} to {station} on your own",
-            REQ_KNOWS_STATION = "You don't know the location of {station}",
-            DIALOG_BRING_TO_STATION = [[
-                player:
-                    You are coming with me!
-                target:
-                    To where?
-                player:
-                    To {station}.
-                target:
-                    !dubious
-                    Do you even know where it is?
-                player:
-                    Conveniently, I do.
-                    !throatcut
-                    As I was saying, you are coming with me!
-            ]],
-            OPT_FINISH_OFF = "Finish off {target}",
-            DIALOG_FINISH_OFF = [[
-                player:
-                    A life for a life.
-                target:
-                    !exit
-                * The job was quick.
-            ]]
         }
         :RunLoopingFn(function(cxt)
             local target = cxt.quest:GetCastMember("target")
             local admiralty = cxt.quest:GetCastMember("admiralty")
             if cxt:FirstLoop() then
                 cxt.enc:SetPrimaryCast(target)
+                cxt.quest:Complete()
 
                 cxt:Dialog("DIALOG_INTRO")
             end
@@ -907,7 +772,7 @@ QDEF:AddConvo("action")
                 }):OnSuccess()
                     :Fn(function(cxt)
                         target:OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
-                        -- target:GainAspect("stripped_influence", 5)
+                        DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
                     end)
                     :GoTo("STATE_PROMOTION")
                 :OnFailure()
@@ -925,31 +790,21 @@ QDEF:AddConvo("action")
                         :Fn(function(cxt)
                             cxt.quest.param.target_dead = target:IsDead()
                             cxt.quest.param.ad_dead = admiralty:IsDead()
+                            DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
                             cxt:Dialog("DIALOG_TARGET_FIGHT_WON")
                             if not cxt.quest.param.ad_dead then
+                                if not cxt.quest.param.target_dead then
+                                    cxt.quest:GetCastMember("target"):OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
+                                end
                                 cxt:GoTo("STATE_PROMOTION")
                             else
                                 if cxt.quest.param.target_dead then
                                     StateGraphUtil.AddLeaveLocation(cxt)
                                 else
-                                    cxt:Opt("OPT_LET_GO")
-                                        :Dialog("DIALOG_LET_GO")
-                                        :CompleteQuest()
-                                        :Travel()
-                                    cxt:Opt("OPT_BRING_TO_STATION")
-                                        :ReqCondition(DemocracyUtil.LocationUnlocked("ADMIRALTY_BARRACKS"), "REQ_KNOWS_STATION")
-                                        :Dialog("DIALOG_BRING_TO_STATION")
-                                        :CompleteQuest("action")
-                                        :ActivateQuest("escort")
-                                        :Travel()
-                                    cxt:Opt("OPT_FINISH_OFF")
-                                        :Dialog("DIALOG_FINISH_OFF")
-                                        :Fn(function(cxt)
-                                            AgentUtil.CommitMurder(target)
-                                            target:Kill()
-                                        end)
-                                        :CompleteQuest()
-                                        :Travel()
+                                    cxt.quest:GetCastMember("target"):OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
+                                    cxt.quest:GetCastMember("target"):GainAspect("stripped_influence", 5)
+                                    cxt.quest:GetCastMember("target"):Retire()
+                                    StateGraphUtil.AddLeaveLocation(cxt)
                                 end
                             end
                         end)
@@ -1013,7 +868,9 @@ QDEF:AddConvo("action")
                         cxt.quest:GetCastMember("target"):GainAspect("stripped_influence", 5)
                         cxt.quest:GetCastMember("target"):Retire()
                         cxt.quest:GetCastMember("admiralty"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("abandoned"))
-                        cxt.quest:Complete()
+                        if not cxt.quest.param.unplanned then
+                            DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
+                        end
                         StateGraphUtil.AddLeaveLocation(cxt)
                     else
                         cxt:Dialog("DIALOG_STAND_ASIDE_LOSE")
@@ -1022,7 +879,7 @@ QDEF:AddConvo("action")
 
                         -- if  then
                             -- cxt.quest:GetCastMember("target"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("abandoned"))
-                        cxt:Opt(cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL and "OPT_DEFEND" or "OPT_ATTACK")
+                        cxt:Opt(cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL and "OPT_DEFEND" or "OPT_FIGHT")
                             :Dialog("OPT_STAND_ASIDE_FIGHT")
                             :Battle{
                                 flags = cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL and BATTLE_FLAGS.SELF_DEFENCE,
@@ -1030,54 +887,72 @@ QDEF:AddConvo("action")
                             :OnWin()
                                 :Dialog("DIALOG_DEFEND_WIN")
                                 :Fn(function(cxt)
-                                    cxt:Opt("OPT_LET_GO")
-                                        :Dialog("DIALOG_LET_GO")
-                                        :CompleteQuest()
-                                        :Travel()
-                                    cxt:Opt("OPT_BRING_TO_STATION")
-                                        :ReqCondition(DemocracyUtil.LocationUnlocked("ADMIRALTY_BARRACKS"), "REQ_KNOWS_STATION")
-                                        :Dialog("DIALOG_BRING_TO_STATION")
-                                        :CompleteQuest("action")
-                                        :ActivateQuest("escort")
-                                        :Travel()
-                                    cxt:Opt("OPT_FINISH_OFF")
-                                        :Dialog("DIALOG_FINISH_OFF")
-                                        :Fn(function(cxt)
-                                            AgentUtil.CommitMurder(target)
-                                            target:Kill()
-                                        end)
-                                        :CompleteQuest()
-                                        :Travel()
-
+                                    cxt.quest:GetCastMember("target"):OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
+                                    cxt.quest:GetCastMember("target"):GainAspect("stripped_influence", 5)
+                                    cxt.quest:GetCastMember("target"):Retire()
+                                    DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
                                 end)
-                        -- else
-                        --     cxt.quest:GetCastMember("target"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("abandoned"))
-                        --     StateGraphUtil.AddLeaveLocation(cxt)
-                        -- end
+                                :Travel()
+                        if cxt:GetAgent():GetRelationship() >= RELATIONSHIP.NEUTRAL then
+                            cxt:Opt("OPT_LEAVE_LOCATION")
+                                :Dialog("DIALOG_LEAVE_LOCATION")
+                                :ReceiveOpinion("abandoned", nil, "target")
+                                :Fn(function(cxt) ConvoUtil.Leave(cxt) end)
+                                :MakeUnder()
+                        end
                     end
                 end)
         end)
     :State("STATE_DEFEATED")
         :Loc{
             DIALOG_INTRO = [[
-                * You arrive at the scene.
-                * Seems that {admiralty} isn't doing too good.
+                {is_unlawful?
+                    * You find an ironic scene, an officer of the Admiralty underneath the foot of {target}.
+                    admiralty:
+                        !left
+                        !injured
+                    target:
+                        !right
+                        !angry
+                        Made a damn big mistake, crossing me, switch.
+                }
+                {is_ad?
+                    * You find {admiralty} dealing with some..."special clerical work".
+                    admiralty:
+                        !left
+                        !injured
+                    target:
+                        !right
+                        !angry
+                        How's that promotion looking now? I bet it's looking mighty fine now.
+                }
+                {rival_faction?
+                    * You come across {target} speaking power to power with {admiralty}.
+                    admiralty:
+                        !left
+                        !injured
+                    target:
+                        !right
+                        !angry
+                        Shouldn't of tried to break the truce that sloppily. Look at where it's gotten you.
+                }
+                {not (is_ad or rival_faction or unlawful)?
+                    * In a surprise twist, you find the ordinary citizen has won out against the Admiralty.
                 admiralty:
                     !left
                     !injured
                 target:
                     !right
                     !angry
-                * They haven't see you yet.
+                    Y'see, switch? Y'see what happens when you mess with the little guys like me?
+                }
+                * Fortunately, {target}'s monologuing has given you a chance to strike or a chance to leave.
             ]],
+            --
             OPT_SLIP_AWAY = "Slip away before anyone notices",
             DIALOG_SLIP_AWAY = [[
-                * You left those two to figure out amongst themselves.
-                admiralty:
-                    !exit
-                * Surely enough, they figured out a solution. And that solution is taking {admiralty}'s head.
-                * There's nothing you can do about it.
-                * At least, that is what you told yourself.
+                * As quickly as you came, you sneak away to let those two bury the hatchet.
+                * <i>Violently</> bury the hatchet. Most likely, in {admiralty}'s face.
             ]],
 
             SIT_MOD_HIGH_MORALE = "{target} just won a battle against {admiralty}",
@@ -1086,7 +961,8 @@ QDEF:AddConvo("action")
             DIALOG_CONVINCE_SPARE = [[
                 player:
                     !left
-                    Can you leave {admiralty} alone?
+                    Look buddy. I get it. You're gloating.
+                    But you might want to wrap it up before the rest of the admiralty catches wind.
                 target:
                     What?
                     Why should I?
@@ -1096,62 +972,61 @@ QDEF:AddConvo("action")
             DIALOG_CONVINCE_SPARE_SUCCESS = [[
                 player:
                 {is_ad?
-                    Look, you're both Admiralty right?
-                    So you know {admiralty.heshe}'s just doing {admiralty.hisher} job, you know?
-                    I'm sure {admiralty.heshe} learned {admiralty.hisher} lesson.
-                    No need to get violent.
+                    I get that all of you switches are one big happy family out in those cramped barracks of yours.
+                    !point
+                    But if you kill {admiralty}, something's going to come back to you.
+                    And someone's going to come for your badge all the same as {admiralty} did.
                 target:
                     !sigh
                     True.
                 }
                 {not is_ad?
-                    You kill {admiralty} now, and you commit a crime that the Admiralty can't ignore.
-                    Best let it slide, eh?
-                    I'm sure {admiralty} will turn a blind eye on whatever you did.
+                    If the blood, broken bones, and whimpering hasn't clued you in yet, {admiralty}'s learned {admiralty.hisher} lesson.
+                    Let {admiralty} go, and the lesson oughta spread. Spread like the plague.
+                    The law's not going to mess with you if you can mess up the law.
                 target:
-                    !thought
-                    That sounds way more convenient.
+                    Convincing argument you've got there.
                 }
                 admiralty:
                     !left
                     !injured
                 target:
-                    You know what, how about a deal.
-                    You leave quiet, and I let you actually leave.
+                    Look, if it makes you both shut up, I'll cut a deal.
+                    You stay away from me. You tell people about how I'm not to be messed with.
+                    It's an "You scratch my back, I don't scratch your back like a starving lumicyte." system I want here. Do you understand?
                 admiralty:
-                    I guess I don't have a choice, do I?
+                    I've got nothing else to understand.
                 target:
-                    You can choose to die, if that's what you want.
+                    Good. Let's shake on it.
+                    !give
                 admiralty:
-                    Fine. I'll leave quiet.
-                    !exit
-                * You saved {admiralty}, but you can't deal with {target}.
+                    !give
+                * With that, your chances of removing {target} were sacrificed for {admiralty}'s life.
                 * Maybe this is for the best.
             ]],
             DIALOG_CONVINCE_SPARE_FAILURE = [[
                 player:
-                    Would your conscience allow that?
+                    Don't think about catharsis. Think...
+                    !interest
+                    Think about your <i>soul</>.
                 target:
-                    That's a terrible reason.
+                    !handwave
+                    Oh please.
+                    I have no soul.
             ]],
 
             OPT_LEAVE = "Leave",
-
+            --target doesn't hate you, you leave to let Admiralty be killed.
             DIALOG_LEAVE = [[
                 player:
-                    Sorry for bothering you. I'll see my self out.
-                target:
-                    You'd better be.
-                admiralty:
-                    !right
-                    Wait, where you're going.
-                player:
-                    Leaving.
-                    I don't want to be caught up in this mess.
+                    Ah, I see this is the common Havarian Handshake.
+                    Didn't realize I was trying to interrupt tradition around here.
+                    Well, don't let me bother you two. Carry on.
                     !exit
-                * You left. Immediately after, {target} killed {admiralty}.
-                * At least you're still alive... and you haven't attacked anyone...
-                * ...but was it worth it?
+                target:
+                    That's more like it.
+                    !exit
+                * You tromp away, the last thing you hear being a gurgle before you're out of earshot.
             ]],
 
             OPT_ATTACK = "Attack {target} to save {admiralty}",
@@ -1186,7 +1061,7 @@ QDEF:AddConvo("action")
                     }
                     target:
                         You win.
-                        What do you want from me now.
+                        What do you want from me now?
                     admiralty:
                         !left
                         You come with me, to the station.
@@ -1196,15 +1071,22 @@ QDEF:AddConvo("action")
         :Fn(function(cxt)
             local target = cxt.quest:GetCastMember("target")
             local admiralty = cxt.quest:GetCastMember("admiralty")
+            cxt.quest:Complete()
+            --Fight if you fail negotiations
             local function AttackPhase(cxt)
+                --always have fight option
                 cxt:Opt("OPT_ATTACK")
                     :Dialog("DIALOG_ATTACK")
                     :Battle{
                         enemies = target:GetParty() and target:GetParty():GetMembers() or {target},
                     }:OnWin()
-                        :Fn(function(cxt) cxt.quest.param.target_dead = target:IsDead() end)
+                        :Fn(function(cxt)
+                            cxt.quest.param.target_dead = target:IsDead()
+                            DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
+                        end)
                         :Dialog("DIALOG_ATTACK_WIN")
                         :GoTo("STATE_PROMOTION")
+                --If the target doesn't hate you and you failed a negotiation.
                 if cxt.quest:GetCastMember("target"):GetRelationship() > RELATIONSHIP.HATED then
                     cxt:Opt("OPT_LEAVE")
                         :Dialog("DIALOG_LEAVE")
@@ -1212,7 +1094,6 @@ QDEF:AddConvo("action")
                             cxt.quest:GetCastMember("admiralty"):Kill()
                             DemocracyUtil.DeltaAgentSupport(-2, -5, cxt.quest:GetCastMember("admiralty"), "NEGLIGENCE")
                         end)
-                        :FailQuest()
                         :Travel()
                 end
             end
@@ -1224,7 +1105,6 @@ QDEF:AddConvo("action")
                 :Fn(function(cxt)
                     cxt.quest:GetCastMember("admiralty"):Kill()
                 end)
-                :FailQuest()
                 :Travel()
             cxt:BasicNegotiation("DEMORALIZE",{
                     flags = NEGOTIATION_FLAGS.INTIMIDATION,
@@ -1232,28 +1112,20 @@ QDEF:AddConvo("action")
                     situation_modifiers = {{ value = 25, text = cxt:GetLocString("SIT_MOD_HIGH_MORALE") }},
                     helpers = {"admiralty"},
                 }):OnSuccess()
-                    -- :Fn(function(cxt)
-                    --     target:OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
-                    --     -- target:GainAspect("stripped_influence", 5)
-                    -- end)
                     :ReceiveOpinion(OPINION.SOLD_OUT_TO_ADMIRALTY, nil, "target")
+                    :Fn(function(cxt)
+                        DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
+                    end)
                     :GoTo("STATE_PROMOTION")
                 :OnFailure()
                     :Fn(function(cxt)
                         AttackPhase(cxt)
                     end)
             cxt:BasicNegotiation("CONVINCE_SPARE",{
-                -- flags = NEGOTIATION_FLAGS.INTIMIDATION,
                 target_agent = target,
-                -- situation_modifiers = {{ value = 25, text = cxt:GetLocString("SIT_MOD_HIGH_MORALE") }},
                 helpers = {"admiralty"},
                 }):OnSuccess()
-                    :Fn(function(cxt)
-                        -- target:OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
-                        -- target:GainAspect("stripped_influence", 5)
-                    end)
                     :ReceiveOpinion("saved_them", nil, "admiralty")
-                    :CompleteQuest()
                     :Travel()
                 :OnFailure()
                     :Fn(function(cxt)
@@ -1265,18 +1137,17 @@ QDEF:AddConvo("action")
         :Loc{
             DIALOG_PROMOTION = [[
                 agent:
-                    This person is quite the notorious criminal.
-                    Now I've {target_dead?killed|captured} {target.himher}, I'm going to get promoted.
+                    This one's got a big head on {target.hisher} shoulders. Big head means big bounty.
                 {unplanned?
-                    Thanks for your help back there?
+                    I've got to thank you for giving a hand back there.
                     {dominate?
                     player:
                         But I didn't do anything!
                     agent:
-                        Exactly.
+                        You'll be a witness! Living proof that I did this single-handed!
                     }
                     |
-                    It's all thanks to your lead, {player}.
+                    I'll toast a strong cup of plonk to you while I'm celebrating.
                 }
                 {interrupted?
                     Even though you tried to interfere in the end.
@@ -1295,49 +1166,24 @@ QDEF:AddConvo("action")
                 {not target_dead?
                     Well, I'm bringing this guy to the station.
                 }
-            ]],
-            DIALOG_LEARN_STATION = [[
-                player:
-                    Wait, I've never been to the Admiralty Headquarters before.
-                    Can you show me the way?
                 agent:
-                    Oh, I guess you've never been there before.
-                    Wanna come?
-            ]],
-            OPT_ACCEPT_INVITE = "Accept {admiralty}'s offer",
-            DIALOG_ACCEPT_INVITE = [[
-                player:
-                    Sure, why not.
-                agent:
-                    Follow me.
-            ]],
-            OPT_DECLINE_INVITE = "Decline {admiralty}'s offer",
-            DIALOG_DECLINE_INVITE = [[
-                player:
-                    Nah, I have better places to be.
-                agent:
-                    Oh well. Maybe next time.
-            ]],
-
-            DIALOG_END = [[
-            agent:
-            {interrupted?
-                I was quite disappointed with what you did back there.
-                Oh well. All's well that Maxwell.
-                I mean, ends well.
-            }
-                See you!
-                !exit
-            {interrupted?
-                That was real weird.
-            }
-            {not target_dead?
-                * You left {agent} to escort {target}.
-                * Hopefully you'll never see {target} again.
-            }
-            {target_dead?
-                * You left {agent}, who will report {target}'s death.
-            }
+                {interrupted?
+                    I was quite disappointed with what you did back there.
+                    Oh well. All's well that Maxwell.
+                    I mean, ends well.
+                }
+                    See you!
+                    !exit
+                {interrupted?
+                    That was real weird.
+                }
+                {not target_dead?
+                    * You left {agent} to escort {target}.
+                    * Hopefully you'll never see {target} again.
+                }
+                {target_dead?
+                    * You left {agent}, who will report {target}'s death.
+                }
             ]],
         }
         :Fn(function(cxt)
@@ -1355,32 +1201,13 @@ QDEF:AddConvo("action")
             end
 
             cxt:Dialog("DIALOG_LEAVE")
-            if not DemocracyUtil.LocationUnlocked("ADMIRALTY_BARRACKS") and not cxt.quest.param.interrupted then
-                cxt:Dialog("DIALOG_LEARN_STATION")
-                -- DemocracyUtil.DoLocationUnlock(cxt, "ADMIRALTY_BARRACKS")
-                cxt:RunLoopingFn(function(cxt)
-                    cxt:Opt("OPT_ACCEPT_INVITE")
-                        :Dialog("DIALOG_ACCEPT_INVITE")
-                        :CompleteQuest("action")
-                        :ActivateQuest("escort")
-                        :Travel()
-
-                    cxt:Opt("OPT_DECLINE_INVITE")
-                        :Dialog("DIALOG_DECLINE_INVITE")
-                        :Pop()
-                end)
+            if not cxt.quest:GetCastMember("target"):IsDead() then
+                cxt.quest:GetCastMember("target"):GainAspect("stripped_influence", 5)
+                cxt.quest:GetCastMember("target"):Retire()
             end
-            if cxt.quest:IsActive("action") then
-                cxt:Dialog("DIALOG_END")
-                if not cxt.quest:GetCastMember("target"):IsDead() then
-                    cxt.quest:GetCastMember("target"):GainAspect("stripped_influence", 5)
-                    cxt.quest:GetCastMember("target"):Retire()
-                end
-                cxt.quest:GetCastMember("admiralty"):MoveToLocation(cxt.quest:GetCastMember("station"))
-                cxt.quest:Complete()
-                DoPromoteAdmiralty(cxt)
-                StateGraphUtil.AddLeaveLocation(cxt)
-            end
+            cxt.quest:GetCastMember("admiralty"):MoveToLocation(cxt.quest:GetCastMember("station"))
+            DoPromoteAdmiralty(cxt)
+            StateGraphUtil.AddLeaveLocation(cxt)
         end)
     :State("STATE_SAVE_TARGET")
         :Loc{
@@ -1497,46 +1324,16 @@ QDEF:AddConvo("action")
             cxt:Opt("OPT_BRUSH_OFF")
                 :Dialog("DIALOG_BRUSH_OFF")
                 :ReceiveOpinion("suspects_setup")
-                :CompleteQuest()
                 :Travel()
 
             cxt:BasicNegotiation("EXCUSE")
                 :OnSuccess()
                     :ReceiveOpinion("saved_from_arrest")
-                    :CompleteQuest()
                     :Travel()
                 :OnFailure()
                     :ReceiveOpinion("suspects_setup")
-                    :CompleteQuest()
                     :Travel()
         end)
-
-QDEF:AddConvo("innocent", "admiralty")
-    :Loc{
-        OPT_ASK = "Ask about {agent}",
-        DIALOG_ASK = [[
-            player:
-                Any progress on {target}?
-            agent:
-                Yeah, so turns out {target} is completely innocent.
-                I can't find any dirt on {target.himher}.
-                Thanks for letting me follow a false lead, {player}.
-            player:
-                Hey, that's not my fault!
-                How am I supposed to know whether {target} is innocent or not?
-                It's supposed to be your job!
-            agent:
-                With this time, I could've did other meaningful things that can get me promoted!
-                Instead, my time is wasted on a wild goose chase.
-                Didn't I tell you? Us Admiralty are getting really busy because of the election.
-        ]],
-    }
-    :Hub(function(cxt)
-        cxt:Opt("OPT_ASK")
-            :Dialog("DIALOG_ASK")
-            :ReceiveOpinion("wasted_their_time")
-            :FailQuest()
-    end)
 
 QDEF:AddConvo("wait", "admiralty")
     :Priority(CONVO_PRIORITY_LOWEST)
@@ -1544,184 +1341,4 @@ QDEF:AddConvo("wait", "admiralty")
         :Fn(function(cxt)
             cxt:Quip(cxt.enc:GetPlayer(), "investigation_greeting", "player")
             cxt:Quip(cxt:GetAgent(), "investigation_greeting", "agent")
-        end)
-QDEF:AddConvo("escort")
-    :Priority(CONVO_PRIORITY_HIGHEST)
-    :Confront(function(cxt)
-        if not cxt.location:HasTag("in_transit") then
-            if cxt.location == cxt.quest:GetCastMember("station") then
-                return "STATE_ARRIVE"
-            else
-                return "STATE_OTHER_LOCATION"
-            end
-        end
-    end)
-    :State("STATE_OTHER_LOCATION")
-        :Loc{
-            DIALOG_INTRO = [[
-                player:
-                    !left
-                {not ad_dead?
-                    admiralty:
-                        !right
-                        Wait, this isn't {station#location}.
-                        Do you have anything better to do?
-                    {not target_dead?
-                        If so, I can take it from here.
-                    }
-                    {target_dead?
-                        If so, I'll leave.
-                    }
-                }
-                {ad_dead?
-                    target:
-                        !right
-                        !injured
-                        What is this? This isn't {station#location}.
-                        What do you want from me?
-                }
-            ]],
-            OPT_LEAVE_AD = "Leave {admiralty}",
-            DIALOG_LEAVE_AD = [[
-                player:
-                    Yeah, I'm really busy.
-                {target_dead?
-                    You can leave now. Do your Admiralty stuff or whatever.
-                    |
-                    You can take it from here. Take {target} to the station.
-                }
-                admiralty:
-                    Alright then.
-                    !exit
-            ]],
-            OPT_LET_TARGET_GO = "Let {target} go",
-            DIALOG_LET_GO = [[
-                player:
-                    I'm not the Admiralty, so I really have no place to arrest you.
-                agent:
-                    Seriously?
-                    After all that, and you're just letting me go?
-                player:
-                    Well, yeah.
-                agent:
-                    You are a weird one, {player}.
-                    But just because you let me go, doesn't mean I'll forgive you.
-                    You caused me way too much trouble that I otherwise don't have.
-                    !exit
-                * You wonder if you made the right decision.
-            ]],
-        }
-        :Fn(function(cxt)
-            cxt:Dialog("DIALOG_INTRO")
-            if cxt:GetCastMember("admiralty"):IsDead() then
-                cxt:Opt("OPT_LET_TARGET_GO")
-                    :Dialog("DIALOG_LET_GO")
-                    :CompleteQuest()
-                    :DoneConvo()
-            else
-                cxt:Opt("OPT_LEAVE_AD")
-                    :Dialog("DIALOG_LEAVE_AD")
-                    :Fn(function(cxt)
-                        local target = cxt.quest:GetCastMember("target")
-                        if not target:IsDead() then
-                            target:GainAspect("stripped_influence", 5)
-                            target:OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
-                            target:Retire()
-                        end
-                        cxt.quest:GetCastMember("admiralty"):MoveToLocation(cxt.quest:GetCastMember("station"))
-                        DoPromoteAdmiralty(cxt)
-                        cxt.quest:Complete()
-                        StateGraphUtil.AddEndOption(cxt)
-                    end)
-            end
-            StateGraphUtil.AddLeaveLocation(cxt)
-        end)
-    :State("STATE_ARRIVE")
-        :Loc{
-            DIALOG_INTRO = [[
-                player:
-                    !left
-                agent:
-                    !right
-                {ad_dead?
-                    {not target_dead?
-                        agent:
-                            [p]Who's this?
-                        player:
-                            A criminal. {admiralty} and I captured {target.himher} together.
-                        agent:
-                            Speaking of which, where's {admiralty}?
-                        player:
-                            Well, {admiralty.heshe}'s dead.
-                        agent:
-                            What a shame.
-                            We'll handle it from here.
-                    }
-                }
-                {not ad_dead?
-                    {target_dead?
-                        agent:
-                            [p] What's going on?
-                        admiralty:
-                            !left
-                            We killed {target}.
-                        agent:
-                            Oh nice!
-                        {high_bounty?
-                            [p] {admiralty}, you're hereby promoted.
-                        admiralty:
-                            !left
-                            Sweet!
-                        }
-                    }
-                    {not target_dead?
-                        agent:
-                            [p] Who's this?
-                        player:
-                            A criminal that {admiralty} and I captured.
-                        agent:
-                            Well done!
-                        {high_bounty?
-                            [p] We've had our eyes on {target} for a while now. I'm glad you can bring {target.himher} in alive.
-                            {admiralty}, you're hereby promoted.
-                        admiralty:
-                            !left
-                            Sweet!
-                        }
-                        agent:
-                            We'll handle it from here.
-                    }
-                    player:
-                        !left
-                    admiralty:
-                        !right
-                        Thanks for your help, {player}!
-                }
-            ]],
-        }
-        :Fn(function(cxt)
-            local ad = cxt.location:FindAgentIf(function(agent)
-                return agent:GetFactionID() == "ADMIRALTY" and agent:GetBrain():IsOnDuty()
-            end)
-            if not ad then
-                ad = cxt.location:FindAgentIf(function(agent)
-                    return agent:GetFactionID() == "ADMIRALTY"
-                end)
-            end
-            if not ad then
-                -- this really shouldn't happen.
-                ad = cxt.quest:CreateSkinnedAgent( "ADMIRALTY_CLERK" )
-                ad:MoveToLocation(cxt.quest:GetCastMember("station"))
-            end
-            cxt:TalkTo(ad)
-            cxt:Dialog("DIALOG_INTRO")
-            local target = cxt.quest:GetCastMember("target")
-            if not target:IsDead() then
-                target:GainAspect("stripped_influence", 5)
-                target:OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY)
-                target:Retire()
-            end
-            DoPromoteAdmiralty(cxt)
-            cxt.quest:Complete()
-            StateGraphUtil.AddEndOption(cxt)
         end)

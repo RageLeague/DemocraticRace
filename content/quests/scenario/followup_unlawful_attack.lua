@@ -19,7 +19,7 @@ local QDEF = QuestDef.Define
 }
 :AddCast{
     cast_id = "target",
-    -- no_validation = true,
+    no_validation = true,
     unimportant = true,
     events = {
         agent_retired = function(quest, agent)

@@ -49,9 +49,19 @@ local QDEF = QuestDef.Define
     mark = {"opposition"},
     state = QSTATUS.ACTIVE,
 }
-:AddCastByAlias{
+:AddCast{
     cast_id = "opposition",
-    alias = available_opposition,
+    cast_fn = function(quest, t)
+        local all_candidates = DemocracyUtil.GetAllOppositions()
+        if #all_candidates == 0 then
+            -- If you get to that point you deserve a prize
+            -- Or a softlock, which is what you are going to get
+        else
+            local chosen = table.arraypick(all_candidates)
+            table.insert(t, DemocracyUtil.GetMainQuestCast(chosen))
+        end
+    end,
+    no_validation = true,
     on_assign = function(quest, agent)
         -- if character_map[agent:GetContentID()] then
         --     quest.param[character_map[agent:GetContentID()]] = true
@@ -83,6 +93,23 @@ local QDEF = QuestDef.Define
 }
 DemocracyUtil.AddPrimaryAdvisor(QDEF)
 DemocracyUtil.AddHomeCasts(QDEF)
+
+local function ShowStancesTutorial()
+    local screen = TheGame:FE():GetTopScreen()
+    TheGame:GetGameProfile():SetHasSeenMessage("democracy_tutorial_stances")
+    TheGame:FE():InsertScreen( Screen.YesNoPopup(LOC"DEMOCRACY.TUTORIAL.TUTORIAL_STANCES_TITLE", LOC"DEMOCRACY.TUTORIAL.TUTORIAL_STANCES_BODY", nil, nil, LOC"UI.NEGOTIATION_PANEL.TUTORIAL_NO" ))
+        :SetFn(function(v)
+            if v == Screen.YesNoPopup.YES then
+                local coro = screen:StartCoroutine(function()
+                    local advance = false
+                    TheGame:FE():PushScreen( Screen.SlideshowScreen( "democracy_tutorial_stances", function() advance = true end ):SetAutoAdvance(false) )
+                    while not advance do
+                        coroutine.yield()
+                    end
+                end )
+            end
+        end)
+end
 
 QDEF:AddConvo("meet_opposition", "opposition")
     :Loc{
@@ -258,6 +285,12 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 agent:
                     !permit
                     What say you? Are you persuaded by my speech?
+                player:
+                    ...
+                    !placate
+                    Wait, hold on. Am I suppose to give my opinion here?
+                agent:
+                    I mean, you don't <i>have to</>, but I would <i>really</> like to hear about your opinion on this matter.
             ]],
             OPT_AGREE = "Agree",
             DIALOG_AGREE = [[
@@ -291,36 +324,85 @@ QDEF:AddConvo("meet_opposition", "opposition")
                     Oh well.
                     Just be warned. You can't deflect the issue forever. Especially on these important issues.
             ]],
+            OPT_ASK_ABOUT = "Ask {primary_advisor} about stance taking",
+            DIALOG_ASK_ABOUT = [[
+                player:
+                    Excuse me for a moment.
+                agent:
+                    Of course.
+                * You turn to {primary_advisor}
+                primary_advisor:
+                    !right
+                player:
+                    !cagey
+                    Wait, what should I say?
+                    I feel like I am compelled to take a side here, and I don't know the consequences of doing that.
+                primary_advisor:
+                    !shrug
+                    Well, as a politician, you will often face dilemma like this where you are compelled to take a side.
+                    Regardless of which side you pick, it's important for you to know what it entails.
+                    !give
+                    Here's a brief explanation on what taking a stance means.
+            ]],
+            DIALOG_ASK_ABOUT_PST = [[
+                primary_advisor:
+                    Remember, while I may have personal opinions on some topics, it's ultimately your campaign, and your decisions to make.
+                    I will support you, regardless of what stances you take.
+                    !cruel
+                    As long as you take the right ones, of course.
+                player:
+                    Of course.
+                agent:
+                    !right
+                    So? What do you think?
+            ]],
         }
+        :SetLooping(true)
         :Fn(function(cxt)
-            cxt:Dialog("DIALOG_GREET")
-            cxt:Opt("OPT_AGREE")
-                :Dialog("DIALOG_AGREE")
-                :UpdatePoliticalStance(cxt.quest.param.oppo_issue, cxt.quest.param.stance_index)
-                :Fn(function(cxt)
-                    cxt.quest.param.greeted = true
-                    cxt.quest.param.agreed = true
-                    cxt:Dialog("DIALOG_GREET_PST")
-                    cxt.quest:Activate("discuss_plan")
-                end)
-            cxt:Opt("OPT_DISAGREE")
-                :Dialog("DIALOG_DISAGREE")
-                :UpdatePoliticalStance(cxt.quest.param.oppo_issue, -cxt.quest.param.stance_index)
-                :Fn(function(cxt)
-                    cxt.quest.param.greeted = true
-                    cxt.quest.param.disagreed = true
-                    cxt:Dialog("DIALOG_GREET_PST")
-                    cxt.quest:Activate("discuss_plan")
-                end)
-            cxt:Opt("OPT_IGNORE")
-                :Dialog("DIALOG_IGNORE")
-                :Fn(function(cxt)
-                    DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport",
-                        -1)
-                    cxt.quest.param.greeted = true
-                    cxt:Dialog("DIALOG_GREET_PST")
-                    cxt.quest:Activate("discuss_plan")
-                end)
+            if cxt:FirstLoop() then
+                cxt:Dialog("DIALOG_GREET")
+                cxt.quest.param.greeted = true
+            end
+            if not cxt.quest.param.asked_stance then
+                cxt:Opt("OPT_ASK_ABOUT")
+                    :Dialog("DIALOG_ASK_ABOUT")
+                    :Fn(function(cxt)
+                        cxt:Wait()
+                        cxt.quest.param.asked_stance = true
+                        TheGame:GetGameProfile():AcquireUnlock("DONE_STANCE_QUESTION")
+                        ShowStancesTutorial()
+                    end)
+                    :Dialog("DIALOG_ASK_ABOUT_PST")
+            end
+            if TheGame:GetGameProfile():HasUnlock("DONE_STANCE_QUESTION") then
+                cxt:Opt("OPT_AGREE")
+                    :Dialog("DIALOG_AGREE")
+                    :UpdatePoliticalStance(cxt.quest.param.oppo_issue, cxt.quest.param.stance_index)
+                    :Fn(function(cxt)
+                        cxt.quest.param.agreed = true
+                        cxt:Dialog("DIALOG_GREET_PST")
+                        cxt.quest:Activate("discuss_plan")
+                    end)
+                    :Pop()
+                cxt:Opt("OPT_DISAGREE")
+                    :Dialog("DIALOG_DISAGREE")
+                    :UpdatePoliticalStance(cxt.quest.param.oppo_issue, -cxt.quest.param.stance_index)
+                    :Fn(function(cxt)
+                        cxt.quest.param.disagreed = true
+                        cxt:Dialog("DIALOG_GREET_PST")
+                        cxt.quest:Activate("discuss_plan")
+                    end)
+                    :Pop()
+                cxt:Opt("OPT_IGNORE")
+                    :Dialog("DIALOG_IGNORE")
+                    :Fn(function(cxt)
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport",
+                            -1)
+                        cxt:Dialog("DIALOG_GREET_PST")
+                        cxt.quest:Activate("discuss_plan")
+                    end)
+                    :Pop()
+            end
         end)
     :AskAboutHubConditions("STATE_QUESTIONS",
     {
@@ -410,11 +492,28 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 [p] I'm done with intel gathering.
             agent:
                 Time for you to do some work.
+            {no_assassin?
             player:
-                The world seems a bit dangerous for me now.
+                [p] I'm a big shot now. What if there are assassins coming after me?
+            agent:
+                If you want to feel safer, hire a bodyguard or something.
+            }
+            {not no_assassin and billed_baron_response?
+            agent:
+                [p] By the way, why do I have a bill for Baron response?
+            player:
+                I'm sorry for looking for help when I am being attacked by assassins, okay?
+            agent:
+                That is not very cash money of you.
+                Hire your own bodyguard. Don't make me pay for your problems.
+            }
+            {not no_assassin and not billed_baron_response?
+            player:
+                [p] The world seems a bit dangerous for me now.
             agent:
                 I guess you're pretty shaken from the yesterday's assassination, huh?
                 If you want to feel safer, hire a bodyguard or something.
+            }
         ]],
     }
     :Hub(function(cxt)
@@ -424,6 +523,10 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             :GoTo("STATE_QUESTIONS")
         cxt:Opt("OPT_DONE_QUEST")
             :SetQuestMark( cxt.quest )
+            :Fn(function(cxt)
+                cxt.quest.param.billed_baron_response = cxt:GetAgent():HasMemory("BILLED_BARON_RESPONSE")
+                cxt.quest.param.no_assassin = TheGame:GetGameState():GetMainQuest() and TheGame:GetGameState():GetMainQuest().param.no_assassin
+            end)
             :Dialog("DIALOG_DONE_QUEST")
             :Fn(function(cxt)
                 QuestUtil.SpawnQuest("CAMPAIGN_BODYGUARD")

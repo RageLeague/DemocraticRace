@@ -43,6 +43,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "go_to_sleep",
     title = "Go to sleep",
+    desc = "It's been a long day. Go to bed when you are ready.",
     mark = {"primary_advisor"},
     on_activate = function(quest)
         DemocracyUtil.StartFreeTime()
@@ -209,7 +210,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         cxt:Dialog("DIALOG_INTRO")
         DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 3)
         cxt:Dialog("DIALOG_INTRO_PST")
-        if cxt.quest.param.has_potential_ally then
+        if cxt.enc.scratch.has_potential_ally then
             cxt:GoTo("STATE_ALLIANCE")
         elseif cxt.enc.scratch.advisor_favor then
             cxt:GoTo("STATE_FAVOR")
@@ -229,6 +230,8 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 primary_advisor:
                     !right
                     I'll leave you to it.
+                agent:
+                    !right
             ]],
             DIALOG_CHOOSE_PST = [[
                 {allied?
@@ -248,7 +251,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 * {agent} leaves, leaving you with {primary_advisor}.
             ]],
 
-            DIALOG_CHOOSE_PST = [[
+            DIALOG_CHOOSE_PST2 = [[
                 agent:
                     !right
                 * Your advisor comes to you.
@@ -288,7 +291,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 cxt:Dialog("DIALOG_CHOOSE_PST")
                 DemocracyUtil.DoLocationUnlock(cxt, cxt.enc.scratch.ally_work_pos)
                 cxt:TalkTo(cxt:GetCastMember("primary_advisor"))
-                cxt:Dialog("DIALOG_CHOOSE_PST")
+                cxt:Dialog("DIALOG_CHOOSE_PST2")
                 cxt.quest:Complete("starting_out")
                 cxt.enc.scratch.potential_ally:MoveToLimbo()
                 StateGraphUtil.AddLeaveLocation(cxt)
@@ -446,13 +449,13 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
 
                 ConvoUtil.DoSleep(cxt, "DIALOG_WAKE")
 
-                DemocracyUtil.DoAlphaMessage()
+                -- DemocracyUtil.DoAlphaMessage()
 
-                cxt:End()
+                -- cxt:End()
 
-                if true then
-                    return
-                end
+                -- if true then
+                --     return
+                -- end
 
                 cxt.quest:Complete()
 

@@ -12,6 +12,7 @@ local GRAFTS =
         -- hidden = true,
         name = "Agonizing Injury",
         desc = "Your max resolve in negotiation is limited by the proportion of health you have.",
+        img = "DEMOCRATICRACE:assets/grafts/democracy_resolve_limiter.png",
         negotiation_modifier =
         {
             hidden = true,

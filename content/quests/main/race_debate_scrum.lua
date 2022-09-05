@@ -295,6 +295,7 @@ local function CreateDebateOption(cxt, helpers, hinders, topic, stance)
             end
 
             DemocracyUtil.SendMetricsData("DAY_3_BOSS_START", METRIC_DATA)
+            TheGame:SetTempMusicOverride("DEMOCRATICRACE|event:/democratic_race/music/negotiation/debate_scrum", cxt.enc)
         end)
         :Negotiation{
             flags = NEGOTIATION_FLAGS.NO_BYSTANDERS | NEGOTIATION_FLAGS.WORDSMITH | NEGOTIATION_FLAGS.NO_CORE_RESOLVE | NEGOTIATION_FLAGS.NO_LOOT,
@@ -1005,7 +1006,8 @@ QDEF:AddConvo("do_debate")
             for i, agent in ipairs(cxt.quest.param.popularity_rankings) do
                 if agent:IsPlayer() then
                     cxt.quest.param.player_rank = i
-                    break
+                else
+                    DemocracyUtil.TryMainQuestFn("DeltaOppositionSupport", DemocracyUtil.GetOppositionID(agent), (cxt.quest.param.popularity[agent:GetID()] or 0) - 15)
                 end
             end
             if not cxt.quest.param.player_rank then
@@ -1036,12 +1038,25 @@ QDEF:AddConvo("do_debate")
             cxt.quest:Complete("do_debate")
 
             local your_score = cxt.quest.param.popularity[cxt.player:GetID()] or 0
+            local main_quest = TheGame:GetGameState():GetMainQuest()
             if cxt.quest.param.good_debate then
                 DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.5), "COMPLETED_QUEST_MAIN")
+                if main_quest then
+                    main_quest.param.good_debate_scrum = true
+                end
             elseif cxt.quest.param.bad_debate then
                 DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.25), "COMPLETED_QUEST_MAIN")
+                if main_quest then
+                    main_quest.param.good_debate_scrum = false
+                end
             else
                 DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.35), "COMPLETED_QUEST_MAIN")
+                if main_quest then
+                    main_quest.param.good_debate_scrum = true
+                end
+            end
+            if main_quest then
+                main_quest.param.debate_scrum_result = cxt.quest.param.popularity_rankings
             end
 
             local METRIC_DATA =

@@ -26,6 +26,13 @@ local QDEF = QuestDef.Define
     desc = "Ask your advisor for the campaign funding of the day.",
     mark = {"primary_advisor"},
 }
+:AddOpinionEvents{
+    hope_for_campaign =
+    {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Does not want to abandon the campaign now",
+    },
+}
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 
 local RANKS = {
@@ -237,6 +244,16 @@ QDEF:AddConvo("summary", "primary_advisor")
                     At least that's something.
                 }
             ]],
+            DIALOG_POST_FINAL_DEBATE = [[
+                agent:
+                {not disliked?
+                    We've gained all these support level over the past few days, it's too late for us to stop now.
+                }
+                {disliked?
+                    Even though our support level doesn't look good, we have already come too far for us to stop now.
+                }
+                    Let us hope that all of our effort is all worth it in the end.
+            ]],
         }
         :Fn(function(cxt)
             -- the idea here is that the advisor check how much they support you
@@ -263,8 +280,8 @@ QDEF:AddConvo("summary", "primary_advisor")
             if cxt.enc.scratch.general_support_good and rank >= 4 then
                 cxt:Dialog("DIALOG_GOOD_SUPPORT_BAD_PERSONAL")
             end
-            if cxt.quest.param.parent_quest then
-                local parent_quest = cxt.quest.param.parent_quest
+            local parent_quest = cxt.quest.param.parent_quest
+            if parent_quest then
                 -- If you did interview on a particular day, comment on that
                 if parent_quest.param.did_interview then
                     cxt.quest.param.good_interview = parent_quest.param.good_interview
@@ -290,9 +307,17 @@ QDEF:AddConvo("summary", "primary_advisor")
             if not cxt.enc.scratch.loved then
                 cxt:GetAgent():OpinionEvent(OPINION["SUPPORT_EXPECTATION_" .. RANKS[rank]])
             end
-            if cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL and not TheGame:GetGameState():GetMainQuest().param.allow_skip_side then
-                cxt:Dialog("DIALOG_UNLOCK_SKIP")
-                TheGame:GetGameState():GetMainQuest().param.allow_skip_side = true
+
+            if parent_quest and parent_quest.did_final_debate then
+                cxt:Dialog("DIALOG_POST_FINAL_DEBATE")
+                if cxt:GetAgent():GetRelationship() == RELATIONSHIP.HATED then
+                    cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("hope_for_campaign"))
+                end
+            else
+                if cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL and not TheGame:GetGameState():GetMainQuest().param.allow_skip_side then
+                    cxt:Dialog("DIALOG_UNLOCK_SKIP")
+                    TheGame:GetGameState():GetMainQuest().param.allow_skip_side = true
+                end
             end
             if cxt:GetAgent():GetRelationship() == RELATIONSHIP.HATED then
                 cxt:GoTo("STATE_FAILURE")
@@ -357,15 +382,16 @@ QDEF:AddConvo("summary", "primary_advisor")
                 :FailQuest("summary")
                 :ActivateQuest("new_advisor")
                 :DoneConvo()
-
-            cxt:Opt("OPT_DEBUG_BYPASS_HARD_CHECK")
-                :PostText("TT_DEBUG_BYPASS_HARD_CHECK")
-                :Fn(function()
-                    TheGame:GetGameState():GetOptions().is_custom_mode = true
-                end)
-                :Dialog("DIALOG_LAST_CHANCE")
-                :ActivateQuest("ask_pay")
-                -- :GoTo("STATE_PAY")
+            if TheGame:GetLocalSettings().DEBUG then
+                cxt:Opt("OPT_DEBUG_BYPASS_HARD_CHECK")
+                    :PostText("TT_DEBUG_BYPASS_HARD_CHECK")
+                    :Fn(function()
+                        TheGame:GetGameState():GetOptions().is_custom_mode = true
+                    end)
+                    :Dialog("DIALOG_LAST_CHANCE")
+                    :ActivateQuest("ask_pay")
+                    -- :GoTo("STATE_PAY")
+            end
             -- DemocracyUtil.AddAutofail(cxt, function(cxt)
             --     cxt:Dialog("DIALOG_LAST_CHANCE")
             --     cxt:GoTo("STATE_PAY")

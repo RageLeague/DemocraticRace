@@ -939,7 +939,7 @@ QDEF:AddConvo("bad_event")
                     Well, y'see. The thing about heresy is uhm...
                     !point
                     {guard} go distract them.
-                * You book it in the opposite direction, your guard keeping the group distracted long enough for you to duck out of sight.
+                * You book it in the opposite direction, while {guard} keeps the group distracted long enough for you to duck out of sight.
             ]],
 
             DIALOG_DEFEND = [[
@@ -1044,15 +1044,17 @@ QDEF:AddConvo("bad_event")
                 :CompleteQuest("bad_event")
                 :Travel()
 
-            DemocracyUtil.AddBodyguardOpt(cxt, function(cxt, agent)
-                cxt:ReassignCastMember("guard", agent)
-                cxt:Dialog("DIALOG_USE_BODYGUARD")
-                if agent:IsPet() then
-                    QuestUtil.SpawnQuest("STORY_PET_RETURN", { cast = { pet = agent } })
-                end
-                agent:Dismiss()
-                cxt.quest:Complete("bad_event")
-                StateGraphUtil.AddLeaveLocation(cxt)
+            DemocracyUtil.AddBodyguardOpt(cxt, function(opt, agent)
+                opt:Fn(function(cxt)
+                    cxt:ReassignCastMember("guard", agent)
+                    cxt:Dialog("DIALOG_USE_BODYGUARD")
+                    if agent:IsPet() then
+                        QuestUtil.SpawnQuest("STORY_PET_RETURN", { cast = { pet = agent } })
+                    end
+                    agent:Dismiss()
+                    cxt.quest:Complete("bad_event")
+                    StateGraphUtil.AddLeaveLocation(cxt)
+                end)
             end)
 
             cxt:Opt("OPT_DEFEND")
@@ -1153,6 +1155,7 @@ QDEF:AddConvo("rat_out_aftermath")
             cxt:GetCastMember("tei"):MoveToLocation(cxt.location)
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Cancel()
+            QuestUtil.SpawnQuest( "FOLLOWUP_INTERWEAVING_BONDS" )
             StateGraphUtil.AddEndOption(cxt)
         end)
     :State("STATE_ARREST")

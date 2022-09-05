@@ -10,6 +10,18 @@ local assets = {
 
 local OUTLINE_SIZE = 3
 
+local STANCE_INDICES = { -2, -1.5, -1, 0, 1, 1.5, 2 }
+local STANCE_ALIGNMENT =
+{
+    [-2] = 0,
+    [-1.5] = 0.15,
+    [-1] = 0.3,
+    [0] = 0.5,
+    [1] = 0.7,
+    [1.5] = 0.85,
+    [2] = 1,
+}
+
 local PoliticalIssueTrack = class( "DemocracyClass.Widget.PoliticalIssueTrack", Widget.Clickable )
 
 function PoliticalIssueTrack:init(max_width, max_height, spacing)
@@ -47,10 +59,10 @@ function PoliticalIssueTrack:init(max_width, max_height, spacing)
 
     self.agent_portraits = {}
 
-    for i = -2, 2 do
-        table.insert(self.stance_icons, self:AddChild(DemocracyClass.Widget.StanceIcon(self.icon_size):SetDefaultIcon(i)))
-        if i >= -1 then
-            self.stance_icons[#self.stance_icons]:SetFocusDir("left", self.stance_icons[#self.stance_icons-1], true)
+    for _, i in ipairs(STANCE_INDICES) do
+        self.stance_icons[i + 3] = self:AddChild(DemocracyClass.Widget.StanceIcon(self.icon_size):SetDefaultIcon(i))
+        if i >= -1 and math.round(i) == i then
+            self.stance_icons[i + 3]:SetFocusDir("left", self.stance_icons[i + 2], true)
         end
     end
 
@@ -141,24 +153,38 @@ function PoliticalIssueTrack:Layout()
 
     self.opinion_track:LayoutBounds("center", "bottom", self.hitbox):Offset(0, self.icon_size + 2 * self.spacing)
     self.issue_title:LayoutBounds("left", "top", self.hitbox):Offset(SPACING.M1, -self.spacing)
-    for i, icon in ipairs(self.stance_icons) do
-        local percent_align = (i - 1) / (#self.stance_icons - 1)
+    for i, icon in pairs(self.stance_icons) do
+        local percent_align = STANCE_ALIGNMENT[i - 3]
+        assert(percent_align, "Missing alignment data for " .. i)
         icon:LayoutBounds("center", "bottom", self.hitbox):Offset(math.round((self.track_w - self.icon_size) * (percent_align - .5)), self.spacing)
     end
 
     if self.issue then
-        local stance_groupings = {{},{},{},{},{}}
+        local stance_groupings = {}
+        for _, i in ipairs(STANCE_INDICES) do
+            stance_groupings[i + 3] = {}
+        end
+        local player_special_index
         for i, widget in ipairs(self.agent_portraits) do
             local stance = self.issue:GetAgentStanceIndex(widget.agent) or 0
             if widget.agent:IsPlayer() and DemocracyUtil.GetStanceChangeFreebie(self.issue) then
                 widget:SetToolTip(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.CURRENT_STANCE_LOOSE", widget.agent, self.issue.stances[stance]))
+                if stance > 0 then
+                    player_special_index = 4.5
+                elseif stance < 0 then
+                    player_special_index = 1.5
+                end
             else
                 widget:SetToolTip(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.CURRENT_STANCE", widget.agent, self.issue.stances[stance]))
             end
-            table.insert(stance_groupings[stance + 3], widget)
+            if not (widget.agent:IsPlayer() and player_special_index) then
+                table.insert(stance_groupings[stance + 3], widget)
+            else
+                table.insert(stance_groupings[player_special_index], widget)
+            end
         end
         local barx, bary = self.stance_icons[1]:TransformFromWidget(self.opinion_track)
-        for i, group in ipairs(stance_groupings) do
+        for i, group in pairs(stance_groupings) do
             if #group > 0 then
                 for j, widget in ipairs(group) do
                     local offset = j - ((#group + 1) / 2)

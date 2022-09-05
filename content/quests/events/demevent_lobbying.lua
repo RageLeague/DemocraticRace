@@ -85,6 +85,7 @@ QDEF:AddConvo()
         :Fn(function(cxt)
             if cxt:FirstLoop() then
                 cxt.quest:Complete()
+                cxt:TalkTo("merchant")
 
                 cxt.quest.param.lobby_money = 100
                 local weightings = {}

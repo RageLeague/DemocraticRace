@@ -159,6 +159,7 @@ Content.AddStringTable( "DEM_CONVO", {
         REQ_FREE_TIME = "You don't have free time to choose this action.",
         REQ_FREE_TIME_ACTIONS = "You don't have enough free time actions to choose this action.",
         TT_FREE_TIME_ACTION_COST = "This option requires {1} free time {1*action|actions}.",
+        TT_FREE_TIME_ACTION_COST_OPTIONAL = "This option costs up to {1} free time {1*action|actions}.",
 
         OPT_NEGOTIATE_TERMS = "Negotiate the terms",
         TT_NEGOTIATE_TERMS = "Negotiate the terms of your deal with {agent}, to hopefully reduce your commitments.",

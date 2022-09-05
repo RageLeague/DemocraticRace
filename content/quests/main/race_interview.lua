@@ -1,5 +1,5 @@
 local INTERVIEWER_BEHAVIOR = {
-    QUESTION_STACKS = {4, 3, 2, 1},
+    QUESTION_STACKS = {3, 3, 3, 3},
     OnInit = function( self, difficulty )
         -- self.bog_boil = self:AddCard("bog_boil")
         local relationship_delta = self.agent and (self.agent:GetRelationship() - RELATIONSHIP.NEUTRAL) or 0
@@ -8,24 +8,16 @@ local INTERVIEWER_BEHAVIOR = {
         -- modifier.agents = shallowcopy(self.agents)
         -- modifier:InitModifiers()
         self.cont_question_card = self:AddCard("contemporary_question_card")
-        self.cont_question_card.stacks = self.QUESTION_STACKS[
-            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-            #self.QUESTION_STACKS) ]
+        self.cont_question_card.stacks = DemocracyUtil.CalculateBossScale(self.QUESTION_STACKS)
 
         self.modifier_picker = self:MakePicker()
 
         local _, card = self.modifier_picker:AddArgument("LOADED_QUESTION", 2 + math.max(0, -relationship_delta))
-        card.stacks = self.QUESTION_STACKS[
-            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-            #self.QUESTION_STACKS) ]
+        card.stacks = DemocracyUtil.CalculateBossScale(self.QUESTION_STACKS)
         local _, card = self.modifier_picker:AddArgument("PLEASANT_QUESTION", 2 + math.max(0, relationship_delta))
-        card.stacks = self.QUESTION_STACKS[
-            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-            #self.QUESTION_STACKS) ]
+        card.stacks = DemocracyUtil.CalculateBossScale(self.QUESTION_STACKS)
         local _, card = self.modifier_picker:AddArgument("GENERIC_QUESTION", 4)
-        card.stacks = self.QUESTION_STACKS[
-            math.min( GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1,
-            #self.QUESTION_STACKS) ]
+        card.stacks = DemocracyUtil.CalculateBossScale(self.QUESTION_STACKS)
 
         if not self.params then self.params = {} end
         self.params.questions_answered = 0
@@ -491,7 +483,7 @@ QDEF:AddConvo("do_interview")
             ]],
 
             OPT_DO_INTERVIEW = "Do the interview",
-            SIT_MOD = "Has a lot of questions prepared for you.",
+            SIT_MOD = "Has a lot of questions prepared for you",
             NEGOTIATION_REASON = "Survive the interview while answering as many questions as you can!({1} {1*question|questions} answered)",
 
             DIALOG_INTERVIEW_SUCCESS = [[
@@ -506,10 +498,29 @@ QDEF:AddConvo("do_interview")
             ]],
             DIALOG_INTERVIEW_FAIL = [[
                 player:
-                    [p] I said something embarrassing and outrageous in front of everyone!
-                * awkward silence.
-                * oh no.
-                * this embarrassment is going to cost you.
+                    !angry_accuse
+                    All of you people, asking all of these questions!
+                    I'm just one {player.gender:man|woman|person}, you know! I don't know everything!
+                    $scaredPowerless
+                    So why do you all depend on me? Why do you look up to me?
+                agent:
+                    !dubious
+                    Excuse me, {player.gender:sir|ma'am|my friend}. Are you all right?
+                player:
+                    !angry_shrug
+                    Of course not!
+                    $scaredTakenAback
+                    I hate this! I hate the election! I hate running a campaign.
+                    $scaredAnguished
+                    Why can't you *sob* just *sob* leave me alone!
+                    !exit
+                agent:
+                    {player.gender:Sir|Ma'am|My friend}-
+                * But it's already too late. You already ran out of the theater.
+                * As you run down the Pearl streets, tears shed down your eyes.
+                * All the stress, all the decisions, all the questions. It's all too much for you.
+                * Where are you running to? Even you don't know.
+                * The only thing you know is that you are running away from your campaign. Running away from politics, once and for all.
             ]],
             DIALOG_INTERVIEW_AFTER = [[
                 * After the interview, {1*a person confronts you|several people confront you}.
@@ -519,14 +530,6 @@ QDEF:AddConvo("do_interview")
             ]],
             DIALOG_INTERVIEW_AFTER_BAD = [[
                 * That's not good. People don't like your interview!
-            ]],
-            DIALOG_FAIL = [[
-                {good_interview?
-                    * Despite the fact, the damage has already been done.
-                }
-                * From the meltdown back on the state, your reputation drops significantly.
-                * With that, this is the end of your political campaign.
-                * There is no way for you to recover from that failure.
             ]],
         }
         :Fn(function(cxt)
@@ -640,9 +643,6 @@ QDEF:AddConvo("do_interview")
                     end,
                     on_fail = function(cxt)
                         local questions_answered = (BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0)
-                        cxt:Dialog("DIALOG_INTERVIEW_FAIL")
-                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -20)
-                        ResolvePostInterview()
                         local METRIC_DATA =
                         {
                             player_data = TheGame:GetGameState():GetPlayerState(),
@@ -652,8 +652,8 @@ QDEF:AddConvo("do_interview")
                             result = "LOSE",
                         }
                         DemocracyUtil.SendMetricsData("DAY_2_BOSS_END", METRIC_DATA)
+                        cxt:Dialog("DIALOG_INTERVIEW_FAIL")
                         -- you can't recover from a failed interview. it's instant lose.
-                        cxt:Dialog("DIALOG_FAIL")
                         DemocracyUtil.AddAutofail(cxt, false)
                     end,
                 }

@@ -6,7 +6,7 @@ local DEFAULT_ICON = {
     [0] = global_images.relationship_level[RELATIONSHIP.NEUTRAL],
     [1] = global_images.relationship_level[RELATIONSHIP.LIKED],
     [2] = global_images.relationship_level[RELATIONSHIP.LOVED],
-    
+
 }
 
 function StanceIcon:init( size )
@@ -46,6 +46,8 @@ function StanceIcon:Refresh()
         self:SetToolTipClass(Widget.TooltipCodex)
         self:SetToolTip(self.stance)
         self:ShowToolTipOnFocus()
+    else
+        self:ShowToolTipOnFocus(false)
     end
     return self
 end

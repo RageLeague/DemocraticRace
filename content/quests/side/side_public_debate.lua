@@ -32,11 +32,11 @@ local QDEF = QuestDef.Define
     end,
 
     on_start = function(quest)
-        local location = Location( LOCATION_DEF.id )
-        assert(location)
-        TheGame:GetGameState():AddLocation(location)
-        quest:AssignCastMember("junction", location )
-        quest:Activate("meet_opponent")
+        -- local location = Location( LOCATION_DEF.id )
+        -- assert(location)
+        -- TheGame:GetGameState():AddLocation(location)
+        -- quest:AssignCastMember("junction", location )
+        -- quest:Activate("meet_opponent")
     end,
     on_destroy = function( quest )
         if quest:GetCastMember("junction") then
@@ -103,6 +103,7 @@ local QDEF = QuestDef.Define
     end,
     on_assign = function(quest, agent)
         quest:AssignCastMember("laughing_stock")
+        quest.param["opponent_" .. agent.alias:lower()] = true
     end,
 }
 :AddCast{
@@ -157,15 +158,26 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
                 Right?
             }
             {has_primary_advisor?
-                primary_advisor:
-                    Are you thinking of attending? You know they aren't going to listen to you unless you put on a really good show.
-                    Do you think you can do that?
+                {not (primary_advisor_manipulate and opponent_tei)?
+                    primary_advisor:
+                        Are you thinking of attending? You know they aren't going to listen to you unless you put on a really good show.
+                        Do you think you can do that?
+                }
+                {primary_advisor_manipulate and opponent_tei?
+                    primary_advisor:
+                        I guess that is going on, huh?
+                        Logically speaking, you need to do whatever you have to do to gather support.
+                        However, if, hypothetically, you don't embarrass {opponent.himher} in front of a large crowd, wouldn't that be better for everyone involved?
+                }
             }
         ]],
     }
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
+            if cxt:GetCastMember("primary_advisor") and cxt:GetCastMember("primary_advisor"):GetContentID() == "ADVISOR_MANIPULATE" and cxt:GetCastMember("opponent"):GetContentID() == "TEI" then
+                QuestUtil.SpawnQuest( "FOLLOWUP_INTERWEAVING_BONDS", { parameters = { avoid_tei = true } } )
+            end
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :Loc{
@@ -177,17 +189,31 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
                 Yeah, piece of cake.
             }
             {has_primary_advisor?
-                !shrug
-                It's a big risk, but I might be able to sway the crowd to support me.
-            primary_advisor:
-                !palm
-                If you say so. Just don't make a fool out of yourself, okay?
+                {not (primary_advisor_manipulate and opponent_tei)?
+                        !shrug
+                        It's a big risk, but I might be able to sway the crowd to support me.
+                    primary_advisor:
+                        !palm
+                        If you say so. Just don't make a fool of yourself, okay?
+                }
+                {primary_advisor_manipulate and opponent_tei?
+                        Sorry, I can't pass up this opportunity.
+                    primary_advisor:
+                        !sigh
+                        A perfectly logical choice, I suppose.
+                        Still, don't make a fool of yourself, okay?
+                }
             }
         ]],
     }
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
+            local location = Location( LOCATION_DEF.id )
+            assert(location)
+            TheGame:GetGameState():AddLocation(location)
+            cxt.quest:AssignCastMember("junction", location )
+            cxt.quest:Activate("meet_opponent")
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{
@@ -200,8 +226,20 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
                 I'm too optimistic for my own good.
             }
             {has_primary_advisor?
-                !point
-                That would probably be a no from me.
+                {not (primary_advisor_manipulate and opponent_tei)?
+                        !point
+                        That would probably be a no from me.
+                    primary_advisor:
+                        !hips
+                        Well, looks like you know your own limits.
+                }
+                {primary_advisor_manipulate and opponent_tei?
+                        !shrug
+                        Well, if you say so.
+                    primary_advisor:
+                        !permit
+                        There are still plenty of other ways to gather support, so logically, you should do that.
+                }
             }
         ]],
     }
@@ -435,6 +473,10 @@ QDEF:AddConvo("meet_opponent")
                 elseif #(cxt.quest.param.crowd or {}) - i < lose_supporter then
                     agent:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("disliked_debate"))
                 end
+            end
+            local opposition_id = DemocracyUtil.GetOppositionID(cxt:GetCastMember("opponent"))
+            if opposition_id then
+                DemocracyUtil.TryMainQuestFn("DeltaOppositionSupport", opposition_id, (cxt.quest.param.audience_stage - 2) * 4)
             end
             if cxt.quest.param.lost_negotiation or cxt.quest.param.audience_stage <= 0 then
                 cxt.quest:Fail()

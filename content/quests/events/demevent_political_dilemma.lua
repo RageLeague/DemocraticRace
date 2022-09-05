@@ -91,7 +91,7 @@ QDEF:AddConvo()
                     I won't forget this!
                     !exit
                 * {other.HeShe} leaves.
-                * {agent} slumps {agent.hisher} shoulders and lets out a sigh of relief
+                * {agent} slumps {agent.hisher} shoulders and lets out a sigh of relief.
                 player:
                     !left
                 agent:
