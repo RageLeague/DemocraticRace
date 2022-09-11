@@ -796,6 +796,10 @@ QDEF:AddConvo("visit_office")
                     !left
                     It looks like an okay place.
                 primary_advisor:
+                {advisor_hostile?
+                    !hips
+                    Ha! This is the best office in the history of offices, ever.
+                }
                     !thought
                     I guess you don't have a place to sleep, huh?
                     Well, you can use the office backroom as a bedroom.
@@ -809,6 +813,7 @@ QDEF:AddConvo("visit_office")
             ]],
         }
         :Fn(function(cxt)
+            cxt:TalkTo("primary_advisor")
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Complete()
             QuestUtil.SpawnQuest("RACE_LIVING_WITH_ADVISOR")
