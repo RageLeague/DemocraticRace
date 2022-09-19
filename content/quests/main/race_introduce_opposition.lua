@@ -266,8 +266,9 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 agent:
                     %oppo_greeting
                 player:
-                    What's your goal in the race? What drives you forward?
+                    Why are you running as a candidate for the election? What is your goal?
                 agent:
+                    !agree
                     I'm glad you asked.
                 * {agent} clears {agent.hisher} throat loudly.
                     %opposition_intro idea_monologue {opposition_id}
@@ -275,54 +276,89 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 {not spark_contact?
                     I must say, I'm stunned by your rhetoric.
                 agent:
+                    !happy
                     I bet you are!
                 }
                 {spark_contact?
                     Wow, that... definitely is one of the speeches I've ever heard.
                 agent:
+                    !happy
                     I'm glad you liked it.
                 }
                 agent:
                     !permit
-                    What say you? Are you persuaded by my speech?
+                    What say you? Do you agree with me on this matter?
                 player:
                     ...
                     !placate
                     Wait, hold on. Am I suppose to give my opinion here?
                 agent:
+                    !wink
                     I mean, you don't <i>have to</>, but I would <i>really</> like to hear about your opinion on this matter.
             ]],
             OPT_AGREE = "Agree",
             DIALOG_AGREE = [[
-                player:
-                    Believe me, friend. I'm a firm believer in your ideology.
-                agent:
-                    Ah-ha, my dear {player}. We needn't fight at all in this race.
-                player:
-                    Now, Now, I still disagree with you on a number of things.
-                    You're still going to lose in this Democratic Race!
-                agent:
-                    Hark! Well, when you falter, know your voters will join me in the end.
+                {(player_arint and spark_contact)?
+                    player:
+                        I do have to say that your opinion is agreeable to me.
+                    agent:
+                        You don't need to placate me.
+                        Like I said, I am running the campaign all by myself, and I don't need your approval or help.
+                    player:
+                        !sigh
+                        There's no convincing you otherwise, is there?
+                    agent:
+                        Nope.
+                }
+                {not (player_arint and spark_contact)?
+                    player:
+                        Believe me, friend. I'm a firm believer in your ideology.
+                    agent:
+                        Ah-ha, my dear {player}. We are finding so much in common already!
+                        A shame, though. Only one of us is going to win the election, and I don't intend on holding back.
+                    player:
+                        Of course.
+                        I wouldn't expect anything else.
+                }
             ]],
             OPT_DISAGREE = "Disagree",
             DIALOG_DISAGREE = [[
-                player:
-                    I can't say I do.
-                agent:
-                    A shame. We could've been great allies.
-                player:
-                    But aren't we political opponents, though?
-                agent:
-                    Yeah, you're right.
-                    Well, good luck with your campaign, because I'll beat you.
+                {(player_arint and spark_contact)?
+                    player:
+                        With all due respect, {agent.gender:sir|ma'am|manager}, I'm afraid that is not going to work.
+                    agent:
+                        !crossed
+                        Hmph. Doesn't matter. I don't need your approval.
+                    player:
+                        !dubious
+                        Then why did you ask me for my opinion in the first place?
+                    agent:
+                        !shrug
+                        Well, I want to know your opinion on the matter, of course.
+                        And I see now that we are going to face each other eventually.
+                }
+                {not (player_arint and spark_contact)?
+                    player:
+                        I can't say I do.
+                    agent:
+                        A shame. We could've been great allies.
+                    player:
+                        But aren't we political opponents, though?
+                    agent:
+                        Yeah, you're right.
+                        Well, good luck with your campaign, and may the best candidate win.
+                }
             ]],
             OPT_IGNORE = "Remain silent on this issue",
             DIALOG_IGNORE = [[
                 player:
                     I don't want to make any statement regarding this issue.
                 agent:
-                    Oh well.
-                    Just be warned. You can't deflect the issue forever. Especially on these important issues.
+                    !crossed
+                    {player}, this is an important issue that Havaria faces!
+                    You can't stand aside forever while Havaria suffers from it!
+                    !sigh
+                    But fine. If you don't want to answer, I can't exactly force you to.
             ]],
             OPT_ASK_ABOUT = "Ask {primary_advisor} about stance taking",
             DIALOG_ASK_ABOUT = [[
@@ -338,19 +374,38 @@ QDEF:AddConvo("meet_opposition", "opposition")
                     Wait, what should I say?
                     I feel like I am compelled to take a side here, and I don't know the consequences of doing that.
                 primary_advisor:
-                    !shrug
-                    Well, as a politician, you will often face dilemma like this where you are compelled to take a side.
+                    {not advisor_manipulate?
+                        !shrug
+                        Well, as a politician, you will often face dilemma like this where you are compelled to take a side.
+                    }
+                    {advisor_manipulate?
+                        !shrug
+                        Well, logically speaking, politics is the resolution of conflicts.
+                        Naturally, when conflicts like this arise, you are usually compelled to take a side.
+                    }
                     Regardless of which side you pick, it's important for you to know what it entails.
-                    !give
-                    Here's a brief explanation on what taking a stance means.
+                    {not advisor_hostile?
+                        !give
+                        Here's a brief explanation on what taking a stance means.
+                    }
+                    {advisor_hostile?
+                        !permit
+                        Well, I'm an expert at taking stances. Here's what you should know.
+                    }
             ]],
             DIALOG_ASK_ABOUT_PST = [[
                 primary_advisor:
                     Remember, while I may have personal opinions on some topics, it's ultimately your campaign, and your decisions to make.
                     I will support you, regardless of what stances you take.
                     !cruel
+                {not advisor_diplomacy?
                     As long as you take the right ones, of course.
+                }
+                {advisor_diplomacy?
+                    As long as it's based, of course.
+                }
                 player:
+                    !sigh
                     Of course.
                 agent:
                     !right
