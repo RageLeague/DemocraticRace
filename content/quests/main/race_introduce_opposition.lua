@@ -481,14 +481,40 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 I strongly believe that {oppo_stance#pol_stance} can improve Havarian lives significantly.
             player:
                 Are you sure that isn't a ruse to get more power?
-            agent:
-                !placate
-                I assure you, the power is just a mean to an end.
-                Ultimately, the goal is make Havaria better than before.
-            player:
-                Right.
-                !happy
-                Totally.
+            {kalandra?
+                agent:
+                    The power, ultimately, belongs to the people.
+                    I am simply representing the will of the people, that's all.
+                player:
+                    !handwave
+                    Sure, sure. That's what they all say.
+            }
+            {andwanette?
+                agent:
+                    !handwave
+                    Oh please, darling. There's no class in that line of thinking.
+                    Power and influence? That's not my style.
+                player:
+                    !dubious
+                    Somehow I find that hard to believe.
+            }
+            {murder_bay_admiralty_contact?
+                agent:
+                    Don't be a fool, {player}. Everyone wants power.
+                    I just want to make Havaria a more secure place while doing so.
+                player:
+                    Well, I appreciate the straightforwardness at least.
+            }
+            {not (kalandra or andwanette or murder_bay_admiralty_contact)?
+                agent:
+                    !placate
+                    I assure you, the power is just a mean to an end.
+                    Ultimately, the goal is make Havaria better than before.
+                player:
+                    Right.
+                    !happy
+                    Totally.
+            }
         ]],
         nil,
 
@@ -496,15 +522,57 @@ QDEF:AddConvo("meet_opposition", "opposition")
         "Ask about {agent}'s plan",
         [[
             player:
-                How do you plan to become elected?
-            agent:
-                I mean, same as everyone else.
-            player:
-                Can you give a more detailed answer?
-            agent:
-                Why should I? You're my opponent.
-            player:
-                Fair enough.
+                How do you plan to become elected? How are you going to gather the voters?
+            {andwanette?
+                agent:
+                    !handwave
+                    It's simple, darling.
+                    When in doubt, people will vote for the candidate that they recognize.
+                    !permit
+                    Given that I am a huge celebrity already in the Pearl, many people will vote for me simply because they are a huge fan.
+                player:
+                    !dubious
+                    This sounds less of an election and more of a popularity contest.
+                agent:
+                    !handwave
+                    Oh please, darling. That's how <i>all</> elections work.
+            }
+            {spark_contact?
+                agent:
+                    It's easy.
+                    People don't like paying taxes. I promised them that I will reduce their taxes.
+                    Naturally, people will vote for me to reduce their taxes so they get more money in their pockets.
+                player:
+                    Surely it can't be that easy.
+                {agreed?
+                    player:
+                        I mean, I agree with your stance, but surely that can't be enough to win the votes?
+                    agent:
+                        Come on, {player}. Who actually wants to pay taxes?
+                        Even the Rise don't.
+                    player:
+                        I can see your point.
+                }
+                {not agreed?
+                    player:
+                        I mean, you can't run a country without money? How are you going to get those without taxes?
+                    agent:
+                        Well, they don't need to know that.
+                        What they do know is that I promised to cut their taxes, and I am going to do exactly that.
+                    player:
+                        That's... kind of devious.
+                }
+            }
+            {not (andwanette or spark_contact)?
+                agent:
+                    I mean, same as everyone else.
+                player:
+                    Can you give a more detailed answer?
+                agent:
+                    Why should I? You're my opponent.
+                player:
+                    Fair enough.
+            }
         ]],
         nil,
 
