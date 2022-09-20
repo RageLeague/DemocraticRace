@@ -298,11 +298,62 @@ QDEF:AddConvo("meet_opposition", "opposition")
             ]],
             OPT_AGREE = "Agree",
             DIALOG_AGREE = [[
+                {(player_sal and kalandra)?
+                    player:
+                        Of course.
+                        !spit
+                        I'm never going to forget what they did to my parents. What they did to me.
+                    agent:
+                        !agree
+                        I see you still got the fighting spirit inside you.
+                        !permit
+                        Well, you're in luck. The upcoming election will change everything.
+                        !sigh
+                        A shame that only one of us can win the election.
+                    player:
+                        !permit
+                        Don't worry. I would be happy if either one of us win.
+                    agent:
+                        !agree
+                        My thoughts exactly.
+                }
+                {(player_rook and spark_contact)?
+                    player:
+                        !thought
+                        I have to say, for such a... stellar performance, I find myself agreeing with you.
+                    agent:
+                        !happy
+                        That's the spirit, old chum!
+                        !handwring
+                        So what's the plan? A couple cups of booze and some finger foods back at HQ?
+                    player:
+                        Well, I hate to miss out on that, but I've got to do more work campaigning.
+                    agent:
+                        !sigh
+                        Ah, that's truly a shame.
+                        Oh well, maybe another time.
+                }
+                {(player_smith and vixmalli)?
+                    player:
+                        !happy
+                        Hope you don't mind there being <i>two</> Heshians on the ballot, there.
+                    agent:
+                        Really? You believe in enforcing Hesh's will?
+                        !angry
+                        Or are you just trying to take my voter base?
+                    player:
+                        !shrug
+                        Eh, make what you will. I'm just telling you how I think.
+                    agent:
+                        !facepalm
+                        Still, it seems like you have finally waken up and found purpose in your life.
+                }
                 {(player_arint and spark_contact)?
                     player:
                         I do have to say that your opinion is agreeable to me.
                     agent:
-                        You don't need to placate me.
+                        !crossed
+                        You don't need to patronize me.
                         Like I said, I am running the campaign all by myself, and I don't need your approval or help.
                     player:
                         !sigh
@@ -310,7 +361,7 @@ QDEF:AddConvo("meet_opposition", "opposition")
                     agent:
                         Nope.
                 }
-                {not (player_arint and spark_contact)?
+                {not (player_arint and spark_contact) or (player_smith and vixmalli) or (player_rook and spark_contact) or (player_sal and kalandra)?
                     player:
                         Believe me, friend. I'm a firm believer in your ideology.
                     agent:
@@ -323,6 +374,57 @@ QDEF:AddConvo("meet_opposition", "opposition")
             ]],
             OPT_DISAGREE = "Disagree",
             DIALOG_DISAGREE = [[
+                {(player_sal and kalandra)?
+                    player:
+                        !bashful
+                        Well, I hate to say this, but I can't agree.
+                        No matter what we try to do, we can't change how the world works.
+                    agent:
+                        !sigh
+                        I see that you have lost the fire in your eyes.
+                        Can't fault you for that, though. Life hits us all hard.
+                        !permit
+                        But if Havaria is going to change, there is no better time than now, during the election.
+                    * It's true. No matter what happens during the election, Havaria will change forever.
+                    * The best thing for you to do is to make sure that when that happens, you are the one in charge.
+                    player:
+                        !bashful
+                        Thanks for the kind words. I will think about it.
+                }
+                {(player_rook and spark_contact)?
+                    player:
+                        Ah, it seems our views have drifted apart.
+                    agent:
+                        !shrug
+                        It is what it is, old sport. No hard feelings.
+                        Course, doesn't mean I can support you, what with you being the enemy and all.
+                    player:
+                        !wink
+                        That's the thing with enemies. You remember the academy, right?
+                    agent:
+                        !chuckle
+                        Oh ho ho! Smart, old sport. We'll see each other on the debate floor then?
+                    player:
+                        !nudge_nudge
+                        If you make it, of course.
+                }
+                {(player_smith and vixmalli)?
+                    player:
+                        !crossed
+                        Well, I'm sure you'll be so happy to know I don't believe in that stuff!
+                    agent:
+                        !disappoint
+                        Why am I surprised? You are always a drunk child, with no purpose or calling.
+                        !angry_point
+                        Well, I hope you remember who wrote half of your essays to get you through school.
+                    player:
+                        !angry_shrug
+                        Hey! Mullifee helped too, you can't take all the credit for that.
+                    agent:
+                        !crossed
+                        Hmph. Hope she's willing to help write your speeches too.
+                    * She isn't. That's your <i>advisor's</> job.
+                }
                 {(player_arint and spark_contact)?
                     player:
                         With all due respect, {agent.gender:sir|ma'am|manager}, I'm afraid that is not going to work.
@@ -337,7 +439,7 @@ QDEF:AddConvo("meet_opposition", "opposition")
                         Well, I want to know your opinion on the matter, of course.
                         And I see now that we are going to face each other eventually.
                 }
-                {not (player_arint and spark_contact)?
+                {not (player_arint and spark_contact) or (player_smith and vixmalli) or (player_rook and spark_contact) or (player_sal and kalandra)?
                     player:
                         I can't say I do.
                     agent:
