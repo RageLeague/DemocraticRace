@@ -329,8 +329,9 @@ QDEF:AddConvo("meet_opposition", "opposition")
                     player:
                         Well, I hate to miss out on that, but I've got to do more work campaigning.
                     agent:
-                        !point
-                        Ah, right. Well, the offer's there if you want it.
+                        !sigh
+                        Ah, that's truly a shame.
+                        Oh well, maybe another time.
                 }
                 {(player_smith and vixmalli)?
                     player:
