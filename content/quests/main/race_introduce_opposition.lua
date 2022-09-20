@@ -352,6 +352,7 @@ QDEF:AddConvo("meet_opposition", "opposition")
                     player:
                         I do have to say that your opinion is agreeable to me.
                     agent:
+                        !crossed
                         You don't need to patronize me.
                         Like I said, I am running the campaign all by myself, and I don't need your approval or help.
                     player:
