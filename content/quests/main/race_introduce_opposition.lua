@@ -298,6 +298,50 @@ QDEF:AddConvo("meet_opposition", "opposition")
             ]],
             OPT_AGREE = "Agree",
             DIALOG_AGREE = [[
+                {(player_sal and kalandra)?
+                    player:
+                        !salute
+                        From the mud we'll Rise, {agent}.
+                    agent:
+                        !happy
+                        And my, how much we've already Risen. Running for leadership of all of Havaria.
+                    player:
+                        !bashful
+                        Heh, yeah. Who would've expected two little boglings like us would get here?
+                    agent:
+                        !wink
+                        I had my hunches you'd make it far. 
+                }
+                {(player_rook and spark_contact)?
+                    player:
+                        !thought
+                        I have to say, for such a...stellar performance, I find myself agreeing with you.
+                    agent:
+                        !happy
+                        That's the spirit, old chum!
+                        !handwring
+                        So what's the plan? A couple cups of booze and some finger foods back at HQ?
+                    player:
+                        Well, I hate to miss out on that, but I've got to do more work campaigning.
+                    agent:
+                        !point
+                        Ah, right. Well, the offer's there if you want it.
+                }
+                {(player_smith and vixmalli)?
+                    player:
+                        !happy
+                        Hope you don't mind there being <i>two</> heshians on the ballot, there.
+                    agent:
+                        Really? You believe in protecting Hesh's relics?
+                        !angry
+                        Or are you just trying to take my voter base?
+                    player:
+                        !bashful
+                        Eh...which one would make you less angry?
+                    agent:
+                        !facepalm
+                        At least you aren't being heretical. We're making progress on you.
+                }
                 {(player_arint and spark_contact)?
                     player:
                         I do have to say that your opinion is agreeable to me.
@@ -310,7 +354,7 @@ QDEF:AddConvo("meet_opposition", "opposition")
                     agent:
                         Nope.
                 }
-                {not (player_arint and spark_contact)?
+                {not (player_arint and spark_contact) or (player_smith and vixmalli) or (player_rook and spark_contact) or (player_sal and kalandra)?
                     player:
                         Believe me, friend. I'm a firm believer in your ideology.
                     agent:
@@ -323,6 +367,55 @@ QDEF:AddConvo("meet_opposition", "opposition")
             ]],
             OPT_DISAGREE = "Disagree",
             DIALOG_DISAGREE = [[
+                --Sal is rolling with the punches as life moves foward.
+                {(player_sal and kalandra)?
+                    player:
+                        !bashful
+                        Ah, well, time hasn't been great to me, {agent}.
+                        Times have changed, so do people. I'm just rolling with the punches here.
+                    agent:
+                        Hmm. Hate to see you think that.
+                        But I assume grifter work never paid well if you didn't help the winning side. 
+                    player:
+                        !shrug
+                        Never did. I've gotta eat, after all.
+                    agent:
+                        !chuckle
+                        Don't we all?
+                }
+                {(player_rook and spark_contact)?
+                    player:
+                        Ah, it seems our views have drifted apart.
+                    agent:
+                        !shrug
+                        It is what it is, old sport. No hard feelings.
+                        Course, doesn't mean I can support you, what with you being the enemy and all.
+                    player:
+                        !wink
+                        That's the thing with enemies. You remember the academy, right?
+                    agent:
+                        !chuckle
+                        Oh ho ho! Smart, old sport. We'll see each other on the debate floor then?
+                    player:
+                        !nudgenudge
+                        If you make it, of course.
+                }
+                {(player_smith and vixmalli)?
+                    player:
+                        !crossed
+                        Well, I'm sure you'll be so happy to know I don't believe in that stuff!
+                    agent:
+                        !dissapointed
+                        Why am I surprised? A heretic to the end.
+                        !angrypoint
+                        Well, I hope you remember who wrote half of your essays to get you through school.
+                    player:
+                        !angryshrug
+                        Hey! Mullifee helped too, you can't take all the credit for that.
+                    agent:
+                        !crossed
+                        Hmph. Hope she's willing to help write your speeches too.
+                }
                 {(player_arint and spark_contact)?
                     player:
                         With all due respect, {agent.gender:sir|ma'am|manager}, I'm afraid that is not going to work.
@@ -337,7 +430,7 @@ QDEF:AddConvo("meet_opposition", "opposition")
                         Well, I want to know your opinion on the matter, of course.
                         And I see now that we are going to face each other eventually.
                 }
-                {not (player_arint and spark_contact)?
+                {not (player_arint and spark_contact) or (player_smith and vixmalli) or (player_rook and spark_contact) or (player_sal and kalandra)?
                     player:
                         I can't say I do.
                     agent:
