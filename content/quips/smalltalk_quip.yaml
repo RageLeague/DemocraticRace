@@ -524,3 +524,12 @@ lines:
     player:
       !happy
       Good to hear my little bro's makin' friends.
+    agent:
+      !happy
+      Aww! Glad to see that you care about your brother so much!
+      It's so rare for people in Havaria to have a loving family!
+    {player_sober_today?
+      * For the record, you are incredibly mean to Theroux, with your constant bullying and dangerous pranks.
+      * Doesn't mean you don't care about him, but still, maybe you should actually start to be nice to him.
+      * Unless your shenanigans have already gotten him killed. Please don't tell me that.
+    }
