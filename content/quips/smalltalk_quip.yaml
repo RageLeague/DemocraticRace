@@ -436,3 +436,106 @@ lines:
         !happy
         Thanks. Glad to find another person who enjoys a good poetry.
     }
+- tags: [democratic_race, player_sal, laborer]
+  dialog:
+  - |
+    player:
+      You alright? You can't seem to bend your back well.
+    agent:
+      !permit
+      You ever just get that creak in your back? The one that just...
+    player:
+      !flinch
+      Been there, hauled that. Like a Crayote dancing on your spine.
+    agent:
+      !point
+      Exactly! Hesh, it's got me hurt somethin' fierce.
+    player:
+      !eureka
+      Well, if I remember right, there's a pressure point right here. If I just...
+    agent:
+      !flinch
+      Yeowch!
+      ...
+      !happy
+      Wow! I barely feel it anymore. Thanks, {player}!
+    player:
+      !wink
+      What can I say? When you've been on the derricks as long as I have, you learn a few tricks to keep yourself upright.
+    agent:
+      !placate
+      Whoa! You worked in the derricks?
+      No wonder I feel like out of all the candidates, you are the most down-to-earth one.
+- tags: [democratic_race, player_rook, spark_barons]
+  dialog:
+  - |
+    player:
+      !hips
+      Something's troubling you, my friend. What is it?
+    agent:
+      !sigh
+      I've been trying to iron out this bug for a while. Think you have an idea for it?
+    player:
+      !dubious
+      How hard is it to squish a bug? Can't you just hit it really hard?
+      Or, if it's like a flead queen, can't you just shoot it really hard?
+    agent:
+      Seems like there's some sort of misunderstanding.
+      I am talking about a computer bug. You can't really hit it hard without breaking expensive machineries.
+    player:
+      !dubious
+      A... computer bug?
+    agent:
+      !permit
+      Yeah. Says something about an error in the manifest organizer.
+    player:
+      You... don't just have a clerk for that?
+    agent:
+      !shrug
+      Why would we? We have computers.
+    player:
+      !dubious
+      What's a..."computer", if you could elaborate?
+    agent:
+      !facepalm
+      Oh Hesh. We have a lot to talk about.
+- tags: [democratic_race, player_smith, cult_of_hesh]
+  dialog:
+  - |
+    player:
+      !intrigue
+      So how's my brother been treating you guys?
+    agent:
+      I would not think it wise to talk about the Cardinal like that.
+    {player_drunk?
+      player:
+        !drunk
+        Whoa! That's pretty impressive! I didn't know Theroux also became a Cardinal!
+      agent:
+        !dubious
+        Who...?
+        !happy
+        Oh, Theroux, of course.
+    }
+    {not player_drunk?
+      player:
+        !placate
+        No, I mean my other brother.
+      agent:
+        !happy
+        Ah! You meant Theroux.
+    }
+    agent:
+      Real peach when he comes by. Doesn't come often though.
+    player:
+      !happy
+      Good to hear my little bro's makin' friends.
+    agent:
+      !happy
+      Aww! Glad to see that you care about your brother so much!
+      It's so rare for people in Havaria to have a loving family!
+    {player_sober_today?
+      * For the record, you are incredibly mean to Theroux, with your constant bullying and dangerous pranks.
+      * Doesn't mean you don't care about him, but still, maybe you should actually start to be nice to him.
+      * Unless your shenanigans have already gotten him killed. Please don't tell me that.
+    }
