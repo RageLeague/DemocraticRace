@@ -432,6 +432,7 @@ lines:
     }
 - tags: [democratic_race, player_sal, laborer]
   dialog:
+  - |
     agent:
       !injured
       You ever just get that creak in your back? The one that just...
@@ -452,44 +453,62 @@ lines:
       Wow! I barely feel it anymore. Thanks, {player}!
     player:
       !wink
-      Never too late to teach an old Ik-derrick new tricks.
+      What can I say? When you've been on the derricks as long as I have, you learn a few tricks to keep yourself upright.
+    agent:
+      !placate
+      Whoa! You worked in the derricks?
+      No wonder I feel like out of all the candidates, you are the most down-to-earth one.
 - tags: [democratic_race, player_rook, spark_barons]
   dialog:
+  - |
     agent:
-      !angry
-      I've been trying to iron out this Computer bug for a while. Think you have an idea for it?
+      !sign
+      I've been trying to iron out this computer bug for a while. Think you have an idea for it?
     player:
-      !question
-      Computer...bug?
+      !dubious
+      Computer... bug?
     agent:
       !permit
-      Yeah. Says something about an error in the manifest organizer. 
+      Yeah. Says something about an error in the manifest organizer.
     player:
-      You...don't just have a clerk for that?
+      You... don't just have a clerk for that?
     agent:
-      !question
+      !shrug
       Why would we? We have computers.
     player:
-      What's a..."Computer", if you could elaborate.
+      !dubious
+      What's a..."computer", if you could elaborate?
     agent:
       !facepalm
-      Oh dear Hesh, we have a lot to talk about.
+      Oh Hesh. We have a lot to talk about.
 - tags: [democratic_race, player_smith, cult_of_hesh]
   dialog:
+  - |
     player:
       !intrigue
       So how's my brother been treating you guys?
     agent:
       I would not think it wise to talk about the Cardinal like that.
-    player:
-      !crossed
-      ...
+    {player_drunk?
+      player:
+        !drunk
+        Whoa! That's pretty impressive! I didn't know Theroux also became a Cardinal!
+      agent:
+        !dubious
+        Who...?
+        !happy
+        Oh, Theroux, of course.
+    }
+    {not player_drunk?
+      player:
+        !placate
+        No, I mean my other brother.
+      agent:
+        !happy
+        Ah! You meant Theroux.
+    }
     agent:
-      ...
-      !happy
-      Oh! You meant Theroux.
       Real peach when he comes by. Doesn't come often though.
     player:
       !happy
       Good to hear my little bro's makin' friends.
-      
