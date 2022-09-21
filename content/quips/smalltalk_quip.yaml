@@ -430,3 +430,66 @@ lines:
         !happy
         Thanks. Glad to find another person who enjoys a good poetry.
     }
+- tags: [democratic_race, player_sal, laborer]
+  dialog:
+    agent:
+      !injured
+      You ever just get that creak in your back? The one that just...
+    player:
+      !flinch
+      Been there, hauled that. Like a Crayote dancing on your spine.
+    agent:
+      !point
+      Exactly! Hesh, it's got me hurt somethin' fierce.
+    player:
+      !eureka
+      Well, if I remember right, there's a pressure point right here. If I just...
+    agent:
+      !flinch
+      Yeowch!
+      ...
+      !happy
+      Wow! I barely feel it anymore. Thanks, {player}!
+    player:
+      !wink
+      Never too late to teach an old Ik-derrick new tricks.
+- tags: [democratic_race, player_rook, spark_barons]
+  dialog:
+    agent:
+      !angry
+      I've been trying to iron out this Computer bug for a while. Think you have an idea for it?
+    player:
+      !question
+      Computer...bug?
+    agent:
+      !permit
+      Yeah. Says something about an error in the manifest organizer. 
+    player:
+      You...don't just have a clerk for that?
+    agent:
+      !question
+      Why would we? We have computers.
+    player:
+      What's a..."Computer", if you could elaborate.
+    agent:
+      !facepalm
+      Oh dear Hesh, we have a lot to talk about.
+- tags: [democratic_race, player_smith, cult_of_hesh]
+  dialog:
+    player:
+      !intrigue
+      So how's my brother been treating you guys?
+    agent:
+      I would not think it wise to talk about the Cardinal like that.
+    player:
+      !crossed
+      ...
+    agent:
+      ...
+      !happy
+      Oh! You meant Theroux.
+      Real peach when he comes by. Doesn't come often though.
+    player:
+      !happy
+      Good to hear my little bro's makin' friends.
+      
