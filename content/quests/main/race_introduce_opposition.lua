@@ -665,6 +665,36 @@ QDEF:AddConvo("meet_opposition", "opposition")
                         That's... kind of devious.
                 }
             }
+            {kalandra?
+                agent:
+                    !hips
+                    Of course I have a plan.
+                    Why do you think I pushed so hard for an election in the first place?
+                player:
+                    !surprised
+                    Wait, the election was your idea?
+                agent:
+                    !shrug
+                    Well, not necessarily. But I am a huge advocate for it.
+                    A huge reason is that the laborers outnumber our oppressors by a lot.
+                    If I can get all the laborers by my side in the election, the revolution will surely succeed.
+                {player_sal?
+                    player:
+                        Isn't that what our parents said ten years ago?
+                        Before, well, you know.
+                    agent:
+                        But this time, it's going to be different.
+                        Democracy is a way to give the people a voice, and I will make sure their voices get heard.
+                }
+                {not player_sal?
+                    player:
+                        Yeah, but how are you confident that every laborer has the same opinion?
+                        Most laborers I talk to don't seem like the revolutionary type.
+                    agent:
+                        They don't seem like it because they fear of speaking out against the establishment.
+                        But with the election, they can freely express their true feeling without fear of retaliation.
+                }
+            }
             {not (andwanette or spark_contact)?
                 agent:
                     I mean, same as everyone else.
