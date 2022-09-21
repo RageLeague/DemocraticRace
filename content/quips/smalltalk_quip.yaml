@@ -433,8 +433,10 @@ lines:
 - tags: [democratic_race, player_sal, laborer]
   dialog:
   - |
+    player:
+      You alright? You can't seem to bend your back well.
     agent:
-      !injured
+      !permit
       You ever just get that creak in your back? The one that just...
     player:
       !flinch
@@ -461,12 +463,22 @@ lines:
 - tags: [democratic_race, player_rook, spark_barons]
   dialog:
   - |
+    player:
+      !hips
+      Something's troubling you, my friend. What is it?
     agent:
-      !sign
-      I've been trying to iron out this computer bug for a while. Think you have an idea for it?
+      !sigh
+      I've been trying to iron out this bug for a while. Think you have an idea for it?
     player:
       !dubious
-      Computer... bug?
+      How hard is it to squish a bug? Can't you just hit it really hard?
+      Or, if it's like a flead queen, can't you just shoot it really hard?
+    agent:
+      Seems like there's some sort of misunderstanding.
+      I am talking about a computer bug. You can't really hit it hard without breaking expensive machineries.
+    player:
+      !dubious
+      A... computer bug?
     agent:
       !permit
       Yeah. Says something about an error in the manifest organizer.
