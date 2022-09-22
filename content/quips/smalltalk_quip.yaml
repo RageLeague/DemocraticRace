@@ -499,6 +499,32 @@ lines:
     agent:
       !facepalm
       Oh Hesh. We have a lot to talk about.
+- tags: [democratic_race, player_rook, jakes]
+  dialog:
+  - |
+    player:
+      !salute
+      Hail, {agent}. I hope my package is here on time.
+    agent:
+      !cagey
+      Oh, yeah. The package. Heard about it down by the docks, so I got it on me.
+    player:
+      It should already be paid for, right?
+    agent:
+      Yep. All paid for by-
+    player:
+      !handwring
+      That doesn't matter. Just give me the goods.
+      !take
+    agent:
+      !give
+      Don't know what kinda person buys mustache cream from Deltree when there's local sources.
+    player:
+      !crossed
+      I've got my reasons. You've got your money.
+    agent:
+      !shrug
+      If you say so. Pleasure doin' business.
 - tags: [democratic_race, player_smith, cult_of_hesh]
   dialog:
   - |
@@ -539,3 +565,30 @@ lines:
       * Doesn't mean you don't care about him, but still, maybe you should actually start to be nice to him.
       * Unless your shenanigans have already gotten him killed. Please don't tell me that.
     }
+- tags: [democratic_race, player_smith, admiralty]
+  dialog:
+  - |
+    player:
+      !greeting
+      Hey, {agent}! I've got some free time. What say you and I go get some drinks and throw rocks at Heshbladders?
+    agent:
+      !salute
+      Sorry, {player}. Captain's orders.
+    {player_drunk?
+      player:
+        Aw, c'mon! It'll be fun! You switches aren't <i>that</> opposed to fun, are ya?
+    }
+    {not player_drunk?
+      player:
+        !dubious
+        Aw, come on. She can't be that uptight?
+    }
+    agent:
+      !shrug
+      Well, technically the orders are just "don't go faffing about with {player} until the election's over" so my hands are tied.
+    player:
+      !handwring
+      But after the election?
+    agent:
+      !wink
+      I'm all yours.
