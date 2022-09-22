@@ -707,13 +707,26 @@ QDEF:AddConvo("meet_opposition", "opposition")
             }
             {not (andwanette or spark_contact or kalandra or murder_bay_bandit_contact)?
                 agent:
-                    I mean, same as everyone else.
+                    Why do you think I will answer that question?
                 player:
-                    Can you give a more detailed answer?
+                    !bashful
+                    I don't know? Just trying to start a conversation, that's all.
                 agent:
-                    Why should I? You're my opponent.
+                    !crossed
+                    By asking for my campaign strategy? When we both know that we are opponents in the election.
+                {agreed?
+                    And us agreeing on one particular topic doesn't change that.
+                }
+                    No. I'm not going to give you free information so you can use it against me.
                 player:
-                    Fair enough.
+                {(player_smith and vixmalli)?
+                    !sigh
+                    You never change, Vix.
+                }
+                {not (player_smith and vixmalli)?
+                    !placate
+                    Geez. I get your point.
+                }
             }
         ]],
         nil,
