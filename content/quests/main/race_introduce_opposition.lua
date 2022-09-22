@@ -603,7 +603,8 @@ QDEF:AddConvo("meet_opposition", "opposition")
             {murder_bay_admiralty_contact?
                 agent:
                     Don't be a fool, {player}. Everyone wants power.
-                    I just want to make Havaria a more secure place while doing so.
+                    I just want to make my job more interesting.
+                    And if Havarians feel safer because of my actions? Then that's just added bonus.
                 player:
                     Well, I appreciate the straightforwardness at least.
             }
@@ -695,7 +696,20 @@ QDEF:AddConvo("meet_opposition", "opposition")
                         But with the election, they can freely express their true feeling without fear of retaliation.
                 }
             }
-            {not (andwanette or spark_contact)?
+            {murder_bay_bandit_contact?
+                player:
+                    I mean, how are you going to convince the voters to vote for the leader of Spree?
+                agent:
+                    !thought
+                    Hah, I guess my reputation precedes me, given that I'm the Scourge of Murder Bay, after all.
+                    But in this election, any reputation is good reputation.
+                    Besides, I'm offering a policy that every Havarian who is worth their salt couldn't refuse: full Havarian independence.
+                    No more Admiralty's quasi-legal status. No more Deltrean colonialism.
+                    The Havarian people will rule themselves.
+                player:
+                    I do have to say, that certainly sounds appealing.
+            }
+            {not (andwanette or spark_contact or kalandra or murder_bay_bandit_contact)?
                 agent:
                     I mean, same as everyone else.
                 player:
