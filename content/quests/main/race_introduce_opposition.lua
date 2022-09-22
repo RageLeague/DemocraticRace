@@ -700,14 +700,10 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 player:
                     I mean, how are you going to convince the voters to vote for the leader of Spree?
                 agent:
-                    !thought
-                    Hah, I guess my reputation precedes me, given that I'm the Scourge of Murder Bay, after all.
-                    But in this election, any reputation is good reputation.
-                    Besides, I'm offering a policy that every Havarian who is worth their salt couldn't refuse: full Havarian independence.
-                    No more Admiralty's quasi-legal status. No more Deltrean colonialism.
-                    The Havarian people will rule themselves.
+                    If they know what's good for them, they will vote for the person who promises them full Havaria independence.
+                    Even if that person is the Scourge of Murder Bay {agent.self}.
                 player:
-                    I do have to say, that certainly sounds appealing.
+                    Ah.
             }
             {not (andwanette or spark_contact or kalandra or murder_bay_bandit_contact)?
                 agent:
