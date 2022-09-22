@@ -508,10 +508,13 @@ lines:
     agent:
       !cagey
       Oh, yeah. The package. Heard about it down by the docks, so I got it on me.
-      Prepaid, right?
+    player:
+      It should already be paid for, right?
+    agent:
+      Yep. All paid for by-
     player:
       !handwring
-      All on the Agency's dollar. Hand it over.
+      That doesn't matter. Just give me the goods.
       !take
     agent:
       !give
@@ -582,7 +585,7 @@ lines:
     }
     agent:
       !shrug
-      Well, technically the orders are just "Don't go faffing about with Smith until the Election's over" so my hands are tied.
+      Well, technically the orders are just "don't go faffing about with {player} until the election's over" so my hands are tied.
     player:
       !handwring
       But after the election?
