@@ -881,34 +881,46 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
     :AskAboutHubConditions("STATE_QUESTIONS",
     {
         nil,
-        "Ask about opposition",
+        "Ask about oppositions",
         [[
             player:
-                What does it mean for me now that there are these oppositions?
+                I didn't know there are so many strong opponents also running for leadership! What should we do about them?
             agent:
-                It means that they will also running for president, pulling votes that would otherwise be yours to them.
-                Since everyone can only vote one person at a time, more oppositions means less votes for you.
-            player:
-                What should I do to combat this?
-            agent:
-                You need to eliminate the oppositions.
-            player:
-                You want me to kill them?
-            agent:
-                !placate
-                What? Of course not.
-            {not advisor_manipulate?
-                As the campaign goes on, some people will naturally drop out because they don't have enough support.
-                If you can ally with them, their voters will vote for you if their primary candidate drops out.
-            }
+                !shrug
+                Right now? There's not much you can do in particular.
             {advisor_manipulate?
-                Logically speaking, if someone don't have enough support, they have no chance at winning.
-                And let's say, hypothetically, that you have similar ideology with said candidate.
-                Then, logically, their voters will vote for the next best candidate that is most likely to win.
-                It's called Strategic Voting.
-            }
+                Logically speaking, focusing on your campaign and standing out will improve the chance of people voting for you.
+                But hypothetically, if you know everything about your opponents.
+                Their platforms, their ideals, and their strategies.
+                Then, wouldn't you agree that when you finally face one of them during a debate, you will stand a better chance?
             player:
-                That sounds like a much better plan.
+                !shrug
+                I guess so?
+            }
+            {advisor_diplomacy?
+                As long as you stay based and appeal to the people, you can win this.
+                Meanwhile, you should learn more about your fellow candidates.
+                You never know when the personal info of one of your opponents will come in handy during a debate.
+            player:
+                !dubious
+                That's one way to go about it.
+            }
+            {not (advisor_manipulate or advisor_diplomacy)?
+                You should keep gathering support.
+                On the other hand, you should learn more about your opponent.
+                That way, when you eventually faces them in a debate, you will know what to say.
+            player:
+                !agree
+                Sounds like a plan.
+            }
+            agent:
+                You can talk to {opposition} right now and see what you can learn about {opposition.himher}.
+            {advisor_hostile?
+                Of course, nobody knows more about your opponents better than me, so you should ask me about them.
+            }
+            {not advisor_hostile?
+                If you want me to give a summary of your opponents, though, you can ask me.
+            }
         ]],
         nil,
 
