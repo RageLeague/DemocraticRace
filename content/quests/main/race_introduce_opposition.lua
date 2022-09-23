@@ -946,18 +946,49 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         "Ask about the Admiralty candidate",
         [[
             player:
+                !interest
                 I'm assuming the Admiralty is surely running?
             agent:
+                !agree
                 Of course.
+                !permit
                 Their candidate is Oolo Ollowano, an officer from Murder Bay.
             player:
+                !thought
                 Why is she running for president?
+            {player_smith?
+                !crossed
+                More importantly, why isn't Mullifee running?
+            agent:
+                !shrug
+                No idea. You need to ask her personally, probably.
+                Probably they figured that the Admiralty only needs one candidate, and it's Oolo.
+            player:
+                !sigh
+                It's such a shame, though. Mullifee would probably be a great candidate.
+            agent:
+                !handwave
+                Anyway, you know how the Admiralty is.
+            }
+            {not player_smith?
             agent:
                 !handwave
                 You know how the Admiralty is.
-                They want to maintain control in Havaria.
-                As such, they are running on the platform of <!pol_stance_security_2>Universal Security</>, where every person has access to Admiralty protection.
-                It will be popular among Civilians and the Admiralty, of course. But it will be very unpopular with people who dislike them or their rivals.
+            }
+                They want to completely control Havaria by themselves, instead of the quasi-legal status they have currently.
+                As such, they are pushing really hard on <!pol_stance_security_2>Universal Security</>, where every person is protected by the Admiralty.
+                !point
+                Whether you like it or not.
+            player:
+                !thought
+                That sounds really sketchy, but I can see the appeal to some people.
+            {advisor_diplomacy?
+            agent:
+                Although... From the looks of things, Oolo seems to have a particular interest in this platform, even more so than your standard political reason.
+                !shrug
+                Maybe she is interested in more than just a simple power grab?
+                I can respect such based behaviour, even though I don't agree with what she is doing.
+            }
         ]],
         nil,
         nil,
