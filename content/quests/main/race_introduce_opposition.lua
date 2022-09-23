@@ -947,7 +947,7 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         [[
             player:
                 !interest
-                I'm assuming the Admiralty is surely running?
+                I'm assuming the Admiralty is definitely running?
             agent:
                 !agree
                 Of course.
@@ -955,7 +955,7 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 Their candidate is Oolo Ollowano, an officer from Murder Bay.
             player:
                 !thought
-                Why is she running for president?
+                Why is Oolo running for president?
             {player_smith?
                 !crossed
                 More importantly, why isn't Mullifee running?
@@ -984,7 +984,7 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 That sounds really sketchy, but I can see the appeal to some people.
             {advisor_diplomacy?
             agent:
-                Although... From the looks of things, Oolo seems to have a particular interest in this platform, even more so than your standard political reason.
+                Although... From the looks of things, Oolo seems to have a particular interest in fighting against crime in Havaria, even more so than your standard political reason.
                 !shrug
                 Maybe she is interested in more than just a simple power grab?
                 I can respect such based behaviour, even though I don't agree with what she is doing.
@@ -995,17 +995,32 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         "Ask about the Spree candidate",
         [[
             player:
+                !interest
                 Do people really want a Spree to become the president?
             agent:
-                The entire point of the Truce Deal is to allow anyone to run, regardless of their background.
-                Anyway, Nadan Undar, the leader, is their candidate.
+                !shrug
+                Well, half of the population is probably some sort of criminal, and the other half is another sort of criminal, but less blatant.
+            {advisor_manipulate?
+                Besides, logically speaking, the background of the candidate should matter less than the platform they run on.
             player:
-                What is he running on?
+                !agree
+                Fair point.
+            }
+            {advisor_diplomacy?
+                Besides, if the candidate is based, being a criminal lord would just add to the basedness factor.
+            player:
+                !dubious
+                You've lost me.
+            }
+            {not (advisor_manipulate or advisor_diplomacy)?
+                As long as the platform is sound, who cares if the candidate is a Spree?
+            player:
+                !agree
+                Fair point.
+            }
             agent:
-                He's running on <!pol_stance_independence_2>Havarian Independence</>.
-                The Spree likes it because they can be more lawless, but it is popular among other voting groups as well.
-                People are fed up with Deltree's reach, especially towards the Admiralty for controlling their lives.
-                Although the more prestigious people would rather have Havaria be totally annexed.
+                Anyway, Nadan Undar, the leader, is their candidate.
+                He promises <!pol_stance_independence_2>full independence of Havaria</> from the Deltrean empire.
         ]],
         nil,
         nil,
