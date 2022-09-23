@@ -829,12 +829,19 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                         We have a lot of similarities in terms of ideology. We could probably get along.
                     agent:
                         !agree
+                    {advisor_diplomacy?
+                        It's good that you found a fellow candidate who you can vibe with.
+                        But remember, no matter how based they seem, you are still political opponents.
+                    }
+                    {not advisor_diplomacy?
                         Glad you found a potential ally so quickly.
                         But remember, you are still political opponents, so don't get to attached to {opposition.himher}.
+                    }
+                        !permit
                         Eventually, only one of you can become the president, and it should be you.
                     player:
-                        !thought
-                        ...
+                        !hips
+                        I wouldn't have it any other way.
                     agent:
                         Still, it is good to find an ally if you can. You can't win this election alone.
                         You can ask {opposition} about potential alliances.
