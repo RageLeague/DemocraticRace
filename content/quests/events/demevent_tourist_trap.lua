@@ -98,7 +98,7 @@ QDEF:AddConvo()
                     Well, you see, uh... It is a very important question that we should ask ourselves often.
                 agent:
                     ...
-                    !facepalm
+                    !palm
                     You don't have a goal once you get elected, do you?
                 player:
                     !bashful

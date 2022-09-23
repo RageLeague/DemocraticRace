@@ -30,9 +30,9 @@ lines:
 - tags: [post_interview, dislikes_interview, disliked]
   dialog:
   - |
-    !facepalm
+    !palm
     My expectations for you was low, but that was something else.
-    
+
 - tags: [post_interview, dislikes_interview, liked]
   dialog:
   - |

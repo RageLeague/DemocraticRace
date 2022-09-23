@@ -151,7 +151,7 @@ Convo("DEM_ADMIRALTY_ARREST")
                 }
                 {not liked?
                     Guess {1#agent} just hands them out like lollipops, huh?
-                    !facepalm
+                    !palm
                     Fine, I'll do it.
                 }
             ]],

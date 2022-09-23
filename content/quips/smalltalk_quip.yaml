@@ -68,7 +68,7 @@ lines:
     agent:
       Uh... What?
     player:
-      !facepalm
+      !palm
       Just... I've spent too much time with someone, and now I'm starting to picking up his speech patterns.
     }
     {not primary_advisor_diplomacy?
@@ -497,7 +497,7 @@ lines:
       !dubious
       What's a..."computer", if you could elaborate?
     agent:
-      !facepalm
+      !palm
       Oh Hesh. We have a lot to talk about.
 - tags: [democratic_race, player_rook, jakes]
   dialog:

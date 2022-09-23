@@ -1126,7 +1126,7 @@ QDEF:AddConvo("rat_out_aftermath")
                     !point
                     That's a promise.
                 tei:
-                    !facepalm
+                    !palm
                     Look, you seem like you genuinely don't know, and you seem sincere enough.
                     I'll let you go this time, but don't do this again, alright?
                     I can't promise that I will be merciful next time, or anyone else for that matter.

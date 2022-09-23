@@ -557,7 +557,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                             Yeah, an assassin tried to kill {player}, but it seems like {agent.heshe} got away.
                     }
                     responder:
-                        !facepalm
+                        !palm
                         I hate it when that happens.
                         Of course someone will try to assassinate a candidate.
                         Why would my job be any easier?

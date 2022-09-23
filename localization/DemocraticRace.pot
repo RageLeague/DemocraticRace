@@ -2570,7 +2570,7 @@ msgstr ""
 
 #: CONVO.DEM_ADMIRALTY_ARREST.STATE_SELECT_METHOD.DIALOG_USE_AUTHORIZATION
 msgctxt "CONVO.DEM_ADMIRALTY_ARREST.STATE_SELECT_METHOD.DIALOG_USE_AUTHORIZATION"
-msgid "player:\nCan you do it?\nagent:\nI don't know. Can I?\nplayer:\n!point\nYou can. And you should. Considering it an order from {1#agent}.\nagent:\n{liked?\nOkay, I'll do it.\n}\n{not liked?\nGuess {1#agent} just hands them out like lolipops, huh?\n!facepalm\nFine, I'll do it.\n}"
+msgid "player:\nCan you do it?\nagent:\nI don't know. Can I?\nplayer:\n!point\nYou can. And you should. Considering it an order from {1#agent}.\nagent:\n{liked?\nOkay, I'll do it.\n}\n{not liked?\nGuess {1#agent} just hands them out like lolipops, huh?\n!palm\nFine, I'll do it.\n}"
 msgstr ""
 
 #: CONVO.DEM_ADMIRALTY_ARREST.STATE_SELECT_METHOD.DIALOG_USE_AUTHORIZATION_SELF
@@ -4060,7 +4060,7 @@ msgstr ""
 
 #: CONVO.RACE_DAY_1_SLEEP.STATE_ASSASSINATION.DIALOG_PST_FIGHT_SURRENDER
 msgctxt "CONVO.RACE_DAY_1_SLEEP.STATE_ASSASSINATION.DIALOG_PST_FIGHT_SURRENDER"
-msgid "agent:\n!injured\nplayer:\n!fight\nHad enough?\nagent:\nI see you...shook off the rust quite well.\nYou got me dead to rights here.\nplayer:\nYou put up a good fight. I'll give you that much.\nTell me, who sent you.\nagent:\nYou'll have to forgive me, but I can't disclose that.\nHow about this? You let me go, and I'll give you this graft.\nplayer:\n!left\nDeal. You did what you had to do, following with the contract. I respect that.\nNow scarper off before I change my mind.\n!exit\n* {agent} ran away, leaving you tired and hurt.\n{help_called?\n* It is not long before the responders arrive.\nresponder:\n!right\nWhat's going on?\nplayer:\nAn assassin tried to kill me, but {agent.heshe} got away before you can get here.\nresponder:\n!facepalm\nI hate it when that happens.\nOf course someone will try to assassinate a candidate.\nWhy would my job be any easier?\nplayer:\nUh... Aren't you going to chase after {agent.himher}?\nresponder:\nOh, yes. Of course. Good night and good luck.\n!exit\n}\n* Finally, after a long day, you're all by yourself, safe from assassinations.\n* Except this cool graft that {agent} dropped!\nplayer:\n!left\nSweet!"
+msgid "agent:\n!injured\nplayer:\n!fight\nHad enough?\nagent:\nI see you...shook off the rust quite well.\nYou got me dead to rights here.\nplayer:\nYou put up a good fight. I'll give you that much.\nTell me, who sent you.\nagent:\nYou'll have to forgive me, but I can't disclose that.\nHow about this? You let me go, and I'll give you this graft.\nplayer:\n!left\nDeal. You did what you had to do, following with the contract. I respect that.\nNow scarper off before I change my mind.\n!exit\n* {agent} ran away, leaving you tired and hurt.\n{help_called?\n* It is not long before the responders arrive.\nresponder:\n!right\nWhat's going on?\nplayer:\nAn assassin tried to kill me, but {agent.heshe} got away before you can get here.\nresponder:\n!palm\nI hate it when that happens.\nOf course someone will try to assassinate a candidate.\nWhy would my job be any easier?\nplayer:\nUh... Aren't you going to chase after {agent.himher}?\nresponder:\nOh, yes. Of course. Good night and good luck.\n!exit\n}\n* Finally, after a long day, you're all by yourself, safe from assassinations.\n* Except this cool graft that {agent} dropped!\nplayer:\n!left\nSweet!"
 msgstr ""
 
 #: CONVO.RACE_DAY_1_SLEEP.STATE_ASSASSINATION.GOAL_AWAIT_RESCUE
@@ -5335,7 +5335,7 @@ msgstr ""
 
 #: CONVO.TEA_WITH_BENEFACTOR_4.DIALOG_INTRO
 msgctxt "CONVO.TEA_WITH_BENEFACTOR_4.DIALOG_INTRO"
-msgid "player:\n!thought\nWell, it's worth a shot.\n!happy\nBest case scenario, free drinks.\nCan't see anything wrong with that.\n{has_primary_advisor?\nagent:\n!facepalm\nI can't believe that free drinks is only what you care about.\nAnyway, don't keep our host waiting!\n}"
+msgid "player:\n!thought\nWell, it's worth a shot.\n!happy\nBest case scenario, free drinks.\nCan't see anything wrong with that.\n{has_primary_advisor?\nagent:\n!palm\nI can't believe that free drinks is only what you care about.\nAnyway, don't keep our host waiting!\n}"
 msgstr ""
 
 #: CONVO.TEA_WITH_BENEFACTOR_5.DIALOG_INTRO
@@ -8860,7 +8860,7 @@ msgstr ""
 
 #: QUIPS.post_interview.dislikes_interview.disliked.1
 msgctxt "QUIPS.post_interview.dislikes_interview.disliked.1"
-msgid "!facepalm\nMy expectations for you was low, but that was something else."
+msgid "!palm\nMy expectations for you was low, but that was something else."
 msgstr ""
 
 #: QUIPS.post_interview.dislikes_interview.liked.1

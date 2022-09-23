@@ -345,7 +345,7 @@ QDEF:AddConvo("meet_opposition", "opposition")
                         !shrug
                         Eh, make what you will. I'm just telling you how I think.
                     agent:
-                        !facepalm
+                        !palm
                         Still, it seems like you have finally waken up and found purpose in your life.
                 }
                 {(player_arint and spark_contact)?
@@ -1021,6 +1021,8 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             agent:
                 Anyway, Nadan Undar, the leader, is their candidate.
                 He promises <!pol_stance_independence_2>full independence of Havaria</> from the Deltrean empire.
+            player:
+                !palm
         ]],
         nil,
         nil,
