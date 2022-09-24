@@ -1023,6 +1023,42 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 He promises <!pol_stance_independence_2>full independence of Havaria</> from the Deltrean empire.
             player:
                 !palm
+                Ugh. I know I'm supposed to be a politician and all, but geopolitics makes my head hurt.
+            agent:
+            {advisor_diplomacy?
+                Well, the Havarians are fed up with Deltrean overreach.
+                Havaria is the land of the free, after all, and it doesn't need the cringe Deltrean rule.
+            player:
+                !dubious
+                Since when is Havaria the land of the free?
+            }
+            {advisor_manipulate?
+                !sigh
+                Logically speaking, the people who supports him make no sense.
+                Having Deltrean control Havaria removes the legal gray area that causes criminals to become rampant.
+                If you are not a criminal, why would you support Havarian independence?
+                {pro_security?
+                    player:
+                        !permit
+                        You said so yourself, didn't you?
+                        Everyone in Havaria is some sort of criminal or the other.
+                    agent:
+                        !thought
+                        That's... true.
+                }
+                {not pro_security?
+                    player:
+                        !crossed
+                        Okay, I see why some people would like Havaria to be independent.
+                }
+            }
+            {advisor_hostile?
+                Well, nobody knows more about geopolitics more than me.
+                Which is why you should avoid it entirely. It's boring as Hesh.
+            player:
+                !interest
+                That's... unexpected of you.
+            }
         ]],
         nil,
         nil,
@@ -1030,9 +1066,11 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         [[
             {player_arint?
             player:
+                !interest
                 I'm assuming that Fellemo is running.
                 Is there anyone else from the Spark Baron running as well?
             agent:
+                !shrug
                 As far as I am aware, other than you and him, there is no one else from the Spark Baron running.
                 Seems you already know Fellemo, huh?
             player:
@@ -1041,30 +1079,66 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             }
             {not player_arint?
             player:
+                !interest
                 There must be someone from the Spark Barons running, right?
             agent:
                 !agree
                 There sure is.
                 Their candidate is Lellyn Fellemo, a retired Admiralty solider, who now is a regional officer managing Grout Bog.
-                !cagey
-                Although... if I'm honest, I am not sure if he is really a capable candidate.
-                He doesn't seem to have a concrete plan, and he doesn't seem to put a lot of work into the campaign.
+                {advisor_diplomacy?
+                    A based guy, I tell you.
+                * A great non-answer from {agent}. Classic.
+                }
+                {not advisor_diplomacy?
+                        !cagey
+                        Although... if I'm honest, I am not sure if he is really a capable candidate.
+                    player:
+                    {player_rook?
+                        !happy
+                        That's what he wants you to think.
+                    agent:
+                        !dubious
+                        Is he now?
+                    }
+                    {not player_rook?
+                        !shrug
+                        I don't know. I don't think anyone can get this far by being incompetent.
+                    agent:
+                        !thought
+                        Good point.
+                    }
+                }
             }
             player:
                 What's Fellemo's angle, then?
             agent:
                 He wants a <!pol_stance_fiscal_policy_-2>Laissez Faire</> approach to the economy.
-                Basically, the government leaves the economy alone by removing government services and taxes.
-                Of course, many people would want that, especially the Spark Barons.
-                They don't want their hard-earned money to go to leeches that is the state.
-                But it would mean that the government can't get much funding through taxes.
-                And I suppose can't get the help they need from the government, but that is the reality of Havaria.
-            player:
-                How does he plan to make Havaria function if he abolish taxes?
-            agent:
-                No clue.
-                You should ask him about it.
-                Although I doubt you will get a straight answer from him.
+                !permit
+                Generally speaking, he wants to cut taxes, and basically do nothing else.
+                !point
+                That's by design, of course. He thinks the government should stay out of people's lives.
+            {anti_fiscal_policy?
+                player:
+                    !agree
+                    I agree. Taxation is theft.
+                agent:
+                {advisor_manipulate?
+                    !crossed
+                    Logically speaking, everything needs money to function, even the government.
+                    Without taxes, the government will need something else.
+                }
+                {not advisor_manipulate?
+                    !shrug
+                    Well, the government needs some ways to make money, if not by taxes.
+                }
+            }
+            {not anti_fiscal_policy?
+                player:
+                    How does he plan to pay for the government's expenses if he plans to cut taxes?
+                agent:
+                    !shrug
+                    No idea.
+            }
         ]],
         nil,
         nil,
