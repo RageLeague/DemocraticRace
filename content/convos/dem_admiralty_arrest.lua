@@ -209,7 +209,7 @@ Convo("DEM_ADMIRALTY_ARREST")
                 cxt.enc.scratch.is_ad = true
                 arrest_params.investigate_difficulty = arrest_params.investigate_difficulty + 3
             end
-            if target:GetFactionID() == "SPARK_BARON" or target:GetFactionID() == "CULT_OF_HESH" then
+            if target:GetFactionID() == "SPARK_BARONS" or target:GetFactionID() == "CULT_OF_HESH" then
                 cxt.enc.scratch.is_rival_faction = true
                 cxt.enc.scratch.rival_id = target:GetFactionID()
                 arrest_params.investigate_difficulty = arrest_params.investigate_difficulty + 2
