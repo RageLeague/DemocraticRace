@@ -937,6 +937,9 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                     cxt.enc.scratch.STATE_QUESTIONS_HISTORY[optdata] = nil
                 end
             end
+            for id, data in pairs(DemocracyConstants.opposition_data) do
+                cxt.enc.scratch[id .. "_met"] = DemocracyUtil.GetMainQuestCast(id) and DemocracyUtil.GetMainQuestCast(id):KnowsPlayer()
+            end
             cxt:GoTo("STATE_OPPOSITION_QUESTIONS")
         end,
     })
@@ -945,14 +948,24 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         nil,
         "Ask about the Admiralty candidate",
         [[
-            player:
-                !interest
-                I'm assuming the Admiralty is definitely running?
-            agent:
-                !agree
-                Of course.
-                !permit
-                Their candidate is Oolo Ollowano, an officer from Murder Bay.
+            {not candidate_admiralty_met?
+                player:
+                    !interest
+                    I'm assuming the Admiralty is definitely running?
+                agent:
+                    !agree
+                    Of course.
+                    !permit
+                    Their candidate is Oolo Ollowano, an officer from Murder Bay.
+            }
+            {candidate_admiralty_met?
+                player:
+                    !interest
+                    Oolo must be the candidate for the Admiralty, right?
+                agent:
+                    !agree
+                    That's right.
+            }
             player:
                 !thought
                 Why is Oolo running for president?
@@ -1065,49 +1078,57 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         "Ask about the Spark Baron candidate",
         [[
             {player_arint?
-            player:
-                !interest
-                I'm assuming that Fellemo is running.
-                Is there anyone else from the Spark Baron running as well?
-            agent:
-                !shrug
-                As far as I am aware, other than you and him, there is no one else from the Spark Baron running.
-                Seems you already know Fellemo, huh?
-            player:
-                !sigh
-                All too well.
+                player:
+                    !interest
+                    I'm assuming that Fellemo is running.
+                    Is there anyone else from the Spark Baron running as well?
+                agent:
+                    !shrug
+                    As far as I am aware, other than you and him, there is no one else from the Spark Baron running.
+                    Seems you already know Fellemo, huh?
+                player:
+                    !sigh
+                    All too well.
             }
-            {not player_arint?
-            player:
-                !interest
-                There must be someone from the Spark Barons running, right?
-            agent:
-                !agree
-                There sure is.
-                Their candidate is Lellyn Fellemo, a retired Admiralty solider, who now is a regional officer managing Grout Bog.
-                {advisor_diplomacy?
-                    A based guy, I tell you.
-                * A great non-answer from {agent}. Classic.
-                }
-                {not advisor_diplomacy?
-                        !cagey
-                        Although... if I'm honest, I am not sure if he is really a capable candidate.
-                    player:
-                    {player_rook?
-                        !happy
-                        That's what he wants you to think.
-                    agent:
-                        !dubious
-                        Is he now?
+            {not player_arint and candidate_baron_met?
+                player:
+                    !interest
+                    I'm assuming that Fellemo is the one running for the Barons, right?
+                agent:
+                    !agree
+                    That's right.
+            }
+            {not player_arint and not candidate_baron_met?
+                player:
+                    !interest
+                    There must be someone from the Spark Barons running, right?
+                agent:
+                    !agree
+                    There sure is.
+                    Their candidate is Lellyn Fellemo, a retired Admiralty solider, who now is a regional officer managing Grout Bog.
+                    {advisor_diplomacy?
+                        A based guy, I tell you.
+                    * A great non-answer from {agent}. Classic.
                     }
-                    {not player_rook?
-                        !shrug
-                        I don't know. I don't think anyone can get this far by being incompetent.
-                    agent:
-                        !thought
-                        Good point.
+                    {not advisor_diplomacy?
+                            !cagey
+                            Although... if I'm honest, I am not sure if he is really a capable candidate.
+                        player:
+                        {player_rook?
+                            !happy
+                            That's what he wants you to think.
+                        agent:
+                            !dubious
+                            Is he now?
+                        }
+                        {not player_rook?
+                            !shrug
+                            I don't know. I don't think anyone can get this far by being incompetent.
+                        agent:
+                            !thought
+                            Good point.
+                        }
                     }
-                }
             }
             player:
                 What's Fellemo's angle, then?
@@ -1144,14 +1165,61 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         nil,
         "Ask about the Rise candidate",
         [[
+            {not candidate_rise_met?
+                player:
+                    !interest
+                    Is there anyone representing the Rise?
+                agent:
+                    !agree
+                    Of course. Prindo Kalandra, a foreman, is representing them.
+                {player_sal?
+                    player:
+                        !happy
+                        A foreman? Glad to know that Prindo is doing so well for herself.
+                    agent:
+                        !dubious
+                        You two are on a first name basis?
+                    player:
+                        !dubious
+                        Uh... yeah? Is that not normal, somehow?
+                    agent:
+                        !shrug
+                        I mean, for some reason, everyone refers to her by last name only, even though everyone else is referred to by first name.
+                    {spark_barons?
+                        !point
+                        Well... Except Fellemo as well, I guess.
+                    }
+                }
+            }
+            {candidate_rise_met?
+                {not player_sal?
+                    player:
+                        !interest
+                        Kalandra is representing the Rise, correct?
+                    agent:
+                        !agree
+                        That's right.
+                }
+                {player_sal?
+                    player:
+                        Please tell me that Prindo is running for the Rise, right?
+                    agent:
+                        !dubious
+                        Uh... I guess, yeah?
+                    player:
+                        !dubious
+                        What do you mean? You seems unsure.
+                    agent:
+                        It's just... It's a bit weird hearing Prindo Kalandra being referred to by first name only.
+                        !thought
+                        Actually, the real weird thing here is that people refer to everyone else by first name, but not her, for some reason.
+                    {spark_barons?
+                        !point
+                        And Fellemo. Him too.
+                    }
+                }
+            }
             player:
-                Is there anyone representing the Rise?
-            agent:
-                Of course. Prindo Kalandra is the one representing them.
-                In fact, she seems very supportive of the election.
-                Perhaps it's her idea in the first place.
-            player:
-                Sounds good.
                 And I'm assuming the Rise runs on a <!pol_stance_labor_law_1>pro-worker</> platform?
             agent:
                 !spit
