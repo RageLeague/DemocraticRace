@@ -19,7 +19,10 @@ Content.AddCharacterDef
         -- Can't figure this out.
         build = "cognitive_hesh_build",
         -- head = "head_luminari",
-        scale_adjust = 2,
+        scale_adjust = 1.5,
+
+        character_offset = {40, 240},
+        custom_portrait = "DEMOCRATICRACE:assets/portraits/hesh_portrait.png",
 
         gender = GENDER.UNDISCLOSED, -- GENDER.UNDISCLOSED,
 
