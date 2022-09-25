@@ -1242,23 +1242,25 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         nil,
         "Ask about the Cult candidate",
         [[
-            player:
-                So who's representing the Cult of Hesh?
-            agent:
-                It's Vixmalli Banquod.
-            {player_smith?
-                He's a member of one of the most prestigious-
-            player:
-                Yeah, I know who he is.
-                !thought
-                Damn it, Vix. You are not going to make it easy for me, huh?
-                Anyway, what does he want?
-            }
-            {not player_smith?
-                He's a member of one of the most prestigious families in Havaria.
-                He basically bought his way to the top of the Cult's Hierarchy.
-            player:
-                Well, that sounds good and all, but what does he want?
+            {not candidate_cult_met?
+                player:
+                    So who's representing the Cult of Hesh?
+                agent:
+                    It's Vixmalli Banquod.
+                {player_smith?
+                    He's a member of one of the most prestigious-
+                player:
+                    Yeah, I know who he is.
+                    !thought
+                    Damn it, Vix. You are not going to make it easy for me, huh?
+                    Anyway, what does he want?
+                }
+                {not player_smith?
+                    He's a member of one of the most prestigious families in Havaria.
+                    He basically bought his way to the top of the Cult's hierarchy.
+                player:
+                    Well, that sounds good and all, but what does he want?
+                }
             }
             {not cult_of_hesh?
                 It's the cult. They always want more power.
