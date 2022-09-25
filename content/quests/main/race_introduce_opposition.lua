@@ -1262,6 +1262,9 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                     Well, that sounds good and all, but what does he want?
                 }
             }
+            {candidate_cult_met?
+
+            }
             {not cult_of_hesh?
                 It's the cult. They always want more power.
                 But they don't really have anything that jives with the public voting blocks.
