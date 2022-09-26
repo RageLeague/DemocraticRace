@@ -1263,25 +1263,88 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 }
             }
             {candidate_cult_met?
-
+                {not player_smith?
+                    player:
+                        Is Vixmalli representing the Cult of Hesh?
+                    agent:
+                        !agree
+                        That's right.
+                }
+                {player_smith?
+                    player:
+                        Is Vix representing the Cult of Hesh?
+                    agent:
+                        !dubious
+                        Vixmalli? Yeah.
+                }
+                {advisor_manipulate?
+                    agent:
+                        !sigh
+                        A shame, though. I can think of a better candidate than him.
+                }
+                player:
+                    Well, what does he want?
             }
-            {not cult_of_hesh?
-                It's the cult. They always want more power.
-                But they don't really have anything that jives with the public voting blocks.
-                Well, everything except <!pol_stance_religious_policy_2>preserve artifacts</>.
-                They'll likely just start preaching about Hesh declaring them the president.
-                Their supporters are going to be rigidly pro-cult unless you stoop to their level.
-                If you do though, watch your back from those who want the artifacts for profit.
+            {not advisor_manipulate?
+                agent:
+                    !shrug
+                    It's the Cult. They always want more power.
+                    !spit
+                    Which is why his entire platform is based on promoting <!pol_stance_religious_policy_2>Heshian values</>.
+                player:
+                    !dubious
+                    Really? That's it? And he think people are going to vote for him because of that?
+                agent:
+                    !shrug
+                {advisor_diplomacy?
+                    Well, half of the population is cringe like that.
+                    Believing a giant jellyfish that might not even be real, and doing what the Cult tells them to do just because they say so.
+                }
+                {not advisor_diplomacy?
+                    Well, half of the population is Heshian anyway.
+                    {advisor_hostile?
+                        !thumb
+                        Believe me, nobody knows cults better than me, and they would rather let a cult tell them what to do than think for themselves.
+                        * Somehow, you feel like {agent}'s statement comes from personal experience.
+                    }
+                }
             }
-            {cult_of_hesh?
-                To <!pol_stance_religious_policy_2>preserve artifacts</>, obviously.
-                He's probably going to claim that Hesh itself supports him to be the president.
-                You know how it is.
-            player:
-                What a surprise.
-            agent:
-                His supporters are probably those who believe in the holiness of those artifacts.
-                But you know how it is in Havaria. Some heathens probably wants to sell them for profits.
+            {advisor_manipulate?
+                agent:
+                    !permit
+                    Well, as a Heshian, logically speaking, he wants to <!pol_stance_religious_policy_2>exercise Hesh's will</>.
+                    That usually means implementing policies that the Cult likes, of course.
+                player:
+                    !dubious
+                    Really? That's it? And he think people are going to vote for him because of that?
+                agent:
+                    !shrug
+                    You know how it is. Half of Havarian population believes in the Heshian faith.
+                    Logically speaking, some of them will vote purely based on what they see as Hesh's will.
+                    Given that Vixmalli claims to exercise Hesh's will, we can logically conclude that a sizable population will vote for him because of this.
+                player:
+                    !dubious
+                    That sounds awfully objective and reasonable. Are you sure you are a Heshian priest?
+                {not liked?
+                    agent:
+                        !angry
+                        I <i>am</> a Heshian priest! Do you not see my title?
+                    * Well, {agent}'s title does say "{agent.identity}". I think that settles it.
+                    agent:
+                        !neutral
+                }
+                {liked?
+                    agent:
+                        Everyone has a different way of showing faith, and it doesn't change the fact that I am a priest.
+                        !crossed
+                        I thought you would know better, {player}.
+                    player:
+                        !placate
+                        Look, I didn't mean to offend you, alright? If my remark upsets you, then I apologize.
+                    agent:
+                        !sigh
+                        It's fine. I get those comments a lot, and I won't hold it against you.
+                }
             }
         ]],
         nil,
