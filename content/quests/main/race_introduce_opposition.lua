@@ -767,30 +767,97 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         OPT_DONE_QUEST = "Finish Up",
         DIALOG_DONE_QUEST = [[
             player:
-                [p] I'm done with intel gathering.
-            agent:
-                Time for you to do some work.
+                I think I know all I need to know now.
+            {greeted?
+                agent:
+                    !agree
+                    That's good.
+                    !point
+                    It's time for you to go back to campaigning. We've got work to do.
+            }
+            {not greeted?
+                agent:
+                    !dubious
+                    You sure? You didn't even talk to {opposition}.
+                player:
+                    Like I said, I'm good for now.
+                agent:
+                    !shrug
+                    Alright.
+                    !point
+                    You should go back to campaigning then. We've got work to do.
+            }
             {no_assassin?
-            player:
-                [p] I'm a big shot now. What if there are assassins coming after me?
-            agent:
-                If you want to feel safer, hire a bodyguard or something.
+                player:
+                    Actually, one more thing.
+                agent:
+                    !dubious
+                    Yes?
+                player:
+                    How should I protect myself?
+                    !thought
+                    I mean, I'm kind of a big deal now, and there's bound to be people who hate my gut or even want me dead.
+                    Back when I was still grifting, I can defend myself just fine.
+                    !shrug
+                    But now that I am focusing on campaigning, I don't know if I can do that anymore.
+                agent:
+                    Well, if you want to feel safer, you should hire a bodyguard.
+                    !point
+                    Go ask around. There's plenty of people who are willing to protect you, as long as you pay well.
             }
             {not no_assassin and billed_baron_response?
-            agent:
-                [p] By the way, why do I have a bill for Baron response?
-            player:
-                I'm sorry for looking for help when I am being attacked by assassins, okay?
-            agent:
-                That is not very cash money of you.
-                Hire your own bodyguard. Don't make me pay for your problems.
+                {not advisor_intervention?
+                    agent:
+                        !crossed
+                        Also, can you explain something to me?
+                    player:
+                        !dubious
+                        Explain what?
+                    agent:
+                        Why is there a bill for a Baron response on my desk?
+                    player:
+                        !angry_shrug
+                        I don't know, I was busy trying to not get killed by an assassination attempt, so I'm sorry if I didn't consider your wallet while doing that.
+                    agent:
+                        !sigh
+                        That wasn't very cash money of you.
+                        If you are looking to defend yourself, you should hire a bodyguard.
+                        !point
+                        Go ask around. There's plenty of people who are willing to protect you, as long as you pay well.
+                }
+                {advisor_intervention?
+                    agent:
+                        !thought
+                        Also, that reminds me.
+                        I got the bill for the Baron response this morning. It's quite a huge sum.
+                    player:
+                        !crossed
+                        Hey, I can't just let the assassin kill me, you know?
+                        !point
+                        And if I recall, it's you, and only you, who actually called for the backup, so I would say the bill's on you.
+                    agent:
+                        Well, next time, you should hire a bodyguard yourself instead.
+                        !point
+                        Go ask around. There's plenty of people who are willing to protect you, as long as you pay well.
+                }
             }
             {not no_assassin and not billed_baron_response?
-            player:
-                [p] The world seems a bit dangerous for me now.
-            agent:
-                I guess you're pretty shaken from the yesterday's assassination, huh?
-                If you want to feel safer, hire a bodyguard or something.
+                player:
+                    Actually, one more thing.
+                agent:
+                    !dubious
+                    Yes?
+                player:
+                    How should I protect myself?
+                    !thought
+                    I mean, it's clear from yesterday that some people really want me dead.
+                    Back when I was still grifting, I can defend myself just fine.
+                    !shrug
+                    But now that I am focusing on campaigning, I don't know if I can do that anymore.
+                agent:
+                    Well, if you want to feel safer, you should hire a bodyguard.
+                    !point
+                    Go ask around. There's plenty of people who are willing to protect you, as long as you pay well.
             }
         ]],
     }
@@ -804,6 +871,7 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             :Fn(function(cxt)
                 cxt.quest.param.billed_baron_response = cxt:GetAgent():HasMemory("BILLED_BARON_RESPONSE")
                 cxt.quest.param.no_assassin = TheGame:GetGameState():GetMainQuest() and TheGame:GetGameState():GetMainQuest().param.no_assassin
+                cxt.quest.param.advisor_intervention = TheGame:GetGameState():GetMainQuest() and TheGame:GetGameState():GetMainQuest().param.day_1_advisor_intervention
             end)
             :Dialog("DIALOG_DONE_QUEST")
             :Fn(function(cxt)
