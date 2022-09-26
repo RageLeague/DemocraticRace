@@ -1358,10 +1358,16 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 The Jakes is a worker union. They don't have a hierarchy like other factions, so they don't have a particular candidate.
                 However, there is a candidate trying to levy support from the Jakes in particular.
                 Her name's Andwanette. Big character in the foam before, but now she's got a fire in her belly to take it to new heights.
+            {candidate_jakes_met?
+                player:
+                    Andwanette? I thought she isn't affiliated with any particular faction?
+                agent:
+                    She isn't, but she is indeed trying to appeal to the Jakes with her platform.
+            }
             player:
                 So what are her actual viewpoints, or is she just waffling to the Jakes?
             agent:
-                She's a merchant who deals in Back-alley goods. She wants to put those goods on a market that isn't the black market.
+                She's a merchant who deals in back-alley goods. She wants to put those goods on a market that isn't the black market.
                 Expect her to lean towards <!pol_stance_substance_regulation_-2>removing lots of existing regulations</>.
                 !shrug
             {advisor_hostile or advisor_diplomacy?
@@ -1371,7 +1377,6 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             }
             player:
                 Fair enough.
-                Though I imagine the people in authority won't like it.
         ]],
         function()end,
     })
