@@ -266,8 +266,9 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 agent:
                     %oppo_greeting
                 player:
-                    What's your goal in the race? What drives you forward?
+                    Why are you running as a candidate for the election? What is your goal?
                 agent:
+                    !agree
                     I'm glad you asked.
                 * {agent} clears {agent.hisher} throat loudly.
                     %opposition_intro idea_monologue {opposition_id}
@@ -275,54 +276,191 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 {not spark_contact?
                     I must say, I'm stunned by your rhetoric.
                 agent:
+                    !happy
                     I bet you are!
                 }
                 {spark_contact?
                     Wow, that... definitely is one of the speeches I've ever heard.
                 agent:
+                    !happy
                     I'm glad you liked it.
                 }
                 agent:
                     !permit
-                    What say you? Are you persuaded by my speech?
+                    What say you? Do you agree with me on this matter?
                 player:
                     ...
                     !placate
                     Wait, hold on. Am I suppose to give my opinion here?
                 agent:
+                    !wink
                     I mean, you don't <i>have to</>, but I would <i>really</> like to hear about your opinion on this matter.
             ]],
             OPT_AGREE = "Agree",
             DIALOG_AGREE = [[
-                player:
-                    Believe me, friend. I'm a firm believer in your ideology.
-                agent:
-                    Ah-ha, my dear {player}. We needn't fight at all in this race.
-                player:
-                    Now, Now, I still disagree with you on a number of things.
-                    You're still going to lose in this Democratic Race!
-                agent:
-                    Hark! Well, when you falter, know your voters will join me in the end.
+                {(player_sal and kalandra)?
+                    player:
+                        Of course.
+                        !spit
+                        I'm never going to forget what they did to my parents. What they did to me.
+                    agent:
+                        !agree
+                        I see you still got the fighting spirit inside you.
+                        !permit
+                        Well, you're in luck. The upcoming election will change everything.
+                        !sigh
+                        A shame that only one of us can win the election.
+                    player:
+                        !permit
+                        Don't worry. I would be happy if either one of us win.
+                    agent:
+                        !agree
+                        My thoughts exactly.
+                }
+                {(player_rook and spark_contact)?
+                    player:
+                        !thought
+                        I have to say, for such a... stellar performance, I find myself agreeing with you.
+                    agent:
+                        !happy
+                        That's the spirit, old chum!
+                        !handwring
+                        So what's the plan? A couple cups of booze and some finger foods back at HQ?
+                    player:
+                        Well, I hate to miss out on that, but I've got to do more work campaigning.
+                    agent:
+                        !sigh
+                        Ah, that's truly a shame.
+                        Oh well, maybe another time.
+                }
+                {(player_smith and vixmalli)?
+                    player:
+                        !happy
+                        Hope you don't mind there being <i>two</> Heshians on the ballot, there.
+                    agent:
+                        Really? You believe in enforcing Hesh's will?
+                        !angry
+                        Or are you just trying to take my voter base?
+                    player:
+                        !shrug
+                        Eh, make what you will. I'm just telling you how I think.
+                    agent:
+                        !palm
+                        Still, it seems like you have finally waken up and found purpose in your life.
+                }
+                {(player_arint and spark_contact)?
+                    player:
+                        I do have to say that your opinion is agreeable to me.
+                    agent:
+                        !crossed
+                        You don't need to patronize me.
+                        Like I said, I am running the campaign all by myself, and I don't need your approval or help.
+                    player:
+                        !sigh
+                        There's no convincing you otherwise, is there?
+                    agent:
+                        Nope.
+                }
+                {not (player_arint and spark_contact) or (player_smith and vixmalli) or (player_rook and spark_contact) or (player_sal and kalandra)?
+                    player:
+                        Believe me, friend. I'm a firm believer in your ideology.
+                    agent:
+                        Ah-ha, my dear {player}. We are finding so much in common already!
+                        A shame, though. Only one of us is going to win the election, and I don't intend on holding back.
+                    player:
+                        Of course.
+                        I wouldn't expect anything else.
+                }
             ]],
             OPT_DISAGREE = "Disagree",
             DIALOG_DISAGREE = [[
-                player:
-                    I can't say I do.
-                agent:
-                    A shame. We could've been great allies.
-                player:
-                    But aren't we political opponents, though?
-                agent:
-                    Yeah, you're right.
-                    Well, good luck with your campaign, because I'll beat you.
+                {(player_sal and kalandra)?
+                    player:
+                        !bashful
+                        Well, I hate to say this, but I can't agree.
+                        No matter what we try to do, we can't change how the world works.
+                    agent:
+                        !sigh
+                        I see that you have lost the fire in your eyes.
+                        Can't fault you for that, though. Life hits us all hard.
+                        !permit
+                        But if Havaria is going to change, there is no better time than now, during the election.
+                    * It's true. No matter what happens during the election, Havaria will change forever.
+                    * The best thing for you to do is to make sure that when that happens, you are the one in charge.
+                    player:
+                        !bashful
+                        Thanks for the kind words. I will think about it.
+                }
+                {(player_rook and spark_contact)?
+                    player:
+                        Ah, it seems our views have drifted apart.
+                    agent:
+                        !shrug
+                        It is what it is, old sport. No hard feelings.
+                        Course, doesn't mean I can support you, what with you being the enemy and all.
+                    player:
+                        !wink
+                        That's the thing with enemies. You remember the academy, right?
+                    agent:
+                        !chuckle
+                        Oh ho ho! Smart, old sport. We'll see each other on the debate floor then?
+                    player:
+                        !nudge_nudge
+                        If you make it, of course.
+                }
+                {(player_smith and vixmalli)?
+                    player:
+                        !crossed
+                        Well, I'm sure you'll be so happy to know I don't believe in that stuff!
+                    agent:
+                        !disappoint
+                        Why am I surprised? You are always a drunk child, with no purpose or calling.
+                        !angry_point
+                        Well, I hope you remember who wrote half of your essays to get you through school.
+                    player:
+                        !angry_shrug
+                        Hey! Mullifee helped too, you can't take all the credit for that.
+                    agent:
+                        !crossed
+                        Hmph. Hope she's willing to help write your speeches too.
+                    * She isn't. That's your <i>advisor's</> job.
+                }
+                {(player_arint and spark_contact)?
+                    player:
+                        With all due respect, {agent.gender:sir|ma'am|manager}, I'm afraid that is not going to work.
+                    agent:
+                        !crossed
+                        Hmph. Doesn't matter. I don't need your approval.
+                    player:
+                        !dubious
+                        Then why did you ask me for my opinion in the first place?
+                    agent:
+                        !shrug
+                        Well, I want to know your opinion on the matter, of course.
+                        And I see now that we are going to face each other eventually.
+                }
+                {not (player_arint and spark_contact) or (player_smith and vixmalli) or (player_rook and spark_contact) or (player_sal and kalandra)?
+                    player:
+                        I can't say I do.
+                    agent:
+                        A shame. We could've been great allies.
+                    player:
+                        But aren't we political opponents, though?
+                    agent:
+                        Yeah, you're right.
+                        Well, good luck with your campaign, and may the best candidate win.
+                }
             ]],
             OPT_IGNORE = "Remain silent on this issue",
             DIALOG_IGNORE = [[
                 player:
                     I don't want to make any statement regarding this issue.
                 agent:
-                    Oh well.
-                    Just be warned. You can't deflect the issue forever. Especially on these important issues.
+                    !crossed
+                    {player}, this is an important issue that Havaria faces!
+                    You can't stand aside forever while Havaria suffers from it!
+                    !sigh
+                    But fine. If you don't want to answer, I can't exactly force you to.
             ]],
             OPT_ASK_ABOUT = "Ask {primary_advisor} about stance taking",
             DIALOG_ASK_ABOUT = [[
@@ -338,19 +476,38 @@ QDEF:AddConvo("meet_opposition", "opposition")
                     Wait, what should I say?
                     I feel like I am compelled to take a side here, and I don't know the consequences of doing that.
                 primary_advisor:
-                    !shrug
-                    Well, as a politician, you will often face dilemma like this where you are compelled to take a side.
+                    {not advisor_manipulate?
+                        !shrug
+                        Well, as a politician, you will often face dilemma like this where you are compelled to take a side.
+                    }
+                    {advisor_manipulate?
+                        !shrug
+                        Well, logically speaking, politics is the resolution of conflicts.
+                        Naturally, when conflicts like this arise, you are usually compelled to take a side.
+                    }
                     Regardless of which side you pick, it's important for you to know what it entails.
-                    !give
-                    Here's a brief explanation on what taking a stance means.
+                    {not advisor_hostile?
+                        !give
+                        Here's a brief explanation on what taking a stance means.
+                    }
+                    {advisor_hostile?
+                        !permit
+                        Well, I'm an expert at taking stances. Here's what you should know.
+                    }
             ]],
             DIALOG_ASK_ABOUT_PST = [[
                 primary_advisor:
                     Remember, while I may have personal opinions on some topics, it's ultimately your campaign, and your decisions to make.
                     I will support you, regardless of what stances you take.
                     !cruel
+                {not advisor_diplomacy?
                     As long as you take the right ones, of course.
+                }
+                {advisor_diplomacy?
+                    As long as it's based, of course.
+                }
                 player:
+                    !sigh
                     Of course.
                 agent:
                     !right
@@ -426,14 +583,41 @@ QDEF:AddConvo("meet_opposition", "opposition")
                 I strongly believe that {oppo_stance#pol_stance} can improve Havarian lives significantly.
             player:
                 Are you sure that isn't a ruse to get more power?
-            agent:
-                !placate
-                I assure you, the power is just a mean to an end.
-                Ultimately, the goal is make Havaria better than before.
-            player:
-                Right.
-                !happy
-                Totally.
+            {kalandra?
+                agent:
+                    The power, ultimately, belongs to the people.
+                    I am simply representing the will of the people, that's all.
+                player:
+                    !handwave
+                    Sure, sure. That's what they all say.
+            }
+            {andwanette?
+                agent:
+                    !handwave
+                    Oh please, darling. There's no class in that line of thinking.
+                    Power and influence? That's not my style.
+                player:
+                    !dubious
+                    Somehow I find that hard to believe.
+            }
+            {murder_bay_admiralty_contact?
+                agent:
+                    Don't be a fool, {player}. Everyone wants power.
+                    I just want to make my job more interesting.
+                    And if Havarians feel safer because of my actions? Then that's just added bonus.
+                player:
+                    Well, I appreciate the straightforwardness at least.
+            }
+            {not (kalandra or andwanette or murder_bay_admiralty_contact)?
+                agent:
+                    !placate
+                    I assure you, the power is just a mean to an end.
+                    Ultimately, the goal is make Havaria better than before.
+                player:
+                    Right.
+                    !happy
+                    Totally.
+            }
         ]],
         nil,
 
@@ -441,15 +625,109 @@ QDEF:AddConvo("meet_opposition", "opposition")
         "Ask about {agent}'s plan",
         [[
             player:
-                How do you plan to become elected?
-            agent:
-                I mean, same as everyone else.
-            player:
-                Can you give a more detailed answer?
-            agent:
-                Why should I? You're my opponent.
-            player:
-                Fair enough.
+                How do you plan to become elected? How are you going to gather the voters?
+            {andwanette?
+                agent:
+                    !handwave
+                    It's simple, darling.
+                    When in doubt, people will vote for the candidate that they recognize.
+                    !permit
+                    Given that I am a huge celebrity already in the Pearl, many people will vote for me simply because they are a huge fan.
+                player:
+                    !dubious
+                    This sounds less of an election and more of a popularity contest.
+                agent:
+                    !handwave
+                    Oh please, darling. That's how <i>all</> elections work.
+            }
+            {spark_contact?
+                agent:
+                    It's easy.
+                    People don't like paying taxes. I promised them that I will reduce their taxes.
+                    Naturally, people will vote for me to reduce their taxes so they get more money in their pockets.
+                player:
+                    Surely it can't be that easy.
+                {agreed?
+                    player:
+                        I mean, I agree with your stance, but surely that can't be enough to win the votes?
+                    agent:
+                        Come on, {player}. Who actually wants to pay taxes?
+                        Even the Rise don't.
+                    player:
+                        I can see your point.
+                }
+                {not agreed?
+                    player:
+                        I mean, you can't run a country without money? How are you going to get those without taxes?
+                    agent:
+                        Well, they don't need to know that.
+                        What they do know is that I promised to cut their taxes, and I am going to do exactly that.
+                    player:
+                        That's... kind of devious.
+                }
+            }
+            {kalandra?
+                agent:
+                    !hips
+                    Of course I have a plan.
+                    Why do you think I pushed so hard for an election in the first place?
+                player:
+                    !surprised
+                    Wait, the election was your idea?
+                agent:
+                    !shrug
+                    Well, not necessarily. But I am a huge advocate for it.
+                    A huge reason is that the laborers outnumber our oppressors by a lot.
+                    If I can get all the laborers by my side in the election, the revolution will surely succeed.
+                {player_sal?
+                    player:
+                        Isn't that what our parents said ten years ago?
+                        Before, well, you know.
+                    agent:
+                        But this time, it's going to be different.
+                        Democracy is a way to give the people a voice, and I will make sure their voices get heard.
+                }
+                {not player_sal?
+                    player:
+                        Yeah, but how are you confident that every laborer has the same opinion?
+                        Most laborers I talk to don't seem like the revolutionary type.
+                    agent:
+                        They don't seem like it because they fear of speaking out against the establishment.
+                        But with the election, they can freely express their true feeling without fear of retaliation.
+                }
+            }
+            {murder_bay_bandit_contact?
+                player:
+                    I mean, how are you going to convince the voters to vote for the leader of Spree?
+                agent:
+                    If they know what's good for them, they will vote for the person who promises them full Havaria independence.
+                    Even if that person is the Scourge of Murder Bay {agent.self}.
+                player:
+                    Ah.
+            }
+            {not (andwanette or spark_contact or kalandra or murder_bay_bandit_contact)?
+                agent:
+                    Why do you think I will answer that question?
+                player:
+                    !bashful
+                    I don't know? Just trying to start a conversation, that's all.
+                agent:
+                    !crossed
+                    By asking for my campaign strategy? When we both know that we are opponents in the election.
+                {agreed?
+                    And us agreeing on one particular topic doesn't change that.
+                }
+                    No. I'm not going to give you free information so you can use it against me.
+                player:
+                {(player_smith and vixmalli)?
+                    !sigh
+                    You never change, Vix.
+                }
+                {not (player_smith and vixmalli)?
+                    !placate
+                    Geez. I get your point.
+                }
+            }
         ]],
         nil,
 
@@ -489,30 +767,98 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         OPT_DONE_QUEST = "Finish Up",
         DIALOG_DONE_QUEST = [[
             player:
-                [p] I'm done with intel gathering.
-            agent:
-                Time for you to do some work.
+                I think I know all I need to know now.
+            {greeted?
+                agent:
+                    !agree
+                    That's good.
+                    !point
+                    It's time for you to go back to campaigning. We've got work to do.
+            }
+            {not greeted?
+                agent:
+                    !dubious
+                    You sure? You didn't even talk to {opposition}.
+                player:
+                    Like I said, I'm good for now.
+                agent:
+                    !shrug
+                    Well, if you say so.
+                    Remember, you can always talk to your opponent later on, and potentially talk about alliances.
+                    !point
+                    Anyway, you should go back to campaigning then. We've got work to do.
+            }
             {no_assassin?
-            player:
-                [p] I'm a big shot now. What if there are assassins coming after me?
-            agent:
-                If you want to feel safer, hire a bodyguard or something.
+                player:
+                    Actually, one more thing.
+                agent:
+                    !dubious
+                    Yes?
+                player:
+                    How should I protect myself?
+                    !thought
+                    I mean, I'm kind of a big deal now, and there's bound to be people who hate my gut or even want me dead.
+                    Back when I was still grifting, I can defend myself just fine.
+                    !shrug
+                    But now that I am focusing on campaigning, I don't know if I can do that anymore.
+                agent:
+                    Well, if you want to feel safer, you should hire a bodyguard.
+                    !point
+                    Go ask around. There's plenty of people who are willing to protect you, as long as you pay well.
             }
             {not no_assassin and billed_baron_response?
-            agent:
-                [p] By the way, why do I have a bill for Baron response?
-            player:
-                I'm sorry for looking for help when I am being attacked by assassins, okay?
-            agent:
-                That is not very cash money of you.
-                Hire your own bodyguard. Don't make me pay for your problems.
+                {not advisor_intervention?
+                    agent:
+                        !crossed
+                        Also, can you explain something to me?
+                    player:
+                        !dubious
+                        Explain what?
+                    agent:
+                        Why is there a bill for a Baron response on my desk?
+                    player:
+                        !angry_shrug
+                        I don't know, I was busy trying to not get killed by an assassination attempt, so I'm sorry if I didn't consider your wallet while doing that.
+                    agent:
+                        !sigh
+                        That wasn't very cash money of you.
+                        If you are looking to defend yourself, you should hire a bodyguard.
+                        !point
+                        Go ask around. There's plenty of people who are willing to protect you, as long as you pay well.
+                }
+                {advisor_intervention?
+                    agent:
+                        !thought
+                        Also, that reminds me.
+                        I got the bill for the Baron response this morning. It's quite a huge sum.
+                    player:
+                        !crossed
+                        Hey, I can't just let the assassin kill me, you know?
+                        !point
+                        And if I recall, it's you, and only you, who actually called for the backup, so I would say the bill's on you.
+                    agent:
+                        Well, next time, you should hire a bodyguard yourself instead.
+                        !point
+                        Go ask around. There's plenty of people who are willing to protect you, as long as you pay well.
+                }
             }
             {not no_assassin and not billed_baron_response?
-            player:
-                [p] The world seems a bit dangerous for me now.
-            agent:
-                I guess you're pretty shaken from the yesterday's assassination, huh?
-                If you want to feel safer, hire a bodyguard or something.
+                player:
+                    Actually, one more thing.
+                agent:
+                    !dubious
+                    Yes?
+                player:
+                    How should I protect myself?
+                    !thought
+                    I mean, it's clear from yesterday that some people really want me dead.
+                    Back when I was still grifting, I can defend myself just fine.
+                    !shrug
+                    But now that I am focusing on campaigning, I don't know if I can do that anymore.
+                agent:
+                    Well, if you want to feel safer, you should hire a bodyguard.
+                    !point
+                    Go ask around. There's plenty of people who are willing to protect you, as long as you pay well.
             }
         ]],
     }
@@ -526,9 +872,11 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             :Fn(function(cxt)
                 cxt.quest.param.billed_baron_response = cxt:GetAgent():HasMemory("BILLED_BARON_RESPONSE")
                 cxt.quest.param.no_assassin = TheGame:GetGameState():GetMainQuest() and TheGame:GetGameState():GetMainQuest().param.no_assassin
+                cxt.quest.param.advisor_intervention = TheGame:GetGameState():GetMainQuest() and TheGame:GetGameState():GetMainQuest().param.day_1_advisor_intervention
             end)
             :Dialog("DIALOG_DONE_QUEST")
             :Fn(function(cxt)
+                QuestUtil.SpawnQuest("CAMPAIGN_NEGOTIATE_ALLIANCES")
                 QuestUtil.SpawnQuest("CAMPAIGN_BODYGUARD")
             end)
             :CompleteQuest()
@@ -551,12 +899,19 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                         We have a lot of similarities in terms of ideology. We could probably get along.
                     agent:
                         !agree
+                    {advisor_diplomacy?
+                        It's good that you found a fellow candidate who you can vibe with.
+                        But remember, no matter how based they seem, you are still political opponents.
+                    }
+                    {not advisor_diplomacy?
                         Glad you found a potential ally so quickly.
                         But remember, you are still political opponents, so don't get to attached to {opposition.himher}.
+                    }
+                        !permit
                         Eventually, only one of you can become the president, and it should be you.
                     player:
-                        !thought
-                        ...
+                        !hips
+                        I wouldn't have it any other way.
                     agent:
                         Still, it is good to find an ally if you can. You can't win this election alone.
                         You can ask {opposition} about potential alliances.
@@ -581,49 +936,60 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                         But just remember: if you want to win the election, you will need allies.
                         Go ask around and see if you can find candidates with similar ideologies. That might be a start.
                     }
-                    ** You can now talk to other candidates with similar interests and form an alliance!
+                    ** You can talk to other candidates with similar interests and form an alliance after this conversation.
                 }
             ]],
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
             if cxt.quest.param.greeted and not cxt.quest.param.talked_to_advisor then
-                QuestUtil.SpawnQuest("CAMPAIGN_NEGOTIATE_ALLIANCES")
+                cxt.quest.param.talked_to_advisor = true
             end
-            cxt.quest.param.talked_to_advisor = true
         end)
 
     :AskAboutHubConditions("STATE_QUESTIONS",
     {
         nil,
-        "Ask about opposition",
+        "Ask about oppositions",
         [[
             player:
-                What does it mean for me now that there are these oppositions?
+                I didn't know there are so many strong opponents also running for leadership! What should we do about them?
             agent:
-                It means that they will also running for president, pulling votes that would otherwise be yours to them.
-                Since everyone can only vote one person at a time, more oppositions means less votes for you.
-            player:
-                What should I do to combat this?
-            agent:
-                You need to eliminate the oppositions.
-            player:
-                You want me to kill them?
-            agent:
-                !placate
-                What? Of course not.
-            {not advisor_manipulate?
-                As the campaign goes on, some people will naturally drop out because they don't have enough support.
-                If you can ally with them, their voters will vote for you if their primary candidate drops out.
-            }
+                !shrug
+                Right now? There's not much you can do in particular.
             {advisor_manipulate?
-                Logically speaking, if someone don't have enough support, they have no chance at winning.
-                And let's say, hypothetically, that you have similar ideology with said candidate.
-                Then, logically, their voters will vote for the next best candidate that is most likely to win.
-                It's called Strategic Voting.
-            }
+                Logically speaking, focusing on your campaign and standing out will improve the chance of people voting for you.
+                But hypothetically, if you know everything about your opponents.
+                Their platforms, their ideals, and their strategies.
+                Then, wouldn't you agree that when you finally face one of them during a debate, you will stand a better chance?
             player:
-                That sounds like a much better plan.
+                !shrug
+                I guess so?
+            }
+            {advisor_diplomacy?
+                As long as you stay based and appeal to the people, you can win this.
+                Meanwhile, you should learn more about your fellow candidates.
+                You never know when the personal info of one of your opponents will come in handy during a debate.
+            player:
+                !dubious
+                That's one way to go about it.
+            }
+            {not (advisor_manipulate or advisor_diplomacy)?
+                You should keep gathering support.
+                On the other hand, you should learn more about your opponent.
+                That way, when you eventually faces them in a debate, you will know what to say.
+            player:
+                !agree
+                Sounds like a plan.
+            }
+            agent:
+                You can talk to {opposition} right now and see what you can learn about {opposition.himher}.
+            {advisor_hostile?
+                Of course, nobody knows more about your opponents better than me, so you should ask me about them.
+            }
+            {not advisor_hostile?
+                If you want me to give a summary of your opponents, though, you can ask me.
+            }
         ]],
         nil,
 
@@ -640,6 +1006,9 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                     cxt.enc.scratch.STATE_QUESTIONS_HISTORY[optdata] = nil
                 end
             end
+            for id, data in pairs(DemocracyConstants.opposition_data) do
+                cxt.enc.scratch[id .. "_met"] = DemocracyUtil.GetMainQuestCast(id) and DemocracyUtil.GetMainQuestCast(id):KnowsPlayer()
+            end
             cxt:GoTo("STATE_OPPOSITION_QUESTIONS")
         end,
     })
@@ -648,91 +1017,278 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         nil,
         "Ask about the Admiralty candidate",
         [[
+            {not candidate_admiralty_met?
+                player:
+                    !interest
+                    I'm assuming the Admiralty is definitely running?
+                agent:
+                    !agree
+                    Of course.
+                    !permit
+                    Their candidate is Oolo Ollowano, an officer from Murder Bay.
+            }
+            {candidate_admiralty_met?
+                player:
+                    !interest
+                    Oolo must be the candidate for the Admiralty, right?
+                agent:
+                    !agree
+                    That's right.
+            }
             player:
-                I'm assuming the Admiralty is surely running?
+                !thought
+                Why is Oolo running for president?
+            {player_smith?
+                !crossed
+                More importantly, why isn't Mullifee running?
             agent:
-                Of course.
-                Their candidate is Oolo Ollowano, an officer from Murder Bay.
+                !shrug
+                No idea. You need to ask her personally, probably.
+                Probably they figured that the Admiralty only needs one candidate, and it's Oolo.
             player:
-                Why is she running for president?
+                !sigh
+                It's such a shame, though. Mullifee would probably be a great candidate.
+            agent:
+                !handwave
+                Anyway, you know how the Admiralty is.
+            }
+            {not player_smith?
             agent:
                 !handwave
                 You know how the Admiralty is.
-                They want to maintain control in Havaria.
-                As such, they are running on the platform of <!pol_stance_security_2>Universal Security</>, where every person has access to Admiralty protection.
-                It will be popular among Civilians and the Admiralty, of course. But it will be very unpopular with people who dislike them or their rivals.
+            }
+                They want to completely control Havaria by themselves, instead of the quasi-legal status they have currently.
+                As such, they are pushing really hard on <!pol_stance_security_2>Universal Security</>, where every person is protected by the Admiralty.
+                !point
+                Whether you like it or not.
+            player:
+                !thought
+                That sounds really sketchy, but I can see the appeal to some people.
+            {advisor_diplomacy?
+            agent:
+                Although... From the looks of things, Oolo seems to have a particular interest in fighting against crime in Havaria, even more so than your standard political reason.
+                !shrug
+                Maybe she is interested in more than just a simple power grab?
+                I can respect such based behaviour, even though I don't agree with what she is doing.
+            }
         ]],
         nil,
         nil,
         "Ask about the Spree candidate",
         [[
             player:
+                !interest
                 Do people really want a Spree to become the president?
             agent:
-                The entire point of the Truce Deal is to allow anyone to run, regardless of their background.
-                Anyway, Nadan Undar, the leader, is their candidate.
+                !shrug
+                Well, half of the population is probably some sort of criminal, and the other half is another sort of criminal, but less blatant.
+            {advisor_manipulate?
+                Besides, logically speaking, the background of the candidate should matter less than the platform they run on.
             player:
-                What is he running on?
+                !agree
+                Fair point.
+            }
+            {advisor_diplomacy?
+                Besides, if the candidate is based, being a criminal lord would just add to the basedness factor.
+            player:
+                !dubious
+                You've lost me.
+            }
+            {not (advisor_manipulate or advisor_diplomacy)?
+                As long as the platform is sound, who cares if the candidate is a Spree?
+            player:
+                !agree
+                Fair point.
+            }
             agent:
-                He's running on <!pol_stance_independence_2>Havarian Independence</>.
-                The Spree likes it because they can be more lawless, but it is popular among other voting groups as well.
-                People are fed up with Deltree's reach, especially towards the Admiralty for controlling their lives.
-                Although the more prestigious people would rather have Havaria be totally annexed.
+                Anyway, Nadan Undar, the leader, is their candidate.
+                He promises <!pol_stance_independence_2>full independence of Havaria</> from the Deltrean empire.
+            player:
+                !palm
+                Ugh. I know I'm supposed to be a politician and all, but geopolitics makes my head hurt.
+            agent:
+            {advisor_diplomacy?
+                Well, the Havarians are fed up with Deltrean overreach.
+                Havaria is the land of the free, after all, and it doesn't need the cringe Deltrean rule.
+            player:
+                !dubious
+                Since when is Havaria the land of the free?
+            }
+            {advisor_manipulate?
+                !sigh
+                Logically speaking, the people who supports him make no sense.
+                Having Deltrean control Havaria removes the legal gray area that causes criminals to become rampant.
+                If you are not a criminal, why would you support Havarian independence?
+                {pro_security?
+                    player:
+                        !permit
+                        You said so yourself, didn't you?
+                        Everyone in Havaria is some sort of criminal or the other.
+                    agent:
+                        !thought
+                        That's... true.
+                }
+                {not pro_security?
+                    player:
+                        !crossed
+                        Okay, I see why some people would like Havaria to be independent.
+                }
+            }
+            {advisor_hostile?
+                Well, nobody knows more about geopolitics more than me.
+                Which is why you should avoid it entirely. It's boring as Hesh.
+            player:
+                !interest
+                That's... unexpected of you.
+            }
         ]],
         nil,
         nil,
         "Ask about the Spark Baron candidate",
         [[
             {player_arint?
-            player:
-                I'm assuming that Fellemo is running.
-                Is there anyone else from the Spark Baron running as well?
-            agent:
-                As far as I am aware, other than you and him, there is no one else from the Spark Baron running.
-                Seems you already know Fellemo, huh?
-            player:
-                !sigh
-                All too well.
+                player:
+                    !interest
+                    I'm assuming that Fellemo is running.
+                    Is there anyone else from the Spark Baron running as well?
+                agent:
+                    !shrug
+                    As far as I am aware, other than you and him, there is no one else from the Spark Baron running.
+                    Seems you already know Fellemo, huh?
+                player:
+                    !sigh
+                    All too well.
             }
-            {not player_arint?
-            player:
-                There must be someone from the Spark Barons running, right?
-            agent:
-                !agree
-                There sure is.
-                Their candidate is Lellyn Fellemo, a retired Admiralty solider, who now is a regional officer managing Grout Bog.
-                !cagey
-                Although... if I'm honest, I am not sure if he is really a capable candidate.
-                He doesn't seem to have a concrete plan, and he doesn't seem to put a lot of work into the campaign.
+            {not player_arint and candidate_baron_met?
+                player:
+                    !interest
+                    I'm assuming that Fellemo is the one running for the Barons, right?
+                agent:
+                    !agree
+                    That's right.
+            }
+            {not player_arint and not candidate_baron_met?
+                player:
+                    !interest
+                    There must be someone from the Spark Barons running, right?
+                agent:
+                    !agree
+                    There sure is.
+                    Their candidate is Lellyn Fellemo, a retired Admiralty solider, who now is a regional officer managing Grout Bog.
+                    {advisor_diplomacy?
+                        A based guy, I tell you.
+                    * A great non-answer from {agent}. Classic.
+                    }
+                    {not advisor_diplomacy?
+                            !cagey
+                            Although... if I'm honest, I am not sure if he is really a capable candidate.
+                        player:
+                        {player_rook?
+                            !happy
+                            That's what he wants you to think.
+                        agent:
+                            !dubious
+                            Is he now?
+                        }
+                        {not player_rook?
+                            !shrug
+                            I don't know. I don't think anyone can get this far by being incompetent.
+                        agent:
+                            !thought
+                            Good point.
+                        }
+                    }
             }
             player:
                 What's Fellemo's angle, then?
             agent:
                 He wants a <!pol_stance_fiscal_policy_-2>Laissez Faire</> approach to the economy.
-                Basically, the government leaves the economy alone by removing government services and taxes.
-                Of course, many people would want that, especially the Spark Barons.
-                They don't want their hard-earned money to go to leeches that is the state.
-                But it would mean that the government can't get much funding through taxes.
-                And I suppose can't get the help they need from the government, but that is the reality of Havaria.
-            player:
-                How does he plan to make Havaria function if he abolish taxes?
-            agent:
-                No clue.
-                You should ask him about it.
-                Although I doubt you will get a straight answer from him.
+                !permit
+                Generally speaking, he wants to cut taxes, and basically do nothing else.
+                !point
+                That's by design, of course. He thinks the government should stay out of people's lives.
+            {anti_fiscal_policy?
+                player:
+                    !agree
+                    I agree. Taxation is theft.
+                agent:
+                {advisor_manipulate?
+                    !crossed
+                    Logically speaking, everything needs money to function, even the government.
+                    Without taxes, the government will need something else.
+                }
+                {not advisor_manipulate?
+                    !shrug
+                    Well, the government needs some ways to make money, if not by taxes.
+                }
+            }
+            {not anti_fiscal_policy?
+                player:
+                    How does he plan to pay for the government's expenses if he plans to cut taxes?
+                agent:
+                    !shrug
+                    No idea.
+            }
         ]],
         nil,
         nil,
         "Ask about the Rise candidate",
         [[
+            {not candidate_rise_met?
+                player:
+                    !interest
+                    Is there anyone representing the Rise?
+                agent:
+                    !agree
+                    Of course. Prindo Kalandra, a foreman, is representing them.
+                {player_sal?
+                    player:
+                        !happy
+                        A foreman? Glad to know that Prindo is doing so well for herself.
+                    agent:
+                        !dubious
+                        You two are on a first name basis?
+                    player:
+                        !dubious
+                        Uh... yeah? Is that not normal, somehow?
+                    agent:
+                        !shrug
+                        I mean, for some reason, everyone refers to her by last name only, even though everyone else is referred to by first name.
+                    {spark_barons?
+                        !point
+                        Well... Except Fellemo as well, I guess.
+                    }
+                }
+            }
+            {candidate_rise_met?
+                {not player_sal?
+                    player:
+                        !interest
+                        Kalandra is representing the Rise, correct?
+                    agent:
+                        !agree
+                        That's right.
+                }
+                {player_sal?
+                    player:
+                        Please tell me that Prindo is running for the Rise, right?
+                    agent:
+                        !dubious
+                        Uh... I guess, yeah?
+                    player:
+                        !dubious
+                        What do you mean? You seems unsure.
+                    agent:
+                        It's just... It's a bit weird hearing Prindo Kalandra being referred to by first name only.
+                        !thought
+                        Actually, the real weird thing here is that people refer to everyone else by first name, but not her, for some reason.
+                    {spark_barons?
+                        !point
+                        And Fellemo. Him too.
+                    }
+                }
+            }
             player:
-                Is there anyone representing the Rise?
-            agent:
-                Of course. Prindo Kalandra is the one representing them.
-                In fact, she seems very supportive of the election.
-                Perhaps it's her idea in the first place.
-            player:
-                Sounds good.
                 And I'm assuming the Rise runs on a <!pol_stance_labor_law_1>pro-worker</> platform?
             agent:
                 !spit
@@ -755,41 +1311,109 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
         nil,
         "Ask about the Cult candidate",
         [[
-            player:
-                So who's representing the Cult of Hesh?
-            agent:
-                It's Vixmalli Banquod.
-            {player_smith?
-                He's a member of one of the most prestigious-
-            player:
-                Yeah, I know who he is.
-                !thought
-                Damn it, Vix. You are not going to make it easy for me, huh?
-                Anyway, what does he want?
+            {not candidate_cult_met?
+                player:
+                    So who's representing the Cult of Hesh?
+                agent:
+                    It's Vixmalli Banquod.
+                {player_smith?
+                    He's a member of one of the most prestigious-
+                player:
+                    Yeah, I know who he is.
+                    !thought
+                    Damn it, Vix. You are not going to make it easy for me, huh?
+                    Anyway, what does he want?
+                }
+                {not player_smith?
+                    He's a member of one of the most prestigious families in Havaria.
+                    He basically bought his way to the top of the Cult's hierarchy.
+                player:
+                    Well, that sounds good and all, but what does he want?
+                }
             }
-            {not player_smith?
-                He's a member of one of the most prestigious families in Havaria.
-                He basically bought his way to the top of the Cult's Hierarchy.
-            player:
-                Well, that sounds good and all, but what does he want?
+            {candidate_cult_met?
+                {not player_smith?
+                    player:
+                        Is Vixmalli representing the Cult of Hesh?
+                    agent:
+                        !agree
+                        That's right.
+                }
+                {player_smith?
+                    player:
+                        Is Vix representing the Cult of Hesh?
+                    agent:
+                        !dubious
+                        Vixmalli? Yeah.
+                }
+                {advisor_manipulate?
+                    agent:
+                        !sigh
+                        A shame, though. I can think of a better candidate than him.
+                }
+                player:
+                    Well, what does he want?
             }
-            {not cult_of_hesh?
-                It's the cult. They always want more power.
-                But they don't really have anything that jives with the public voting blocks.
-                Well, everything except <!pol_stance_religious_policy_2>preserve artifacts</>.
-                They'll likely just start preaching about Hesh declaring them the president.
-                Their supporters are going to be rigidly pro-cult unless you stoop to their level.
-                If you do though, watch your back from those who want the artifacts for profit.
+            {not advisor_manipulate?
+                agent:
+                    !shrug
+                    It's the Cult. They always want more power.
+                    !spit
+                    Which is why his entire platform is based on promoting <!pol_stance_religious_policy_2>Heshian values</>.
+                player:
+                    !dubious
+                    Really? That's it? And he think people are going to vote for him because of that?
+                agent:
+                    !shrug
+                {advisor_diplomacy?
+                    Well, half of the population is cringe like that.
+                    Believing a giant jellyfish that might not even be real, and doing what the Cult tells them to do just because they say so.
+                }
+                {not advisor_diplomacy?
+                    Well, half of the population is Heshian anyway.
+                    {advisor_hostile?
+                        !thumb
+                        Believe me, nobody knows cults better than me, and they would rather let a cult tell them what to do than think for themselves.
+                        * Somehow, you feel like {agent}'s statement comes from personal experience.
+                    }
+                }
             }
-            {cult_of_hesh?
-                To <!pol_stance_religious_policy_2>preserve artifacts</>, obviously.
-                He's probably going to claim that Hesh itself supports him to be the president.
-                You know how it is.
-            player:
-                What a surprise.
-            agent:
-                His supporters are probably those who believe in the holiness of those artifacts.
-                But you know how it is in Havaria. Some heathens probably wants to sell them for profits.
+            {advisor_manipulate?
+                agent:
+                    !permit
+                    Well, as a Heshian, logically speaking, he wants to <!pol_stance_religious_policy_2>exercise Hesh's will</>.
+                    That usually means implementing policies that the Cult likes, of course.
+                player:
+                    !dubious
+                    Really? That's it? And he think people are going to vote for him because of that?
+                agent:
+                    !shrug
+                    You know how it is. Half of Havarian population believes in the Heshian faith.
+                    Logically speaking, some of them will vote purely based on what they see as Hesh's will.
+                    Given that Vixmalli claims to exercise Hesh's will, we can logically conclude that a sizable population will vote for him because of this.
+                player:
+                    !dubious
+                    That sounds awfully objective and reasonable. Are you sure you are a Heshian priest?
+                {not liked?
+                    agent:
+                        !angry
+                        I <i>am</> a Heshian priest! Do you not see my title?
+                    * Well, {agent}'s title does say "{agent.identity}". I think that settles it.
+                    agent:
+                        !neutral
+                }
+                {liked?
+                    agent:
+                        Everyone has a different way of showing faith, and it doesn't change the fact that I am a priest.
+                        !crossed
+                        I thought you would know better, {player}.
+                    player:
+                        !placate
+                        Look, I didn't mean to offend you, alright? If my remark upsets you, then I apologize.
+                    agent:
+                        !sigh
+                        It's fine. I get those comments a lot, and I won't hold it against you.
+                }
             }
         ]],
         nil,
@@ -803,10 +1427,16 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                 The Jakes is a worker union. They don't have a hierarchy like other factions, so they don't have a particular candidate.
                 However, there is a candidate trying to levy support from the Jakes in particular.
                 Her name's Andwanette. Big character in the foam before, but now she's got a fire in her belly to take it to new heights.
+            {candidate_jakes_met?
+                player:
+                    Andwanette? I thought she isn't affiliated with any particular faction?
+                agent:
+                    She isn't, but she is indeed trying to appeal to the Jakes with her platform.
+            }
             player:
                 So what are her actual viewpoints, or is she just waffling to the Jakes?
             agent:
-                She's a merchant who deals in Back-alley goods. She wants to put those goods on a market that isn't the black market.
+                She's a merchant who deals in back-alley goods. She wants to put those goods on a market that isn't the black market.
                 Expect her to lean towards <!pol_stance_substance_regulation_-2>removing lots of existing regulations</>.
                 !shrug
             {advisor_hostile or advisor_diplomacy?
@@ -816,7 +1446,6 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             }
             player:
                 Fair enough.
-                Though I imagine the people in authority won't like it.
         ]],
         function()end,
     })

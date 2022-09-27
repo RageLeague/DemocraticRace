@@ -781,7 +781,7 @@ QDEF:AddConvo("go_to_game")
                 player:
                     Then let {challenger.himher} go. You just have to accept that {challenger.heshe} beat you fair and square.
                 agent:
-                    !facepalm
+                    !palm
                     I- Fine. You do have a point.
                 challenger:
                     !left

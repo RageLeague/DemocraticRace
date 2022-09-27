@@ -297,7 +297,7 @@ QDEF:AddConvo("go_to_interview")
                     !surprised
                     Really?
                 primary_advisor:
-                    !facepalm
+                    !palm
                     Yes really! I can't believe you didn't realize the importance of such interview.
                     Anyway, you have a few minutes before the interview starts. Try compose yourself before you go.
                     {has_pet?

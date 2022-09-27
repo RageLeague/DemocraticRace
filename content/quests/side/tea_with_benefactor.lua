@@ -340,7 +340,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
                 Can't see anything wrong with that.
             {has_primary_advisor?
             agent:
-                !facepalm
+                !palm
                 I can't believe that free drinks is only what you care about.
                 Anyway, don't keep our host waiting!
             }

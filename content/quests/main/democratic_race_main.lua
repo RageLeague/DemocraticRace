@@ -271,6 +271,10 @@ local QDEF = QuestDef.Define
     end,
     fill_out_quip_tags = function(quest, tags, agent)
         table.insert_unique(tags, "democratic_race")
+        local wealth_tags = { "lower_class", "middle_class", "upper_class", "elite_class" }
+        if wealth_tags[DemocracyUtil.GetWealth(agent)] then
+            table.insert_unique(tags, wealth_tags[DemocracyUtil.GetWealth(agent)])
+        end
         if agent == quest:GetCastMember("primary_advisor") then
             table.insert_unique(tags, "primary_advisor")
         end

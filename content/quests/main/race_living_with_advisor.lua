@@ -54,7 +54,32 @@ QDEF:AddConvo(nil, "primary_advisor")
     :Loc{
         DIALOG_REMOVE = [[
             agent:
+            {advisor_diplomacy?
+                !permit
+                I can help you get rid of your cringe thoughts...
+            }
+            {advisor_manipulate?
+                !permit
+                Let me help you get rid of illogical thoughts...
+            }
+            {advisor_hostile?
+                {not (depressed or accept_limits)?
+                    !hips
+                    Nobody knows how to make you focus better than me.
+                }
+                {accept_limits and not depressed?
+                    !permit
+                    Nobody is perfect. But I can help you improve.
+                }
+                {depressed?
+                    !sigh
+                    You don't need someone as useless as me tell you what to do.
+                }
+            }
+            {not (advisor_diplomacy or advisor_manipulate or advisor_hostile)?
+                !permit
                 Getting overwhelmed? Let me help you focus...
+            }
         ]],
         OPT_CHECK_SUPPORT = "Check support...",
         DIALOG_CHECK_SUPPORT = [[
@@ -73,8 +98,14 @@ QDEF:AddConvo(nil, "primary_advisor")
             player:
                 I need to access my room.
             agent:
+            {depressed?
+                !handwave
+                You don't need to ask someone as worthless as me for permission.
+            }
+            {not depressed?
                 !handwave
                 I ain't going to stop you.
+            }
                 !exit
         ]],
     }
