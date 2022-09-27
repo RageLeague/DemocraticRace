@@ -783,9 +783,10 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                     Like I said, I'm good for now.
                 agent:
                     !shrug
-                    Alright.
+                    Well, if you say so.
+                    Remember, you can always talk to your opponent later on, and potentially talk about alliances.
                     !point
-                    You should go back to campaigning then. We've got work to do.
+                    Anyway, you should go back to campaigning then. We've got work to do.
             }
             {no_assassin?
                 player:
@@ -875,6 +876,7 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
             end)
             :Dialog("DIALOG_DONE_QUEST")
             :Fn(function(cxt)
+                QuestUtil.SpawnQuest("CAMPAIGN_NEGOTIATE_ALLIANCES")
                 QuestUtil.SpawnQuest("CAMPAIGN_BODYGUARD")
             end)
             :CompleteQuest()
@@ -934,16 +936,15 @@ QDEF:AddConvo("meet_opposition", "primary_advisor")
                         But just remember: if you want to win the election, you will need allies.
                         Go ask around and see if you can find candidates with similar ideologies. That might be a start.
                     }
-                    ** You can now talk to other candidates with similar interests and form an alliance!
+                    ** You can talk to other candidates with similar interests and form an alliance after this conversation.
                 }
             ]],
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
             if cxt.quest.param.greeted and not cxt.quest.param.talked_to_advisor then
-                QuestUtil.SpawnQuest("CAMPAIGN_NEGOTIATE_ALLIANCES")
+                cxt.quest.param.talked_to_advisor = true
             end
-            cxt.quest.param.talked_to_advisor = true
         end)
 
     :AskAboutHubConditions("STATE_QUESTIONS",
