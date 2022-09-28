@@ -72,12 +72,12 @@ QDEF:AddConvo()
             ]],
             OPT_SIDE_WITH = "Side with {1#agent}",
             DIALOG_SIDED = [[
-                other:
+                opposition:
                     !right
                 player:
                     !left
                     Out of the both of you, {agent} is in the right.
-                other:
+                opposition:
                     !surprised
                     What? You would rather side with {agent} than me?
                     That's just so wrong!
@@ -86,11 +86,11 @@ QDEF:AddConvo()
                     !left
                     You're the one who's in the wrong here.
                     See? The grifter also thinks that my idea is correct.
-                other:
+                opposition:
                     !angry_accuse
                     I won't forget this!
                     !exit
-                * {other.HeShe} leaves.
+                * {opposition.gender:He leaves|She leaves|They leave}.
                 * {agent} slumps {agent.hisher} shoulders and lets out a sigh of relief.
                 player:
                     !left
@@ -136,7 +136,7 @@ QDEF:AddConvo()
             cxt:Opt("OPT_SIDE_WITH", cxt.quest:GetCastMember("extremist_pos"))
                 :Fn(function(cxt)
                     cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("extremist_pos"))
-                    cxt:ReassignCastMember("other", cxt.quest:GetCastMember("extremist_neg"))
+                    cxt:ReassignCastMember("opposition", cxt.quest:GetCastMember("extremist_neg"))
                 end)
                 :Dialog("DIALOG_SIDED")
                 :ReceiveOpinion(OPINION.DISAPPROVE_MINOR, nil, cxt.quest:GetCastMember("extremist_neg"))
@@ -146,7 +146,7 @@ QDEF:AddConvo()
             cxt:Opt("OPT_SIDE_WITH", cxt.quest:GetCastMember("extremist_neg"))
                 :Fn(function(cxt)
                     cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember("extremist_neg"))
-                    cxt:ReassignCastMember("other", cxt.quest:GetCastMember("extremist_pos"))
+                    cxt:ReassignCastMember("opposition", cxt.quest:GetCastMember("extremist_pos"))
                 end)
                 :Dialog("DIALOG_SIDED")
                 :ReceiveOpinion(OPINION.DISAPPROVE_MINOR, nil, cxt.quest:GetCastMember("extremist_pos"))
