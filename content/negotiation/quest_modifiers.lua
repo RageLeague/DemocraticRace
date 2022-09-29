@@ -1990,11 +1990,11 @@ local MODIFIERS =
     ELDRITCH_EXISTENCE =
     {
         name = "Eldritch Existence",
-        desc = "At the end of the player turn, for each card remaining in their hand, target argument takes {1} damage.",
+        desc = "At the end of the player turn, for each card remaining in their hand, target argument takes {1} damage. {status_fracturing_mind} added by {2} also has {REPLENISH}",
         icon = "DEMOCRATICRACE:assets/modifiers/eldritch_existence.png",
 
         desc_fn = function(self, fmt_str)
-            return loc.format(fmt_str, self:GetDamageMultiplier())
+            return loc.format(fmt_str, self:GetDamageMultiplier(), self:GetOwnerName())
         end,
 
         modifier_type = MODIFIER_TYPE.CORE,

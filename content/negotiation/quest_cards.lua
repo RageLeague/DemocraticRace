@@ -567,7 +567,7 @@ local CARDS = {
         end,
 
         cost = 1,
-        flags =  CARD_FLAGS.STATUS | CARD_FLAGS.EXPEND | CARD_FLAGS.REPLENISH,
+        flags =  CARD_FLAGS.STATUS | CARD_FLAGS.EXPEND,
         rarity = CARD_RARITY.UNIQUE,
 
         target_self = TARGET_ANY_RESOLVE,
@@ -594,6 +594,7 @@ local CARDS = {
                     for k = 1, 2 do
                         local incepted_card = Negotiation.Card( "status_fracturing_mind", self.owner)
                         incepted_card.userdata.count = new_amt
+                        incepted_card.flags = self.flags
                         table.insert(cards, incepted_card )
                     end
                     minigame:DealCards( cards, minigame:GetDiscardDeck() )
@@ -620,6 +621,7 @@ local CARDS = {
             local cards = {}
             for i = 1, self.count do
                 local card = Negotiation.Card( "status_fracturing_mind", minigame:GetPlayer() )
+                card.flags = card.flags | CARD_FLAGS.REPLENISH
                 table.insert( cards, card )
             end
             minigame:InceptCards( cards, self )
