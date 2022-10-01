@@ -55,7 +55,7 @@ local QDEF = QuestDef.Define
         if agent:GetFactionID() == "ADMIRALTY" then
             quest.param.is_ad = true
         end
-        if agent:GetFactionID() == "SPARK_BARON" or agent:GetFactionID() == "CULT_OF_HESH" then
+        if agent:GetFactionID() == "SPARK_BARONS" or agent:GetFactionID() == "CULT_OF_HESH" then
             quest.param.rival_faction = true
 
         end

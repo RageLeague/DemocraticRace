@@ -177,54 +177,96 @@ QDEF:AddConvo("win_argument")
     :State("STATE_START")
         :Loc{
             GENERIC_BAD_OPINION = [[
+                !angry_accuse
+                $angryHostile
                 Everyone here all suck!
+                $angryHostile
                 Wake up sheeple!
+                $angryHostile
                 You all have no idea behind the big picture!
+                $angrySeething
                 Don't listen to what they tell you!
             ]],
             LABORER_BAD_OPINION = [[
+                $angrySeething
                 The laborers have been oppressed for so long!
+                $angryHostile
                 Time to fight back, people!
                 !throatcut
+                $angryHostile
                 Kill all those who exploit the fruit of our labor!
+                $angryHostile
                 Grifters, switches, cultists, barons, bandits, they are all the same!
+                !angry_accuse
+                $angryHostile
                 They don't deserve to live!
             ]],
             WEALTHY_BAD_OPINION = [[
+                !angry_accuse
+                $angryHostile
                 You all should be working, not gorging yourselves on fine dining!
                 !angry_accuse
+                $angryHostile
                 If you had worked harder, you wouldn't have been in so much debt!
+                $angryHostile
                 It's all your fault if you're indebted.
+                !hips
+                $angrySeething
                 Just pull yourselves up by your bootstraps! What's so hard about that?
             ]],
             AUTHORITY_BAD_OPINION = [[
+                !angry_accuse
+                $angrySeething
                 You keep complaining about us arresting you, but have you considered not committing crimes?
+                $angryHostile
                 The law isn't that hard to follow, is it?
                 !angry_shrug
+                $angryHostile
                 Of course all of our actions are lawful.
+                $angryTakenAback
                 What do you mean we can't do whatever we want just because we have the authority?
+                !angry_accuse
+                $angryHostile
                 We are the law!
             ]],
             UNLAWFUL_BAD_OPINION = [[
+                !angry_shrug
+                $angryHostile
                 The authority is too corrupt! And they always will be!
-                !angry_accuse
+                !throatcut
+                $angryHostile
                 Let's get rid of authority altogether!
+                $angryHostile
                 No more laws, everyone can do whatever the Hesh they want!
+                $angryHostile
                 The society is better off if it is in complete anarchy!
             ]],
             WORSHIPPER_BAD_OPINION = [[
                 !hesh_greeting
+                $angryGreeting
                 All shall tremble before the mighty Hesh!
+                $angryDefault
                 Believe in Hesh, and your life will be happy and prosperous!
+                $angryHostile
+                !angry_accuse
+                $angryPatienceLost
                 Disregard Hesh, and your life will be filled with misery!
+                $angryHostile
                 We must devote every hour of our life to Hesh!
+                !throatcut
+                $angrySeething
                 All heretics must be executed!
             ]],
             BROKER_BAD_OPINION = [[
+                !angry_shrug
+                $angryTakenAback
                 What do you mean debt breaking should be illegal?
+                $angryHostile
                 It's perfectly fine if you agreed to it!
                 !angry_shrug
+                $angryPatienceLost
                 Can't pay it back? Just don't borrow money!
+                $angryPatienceLost
                 You should've known the consequences before you agree to do anything!
             ]],
             CRYPTIC_BAD_OPINION = [[
@@ -256,55 +298,77 @@ QDEF:AddConvo("win_argument")
 
             ]],
             DIALOG_INTRO_PST = [[
-                * You feel like it's your moral obligation to correct {agent.hisher} opinion.
+                * This is one of the most atrocious political rant you've heard ever since you've been here.
+                * The only one you've heard in fact. But it doesn't change the fact on how atrocious it is.
+                * You feel like it's your moral obligation to shut {agent.himher} down.
             ]],
             OPT_DEBATE = [[Make {agent} stop]],
             TT_DEBATE = "You will start with some {1#card} in your deck.",
             DIALOG_DEBATE = [[
                 player:
                     !left
+                    !point
+                    $neutralAside
                     {agent.gender:Sir|Ma'am|Excuse me}, this is a Wendy's.
                 agent:
                     !dubious
+                    $neutralDubious
                     Uhh, no? This is the Slurping Snail.
                 player:
+                    $neutralWhatever
                     That's not the point.
                     !cruel
+                    $angryCruel
                     The point is how wrong and stupid your opinion is.
             ]],
             DIALOG_DEBATE_WIN = [[
                 player:
                     !angry
+                    $angryDefault
                     This is one of the most stupid things that I've heard.
+                    $angryDefault
                     Have you heard yourself speak at all? I can't believe anyone would stoop this low!
+                    $angryDefault
                     Maybe instead of babbling about in public and utterly humiliate yourself, you should get a life and talk to actual people.
-                    Then maybe you can be an actual functioning member of the society and have a less awful opinion.
+                    $angryCruel
+                    Then maybe you can be an actual functioning member of the society.
                 agent:
                     !scared
+                    $angryTakenAback
                     I... You... Dare...?
                 player:
                     !cruel
+                    $angryCruel
                     What's the matter? Vroc got your tongue?
                 agent:
                     !angry
+                    $angryDefault
                     I will remember this!
                     !exit
                 * Then, {agent} storms out of the noodle shop, in the most humiliating manner possible.
             ]],
             DIALOG_DEBATE_LOST = [[
                 player:
+                    $angryDefault
+                    !angry_accuse
                     Your opinion is stupid.
                 agent:
+                    !hips
+                    $happyJoke
                     And yet, you haven't provided an alternate opinion.
+                    !dubious
+                    $neutralDubious
                     Seriously? You just said "your opinion is stupid" the entire time.
+                    !angry_accuse
+                    $angryHostile
                     It's because people like you, who can't think for themselves, that there are so many problems in Havaria.
                 * Utterly humiliated, you return to your bowl and drink, covering your face from the entire bar of people laughing at you.
                 * Wow, that was an utter failure.
                 * You are never able to recover from that failure.
                 * You can never gather enough resolve to pursue politics.
                 * Seriously, you suck at this game. This is the first negotiation, and you already failed.
-                * Full resolve, WEAKEST ENEMY.
-                * Just...start a new run already. This time maybe watch the tutorial beforehand.
+                * Full resolve, FIRST OPPONENT.
+                * Just... start a new run already. This time maybe watch the tutorial beforehand.
             ]],
 
             OPT_IGNORE = [[Ignore {agent.himher}. {agent.HeShe} isn't worth your time.]],
@@ -400,25 +464,38 @@ QDEF:AddConvo("win_argument")
                 * You considered the encounter you had with {heckler}.
                 player:
                     !thought
+                    $happyCocky
                     Wow, I can't believe how good I am at political debates.
+                    $neutralThoughtful
                     Maybe I should use my power for good.
-                    Like running for the president.
+                    !eureka
+                    $happyAmazed
+                    Like running for leadership.
                 * That's right, Havaria is a democracy now.
-                * In fact, it is a very recent development, and the election is coming up in a few days.
+                * In fact, it is a very recent development. Havaria has just decided that it is going to have an election in a few days.
                 player:
                 {not player_arint?
+                    $neutralJoke
                     Here I thought this is all just another grift for me.
-                    But now, I am going to pull the biggest grift of all: running for presidency.
+                    !handwring
+                    $miscMischievous
+                    But now, I am going to pull the biggest grift of all: running for leadership.
                 }
                 {player_arint?
+                    $neutralThoughtful
                     The Spark Barons need another choice.
+                    !thought
+                    $neutralThoughtful
                     Someone who is less impulsive and actually has a plan.
-                    It's decided: I am running for presidency.
+                    !eureka
+                    $miscMischievous
+                    It's decided: I am running for leadership.
                 }
                     !thought
                     Now, to run a campaign, I need to gather some support.
+                    $neutralThoughtful
                     And I might know just the thing...
-                *** After the successful debate, you decide to run for presidency.
+                *** After the successful debate, you decide to run for leadership.
             ]],
         }
         :Fn(function(cxt)

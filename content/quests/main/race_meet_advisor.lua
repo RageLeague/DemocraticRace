@@ -173,9 +173,10 @@ QDEF:AddConvo("go_to_bar")
     :State("STATE_FAILURE")
         :Loc{
             DIALOG_INTRO = [[
-                * You arrived at the shop.
-                * You ordered a bowl of noodles, thinking about today's failure.
-                * Perhaps you shouldn't run for president after all.
+                * You arrive at the shop.
+                * Sitting at a table, you think about your failure of your political rally.
+                * Perhaps you aren't fit for the job. Perhaps you are never meant to be a leader.
+                * As your noodle order come in, you chow it down quickly, swallowing your failure and shame.
             ]],
         }
         :Fn(function(cxt)
@@ -191,8 +192,9 @@ QDEF:AddConvo("go_to_bar")
                     !left
                 advisor_diplomacy:
                     !right
+                    !permit
                     How do you do, fellow grifter?
-                    I've heard you were running for president.
+                    I've heard you were running for leadership.
                 player:
                     Yeah, that's me. What do you want?
                 advisor_diplomacy:
@@ -254,44 +256,49 @@ QDEF:AddConvo("choose_advisor", "advisor_diplomacy")
         :Loc{
             DIALOG_INTRO = [[
                 agent:
-                    Hello, {player}.
-                    Ready to make a decision yet?
+                    Are you ready to make a decision yet, my fellow grifter?
             ]],
             DIALOG_QUESTION = [[
                 player:
+                    !neutral
                     Why should I pick you and not anyone else?
                 agent:
                     !handwave
                     Look, I'm a people's person.
                     With my Charisma 100, I can convince anyone of anything.
                     !nod
-                    And if you choose me, I can show you the wae.
-                * You're not sure why {agent.heshe} says "way" this way.
+                    And if you choose me, I can show you the way.
                 player:
                     !dubious
                     That doesn't sound very convincing.
                 agent:
-                    I don't think you understand.
-                    !cruel
-                    You <i>will</> be convinced.
+                    !crossed
+                    Look, if you don't want a based people person's help, why did you even ask in the first place?
                 player:
                     !placate
-                    Okay, calm down.
-                    I get your point.
-                ** {agent} will provide more diplomatic cards in {agent.hisher} card shop, is what {agent.heshe}'s saying.
+                    That's not what I mean.
+                agent:
+                    Besides, you want a based person as your advisor.
+                    Someone who is not motivated by cringe normie things like money. Someone who has a goal beyond a common grift.
+                player:
+                    That... Sure is an interesting point.
+                ** {agent} will provide more diplomatic cards in {agent.hisher} card shop, is what {agent.gender:he's|she's|they're} saying.
             ]],
             DIALOG_PICK = [[
                 player:
+                    !agree
                     I guess you can be my advisor.
                 agent:
+                    !happy
                     Sweet!
                     That is a wholesome 100 moment.
             ]],
             DIALOG_LATER = [[
                 player:
-                    Not yet.
+                    I need to think about it for a bit longer.
                 agent:
-                    Oh well. Take your time.
+                    Alright.
+                    But you know there is only one person who can get you to where you want.
             ]],
         }
         :SetLooping()
@@ -303,7 +310,7 @@ QDEF:AddConvo("choose_advisor", "advisor_hostile")
             DIALOG_INTRO = [[
                 agent:
                     Nobody knows debating better than me.
-                    So you better pick me, quick. I'm very impatient.
+                    So you better pick me as your advisor. You don't want to miss this opportunity.
             ]],
             DIALOG_QUESTION = [[
                 player:
@@ -311,16 +318,21 @@ QDEF:AddConvo("choose_advisor", "advisor_hostile")
                 agent:
                     I already told you.
                     !thumb
-                    Nobody knows debating better than me, so I'm your best option.
-                    My secret? Talking over the opposition.
+                    Nobody knows political campaigns better than me, so I'm your best option.
                 player:
-                    That's not-
+                    Really? I find that hard to believe.
                 agent:
                     You're wrong.
-                    It works a hundred percent of the time.
-                    As long as you don't give the opponent the chance to speak, they can't refute what you're saying.
-                    And you win by default.
-                ** {agent} will provide more hostile cards in {agent.hisher} card shop, is what {agent.heshe}'s saying.
+                player:
+                    Excuse me?
+                agent:
+                    I am the best advisor I know. The best advisor you would ever meet.
+                    Of course, you would never reach my level. Which is why I can help you improve.
+                player:
+                    Well, I appreciate your confidence at least.
+                agent:
+                    Ha! Confidence comes naturally when you are competent like me.
+                ** {agent} will provide more hostile cards in {agent.hisher} card shop, is what {agent.gender:he's|she's|they're} saying.
             ]],
 
             DIALOG_PICK = [[
@@ -358,10 +370,10 @@ QDEF:AddConvo("choose_advisor", "advisor_manipulate")
                 player:
                     What if facts and logic isn't on my side? Will you still help me?
                 agent:
-                    That thought is quite illogical.
-                    Facts and logic is subjective, yet it appears objective.
-                    I can teach you how to make facts and logic be on your side, even though it does not appear to be.
-                ** {agent} will provide more manipulative cards in {agent.hisher} card shop, is what {agent.heshe}'s saying.
+                    If facts and logic isn't on your side, it's your problem, not mine.
+                    Make sure your objective aligns with facts and logic, or make facts and logic align with your objective, whichever is easier.
+                    Logically, if you choose me as your advisor, I can help you with that.
+                ** {agent} will provide more manipulative cards in {agent.hisher} card shop, is what {agent.gender:he's|she's|they're} saying.
             ]],
 
             DIALOG_PICK = [[
@@ -384,12 +396,55 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
     :AttractState("STATE_TALK")
         :Loc{
             DIALOG_INTRO = [[
-                agent:
-                    You're running for president, yes?
-                    I saw what you did this morning. You are very talented at this kind of stuff.
-                    You have a way with your words. I can give you that.
-                player:
-                    Really? Thanks.
+                {advisor_diplomacy?
+                    agent:
+                        You are running for leadership, yes?
+                    player:
+                        Yes, that's me.
+                    agent:
+                        A based objective, indeed.
+                    player:
+                        !dubious
+                        Is... that a good thing?
+                    agent:
+                        Oh, yes. You want to be based, of course.
+                        And from what I've seen, you really are based.
+                        Your words certainly reached the normies, I can tell.
+                    player:
+                        That... sounds good?
+                }
+                {advisor_manipulate?
+                    agent:
+                        So, am I right to conclude that you are running for leadership?
+                    player:
+                        You don't need to conclude anything, but yes.
+                    agent:
+                        So, having established that, we can assume that you need strong logical skills in order to convince the masses.
+                        From what I've see in the morning, you certainly have strong rhetorical skills. The masses are convinced by your facts and logic.
+                        I'm sure that my husband, who is a doctor, can agree as well.
+                    player:
+                        Thanks, I guess.
+                        Not sure if the last remark is necessary, but thanks anyway.
+                }
+                {advisor_hostile?
+                    agent:
+                        So, you must be running for leadership?
+                    player:
+                        Yes, that's me.
+                    agent:
+                        Good stuff.
+                        I saw what you did earlier. Good stuff. Tremendous stuff.
+                        Of course, nobody knows debate better than me, but you come very close.
+                    player:
+                        I'm never getting a compliment better than this, am I?
+                }
+                {not (advisor_diplomacy or advisor_manipulate or advisor_hostile)?
+                    agent:
+                        I saw what you did this morning.
+                        You have a way with your words, I'll give you that.
+                    player:
+                        Really? Thanks.
+                }
                 agent:
                     Well, I didn't offer to become your advisor because I want to compliment you.
                     There are many things I want to talk about with you.
@@ -402,16 +457,45 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                 player:
                     Yes, actually.
                     I think I was a politician in a past life.
-                agent:
-                    !dubious
-                    Uh huh, very funny.
-                player:
-                    No, seriously, I did this a few time before already.
-                agent:
-                    !placate
-                    Okay, geez! I got your point.
-                    So you know the drill, right?
-                    Random people disliking you, unlocking the grog. Let's just get this over with.
+                {advisor_manipulate?
+                    agent:
+                        Well, in that case, logically speaking, I don't need to go over the tedious explanation.
+                    player:
+                        Wait, aren't you even going to question if I am joking or not?
+                    agent:
+                        Wait, you're joking?
+                    player:
+                        Well... No, but I would expect you to at least question it.
+                        Just... forget it.
+                    agent:
+                        Anyway... As I was saying, you know all of these stuff.
+                        Random people disliking you, unlocking the bar. Excellent. Glad we got that over.
+                }
+                {advisor_hostile?
+                    agent:
+                        Yeah, right.
+                        Even if that's the case, you still won't be as good at campaigning as me.
+                    player:
+                        !crossed
+                        Well, I am good enough to not need your explanation.
+                    agent:
+                        !crossed
+                        Hmph.
+                        If you are good enough, you should know what comes next.
+                        Random people disliking you, unlocking the bar. Let's just get this over with.
+                }
+                {not (advisor_manipulate or advisor_hostile)?
+                    agent:
+                        !dubious
+                        Uh huh, very funny.
+                    player:
+                        No, seriously, I did this a few time before already.
+                    agent:
+                        !shrug
+                        If you say so.
+                        So you know the drill, right?
+                        Random people disliking you, unlocking the bar. Let's just get this over with.
+                }
             ]],
             DIALOG_NO = [[
                 player:
@@ -442,63 +526,139 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
             cxt:Opt("OPT_NO")
                 :Dialog("DIALOG_NO")
                 :GoTo("STATE_QUESTIONS")
-                -- :Fn(function()DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 2)end)
-                -- :Dialog("DIALOG_NO_CONT")
-            -- StateGraphUtil.AddEndOption(cxt.hub)
-
-            -- cxt:GetAgent():GetBrain():MoveToHome()
-            -- QuestUtil.SpawnQuest("RACE_LIVING_WITH_ADVISOR")
         end)
     :State("STATE_QUESTIONS")
         :Loc{
-            OPT_SUPPORT = "Ask about support level",
+            OPT_SUPPORT = "Ask about support",
             DIALOG_SUPPORT = [[
+                player:
+                    How do I know how popular I am, or if people will vote for me or not?
                 agent:
-                    The first step of running a campaign is to realize that being a politician is a hard job.
-                    There are different ways of approaching problems in the society, and people have different opinions on these approaches.
-                    Naturally, some people will dislike you simply because of your ideology.
+                    Well here's the thing.
+                {advisor_diplomacy?
+                    The general public is cringe.
+                    They will dislike you, simply because you are popular.
+                }
+                {advisor_manipulate?
+                    Logically speaking, as you get more popular, more people will start to dislike you because you are popular.
+                }
+                {advisor_hostile?
+                    Some people are naturally jealous.
+                    They will dislike you because they have no talents of their own, and envy your skills.
+                }
+                {not (advisor_diplomacy or advisor_manipulate or advisor_manipulate)?
+                    They will dislike you, simply because you are popular.
+                }
                 * As if on cue, you see a notification showing people disliking you.
             ]],
             DIALOG_SUPPORT_PST = [[
                 player:
                     What is this? That seems very arbitrary.
                 agent:
-                    It may seem arbitrary, but you have to deal with these people.
-                    You need gain support level to increase the popularity among the people.
-                    Remember, people who like you or love you will most likely vote for you, and people who dislike or hate you will most likely vote against you.
-                    But the support level affects your popularity among swing voters.
-                    At the same time, you should make people like you more, since they will help your with negotiation and solidifies their votes for you.
-                    Check out this tutorial for more information.
-                * {agent} handed you a pamphlet, which you promptly pocketed after reading it (or not).
+                    It may seem arbitrary, but it is what you have to deal with as a politician.
+                    Which is why in order to get people to vote for you, you need to get people on your side.
+                    How popular you are among the people is measured by your support.
+                {advisor_diplomacy?
+                    If you want to get people to vote for you, you need to ratio your opponent's support.
+                }
+                {advisor_manipulate?
+                    Hypothetically speaking, the more support you have, the more likely that the people will vote for you.
+                }
+                {not (advisor_diplomacy or advisor_manipulate)?
+                    The more support you have, the more likely that the people will vote for you.
+                }
+                    !permit
+                    Here's more information about support. You should take a look.
+                player:
+                    !take
+                    Thanks.
             ]],
             OPT_FUNDING = "Ask about funding",
             DIALOG_FUNDING = [[
-                agent:
-                    Your support level determines how much funding you get.
-                    Additionally, richer people provides more funding for you than poorer people, so it might be a good idea to gain more support from the rich.
-                    I'll help you collect funding, and give it to you by the end of each day.
-                    Then you can focus on the actual campaign.
                 player:
-                    I bet you're doing that just because you can pocket extra money without letting me know.
+                    I can't help but notice that I am not actively making money when I am rallying for support.
+                    How am supposed to get funding for the campaign?
                 agent:
-                    !happy
-                    ...
+                    You don't have to worry about that.
+                {advisor_diplomacy?
+                    The people love a based candidate, someone who speaks to them personally.
+                    They will donate money to their favorite candidate just so they can win.
+                    If you are popular, especially if people supporting you are loaded, you will get a griftillion shills.
+                }
+                {advisor_manipulate?
+                    Logically, if you have more support, more people will want to donate to your campaign to make sure you succeed.
+                    And the higher their social standings are, the more money they have to spare, and the more you will get from donations.
+                }
+                {advisor_hostile?
+                    Nobody knows about gathering funding more than me.
+                    And if you are as popular as me? People will throw money at you willingly.
+                    Especially those who have money to spare.
+                }
+                {not (advisor_diplomacy or advisor_manipulate or advisor_hostile)?
+                    If your support is high, people will donate you money.
+                    Especially if you are popular among the wealthy.
+                }
+                    I will be managing those funding, of course. I will give them to you by the end of each day.
                 player:
-                    !sigh
-                    Fine, have it your way, then.
-                agent:
-                    You can spend your funding on improving your negotiation skills, advertise your campaign, and even buying shills and manipulating the voter base.
-                player:
-                    I thought our currency is shills. How does buying shills with shills work?
-                agent:
-                    You know how it works.
+                    You sure you aren't pocketing some money for yourself?
+                {advisor_diplomacy?
+                    agent:
+                        !crossed
+                        Hey, what are you insinuating?
+                        As a based {agent.gender:man|woman|person}, I don't care about normie stuff like cheating your campaign money out of you.
+                    player:
+                        !suspicious
+                        Yes, of course you don't.
+                }
+                {advisor_manipulate?
+                    agent:
+                        Naturally.
+                        I mean, I am providing you with a service. Logically speaking, I should get paid for that.
+                    player:
+                        Well, duh. Of course. How could I have think otherwise.
+                    agent:
+                        !agree
+                        Glad you understand facts and logic.
+                        But don't worry. I will only take out what is necessary for myself.
+                        Logically, the rest goes to you and the campaign.
+                    player:
+                        !shrug
+                        Well, at least you are straightforward about it.
+                }
+                {advisor_hostile?
+                    agent:
+                        Ha! You think I care about your measly campaign funds?
+                        I can give you a small loan of a million shills if I want. Although I doubt you can pay it back.
+                    player:
+                        !placate
+                        You know what? I'm not even going to question it.
+                }
+                {not (advisor_diplomacy or advisor_manipulate or advisor_hostile)?
+                    agent:
+                        !bashful
+                        ...No?
+                    player:
+                        !dubious
+                        Uh huh.
+                }
             ]],
             OPT_FREE_TIME = "Ask about free time",
             DIALOG_FREE_TIME = [[
+                player:
+                    Do I get some free time when I am not campaigning?
                 agent:
-                    After spending some time campaigning, you will have some free time.
-                    You can go visit locations you have learned through various means and socialize with your supporters once per day.
-                    Sometimes you will learn new locations from them, sometimes they will provide a random benefit for you.
+                    Yeah. You will get some free time when you are done.
+                    During that time, you can visit many places, talk to many people, and do various things.
+                    You can relax, or you can spend this time socializing with other people and get more support.
+                player:
+                    That sounds good and all, but I don't know where anything is, given that I just got here.
+                {player_smith?
+                    I mean, I was born here, but everything changed so much, and I don't remember where anything is.
+                * That, or you are extremely drunk and forgot everything about the Pearl.
+                }
+                agent:
+                    !handwave
+                    Don't worry. As you talk to people, you will gradually learn where everything is.
                 {not unlocked_grog?
                     {advisor_manipulate?
                         Let's say, that hypothetically, that you don't know where the Hideaway.
@@ -636,6 +796,10 @@ QDEF:AddConvo("visit_office")
                     !left
                     It looks like an okay place.
                 primary_advisor:
+                {advisor_hostile?
+                    !hips
+                    Ha! This is the best office in the history of offices, ever.
+                }
                     !thought
                     I guess you don't have a place to sleep, huh?
                     Well, you can use the office backroom as a bedroom.
@@ -649,6 +813,7 @@ QDEF:AddConvo("visit_office")
             ]],
         }
         :Fn(function(cxt)
+            cxt:TalkTo("primary_advisor")
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Complete()
             QuestUtil.SpawnQuest("RACE_LIVING_WITH_ADVISOR")

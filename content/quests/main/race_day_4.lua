@@ -476,7 +476,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 },
             }):OnSuccess()
                 :Fn(function(cxt)
-                    DemocracyUtil.DropCandidate(cxt.quest:GetCastMember("opponent"))
+                    DemocracyUtil.DropCandidate(cxt:GetCastMember("opponent"))
                     cxt.quest:Complete("starting_out")
                     cxt:GetCastMember("opponent"):MoveToLimbo()
                     StateGraphUtil.AddLeaveLocation(cxt)

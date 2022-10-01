@@ -636,6 +636,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                     !exit
                 * That night, you didn't have any more dreams, which is quite a relief.
             ]],
+            SIT_MOD = "Hard to understand",
         }
         :Fn(function(cxt)
             cxt:TalkTo(TheGame:GetGameState():AddSkinnedAgent("COGNITIVE_HESH"))
@@ -643,6 +644,9 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
             cxt:Dialog("DIALOG_INTRO")
 
             cxt:BasicNegotiation("UNDERSTAND", {
+                situation_modifiers = {
+                    { value = cxt.quest:GetRank() * 5 + 10, text = cxt:GetLocString("SIT_MOD") },
+                },
             })
                 :OnSuccess()
                     :CompleteQuest("ask_info")
@@ -1126,7 +1130,7 @@ QDEF:AddConvo("rat_out_aftermath")
                     !point
                     That's a promise.
                 tei:
-                    !facepalm
+                    !palm
                     Look, you seem like you genuinely don't know, and you seem sincere enough.
                     I'll let you go this time, but don't do this again, alright?
                     I can't promise that I will be merciful next time, or anyone else for that matter.

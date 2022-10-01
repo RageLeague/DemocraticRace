@@ -4,7 +4,7 @@ A pioneer campaign mod for Griftlands, the Democratic Race is a mod for Griftlan
 
 This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
-Version: 0.8.0(Alpha)
+Version: 0.8.1(Alpha)
 
 Author: RageLeague
 
@@ -104,6 +104,24 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Flange Finnegan
 
 ## Changelog
+
+### 0.8.1
+
+This is a small update. Just to get something out before Bogtober.
+
+* Many dialog changes for the main story. Including many dialog variations based on the player character, advisor, and potentially the opponent you are talking to.
+* Added a couple of smalltalks based on the player character.
+* Fixed wrong ID for Spark Barons in Admiralty arrest event/option.
+* Changed timing for alliance negotiation option.
+* Fixed some wrong emotes.
+* Fixed incorrect casting in political dilemma event.
+* Added missing dialog for paying when you run into trouble with the Admiralty.
+* Fixed candidate not dropping out when convinced them to do so.
+
+These following changes involve spoilers for Benni's request.
+* New Hesh build.
+* Fracturing Mind now only replenishes when incepted by Hesh itself.
+* Hesh has more resolve during your negotiation with it.
 
 ### 0.8.0 (Day 4 Update)
 

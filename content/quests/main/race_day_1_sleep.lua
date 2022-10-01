@@ -557,7 +557,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                             Yeah, an assassin tried to kill {player}, but it seems like {agent.heshe} got away.
                     }
                     responder:
-                        !facepalm
+                        !palm
                         I hate it when that happens.
                         Of course someone will try to assassinate a candidate.
                         Why would my job be any easier?
@@ -1126,6 +1126,9 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
             end
             if not cxt.quest.param.did_assassination and TheGame:GetGameState():GetMainQuest() then
                 TheGame:GetGameState():GetMainQuest().param.no_day_1_assassin = true
+            end
+            if cxt.quest.param.advisor_intervention and TheGame:GetGameState():GetMainQuest() then
+                TheGame:GetGameState():GetMainQuest().param.day_1_advisor_intervention = true
             end
             cxt:Opt("OPT_SLEEP")
                 :PreIcon(global_images.sleep)
