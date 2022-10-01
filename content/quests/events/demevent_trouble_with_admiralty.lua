@@ -144,6 +144,7 @@ QDEF:AddConvo()
             end
             local pay_cost = 50 + 25 * cxt.quest:GetRank()
             cxt:Opt("OPT_PAY")
+                :Dialog("DIALOG_PAY")
                 :DeliverMoney(pay_cost)
                 :Travel()
             if not cxt.quest.param.tried_convince then
