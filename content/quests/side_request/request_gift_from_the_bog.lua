@@ -74,7 +74,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "pick_up_package",
     title = "Pick up package from {delivery}.",
-    desc = "Go to {delivery}'s home and pick up the package from them.",
+    desc = "Go to {delivery}'s home and pick up the package from {delivery.himher}.",
     mark = function(quest, t, in_location)
         if DemocracyUtil.IsFreeTimeActive() then
             table.insert(t, quest:GetCastMember("delivery"))
@@ -98,7 +98,7 @@ QDEF:AddIntro(
             Maybe start from {delivery.hisher} home. See if you can find {delivery.himher} there.
     ]])
 
-QDEF:AddConvo("pick_up_package", "delivery_home")
+QDEF:AddConvo("pick_up_package")
     :Confront(function(cxt)
         if cxt.location == cxt:GetCastMember("delivery_home") then
             if cxt:GetCastMember("delivery"):GetLocation() == cxt:GetCastMember("delivery_home") then
@@ -112,6 +112,12 @@ QDEF:AddConvo("pick_up_package", "delivery_home")
         :Loc{
             DIALOG_INTRO = [[
                 * [p] You visit {agent}'s home.
+                player:
+                    !left
+                    !scared
+                agent:
+                    !right
+                    !injured
                 * {agent} writhes in pain.
                 * When you ask, {agent} shows you bog parasites growing out of {agent.hisher} arm.
                 {have_parasite?
@@ -126,7 +132,7 @@ QDEF:AddConvo("pick_up_package", "delivery_home")
                 * This is a big deal. You need to tell everyone about it.
             ]],
             OPT_SURGERY = "Perform \"surgery\" on {agent}",
-            TT_SURGERY = "Get rid of {agent}'s parasite in a battle. Or use it as an excuse to attack {agent.himher}.",
+            TT_SURGERY = "Get rid of {agent}'s parasite in a battle. Or {agent} in general, if that's how you want things to go.",
             DIALOG_SURGERY = [[
                 player:
                     !fight
@@ -135,19 +141,55 @@ QDEF:AddConvo("pick_up_package", "delivery_home")
             DIALOG_SURGERY_WIN = [[
                 * [p] You got rid of the parasite.
                 * {agent} thanks you.
+                {infected?
+                    * [p] But during the battle, seems like you contracted the parasite.
+                    {vaccinated?
+                        * Luckily, you are vaccinated against it. Shouldn't cause a problem.
+                    }
+                    {not vaccinated?
+                        * That's not good.
+                    }
+                }
             ]],
             DIALOG_SURGERY_RUN = [[
                 * [p] You grabbed the package and run.
                 * {agent} is too busy writhing in pain than to chase after you.
+                {infected?
+                    * [p] But during the battle, seems like you contracted the parasite.
+                    {vaccinated?
+                        * Luckily, you are vaccinated against it. Shouldn't cause a problem.
+                    }
+                    {not vaccinated?
+                        * That's not good.
+                    }
+                }
             ]],
             DIALOG_SURGERY_KILLED = [[
                 * [p] Okay, you straight up just killed {agent}.
                 * That's one way of dealing with parasites.
+                {infected?
+                    * [p] But during the battle, seems like you contracted the parasite.
+                    {vaccinated?
+                        * Luckily, you are vaccinated against it. Shouldn't cause a problem.
+                    }
+                    {not vaccinated?
+                        * That's not good.
+                    }
+                }
             ]],
             DIALOG_SURGERY_FAILED = [[
                 * [p] It doesn't seem to actually help {agent}, and now {agent} is mad.
                 * {agent.HeShe} can't do anything about it, though, since {agent.gender:he's|she's|they're} very injured.
                 * You grabbed the package and leave {agent} to {agent.hisher} fate.
+                {infected?
+                    * [p] But during the battle, seems like you contracted the parasite.
+                    {vaccinated?
+                        * Luckily, you are vaccinated against it. Shouldn't cause a problem.
+                    }
+                    {not vaccinated?
+                        * That's not good.
+                    }
+                }
             ]],
             OPT_ESCORT = "Convince {agent} to follow you",
             DIALOG_ESCORT = [[
@@ -168,6 +210,7 @@ QDEF:AddConvo("pick_up_package", "delivery_home")
                     [p] I can't move.
             ]],
 
+            OPT_LEAVE = "Leave {agent} to {agent.hisher} fate",
             DIALOG_LEAVE = [[
                 player:
                     [p] I'm sorry. There is nothing I can do at this point.
@@ -182,6 +225,73 @@ QDEF:AddConvo("pick_up_package", "delivery_home")
                 * Anyway, you need to get back to {giver} and deliver the package. And also tell {agent} about the parasite situation.
             ]],
         }
+        :SetLooping(true)
+        :Fn(function(cxt)
+            if cxt:FirstLoop() then
+                cxt:TalkTo(cxt:GetCastMember("delivery"))
+                cxt.enc.scratch.vaccinated = cxt.player.graft_owner:HasGraft("perk_vaccinated")
+                cxt:Dialog("DIALOG_INTRO")
+            end
+
+            if not cxt.quest.param.tried_surgery then
+                cxt:Opt("OPT_SURGERY")
+                    :PostText("TT_SURGERY")
+                    :Dialog("DIALOG_SURGERY")
+                    :Battle{
+                        enemies = { cxt:GetCastMember("delivery") },
+                        -- flags = BATTLE_FLAGS.NO_BACKUP,
+                        on_start_battle = function(battle)
+                            local fighter = battle:GetFighterForAgent(cxt:GetAgent())
+                            if fighter then
+                                fighter:AddCondition("DEM_PARASITIC_INFECTION", 1)
+                                fighter:AddCondition("DISEASED", 5)
+                            end
+
+                            local cards = {}
+                            for i = 1, 4 do
+                                table.insert(cards, Battle.Card("dem_incision", battle:GetPlayerFighter()))
+                            end
+                            battle:DealCards(cards, battle:GetDrawDeck())
+                        end,
+                        on_win = function(cxt, battle)
+                            local player = battle:GetFighterForAgent(cxt.player)
+                            cxt.enc.scratch.infected = player and player:HasCondition("DISEASED")
+                            local fighter = battle:GetFighterForAgent(cxt:GetAgent())
+                            if cxt:GetCastMember("delivery"):IsDead() then
+                                cxt:Dialog("DIALOG_SURGERY_KILLED")
+                            elseif fighter and fighter:HasCondition( "DISEASED" ) then
+                                cxt:Dialog("DIALOG_SURGERY_FAILED")
+                            else
+                                cxt:Dialog("DIALOG_SURGERY_WIN")
+                                cxt:GetCastMember("delivery"):OpinionEvent(OPINION.SAVED_LIFE)
+                            end
+                            if cxt.enc.scratch.infected and not cxt.enc.scratch.vaccinated then
+                                cxt:GainCards{"twig", "stem"}
+                            end
+                            cxt.quest.param.tried_surgery = true
+                            cxt.quest:Complete("pick_up_package")
+                            StateGraphUtil.AddLeaveLocation(cxt)
+                        end,
+                        on_runaway = function(cxt, battle)
+                            local player = battle:GetFighterForAgent(cxt.player)
+                            cxt.enc.scratch.infected = player and player:HasCondition("DISEASED")
+
+                            cxt:Dialog("DIALOG_SURGERY_RUN")
+                            if cxt.enc.scratch.infected and not cxt.enc.scratch.vaccinated then
+                                cxt:GainCards{"twig", "stem"}
+                            end
+                            cxt.quest.param.tried_surgery = true
+                            cxt.quest:Complete("pick_up_package")
+                            StateGraphUtil.AddLeaveLocation(cxt)
+                        end,
+                    }
+            end
+
+            cxt:Opt("OPT_LEAVE")
+                :Dialog("DIALOG_LEAVE")
+                :CompleteQuest("pick_up_package")
+                :Travel()
+        end)
     :State("STATE_CONF_NO_PERSON")
         :Loc{
             DIALOG_INTRO_NO_PERSON = [[
@@ -192,3 +302,8 @@ QDEF:AddConvo("pick_up_package", "delivery_home")
                 * You need to tell people about it.
             ]],
         }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO_NO_PERSON")
+            cxt.quest:Complete("pick_up_package")
+            StateGraphUtil.AddLeaveLocation(cxt)
+        end)
