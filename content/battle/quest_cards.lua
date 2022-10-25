@@ -4,9 +4,9 @@ local BATTLE_EVENT = battle_defs.EVENT
 
 local attacks =
 {
-    dem_incision =
+    dem_parasite_extraction =
     {
-        name = "Incision",
+        name = "Parasite Extraction",
         desc = "If the target is at {1#percent} health or less, remove 1 {DISEASED} from the target when this card does unmitigated damage.",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.health_threshold)
@@ -16,8 +16,8 @@ local attacks =
 
         cost = 1,
 
-        rarity = CARD_RARITY.BASIC,
-        flags = CARD_FLAGS.MELEE,
+        rarity = CARD_RARITY.UNIQUE,
+        flags = CARD_FLAGS.MELEE | CARD_FLAGS.REPLENISH,
 
         min_damage = 2,
         max_damage = 4,
@@ -38,7 +38,7 @@ local attacks =
         end,
         OnPostResolve = function( self, battle, attack )
             for i, hit in attack:Hits() do
-                if table.arraycontains(self.valid_targets, hit.target) then
+                if hit.damage_dealt and hit.damage_dealt > 0 and table.arraycontains(self.valid_targets, hit.target) then
                     hit.target:RemoveCondition( "DISEASED", 1, self )
                 end
             end

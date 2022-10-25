@@ -249,7 +249,7 @@ QDEF:AddConvo("pick_up_package")
 
                             local cards = {}
                             for i = 1, 4 do
-                                table.insert(cards, Battle.Card("dem_incision", battle:GetPlayerFighter()))
+                                table.insert(cards, Battle.Card("dem_parasite_extraction", battle:GetPlayerFighter()))
                             end
                             battle:DealCards(cards, battle:GetDrawDeck())
                         end,
