@@ -77,9 +77,18 @@ local QDEF = QuestDef.Define
     desc = "Go to {delivery}'s home and pick up the package from {delivery.himher}.",
     mark = function(quest, t, in_location)
         if DemocracyUtil.IsFreeTimeActive() then
-            table.insert(t, quest:GetCastMember("delivery"))
+            table.insert(t, quest:GetCastMember("delivery_home"))
         end
     end,
+    on_complete = function(quest)
+        quest:Activate("deliver_package")
+    end,
+}
+:AddObjective{
+    id = "deliver_package",
+    title = "Deliver the package to {giver}.",
+    desc = "You got the package. Deliver it to {giver}.",
+    mark = {"giver"},
 }
 
 QDEF:AddIntro(
@@ -204,6 +213,7 @@ QDEF:AddConvo("pick_up_package")
                     We need to get you some help soon.
                 agent:
                     Fine.
+                * You pick up the package and bring {agent} with you.
             ]],
             DIALOG_ESCORT_FAILURE = [[
                 agent:
@@ -233,59 +243,80 @@ QDEF:AddConvo("pick_up_package")
                 cxt:Dialog("DIALOG_INTRO")
             end
 
-            if not cxt.quest.param.tried_surgery then
-                cxt:Opt("OPT_SURGERY")
-                    :PostText("TT_SURGERY")
-                    :Dialog("DIALOG_SURGERY")
-                    :Battle{
-                        enemies = { cxt:GetCastMember("delivery") },
-                        -- flags = BATTLE_FLAGS.NO_BACKUP,
-                        on_start_battle = function(battle)
-                            local fighter = battle:GetFighterForAgent(cxt:GetAgent())
-                            if fighter then
-                                fighter:AddCondition("DEM_PARASITIC_INFECTION", 1)
-                                fighter:AddCondition("DISEASED", 5)
-                            end
+            if not cxt.enc.scratch.tried_escort then
+                cxt:BasicNegotiation("ESCORT", {
 
-                            local cards = {}
-                            for i = 1, 4 do
-                                table.insert(cards, Battle.Card("dem_parasite_extraction", battle:GetPlayerFighter()))
-                            end
-                            battle:DealCards(cards, battle:GetDrawDeck())
-                        end,
-                        on_win = function(cxt, battle)
-                            local player = battle:GetFighterForAgent(cxt.player)
-                            cxt.enc.scratch.infected = player and player:HasCondition("DISEASED")
-                            local fighter = battle:GetFighterForAgent(cxt:GetAgent())
-                            if cxt:GetCastMember("delivery"):IsDead() then
-                                cxt:Dialog("DIALOG_SURGERY_KILLED")
-                            elseif fighter and fighter:HasCondition( "DISEASED" ) then
-                                cxt:Dialog("DIALOG_SURGERY_FAILED")
-                            else
-                                cxt:Dialog("DIALOG_SURGERY_WIN")
-                                cxt:GetCastMember("delivery"):OpinionEvent(OPINION.SAVED_LIFE)
-                            end
-                            if cxt.enc.scratch.infected and not cxt.enc.scratch.vaccinated then
-                                cxt:GainCards{"twig", "stem"}
-                            end
-                            cxt.quest.param.tried_surgery = true
-                            cxt.quest:Complete("pick_up_package")
-                            StateGraphUtil.AddLeaveLocation(cxt)
-                        end,
-                        on_runaway = function(cxt, battle)
-                            local player = battle:GetFighterForAgent(cxt.player)
-                            cxt.enc.scratch.infected = player and player:HasCondition("DISEASED")
-
-                            cxt:Dialog("DIALOG_SURGERY_RUN")
-                            if cxt.enc.scratch.infected and not cxt.enc.scratch.vaccinated then
-                                cxt:GainCards{"twig", "stem"}
-                            end
-                            cxt.quest.param.tried_surgery = true
-                            cxt.quest:Complete("pick_up_package")
-                            StateGraphUtil.AddLeaveLocation(cxt)
-                        end,
-                    }
+                }):OnSuccess()
+                    :Fn(function(cxt)
+                        cxt.quest:Complete("pick_up_package")
+                        local overrides = {
+                            cast = {
+                                escort = cxt:GetAgent(),
+                            },
+                            parameters = {
+                            },
+                        }
+                        cxt:GetAgent():Recruit(PARTY_MEMBER_TYPE.ESCORT)
+                        cxt.quest.param.escort_quest = QuestUtil.SpawnQuest("FOLLOWUP_PARASITE_KILLER", overrides)
+                    end)
+                    :Travel()
+                :OnFailure()
+                    :Fn(function(cxt)
+                        cxt.enc.scratch.tried_escort = true
+                    end)
             end
+
+            cxt:Opt("OPT_SURGERY")
+                :PostText("TT_SURGERY")
+                :Dialog("DIALOG_SURGERY")
+                :Battle{
+                    enemies = { cxt:GetCastMember("delivery") },
+                    -- flags = BATTLE_FLAGS.NO_BACKUP,
+                    on_start_battle = function(battle)
+                        local fighter = battle:GetFighterForAgent(cxt:GetAgent())
+                        if fighter then
+                            fighter:AddCondition("DEM_PARASITIC_INFECTION", 1)
+                            fighter:AddCondition("DISEASED", 5)
+                        end
+
+                        local cards = {}
+                        for i = 1, 4 do
+                            table.insert(cards, Battle.Card("dem_parasite_extraction", battle:GetPlayerFighter()))
+                        end
+                        battle:DealCards(cards, battle:GetDrawDeck())
+                    end,
+                    on_win = function(cxt, battle)
+                        local player = battle:GetFighterForAgent(cxt.player)
+                        cxt.enc.scratch.infected = player and player:HasCondition("DISEASED")
+                        local fighter = battle:GetFighterForAgent(cxt:GetAgent())
+                        if cxt:GetCastMember("delivery"):IsDead() then
+                            cxt:Dialog("DIALOG_SURGERY_KILLED")
+                        elseif fighter and fighter:HasCondition( "DISEASED" ) then
+                            cxt:Dialog("DIALOG_SURGERY_FAILED")
+                        else
+                            cxt:Dialog("DIALOG_SURGERY_WIN")
+                            cxt:GetCastMember("delivery"):OpinionEvent(OPINION.SAVED_LIFE)
+                        end
+                        if cxt.enc.scratch.infected and not cxt.enc.scratch.vaccinated then
+                            cxt:GainCards{"twig", "stem"}
+                        end
+                        cxt.quest.param.tried_surgery = true
+                        cxt.quest:Complete("pick_up_package")
+                        StateGraphUtil.AddLeaveLocation(cxt)
+                    end,
+                    on_runaway = function(cxt, battle)
+                        local player = battle:GetFighterForAgent(cxt.player)
+                        cxt.enc.scratch.infected = player and player:HasCondition("DISEASED")
+
+                        cxt:Dialog("DIALOG_SURGERY_RUN")
+                        if cxt.enc.scratch.infected and not cxt.enc.scratch.vaccinated then
+                            cxt:GainCards{"twig", "stem"}
+                        end
+                        cxt.quest.param.tried_surgery = true
+                        cxt.quest:Complete("pick_up_package")
+                        StateGraphUtil.AddLeaveLocation(cxt)
+                    end,
+                }
 
             cxt:Opt("OPT_LEAVE")
                 :Dialog("DIALOG_LEAVE")
@@ -306,4 +337,44 @@ QDEF:AddConvo("pick_up_package")
             cxt:Dialog("DIALOG_INTRO_NO_PERSON")
             cxt.quest:Complete("pick_up_package")
             StateGraphUtil.AddLeaveLocation(cxt)
+        end)
+
+QDEF:AddConvo("deliver_package")
+    :TravelConfront("INTERRUPT", function(cxt)
+        return not cxt.quest.param.did_admiralty_confront and TheGame:GetGameState():CanSpawnTravelEvent()
+    end)
+        :Loc{
+            DIALOG_INTRO = [[
+                * [p] A bunch of switches walks up to you.
+                player:
+                    !left
+                agent:
+                    !right
+                    You've seen what the parasites looks like.
+                    Come to the our headquarters, and let's talk about it there.
+                {other_party_member?
+                    Your friend, too.
+                }
+            ]],
+            OPT_AGREE = "Agree to follow {agent}",
+            DIALOG_AGREE = [[
+                player:
+                {not other_party_member?
+                    [p] Alright. I'm coming with you.
+                }
+                {other_party_member?
+                    [p] Alright. We'll come with you.
+                party:
+                    !left
+                    Wait, we are?
+                player:
+                    !left
+                }
+                agent:
+                    Excellent. We have a lot to talk about.
+                * You follow {agent} to the Admiralty headquarters.
+            ]],
+        }
+        :Fn(function(cxt)
+
         end)

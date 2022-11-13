@@ -8,6 +8,7 @@ local QDEF = QuestDef.Define
 }
 :AddCast{
     cast_id = "hunter",
+    no_validation = true,
     events = {
         agent_retired = function(quest, agent)
             quest:Fail()
