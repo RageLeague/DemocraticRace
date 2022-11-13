@@ -499,6 +499,15 @@ QDEF:AddConvo("deliver_package")
                             DemocracyUtil.DoEnding(cxt, "disappearance", {})
                         end)
                 end)
+            if not cxt.enc.scratch.tried_refuse then
+                cxt:Opt("OPT_REFUSE")
+                    :Dialog("DIALOG_REFUSE")
+                    :Fn(function(cxt)
+                        cxt.enc.scratch.tried_refuse = true
+                    end)
+                return
+            end
+
             if not cxt.enc.scratch.forced_fight then
                 if not cxt.enc.scratch.tried_bribe then
                     cxt:Opt("OPT_BRIBE")
