@@ -403,8 +403,14 @@ QDEF:AddConvo("deliver_package")
                 agent:
                     [p] The election is coming up, and we don't want something like a bog parasite causing a huge panic.
                     That's why the less information gets out there, the better.
-                * Oh dear. They are going to silence you so you don't cause panic.
-                * {agent} doesn't seem to notice that {agent.heshe} slipped up, though, and you kept your cool.
+                {not player_drunk?
+                    * Oh dear. They are going to silence you so you don't cause panic.
+                    * {agent} doesn't seem to notice that {agent.heshe} slipped up, though, and you kept your cool.
+                }
+                {player_drunk?
+                    * That sounds... bad for you.
+                    * {agent} doesn't seem to notice that {agent.heshe} slipped up, though, and despite how drunk you are, you kept your cool.
+                }
                 agent:
                     Lots of people might not appreciate it, but the Admiralty does a good job at keeping order.
                     Anyway, we need your help so we can understand the parasites better.
@@ -517,5 +523,29 @@ QDEF:AddConvo("deliver_package")
                             cxt.enc.scratch.tried_bribe = true
                         end)
                 end
+                cxt:Opt("OPT_PROBE")
+                    :Dialog("DIALOG_PROBE")
+                    :Negotiation{
+                        on_start_negotiation = function(minigame)
+                            minigame:GetOpponentNegotiator():CreateModifier( "secret_intel", 1 )
+                        end,
+                        on_success = function(cxt, minigame)
+                            local count = minigame:GetPlayerNegotiator():GetModifierStacks( "secret_intel" )
+                            if count > 0 then
+                                cxt:Dialog("DIALOG_PROBE_SUCCESS")
+                                cxt.quest.param.probed_info = true
+                            else
+                                cxt:Dialog("DIALOG_PROBE_FAILURE")
+                            end
+                        end,
+                        on_fail = function(cxt, minigame)
+                            if minigame.secret_intel_destroyed then
+                                cxt:Dialog("DIALOG_PROBE_SLIP_UP")
+                                cxt.enc.scratch.forced_fight = true
+                            else
+                                cxt:Dialog("DIALOG_PROBE_FAILURE")
+                            end
+                        end,
+                    }
             end
         end)
