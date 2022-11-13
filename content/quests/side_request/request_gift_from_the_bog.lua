@@ -341,7 +341,7 @@ QDEF:AddConvo("pick_up_package")
 
 QDEF:AddConvo("deliver_package")
     :TravelConfront("INTERRUPT", function(cxt)
-        return not cxt.quest.param.did_admiralty_confront and TheGame:GetGameState():CanSpawnTravelEvent()
+        return not cxt.quest.param.did_admiralty_confront
     end)
         :Loc{
             DIALOG_INTRO = [[
@@ -374,7 +374,139 @@ QDEF:AddConvo("deliver_package")
                     Excellent. We have a lot to talk about.
                 * You follow {agent} to the Admiralty headquarters.
             ]],
+            OPT_FOLLOW = "Follow {agent}",
+            OPT_REFUSE = "Refuse to follow {agent}",
+            DIALOG_REFUSE = [[
+                player:
+                    [p] Sorry. Kinda busy right now. Gotta bail.
+                agent:
+                    I think you misunderstood me.
+                    I didn't ask for your permission.
+                    You are coming with me. This is an urgent matter.
+            ]],
+            OPT_BRIBE = "Bribe {agent} to let you go",
+            DIALOG_BRIBE = [[
+                player:
+                    [p] Just a little money, and we pretend nothing happened.
+                agent:
+                    Is that how you think this works?
+                    I've got strict orders from the top. You are coming with me.
+                player:
+                    Dang. That usually works.
+            ]],
+            OPT_PROBE = "Ask for why the Admiralty needs you",
+            DIALOG_PROBE = [[
+                player:
+                    [p] Why does the Admiralty need me again?
+            ]],
+            DIALOG_PROBE_SUCCESS = [[
+                agent:
+                    [p] The election is coming up, and we don't want something like a bog parasite causing a huge panic.
+                    That's why the less information gets out there, the better.
+                * Oh dear. They are going to silence you so you don't cause panic.
+                * {agent} doesn't seem to notice that {agent.heshe} slipped up, though, and you kept your cool.
+                agent:
+                    Lots of people might not appreciate it, but the Admiralty does a good job at keeping order.
+                    Anyway, we need your help so we can understand the parasites better.
+                * You need to think of a plan to get out of this situation.
+                {other_party_member?
+                    * Preferably, with your party members, as well.
+                }
+            ]],
+            DIALOG_PROBE_SLIP_UP = [[
+                agent:
+                    [p] The election is coming up, and we don't want something like a bog parasite causing a huge panic.
+                    That's why the less information gets out there, the better.
+                player:
+                    Wait, that's why you want me to come with you?
+                agent:
+                    Hesh damn it, the jig is up.
+                    No more pleasantries. You are coming with us, whether you like it or not.
+                * Time to defend yourself!
+            ]],
+            DIALOG_PROBE_FAILURE = [[
+                agent:
+                    [p] For research purposes, of course.
+                    You don't want the Pearl to be infected by the parasites, do you?
+                player:
+                    Well...
+                agent:
+                    Then you should definitely come with me, then.
+            ]],
+            OPT_CONVINCE = "Convince {agent} to let you go",
+            TT_CONVINCE = "",
+            DIALOG_CONVINCE = [[
+                player:
+                    [p] Well, here's the thing...
+            ]],
+            DIALOG_CONVINCE_SUCCESS = [[
+                agent:
+                    [p] That's well and good. I almost considered letting you go.
+                    But I have my orders. I don't intend on disobeying them.
+                    You are coming with me. No matter what.
+                {probed_info?
+                    * Dammit! You didn't distract long enough to get away!
+                }
+                {not probed_info?
+                    * Okay, why is there a negotiation option there if it's completely pointless?
+                }
+            ]],
+            DIALOG_CONVINCE_GOT_AWAY = [[
+                agent:
+                    [p] A bird? Where?
+                * You got away!
+                {party_left_behind?
+                    * You left {left_behind} behind, though. But at least you are safe from the Admiralty's grasp.
+                }
+            ]],
+            DIALOG_CONVINCE_FAILURE = [[
+                player:
+                    [p] I am really, really busy with my campaign.
+                agent:
+                    Sorry, that won't fly.
+                    You are coming with me!
+            ]],
+            OPT_FIGHT = "Fight your way out",
+            DIALOG_FIGHT = [[
+                player:
+                    !fight
+                    [p] You leave me no choice!
+            ]],
+            DIALOG_FIGHT_WIN = [[
+                * [p] You beat the Admiralty.
+                * Time to move on before more shows up.
+            ]],
+            DIALOG_FIGHT_RUNAWAY = [[
+                * [p] You find an opening an run away.
+            ]],
         }
+        :SetLooping()
         :Fn(function(cxt)
-
+            if cxt:FirstLoop() then
+                cxt.quest.param.did_admiralty_confront = true
+                local leader = TheGame:GetGameState():AddSkinnedAgent( "ADMIRALTY_INVESTIGATOR" ) --new guy, not relationship
+                cxt.enc.scratch.patrol = CreateCombatBackup(leader, "ADMIRALTY_PATROL_BACKUP", cxt.quest:GetRank() + 1)
+                table.insert(cxt.enc.scratch.patrol, 1, leader)
+                cxt:TalkTo(leader)
+                cxt:Dialog("DIALOG_INTRO")
+            end
+            cxt:Opt("OPT_AGREE")
+                :Dialog("DIALOG_AGREE")
+                :Fn(function(cxt)
+                    -- You "disappear"
+                    cxt:Opt("OPT_FOLLOW")
+                        :Fn(function(cxt)
+                            DemocracyUtil.DoEnding(cxt, "disappearance", {})
+                        end)
+                end)
+            if not cxt.enc.scratch.forced_fight then
+                if not cxt.enc.scratch.tried_bribe then
+                    cxt:Opt("OPT_BRIBE")
+                        :RequireMoney(150)
+                        :Dialog("DIALOG_BRIBE")
+                        :Fn(function(cxt)
+                            cxt.enc.scratch.tried_bribe = true
+                        end)
+                end
+            end
         end)

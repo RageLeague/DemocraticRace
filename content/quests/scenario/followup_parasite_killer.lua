@@ -20,9 +20,9 @@ local QDEF = QuestDef.Define
         end,
         dismissed = function( quest )
             quest:Fail()
-            if not quest:GetCastMember("escort"):IsRetired() then
-                quest:GetCastMember("escort"):Kill()
-            end
+            -- if not quest:GetCastMember("escort"):IsRetired() then
+            --     quest:GetCastMember("escort"):Kill()
+            -- end
         end,
     },
 }
