@@ -436,6 +436,53 @@ lines:
         !happy
         Thanks. Glad to find another person who enjoys a good poetry.
     }
+- tags: [democratic_race, pamphleteer]
+  dialog:
+  - |
+    agent:
+      !happy
+      So I think I finally worked something out that'll truly get workers on our side!
+    player:
+      !permit
+      Well, lay it on me!
+    agent:
+      !burp
+      <i>Ahem.</>
+      "Workers of Havaria! Free yourselves from the shackles of the Barons!"
+      "We promise we'll make your lives worth it's death!"
+    player:
+      !dubious
+      I'm...sorry?
+    agent:
+      !shrug
+      Well, if you're joining the cause, you've gotta be willing to die for the cause. 
+    player:
+      !clap
+      How about you workshop that one a little more?
+- tags: [democratic_race, dredgers]
+  dialog:
+  - |
+    agent:
+      !bashful
+      Say, {player}, do you mind watching my pet for a while? The Lab requires me.
+    player:
+      !happy
+      Sure! Where's the little rascal?
+    agent:
+      !permit
+    * {agent} hands you a petri dish full of a popping gunk of Hesh only knows.
+    agent:
+      !happy
+      His name is Jeremy.
+    player:
+      !flinch
+      Oh he's a...cutie.
+    agent:
+      Isn't he? Now, just remember to stir him one every 3 hours so he doesn't get moldy.
+    player:
+      !burp
+      You can-<i>hurp</>- count on me.
+    * You make a mental note of where all the trash cans are for when you leave.
 - tags: [democratic_race, player_sal, laborer]
   dialog:
   - |
