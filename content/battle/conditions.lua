@@ -60,6 +60,32 @@ local conditions =
         desc_fn = function( self, fmt_str )
             return loc.format( fmt_str, self:GetOwnerName(), self.base_chance, self.additional_chance, self.chance_threshold )
         end,
+
+        base_chance = 0.5,
+        additional_chance = 0.05,
+        chance_threshold = 5,
+
+        ctype = CTYPE.INNATE,
+
+        event_handlers =
+        {
+            [ BATTLE_EVENT.DELTA_STAT ] = function( self, fighter, stat, delta, value, mitigated  )
+                if fighter == self.owner and stat == COMBAT_STAT.HEALTH and delta < 0 then
+                    if self.owner:GetConditionStacks("RUNNING") > 0 then
+                        local chance = self.base_chance
+                        if delta > self.chance_threshold then
+                            chance = chance + (delta - self.chance_threshold) * self.additional_chance
+                        end
+                        print(chance)
+                        if math.random() < chance then
+                            -- Remove running and gain exert
+                            self.owner:RemoveCondition("RUNNING")
+                            self.owner:AddCondition( "EXERT", 1, self )
+                        end
+                    end
+                end
+            end,
+        },
     },
 }
 
