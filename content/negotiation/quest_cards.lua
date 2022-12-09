@@ -782,7 +782,7 @@ local CARDS = {
                     if not (minigame.escaped_people and table.arraycontains(minigame.escaped_people, member)) then
                         local card = Negotiation.Card( "dem_retreat_target", self.owner )
                         card:SetAgent(member)
-                        table.insert(cards)
+                        table.insert(cards, card)
                     end
                 end
             end
