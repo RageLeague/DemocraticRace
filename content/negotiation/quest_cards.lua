@@ -769,7 +769,7 @@ local CARDS = {
 
         CanPlayCard = function( self, card, engine, target )
             if self.anti_negotiator:GetModifierStacks("DISTRACTED") < self.stacks_needed then
-                return false, loc.format( (self.def or self):GetLocalizedString("ALT_DESC"), 1 )
+                return false, loc.format( (self.def or self):GetLocalizedString("ALT_DESC"), self.stacks_needed )
             end
             return true
         end,
