@@ -461,9 +461,6 @@ QDEF:AddConvo("deliver_package")
                 agent:
                     [p] A bird? Where?
                 * You got away!
-                {party_left_behind?
-                    * You left {left_behind} behind, though. But at least you are safe from the Admiralty's grasp.
-                }
             ]],
             DIALOG_CONVINCE_FAILURE = [[
                 player:
@@ -523,29 +520,55 @@ QDEF:AddConvo("deliver_package")
                             cxt.enc.scratch.tried_bribe = true
                         end)
                 end
-                cxt:Opt("OPT_PROBE")
-                    :Dialog("DIALOG_PROBE")
-                    :Negotiation{
-                        on_start_negotiation = function(minigame)
-                            minigame:GetOpponentNegotiator():CreateModifier( "secret_intel", 1 )
-                        end,
-                        on_success = function(cxt, minigame)
-                            local count = minigame:GetPlayerNegotiator():GetModifierStacks( "secret_intel" )
-                            if count > 0 then
-                                cxt:Dialog("DIALOG_PROBE_SUCCESS")
-                                cxt.quest.param.probed_info = true
-                            else
-                                cxt:Dialog("DIALOG_PROBE_FAILURE")
-                            end
-                        end,
-                        on_fail = function(cxt, minigame)
-                            if minigame.secret_intel_destroyed then
-                                cxt:Dialog("DIALOG_PROBE_SLIP_UP")
-                                cxt.enc.scratch.forced_fight = true
-                            else
-                                cxt:Dialog("DIALOG_PROBE_FAILURE")
-                            end
-                        end,
-                    }
+                if not cxt.enc.scratch.tried_negotiation then
+                    cxt:Opt("OPT_PROBE")
+                        :Dialog("DIALOG_PROBE")
+                        :Negotiation{
+                            on_start_negotiation = function(minigame)
+                                minigame:GetOpponentNegotiator():CreateModifier( "secret_intel", 1 )
+                            end,
+                            on_success = function(cxt, minigame)
+                                local count = minigame:GetPlayerNegotiator():GetModifierStacks( "secret_intel" )
+                                if count > 0 then
+                                    cxt:Dialog("DIALOG_PROBE_SUCCESS")
+                                    cxt.enc.scratch.probed_info = true
+                                else
+                                    cxt:Dialog("DIALOG_PROBE_FAILURE")
+                                end
+                            end,
+                            on_fail = function(cxt, minigame)
+                                if minigame.secret_intel_destroyed then
+                                    cxt:Dialog("DIALOG_PROBE_SLIP_UP")
+                                    cxt.enc.scratch.probed_info = true
+                                    cxt.enc.scratch.forced_fight = true
+                                else
+                                    cxt:Dialog("DIALOG_PROBE_FAILURE")
+                                end
+                            end,
+                        }
+                    cxt:Opt("OPT_CONVINCE")
+                        :Dialog("DIALOG_CONVINCE")
+                        :Negotiation{
+                            on_start_negotiation = function(minigame)
+                                if cxt.enc.scratch.probed_info then
+                                    -- Add new negotiation cards and args
+                                    minigame.escaped_people = {}
+                                end
+                            end,
+                            on_success = function(cxt, minigame)
+                                if minigame.escaped_people and table.arraycontains(minigame.escaped_people, cxt.player) then
+                                    cxt:Dialog("DIALOG_CONVINCE_GOT_AWAY")
+                                    StateGraphUtil.AddLeaveLocation(cxt)
+                                else
+                                    cxt:Dialog("DIALOG_CONVINCE_SUCCESS")
+                                    cxt.enc.scratch.tried_negotiation = true
+                                end
+                            end,
+                            on_fail = function(cxt, minigame)
+                                cxt:Dialog("DIALOG_CONVINCE_FAILURE")
+                                cxt.enc.scratch.tried_negotiation = true
+                            end,
+                        }
+                end
             end
         end)
