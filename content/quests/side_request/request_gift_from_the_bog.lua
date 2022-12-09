@@ -610,4 +610,17 @@ QDEF:AddConvo("deliver_package")
                         }
                 end
             end
+
+            cxt:Opt("OPT_FIGHT")
+                :Dialog("DIALOG_FIGHT")
+                :Battle{
+                    on_start_battle = function(battle)
+                        for i, agent in ipairs(battle:GetPlayerTeam():GetFighters()) do
+                        end
+                    end,
+                    on_win = function(cxt)
+                        cxt:Dialog("DIALOG_FIGHT_WIN")
+                        StateGraphUtil.AddLeaveLocation(cxt)
+                    end,
+                }
         end)
