@@ -553,6 +553,10 @@ QDEF:AddConvo("deliver_package")
                                 if cxt.enc.scratch.probed_info then
                                     -- Add new negotiation cards and args
                                     minigame.escaped_people = {}
+                                    minigame:GetOpponentNegotiator():CreateModifier( "DEM_STARTLING_DISTRACTION", 5 )
+                                    local card = Negotiation.Card( "dem_opportunistic_retreat", minigame.player_negotiator.agent )
+                                    card.show_dealt = true
+                                    card:TransferCard(minigame:GetDrawDeck())
                                 end
                             end,
                             on_success = function(cxt, minigame)
