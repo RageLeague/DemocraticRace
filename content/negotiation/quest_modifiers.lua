@@ -17,7 +17,7 @@ local function CalculateBonusScale(self)
         if self.engine and CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
             return DemocracyUtil.CalculateBossScale(self.bonus_scale)
         else
-            return self.bonus_scale[1]
+            return self.bonus_scale[2]
         end
     end
     return self.bonus_per_generation
@@ -2845,6 +2845,31 @@ local MODIFIERS =
             for i, modifier in ipairs(player_mods) do
                 self.anti_negotiator:AddModifier(modifier, 1, self)
             end
+        end,
+    },
+    DEM_STARTLING_DISTRACTION =
+    {
+        name = "Startling Distraction",
+        desc = "{MYRIAD_MODIFIER {2}}.\n\nWhen destroyed, {1} gains {3} {DISTRACTED}.",
+        -- icon = "negotiation/modifiers/card_draw.tex",
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+        init_max_resolve = 10,
+
+        bonus_per_generation = 2,
+
+        generation = 0,
+
+        desc_fn = function(self, fmt_str)
+            return loc.format( fmt_str, self:GetOwnerName(), CalculateBonusScale(self), self.stacks or 1)
+        end,
+        OnInit = function(self)
+            self.init_max_resolve = 5 * self.engine:GetDifficulty() + 5
+            MyriadInit(self)
+        end,
+        OnBounty = function(self)
+            self.negotiator:DeltaModifier("DISTRACTED", self.stacks or 1)
+            CreateNewSelfMod(self)
         end,
     },
 }
