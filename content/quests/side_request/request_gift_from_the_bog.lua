@@ -482,6 +482,12 @@ QDEF:AddConvo("deliver_package")
             DIALOG_FIGHT_RUNAWAY = [[
                 * [p] You find an opening an run away.
             ]],
+            DIALOG_PARTY_LEFT_BEHIND = [[
+                * [p] {1#agent_list} didn't escape, though. You shudder to imagine what happened to {2*{3.himher}|them}.
+            ]],
+            DIALOG_PARTY_ESCAPED = [[
+                * [p] At least {1#agent_list} got away. You hope that {2*{3.heshe}|they} can get to safety.
+            ]],
         }
         :SetLooping()
         :Fn(function(cxt)
@@ -562,15 +568,42 @@ QDEF:AddConvo("deliver_package")
                             on_success = function(cxt, minigame)
                                 if minigame.escaped_people and table.arraycontains(minigame.escaped_people, cxt.player) then
                                     cxt:Dialog("DIALOG_CONVINCE_GOT_AWAY")
+                                    local left_behind = {}
+                                    for i, member in cxt.player:GetParty():Members() do
+                                        if not table.arraycontains(minigame.escaped_people, member) then
+                                            table.insert(left_behind, member)
+                                        end
+                                    end
+                                    if #left_behind > 0 then
+                                        cxt:Dialog("DIALOG_PARTY_LEFT_BEHIND", left_behind, #left_behind, left_behind[1])
+                                        for i, member in ipairs(left_behind) do
+                                            member:OpinionEvent(OPINION.ABANDONED)
+                                            member:Retire()
+                                        end
+                                    end
                                     StateGraphUtil.AddLeaveLocation(cxt)
                                 else
                                     cxt:Dialog("DIALOG_CONVINCE_SUCCESS")
                                     cxt.enc.scratch.tried_negotiation = true
+                                    local escaped = minigame.escaped_people
+                                    if escaped and #escaped > 0 then
+                                        cxt:Dialog("DIALOG_PARTY_ESCAPED", escaped, #escaped, escaped[1])
+                                        for i, member in ipairs(escaped) do
+                                            member:Dismiss()
+                                        end
+                                    end
                                 end
                             end,
                             on_fail = function(cxt, minigame)
                                 cxt:Dialog("DIALOG_CONVINCE_FAILURE")
                                 cxt.enc.scratch.tried_negotiation = true
+                                local escaped = minigame.escaped_people
+                                if escaped and #escaped > 0 then
+                                    cxt:Dialog("DIALOG_PARTY_ESCAPED", escaped, #escaped, escaped[1])
+                                    for i, member in ipairs(escaped) do
+                                        member:Dismiss()
+                                    end
+                                end
                             end,
                         }
                 end
