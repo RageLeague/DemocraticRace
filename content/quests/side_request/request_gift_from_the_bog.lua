@@ -527,31 +527,33 @@ QDEF:AddConvo("deliver_package")
                         end)
                 end
                 if not cxt.enc.scratch.tried_negotiation then
-                    cxt:Opt("OPT_PROBE")
-                        :Dialog("DIALOG_PROBE")
-                        :Negotiation{
-                            on_start_negotiation = function(minigame)
-                                minigame:GetOpponentNegotiator():CreateModifier( "secret_intel", 1 )
-                            end,
-                            on_success = function(cxt, minigame)
-                                local count = minigame:GetPlayerNegotiator():GetModifierStacks( "secret_intel" )
-                                if count > 0 then
-                                    cxt:Dialog("DIALOG_PROBE_SUCCESS")
-                                    cxt.enc.scratch.probed_info = true
-                                else
-                                    cxt:Dialog("DIALOG_PROBE_FAILURE")
-                                end
-                            end,
-                            on_fail = function(cxt, minigame)
-                                if minigame.secret_intel_destroyed then
-                                    cxt:Dialog("DIALOG_PROBE_SLIP_UP")
-                                    cxt.enc.scratch.probed_info = true
-                                    cxt.enc.scratch.forced_fight = true
-                                else
-                                    cxt:Dialog("DIALOG_PROBE_FAILURE")
-                                end
-                            end,
-                        }
+                    if not cxt.enc.scratch.probed_info then
+                        cxt:Opt("OPT_PROBE")
+                            :Dialog("DIALOG_PROBE")
+                            :Negotiation{
+                                on_start_negotiation = function(minigame)
+                                    minigame:GetOpponentNegotiator():CreateModifier( "secret_intel", 1 )
+                                end,
+                                on_success = function(cxt, minigame)
+                                    local count = minigame:GetPlayerNegotiator():GetModifierStacks( "secret_intel" )
+                                    if count > 0 then
+                                        cxt:Dialog("DIALOG_PROBE_SUCCESS")
+                                        cxt.enc.scratch.probed_info = true
+                                    else
+                                        cxt:Dialog("DIALOG_PROBE_FAILURE")
+                                    end
+                                end,
+                                on_fail = function(cxt, minigame)
+                                    if minigame.secret_intel_destroyed then
+                                        cxt:Dialog("DIALOG_PROBE_SLIP_UP")
+                                        cxt.enc.scratch.probed_info = true
+                                        cxt.enc.scratch.forced_fight = true
+                                    else
+                                        cxt:Dialog("DIALOG_PROBE_FAILURE")
+                                    end
+                                end,
+                            }
+                    end
                     cxt:Opt("OPT_CONVINCE")
                         :Dialog("DIALOG_CONVINCE")
                         :Negotiation{
