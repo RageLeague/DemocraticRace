@@ -591,7 +591,12 @@ QDEF:AddConvo("deliver_package")
                                     if escaped and #escaped > 0 then
                                         cxt:Dialog("DIALOG_PARTY_ESCAPED", escaped, #escaped, escaped[1])
                                         for i, member in ipairs(escaped) do
-                                            member:Dismiss()
+                                            if member:IsPet() then
+                                                QuestUtil.RunAwayPet(member)
+                                            else
+                                                member:Dismiss()
+                                                member:MoveToLimbo()
+                                            end
                                         end
                                     end
                                 end
@@ -603,7 +608,12 @@ QDEF:AddConvo("deliver_package")
                                 if escaped and #escaped > 0 then
                                     cxt:Dialog("DIALOG_PARTY_ESCAPED", escaped, #escaped, escaped[1])
                                     for i, member in ipairs(escaped) do
-                                        member:Dismiss()
+                                        if member:IsPet() then
+                                            QuestUtil.RunAwayPet(member)
+                                        else
+                                            member:Dismiss()
+                                            member:MoveToLimbo()
+                                        end
                                     end
                                 end
                             end,
@@ -611,16 +621,24 @@ QDEF:AddConvo("deliver_package")
                 end
             end
 
-            cxt:Opt("OPT_FIGHT")
-                :Dialog("DIALOG_FIGHT")
-                :Battle{
-                    on_start_battle = function(battle)
-                        for i, agent in ipairs(battle:GetPlayerTeam():GetFighters()) do
-                        end
-                    end,
-                    on_win = function(cxt)
-                        cxt:Dialog("DIALOG_FIGHT_WIN")
-                        StateGraphUtil.AddLeaveLocation(cxt)
-                    end,
-                }
+            if cxt.enc.scratch.forced_fight or cxt.enc.scratch.probed_info or cxt.enc.scratch.tried_negotiation then
+                cxt:Opt("OPT_FIGHT")
+                    :Dialog("DIALOG_FIGHT")
+                    :Battle{
+                        flags = BATTLE_FLAGS.SELF_DEFENCE,
+                        on_start_battle = function(battle)
+                            for i, fighter in ipairs(battle:GetPlayerTeam():GetFighters()) do
+                                fighter:AddCondition( "DEM_CORNERED" )
+                            end
+                        end,
+                        on_win = function(cxt)
+                            cxt:Dialog("DIALOG_FIGHT_WIN")
+                            StateGraphUtil.AddLeaveLocation(cxt)
+                        end,
+                        on_runaway = function(cxt, battle)
+                            cxt:Dialog("DIALOG_FIGHT_RUNAWAY")
+                            StateGraphUtil.DoRunAwayEffects( cxt, battle, true )
+                        end,
+                    }
+            end
         end)
