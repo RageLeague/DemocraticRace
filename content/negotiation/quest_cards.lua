@@ -747,6 +747,19 @@ local CARDS = {
             self.anti_negotiator:CreateModifier( "PLANTED_EVIDENCE", incept_count, self )
         end,
     },
+    dem_opportunistic_retreat =
+    {
+        name = "Opportunistic Retreat",
+        desc = "Remove {1} {DISTRACTED} from the opponent: One member of your party escapes the scene. You win the negotiation if you escape.",
+
+        cost = 1,
+        flags = CARD_FLAGS.MANIPULATE,
+        rarity = CARD_RARITY.UNIQUE,
+
+        OnPostResolve = function( self, minigame )
+
+        end,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     if not def.series then
