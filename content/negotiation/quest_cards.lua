@@ -146,7 +146,7 @@ local CARDS = {
         end,
 
         icon = "negotiation/decency.tex",
-        -- hide_in_cardex = true,
+        hide_in_cardex = true,
         manual_desc = true,
 
         cost = 0,
@@ -751,13 +751,80 @@ local CARDS = {
     {
         name = "Opportunistic Retreat",
         desc = "Remove {1} {DISTRACTED} from the opponent: One member of your party escapes the scene. You win the negotiation if you escape.",
+        alt_desc = "Requires at least {1} <b>Distracted</b>",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.stacks_needed)
+        end,
+        flavour = "When all else fails, you can always run away.",
 
         cost = 1,
         flags = CARD_FLAGS.MANIPULATE,
         rarity = CARD_RARITY.UNIQUE,
 
-        OnPostResolve = function( self, minigame )
+        stacks_needed = 3,
 
+        PreReq = function( self, minigame )
+            return self:CanPlayCard( self, minigame )
+        end,
+
+        CanPlayCard = function( self, card, engine, target )
+            if self.anti_negotiator:GetModifierStacks("DISTRACTED") < self.stacks_needed then
+                return false, loc.format( (self.def or self):GetLocalizedString("ALT_DESC"), 1 )
+            end
+            return true
+        end,
+
+        OnPostResolve = function( self, minigame )
+            local cards = {}
+            local party = self.owner:GetParty()
+            if party then
+                for i, member in party:Members() do
+                    if not (minigame.escaped_people and table.arraycontains(minigame.escaped_people, member)) then
+                        local card = Negotiation.Card( "dem_retreat_target", self.owner )
+                        card:SetAgent(member)
+                        table.insert(cards)
+                    end
+                end
+            end
+            local pick = self.engine:ImproviseCards( cards, 1, nil, nil, nil, self )[1]
+            if pick then
+                table.insert(minigame.escaped_people, pick.retreat_agent)
+                self.engine:ExpendCard(pick)
+                if pick.retreat_agent == self.owner then
+                    minigame:Win()
+                end
+            end
+        end,
+    },
+    dem_retreat_target =
+    {
+        name = "Retreat Target",
+        name_fn = function(self, fmt_str)
+            if self.retreat_agent then
+                return self.retreat_agent:GetName()
+            end
+            return loc.format(fmt_str)
+        end,
+        desc = "Let <b>{1}</> run away from the scene.",
+        alt_desc = "Let a party member run away from the scene.",
+        desc_fn = function(self, fmt_str)
+            if self.retreat_agent then
+                return loc.format(fmt_str, self.retreat_agent:GetFullName())
+            end
+            return loc.format((self.def or self):GetLocalizedString("ALT_DESC"))
+        end,
+
+        -- icon = "negotiation/decency.tex",
+        hide_in_cardex = true,
+        manual_desc = true,
+
+        cost = 0,
+        flags = CARD_FLAGS.UNPLAYABLE | CARD_FLAGS.DIPLOMACY,
+        rarity = CARD_RARITY.UNIQUE,
+
+        SetAgent = function(self, agent)
+            self.retreat_agent = agent
+            self:NotifyChanged()
         end,
     },
 }
