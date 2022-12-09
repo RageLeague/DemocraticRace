@@ -53,6 +53,14 @@ local conditions =
             end,
         },
     },
+    DEM_CORNERED =
+    {
+        name = "Cornered",
+        desc = "While {1} has {RUNNING}, if they suffer health loss, there is a {2#percent} chance that they lose {RUNNING} and gain {EXERT}. Increase this chance by {3#percent} for each point of health loss after {4}.",
+        desc_fn = function( self, fmt_str )
+            return loc.format( fmt_str, self:GetOwnerName(), self.base_chance, self.additional_chance, self.chance_threshold )
+        end,
+    },
 }
 
 for condition_id, t in pairs( conditions ) do
