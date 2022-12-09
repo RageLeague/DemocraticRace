@@ -440,7 +440,8 @@ QDEF:AddConvo("deliver_package")
                     Then you should definitely come with me, then.
             ]],
             OPT_CONVINCE = "Convince {agent} to let you go",
-            TT_CONVINCE = "",
+            TT_CONVINCE = "Use this opportunity to cause a distraction and escape!",
+            REASON_ESCAPE = "Distract {agent} and get away!",
             DIALOG_CONVINCE = [[
                 player:
                     [p] Well, here's the thing...
@@ -493,6 +494,7 @@ QDEF:AddConvo("deliver_package")
         :Fn(function(cxt)
             if cxt:FirstLoop() then
                 cxt.quest.param.did_admiralty_confront = true
+                cxt.enc.scratch.other_party_member = #cxt.player:GetParty():GetMembers() > 1
                 local leader = TheGame:GetGameState():AddSkinnedAgent( "ADMIRALTY_INVESTIGATOR" ) --new guy, not relationship
                 cxt.enc.scratch.patrol = CreateCombatBackup(leader, "ADMIRALTY_PATROL_BACKUP", cxt.quest:GetRank() + 1)
                 table.insert(cxt.enc.scratch.patrol, 1, leader)
@@ -527,7 +529,7 @@ QDEF:AddConvo("deliver_package")
                         end)
                 end
                 if not cxt.enc.scratch.tried_negotiation then
-                    if not cxt.enc.scratch.probed_info then
+                    if not cxt.quest.param.probed_info then
                         cxt:Opt("OPT_PROBE")
                             :Dialog("DIALOG_PROBE")
                             :Negotiation{
@@ -538,7 +540,7 @@ QDEF:AddConvo("deliver_package")
                                     local count = minigame:GetPlayerNegotiator():GetModifierStacks( "secret_intel" )
                                     if count > 0 then
                                         cxt:Dialog("DIALOG_PROBE_SUCCESS")
-                                        cxt.enc.scratch.probed_info = true
+                                        cxt.quest.param.probed_info = true
                                     else
                                         cxt:Dialog("DIALOG_PROBE_FAILURE")
                                     end
@@ -546,7 +548,7 @@ QDEF:AddConvo("deliver_package")
                                 on_fail = function(cxt, minigame)
                                     if minigame.secret_intel_destroyed then
                                         cxt:Dialog("DIALOG_PROBE_SLIP_UP")
-                                        cxt.enc.scratch.probed_info = true
+                                        cxt.quest.param.probed_info = true
                                         cxt.enc.scratch.forced_fight = true
                                     else
                                         cxt:Dialog("DIALOG_PROBE_FAILURE")
@@ -554,11 +556,19 @@ QDEF:AddConvo("deliver_package")
                                 end,
                             }
                     end
-                    cxt:Opt("OPT_CONVINCE")
-                        :Dialog("DIALOG_CONVINCE")
+                    local opt = cxt:Opt("OPT_CONVINCE")
+                    if cxt.quest.param.probed_info then
+                        opt:PostText("TT_CONVINCE")
+                    end
+                    opt:Dialog("DIALOG_CONVINCE")
                         :Negotiation{
+                            reason_fn = function(minigame)
+                                if cxt.quest.param.probed_info then
+                                    return loc.format(cxt:GetLocString("REASON_ESCAPE"))
+                                end
+                            end,
                             on_start_negotiation = function(minigame)
-                                if cxt.enc.scratch.probed_info then
+                                if cxt.quest.param.probed_info then
                                     -- Add new negotiation cards and args
                                     minigame.escaped_people = {}
                                     minigame:GetOpponentNegotiator():CreateModifier( "DEM_STARTLING_DISTRACTION", 5 )
@@ -621,7 +631,7 @@ QDEF:AddConvo("deliver_package")
                 end
             end
 
-            if cxt.enc.scratch.forced_fight or cxt.enc.scratch.probed_info or cxt.enc.scratch.tried_negotiation then
+            if cxt.enc.scratch.forced_fight or cxt.quest.param.probed_info or cxt.enc.scratch.tried_negotiation then
                 cxt:Opt("OPT_FIGHT")
                     :Dialog("DIALOG_FIGHT")
                     :Battle{
