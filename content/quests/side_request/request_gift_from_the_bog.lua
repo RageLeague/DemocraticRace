@@ -154,10 +154,17 @@ QDEF:AddConvo("pick_up_package")
                     * [p] But during the battle, seems like you contracted the parasite.
                     {vaccinated?
                         * Luckily, you are vaccinated against it. Shouldn't cause a problem.
+                        * But who's to say it won't be a problem to other people?
+                        * You need to tell everyone about it. Let them be aware of the danger.
                     }
                     {not vaccinated?
                         * That's not good.
+                        * You need to tell everyone about how contagious it is. Let them be aware of the danger.
                     }
+                }
+                {not infected?
+                    * Still, you might have got rid of one parasite, but who's to say there aren't more people in the Pearl infected?
+                    * You need to tell everyone about it. Let them be aware of the danger.
                 }
             ]],
             DIALOG_SURGERY_RUN = [[
@@ -167,10 +174,17 @@ QDEF:AddConvo("pick_up_package")
                     * [p] But during the battle, seems like you contracted the parasite.
                     {vaccinated?
                         * Luckily, you are vaccinated against it. Shouldn't cause a problem.
+                        * But who's to say it won't be a problem to other people?
+                        * You need to tell everyone about it. Let them be aware of the danger.
                     }
                     {not vaccinated?
                         * That's not good.
+                        * You need to tell everyone about how contagious it is. Let them be aware of the danger.
                     }
+                }
+                {not infected?
+                    * The parasite looks really scary.
+                    * You need to tell everyone about it. Let them be aware of the danger.
                 }
             ]],
             DIALOG_SURGERY_KILLED = [[
@@ -180,10 +194,17 @@ QDEF:AddConvo("pick_up_package")
                     * [p] But during the battle, seems like you contracted the parasite.
                     {vaccinated?
                         * Luckily, you are vaccinated against it. Shouldn't cause a problem.
+                        * But who's to say it won't be a problem to other people?
+                        * You need to tell everyone about it. Let them be aware of the danger.
                     }
                     {not vaccinated?
                         * That's not good.
+                        * You need to tell everyone about how contagious it is. Let them be aware of the danger.
                     }
+                }
+                {not infected?
+                    * Still, you might have got rid of one parasite, but who's to say there aren't more people in the Pearl infected?
+                    * You need to tell everyone about it. Let them be aware of the danger.
                 }
             ]],
             DIALOG_SURGERY_FAILED = [[
@@ -194,10 +215,17 @@ QDEF:AddConvo("pick_up_package")
                     * [p] But during the battle, seems like you contracted the parasite.
                     {vaccinated?
                         * Luckily, you are vaccinated against it. Shouldn't cause a problem.
+                        * But who's to say it won't be a problem to other people?
+                        * You need to tell everyone about it. Let them be aware of the danger.
                     }
                     {not vaccinated?
                         * That's not good.
+                        * You need to tell everyone about how contagious it is. Let them be aware of the danger.
                     }
+                }
+                {not infected?
+                    * The parasite looks really scary.
+                    * You need to tell everyone about it. Let them be aware of the danger.
                 }
             ]],
             OPT_ESCORT = "Convince {agent} to follow you",
@@ -214,6 +242,7 @@ QDEF:AddConvo("pick_up_package")
                 agent:
                     Fine.
                 * You pick up the package and bring {agent} with you.
+                * And tell everyone about this contagious parasite.
             ]],
             DIALOG_ESCORT_FAILURE = [[
                 agent:
@@ -232,7 +261,8 @@ QDEF:AddConvo("pick_up_package")
                         I hope you can recover from... whatever that is.
                     }
                 * Of course. Thoughts and prayers. That is <i>definitely</> enough to help {agent} recover.
-                * Anyway, you need to get back to {giver} and deliver the package. And also tell {agent} about the parasite situation.
+                * Anyway, you need to get back to {giver} and deliver the package.
+                * And tell everyone about this contagious parasite.
             ]],
         }
         :SetLooping(true)
@@ -259,7 +289,7 @@ QDEF:AddConvo("pick_up_package")
                         cxt:GetAgent():Recruit(PARTY_MEMBER_TYPE.ESCORT)
                         cxt.quest.param.escort_quest = QuestUtil.SpawnQuest("FOLLOWUP_PARASITE_KILLER", overrides)
                     end)
-                    :Travel()
+                    :GoTo("STATE_TELL")
                 :OnFailure()
                     :Fn(function(cxt)
                         cxt.enc.scratch.tried_escort = true
@@ -296,13 +326,14 @@ QDEF:AddConvo("pick_up_package")
                         else
                             cxt:Dialog("DIALOG_SURGERY_WIN")
                             cxt:GetCastMember("delivery"):OpinionEvent(OPINION.SAVED_LIFE)
+                            cxt.quest.param.parasite_cured = true
                         end
                         if cxt.enc.scratch.infected and not cxt.enc.scratch.vaccinated then
                             cxt:GainCards{"twig", "stem"}
                         end
                         cxt.quest.param.tried_surgery = true
                         cxt.quest:Complete("pick_up_package")
-                        StateGraphUtil.AddLeaveLocation(cxt)
+                        cxt:GoTo("STATE_TELL")
                     end,
                     on_runaway = function(cxt, battle)
                         local player = battle:GetFighterForAgent(cxt.player)
@@ -314,14 +345,14 @@ QDEF:AddConvo("pick_up_package")
                         end
                         cxt.quest.param.tried_surgery = true
                         cxt.quest:Complete("pick_up_package")
-                        StateGraphUtil.AddLeaveLocation(cxt)
+                        cxt:GoTo("STATE_TELL")
                     end,
                 }
 
             cxt:Opt("OPT_LEAVE")
                 :Dialog("DIALOG_LEAVE")
                 :CompleteQuest("pick_up_package")
-                :Travel()
+                :GoTo("STATE_TELL")
         end)
     :State("STATE_CONF_NO_PERSON")
         :Loc{
@@ -336,7 +367,41 @@ QDEF:AddConvo("pick_up_package")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO_NO_PERSON")
             cxt.quest:Complete("pick_up_package")
-            StateGraphUtil.AddLeaveLocation(cxt)
+            cxt:GoTo("STATE_TELL")
+        end)
+    :State("STATE_TELL")
+        :Loc{
+            OPT_ACCEPT = "Accept",
+            DIALOG_ACCEPT = [[
+                right:
+                    !exit
+                player:
+                    !left
+                    [p] Alright, I accept.
+                * Let's do this.
+            ]],
+
+            OPT_REFUSE = "Refuse",
+            DIALOG_REFUSE = [[
+                right:
+                    !exit
+                player:
+                    !left
+                    [p] Now it's not the time. I'm busy campaigning.
+                * If you say so.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Opt("OPT_ACCEPT")
+                :Dialog("DIALOG_ACCEPT")
+                :Fn(function(cxt)
+                    -- TODO: Spawn a side quest
+                end)
+                :Travel()
+
+            cxt:Opt("OPT_REFUSE")
+                :Dialog("DIALOG_REFUSE")
+                :Travel()
         end)
 
 QDEF:AddConvo("deliver_package")
@@ -648,7 +713,64 @@ QDEF:AddConvo("deliver_package")
                         on_runaway = function(cxt, battle)
                             cxt:Dialog("DIALOG_FIGHT_RUNAWAY")
                             StateGraphUtil.DoRunAwayEffects( cxt, battle, true )
+                            StateGraphUtil.AddLeaveLocation(cxt)
                         end,
                     }
             end
         end)
+
+
+QDEF:AddConvo("deliver_package", "giver")
+    :Loc{
+        OPT_DELIVER = "Deliver the package",
+        DIALOG_DELIVER = [[
+            player:
+                !give
+                [p] Here's the package.
+            agent:
+                !take
+                Thanks.
+                How's {delivery}?
+            {delivery_dead?
+                player:
+                    [p] {delivery} didn't make it.
+                agent:
+                    Well, that's a shame.
+            }
+            {not delivery_dead and parasite_cured?
+                player:
+                    [p] {delivery.HeShe} got infected by the bog parasites, but {delivery.heshe} got better now.
+                agent:
+                    That's good, I suppose.
+            }
+            {not delivery_dead and not parasite_cured and infected_in_party?
+                player:
+                    [p] Here {delivery.gender?he is|she is|they are}.
+                delivery:
+                    !left
+                    !injured
+                agent:
+                    !surprised
+                    What the Hesh is that?
+                    I- I don't know what I can do about it. You should get that looked at.
+                player:
+                    !left
+                    Well, yeah, that's what plan to do right now. I'm just dropping off the package first.
+                agent:
+                    Ah, of course.
+            }
+            {not delivery_dead and not parasite_cured and not infected_in_party?
+                player:
+                    [p] {delivery.HeShe} got infected by the bog parasites.
+                    I imagine that {delivery.gender?he's|she's|they're} writhing in pain at the moment.
+                agent:
+                    !wince
+                    That doesn't sound pleasant.
+            }
+            agent:
+                Anyway, I thank you for your good work, from the bottom of my heart.
+        ]],
+    }
+    :Hub(function(cxt)
+
+    end)
