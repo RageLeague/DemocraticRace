@@ -772,5 +772,8 @@ QDEF:AddConvo("deliver_package", "giver")
         ]],
     }
     :Hub(function(cxt)
-
+        cxt:Opt("OPT_DELIVER")
+            :SetQuestMark()
+            :Dialog("DIALOG_DELIVER")
+            :CompleteQuest()
     end)
