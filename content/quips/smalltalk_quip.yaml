@@ -367,6 +367,30 @@ lines:
       What I'm trying to say is... Don't let your past drag you down, alright?
       Let the world remember who you are: a capable leader, able to bring Havaria to the right path.
 
+- tags: [democratic_race, imiko]
+  dialog:
+  - |
+    agent:  
+      !think
+      ...
+      Y'know, I think I want to kill all marine life.
+    player:
+      !taken_aback
+      That's a bold statement. Aren't creatures like Octopi cool?
+      !scaredshrug
+      Or...squids?
+    agent:
+      !crossed
+      That's the thing though. The cult likes them, they're slimy, they have no hair...
+      I think we'd just be better without them.
+    player:
+      !intrigue
+      So what, are you going to start a hairmaggedon on them?
+    agent:
+      !placate
+      Ah, please don't call it "Hairmaggedon". 
+      Bad for PR, you understand.
+
 - tags: [democratic_race, nand]
   dialog:
   - |
