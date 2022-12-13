@@ -745,7 +745,7 @@ QDEF:AddConvo("deliver_package", "giver")
             }
             {not delivery_dead and not parasite_cured and infected_in_party?
                 player:
-                    [p] Here {delivery.gender?he is|she is|they are}.
+                    [p] Here {delivery.gender:he is|she is|they are}.
                 delivery:
                     !left
                     !injured
@@ -762,7 +762,7 @@ QDEF:AddConvo("deliver_package", "giver")
             {not delivery_dead and not parasite_cured and not infected_in_party?
                 player:
                     [p] {delivery.HeShe} got infected by the bog parasites.
-                    I imagine that {delivery.gender?he's|she's|they're} writhing in pain at the moment.
+                    I imagine that {delivery.gender:he's|she's|they're} writhing in pain at the moment.
                 agent:
                     !wince
                     That doesn't sound pleasant.
@@ -774,6 +774,14 @@ QDEF:AddConvo("deliver_package", "giver")
     :Hub(function(cxt)
         cxt:Opt("OPT_DELIVER")
             :SetQuestMark()
+            :Fn(function(cxt)
+                if cxt:GetCastMember("delivery"):IsInPlayerParty() then
+                    cxt.enc.scratch.infected_in_party = true
+                    if not cxt.quest.param.parasite_cured then
+                        cxt:GetAgent():Remember("SEEN_BOG_PARASITE")
+                    end
+                end
+            end)
             :Dialog("DIALOG_DELIVER")
             :CompleteQuest()
     end)

@@ -775,6 +775,7 @@ local CARDS = {
         end,
 
         OnPostResolve = function( self, minigame )
+            self.anti_negotiator:DeltaModifier("DISTRACTED", -self.stacks_needed, self)
             local cards = {}
             local party = self.owner:GetParty()
             if party then
