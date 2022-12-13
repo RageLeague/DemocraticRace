@@ -370,7 +370,7 @@ lines:
 - tags: [democratic_race, imiko]
   dialog:
   - |
-    agent:  
+    agent:
       !think
       ...
       Y'know, I think I want to kill all marine life.
@@ -388,7 +388,7 @@ lines:
       So what, are you going to start a hairmaggedon on them?
     agent:
       !placate
-      Ah, please don't call it "Hairmaggedon". 
+      Ah, please don't call it "Hairmaggedon".
       Bad for PR, you understand.
 
 - tags: [democratic_race, nand]
@@ -460,7 +460,7 @@ lines:
         !happy
         Thanks. Glad to find another person who enjoys a good poetry.
     }
-- tags: [democratic_race, pamphleteer]
+- tags: [democratic_race, rise_pamphleteer]
   dialog:
   - |
     agent:
@@ -479,11 +479,11 @@ lines:
       I'm...sorry?
     agent:
       !shrug
-      Well, if you're joining the cause, you've gotta be willing to die for the cause. 
+      Well, if you're joining the cause, you've gotta be willing to die for the cause.
     player:
       !clap
       How about you workshop that one a little more?
-- tags: [democratic_race, dredgers]
+- tags: [democratic_race, dredger]
   dialog:
   - |
     agent:
@@ -504,7 +504,7 @@ lines:
     agent:
       Isn't he? Now, just remember to stir him one every 3 hours so he doesn't get moldy.
     player:
-      !burp
+      !disgust
       You can-<i>hurp</>- count on me.
     * You make a mental note of where all the trash cans are for when you leave.
 - tags: [democratic_race, player_sal, laborer]
