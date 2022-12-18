@@ -730,36 +730,65 @@ QDEF:AddConvo("deliver_package", "giver")
             agent:
                 !take
                 Thanks.
-                How's {delivery}?
             {delivery_dead?
+                agent:
+                    [p] How's {delivery}?
                 player:
-                    [p] {delivery} didn't make it.
+                    {delivery} didn't make it.
                 agent:
                     Well, that's a shame.
             }
-            {not delivery_dead and parasite_cured?
+            {not delivery_dead and parasite_cured and not cured_by_giver?
+                agent:
+                    [p] How's {delivery}?
                 player:
                     [p] {delivery.HeShe} got infected by the bog parasites, but {delivery.heshe} got better now.
                 agent:
                     That's good, I suppose.
             }
+            {not delivery_dead and parasite_cured and cured_by_giver?
+                agent:
+                    [p] Well, the surgery on {delivery} went well.
+                    {delivery.HeShe} might still take a couple of days to recover from the surgery, but the biggest ordeal has already been overcome.
+                player:
+                    That sounds good.
+                agent:
+                    Still, the bog parasite looks painful.
+            }
             {not delivery_dead and not parasite_cured and infected_in_party?
+                agent:
+                    [p] How's {delivery}?
                 player:
                     [p] Here {delivery.gender:he is|she is|they are}.
                 delivery:
                     !left
                     !injured
-                agent:
-                    !surprised
-                    What the Hesh is that?
-                    I- I don't know what I can do about it. You should get that looked at.
-                player:
-                    !left
-                    Well, yeah, that's what plan to do right now. I'm just dropping off the package first.
-                agent:
-                    Ah, of course.
+                {can_cure_escort?
+                    agent:
+                        !surprised
+                        Holy Hesh, {delivery}, that looks really bad.
+                        I- I've never encountered anything like this. I can try to get rid of it, but it might be challenging.
+                    player:
+                        !left
+                        Well, we can worry about that later. I'm just dropping off the package first.
+                    agent:
+                        Ah, of course.
+                }
+                {not can_cure_escort?
+                    agent:
+                        !surprised
+                        What the Hesh is that?
+                        I- I don't know what I can do about it. You should get that looked at.
+                    player:
+                        !left
+                        Well, yeah, that's what plan to do right now. I'm just dropping off the package first.
+                    agent:
+                        Ah, of course.
+                }
             }
             {not delivery_dead and not parasite_cured and not infected_in_party?
+                agent:
+                    [p] How's {delivery}?
                 player:
                     [p] {delivery.HeShe} got infected by the bog parasites.
                     I imagine that {delivery.gender:he's|she's|they're} writhing in pain at the moment.
@@ -777,6 +806,9 @@ QDEF:AddConvo("deliver_package", "giver")
             :Fn(function(cxt)
                 if cxt:GetCastMember("delivery"):IsInPlayerParty() then
                     cxt.enc.scratch.infected_in_party = true
+                    if table.arraycontains(Content.GetQuestDef( "FOLLOWUP_PARASITE_KILLER" ).ALLOWED_HEALER, cxt:GetAgent():GetContentID()) then
+                        cxt.enc.scratch.can_cure_escort = true
+                    end
                     if not cxt.quest.param.parasite_cured then
                         cxt:GetAgent():Remember("SEEN_BOG_PARASITE")
                     end
