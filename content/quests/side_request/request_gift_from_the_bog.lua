@@ -400,16 +400,17 @@ QDEF:AddConvo("pick_up_package")
             ]],
         }
         :Fn(function(cxt)
-            cxt:Opt("OPT_ACCEPT")
-                :Dialog("DIALOG_ACCEPT")
-                :Fn(function(cxt)
-                    -- TODO: Spawn a side quest
-                end)
-                :Travel()
+            StateGraphUtil.AddLeaveLocation(cxt)
+            -- cxt:Opt("OPT_ACCEPT")
+            --     :Dialog("DIALOG_ACCEPT")
+            --     :Fn(function(cxt)
+            --         -- TODO: Spawn a side quest
+            --     end)
+            --     :Travel()
 
-            cxt:Opt("OPT_REFUSE")
-                :Dialog("DIALOG_REFUSE")
-                :Travel()
+            -- cxt:Opt("OPT_REFUSE")
+            --     :Dialog("DIALOG_REFUSE")
+            --     :Travel()
         end)
 
 QDEF:AddConvo("deliver_package")
