@@ -16,7 +16,14 @@ local QDEF = QuestDef.Define
         base_difficulty_change = function(quest, new_diff, old_diff)
             quest:SetRank(new_diff)
         end,
-
+        quests_changed = function(quest, event_quest)
+            if event_quest == quest.param.escort_quest and event_quest:IsComplete() then
+                quest.param.parasite_cured = true
+                if event_quest.param.curer_agent == quest:GetCastMember("giver") then
+                    quest.param.cured_by_giver = true
+                end
+            end
+        end
     },
 
     collect_agent_locations = function(quest, t)
@@ -288,6 +295,7 @@ QDEF:AddConvo("pick_up_package")
                         }
                         cxt:GetAgent():Recruit(PARTY_MEMBER_TYPE.ESCORT)
                         cxt.quest.param.escort_quest = QuestUtil.SpawnQuest("FOLLOWUP_PARASITE_KILLER", overrides)
+                        cxt.quest.param.escort_quest.param.giver = cxt:GetCastMember("giver")
                     end)
                     :GoTo("STATE_TELL")
                 :OnFailure()
@@ -559,7 +567,13 @@ QDEF:AddConvo("deliver_package")
         :Fn(function(cxt)
             if cxt:FirstLoop() then
                 cxt.quest.param.did_admiralty_confront = true
-                cxt.enc.scratch.other_party_member = #cxt.player:GetParty():GetMembers() > 1
+                for i, agent in ipairs(cxt.player:GetParty():GetMembers()) do
+                    if not agent:IsPlayer() and agent:CanTalk() then
+                        cxt:ReassignCastMember("party", agent)
+                        cxt.enc.scratch.other_party_member = true
+                        break
+                    end
+                end
                 local leader = TheGame:GetGameState():AddSkinnedAgent( "ADMIRALTY_INVESTIGATOR" ) --new guy, not relationship
                 cxt.enc.scratch.patrol = CreateCombatBackup(leader, "ADMIRALTY_PATROL_BACKUP", cxt.quest:GetRank() + 1)
                 table.insert(cxt.enc.scratch.patrol, 1, leader)
@@ -808,6 +822,9 @@ QDEF:AddConvo("deliver_package", "giver")
                     cxt.enc.scratch.infected_in_party = true
                     if table.arraycontains(Content.GetQuestDef( "FOLLOWUP_PARASITE_KILLER" ).ALLOWED_HEALER, cxt:GetAgent():GetContentID()) then
                         cxt.enc.scratch.can_cure_escort = true
+                    end
+                    if cxt.quest.param.escort_quest then
+                        cxt.quest.param.escort_quest.param.package_delivered = true
                     end
                     if not cxt.quest.param.parasite_cured then
                         cxt:GetAgent():Remember("SEEN_BOG_PARASITE")
