@@ -34,13 +34,31 @@ local QDEF = QuestDef.Define
 
     on_start = function(quest)
         quest:Activate("pick_up_package")
+        local overrides = {
+            cast = {
+                infected = cxt:GetCastMember("delivery"),
+            },
+            parameters = {
+                spawned_from_quest = true,
+            },
+        }
+        QuestUtil.SpawnQuest("DEMEVENT_RAMPAGING_BOG_MONSTER", overrides, true)
     end,
 
     on_complete = function(quest)
         if not (quest.param.sub_optimal or quest.param.poor_performance) then
             quest:GetCastMember("giver"):OpinionEvent(OPINION.DID_LOYALTY_QUEST)
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 2, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 5, "JAKES", "COMPLETED_QUEST_REQUEST")
         elseif quest.param.sub_optimal then
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 2, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 3, "JAKES", "COMPLETED_QUEST_REQUEST")
         elseif quest.param.poor_performance then
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 2, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 2, "JAKES", "COMPLETED_QUEST_REQUEST")
         end
     end,
 
@@ -602,6 +620,15 @@ QDEF:AddConvo("deliver_package")
                     end
                 end
                 local leader = TheGame:GetGameState():AddSkinnedAgent( "ADMIRALTY_INVESTIGATOR" ) --new guy, not relationship
+                local overrides = {
+                    cast = {
+                        admiralty = leader,
+                    },
+                    parameters = {
+                        tried_parasite_silence = true,
+                    },
+                }
+                QuestUtil.SpawnQuest("FOLLOW_DIALOG_AWKWARD_ADMIRALTY_MEETING", overrides)
                 cxt.enc.scratch.patrol = CreateCombatBackup(leader, "ADMIRALTY_PATROL_BACKUP", cxt.quest:GetRank() + 1)
                 table.insert(cxt.enc.scratch.patrol, 1, leader)
                 cxt:TalkTo(leader)

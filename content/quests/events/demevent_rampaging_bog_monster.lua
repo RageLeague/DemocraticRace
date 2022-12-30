@@ -3,10 +3,13 @@ local QDEF = QuestDef.Define
     qtype = QTYPE.EVENT,
     act_filter = DemocracyUtil.DemocracyActFilter,
     spawn_event_mask = QEVENT_TRIGGER.TRAVEL,
-    on_destroy = function(quest)
-    end,
-    on_init = function(quest)
-    end,
+    rank = {3},
+    cooldown = EVENT_COOLDOWN.LONG,
+    events = {
+        base_difficulty_change = function(quest, new_diff, old_diff)
+            quest:SetRank(new_diff)
+        end,
+    },
 }
 :AddCast{
     cast_id = "infected",
@@ -14,6 +17,7 @@ local QDEF = QuestDef.Define
         -- Some random guy we don't know about, if it's just a random event.
         table.insert(t, quest:CreateSkinnedAgent())
     end,
+    no_validation = true,
     events = {
         agent_retired = function(quest, agent)
             if not quest.param.event_in_action then
@@ -32,7 +36,7 @@ local QDEF = QuestDef.Define
         action_clock_advance = function(quest, location)
             if quest.param.dormant_start_time ~= Now() then
                 quest.param.dormant_timer = (quest.param.dormant_timer or 0) - 1
-                if math.random() < 0.3 then
+                if math.random() < 0.5 then
                     quest.param.dormant_timer = quest.param.dormant_timer + 1
                 end
                 if quest.param.dormant_timer <= 0 then

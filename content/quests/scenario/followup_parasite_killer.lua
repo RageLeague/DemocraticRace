@@ -7,6 +7,11 @@ local QDEF = QuestDef.Define
     on_complete = function(quest)
         quest:GetCastMember("escort"):Dismiss()
     end,
+    events = {
+        base_difficulty_change = function(quest, new_diff, old_diff)
+            quest:SetRank(new_diff)
+        end,
+    },
 }
 :AddObjective{
     id = "start",
