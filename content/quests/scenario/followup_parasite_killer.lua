@@ -151,6 +151,9 @@ QDEF:AddConvo()
                 :Fn(function(cxt)
                     cxt:GetCastMember("escort"):OpinionEvent(OPINION.SAVED_LIFE, nil, cxt:GetAgent())
                     cxt.quest.param.curer_agent = cxt:GetAgent()
+                    if cxt.quest.param.bog_monster_event then
+                        cxt.quest.param.bog_monster_event:Cancel()
+                    end
                 end)
                 :CompleteQuest()
         end

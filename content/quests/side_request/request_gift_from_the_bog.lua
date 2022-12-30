@@ -43,7 +43,7 @@ local QDEF = QuestDef.Define
                 spawned_from_quest = true,
             },
         }
-        QuestUtil.SpawnQuest("DEMEVENT_RAMPAGING_BOG_MONSTER", overrides, true)
+        quest.param.bog_monster_event = QuestUtil.SpawnQuest("DEMEVENT_RAMPAGING_BOG_MONSTER", overrides, true)
     end,
 
     on_complete = function(quest)
@@ -315,6 +315,7 @@ QDEF:AddConvo("pick_up_package")
                         cxt:GetAgent():Recruit(PARTY_MEMBER_TYPE.ESCORT)
                         cxt.quest.param.escort_quest = QuestUtil.SpawnQuest("FOLLOWUP_PARASITE_KILLER", overrides)
                         cxt.quest.param.escort_quest.param.giver = cxt:GetCastMember("giver")
+                        cxt.quest.param.escort_quest.param.bog_monster_event = cxt.quest.param.bog_monster_event
                     end)
                     :GoTo("STATE_TELL")
                 :OnFailure()
@@ -354,6 +355,9 @@ QDEF:AddConvo("pick_up_package")
                             cxt:Dialog("DIALOG_SURGERY_WIN")
                             cxt:GetCastMember("delivery"):OpinionEvent(OPINION.SAVED_LIFE)
                             cxt.quest.param.parasite_cured = true
+                            if cxt.quest.param.bog_monster_event then
+                                cxt.quest.param.bog_monster_event:Cancel()
+                            end
                         end
                         if cxt.enc.scratch.infected and not cxt.enc.scratch.vaccinated then
                             cxt:GainCards{"twig", "stem"}
