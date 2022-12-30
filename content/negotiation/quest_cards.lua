@@ -828,6 +828,43 @@ local CARDS = {
             self:NotifyChanged()
         end,
     },
+    dem_random_rare_parasite =
+    {
+        name = "Thriving Parasites",
+        desc = "Transforms into a random Rare Parasite card when added to your deck.",
+        icon = "battle/bog_symbiosis.tex",
+
+        cost = 0,
+        flags = CARD_FLAGS.UNPLAYABLE | CARD_FLAGS.STATUS,
+        rarity = CARD_RARITY.UNIQUE,
+        manual_desc = true,
+
+        global_event_handlers =
+        {
+            [ "card_added" ] = function( self, card )
+                if card == self then
+                    local parasites = {}
+                    local negotiation_defs = require "negotiation/negotiation_defs"
+                    for i, def in ipairs( Content.GetAllNegotiationCards() ) do
+                        if CheckBits( def.flags, negotiation_defs.CARD_FLAGS.PARASITE ) then
+                            parasites[ def.id ] = def
+                        end
+                    end
+
+                    local fun = require "util/fun"
+                    local new_card_id = fun(parasites)
+                            :filter(function(v) return v.rarity == CARD_RARITY.RARE end)
+                            :keys()
+                            :shuffle()
+                            :first()
+                    if new_card_id then
+                        local card = self.owner.negotiator:LearnCard(new_card_id)
+                    end
+                    self.owner.negotiator:RemoveCard(card)
+                end
+            end,
+        },
+    }
 }
 for i, id, def in sorted_pairs( CARDS ) do
     if not def.series then
