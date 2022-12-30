@@ -479,6 +479,9 @@ QDEF:AddConvo("deliver_package")
                     That's why the less information gets out there, the better.
                 {not player_drunk?
                     * Oh dear. They are going to silence you so you don't cause panic.
+                    {crowd_saw_bog_monster?
+                        * {agent} is one step too late, though. The bog monster you saw the other day caused enough panic already.
+                    }
                     * {agent} doesn't seem to notice that {agent.heshe} slipped up, though, and you kept your cool.
                 }
                 {player_drunk?
@@ -488,7 +491,13 @@ QDEF:AddConvo("deliver_package")
                 agent:
                     Lots of people might not appreciate it, but the Admiralty does a good job at keeping order.
                     Anyway, we need your help so we can understand the parasites better.
-                * You need to think of a plan to get out of this situation.
+                {crowd_saw_bog_monster?
+                    * You can try to convince {agent} that there is no point, now that the public already saw the impact of the bog parasites in the Pearl.
+                    * {agent} might not listen to you, though, so if that fails, you need a plan to get out of this situation.
+                }
+                {not crowd_saw_bog_monster?
+                    * You need to think of a plan to get out of this situation.
+                }
                 {other_party_member?
                     * Preferably, with your party members, as well.
                 }
@@ -521,15 +530,31 @@ QDEF:AddConvo("deliver_package")
                     [p] Well, here's the thing...
             ]],
             DIALOG_CONVINCE_SUCCESS = [[
-                agent:
-                    [p] That's well and good. I almost considered letting you go.
-                    But I have my orders. I don't intend on disobeying them.
-                    You are coming with me. No matter what.
-                {probed_info?
-                    * Dammit! You didn't distract long enough to get away!
+                {probed_info and crowd_saw_bog_monster?
+                    player:
+                        [p] Don't you get it? There is no point.
+                        No matter how hard you try to hide, the truth always comes out.
+                        There was already an incident earlier, where a person infected by the bog parasites transformed into a giant monster and attacking everyone in sight.
+                    agent:
+                        Is that true?
+                    player:
+                        Yeah, it is. Easy enough to check.
+                    agent:
+                        !sigh
+                        In the end, all of our effort, it's all pointless anyway.
+                        Fine, just go. I'm not going to stop you.
                 }
-                {not probed_info?
-                    * Okay, why is there a negotiation option there if it's completely pointless?
+                {not (probed_info and crowd_saw_bog_monster)?
+                    agent:
+                        [p] That's well and good. I almost considered letting you go.
+                        But I have my orders. I don't intend on disobeying them.
+                        You are coming with me. No matter what.
+                    {probed_info?
+                        * Dammit! You didn't distract long enough to get away!
+                    }
+                    {not probed_info?
+                        * Okay, why is there a negotiation option there if it's completely pointless?
+                    }
                 }
             ]],
             DIALOG_CONVINCE_GOT_AWAY = [[
@@ -568,6 +593,7 @@ QDEF:AddConvo("deliver_package")
         :Fn(function(cxt)
             if cxt:FirstLoop() then
                 cxt.quest.param.did_admiralty_confront = true
+                cxt.enc.scratch.crowd_saw_bog_monster = cxt.player:HasMemory("CROWD_SAW_BOG_MONSTER")
                 for i, agent in ipairs(cxt.player:GetParty():GetMembers()) do
                     if not agent:IsPlayer() and agent:CanTalk() then
                         cxt:ReassignCastMember("party", agent)
@@ -677,6 +703,10 @@ QDEF:AddConvo("deliver_package")
                                 else
                                     cxt:Dialog("DIALOG_CONVINCE_SUCCESS")
                                     cxt.enc.scratch.tried_negotiation = true
+                                    if cxt.quest.param.probed_info and cxt.enc.scratch.crowd_saw_bog_monster then
+                                        StateGraphUtil.AddLeaveLocation(cxt)
+                                        return
+                                    end
                                     local escaped = minigame.escaped_people
                                     if escaped and #escaped > 0 then
                                         cxt:Dialog("DIALOG_PARTY_ESCAPED", escaped, #escaped, escaped[1])

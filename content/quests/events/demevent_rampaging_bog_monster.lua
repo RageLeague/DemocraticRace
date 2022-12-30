@@ -275,6 +275,7 @@ QDEF:AddConvo("action")
                         if killed then
                             cxt:Dialog("DIALOG_KILL_DEAD")
                             cxt.quest:Complete()
+                            cxt.player:Remember("PUT_OUT_BOG_MISERY", cxt:GetCastMember("infected"))
                             StateGraphUtil.AddLeaveLocation(cxt)
                         else
                             cxt.enc.scratch.close_to_beast = true
