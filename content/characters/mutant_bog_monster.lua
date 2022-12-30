@@ -20,7 +20,7 @@ Content.AddCharacterDef
 
         fight_data =
         {
-            MAX_HEALTH = 120,
+            MAX_HEALTH = 150,
             MAX_MORALE = MAX_MORALE_LOOKUP.IMMUNE,
             status_widget_dx = 0.5,
             status_widget_dy = -0.95,

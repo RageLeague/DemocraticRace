@@ -101,7 +101,7 @@ local function SimulateBeastFight(beast, team)
     local turn_count = 1
     while #survivors > 0 and beast.health:Get() > 0 do
         for i, agent in ipairs(survivors) do
-            beast.health:Delta(-math.random(0, 10))
+            beast.health:Delta(-math.random(0, 12))
             if beast.health:Get() == 0 then
                 beast:Kill()
                 break
@@ -113,8 +113,10 @@ local function SimulateBeastFight(beast, team)
         local new_survivors = {}
         local primary = table.arraypick(survivors)
         for i, agent in ipairs(survivors) do
-            if turn_count % 2 == 1 or primary == agent then
-                agent.health:Delta(-math.random(0, 10))
+            if turn_count % 2 == 1 then
+                agent.health:Delta(-math.random(0, 6))
+            elseif primary == agent then
+                agent.health:Delta(-math.random(0, 12))
             end
             if agent.health:Get() > 0 then
                 table.insert(new_survivors, agent)
@@ -463,6 +465,7 @@ QDEF:AddConvo("action")
         :SetLooping()
         :Fn(function(cxt)
             if cxt:FirstLoop() then
+                cxt.player:Remember("CROWD_SAW_BOG_MONSTER")
                 cxt.enc.scratch.crowd_people = {}
                 table.insert(cxt.enc.scratch.crowd_people, AgentUtil.GetFreeAgent(table.arraypick(CROWD_FOREMAN)))
                 for i, id in ipairs(table.multipick(CROWD_MEMBER, 2)) do
