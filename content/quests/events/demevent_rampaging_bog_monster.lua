@@ -167,7 +167,10 @@ QDEF:AddConvo("action")
             ]],
             DIALOG_KILL_DEAD = [[
                 * [p] You successfully put {infected} out of {infected.hisher} misery and prevented a huge disaster.
-                * Aren't you a hero?
+                * Passer-bys see you as a killer, blissfully unaware of the danger that would've occur should you allow {infected} to live.
+                * It is a thankless task, but it must be done.
+                * For a true hero will do what is right, even if they receive no praise from the world.
+                * You just wish that the world will see you as the hero that you are, and have your support reflect that.
             ]],
             DIALOG_KILL_SPARED = [[
                 * [p] There is not enough time.
