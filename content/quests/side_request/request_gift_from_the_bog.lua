@@ -37,7 +37,7 @@ local QDEF = QuestDef.Define
         quest:Activate("pick_up_package")
         local overrides = {
             cast = {
-                infected = cxt:GetCastMember("delivery"),
+                infected = quest:GetCastMember("delivery"),
             },
             parameters = {
                 spawned_from_quest = true,
