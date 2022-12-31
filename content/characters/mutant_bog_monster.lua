@@ -12,6 +12,8 @@ Content.AddCharacterDef
         species = SPECIES.BEAST,
         death_item = "dem_random_rare_parasite",
 
+        battle_preview_anim = "DEMOCRATICRACE:assets/anim/boss_bog_monster_slide.zip",
+
         loc_strings =
         {
             TWIN_BOSS_PREVIEW_NAMES = "Bog Mutant",
