@@ -11,6 +11,7 @@ local attacks =
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.health_threshold)
         end,
+        icon = "DEMOCRATICRACE:assets/cards/parasite_extraction.png",
         anim = "melee_item",
         anims = { "anim/weapon_melee_knife_seemli.zip"},
 

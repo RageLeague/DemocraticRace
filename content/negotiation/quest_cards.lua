@@ -756,6 +756,7 @@ local CARDS = {
             return loc.format(fmt_str, self.stacks_needed)
         end,
         flavour = "When all else fails, you can always run away.",
+        icon = "DEMOCRATICRACE:assets/cards/opportunistic_retreat.png",
 
         cost = 1,
         flags = CARD_FLAGS.MANIPULATE,
@@ -814,6 +815,7 @@ local CARDS = {
             end
             return loc.format((self.def or self):GetLocalizedString("ALT_DESC"))
         end,
+        icon = "DEMOCRATICRACE:assets/cards/opportunistic_retreat.png",
 
         -- icon = "negotiation/decency.tex",
         hide_in_cardex = true,

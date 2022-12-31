@@ -11,6 +11,7 @@ local conditions =
         desc_fn = function( self, fmt_str )
             return loc.format( fmt_str, self:GetOwnerName(), self.disease_count )
         end,
+        icon = "DEMOCRATICRACE:assets/conditions/parasitic_infection.png",
 
         disease_count = 1,
         ctype = CTYPE.INNATE,
@@ -60,6 +61,7 @@ local conditions =
         desc_fn = function( self, fmt_str )
             return loc.format( fmt_str, self:GetOwnerName(), self.base_chance, self.additional_chance, self.chance_threshold )
         end,
+        icon = "DEMOCRATICRACE:assets/conditions/cornered.png",
 
         base_chance = 0.5,
         additional_chance = 0.05,
