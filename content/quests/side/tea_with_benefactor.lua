@@ -62,7 +62,7 @@ local FOLLOWUP
 
 local QDEF = QuestDef.Define
 {
-    title = "Tea with a benefactor",
+    title = "Tea With A Benefactor",
     desc = "An influential citizen has taken interest in your campaign and invited you for a cup of tea. See if you can turn some of that support into cash.",
     icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/tea_with_benefactor.png"),
 
