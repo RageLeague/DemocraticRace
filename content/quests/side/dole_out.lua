@@ -109,9 +109,7 @@ local QDEF = QuestDef.Define{
         table.insert( t, quest:GetCastMember("dealer_workplace"):GetProprietor())
     end,
 }
--- Added true to make primary advisor mandatory.
--- Otherwise the game will softlock.
--- Fair enough.
+
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :Loc{
