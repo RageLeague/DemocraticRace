@@ -110,25 +110,9 @@ local QDEF = QuestDef.Define{
     end,
 }
 :AddOpinionEvents{
-    politic = {
-        delta = OPINION_DELTAS.LIKE,
-        txt = "Changed political opinion for them",
-    },
     paid = {
         delta = OPINION_DELTAS.LIKE,
         txt = "Gave them money and dole loaves",
-    },
-    peeved = {
-        delta = OPINION_DELTAS.BAD,
-        txt = "Called a populist",
-    },
-    political_waffle = {
-        delta = OPINION_DELTAS.LIKE,
-        txt = "Agreed with them on all the big issues",
-    },
-    political_angry = {
-        delta = OPINION_DELTAS.BAD,
-        txt = "Let them call you a straw man",
     },
 }
 -- Added true to make primary advisor mandatory.
@@ -266,7 +250,7 @@ QDEF:AddConvo("dole_out_three")
                 player:
                     Is something the matter?
                 agent:
-                    Just...I've been eating this for the past...how long?
+                    Just... I've been eating this for the past... how long?
                     Wish I could have something else...
             ]],
             OPT_GIVE = "Give them some shills",
@@ -284,7 +268,7 @@ QDEF:AddConvo("dole_out_three")
                 player:
                     My sympathies, I have been in the same position as you before.
                 agent:
-                    I mean...it's fine, it's fine. Thank you for the food, regardless.
+                    I mean... It's fine, it's fine. Thank you for the food, regardless.
             ]],
         }
         :Fn(function(cxt)
@@ -294,7 +278,7 @@ QDEF:AddConvo("dole_out_three")
             cxt:Opt("OPT_GIVE")
                 :Dialog("DIALOG_GIVE")
                 :DeliverMoney(100)
-                :ReceiveOpinion("paid")
+                :ReceiveOpinion(OPINION.DEEPENED_RELATIONSHIP)
                 :DoneConvo()
                     -- :CompleteQuest("feed_pan")
             cxt:Opt("OPT_NO_MONEY")
@@ -339,7 +323,6 @@ QDEF:AddConvo("dole_out_three")
 
             cxt:Opt("OPT_AGREE")
                 :UpdatePoliticalStance("FISCAL_POLICY", 2, false, true)
-                :ReceiveOpinion("politic")
                 :Dialog("DIALOG_AGREE")
                 :GoTo("STATE_AGREE")
             cxt:Opt("OPT_DISAGREE")
@@ -367,7 +350,7 @@ QDEF:AddConvo("dole_out_three")
         :Fn(function(cxt)
             cxt:Opt("OPT_AGREE_2")
                 :UpdatePoliticalStance("LABOR_LAW", 2, false, true)--random stance. might change once I get a minute to look.
-                :ReceiveOpinion("political_waffle")
+                :ReceiveOpinion(OPINION.SHARE_IDEOLOGY)
                 :Dialog("DIALOG_AGREE_2")
                 -- :CompleteQuest("feed_politic")
                 :Fn(function(cxt)
@@ -431,13 +414,13 @@ QDEF:AddConvo("dole_out_three")
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_CALM_DOWN_FAIL")
-                        cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("political_angry"))
+                        cxt:GetAgent():OpinionEvent(OPINION.DISLIKE_IDEOLOGY)
                         StateGraphUtil.AddEndOption(cxt)
                     end
                 }
             cxt:Opt("OPT_IGNORE")
                 :Dialog("DIALOG_IGNORE")
-                :ReceiveOpinion("political_angry")
+                :ReceiveOpinion(OPINION.DISLIKE_IDEOLOGY)
                 -- :CompleteQuest("feed_politic")
                 :DoneConvo()
         end)
@@ -496,13 +479,13 @@ QDEF:AddConvo("dole_out_three")
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_CALM_DOWN_2_FAIL")
-                        cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("political_angry"))
+                        cxt:GetAgent():OpinionEvent(OPINION.DISLIKE_IDEOLOGY)
                         StateGraphUtil.AddEndOption(cxt)
                     end
                 }
             cxt:Opt("OPT_IGNORE_2")
                 :Dialog("DIALOG_IGNORE_2")
-                :ReceiveOpinion("political_angry")
+                :ReceiveOpinion(OPINION.DISLIKE_IDEOLOGY)
                 :DoneConvo()
         end)
     :State("STATE_UNGRATEFUL")
@@ -558,21 +541,19 @@ QDEF:AddConvo("dole_out_three")
                     end,
                     on_success = function(cxt)
                         cxt:Dialog("DIALOG_CONVINCE_SUCCESS")
-                        -- cxt.quest:Complete("feed_ungrate")
                         table.insert(cxt.quest.param.gifted_people, cxt:GetAgent())
                         StateGraphUtil.AddEndOption(cxt)
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_CONVINCE_FAIL")
-                        -- cxt:ReceiveOpinion("peeved")
-                        cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("peeved"))
+                        cxt:GetAgent():OpinionEvent(OPINION.INSULT)
                         table.insert(cxt.quest.param.rejected_people, cxt:GetAgent())
                         StateGraphUtil.AddEndOption(cxt)
                     end,
                 }
             cxt:Opt("OPT_IGNORE")
                 :Dialog("DIALOG_IGNORE")
-                :ReceiveOpinion("peeved")
+                :ReceiveOpinion(OPINION.INSULT)
                 :Fn(function(cxt)
                     table.insert(cxt.quest.param.rejected_people, cxt:GetAgent())
                 end)
