@@ -13,6 +13,7 @@ Content.AddCharacterDef
         death_item = "dem_random_rare_parasite",
 
         battle_preview_anim = "DEMOCRATICRACE:assets/anim/boss_bog_monster_slide.zip",
+        battle_preview_offset = { x = 100, y = 0 },
 
         loc_strings =
         {
