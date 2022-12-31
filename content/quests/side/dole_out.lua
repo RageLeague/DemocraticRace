@@ -112,23 +112,23 @@ local QDEF = QuestDef.Define{
 :AddOpinionEvents{
     politic = {
         delta = OPINION_DELTAS.LIKE,
-        txt = "Changed political opinion for them.",
+        txt = "Changed political opinion for them",
     },
     paid = {
         delta = OPINION_DELTAS.LIKE,
-        txt = "Gave them money and dole loaves.",
+        txt = "Gave them money and dole loaves",
     },
     peeved = {
         delta = OPINION_DELTAS.BAD,
-        txt = "Called a populist.",
+        txt = "Called a populist",
     },
     political_waffle = {
         delta = OPINION_DELTAS.LIKE,
-        txt = "Agreed with them on all the big issues.",
+        txt = "Agreed with them on all the big issues",
     },
     political_angry = {
         delta = OPINION_DELTAS.BAD,
-        txt = "Let them call you a straw man.",
+        txt = "Let them call you a straw man",
     },
 }
 -- Added true to make primary advisor mandatory.
