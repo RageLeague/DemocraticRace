@@ -11,6 +11,10 @@ local FAIL_ENDINGS = {
         slides = "democracy_fail_broken_mind",
         name = "Broken Mind",
     },
+    disappearance = {
+        slides = "democracy_fail_disappearance",
+        name = "Disappearance",
+    },
 }
 local SUCCESS_ENDING = {
 

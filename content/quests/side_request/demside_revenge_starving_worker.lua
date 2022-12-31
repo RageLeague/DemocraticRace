@@ -11,6 +11,7 @@ local QDEF = QuestDef.Define
     tags = {"REQUEST_JOB"},
     reward_mod = 0,
     can_flush = false,
+    cooldown = EVENT_COOLDOWN.LONG,
 
     events = {
         base_difficulty_change = function(quest, new_diff, old_diff)
