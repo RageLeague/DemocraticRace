@@ -367,6 +367,35 @@ lines:
       What I'm trying to say is... Don't let your past drag you down, alright?
       Let the world remember who you are: a capable leader, able to bring Havaria to the right path.
 
+- tags: [democratic_race, imiko]
+  dialog:
+  - |
+    agent:
+      !think
+      The Cult has gotten Hesh's tentacles all over the populace, stifling the mind of the people.
+      It would be better for the people if they are just... gone.
+    player:
+      !chuckle
+      $miscMocking
+      What, are you gonna kill Hesh itself?
+    agent:
+      !handwave
+      Nah, that won't be enough. Without Hesh, there are other beings with tentacles that the Cult will worship next.
+      No, what I'm talking about is something more definitive.
+      Be it jellyfish, octopuses, or squids. It would be better for everyone if the Cult can't find any tentacled creature of worship, if you catch my drift.
+    player:
+      !chuckle
+      $miscMocking
+      So what, are you going to start a Hairmaggedon on tentacled marine life?
+    agent:
+      !placate
+      Ah, please don't call it "Hairmaggedon".
+      Bad for PR, you understand.
+    {not player_drunk?
+      * {agent} doesn't sound like {agent.gender:he's|she's|they're} joking, but you can never really tell with {agent.himher}.
+      * For the sake of marine biodiversity, you hope that {agent.gender:he is|she is|they are}.
+    }
+
 - tags: [democratic_race, nand]
   dialog:
   - |
@@ -435,6 +464,110 @@ lines:
       agent:
         !happy
         Thanks. Glad to find another person who enjoys a good poetry.
+    }
+- tags: [democratic_race, rise_pamphleteer]
+  dialog:
+  - |
+    agent:
+      !happy
+      I've been cooking up something that will surely get the workers on our side!
+    player:
+      !clap
+      Well, what are you waiting for? Lay it on me!
+    agent:
+      !permit
+      Here it is. Take a good look.
+    player:
+      !take
+    * {agent} hands you a propaganda poster.
+    * Depicted on it is a laborer's hand holding up a hammer.
+    * At the bottom of the poster is the caption "Till death, we fight".
+    player:
+      !dubious
+      "Till death, we fight"?
+    agent:
+      !agree
+      Yeah. Time has proven over and over again that nothing ever changes, if people sacrifice their ideals to save their own skin.
+      If you really want any changes, you must be willing to sacrifice your life for the cause.
+    {anti_labor_law?
+      player:
+        !crossed
+        If your cause requires the sacrifice of innocent lives, then perhaps it isn't a cause worth fighting for.
+      agent:
+        !thought
+        Hmm... I suppose that it does come out that way. I need to rethink the slogan a bit.
+    }
+    {pro_labor_law?
+      player:
+        While I don't disagree, I feel like this is a bit exclusionary.
+        The revolution can't happen with just a few radicals willing to sacrifice their lives.
+        !thumb
+        If we want the revolution to succeed, we need to get lots of people on board, not just the ones willing to fight to the death.
+      agent:
+        !agree
+        I suppose you do have a point.
+    }
+    {not pro_labor_law and not anti_labor_law?
+      player:
+        !thumb
+        I can't speak for everyone, but personally, I don't really want to die.
+        And I'm pretty sure most people don't, either.
+      agent:
+        !thought
+        Hmm... I suppose if I want my message to reach the masses, it needs to be more palatable.
+    }
+    agent:
+      !happy
+      Thanks for the feedback, {player}.
+- tags: [democratic_race, dredger]
+  dialog:
+  - |
+    agent:
+      !bashful
+      Say, {player}, have I showed you my fascinating specimen named Jeremy?
+    player:
+      !dubious
+      "Fascinating specimen"? Is that how you refer to your pet?
+    agent:
+      Oh! So those are what pets are! I've been wondering about that for a while!
+      !permit
+      Anyway, here they are!
+    * {agent} hands you a petri dish full of a popping gunk of Hesh-knows-what.
+    {player_drunk?
+      player:
+        !drunk
+        I have to agree. Hesh-knows-whats are fascinating creatures.
+        They are between life and death, between plants and fungi, between bliss and agony, between-
+      agent:
+        !placate
+        Okay, now you lost me.
+      player:
+        !disgust
+      * Uh oh. It seems your stomach begins to turn.
+      * You are not sure if it's from all the alcohol you drank, or the Hesh-knows-whats, or both.
+      agent:
+        !bashful
+        You know what? I'm just going to put them away.
+    }
+    {not player_drunk?
+      * They emit a smell that is hard to describe.
+      player:
+        !disgust
+        Wh- What is that?
+      agent:
+        Well, I am developing an enzyme capable of synthesizing fuel from common materials.
+        This is the 984th Jeremy.
+      player:
+        !bashful
+        Well, that's quite a lot of Jeremys.
+      agent:
+        !neutral_notepad
+        Seems like there are a couple of tweaks that need to be made.
+        Anyway, I'm sure the next batch is going to be great.
+      player:
+        Yeah.
+        $scaredStammering
+        Totally.
     }
 - tags: [democratic_race, player_sal, laborer]
   dialog:
