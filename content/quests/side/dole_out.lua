@@ -109,12 +109,6 @@ local QDEF = QuestDef.Define{
         table.insert( t, quest:GetCastMember("dealer_workplace"):GetProprietor())
     end,
 }
-:AddOpinionEvents{
-    paid = {
-        delta = OPINION_DELTAS.LIKE,
-        txt = "Gave them money and dole loaves",
-    },
-}
 -- Added true to make primary advisor mandatory.
 -- Otherwise the game will softlock.
 -- Fair enough.
