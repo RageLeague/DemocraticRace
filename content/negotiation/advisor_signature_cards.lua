@@ -627,6 +627,53 @@ local CARDS = {
         improvise_count = 5,
         change_to_discard = true,
     },
+    advisor_manipulate_false_dichotomy =
+    {
+        name = "False Dichotomy",
+        desc = "Restore target non-core argument to full resolve if its resolve is at least half of its max resolve, or destroy it otherwise.",
+        flavour = "'What are nuances? You must always choose between two extremes.'",
+
+        advisor = "ADVISOR_MANIPULATE",
+        flags = CARD_FLAGS.MANIPULATE,
+        cost = 1,
+
+        target_enemy = TARGET_ANY_RESOLVE,
+        target_self = TARGET_ANY_RESOLVE,
+
+        IsAttack = function(self)
+            return true
+        end,
+
+        invert_effect = false,
+
+        OnPostResolve = function( self, minigame, targets )
+            for i, target in ipairs(targets) do
+                local resolve, max_resolve = target:GetResolve()
+                if (resolve * 2 >= max_resolve) == self.invert_effect then
+                    target.negotiator:DestroyModifier(target, self)
+                else
+                    target:RestoreResolve(max_resolve - resolve, self)
+                end
+            end
+            if self.card_draw and self.card_draw > 0 then
+                minigame:DrawCards( self.card_draw )
+            end
+        end,
+    },
+    advisor_manipulate_false_dichotomy_plus =
+    {
+        name = "Visionary False Dichotomy",
+        desc = "Restore target non-core argument to full resolve if its resolve is at least half of its max resolve, or destroy it otherwise.\n<#UPGRADE>Draw a card.</>",
+
+        card_draw = 1,
+    },
+    advisor_manipulate_false_dichotomy_plus2 =
+    {
+        name = "Twisted False Dichotomy",
+        desc = "<#UPGRADE>Destroy</> target non-core argument if its resolve is at least half of its max resolve, or <#UPGRADE>restore it to full resolve</> otherwise.",
+
+        invert_effect = true,
+    },
 
     advisor_hostile_talk_over =
     {
