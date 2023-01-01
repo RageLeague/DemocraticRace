@@ -19,7 +19,7 @@ local attacks =
 
         cost = 1,
         target_type = TARGET_TYPE.FRIENDLY_OR_SELF,
-        flags = CARD_FLAGS.ITEM | CARD_FLAGS.SKILL | CARD_FLAGS.REPLENISH,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.SKILL,
         rarity = CARD_RARITY.UNIQUE,
 
         max_charges = 4,
