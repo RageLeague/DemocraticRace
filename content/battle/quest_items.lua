@@ -34,11 +34,17 @@ local attacks =
         name = "Improved Dole Loaves",
         flavour = "Compared to regular dole loaves, these ones have some garlic butter on top.",
         desc = "{HEAL {1}}. If the target is the player, also restore {2} resolve.",
+        alt_desc = " (Resolve: {1}/{2})",
         desc_fn = function(self, fmt_str)
-            return loc.format( fmt_str, self.heal_amount, self.resolve_amount )
+            local result = loc.format( fmt_str, self.heal_amount, self.resolve_amount )
+            if TheGame:GetGameState() then
+                local resolve, max_resolve = TheGame:GetGameState():GetCaravan():GetResolve()
+                result = result .. loc.format((self.def or self):GetLocalizedString("ALT_DESC"), resolve, max_resolve)
+            end
+            return result
         end,
 
-        resolve_amount = 2,
+        resolve_amount = 4,
 
         OnPostResolve = function( self, battle, attack )
             self.target:HealHealth( self.heal_amount, self )

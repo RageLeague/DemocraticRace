@@ -195,9 +195,9 @@ local CONVO = QDEF:AddConvo("dole_out_three")
             cxt.quest.param.gifted_people = cxt.quest.param.gifted_people or {}
             cxt.quest.param.rejected_people = cxt.quest.param.rejected_people or {}
             local cards = {}
-            for i, card in ipairs(cxt.player.battler.cards.cards) do
+            for i, card in ipairs(cxt.player.negotiator.cards.cards) do
                 print(card.id)
-                if card.id == "dole_loaves" or card.id == "dole_loaves_plus" then
+                if card.id == "dole_loaves_negotiation" or card.id == "dole_loaves_negotiation_plus" then
                     table.insert(cards, card)
                 end
             end
@@ -211,7 +211,7 @@ local CONVO = QDEF:AddConvo("dole_out_three")
                         cards,
                         cxt:GetLocString("SELECT_TITLE"),
                         cxt:GetLocString("SELECT_DESC"),
-                        Widget.BattleCard,
+                        Widget.NegotiationCard,
                         function(card)
                             cxt.enc:ResumeEncounter( card )
                         end
@@ -220,7 +220,7 @@ local CONVO = QDEF:AddConvo("dole_out_three")
                     if card then
                         cxt.quest:DefFn("DeltaActions", -1)
 
-                        cxt.enc.scratch.improved_bread = card.id == "dole_loaves_plus"
+                        cxt.enc.scratch.improved_bread = card.id == "dole_loaves_negotiation_plus"
 
                         cxt:Dialog("DIALOG_SATISFIES_CONDITIONS")
 
@@ -238,7 +238,7 @@ local CONVO = QDEF:AddConvo("dole_out_three")
                         if who:GetFactionID() == "RISE" then
                             weight.STATE_POLITICAL = weight.STATE_POLITICAL + 1
                         end
-                        if card.id == "dole_loaves_plus" then
+                        if card.id == "dole_loaves_negotiation_plus" then
                             weight.STATE_GRATEFUL = weight.STATE_GRATEFUL + 3
                         end
                         local state = weightedpick(weight)
