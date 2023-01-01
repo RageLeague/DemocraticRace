@@ -4,11 +4,12 @@ local BATTLE_EVENT = battle_defs.EVENT
 
 local attacks =
 {
+    -- See https://forums.kleientertainment.com/forums/topic/81405-mushroom-farming-or-farmer-characters-in-the-future/
     dole_loaves =
     {
         name = "Dole Loaves",
         anim = "taunt",
-        flavour = "'It's food, I'll give you that.'",
+        flavour = "Made from 'high quality' spollop, these are definitely some of the food ever.",
         desc = "{HEAL {1}}.",
         icon = "DEMOCRATICRACE:assets/cards/dole_loaves.png",
         anims = { "anim/grog_beer_glass2.zip"},
@@ -24,8 +25,26 @@ local attacks =
         max_charges = 4,
         heal_amount = 4,
 
-        OnPostResolve = function( self, battle, attack)
+        OnPostResolve = function( self, battle, attack )
             self.target:HealHealth( self.heal_amount, self )
+        end,
+    },
+    dole_loaves_plus =
+    {
+        name = "Improved Dole Loaves",
+        flavour = "Compared to regular dole loaves, these ones have some garlic butter on top.",
+        desc = "{HEAL {1}}. If the target is the player, also restore {2} resolve.",
+        desc_fn = function(self, fmt_str)
+            return loc.format( fmt_str, self.heal_amount, self.resolve_amount )
+        end,
+
+        resolve_amount = 2,
+
+        OnPostResolve = function( self, battle, attack )
+            self.target:HealHealth( self.heal_amount, self )
+            if self.target.agent and self.target.agent:IsPlayer() then
+                TheGame:GetGameState():GetCaravan():DeltaResolve( self.resolve_amount )
+            end
         end,
     },
 }
