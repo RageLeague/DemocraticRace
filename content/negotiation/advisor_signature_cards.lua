@@ -298,6 +298,52 @@ local CARDS = {
         name = "Enhanced Underdog",
         damage_bonus = 2,
     },
+    advisor_diplomacy_virtue_signal =
+    {
+        name = "Virtue Signal",
+        desc = "Target opponent non-core argument gains {1} resolve. Deal {2} damage to all other arguments that opponent has.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, AutoUpgradeText(self, "heal_amount", true), AutoUpgradeText(self, "damage_amount"))
+        end,
+        flavour = "'People would rather pull one person out of the gutter than make it so a thousand more don't need to live in it in the first place.'",
+
+        advisor = "ADVISOR_DIPLOMACY",
+        flags = CARD_FLAGS.DIPLOMACY,
+        cost = 1,
+        target_enemy = ClearBits(TARGET_ANY_RESOLVE, TARGET_FLAG.CORE),
+
+        heal_amount = 4,
+        damage_amount = 4,
+
+        IsAttack = function(self)
+            return true -- Polymorphism babey!!!
+        end,
+
+        OnPostResolve = function(self, minigame, targets)
+            for i, target in ipairs(targets) do
+                target:ModifyResolve(self.heal_amount, self)
+            end
+            local other_targets = minigame:CollectAlliedTargets( self.target )
+            for i, target in ipairs(other_targets) do
+                if not table.arraycontains(targets, target) then
+                    minigame:ApplyPersuasion(self, target, self.damage_amount, self.damage_amount)
+                end
+            end
+        end,
+    },
+    advisor_diplomacy_virtue_signal_plus =
+    {
+        name = "Pale Virtue Signal",
+
+        heal_amount = 1,
+    },
+    advisor_diplomacy_virtue_signal_plus2 =
+    {
+        name = "Boosted Virtue Signal",
+
+        heal_amount = 6,
+        damage_amount = 6,
+    },
     advisor_manipulate_straw_army =
     {
         name = "Straw Army",
