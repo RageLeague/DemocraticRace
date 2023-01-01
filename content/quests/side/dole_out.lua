@@ -786,7 +786,7 @@ QDEF:AddConvo("go_to_advisor", "primary_advisor")
 QDEF:AddConvo("buy_loaves", "dealer")
     :Loc{
         OPT_BUY = "Buy loaves",
-        OPT_BUY_IMPROVED = "By improved loaves",
+        OPT_BUY_IMPROVED = "Buy improved loaves",
         DIALOG_BUY = [[
             player:
                 I will buy a bundle.
