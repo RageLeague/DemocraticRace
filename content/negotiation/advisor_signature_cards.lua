@@ -985,6 +985,48 @@ local CARDS = {
         name = "Slightly Incoherent Rambling",
         gain_stacks = 1,
     },
+    advisor_hostile_mask_off =
+    {
+        name = "Mask Off",
+        desc = "For the rest of the negotiation, a card of your choice in your hand becomes a Hostility card and loses all other card types.",
+
+        advisor = "ADVISOR_HOSTILE",
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND,
+        cost = 1,
+
+        flavour = "'I am going to say how it is, and I'm done pretending otherwise.'",
+
+        min_cards = 1,
+        max_cards = 1,
+        new_type = CARD_FLAGS.HOSTILE,
+
+        OnPostResolve = function( self, minigame, targets )
+            local chosen_cards = minigame:ChooseCards(self.min_cards, self.max_cards)
+            if chosen_cards then
+                for i, card in ipairs(chosen_cards) do
+                    if type(self.new_type) ~= "table" then
+                        card:NotifyTriggeredPre()
+                        card.flags = ClearBits(card.flags, CARD_TYPE_FLAGS) | self.new_type
+                        card:NotifyTriggeredPost()
+                    end
+                end
+            end
+        end,
+    },
+    advisor_hostile_mask_off_plus =
+    {
+        name = "Wide Mask Off",
+        desc = "For the rest of the negotiation, <#UPGRADE>any number of cards</> of your choice in your hand become Hostility cards and lose all other card types.",
+
+        min_cards = 0,
+        max_cards = math.huge,
+    },
+    advisor_hostile_mask_off_plus2 =
+    {
+        name = "Sticky Mask Off",
+
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND | CARD_FLAGS.STICKY,
+    },
 }
 
 for i, id, def in sorted_pairs( CARDS ) do
