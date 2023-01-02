@@ -157,6 +157,7 @@ local CARDS = {
         advisor = "ADVISOR_DIPLOMACY",
         flags = CARD_FLAGS.DIPLOMACY | CARD_FLAGS.EXPEND,
         cost = 1,
+        max_xp = 5,
 
         argument_id = "advisor_diplomacy_hive_mind",
 
@@ -298,6 +299,52 @@ local CARDS = {
         name = "Enhanced Underdog",
         damage_bonus = 2,
     },
+    advisor_diplomacy_virtue_signal =
+    {
+        name = "Virtue Signal",
+        desc = "Target opponent non-core argument gains {1} resolve. Deal {2} damage to all other arguments that opponent has.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, AutoUpgradeText(self, "heal_amount", true), AutoUpgradeText(self, "damage_amount"))
+        end,
+        flavour = "'People would rather pull one person out of the gutter than make it so a thousand more don't need to live in it in the first place.'",
+
+        advisor = "ADVISOR_DIPLOMACY",
+        flags = CARD_FLAGS.DIPLOMACY,
+        cost = 1,
+        target_enemy = ClearBits(TARGET_ANY_RESOLVE, TARGET_FLAG.CORE),
+
+        heal_amount = 4,
+        damage_amount = 4,
+
+        IsAttack = function(self)
+            return true -- Polymorphism babey!!!
+        end,
+
+        OnPostResolve = function(self, minigame, targets)
+            for i, target in ipairs(targets) do
+                target:ModifyResolve(self.heal_amount, self)
+            end
+            local other_targets = minigame:CollectAlliedTargets( self.target )
+            for i, target in ipairs(other_targets) do
+                if not table.arraycontains(targets, target) then
+                    minigame:ApplyPersuasion(self, target, self.damage_amount, self.damage_amount)
+                end
+            end
+        end,
+    },
+    advisor_diplomacy_virtue_signal_plus =
+    {
+        name = "Pale Virtue Signal",
+
+        heal_amount = 1,
+    },
+    advisor_diplomacy_virtue_signal_plus2 =
+    {
+        name = "Boosted Virtue Signal",
+
+        heal_amount = 6,
+        damage_amount = 6,
+    },
     advisor_manipulate_straw_army =
     {
         name = "Straw Army",
@@ -311,6 +358,7 @@ local CARDS = {
         advisor = "ADVISOR_MANIPULATE",
         flags = CARD_FLAGS.MANIPULATE,
         cost = 2,
+        max_xp = 5,
 
         strawman_count = 3,
 
@@ -330,83 +378,138 @@ local CARDS = {
         name = "Initial Straw Army",
         flags = CARD_FLAGS.MANIPULATE | CARD_FLAGS.AMBUSH,
     },
-    advisor_manipulate_gaslighting =
+    -- advisor_manipulate_gaslighting =
+    -- {
+    --     name = "Gaslighting",
+    --     desc = "Remove target argument or bounty you control. Until the beginning of your next turn, "
+    --         .. "all opponent sources that are targeting it deal no damage.",
+    --     flavour = "'I have no idea what you're talking about. You must be crazy.'",
+    --     icon = "DEMOCRATICRACE:assets/cards/gaslighting.png",
+
+    --     advisor = "ADVISOR_MANIPULATE",
+    --     flags = CARD_FLAGS.MANIPULATE,
+    --     cost = 1,
+
+    --     target_self = TARGET_FLAG.ARGUMENT | TARGET_FLAG.BOUNTY,
+    --     modifier =
+    --     {
+    --         hidden = true,
+
+    --         event_priorities =
+    --         {
+    --             [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_CLAMP + 100,
+    --         },
+
+    --         event_handlers =
+    --         {
+    --             [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion )
+    --                 if self.affected_sources and table.arraycontains(self.affected_sources, source) then
+    --                     persuasion:ModifyPersuasion(0, 0, self)
+    --                 end
+    --             end,
+
+    --             [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
+    --                 if negotiator == self.negotiator then
+    --                     self.negotiator:RemoveModifier( self )
+    --                 end
+    --             end,
+    --         }
+    --     },
+    --     OnPostResolve = function( self, minigame, targets )
+    --         for i, target in ipairs(targets) do
+    --             local sources = {}
+    --             if minigame:IsBeingTargettedBy( target, self.anti_negotiator, sources ) then
+    --                 local mod = self.negotiator:CreateModifier( "advisor_manipulate_gaslighting", 1, self )
+    --                 mod.affected_sources = sources
+    --             end
+    --             target.negotiator:RemoveModifier( target )
+    --             if self.PostProcess then
+    --                 self:PostProcess(target, sources)
+    --             end
+    --         end
+    --     end,
+    -- },
+
+    -- advisor_manipulate_gaslighting_plus =
+    -- {
+    --     name = "Doubtful Gaslighting",
+    --     alt_desc = "<#UPGRADE>{INCEPT} {DOUBT} equal to the number of sources affected.</>",
+    --     desc_fn = function(self, fmt_str)
+    --         return fmt_str .. "\n" .. (self.def or self):GetLocalizedString("ALT_DESC")
+    --     end,
+    --     PostProcess = function(self, target, sources)
+    --         if sources and #sources > 0 then
+    --             self.anti_negotiator:InceptModifier("DOUBT", #sources , self )
+    --         end
+    --     end,
+    -- },
+    -- advisor_manipulate_gaslighting_plus2 =
+    -- {
+    --     name = "Visionary Gaslighting",
+    --     alt_desc = "<#UPGRADE>Draw cards equal to the number of sources affected.</>",
+    --     desc_fn = function(self, fmt_str)
+    --         return fmt_str .. "\n" .. (self.def or self):GetLocalizedString("ALT_DESC")
+    --     end,
+    --     PostProcess = function(self, target, sources)
+    --         if sources and #sources > 0 then
+    --             self.engine:DrawCards(#sources)
+    --         end
+    --     end,
+    -- },
+
+    advisor_manipulate_cognitive_dissonance =
     {
-        name = "Gaslighting",
-        desc = "Remove target argument or bounty you control. Until the beginning of your next turn, "
-            .. "all opponent sources that are targeting it deal no damage.",
-        flavour = "'I have no idea what you're talking about. You must be crazy.'",
+        name = "Cognitive Dissonance",
+        desc = "Remove target argument, bounty, or inception. Its controller creates a copy of it at the start of your next turn.",
+        flavour = "'When some people's belief contradicts the reality, instead of changing their belief, they reject reality.'",
         icon = "DEMOCRATICRACE:assets/cards/gaslighting.png",
 
         advisor = "ADVISOR_MANIPULATE",
         flags = CARD_FLAGS.MANIPULATE,
         cost = 1,
+        max_xp = 7,
 
-        target_self = TARGET_FLAG.ARGUMENT | TARGET_FLAG.BOUNTY,
+        target_self = TARGET_FLAG.ARGUMENT | TARGET_FLAG.BOUNTY | TARGET_FLAG.INCEPTION,
+        target_enemy = TARGET_FLAG.ARGUMENT | TARGET_FLAG.BOUNTY | TARGET_FLAG.INCEPTION,
+
         modifier =
         {
             hidden = true,
 
-            event_priorities =
-            {
-                [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_CLAMP + 100,
-            },
-
             event_handlers =
             {
-                [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion )
-                    if self.affected_sources and table.arraycontains(self.affected_sources, source) then
-                        persuasion:ModifyPersuasion(0, 0, self)
+                [ EVENT.BEGIN_PLAYER_TURN ] = function ( self, minigame )
+                    if self.stored_mod then
+                        self.stored_mod:Duplicate(self.negotiator)
                     end
+                    self.negotiator:RemoveModifier(self)
                 end,
-
-                [ EVENT.BEGIN_TURN ] = function( self, minigame, negotiator )
-                    if negotiator == self.negotiator then
-                        self.negotiator:RemoveModifier( self )
-                    end
-                end,
-            }
+            },
         },
+
         OnPostResolve = function( self, minigame, targets )
             for i, target in ipairs(targets) do
-                local sources = {}
-                if minigame:IsBeingTargettedBy( target, self.anti_negotiator, sources ) then
-                    local mod = self.negotiator:CreateModifier( "advisor_manipulate_gaslighting", 1, self )
-                    mod.affected_sources = sources
-                end
+                local new_mod = target.negotiator:CreateModifier(self.id, 1, self)
+                new_mod.stored_mod = target:Clone()
                 target.negotiator:RemoveModifier( target )
-                if self.PostProcess then
-                    self:PostProcess(target, sources)
-                end
+            end
+            if self.card_draw and self.card_draw > 0 then
+                minigame:DrawCards( self.card_draw )
             end
         end,
     },
+    advisor_manipulate_cognitive_dissonance_plus =
+    {
+        name = "Pale Cognitive Dissonance",
 
-    advisor_manipulate_gaslighting_plus =
-    {
-        name = "Doubtful Gaslighting",
-        alt_desc = "<#UPGRADE>{INCEPT} {DOUBT} equal to the number of sources affected.</>",
-        desc_fn = function(self, fmt_str)
-            return fmt_str .. "\n" .. (self.def or self):GetLocalizedString("ALT_DESC")
-        end,
-        PostProcess = function(self, target, sources)
-            if sources and #sources > 0 then
-                self.anti_negotiator:InceptModifier("DOUBT", #sources , self )
-            end
-        end,
+        cost = 0,
     },
-    advisor_manipulate_gaslighting_plus2 =
+    advisor_manipulate_cognitive_dissonance_plus2 =
     {
-        name = "Visionary Gaslighting",
-        alt_desc = "<#UPGRADE>Draw cards equal to the number of sources affected.</>",
-        desc_fn = function(self, fmt_str)
-            return fmt_str .. "\n" .. (self.def or self):GetLocalizedString("ALT_DESC")
-        end,
-        PostProcess = function(self, target, sources)
-            if sources and #sources > 0 then
-                self.engine:DrawCards(#sources)
-            end
-        end,
+        name = "Visionary Cognitive Dissonance",
+        desc = "Remove target argument, bounty, or inception. Its controller creates a copy of it at the start of your next turn.\n<#UPGRADE>Draw a card.</>",
+
+        card_draw = 1,
     },
     advisor_manipulate_moreef_defense =
     {
@@ -421,6 +524,7 @@ local CARDS = {
         advisor = "ADVISOR_MANIPULATE",
         flags = CARD_FLAGS.MANIPULATE,
         cost = 1,
+        max_xp = 7,
 
         argument_count = 2,
 
@@ -581,6 +685,54 @@ local CARDS = {
         improvise_count = 5,
         change_to_discard = true,
     },
+    advisor_manipulate_false_dichotomy =
+    {
+        name = "False Dichotomy",
+        desc = "Restore target non-core argument to full resolve if its resolve is at least half of its max resolve, or destroy it otherwise.",
+        flavour = "'What are nuances? You must always choose between two extremes.'",
+
+        advisor = "ADVISOR_MANIPULATE",
+        flags = CARD_FLAGS.MANIPULATE,
+        cost = 1,
+        max_xp = 7,
+
+        target_enemy = TARGET_ANY_RESOLVE,
+        target_self = TARGET_ANY_RESOLVE,
+
+        IsAttack = function(self)
+            return true
+        end,
+
+        invert_effect = false,
+
+        OnPostResolve = function( self, minigame, targets )
+            for i, target in ipairs(targets) do
+                local resolve, max_resolve = target:GetResolve()
+                if (resolve * 2 >= max_resolve) == self.invert_effect then
+                    target.negotiator:DestroyModifier(target, self)
+                else
+                    target:RestoreResolve(max_resolve - resolve, self)
+                end
+            end
+            if self.card_draw and self.card_draw > 0 then
+                minigame:DrawCards( self.card_draw )
+            end
+        end,
+    },
+    advisor_manipulate_false_dichotomy_plus =
+    {
+        name = "Visionary False Dichotomy",
+        desc = "Restore target non-core argument to full resolve if its resolve is at least half of its max resolve, or destroy it otherwise.\n<#UPGRADE>Draw a card.</>",
+
+        card_draw = 1,
+    },
+    advisor_manipulate_false_dichotomy_plus2 =
+    {
+        name = "Twisted False Dichotomy",
+        desc = "<#UPGRADE>Destroy</> target non-core argument if its resolve is at least half of its max resolve, or <#UPGRADE>restore it to full resolve</> otherwise.",
+
+        invert_effect = true,
+    },
 
     advisor_hostile_talk_over =
     {
@@ -652,6 +804,7 @@ local CARDS = {
         advisor = "ADVISOR_HOSTILE",
         flags = CARD_FLAGS.HOSTILE,
         cost = 1,
+        max_xp = 7,
 
         count = 2,
         money_divisor = 50,
@@ -710,6 +863,7 @@ local CARDS = {
         advisor = "ADVISOR_HOSTILE",
         flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND | CARD_FLAGS.VARIABLE_COST,
         cost = 0,
+        max_xp = 5,
 
         CanPlayCard = function( self, card, engine, target )
             for i, hand_card in engine:GetHandDeck():Cards() do
@@ -809,6 +963,7 @@ local CARDS = {
         advisor = "ADVISOR_HOSTILE",
         flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND,
         cost = 1,
+        max_xp = 7,
 
         gain_count = 2,
 
@@ -891,6 +1046,49 @@ local CARDS = {
     {
         name = "Slightly Incoherent Rambling",
         gain_stacks = 1,
+    },
+    advisor_hostile_mask_off =
+    {
+        name = "Mask Off",
+        desc = "For the rest of the negotiation, a card of your choice in your hand becomes a Hostility card and loses all other card types.",
+
+        advisor = "ADVISOR_HOSTILE",
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND,
+        cost = 1,
+        max_xp = 5,
+
+        flavour = "'I am going to say how it is, and I'm done pretending otherwise.'",
+
+        min_cards = 1,
+        max_cards = 1,
+        new_type = CARD_FLAGS.HOSTILE,
+
+        OnPostResolve = function( self, minigame, targets )
+            local chosen_cards = minigame:ChooseCards(self.min_cards, self.max_cards)
+            if chosen_cards then
+                for i, card in ipairs(chosen_cards) do
+                    if type(self.new_type) ~= "table" then
+                        card:NotifyTriggeredPre()
+                        card.flags = ClearBits(card.flags, CARD_TYPE_FLAGS) | self.new_type
+                        card:NotifyTriggeredPost()
+                    end
+                end
+            end
+        end,
+    },
+    advisor_hostile_mask_off_plus =
+    {
+        name = "Wide Mask Off",
+        desc = "For the rest of the negotiation, <#UPGRADE>any number of cards</> of your choice in your hand become Hostility cards and lose all other card types.",
+
+        min_cards = 0,
+        max_cards = math.huge,
+    },
+    advisor_hostile_mask_off_plus2 =
+    {
+        name = "Sticky Mask Off",
+
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND | CARD_FLAGS.STICKY,
     },
 }
 

@@ -141,6 +141,11 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
             agent:
                 I know some people who are willing to bulk sell them to you.
                 You can visit them to buy some loaves.
+            {advisor_manipulate?
+                agent:
+                    Also, I should mention that the contact I know also sells loaves that taste better.
+                    Logically, they would be more expensive, too, but if you think you can spare the shills for the sake of charity, then go for it.
+            }
         ]],
     }
     :State("START")
@@ -150,6 +155,9 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
             cxt.quest:Activate("buy_loaves")
             cxt.quest:Activate("time_countdown")
             cxt.quest:Activate("request_funds")
+            if cxt:GetAgent():GetContentID() == "ADVISOR_MANIPULATE" then
+                cxt.quest.param.access_to_upgrade = true
+            end
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{
@@ -168,7 +176,8 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
         end)
-QDEF:AddConvo("dole_out_three")
+
+local CONVO = QDEF:AddConvo("dole_out_three")
     :Loc{
         DIALOG_SATISFIES_CONDITIONS = [[
             player:
@@ -186,9 +195,9 @@ QDEF:AddConvo("dole_out_three")
             cxt.quest.param.gifted_people = cxt.quest.param.gifted_people or {}
             cxt.quest.param.rejected_people = cxt.quest.param.rejected_people or {}
             local cards = {}
-            for i, card in ipairs(cxt.player.battler.cards.cards) do
+            for i, card in ipairs(cxt.player.negotiator.cards.cards) do
                 print(card.id)
-                if card.id == "dole_loaves" then
+                if card.id == "dole_loaves_negotiation" or card.id == "dole_loaves_negotiation_plus" then
                     table.insert(cards, card)
                 end
             end
@@ -202,7 +211,7 @@ QDEF:AddConvo("dole_out_three")
                         cards,
                         cxt:GetLocString("SELECT_TITLE"),
                         cxt:GetLocString("SELECT_DESC"),
-                        Widget.BattleCard,
+                        Widget.NegotiationCard,
                         function(card)
                             cxt.enc:ResumeEncounter( card )
                         end
@@ -210,6 +219,8 @@ QDEF:AddConvo("dole_out_three")
                     local card = cxt.enc:YieldEncounter()
                     if card then
                         cxt.quest:DefFn("DeltaActions", -1)
+
+                        cxt.enc.scratch.improved_bread = card.id == "dole_loaves_negotiation_plus"
 
                         cxt:Dialog("DIALOG_SATISFIES_CONDITIONS")
 
@@ -227,6 +238,9 @@ QDEF:AddConvo("dole_out_three")
                         if who:GetFactionID() == "RISE" then
                             weight.STATE_POLITICAL = weight.STATE_POLITICAL + 1
                         end
+                        if card.id == "dole_loaves_negotiation_plus" then
+                            weight.STATE_GRATEFUL = weight.STATE_GRATEFUL + 3
+                        end
                         local state = weightedpick(weight)
                         cxt:GoTo(state)
                     end
@@ -242,8 +256,14 @@ QDEF:AddConvo("dole_out_three")
                 player:
                     Is something the matter?
                 agent:
+                {not improved_bread?
                     Just... I've been eating this for the past... how long?
                     Wish I could have something else...
+                }
+                {improved_bread?
+                    Don't get me wrong, these loaves are great.
+                    It's just... I wish I can have more than just bread.
+                }
             ]],
             OPT_GIVE = "Give them some shills",
             DIALOG_GIVE = [[
@@ -602,12 +622,39 @@ QDEF:AddConvo("dole_out_three")
                         I'll happily take some. Thanks!
                 ]],
             },
+            {
+                tags = "gift_bread, improved_bread",
+                [[
+                    player:
+                        !permit
+                        Hey there. You want some bread?
+                    agent:
+                        !take
+                        I like this! These taste way better than what I usually eat.
+                ]],
+                [[
+                    player:
+                        !permit
+                        Do you want some free bread?
+                    agent:
+                        !take
+                        Can't say no to some free bread.
+                        !happy
+                        And it's one of the better tasting ones! Thanks!
+                    player:
+                        !happy
+                        That's the spirit!
+                ]],
+            },
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_GRATE")
             table.insert(cxt.quest.param.gifted_people, cxt:GetAgent())
             StateGraphUtil.AddEndOption(cxt)
         end)
+
+CONVO.quip_db.tag_scores["improved_bread"] = 0
+
 QDEF:AddConvo("dole_out_three", "primary_advisor")
     :Loc{
         OPT_END_EARLY = "Finish quest early",
@@ -739,6 +786,7 @@ QDEF:AddConvo("go_to_advisor", "primary_advisor")
 QDEF:AddConvo("buy_loaves", "dealer")
     :Loc{
         OPT_BUY = "Buy loaves",
+        OPT_BUY_IMPROVED = "Buy improved loaves",
         DIALOG_BUY = [[
             player:
                 I will buy a bundle.
@@ -754,6 +802,15 @@ QDEF:AddConvo("buy_loaves", "dealer")
             :DeliverMoney(80)
             :GainCards{"dole_loaves"}
             :Fn(function(cxt) cxt.quest.param.bought_at_least_one = true end)
+        if cxt.quest.param.access_to_upgrade then
+            cxt:Opt("OPT_BUY_IMPROVED")
+                :SetQuestMark()
+                :Dialog("DIALOG_BUY")
+                :PostCard("dole_loaves_plus")
+                :DeliverMoney(90)
+                :GainCards{"dole_loaves_plus"}
+                :Fn(function(cxt) cxt.quest.param.bought_at_least_one = true end)
+        end
     end)
     :AttractState("STATE_ATTRACT")
         :Loc{
