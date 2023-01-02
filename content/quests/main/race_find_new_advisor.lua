@@ -67,6 +67,14 @@ QDEF:AddConvo("locate_advisor")
                 agent:
                     [p] Seems legit.
             ]],
+            DIALOG_OFFER_CARD = [[
+                agent:
+                    [p] Anyway, clearly you need some help with negotiating, which is why I'm offering you a card for free.
+            ]],
+            DIALOG_OFFER_CARD_PST = [[
+                player:
+                    [p] Thanks.
+            ]],
             DIALOG_CONVINCE_FAILURE = [[
                 agent:
                     [p] No way.
@@ -78,6 +86,15 @@ QDEF:AddConvo("locate_advisor")
             cxt:BasicNegotiation("CONVINCE", {})
                 :OnSuccess()
                     :Fn(function(cxt)
+                        local cards = DemocracyUtil.GetSignatureCardsDraft(cxt:GetAgent():GetContentID(), 3, cxt.player)
+                        if #cards > 0 then
+                            cxt:Dialog("DIALOG_OFFER_CARD")
+
+                            cxt.enc:OfferCards( cards )
+
+                            cxt:Dialog("DIALOG_OFFER_CARD_PST")
+                        end
+
                         DemocracyUtil.UpdateAdvisor(cxt:GetAgent(), "NEW_ADVISOR")
                     end)
                     :CompleteQuest()

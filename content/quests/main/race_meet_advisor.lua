@@ -84,15 +84,15 @@ DemocracyUtil.AddAdvisors(QDEF)
 
 local COMMON_LOC = {
     OPT_QUESTION = "Ask about {agent}'s angle",
-    OPT_PICK = "Choose {agent} as your main advisor.",
+    OPT_PICK = "Choose {agent} as your main advisor",
     OPT_LATER = "Later",
 
-    DIALOG_PICK_PST = [[
+    DIALOG_PICK_PST2 = [[
         * Other advisors left, and you're left with {agent}.
     ]],
 }
 
-local function GetAdvisorFn(advisor_id)
+local function GetAdvisorFn(advisor_id, signature_id)
     return function(cxt)
         if cxt:FirstLoop() then
             cxt.enc:SetPrimaryCast(cxt.quest:GetCastMember(advisor_id))
@@ -103,6 +103,12 @@ local function GetAdvisorFn(advisor_id)
             :PreIcon(global_images.accept)
             :Dialog("DIALOG_PICK")
             :Fn(function(cxt)
+                -- Signature card draft
+                local cards = DemocracyUtil.GetSignatureCardsDraft(signature_id, 3, cxt.player)
+                cxt.enc:OfferCards( cards )
+                cxt:Dialog("DIALOG_PICK_PST")
+
+                -- Set chosen advisor
                 cxt.quest.param.chosen_advisor = advisor_id
                 local not_chosen_advisor = {}
                 for i, val in ipairs(ADVISOR_ID) do
@@ -128,7 +134,7 @@ local function GetAdvisorFn(advisor_id)
                     end
                     cxt.quest:GetCastMember(val):GetBrain():MoveToHome()
                 end
-                cxt:Dialog("DIALOG_PICK_PST")
+                cxt:Dialog("DIALOG_PICK_PST2")
                 cxt.quest:Complete("choose_advisor")
                 cxt.quest:Activate("discuss_plan")
                 StateGraphUtil.AddEndOption(cxt)
@@ -292,6 +298,13 @@ QDEF:AddConvo("choose_advisor", "advisor_diplomacy")
                     !happy
                     Sweet!
                     That is a wholesome 100 moment.
+                    !give
+                    As promised, I will show you the way of the based.
+            ]],
+            DIALOG_PICK_PST = [[
+                player:
+                    !take
+                    Not sure what that means, but I'll take it.
             ]],
             DIALOG_LATER = [[
                 player:
@@ -302,7 +315,7 @@ QDEF:AddConvo("choose_advisor", "advisor_diplomacy")
             ]],
         }
         :SetLooping()
-        :Fn(GetAdvisorFn("advisor_diplomacy"))
+        :Fn(GetAdvisorFn("advisor_diplomacy", "ADVISOR_DIPLOMACY"))
 QDEF:AddConvo("choose_advisor", "advisor_hostile")
     :AttractState("STATE_TALK")
         :Loc(COMMON_LOC)
@@ -340,6 +353,12 @@ QDEF:AddConvo("choose_advisor", "advisor_hostile")
                     I guess I'll pick you.
                 agent:
                     Glad you made the correct choice.
+                    Nobody knows debating more than me, so let me give you some free pointers.
+            ]],
+            DIALOG_PICK_PST = [[
+                player:
+                    !take
+                    If you say so.
             ]],
             DIALOG_LATER = [[
                 player:
@@ -349,7 +368,7 @@ QDEF:AddConvo("choose_advisor", "advisor_hostile")
             ]],
         }
         :SetLooping()
-        :Fn(GetAdvisorFn("advisor_hostile"))
+        :Fn(GetAdvisorFn("advisor_hostile", "ADVISOR_HOSTILE"))
 QDEF:AddConvo("choose_advisor", "advisor_manipulate")
     :AttractState("STATE_TALK")
         :Loc(COMMON_LOC)
@@ -381,6 +400,14 @@ QDEF:AddConvo("choose_advisor", "advisor_manipulate")
                     I'll choose you.
                 agent:
                     Glad you can think logically.
+                    As promised, I will teach you how to argue based on FACTS and LOGIC.
+            ]],
+            DIALOG_PICK_PST = [[
+                player:
+                    !take
+                    These sounds less "logical" and more "manipulative".
+                agent:
+                    Please, logic is basically the manipulation of facts to get them on your side.
             ]],
 
             DIALOG_LATER = [[
@@ -391,7 +418,7 @@ QDEF:AddConvo("choose_advisor", "advisor_manipulate")
             ]],
         }
         :SetLooping()
-        :Fn(GetAdvisorFn("advisor_manipulate"))
+        :Fn(GetAdvisorFn("advisor_manipulate", "ADVISOR_MANIPULATE"))
 QDEF:AddConvo("discuss_plan", "primary_advisor")
     :AttractState("STATE_TALK")
         :Loc{

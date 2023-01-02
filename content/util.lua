@@ -1398,6 +1398,23 @@ function DemocracyUtil.IsFirstAid(card)
     return table.arraycontains(DemocracyUtil.FIRST_AID_CARDS, card.id)
 end
 
+function DemocracyUtil.GetSignatureCardsDraft(signature_id, num_cards, player)
+    local negotiation_defs = require "negotiation/negotiation_defs"
+    local CARD_FLAGS = negotiation_defs.CARD_FLAGS
+    local rng = TheGame:GetGameState():GetRNG( "CARDS" )
+
+    local choices = NegotiationCardCollection(
+        function(cd)
+            return cd.advisor == signature_id and not CheckBits(cd.flags, CARD_FLAGS.UPGRADED)
+        end
+    ):SeededPick(num_cards, rng)
+    local cards = {}
+    for i, carddef in ipairs(choices) do
+        table.insert(cards, Negotiation.Card(carddef.id, player))
+    end
+    return cards
+end
+
 local main_branch_id = 2291214111
 local test_branch_id = 2503106782
 

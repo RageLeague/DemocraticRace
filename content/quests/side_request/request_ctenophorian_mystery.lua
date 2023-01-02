@@ -731,8 +731,7 @@ QDEF:AddConvo("tell_result", "giver")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest.extra_reward = EXTRA_QUEST_REWARD.FREE_ITEM
-            -- TODO: Change the reward
-            cxt.quest.extra_reward_data = "advisor_manipulate_gaslighting"
+            cxt.quest.extra_reward_data = "advisor_manipulate_cognitive_dissonance"
             cxt.quest:Complete()
             ConvoUtil.GiveQuestRewards(cxt)
             cxt:GetCastMember("giver"):AddTag("can_manipulate_truth")
