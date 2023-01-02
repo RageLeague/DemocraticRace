@@ -157,6 +157,7 @@ local CARDS = {
         advisor = "ADVISOR_DIPLOMACY",
         flags = CARD_FLAGS.DIPLOMACY | CARD_FLAGS.EXPEND,
         cost = 1,
+        max_xp = 5,
 
         argument_id = "advisor_diplomacy_hive_mind",
 
@@ -357,6 +358,7 @@ local CARDS = {
         advisor = "ADVISOR_MANIPULATE",
         flags = CARD_FLAGS.MANIPULATE,
         cost = 2,
+        max_xp = 5,
 
         strawman_count = 3,
 
@@ -465,6 +467,7 @@ local CARDS = {
         advisor = "ADVISOR_MANIPULATE",
         flags = CARD_FLAGS.MANIPULATE,
         cost = 1,
+        max_xp = 7,
 
         target_self = TARGET_FLAG.ARGUMENT | TARGET_FLAG.BOUNTY | TARGET_FLAG.INCEPTION,
         target_enemy = TARGET_FLAG.ARGUMENT | TARGET_FLAG.BOUNTY | TARGET_FLAG.INCEPTION,
@@ -521,6 +524,7 @@ local CARDS = {
         advisor = "ADVISOR_MANIPULATE",
         flags = CARD_FLAGS.MANIPULATE,
         cost = 1,
+        max_xp = 7,
 
         argument_count = 2,
 
@@ -690,6 +694,7 @@ local CARDS = {
         advisor = "ADVISOR_MANIPULATE",
         flags = CARD_FLAGS.MANIPULATE,
         cost = 1,
+        max_xp = 7,
 
         target_enemy = TARGET_ANY_RESOLVE,
         target_self = TARGET_ANY_RESOLVE,
@@ -799,6 +804,7 @@ local CARDS = {
         advisor = "ADVISOR_HOSTILE",
         flags = CARD_FLAGS.HOSTILE,
         cost = 1,
+        max_xp = 7,
 
         count = 2,
         money_divisor = 50,
@@ -857,6 +863,7 @@ local CARDS = {
         advisor = "ADVISOR_HOSTILE",
         flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND | CARD_FLAGS.VARIABLE_COST,
         cost = 0,
+        max_xp = 5,
 
         CanPlayCard = function( self, card, engine, target )
             for i, hand_card in engine:GetHandDeck():Cards() do
@@ -956,6 +963,7 @@ local CARDS = {
         advisor = "ADVISOR_HOSTILE",
         flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND,
         cost = 1,
+        max_xp = 7,
 
         gain_count = 2,
 
@@ -1047,6 +1055,7 @@ local CARDS = {
         advisor = "ADVISOR_HOSTILE",
         flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND,
         cost = 1,
+        max_xp = 5,
 
         flavour = "'I am going to say how it is, and I'm done pretending otherwise.'",
 
