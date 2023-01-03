@@ -226,7 +226,7 @@ local CONVO = QDEF:AddConvo("dole_out_three")
 
                         card:ConsumeCharge()
                         if card:IsSpent() then
-                            cxt.player.battler:RemoveCard( card )
+                            cxt.player.negotiator:RemoveCard( card )
                         end
                         -- Wumpus; Huh. Didn't know Weighted Pick was an option for the code. That shrank a lot of the code bloat that I had...hopefully I keep that in mind when the need arises.
                         local weight = {

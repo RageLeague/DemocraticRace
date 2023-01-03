@@ -21,6 +21,7 @@ local attacks =
         target_type = TARGET_TYPE.FRIENDLY_OR_SELF,
         flags = CARD_FLAGS.ITEM | CARD_FLAGS.SKILL,
         rarity = CARD_RARITY.UNIQUE,
+        max_xp = 0,
 
         max_charges = 4,
         heal_amount = 4,
