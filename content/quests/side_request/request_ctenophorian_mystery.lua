@@ -29,6 +29,36 @@ local function GetHeshBelief(agent)
     end)
 end
 
+local FANATIC_BEHAVIOUR =
+{
+    OnInit = function( self, difficulty )
+        local modifier = self.negotiator:AddModifier("ZEAL")
+        self.faith = self:AddArgument("FAITH_IN_HESH")
+        self.wrath = self:AddArgument( "wrath_of_hesh" )
+        self.hesh_arguments = table.shuffle({
+            self:AddArgument("STINGING_NETTLE"),
+            self:AddArgument("COMB_BEARER")
+        })
+
+        self:SetPattern( self.BasicCycle )
+    end,
+
+    BasicCycle = function( self, turns )
+        self:ChooseGrowingNumbers( 2, 1, 2 )
+        self:ChooseComposure( 2, 1, 3 )
+        if turns < 5 then
+            self:ChooseCard(self.faith)
+        else
+            self:ChooseCard(self.wrath)
+        end
+        if (turns - 1) % 2 == 0 then
+            if turns < 4 and ((turns - 1) / 2) < #self.hesh_arguments then
+                self:ChooseCard(self.hesh_arguments[1 + ((turns - 1) / 2)])
+            end
+        end
+    end,
+}
+
 local QDEF = QuestDef.Define
 {
     title = "Ctenophorian Mystery",
@@ -54,13 +84,11 @@ local QDEF = QuestDef.Define
     postcondition = function(quest)
         quest.extra_reward = EXTRA_QUEST_REWARD.FREE_ITEM
         quest.extra_reward_data = "quest_any_card_bonus"
-        -- print("The reward is replaced, brother")
         return true
     end,
 
     on_start = function(quest)
         quest:Activate("ask_info")
-        -- quest.param.people_advertised = 0
     end,
 
     on_complete = function(quest)
@@ -322,27 +350,36 @@ QDEF:AddConvo("ask_info")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_TALK")
-            cxt:BasicNegotiation("ENDURE", {
-                -- This will be a special negotiation.
-                -- Opponent has no core, meaning you can't win by damage.
-                -- You win by surviving a set amount of rounds.
-                flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE,
-                reason_fn = function(minigame) return cxt:GetLocString("NEGOTIATION_REASON") end,
-                on_start_negotiation = function(minigame)
-                    minigame.player_negotiator:AddModifier("FANATIC_LECTURE", math.max(4, 6 - math.floor(cxt.quest:GetRank() / 2)))
-                end,
-            })
-                :OnSuccess()
-                    :GoTo("STATE_SUCCESS")
-                :OnFailure()
-                    :FadeOut()
-                    :Dialog("DIALOG_ENDURE_FAILURE_2")
-                    :FadeIn()
-                    :Dialog("DIALOG_ENDURE_FAILURE_3")
-                    :Fn(function(cxt)
-                        cxt.caravan:DeltaMaxResolve(-2)
-                    end)
-                    :DoneConvo()
+            cxt:Opt("OPT_ENDURE")
+                :Dialog("DIALOG_ENDURE")
+                :Fn(function(cxt)
+                    cxt:GetAgent():SetTempNegotiationBehaviour(FANATIC_BEHAVIOUR)
+                end)
+                :Negotiation{
+                    -- This will be a special negotiation.
+                    -- Opponent has no core, meaning you can't win by damage.
+                    -- You win by surviving a set amount of rounds.
+                    flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE,
+                    reason_fn = function(minigame) return cxt:GetLocString("NEGOTIATION_REASON") end,
+                    on_start_negotiation = function(minigame)
+                        minigame.player_negotiator:AddModifier("FANATIC_LECTURE", 6)
+                        minigame.opponent_negotiator:CreateModifier("DISTRACTION_CONFUSION", 1)
+                        minigame.opponent_negotiator:CreateModifier("CURIOSITY", 1)
+                    end,
+                }
+                    :OnSuccess()
+                        :Dialog("DIALOG_ENDURE_SUCCESS")
+                        :GoTo("STATE_SUCCESS")
+                    :OnFailure()
+                        :Dialog("DIALOG_ENDURE_FAILURE")
+                        :FadeOut()
+                        :Dialog("DIALOG_ENDURE_FAILURE_2")
+                        :FadeIn()
+                        :Dialog("DIALOG_ENDURE_FAILURE_3")
+                        :Fn(function(cxt)
+                            cxt.caravan:DeltaMaxResolve(-2)
+                        end)
+                        :DoneConvo()
         end)
     :State("STATE_ANTI")
         :Loc{

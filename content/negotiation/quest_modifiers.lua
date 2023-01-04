@@ -44,10 +44,12 @@ local MODIFIERS =
         -- win_on_turn = 7,
         event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
-                self.negotiator:RemoveModifier(self, 1)
-                if self.stacks <= 0 then
-                    minigame:Win()
-                    minigame.impasse = true
+                if minigame.turns > 1 then
+                    self.negotiator:RemoveModifier(self, 1)
+                    if self.stacks <= 0 then
+                        minigame:Win()
+                        minigame.impasse = true
+                    end
                 end
             end,
         },
@@ -467,7 +469,10 @@ local MODIFIERS =
             return loc.format( fmt_str, self.negotiator and self.negotiator:GetName() or "the opponent",
                 CalculateBonusScale(self))
         end,
-        OnInit = MyriadInit,
+        OnInit = function(self)
+            self.init_max_resolve = 5 * self.engine:GetDifficulty() + 5
+            MyriadInit(self)
+        end,
         OnBounty = function(self)
             if self.negotiator:GetModifierStacks("IMPATIENCE") > 0 then
                 self.negotiator:RemoveModifier("IMPATIENCE", 1)
@@ -493,7 +498,10 @@ local MODIFIERS =
             return loc.format( fmt_str, self.negotiator and self.negotiator:GetName() or "the opponent",
                 CalculateBonusScale(self))
         end,
-        OnInit = MyriadInit,
+        OnInit = function(self)
+            self.init_max_resolve = 5 * self.engine:GetDifficulty() + 5
+            MyriadInit(self)
+        end,
         OnBounty = function(self)
             local intents = {}
             for i, data in ipairs(self.negotiator:GetIntents()) do
@@ -528,7 +536,10 @@ local MODIFIERS =
             return loc.format( fmt_str, self.negotiator and self.negotiator:GetName() or "the opponent",
                 CalculateBonusScale(self))
         end,
-        OnInit = MyriadInit,
+        OnInit = function(self)
+            self.init_max_resolve = 5 * self.engine:GetDifficulty() + 5
+            MyriadInit(self)
+        end,
         OnBounty = function(self)
 
             self.negotiator:AddModifier("FLUSTERED", 2)
@@ -1941,7 +1952,7 @@ local MODIFIERS =
     FANATIC_LECTURE =
     {
         name = "Long Lecture",
-        desc = "Survive {1} turns to win the negotiation.",
+        desc = "Survive {1} {1*turn|turns} to win the negotiation.",
         desc_fn = function( self, fmt_str )
             return loc.format(fmt_str, self.stacks or 1)
         end,
@@ -1949,9 +1960,11 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.PERMANENT,
         event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
-                self.negotiator:RemoveModifier(self, 1)
-                if self.stacks <= 0 then
-                    minigame:Win()
+                if minigame.turns > 1 then
+                    self.negotiator:RemoveModifier(self, 1)
+                    if self.stacks <= 0 then
+                        minigame:Win()
+                    end
                 end
             end,
         },
@@ -2051,7 +2064,8 @@ local MODIFIERS =
         OnApply = function(self)
             self.card_costs = {}
             self.sticky_applied = {}
-            if not self.negotiator:FindCoreArgument():GetShieldStatus() then
+            local core = self.negotiator:FindCoreArgument()
+            if core and core:GetResolve() ~= nil and not core:GetShieldStatus() then
                 self.core_shield = true
                 self.negotiator:FindCoreArgument():SetShieldStatus(true)
             end
@@ -2126,7 +2140,8 @@ local MODIFIERS =
         end,
 
         OnApply = function(self)
-            if not self.negotiator:FindCoreArgument():GetShieldStatus() then
+            local core = self.negotiator:FindCoreArgument()
+            if core and core:GetResolve() ~= nil and not core:GetShieldStatus() then
                 self.core_shield = true
                 self.negotiator:FindCoreArgument():SetShieldStatus(true)
             end
