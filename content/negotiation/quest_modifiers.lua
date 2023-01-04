@@ -35,7 +35,7 @@ local MODIFIERS =
     PLAYER_ADVANTAGE =
     {
         name = "Limited Time",
-        desc = "The player wins after the opponent's turn {1}, but will yield worse result than winning a negotiation normally.",
+        desc = "The player wins after {1} {1*turn|turns}, but will yield a worse result than winning a negotiation normally.",
         icon = "DEMOCRATICRACE:assets/modifiers/player_advantage.png",
         desc_fn = function( self, fmt_str )
             return loc.format(fmt_str, self.stacks or 1)
@@ -44,7 +44,8 @@ local MODIFIERS =
         -- win_on_turn = 7,
         event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
-                if minigame:GetTurns() > (self.stacks or 1) then
+                self.negotiator:RemoveModifier(self, 1)
+                if self.stacks <= 0 then
                     minigame:Win()
                     minigame.impasse = true
                 end
@@ -1940,15 +1941,16 @@ local MODIFIERS =
     FANATIC_LECTURE =
     {
         name = "Long Lecture",
-        desc = "This negotiation has no core resolve. Rather, wait {1} turns to survive the lecture and win the negotiation.",
+        desc = "Survive {1} turns to win the negotiation.",
         desc_fn = function( self, fmt_str )
             return loc.format(fmt_str, self.stacks or 1)
         end,
-        icon = "negotiation/prattle.tex",
+        icon = "DEMOCRATICRACE:assets/modifiers/player_advantage.png",
         modifier_type = MODIFIER_TYPE.PERMANENT,
         event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
-                if minigame:GetTurns() > (self.stacks or 1) then
+                self.negotiator:RemoveModifier(self, 1)
+                if self.stacks <= 0 then
                     minigame:Win()
                 end
             end,
