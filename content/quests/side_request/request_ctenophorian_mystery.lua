@@ -46,7 +46,7 @@ local FANATIC_BEHAVIOUR =
     BasicCycle = function( self, turns )
         self:ChooseGrowingNumbers( 2, 1, 2 )
         self:ChooseComposure( 2, 1, 3 )
-        if turns < 5 then
+        if turns < 4 then
             self:ChooseCard(self.faith)
         else
             self:ChooseCard(self.wrath)
