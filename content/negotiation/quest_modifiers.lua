@@ -2316,7 +2316,7 @@ local MODIFIERS =
     DEVOTED_MIND =
     {
         name = "Devoted Mind",
-        desc = "Take {1} less damage from {4}'s cards and arguments (excluding splash damage). Increase this amount by {2} for each argument {3} has with {FAITH_IN_HESH}.",
+        desc = "Take {1} less damage from {4}'s cards and arguments (excluding splash damage). Increase this amount by {2} for each argument {3} has with {DEVOTION}.",
         desc_fn = function(self, fmt_str)
             local count = self:CalculateDamageReduction()
             return loc.format(fmt_str, count == self.base_reduction and count or loc.format("<#BONUS>{1}</>", count), self.additional_reduction, self:GetOwnerName(), self:GetOpponentName())
@@ -2358,7 +2358,7 @@ local MODIFIERS =
     INDIFFERENCE_OF_HESH =
     {
         name = "Indifference of Hesh",
-        desc = "{FAITH_IN_HESH}\n\nAt the beginning of {1}'s turn, each other argument {1} has restores {2} resolve.",
+        desc = "{DEVOTION}\n\nAt the beginning of {1}'s turn, each other argument {1} has restores {2} resolve.",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName(), self.resolve_count)
         end,
@@ -2376,12 +2376,12 @@ local MODIFIERS =
         end,
 
         CanPlayCard = function( self, source, engine, target )
-            local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
+            local feature = Content.GetNegotiationCardFeature( "DEVOTION" )
             return feature:CanPlayCardFaith(self, source, target)
         end,
 
         OnBounty = function(self)
-            local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
+            local feature = Content.GetNegotiationCardFeature( "DEVOTION" )
             feature:DoFaithBounty(self)
         end,
 
@@ -2396,7 +2396,7 @@ local MODIFIERS =
     INCOMPREHENSIBILITY_OF_HESH =
     {
         name = "Incomprehensibility of Hesh",
-        desc = "{FAITH_IN_HESH}\n\nWhen another one of {1}'s arguments is destroyed by {2}, add {3} {status_fracturing_mind} to the draw pile.",
+        desc = "{DEVOTION}\n\nWhen another one of {1}'s arguments is destroyed by {2}, add {3} {status_fracturing_mind} to the draw pile.",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName(), self:GetOpponentName(), self.status_count)
         end,
@@ -2414,12 +2414,12 @@ local MODIFIERS =
         end,
 
         CanPlayCard = function( self, source, engine, target )
-            local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
+            local feature = Content.GetNegotiationCardFeature( "DEVOTION" )
             return feature:CanPlayCardFaith(self, source, target)
         end,
 
         OnBounty = function(self)
-            local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
+            local feature = Content.GetNegotiationCardFeature( "DEVOTION" )
             feature:DoFaithBounty(self)
         end,
 
@@ -2440,7 +2440,7 @@ local MODIFIERS =
     INSATIABILITY_OF_HESH =
     {
         name = "Insatiability of Hesh",
-        desc = "{FAITH_IN_HESH}\n\nAttacks an opponent argument at the beginning of {3}'s turn for {1}-{2} damage. Increase this argument's max damage by 1 when any argument is destroyed.",
+        desc = "{DEVOTION}\n\nAttacks an opponent argument at the beginning of {3}'s turn for {1}-{2} damage. Increase this argument's max damage by 1 when any argument is destroyed.",
         desc_fn = function(self, fmt_str)
             local min_persuasion, max_persuasion, details = self.min_persuasion, self.max_persuasion
             if self.engine then
@@ -2460,12 +2460,12 @@ local MODIFIERS =
         target_enemy = TARGET_ANY_RESOLVE,
 
         CanPlayCard = function( self, source, engine, target )
-            local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
+            local feature = Content.GetNegotiationCardFeature( "DEVOTION" )
             return feature:CanPlayCardFaith(self, source, target)
         end,
 
         OnBounty = function(self)
-            local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
+            local feature = Content.GetNegotiationCardFeature( "DEVOTION" )
             feature:DoFaithBounty(self)
         end,
 
@@ -2486,7 +2486,7 @@ local MODIFIERS =
     DESPERATION_FOR_FAITH =
     {
         name = "Desperation For Faith",
-        desc = "{FAITH_IN_HESH}\n\nAt the beginning of {1}'s turn, apply {2} {COMPOSURE} to {1}'s core argument.",
+        desc = "{DEVOTION}\n\nAt the beginning of {1}'s turn, apply {2} {COMPOSURE} to {1}'s core argument.",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName(), self.composure_gain)
         end,
@@ -2499,12 +2499,12 @@ local MODIFIERS =
         composure_gain = 3,
 
         CanPlayCard = function( self, source, engine, target )
-            local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
+            local feature = Content.GetNegotiationCardFeature( "DEVOTION" )
             return feature:CanPlayCardFaith(self, source, target)
         end,
 
         OnBounty = function(self)
-            local feature = Content.GetNegotiationCardFeature( "FAITH_IN_HESH" )
+            local feature = Content.GetNegotiationCardFeature( "DEVOTION" )
             feature:DoFaithBounty(self)
         end,
 
@@ -2897,10 +2897,10 @@ local FEATURES = {
             return fmt_str
         end,
     },
-    FAITH_IN_HESH =
+    DEVOTION =
     {
-        name = "Faith In Hesh",
-        desc = "Cannot be targeted by {DOUBT}.\n\nWhen destroyed, gain {1} {DOUBT}. Increase this amount by {2} for each arguments with <b>Faith In Hesh</> destroyed.",
+        name = "Devotion",
+        desc = "Cannot be targeted by {DOUBT}.\n\nWhen destroyed, gain {1} {DOUBT}. Increase this amount by {2} for each arguments with <b>Devotion</> destroyed.",
         desc_fn = function(self, fmt_str, stacks, engine)
             local delta_count = self:GetDeltaCount(engine)
             if delta_count ~= self.base_count then
