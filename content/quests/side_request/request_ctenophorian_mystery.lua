@@ -139,10 +139,36 @@ local QDEF = QuestDef.Define
     },
 }
 :AddObjective{
+    id = "is_hesh_ctenophore",
+    title = "Is Hesh a ctenophore?",
+    desc = "According to some, Hesh has some \"hair-thingys\" that helps it swim, making it a ctenophore. Is it really the case? The only way to tell is to see for yourself.",
+}
+:AddObjective{
+    id = "is_hesh_cnidarian",
+    title = "Is Hesh a cnidarian?",
+    desc = "According to some, Hesh has some splinters that helps it catch prey, making it a cnidarian. You don't know for sure if it's actually the case until you see for yourself.",
+}
+:AddObjective{
+    id = "is_hesh_unclassifiable",
+    title = "Is Hesh unclassifiable?",
+    desc = "According to some, you can't classify Hesh using conventional biology. How is it possible? You have to see for yourself.",
+}
+:AddObjective{
     id = "tell_result",
     title = "Tell your findings to {giver}",
     desc = "Your dream has given you quite the knowledge about Hesh. {giver} would be quite pleased with this information.",
     mark = {"giver"},
+    on_activate = function(quest)
+        if quest:IsActive("is_hesh_ctenophore") then
+            quest:Cancel("is_hesh_ctenophore")
+        end
+        if quest:IsActive("is_hesh_cnidarian") then
+            quest:Cancel("is_hesh_cnidarian")
+        end
+        if quest:IsActive("is_hesh_unclassifiable") then
+            quest:Cancel("is_hesh_unclassifiable")
+        end
+    end,
 }
 :AddObjective{
     id = "bad_event",
