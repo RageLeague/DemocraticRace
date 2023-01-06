@@ -519,6 +519,9 @@ QDEF:AddConvo("ask_info")
                     :OnSuccess()
                         :Fn(function(cxt)
                             cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] = (cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] or 0) + 1
+                            if not cxt.quest:IsActive(HESH_CLASSIFICATION[cxt.enc.scratch.hesh_identity]) then
+                                cxt.quest:Activate(HESH_CLASSIFICATION[cxt.enc.scratch.hesh_identity])
+                            end
                         end)
                     :OnFailure()
                         :ReceiveOpinion("suspicious")
@@ -583,7 +586,9 @@ QDEF:AddConvo("ask_info")
             cxt:Dialog("DIALOG_ANSWER", cxt.enc.scratch.hesh_identity)
             cxt.quest.param.hesh_id = cxt.quest.param.hesh_id or {}
             cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] = (cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] or 0) + 1
-
+            if not cxt.quest:IsActive(HESH_CLASSIFICATION[cxt.enc.scratch.hesh_identity]) then
+                cxt.quest:Activate(HESH_CLASSIFICATION[cxt.enc.scratch.hesh_identity])
+            end
             if not cxt.quest.param.spawned_interrupt then
                 local candidates = {}
                 for i, agent in cxt.location:Agents() do
@@ -620,6 +625,8 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
             DIALOG_INTRO = [[
                 * Sleep sucks you into it's grasp, and for a moment you feel a weightlessness you've grown accustomed to as the day's stress dissipates.
                 * You stumble into a dream, but this dream... it's different.
+            ]],
+            DIALOG_INTRO_PST = [[
                 * Suddenly, you're up to your ankles in saltwater. The water rises, reaching your knees, then your neck.
                 * Finally, a percussive force of seawater envelops you, and for a moment the ocean becomes the only thing you can feel.
                 agent:
@@ -721,7 +728,11 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
         :Fn(function(cxt)
             cxt:TalkTo(TheGame:GetGameState():AddSkinnedAgent("COGNITIVE_HESH"))
 
+            cxt:FadeOut()
             cxt:Dialog("DIALOG_INTRO")
+            cxt.location:SetPlax("EXT_SMITH_FINALBOSS1")
+            cxt:FadeIn()
+            cxt:Dialog("DIALOG_INTRO_PST")
 
             cxt:BasicNegotiation("UNDERSTAND", {
                 situation_modifiers = {
@@ -729,8 +740,6 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 },
             })
                 :OnSuccess()
-                    :CompleteQuest("ask_info")
-                    :ActivateQuest("tell_result")
                     :GoTo("STATE_QUESTIONS")
                 :OnFailure()
                     :Fn(function(cxt)
@@ -847,6 +856,8 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 agent:
                     [p] <i>It's getting late, {player}. You have a long day ahead of you.</>
                     <i>It's time for us to say goodbye for now.</>
+            ]],
+            DIALOG_END_PST = [[
                 * With that, the space around you begin to dry, as you wake up in your room.
                 {not primary_advisor_manipulate?
                     * There is no water, no signs of Hesh.
@@ -868,23 +879,33 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 has_question_left = cxt:Question("OPT_" .. id, "DIALOG_" .. id) or has_question_left
             end
 
+            local function EndOpt(cxt)
+                cxt:Dialog("DIALOG_END")
+                cxt:FadeOut()
+                cxt.enc:PresentAgent(nil, SIDE.RIGHT)
+                cxt.location:SetPlax()
+                cxt:FadeIn()
+                cxt:Dialog("DIALOG_END_PST")
+
+                cxt.quest:Complete("ask_info")
+                cxt.quest:Activate("tell_result")
+                cxt:Pop()
+            end
+
             if not has_question_left then
                 cxt:Dialog("DIALOG_FINISH")
 
                 cxt:Opt("OPT_COMPLIMENT")
                     :Dialog("DIALOG_COMPLIMENT")
-                    :Dialog("DIALOG_END")
-                    :Pop()
+                    :Fn(EndOpt)
 
                 cxt:Opt("OPT_WEIRD")
                     :Dialog("DIALOG_WEIRD")
-                    :Dialog("DIALOG_END")
-                    :Pop()
+                    :Fn(EndOpt)
 
                 cxt:Opt("OPT_NOTHING")
                     :Dialog("DIALOG_NOTHING")
-                    :Dialog("DIALOG_END")
-                    :Pop()
+                    :Fn(EndOpt)
             end
         end)
 QDEF:AddConvo("tell_result", "giver")
