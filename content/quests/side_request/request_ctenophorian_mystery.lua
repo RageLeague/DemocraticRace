@@ -912,11 +912,6 @@ QDEF:AddConvo("tell_result", "giver")
     :AttractState("STATE_ATTRACT")
         :Loc{
             DIALOG_INTRO = [[
-                {went_crazy?
-                    * Okay, in the new update, the negotiation against Hesh will automatically cause you to lose if you fail.
-                    * You can't get here normally unless you updated the mod.
-                    * So let's just pretend you actually did win, and find out about Hesh.
-                }
                 agent:
                     So, have you find out anything about Hesh?
                 player:
@@ -965,14 +960,6 @@ QDEF:AddConvo("tell_result", "giver")
             ConvoUtil.GiveQuestRewards(cxt)
             cxt:GetCastMember("giver"):AddTag("can_manipulate_truth")
         end)
--- local BAD_EVENT = QuestDef.Define{
---     id = "REQUEST_CTENOPHORIAN_MYSTERY_EVENT",
---     qtype = QTYPE.STORY,
--- }
--- :AddObjective{
---     id = "start",
---     status = QSTATUS.ACTIVE,
--- }
 
 QDEF:AddConvo("bad_event")
     :TravelConfront("INTERRUPT", function(cxt) return TheGame:GetGameState():CanSpawnTravelEvent() end)
