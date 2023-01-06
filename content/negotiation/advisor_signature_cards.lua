@@ -696,8 +696,8 @@ local CARDS = {
         cost = 1,
         max_xp = 7,
 
-        target_enemy = TARGET_ANY_RESOLVE,
-        target_self = TARGET_ANY_RESOLVE,
+        target_enemy = ClearBits(TARGET_ANY_RESOLVE, TARGET_FLAG.CORE),
+        target_self = ClearBits(TARGET_ANY_RESOLVE, TARGET_FLAG.CORE),
 
         IsAttack = function(self)
             return true

@@ -893,6 +893,7 @@ QDEF:AddConvo("deliver_package", "giver")
                         cxt:GetAgent():Remember("SEEN_BOG_PARASITE")
                     end
                 end
+                cxt.enc.scratch.delivery_dead = cxt:GetCastMember("delivery"):IsDead()
             end)
             :Dialog("DIALOG_DELIVER")
             :CompleteQuest()

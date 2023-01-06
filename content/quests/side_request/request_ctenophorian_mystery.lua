@@ -29,6 +29,38 @@ local function GetHeshBelief(agent)
     end)
 end
 
+local HESH_CLASSIFICATION = {"is_hesh_ctenophore", "is_hesh_cnidarian", "is_hesh_unclassifiable"}
+
+local FANATIC_BEHAVIOUR =
+{
+    OnInit = function( self, difficulty )
+        local modifier = self.negotiator:AddModifier("ZEAL")
+        self.faith = self:AddArgument("FAITH_IN_HESH")
+        self.wrath = self:AddArgument( "wrath_of_hesh" )
+        self.hesh_arguments = table.shuffle({
+            self:AddArgument("STINGING_NETTLE"),
+            self:AddArgument("COMB_BEARER")
+        })
+
+        self:SetPattern( self.BasicCycle )
+    end,
+
+    BasicCycle = function( self, turns )
+        self:ChooseGrowingNumbers( 2, 1, 2 )
+        self:ChooseComposure( 2, 1, 3 )
+        if turns < 4 then
+            self:ChooseCard(self.faith)
+        else
+            self:ChooseCard(self.wrath)
+        end
+        if (turns - 1) % 2 == 0 then
+            if turns < 4 and ((turns - 1) / 2) < #self.hesh_arguments then
+                self:ChooseCard(self.hesh_arguments[1 + ((turns - 1) / 2)])
+            end
+        end
+    end,
+}
+
 local QDEF = QuestDef.Define
 {
     title = "Ctenophorian Mystery",
@@ -54,13 +86,11 @@ local QDEF = QuestDef.Define
     postcondition = function(quest)
         quest.extra_reward = EXTRA_QUEST_REWARD.FREE_ITEM
         quest.extra_reward_data = "quest_any_card_bonus"
-        -- print("The reward is replaced, brother")
         return true
     end,
 
     on_start = function(quest)
         quest:Activate("ask_info")
-        -- quest.param.people_advertised = 0
     end,
 
     on_complete = function(quest)
@@ -111,10 +141,36 @@ local QDEF = QuestDef.Define
     },
 }
 :AddObjective{
+    id = "is_hesh_ctenophore",
+    title = "Is Hesh a ctenophore?",
+    desc = "According to some, Hesh has some \"hair-thingys\" that helps it swim, making it a ctenophore. Is it really the case? The only way to tell is to see for yourself.",
+}
+:AddObjective{
+    id = "is_hesh_cnidarian",
+    title = "Is Hesh a cnidarian?",
+    desc = "According to some, Hesh has some splinters that helps it catch prey, making it a cnidarian. You don't know for sure if it's actually the case until you see for yourself.",
+}
+:AddObjective{
+    id = "is_hesh_unclassifiable",
+    title = "Is Hesh unclassifiable?",
+    desc = "According to some, you can't classify Hesh using conventional biology. How is it possible? You have to see for yourself.",
+}
+:AddObjective{
     id = "tell_result",
     title = "Tell your findings to {giver}",
     desc = "Your dream has given you quite the knowledge about Hesh. {giver} would be quite pleased with this information.",
     mark = {"giver"},
+    on_activate = function(quest)
+        if quest:IsActive("is_hesh_ctenophore") then
+            quest:Cancel("is_hesh_ctenophore")
+        end
+        if quest:IsActive("is_hesh_cnidarian") then
+            quest:Cancel("is_hesh_cnidarian")
+        end
+        if quest:IsActive("is_hesh_unclassifiable") then
+            quest:Cancel("is_hesh_unclassifiable")
+        end
+    end,
 }
 :AddObjective{
     id = "bad_event",
@@ -322,27 +378,36 @@ QDEF:AddConvo("ask_info")
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_TALK")
-            cxt:BasicNegotiation("ENDURE", {
-                -- This will be a special negotiation.
-                -- Opponent has no core, meaning you can't win by damage.
-                -- You win by surviving a set amount of rounds.
-                flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE,
-                reason_fn = function(minigame) return cxt:GetLocString("NEGOTIATION_REASON") end,
-                on_start_negotiation = function(minigame)
-                    minigame.player_negotiator:AddModifier("FANATIC_LECTURE", math.max(4, 6 - math.floor(cxt.quest:GetRank() / 2)))
-                end,
-            })
-                :OnSuccess()
-                    :GoTo("STATE_SUCCESS")
-                :OnFailure()
-                    :FadeOut()
-                    :Dialog("DIALOG_ENDURE_FAILURE_2")
-                    :FadeIn()
-                    :Dialog("DIALOG_ENDURE_FAILURE_3")
-                    :Fn(function(cxt)
-                        cxt.caravan:DeltaMaxResolve(-2)
-                    end)
-                    :DoneConvo()
+            cxt:Opt("OPT_ENDURE")
+                :Dialog("DIALOG_ENDURE")
+                :Fn(function(cxt)
+                    cxt:GetAgent():SetTempNegotiationBehaviour(FANATIC_BEHAVIOUR)
+                end)
+                :Negotiation{
+                    -- This will be a special negotiation.
+                    -- Opponent has no core, meaning you can't win by damage.
+                    -- You win by surviving a set amount of rounds.
+                    flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE,
+                    reason_fn = function(minigame) return cxt:GetLocString("NEGOTIATION_REASON") end,
+                    on_start_negotiation = function(minigame)
+                        minigame.player_negotiator:AddModifier("FANATIC_LECTURE", 6)
+                        minigame.opponent_negotiator:CreateModifier("DISTRACTION_CONFUSION", 1)
+                        minigame.opponent_negotiator:CreateModifier("CURIOSITY", 1)
+                    end,
+                }
+                    :OnSuccess()
+                        :Dialog("DIALOG_ENDURE_SUCCESS")
+                        :GoTo("STATE_SUCCESS")
+                    :OnFailure()
+                        :Dialog("DIALOG_ENDURE_FAILURE")
+                        :FadeOut()
+                        :Dialog("DIALOG_ENDURE_FAILURE_2")
+                        :FadeIn()
+                        :Dialog("DIALOG_ENDURE_FAILURE_3")
+                        :Fn(function(cxt)
+                            cxt.caravan:DeltaMaxResolve(-2)
+                        end)
+                        :DoneConvo()
         end)
     :State("STATE_ANTI")
         :Loc{
@@ -445,12 +510,18 @@ QDEF:AddConvo("ask_info")
                     :Dialog("DIALOG_THANK")
                     :Fn(function(cxt)
                         cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] = (cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] or 0) + 1
+                        if not cxt.quest:IsActive(HESH_CLASSIFICATION[cxt.enc.scratch.hesh_identity]) then
+                            cxt.quest:Activate(HESH_CLASSIFICATION[cxt.enc.scratch.hesh_identity])
+                        end
                     end)
             else
                 cxt:BasicNegotiation("EXCUSE", {})
                     :OnSuccess()
                         :Fn(function(cxt)
                             cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] = (cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] or 0) + 1
+                            if not cxt.quest:IsActive(HESH_CLASSIFICATION[cxt.enc.scratch.hesh_identity]) then
+                                cxt.quest:Activate(HESH_CLASSIFICATION[cxt.enc.scratch.hesh_identity])
+                            end
                         end)
                     :OnFailure()
                         :ReceiveOpinion("suspicious")
@@ -515,7 +586,9 @@ QDEF:AddConvo("ask_info")
             cxt:Dialog("DIALOG_ANSWER", cxt.enc.scratch.hesh_identity)
             cxt.quest.param.hesh_id = cxt.quest.param.hesh_id or {}
             cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] = (cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] or 0) + 1
-
+            if not cxt.quest:IsActive(HESH_CLASSIFICATION[cxt.enc.scratch.hesh_identity]) then
+                cxt.quest:Activate(HESH_CLASSIFICATION[cxt.enc.scratch.hesh_identity])
+            end
             if not cxt.quest.param.spawned_interrupt then
                 local candidates = {}
                 for i, agent in cxt.location:Agents() do
@@ -551,12 +624,14 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
         :Loc{
             DIALOG_INTRO = [[
                 * Sleep sucks you into it's grasp, and for a moment you feel a weightlessness you've grown accustomed to as the day's stress dissipates.
-                * You stumble into a dream, but this dream...it's different.
+                * You stumble into a dream, but this dream... it's different.
+            ]],
+            DIALOG_INTRO_PST = [[
                 * Suddenly, you're up to your ankles in saltwater. The water rises, reaching your knees, then your neck.
                 * Finally, a percussive force of seawater envelops you, and for a moment the ocean becomes the only thing you can feel.
                 agent:
                 !right
-                * And from the deep blue, a marine creature appears. A...you can't discern. Its face shifts too quickly for you to understand it.
+                * And from the deep blue, a marine creature appears. A... you can't discern. Its face shifts too quickly for you to understand it.
                 * But you need to understand it. You must...
             ]],
             --Wumpus;If I can make something up that isn't blaring against canon, there'll be things for the three main characters based on these "weird dreams". gonna look into that.
@@ -564,16 +639,27 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
             DIALOG_UNDERSTAND = [[
                 * You swim forward, towards the creature, but not too close, afraid of it's might.
                 * You concentrate on the creature. Every fiber of your mind invests itself into understanding the thing that lies before you.
-                * After an arduous, pained moment, it opens it's mouth to speak...
+                * After an arduous, pained moment, you begin to understand.
             ]],
             DIALOG_UNDERSTAND_SUCCESS = [[
-                * Finally, it closes it's gaping jaw. You step out of your trance and stare at what you've deciphered.
-                * It changes its form based on what you believe Hesh looks like at the moment.
-                * Then it occurred to you: no one has actually seen Hesh personally, to your knowledge.
-                * How come everyone are confident about what Hesh looks like? And how come you can see Hesh's form?
-                * You realized that reality is in the eye of the beholder, and whatever you believe is real, is real.
-                * And you accept this, just as much as you accept the saltwater around you, which drains as your fascination dwindles as well.
-                * When the space around you returns to dry land, sleep leaves, peacefully as it came, and dropping you into your room, refreshed.
+                player:
+                    Just... What are you?
+                * Then, at that moment, you seem to be able to perfectly understand the creature.
+                * The creature starts to speak in an eerily beautiful voice.
+                agent:
+                    <i>I am Hesh.</>
+                player:
+                    !surprised
+                    Whoa! Did Hesh just talk to me? Am I dreaming?
+                agent:
+                    <i>Technically, you are dreaming.</>
+                    <i>Your body is resting, anticipating the struggle of tomorrow, while your mind wanders, freely conversing with me.</>
+                    <i>Dreams are a reflection of reality, after all.</>
+                player:
+                    There's a lot to take in. I need some time to think.
+                agent:
+                    <i>Of course, I understand.</>
+                    <i>If you want to know anything, you only need to ask.</>
             ]],
             DIALOG_UNDERSTAND_FAILURE = [[
                 * Sand.
@@ -642,7 +728,11 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
         :Fn(function(cxt)
             cxt:TalkTo(TheGame:GetGameState():AddSkinnedAgent("COGNITIVE_HESH"))
 
+            cxt:FadeOut()
             cxt:Dialog("DIALOG_INTRO")
+            cxt.location:SetPlax("EXT_SMITH_FINALBOSS1")
+            cxt:FadeIn()
+            cxt:Dialog("DIALOG_INTRO_PST")
 
             cxt:BasicNegotiation("UNDERSTAND", {
                 situation_modifiers = {
@@ -650,8 +740,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 },
             })
                 :OnSuccess()
-                    :CompleteQuest("ask_info")
-                    :ActivateQuest("tell_result")
+                    :GoTo("STATE_QUESTIONS")
                 :OnFailure()
                     :Fn(function(cxt)
                         -- You earn a special card or something.
@@ -679,15 +768,150 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                     -- :CompleteQuest("ask_info")
                     -- :ActivateQuest("tell_result")
         end)
+    :State("STATE_QUESTIONS")
+        :Loc{
+            OPT_ASK_REAL = "Ask if Hesh is real",
+            DIALOG_ASK_REAL = [[
+                player:
+                    [p] Are you real?
+                agent:
+                    <i>I don't know. Maybe I am real, or maybe I am just a construct of your subconscience.</>
+                    <i>But reality is in the eyes of the beholder. If you believe I am real, then I am real to you.</>
+            ]],
+            OPT_ASK_CLASSIFICATION = "Ask what Hesh is",
+            DIALOG_ASK_CLASSIFICATION = [[
+                player:
+                    [p] What are you?
+                agent:
+                    <i>I am Hesh.</>
+                player:
+                    No, I mean what kind of jellyfish are you?
+                    Are you a ctenophore or a cnidarian, or are you beyond the conventional biological classification system?
+                agent:
+                    <i>...</>
+                    <i>What?</>
+                    <i>I mean, uh... What I am is not important. I am what you believe I am.</>
+                    <i>If you believe I am a ctenophore, then I will appear to be a ctenophore to you.</>
+                    <i>If you believe I am a cnidarian, then I will appear as so.</>
+                    <i>If you believe something is true, then in your reality, it is the truth.</>
+            ]],
+            OPT_ASK_CULT = "Ask what Hesh think of the Cult",
+            DIALOG_ASK_CULT = [[
+                player:
+                    [p] What do you think of the Cult?
+                agent:
+                    <i>I feel flattered that I am honored as a god by the Cult.</>
+                    <i>Although, I am slightly concerned by their desire to be consumed by me.</>
+                    <i>I mean, I'm not going to complain because of the free food, but still, it is concerning.</>
+                player:
+                    What do you think of their politics?
+                    You know, like their whole deal of preserving artifacts, or treating lumin as a sacred fuel source.
+                {player_sal?
+                    !spit
+                    Or using indentured labor to harvest said fuel source.
+                }
+                agent:
+                    <i>I don't care.</>
+                    <i>I mean, I'm just a jellyfish swimming at the bottom of the sea. What you people do does not concern me.</>
+            ]],
+            DIALOG_FINISH = [[
+                player:
+                    [p] Thank you. I feel like I understand you better now.
+                agent:
+                    <i>It was nice talking to you, {player}.</>
+                    <i>Rarely do I find people who understand me.</>
+                player:
+                    Oh, Hesh?
+                agent:
+                    <i>Is there something you like to say?</>
+            ]],
+            OPT_COMPLIMENT = "Compliment on Hesh's magnificence",
+            DIALOG_COMPLIMENT = [[
+                player:
+                    [p] Out of all the creatures I've seen, you are truly the most magnificent one.
+                agent:
+                    <i>Thank you.</>
+                    <i>Many people fear me. Many people blindly worship me. But not many people compliment me like you just did.</>
+                player:
+                    !bashful
+                    I- I feel honored.
+            ]],
+            OPT_WEIRD = "Express how weird Hesh is",
+            DIALOG_WEIRD = [[
+                player:
+                    [p] You are truly weird, Hesh.
+                    I feel like even if I asked all these questions, I still don't understand you at all.
+                agent:
+                    <i>I understand.</>
+                    <i>Still, you manage to try and understand me. Not many people have the courage or the resolve to do that.</>
+            ]],
+            OPT_NOTHING = "Don't make additional comments",
+            DIALOG_NOTHING = [[
+                player:
+                    [p] I was just exclaiming. Don't mind me.
+                agent:
+                    <i>Oh. Okay.</>
+            ]],
+            DIALOG_END = [[
+                agent:
+                    [p] <i>It's getting late, {player}. You have a long day ahead of you.</>
+                    <i>It's time for us to say goodbye for now.</>
+            ]],
+            DIALOG_END_PST = [[
+                * With that, the space around you begin to dry, as you wake up in your room.
+                {not primary_advisor_manipulate?
+                    * There is no water, no signs of Hesh.
+                }
+                {primary_advisor_manipulate?
+                    * There is no water, no signs of Hesh (apart from all the Heshian imagery you typically found inside the home of a Heshian priest).
+                }
+                * Just you, and the cozy bed you're in.
+                * You almost want to dismiss it all as just another dream, but you have a sinking feeling that this is no mere dream, but rather, a vision.
+                * A vision of the truth of Hesh, and the truth of the world.
+                * With that in mind, you go back to sleep.
+            ]],
+        }
+        :SetLooping()
+        :Fn(function(cxt)
+            local questions = {"ASK_REAL", "ASK_CLASSIFICATION", "ASK_CULT"}
+            local has_question_left = false
+            for i, id in ipairs(questions) do
+                has_question_left = cxt:Question("OPT_" .. id, "DIALOG_" .. id) or has_question_left
+            end
+
+            local function EndOpt(cxt)
+                cxt:Dialog("DIALOG_END")
+                cxt:FadeOut()
+                cxt.enc:PresentAgent(nil, SIDE.RIGHT)
+                cxt.location:SetPlax()
+                cxt:FadeIn()
+                cxt:Dialog("DIALOG_END_PST")
+
+                cxt.quest:Complete("ask_info")
+                cxt.quest:Activate("tell_result")
+                cxt:Pop()
+            end
+
+            if not has_question_left then
+                cxt:Dialog("DIALOG_FINISH")
+
+                cxt:Opt("OPT_COMPLIMENT")
+                    :Dialog("DIALOG_COMPLIMENT")
+                    :Fn(EndOpt)
+
+                cxt:Opt("OPT_WEIRD")
+                    :Dialog("DIALOG_WEIRD")
+                    :Fn(EndOpt)
+
+                cxt:Opt("OPT_NOTHING")
+                    :Dialog("DIALOG_NOTHING")
+                    :Fn(EndOpt)
+            end
+        end)
 QDEF:AddConvo("tell_result", "giver")
     :AttractState("STATE_ATTRACT")
         :Loc{
             DIALOG_INTRO = [[
-                {went_crazy?
-                    * Okay, in the new update, the negotiation against Hesh will automatically cause you to lose if you fail.
-                    * You can't get here normally unless you updated the mod.
-                    * So let's just pretend you actually did win, and find out about Hesh.
-                }
                 agent:
                     So, have you find out anything about Hesh?
                 player:
@@ -736,14 +960,6 @@ QDEF:AddConvo("tell_result", "giver")
             ConvoUtil.GiveQuestRewards(cxt)
             cxt:GetCastMember("giver"):AddTag("can_manipulate_truth")
         end)
--- local BAD_EVENT = QuestDef.Define{
---     id = "REQUEST_CTENOPHORIAN_MYSTERY_EVENT",
---     qtype = QTYPE.STORY,
--- }
--- :AddObjective{
---     id = "start",
---     status = QSTATUS.ACTIVE,
--- }
 
 QDEF:AddConvo("bad_event")
     :TravelConfront("INTERRUPT", function(cxt) return TheGame:GetGameState():CanSpawnTravelEvent() end)
