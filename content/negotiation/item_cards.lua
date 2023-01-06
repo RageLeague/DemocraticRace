@@ -675,7 +675,7 @@ local CARDS = {
     {
         name = "Sequencer",
         flavour = "'Universal energy my friend, that's what the blue is all about.'",
-        desc = "Restore all uses to an item card in your hand.",
+        desc = "Restore all uses to an item card in your deck.",
         icon = "battle/sequencer.tex",
 
         item_tags = ITEM_TAGS.UTILITY,
@@ -689,18 +689,19 @@ local CARDS = {
         flags = CARD_FLAGS.REPLENISH | CARD_FLAGS.EXPEND,
 
         GetCardsOwnedBySelf = function(self)
-            -- if self.negotiator:IsPlayer() and self.engine then
-            --     return table.merge( self.engine.hand_deck.cards, self.engine.discard_deck.cards, self.engine.draw_deck.cards )
-            -- end
-            return self.engine:GetHandDeck()
+            if self.negotiator:IsPlayer() and self.engine then
+                return table.merge( self.engine.hand_deck.cards, self.engine.discard_deck.cards, self.engine.draw_deck.cards )
+            end
+            return {}
+            -- return self.engine:GetHandDeck()
         end,
 
         CanPlayCard = function( self, card, engine, target )
             if not self:GetCardsOwnedBySelf() then
                 return false, CARD_PLAY_REASONS.NO_VALID_TARGETS
             end
-            for i, card in ipairs(self:GetCardsOwnedBySelf().cards) do
-                if card:IsPartiallySpent() then
+            for i, card in ipairs(self:GetCardsOwnedBySelf()) do
+                if card ~= self and card:IsPartiallySpent() then
                     return true
                 end
             end
@@ -708,12 +709,16 @@ local CARDS = {
         end,
 
         OnPostResolve = function( self, minigame, targets )
-            local card = minigame:ChooseCardsFromTable( self:GetCardsOwnedBySelf(), 1, 1, Negotiation.Card.IsPartiallySpent, LOC "CARD_ENGINE.CHOOSE_SPENT_CARD", self )[1]
+            local card = minigame:ChooseCardsFromTable( self:GetCardsOwnedBySelf(), 1, 1, function(c)
+                return c:IsPartiallySpent() and c ~= self
+            end, LOC "CARD_ENGINE.CHOOSE_SPENT_CARD", self )[1]
             if card then
                 local original_deck = card.deck
                 -- card:TransferCard(minigame.trash_deck)
                 -- minigame:GetTrashDeck():InsertCard( card )
+                original_deck:RemoveCard(card)
                 card:RestoreCharges()
+                card:TransferCard(original_deck)
                 -- card.show_dealt = false
                 -- minigame:DealCard( card, original_deck )
                 -- card:TransferCard(original_deck)
