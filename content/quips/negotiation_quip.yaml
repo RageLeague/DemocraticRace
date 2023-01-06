@@ -1,0 +1,14 @@
+tag_scores:
+    opponent_card: 0.5
+    cognitive_hesh: 10
+lines:
+- push: [negotiation]
+
+# These doesn't actually work yet, because card quip overwrites general quips.
+- tags: [opponent_card, cognitive_hesh]
+  dialog:
+  - "* Hesh looks at you. Hesh judges you."
+  - "* Hesh looks at you in indifference."
+  - "* Hesh does not care."
+  - "* Hesh consumes your thoughts, just as Hesh consumes all."
+  - "* You gaze upon the majesty of Hesh, and realize your own unworthiness."
