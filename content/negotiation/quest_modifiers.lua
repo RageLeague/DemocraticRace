@@ -470,7 +470,9 @@ local MODIFIERS =
                 CalculateBonusScale(self))
         end,
         OnInit = function(self)
-            self.init_max_resolve = 5 * self.engine:GetDifficulty() + 5
+            if (self.generation or 0) == 0 and self.engine:GetDifficulty() > 1 then
+                self.init_max_resolve = self.init_max_resolve + 5 * (self.engine:GetDifficulty() * 1)
+            end
             MyriadInit(self)
         end,
         OnBounty = function(self)
@@ -499,7 +501,9 @@ local MODIFIERS =
                 CalculateBonusScale(self))
         end,
         OnInit = function(self)
-            self.init_max_resolve = 5 * self.engine:GetDifficulty() + 5
+            if (self.generation or 0) == 0 and self.engine:GetDifficulty() > 1 then
+                self.init_max_resolve = self.init_max_resolve + 5 * (self.engine:GetDifficulty() * 1)
+            end
             MyriadInit(self)
         end,
         OnBounty = function(self)
@@ -537,7 +541,9 @@ local MODIFIERS =
                 CalculateBonusScale(self))
         end,
         OnInit = function(self)
-            self.init_max_resolve = 5 * self.engine:GetDifficulty() + 5
+            if (self.generation or 0) == 0 and self.engine:GetDifficulty() > 1 then
+                self.init_max_resolve = self.init_max_resolve + 5 * (self.engine:GetDifficulty() * 1)
+            end
             MyriadInit(self)
         end,
         OnBounty = function(self)
@@ -2881,7 +2887,9 @@ local MODIFIERS =
             return loc.format( fmt_str, self:GetOwnerName(), CalculateBonusScale(self), self.stacks or 1)
         end,
         OnInit = function(self)
-            self.init_max_resolve = 5 * self.engine:GetDifficulty() + 5
+            if (self.generation or 0) == 0 and self.engine:GetDifficulty() > 1 then
+                self.init_max_resolve = self.init_max_resolve + 5 * (self.engine:GetDifficulty() * 1)
+            end
             MyriadInit(self)
         end,
         OnBounty = function(self)
