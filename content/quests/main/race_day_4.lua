@@ -496,6 +496,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         :Loc{
             DIALOG_INTRO = [[
                 opponent:
+                    !right
                     !crossed
                     {player}, I came to tell you some news.
                 player:
