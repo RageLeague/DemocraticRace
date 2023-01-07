@@ -866,7 +866,19 @@ local CARDS = {
                 end
             end,
         },
-    }
+    },
+    status_injury_negotiation =
+    {
+        name = "Injury",
+        flavour = "'Ouch.'",
+        icon = "battle/status_injury.tex",
+
+        cost = 1,
+        flags = CARD_FLAGS.STATUS | CARD_FLAGS.EXPEND,
+        rarity = CARD_RARITY.UNIQUE,
+
+        battle_counterpart = "status_injury",
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     if not def.series then
