@@ -471,7 +471,7 @@ local MODIFIERS =
         end,
         OnInit = function(self)
             if (self.generation or 0) == 0 and self.engine:GetDifficulty() > 1 then
-                self.init_max_resolve = self.init_max_resolve + 5 * (self.engine:GetDifficulty() * 1)
+                self.init_max_resolve = self.init_max_resolve + 5 * (self.engine:GetDifficulty() - 1)
             end
             MyriadInit(self)
         end,
@@ -502,7 +502,7 @@ local MODIFIERS =
         end,
         OnInit = function(self)
             if (self.generation or 0) == 0 and self.engine:GetDifficulty() > 1 then
-                self.init_max_resolve = self.init_max_resolve + 5 * (self.engine:GetDifficulty() * 1)
+                self.init_max_resolve = self.init_max_resolve + 5 * (self.engine:GetDifficulty() - 1)
             end
             MyriadInit(self)
         end,
@@ -542,7 +542,7 @@ local MODIFIERS =
         end,
         OnInit = function(self)
             if (self.generation or 0) == 0 and self.engine:GetDifficulty() > 1 then
-                self.init_max_resolve = self.init_max_resolve + 5 * (self.engine:GetDifficulty() * 1)
+                self.init_max_resolve = self.init_max_resolve + 5 * (self.engine:GetDifficulty() - 1)
             end
             MyriadInit(self)
         end,
@@ -2888,7 +2888,7 @@ local MODIFIERS =
         end,
         OnInit = function(self)
             if (self.generation or 0) == 0 and self.engine:GetDifficulty() > 1 then
-                self.init_max_resolve = self.init_max_resolve + 5 * (self.engine:GetDifficulty() * 1)
+                self.init_max_resolve = self.init_max_resolve + 5 * (self.engine:GetDifficulty() - 1)
             end
             MyriadInit(self)
         end,
