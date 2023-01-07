@@ -2874,7 +2874,7 @@ local MODIFIERS =
     {
         name = "Startling Distraction",
         desc = "{MYRIAD_MODIFIER {2}}.\n\nWhen destroyed, {1} gains {3} {DISTRACTED}.",
-        -- icon = "negotiation/modifiers/card_draw.tex",
+        icon = "negotiation/modifiers/dread.tex",
 
         modifier_type = MODIFIER_TYPE.BOUNTY,
         init_max_resolve = 10,
