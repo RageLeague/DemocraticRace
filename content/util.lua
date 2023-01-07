@@ -366,7 +366,7 @@ function DemocracyUtil.AddAutofail(cxt, param)
     cxt:Opt("OPT_ACCEPT_FAILURE")
         :Fn(function(cxt)
             TheGame:Lose()
-            cxt:End()
+            cxt.enc:YieldEncounter()
         end)
     return DemocracyUtil.AddDebugBypass(cxt, (TheGame:GetLocalSettings().DEBUG or false) and param)
 end
