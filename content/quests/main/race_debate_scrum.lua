@@ -255,9 +255,9 @@ local function ProcessMinigame(minigame, win_minigame, cxt)
         -- Guess what? We need this to not divide by 0.
         if data.mvp_score > 0 then
             for i, val in ipairs(data.score_agent_pairs) do
-                if val.score / data.mvp_score >= 0.95 then
+                if val.score / data.mvp_score >= 0.9 then
                     table.insert(data.mvp, val.agent)
-                elseif val.score / data.mvp_score >= 0.75 then
+                elseif val.score / data.mvp_score >= 0.6 then
                     table.insert(data.valuable_players, val.agent)
                 end
             end
