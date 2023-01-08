@@ -446,7 +446,12 @@ QDEF:AddConvo("do_interview")
             ]],
 
             DIALOG_UNRECOGNIZE_PEOPLE = [[
-                * There are some people you don't recognize though.
+                {know_at_least_one?
+                    * There are some people you don't recognize though.
+                }
+                {not know_at_least_one?
+                    * Looking out to the crowd, you don't recognize anyone here.
+                }
                 * You see {1#listing}.
                 * No doubt to see who you are about and what you bring to the table before choosing a candidate.
             ]],
@@ -546,6 +551,7 @@ QDEF:AddConvo("do_interview")
                     table.insert(agent_supports, {agent, DemocracyUtil.TryMainQuestFn("GetSupportForAgent", agent)})
                     if agent:KnowsPlayer() then
                         table.insert(recognized_people, agent)
+                        cxt.enc.scratch.know_at_least_one = true
                     else
                         agent:GenerateLocTable()
                         table.insert(unrecognized_descs, agent.loc_table.a_desc)
@@ -553,9 +559,13 @@ QDEF:AddConvo("do_interview")
                 end
             end
 
-            cxt:Dialog("DIALOG_RECOGNIZE_PEOPLE", recognized_people)
+            if #recognized_people > 0 then
+                cxt:Dialog("DIALOG_RECOGNIZE_PEOPLE", recognized_people)
+            end
 
-            cxt:Dialog("DIALOG_UNRECOGNIZE_PEOPLE", unrecognized_descs)
+            if #unrecognized_descs > 0 then
+                cxt:Dialog("DIALOG_UNRECOGNIZE_PEOPLE", unrecognized_descs)
+            end
 
             cxt:Dialog("DIALOG_INTERVIEW")
 
