@@ -63,6 +63,12 @@ local QDEF = QuestDef.Define
             quest.param.parent_quest.param.popularity_rankings = quest.param.popularity_rankings
         end
     end,
+    events =
+    {
+        get_free_location_marks = function(quest, free_quest, locations)
+            table.arrayremove(locations, quest:GetCastMember("theater"))
+        end,
+    },
 }
 :AddCast{
     cast_id = "host",

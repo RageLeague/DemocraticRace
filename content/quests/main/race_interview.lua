@@ -79,20 +79,18 @@ local QDEF = QuestDef.Define
         -- end
         table.insert(t, { agent = quest:GetCastMember("host"), location = quest:GetCastMember('theater')})
     end,
-    -- on_start = function(quest)
-
-    -- end,
-    -- on_complete = function(quest)
-    --     if quest:GetCastMember("primary_advisor") then
-    --         quest:GetCastMember("primary_advisor"):GetBrain():SendToWork()
-    --     end
-    -- end,
     on_destroy = function(quest)
         quest:GetCastMember("primary_advisor"):GetBrain():SendToWork()
         if quest.param.parent_quest then
             quest.param.parent_quest.param.did_interview = true
         end
     end,
+    events =
+    {
+        get_free_location_marks = function(quest, free_quest, locations)
+            table.arrayremove(locations, quest:GetCastMember("theater"))
+        end,
+    },
 }
 :AddCast{
     cast_id = "host",

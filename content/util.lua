@@ -599,13 +599,16 @@ function DemocracyUtil.DoSentientPromotion(agent, promotion_def)
     TheGame:GetGameState():GetPlayerAgent().graft_owner:AddSocialGraft(agent, agent:GetRelationship())
 end
 
-function DemocracyUtil.AddUnlockedLocationMarks(t, condition)
+function DemocracyUtil.AddUnlockedLocationMarks(quest, t, condition)
+    local add_locations = {}
     for i, id in ipairs(TheGame:GetGameState():GetMainQuest().param.unlocked_locations) do
         local location = TheGame:GetGameState():GetLocation(id)
         if not condition or condition(location) then
-            table.insert(t, location)
+            table.insert(add_locations, location)
         end
     end
+    TheGame:BroadcastEvent( "get_free_location_marks", quest, add_locations)
+    table.arrayadd(t, add_locations)
 end
 function DemocracyUtil.DoAlphaMessage()
     if TheGame:GetLocalSettings().ROBOTICS then
@@ -1619,9 +1622,9 @@ function QuestDef:AddFreeTimeObjective( child )
             return loc.format(str, quest.param.free_time_actions or 0)
         end,
         desc = "You can choose to visit a location during your free time.",
-        mark = function(quest, t, in_location)
-            DemocracyUtil.AddUnlockedLocationMarks(t)
-        end,
+        -- mark = function(quest, t, in_location)
+        --     DemocracyUtil.AddUnlockedLocationMarks(quest, t)
+        -- end,
         on_activate = function(quest)
             local questdef = quest:GetQuestDef()
             local multiplier = questdef:GetObjective(questdef.free_time_objective_id).action_multiplier or 1

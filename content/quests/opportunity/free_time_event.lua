@@ -78,7 +78,7 @@ local QDEF = QuestDef.Define{
 
 --     state = QSTATUS.ACTIVE,
 --     mark = function(quest, t, in_location)
---         DemocracyUtil.AddUnlockedLocationMarks(t)
+--         DemocracyUtil.AddUnlockedLocationMarks(quest, t)
 --     end,
 --     -- terminal = true,
 -- }
@@ -87,6 +87,9 @@ local QDEF = QuestDef.Define{
     state = QSTATUS.ACTIVE,
     on_complete = function(quest)
         quest:Complete()
+    end,
+    mark = function(quest, t, in_location)
+        DemocracyUtil.AddUnlockedLocationMarks(quest, t)
     end,
 }
 :AddCast{
