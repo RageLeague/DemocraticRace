@@ -806,7 +806,7 @@ local MODIFIERS =
                     end
                 end
             end,
-            [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+            [ EVENT.DELTA_RESOLVE ] = function( self, modifier, resolve, max_resolve, delta, source, params )
                 self:CheckAllowRecord(source)
             end,
             [ EVENT.DELTA_COMPOSURE ] =  function( self, modifier, new_value, old_value, source, start_of_turn )
