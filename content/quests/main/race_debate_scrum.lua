@@ -181,9 +181,24 @@ local QDEF = QuestDef.Define
 }
 :AddObjective{
     id = "report_to_advisor",
-    title = "Return to your advisor",
-    desc = "Talk to your advisor about how you did today.",
-    mark = {"primary_advisor"},
+    -- title = "Return to your advisor",
+    -- desc = "Talk to your advisor about how you did today.",
+    -- mark = {"primary_advisor"},
+    on_activate = function(quest)
+        if quest.param.parent_quest then
+            -- I don't like this being too coupled with day 3, but it's the best we got
+            quest.param.parent_quest:Complete("do_debate")
+        end
+    end,
+    events = {
+        quests_changed = function(quest, event_quest)
+            if event_quest and event_quest == quest.param.parent_quest then
+                if event_quest:IsDone("do_summary") then
+                    quest:Complete()
+                end
+            end
+        end,
+    },
 }
 :AddObjective{
     id = "talk_to_candidates",
@@ -1082,55 +1097,55 @@ QDEF:AddConvo("do_debate")
 
             StateGraphUtil.AddEndOption(cxt)
         end)
-QDEF:AddConvo("report_to_advisor", "primary_advisor")
-    :ConfrontState("STATE_CONFRONT")
-    :Loc{
-        DIALOG_REVIEW = [[
-            agent:
-                You are back.
-            player:
-                Yeah.
-            agent:
-            {good_debate?
-                !clap
-                I have to say, that was quite impressive.
-                Everyone has their eyes on you!
-                Well done!
-            }
-            {bad_debate?
-                !sigh
-                Are you sure you tried?
-            player:
-                I mean, yeah?
-            agent:
-                Well the results doesn't reflect that way.
-                Nobody in the crowd remembers you.
-            }
-            {not good_debate and not bad_debate?
-                That was not that great, but certainly not the worse.
-                I hoped you can do better than that.
-            player:
-                It's way too hard to be first at everything at life.
-                So I'd settle for second place.
-            agent:
-                {advisor_hostile?
-                    That's why you are less successful than I am, huh?
-                    But whatever, I don't care.
-                    |
-                    !shrug
-                    Fair enough.
-                }
-            }
-            agent:
-                Anyway, we can talk more later during the summaries.
-        ]],
-    }
-    :Fn(function(cxt)
-        cxt:Dialog("DIALOG_REVIEW")
+-- QDEF:AddConvo("report_to_advisor", "primary_advisor")
+--     :ConfrontState("STATE_CONFRONT")
+--     :Loc{
+--         DIALOG_REVIEW = [[
+--             agent:
+--                 You are back.
+--             player:
+--                 Yeah.
+--             agent:
+--             {good_debate?
+--                 !clap
+--                 I have to say, that was quite impressive.
+--                 Everyone has their eyes on you!
+--                 Well done!
+--             }
+--             {bad_debate?
+--                 !sigh
+--                 Are you sure you tried?
+--             player:
+--                 I mean, yeah?
+--             agent:
+--                 Well the results doesn't reflect that way.
+--                 Nobody in the crowd remembers you.
+--             }
+--             {not good_debate and not bad_debate?
+--                 That was not that great, but certainly not the worse.
+--                 I hoped you can do better than that.
+--             player:
+--                 It's way too hard to be first at everything at life.
+--                 So I'd settle for second place.
+--             agent:
+--                 {advisor_hostile?
+--                     That's why you are less successful than I am, huh?
+--                     But whatever, I don't care.
+--                     |
+--                     !shrug
+--                     Fair enough.
+--                 }
+--             }
+--             agent:
+--                 Anyway, we can talk more later during the summaries.
+--         ]],
+--     }
+--     :Fn(function(cxt)
+--         cxt:Dialog("DIALOG_REVIEW")
 
-        cxt.quest:Complete()
-        StateGraphUtil.AddEndOption(cxt)
-    end)
+--         cxt.quest:Complete()
+--         StateGraphUtil.AddEndOption(cxt)
+--     end)
 QDEF:AddConvo("talk_to_candidates")
     :AttractState("STATE_CHAT", function(cxt)
         cxt.quest.param.post_debate_chat = cxt.quest.param.post_debate_chat or {}
