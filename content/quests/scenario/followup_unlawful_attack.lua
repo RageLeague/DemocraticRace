@@ -100,7 +100,7 @@ QDEF:AddConvo("report")
                     player:
                         !chuckle
                         Oh how terrible! Who could let such a thing happen?
-                    target:
+                    hunter:
                         !wink
                         I don't know. It could be <i>anyone</>.
                     }

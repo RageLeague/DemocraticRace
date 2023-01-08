@@ -21,7 +21,13 @@ local QDEF = QuestDef.Define
         local parent_quest = quest.param.parent_quest
         if parent_quest and parent_quest.param.vote_result then
             local has_primary = false
-            local result = parent_quest.param.vote_result
+            local result = shallowcopy(parent_quest.param.vote_result)
+            for i = #result, 1, -1 do
+                -- Filter out the ones dropped out of the race
+                if not result[i][1]:IsPlayer() and not DemocracyUtil.TryMainQuestFn("IsCandidateInRace", result[i][1]) then
+                    table.remove(result, i)
+                end
+            end
             if result[1] and result[1][1] then
                 if result[1][1] ~= TheGame:GetGameState():GetPlayerAgent() then
                     has_primary = true
