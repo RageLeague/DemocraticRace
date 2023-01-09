@@ -384,9 +384,22 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             ]],
             OPT_AGREE = "Agree to drop out of the race",
             DIALOG_AGREE = [[
-                player:
-                    !sigh
-                    You're not wrong. Our chances combined would be much better to get us in office.
+                opponent:
+                    !right
+                {not tried_convince_drop and not ally_dropped?
+                    player:
+                        !sigh
+                        You're not wrong. Our chances combined would be much better to get us in office.
+                }
+                {tried_convince_drop or ally_dropped?
+                    player:
+                        [p] I'm assuming that you aren't dropping out of the race then.
+                    opponent:
+                        No.
+                    player:
+                        !sigh
+                        ...I guess I don't have any other choice, do I?
+                }
                 opponent:
                     !intrigue
                     So that's a yes? You'll drop out of the race for me?
@@ -402,10 +415,27 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             ]],
             OPT_REFUSE = "Refuse to drop out",
             DIALOG_REFUSE = [[
-                player:
-                    !chuckle
-                    You seriously, <i>seriously</> doubt the power of political engineering.
-                    My chances are fine, thank you very much.
+                opponent:
+                    !right
+                {not tried_convince_drop and not ally_dropped?
+                    player:
+                        !chuckle
+                        You seriously, <i>seriously</> doubt the power of political engineering.
+                        My chances are fine, thank you very much.
+                }
+                {not tried_convince_drop and ally_dropped?
+                    player:
+                        [p] I'm assuming that you aren't dropping out of the race then.
+                    opponent:
+                        No.
+                    player:
+                        I'm not dropping either. I like my chances at this election.
+                }
+                {tried_convince_drop?
+                    player:
+                        [p] Well, it seems like we can't reach a compromise.
+                        I'm not dropping out of the race. I would like to see the whole thing through.
+                }
                 opponent:
                     !disappoint
                     Well, that's a shame. Truly it is.
@@ -428,7 +458,12 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 opponent:
                     !right
                 player:
+                {ally_dropped?
+                    [p] I think you should drop out of the race as well.
+                }
+                {not ally_dropped?
                     [p] I think you should drop out of the race instead.
+                }
                 opponent:
                     Really now?
                 {higher_ranking?
@@ -447,6 +482,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     We will have a better chance of winning if you drop out of the race.
                 opponent:
                     Okay fine. I'll drop out instead.
+                    !exit
             ]],
             DIALOG_CONVINCE_FAILURE = [[
                 player:
@@ -455,6 +491,10 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     It's very important to me as well!
                     But we must all make sacrifice if we want to still win the election.
                     So, please, {player}. Consider dropping out of the race.
+            ]],
+            DIALOG_CONVINCED_SOME_LEFT = [[
+                * [p] You've convinced {opponent} to drop out of the race.
+                * Now you just need to convince {1#agent_list} as well.
             ]],
             DIALOG_CONVINCED_ALL = [[
                 * [p] Well, it seems like you convinced all of your allies to drop out of the race.
@@ -490,6 +530,8 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 end
                 local other_candidates = shallowcopy(cxt.enc.scratch.conflicting_allies)
                 table.remove(other_candidates, 1)
+
+                cxt:TalkTo("opponent")
                 cxt:Dialog("DIALOG_INTRO", other_candidates, #other_candidates)
             end
             if #cxt.enc.scratch.conflicting_allies == 0 then
@@ -502,8 +544,13 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                         end
                     end
                 end
+                cxt.quest:Complete("starting_out")
+                StateGraphUtil.AddLeaveLocation(cxt)
                 return
             end
+
+            cxt:ReassignCastMember("opponent", cxt.enc.scratch.conflicting_allies[1])
+            cxt:TalkTo("opponent")
 
             cxt:Opt("OPT_AGREE")
                 :Dialog("DIALOG_AGREE")
@@ -518,8 +565,10 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     cxt:Opt("OPT_CONVINCE", agent)
                         :Fn(function(cxt)
                             cxt:ReassignCastMember("opponent", agent)
+                            cxt:TalkTo("opponent")
                             cxt.enc.scratch.higher_ranking = player_votes < opponent_votes
                         end)
+                        :Dialog("DIALOG_CONVINCE")
                         :Negotiation{
                             target_agent = agent,
                             flags = NEGOTIATION_FLAGS.WORDSMITH,
@@ -534,6 +583,10 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                                 -- cxt.quest:Complete("starting_out")
                                 table.arrayremove(cxt.enc.scratch.conflicting_allies, agent)
                                 agent:MoveToLimbo()
+                                if #cxt.enc.scratch.conflicting_allies > 0 then
+                                    cxt:Dialog("DIALOG_CONVINCED_SOME_LEFT", cxt.enc.scratch.conflicting_allies, #cxt.enc.scratch.conflicting_allies)
+                                end
+                                cxt.enc.scratch.ally_dropped = true
                             end)
                         :OnFailure()
                             :Dialog("DIALOG_CONVINCE_FAILURE")
@@ -629,6 +682,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         :Fn(function(cxt)
             cxt:ReassignCastMember("opponent", cxt.enc.scratch.potential_ally)
             cxt:GetCastMember("opponent"):MoveToLocation(cxt:GetCastMember("home"))
+            cxt:TalkTo("opponent")
             cxt:Dialog("DIALOG_INTRO")
 
             if cxt.enc.scratch.low_vote_candidates and #cxt.enc.scratch.low_vote_candidates > 0 then
@@ -738,6 +792,8 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                         end
                     end
                 end
+
+                cxt:TalkTo("primary_advisor")
 
                 cxt:Dialog("DIALOG_INTRO")
             end
