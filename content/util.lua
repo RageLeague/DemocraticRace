@@ -1094,6 +1094,7 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, post_fn, potential_offset)
     cxt:Dialog("DIALOG_ALLIANCE_TALK_INTRO")
     if not candidate_data then
         cxt:Dialog("DIALOG_ALLIANCE_TALK_INVALID")
+        post_fn(cxt, false)
     else
         local potential, problem_agent = DemocracyUtil.GetAlliancePotential(candidate_data.cast_id)
         local platform = candidate_data.platform
