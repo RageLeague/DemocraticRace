@@ -660,7 +660,12 @@ QDEF:AddConvo("starting_out", "primary_advisor")
 
             cxt.quest:Complete("starting_out")
             cxt:GetCastMember("opponent"):MoveToLimbo()
-            StateGraphUtil.AddLeaveLocation(cxt)
+
+            if not cxt.enc.scratch.advisor_favor then
+                StateGraphUtil.AddLeaveLocation(cxt)
+            else
+                cxt:GoTo("STATE_FAVOR")
+            end
         end)
     :State("STATE_INFORM")
         :Loc{
@@ -696,7 +701,12 @@ QDEF:AddConvo("starting_out", "primary_advisor")
 
             cxt.quest:Complete("starting_out")
             cxt:GetCastMember("opponent"):MoveToLimbo()
-            StateGraphUtil.AddLeaveLocation(cxt)
+
+            if not cxt.enc.scratch.advisor_favor then
+                StateGraphUtil.AddLeaveLocation(cxt)
+            else
+                cxt:GoTo("STATE_FAVOR")
+            end
         end)
     :State("STATE_ALLIANCE")
         :Loc{
@@ -750,6 +760,13 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         :Loc{
             DIALOG_INTRO = [[
                 agent:
+                    !right
+                {has_potential_ally?
+                    * As your visitor leaves, you are left alone with {agent} again.
+                    agent:
+                        Before I was interrupted, there was something I want to ask of you.
+                }
+                agent:
                     I know you're working hard to campaign, but I want you to do something for me.
                     Of course, you don't have to accept it.
                     I want you to focus on the campaign if you need to, but if you think you have time to spare, maybe you can help me.
@@ -784,15 +801,6 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         }
         :RunLoopingFn(function(cxt)
             if cxt:FirstLoop() then
-                if cxt.enc.scratch.low_vote_candidates and #cxt.enc.scratch.low_vote_candidates > 0 then
-                    for i = #cxt.enc.scratch.low_vote_candidates, 1, -1 do
-                        local agent = cxt.enc.scratch.low_vote_candidates[i]
-                        if #DemocracyUtil.GetAllOppositions() >= 2 then
-                            DemocracyUtil.DropCandidate(agent)
-                        end
-                    end
-                end
-
                 cxt:TalkTo("primary_advisor")
 
                 cxt:Dialog("DIALOG_INTRO")
