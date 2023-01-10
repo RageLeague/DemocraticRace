@@ -410,8 +410,10 @@ QDEF:AddConvo("debate_people")
 
             if DemocracyUtil.PunishTargetCondition(cxt:GetAgent()) then
                 cxt:Dialog("DIALOG_CONFRONT_ENEMY")
-                cxt:Opt("OPT_PATROL")
-                    :GoTo("STATE_ARREST_TARGET")
+                if cxt:GetAgent():GetFactionID() ~= "ADMIRALTY" then
+                    cxt:Opt("OPT_PATROL")
+                        :GoTo("STATE_ARREST_TARGET")
+                end
                 for _, agent in cxt.location:Agents() do
                     if table.arrayfind(cxt.quest.param.crowd, agent) and agent ~= cxt.quest:GetCastMember("debater") then
                         cxt:Opt("OPT_DENOUNCE")
@@ -508,8 +510,10 @@ QDEF:AddConvo("debate_people")
             OPT_DENOUNCE = "Publicly denounce {debater}'s character..."
         }
         :Fn(function(cxt)
-            cxt:Opt("OPT_PATROL")
-                :GoTo("STATE_ARREST_TARGET")
+            if cxt:GetAgent():GetFactionID() ~= "ADMIRALTY" then
+                cxt:Opt("OPT_PATROL")
+                    :GoTo("STATE_ARREST_TARGET")
+            end
             for _, agent in cxt.location:Agents() do
                 if table.arrayfind(cxt.quest.param.crowd, agent) and agent ~= cxt.quest:GetCastMember("debater") then
                     cxt:Opt("OPT_DENOUNCE")
@@ -658,6 +662,7 @@ QDEF:AddConvo("debate_people")
             DIALOG_DENOUNCE = [[
                 * If you can't win a debate, there is nothing like a little ad hominem to shift the debate in your favor.
                 player:
+                    !left
                     Do you guys know what kind of person {debater} is?
                     {debater.HeShe} might seems like a reasonable person, but you don't know what is behind this facade.
                 debater:

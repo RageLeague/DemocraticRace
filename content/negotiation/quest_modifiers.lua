@@ -470,7 +470,9 @@ local MODIFIERS =
                 CalculateBonusScale(self))
         end,
         OnInit = function(self)
-            self.init_max_resolve = 5 * self.engine:GetDifficulty() + 5
+            if (self.generation or 0) == 0 and self.engine:GetDifficulty() > 1 then
+                self.init_max_resolve = self.init_max_resolve + 5 * (self.engine:GetDifficulty() - 1)
+            end
             MyriadInit(self)
         end,
         OnBounty = function(self)
@@ -499,7 +501,9 @@ local MODIFIERS =
                 CalculateBonusScale(self))
         end,
         OnInit = function(self)
-            self.init_max_resolve = 5 * self.engine:GetDifficulty() + 5
+            if (self.generation or 0) == 0 and self.engine:GetDifficulty() > 1 then
+                self.init_max_resolve = self.init_max_resolve + 5 * (self.engine:GetDifficulty() - 1)
+            end
             MyriadInit(self)
         end,
         OnBounty = function(self)
@@ -537,7 +541,9 @@ local MODIFIERS =
                 CalculateBonusScale(self))
         end,
         OnInit = function(self)
-            self.init_max_resolve = 5 * self.engine:GetDifficulty() + 5
+            if (self.generation or 0) == 0 and self.engine:GetDifficulty() > 1 then
+                self.init_max_resolve = self.init_max_resolve + 5 * (self.engine:GetDifficulty() - 1)
+            end
             MyriadInit(self)
         end,
         OnBounty = function(self)
@@ -801,6 +807,9 @@ local MODIFIERS =
                 end
             end,
             [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+                self:CheckAllowRecord(source)
+            end,
+            [ EVENT.DELTA_RESOLVE ] = function( self, modifier, resolve, max_resolve, delta, source, params )
                 self:CheckAllowRecord(source)
             end,
             [ EVENT.DELTA_COMPOSURE ] =  function( self, modifier, new_value, old_value, source, start_of_turn )
@@ -2868,7 +2877,7 @@ local MODIFIERS =
     {
         name = "Startling Distraction",
         desc = "{MYRIAD_MODIFIER {2}}.\n\nWhen destroyed, {1} gains {3} {DISTRACTED}.",
-        -- icon = "negotiation/modifiers/card_draw.tex",
+        icon = "negotiation/modifiers/dread.tex",
 
         modifier_type = MODIFIER_TYPE.BOUNTY,
         init_max_resolve = 10,
@@ -2881,7 +2890,9 @@ local MODIFIERS =
             return loc.format( fmt_str, self:GetOwnerName(), CalculateBonusScale(self), self.stacks or 1)
         end,
         OnInit = function(self)
-            self.init_max_resolve = 5 * self.engine:GetDifficulty() + 5
+            if (self.generation or 0) == 0 and self.engine:GetDifficulty() > 1 then
+                self.init_max_resolve = self.init_max_resolve + 5 * (self.engine:GetDifficulty() - 1)
+            end
             MyriadInit(self)
         end,
         OnBounty = function(self)

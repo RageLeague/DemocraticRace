@@ -68,7 +68,7 @@ local QDEF = QuestDef.Define{
                 end
             end
         else
-            DemocracyUtil.AddUnlockedLocationMarks(t)
+            DemocracyUtil.AddUnlockedLocationMarks(quest, t)
         end
     end,
 }

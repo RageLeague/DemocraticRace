@@ -49,18 +49,20 @@ local BONUSES = {
             -- :Quip( cxt:GetAgent(), "chum_bonus", "battle" )
             :Fn( function( cxt )
                 cxt:Wait()
-
+                local old_fn = GameState.ShouldDoDraftBounties
+                GameState.ShouldDoDraftBounties = function() return false end
                 for i = 1, 2 do
                     local draft_popup = Screen.DraftChoicePopup()
                     local function OnDone()
                         cxt.encounter:ResumeEncounter()
                     end
                     local cards = RewardUtil.GetBattleCards( 1, 3, cxt.player )
-                    draft_popup:DraftCards( cxt.player, Battle.Card, cards, OnDone )
+                    draft_popup:DraftCards( cxt.player, Battle.Card, cards, OnDone, nil, nil, true )
                     TheGame:FE():InsertScreen( draft_popup )
 
                     cxt.enc:YieldEncounter()
                 end
+                GameState.ShouldDoDraftBounties = old_fn
                 cxt.enc.scratch.chum_got[idx] = true
             end )
     end,

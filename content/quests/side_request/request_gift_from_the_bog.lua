@@ -454,6 +454,71 @@ QDEF:AddConvo("deliver_package")
                 }
             ]],
             OPT_AGREE = "Agree to follow {agent}",
+            DIALOG_AGREE_FIRST = [[
+                player:
+                {player_drunk?
+                    !drunk
+                }
+                    [p] Well-
+                {other_party_member?
+                    * {party} stopped you before you can say anything else.
+                    {not probed_info?
+                        party:
+                            !left
+                            !cagey
+                            Wait, hold on a sec.
+                        {admiralty?
+                            Just between you and me, I've never heard of any Admiralty orders telling us to investigate the parasites.
+                        }
+                        {not admiralty?
+                            Something is not right here.
+                            I don't think the Admiralty cares about public health at all.
+                        }
+                            They must have an ulterior motive. Best be careful about what you say here.
+                    }
+                    {probed_info?
+                        party:
+                            !left
+                            !cagey
+                            Wait, what are you doing?
+                            You know of their ulterior motive. Why are you agreeing to this?
+                            Please, think this through once more!
+                    }
+                }
+                {not other_party_member and not player_drunk?
+                    {not probed_info?
+                        * Wait, before you say anything, think this through a bit.
+                        * Does the Admiralty actually care about public health? Or do they have an ulterior motive?
+                        * You should think this through more carefully before saying anything you'll regret.
+                    }
+                    {probed_info?
+                        * Wait, what are you doing?
+                        * You know of their ulterior motive. Why are you agreeing to this?
+                        * Please, think this through once more!
+                    }
+                }
+                {not other_party_member and player_drunk?
+                    {not probed_info?
+                        * Come on! Does the Admiralty sound like the type that parties at all?
+                        * You should think this through more carefully.
+                        player:
+                            ...
+                        * Come on! I know thinking isn't your strong suit, given how drunk you are.
+                        * But please! Think this through before you say something you'll regret!
+                    }
+                    {probed_info?
+                        * Wait, what are you doing?
+                        * You know of their ulterior motive. Why are you agreeing to this?
+                        player:
+                            ...
+                        * Please, tell me you at least remember what {inspector} said!
+                    }
+                }
+                inspector:
+                    !right
+                    !dubious
+                    Is there something you'd like to say?
+            ]],
             DIALOG_AGREE = [[
                 player:
                 {not other_party_member?
@@ -637,17 +702,32 @@ QDEF:AddConvo("deliver_package")
                 cxt.enc.scratch.patrol = CreateCombatBackup(leader, "ADMIRALTY_PATROL_BACKUP", cxt.quest:GetRank() + 1)
                 table.insert(cxt.enc.scratch.patrol, 1, leader)
                 cxt:TalkTo(leader)
+                cxt:ReassignCastMember("inspector", leader)
                 cxt:Dialog("DIALOG_INTRO")
             end
-            cxt:Opt("OPT_AGREE")
-                :Dialog("DIALOG_AGREE")
-                :Fn(function(cxt)
-                    -- You "disappear"
-                    cxt:Opt("OPT_FOLLOW")
-                        :Fn(function(cxt)
-                            DemocracyUtil.DoEnding(cxt, "disappearance", {})
-                        end)
-                end)
+            if cxt.enc.scratch.tried_agree then
+                cxt:Opt("OPT_AGREE")
+                    :Dialog("DIALOG_AGREE")
+                    :Fn(function(cxt)
+                        -- You "disappear"
+                        cxt:Opt("OPT_FOLLOW")
+                            :Fn(function(cxt)
+                                DemocracyUtil.DoEnding(cxt, "disappearance", {})
+                            end)
+                    end)
+            else
+                cxt:Opt("OPT_AGREE")
+                    :Fn(function(cxt)
+                        if cxt:GetCastMember("party") then
+                            cxt:TalkTo("party")
+                        end
+                    end)
+                    :Dialog("DIALOG_AGREE_FIRST")
+                    :Fn(function(cxt)
+                        cxt.enc.scratch.tried_agree = true
+                        cxt:TalkTo("inspector")
+                    end)
+            end
             if not cxt.enc.scratch.tried_refuse then
                 cxt:Opt("OPT_REFUSE")
                     :Dialog("DIALOG_REFUSE")

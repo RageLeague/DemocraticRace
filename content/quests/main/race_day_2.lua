@@ -236,7 +236,11 @@ QDEF:AddConvo("get_job")
             cxt:Opt("OPT_GET_JOB")
                 :SetQuestMark()
                 :Fn( function(cxt)
-                    UIHelpers.DoSpecificConvo( nil, cxt.convodef.id, "STATE_GET_JOB" ,nil,nil,cxt.quest)
+                    -- Okay there's like precisely one frame where get_job is not active, but this option is
+                    -- So I have to do this
+                    if cxt.quest:IsActive("get_job") then
+                        UIHelpers.DoSpecificConvo( nil, cxt.convodef.id, "STATE_GET_JOB" ,nil,nil,cxt.quest)
+                    end
                 end )
         end
     end)

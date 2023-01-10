@@ -55,6 +55,14 @@ local QDEF = QuestDef.Define
     id = "spread_rumor",
     title = "Spread the rumor",
     desc = "Spread your rumor about {target} through different factions and locations to increase the credibility of your claim.",
+    mark = function(quest, t, in_location)
+        if in_location then
+        else
+            DemocracyUtil.AddUnlockedLocationMarks(quest, t, function(location)
+                return not (quest.param.convinced_locations and table.arraycontains(quest.param.convinced_locations, location))
+            end)
+        end
+    end,
 }
 :AddFreeTimeObjective{
     desc = "Use this time to spread your rumor.",

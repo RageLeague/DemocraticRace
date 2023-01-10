@@ -71,12 +71,12 @@ QDEF:AddConvo("start")
                     What? Who said that?
                 * Oh, I am Mr.Bonds, living rent free inside your head.
                 player:
-                    Doctor what?
+                    Mister what?
                 * I help you identify potential bonds between people.
                 * Relationships, conflicts. I know it all. I see it all.
                 * It's how you are able to survive as a grifter so far.
                 * Just look at yourself. Look at how many friends I identified for you.
-                * You can see them clearly in the <#HILITE>Relationship Screen</>.
+                * You can see them clearly in the <b>Relationship Screen</>.
                 {many_friends?
                     player:
                         !thought
@@ -236,7 +236,7 @@ QDEF:AddConvo("ask", "benni")
             player:
                 !bashful
                 Sorry, my bad.
-            * I didn't tell you to do that. Doctor People Person did.
+            * I didn't tell you to do that. Mr.Bonds did.
             * I am Logistitron-1500, responsible for keeping you on track.
             * So, you should do that. Focus on the campaign, I mean.
             *** {agent} tells you to focus on the campaign.
