@@ -278,11 +278,16 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 if #low_vote_candidates == 0 and #vote_result >= 4 then
                     table.insert(low_vote_candidates, vote_result[#vote_result][1])
                 end
+                table.stable_sort(low_vote_candidates, function(a, b)
+                    return not DemocracyUtil.GetAlliance(a) and DemocracyUtil.GetAlliance(b)
+                end)
                 -- for i, agent in ipairs(low_vote_candidates) do
                 --     DemocracyUtil.DropCandidate(agent)
                 -- end
                 if #low_vote_candidates > 0 then
-                    cxt.quest.param.has_potential_ally = true
+                    if #DemocracyUtil.GetAllOppositions() >= 2 then
+                        cxt.quest.param.has_potential_ally = true
+                    end
                     cxt.enc.scratch.low_vote_candidates = low_vote_candidates
                     -- cxt.enc.scratch.potential_ally = low_vote_candidates[#low_vote_candidates]
                 end
@@ -317,14 +322,13 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             if cxt.enc.scratch.conflicting_allies then
                 cxt:GoTo("STATE_CONFLICTING_ALLIES")
             else
-                for i, agent in ipairs(cxt.enc.scratch.low_vote_candidates) do
-                    if DemocracyUtil.GetAlliance(agent) then
-                        cxt.enc.scratch.dropped_ally = agent
-                        cxt:GoTo("STATE_ALLIED_DROP")
-                        return
-                    end
-                end
                 cxt.enc.scratch.potential_ally = cxt.enc.scratch.low_vote_candidates[#cxt.enc.scratch.low_vote_candidates]
+
+                if DemocracyUtil.GetAlliance(cxt.enc.scratch.potential_ally) then
+                    cxt:GoTo("STATE_ALLIED_DROP")
+                    return
+                end
+
                 local potential = DemocracyUtil.GetAlliancePotential(DemocracyUtil.GetOppositionID(cxt.enc.scratch.potential_ally))
                 if DemocracyUtil.GetEndorsement(potential) >= RELATIONSHIP.LIKED then
                     cxt:GoTo("STATE_ALLIANCE")
@@ -645,7 +649,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             ]],
         }
         :Fn(function(cxt)
-            cxt:ReassignCastMember("opponent", cxt.enc.scratch.dropped_ally)
+            cxt:ReassignCastMember("opponent", cxt.enc.scratch.potential_ally)
             cxt:GetCastMember("opponent"):MoveToLocation(cxt:GetCastMember("home"))
             cxt:Dialog("DIALOG_INTRO")
 
