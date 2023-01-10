@@ -1,6 +1,11 @@
 local QDEF = QuestDef.Define
 {
     qtype = QTYPE.STORY,
+    events = {
+        base_difficulty_change = function(quest, new_diff, old_diff)
+            quest:SetRank(new_diff)
+        end,
+    },
 }
 :AddObjective{
     id = "start",

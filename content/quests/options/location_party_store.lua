@@ -13,6 +13,9 @@ local QDEF = QuestDef.Define
                 end
             end
         end,
+        base_difficulty_change = function(quest, new_diff, old_diff)
+            quest:SetRank(new_diff)
+        end,
     },
 }
 :AddObjective{
