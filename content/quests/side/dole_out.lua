@@ -573,9 +573,6 @@ local CONVO = QDEF:AddConvo("dole_out_three")
             end)
     :State("STATE_GRATEFUL")
         :Loc{
-            DIALOG_GRATE = [[
-                %gift_bread
-            ]],
         }
         :Quips{
             {
@@ -648,7 +645,7 @@ local CONVO = QDEF:AddConvo("dole_out_three")
             },
         }
         :Fn(function(cxt)
-            cxt:Dialog("DIALOG_GRATE")
+            cxt:Quip( cxt:GetAgent(), "gift_bread", cxt.enc.scratch.improved_bread and "improved_bread" or nil)
             table.insert(cxt.quest.param.gifted_people, cxt:GetAgent())
             StateGraphUtil.AddEndOption(cxt)
         end)
