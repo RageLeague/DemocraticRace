@@ -802,7 +802,9 @@ local MODIFIERS =
                 if self.resolve_card == card then
                     self.resolve_card = nil
                     if self.is_allowed then
-                        table.insert(self.cards_played, card.id)
+                        local card_data = shallowcopy(card.userdata) or {}
+                        card_data.xp = nil
+                        table.insert(self.cards_played, {card.id, card_data})
                     end
                 end
             end,

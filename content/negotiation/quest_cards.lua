@@ -228,7 +228,8 @@ local CARDS = {
                 if self.userdata.imprints then
                     local res = ""
                     for i, card in ipairs(self.userdata.imprints) do
-                        res = res .. loc.format("{1#card}\n", card)
+                        local card_id = type(card) == "string" and card or card[1]
+                        res = res .. loc.format("{1#card}\n", card_id)
                     end
                     return loc.format(fmt_str, res)
                 end

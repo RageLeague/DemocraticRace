@@ -797,7 +797,7 @@ QDEF:AddConvo("commission")
                 else
                     cxt:Dialog("DIALOG_FINISH_TOO_FEW_CARDS")
                     while #recorded_cards < 3 do
-                        table.insert(recorded_cards, "fast_talk")
+                        table.insert(recorded_cards, {"fast_talk", {}})
                     end
                 end
                 local cards = cxt:GainCards({"propaganda_poster"})
