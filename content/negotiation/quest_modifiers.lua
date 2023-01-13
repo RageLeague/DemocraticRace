@@ -329,14 +329,10 @@ local MODIFIERS =
         end,
 
         OnUnapply = function(self)
-            local count = self.negotiator:GetModifierStacks("CONNECTED_LINE")
-            local help_count = self.negotiator:GetModifierStacks("HELP_UNDERWAY")
-            if count and count == self.stacks and help_count and help_count == 0 then
-                TheGame:GetMusic():SetParameter("radio_layer", 0)
-            end
-
             local phase_3 = self.negotiator:GetModifierStacks("HELP_UNDERWAY") > 0
             if not phase_3 then
+                TheGame:GetMusic():SetParameter("radio_layer", 0)
+
                 local card = Negotiation.Card( "assassin_fight_call_for_help", self.engine:GetPlayer() )
                 if self.stacks > 1 then
                     card.init_help_count = self.stacks
@@ -759,7 +755,7 @@ local MODIFIERS =
             if self.cards_played and #self.cards_played > 0 then
                 local txt = {}
                 for i, card in ipairs(self.cards_played) do
-                    table.insert(txt, loc.format("{1#card}", card))
+                    table.insert(txt, loc.format("{1#card}", type(card) == "string" and card or card[1]))
                 end
                 return fmt_str .. "\n\n" .. loc.format((self.def or self):GetLocalizedString("ALT_DESC"), txt)
             end
@@ -781,6 +777,7 @@ local MODIFIERS =
                 not CheckBits( card.flags, CARD_FLAGS.UNPLAYABLE ) and
                 not CheckAnyBits( card.flags, CARD_FLAGS.BYSTANDER ) and card.played_from_hand
                 and not CheckAnyBits( card.flags, CARD_FLAGS.FLOURISH )
+                and card.id ~= "propaganda_poster"
         end,
 
         CheckAllowRecord = function(self, source)
