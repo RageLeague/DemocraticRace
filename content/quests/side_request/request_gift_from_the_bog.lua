@@ -114,7 +114,11 @@ local QDEF = QuestDef.Define
     id = "deliver_package",
     title = "Deliver the package to {giver}.",
     desc = "You got the package. Deliver it to {giver}.",
-    mark = {"giver"},
+    mark = function(quest, t, in_location)
+        if DemocracyUtil.IsFreeTimeActive() then
+            table.insert(t, quest:GetCastMember("giver"))
+        end
+    end,
 }
 
 QDEF:AddIntro(
@@ -464,7 +468,7 @@ QDEF:AddConvo("deliver_package")
                     * {party} stopped you before you can say anything else.
                     {not probed_info?
                         party:
-                            !left
+                            !right
                             !cagey
                             Wait, hold on a sec.
                         {admiralty?
@@ -478,7 +482,7 @@ QDEF:AddConvo("deliver_package")
                     }
                     {probed_info?
                         party:
-                            !left
+                            !right
                             !cagey
                             Wait, what are you doing?
                             You know of their ulterior motive. Why are you agreeing to this?

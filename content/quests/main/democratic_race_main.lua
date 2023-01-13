@@ -1168,7 +1168,7 @@ QDEF:AddConvo()
     :ConfrontState("STATE_HURT", function(cxt)
         local health = TheGame:GetGameState():GetPlayerAgent().health:GetPercent()
         local has_graft = TheGame:GetGameState():GetPlayerAgent().graft_owner:HasGraft("democracy_resolve_limiter")
-        return health < 1 and not has_graft
+        return health < 1 and not has_graft and not cxt.location:HasTag("in_transit")
     end)
         :Loc{
             DIALOG_INTRO = [[
