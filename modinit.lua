@@ -371,7 +371,7 @@ local MOD_OPTIONS =
 }
 -- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {
-    version = "0.8.1",
+    version = "0.9.0",
     alias = "DEMOCRATICRACE",
 
     OnLoad = OnLoad,
