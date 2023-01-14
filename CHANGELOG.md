@@ -1,5 +1,51 @@
 # Full Changelog
 
+### 0.9.0
+
+* Added new request quest: "Gift From the Bog", and accompanying quests, "Parasite Killer" and "Rampaging Bog Monster".
+* Reworked Day 3 debate negotiation music.
+* Hid "Question Answer" card from the compendium.
+* Bonus scaling for boss arguments now uses level 2 for non-boss negotiation instead of level 1.
+* Added cooldowns to request quest spawns, so hopefully a particular request quest only shows up once in a run.
+* The hunter cast of "Unlawful Attack" no longer requires validation.
+* The benefactor in "Tea With a Benefactor" requires relationship to be neutral or above.
+* Added a couple of smalltalks.
+* Cleaned up "Dole Out" quest dialogs.
+* Capitalize some quest names properly.
+* Added an upgraded version of Dole Loaves, and added negotiation versions for both of them. Upgraded Dole Loaves gives a resolve bonus when used, and gifting them to people will cause them more likely to be satisfied.
+* Dole Loaves no longer replenishes.
+* Added four new advisor signature cards. Removed "Gaslighting" and its upgrades.
+* Changed xp requirement for signature cards.
+* You can draft a signature card from your advisor whenever you accept an advisor.
+* Fixed crash in the event where an Admiralty is defeated by another person and you intimidate the other person into being arrested.
+* Removed xp upgrades to dole loaves.
+* Fixed incorrect targeting for False Dichotomy.
+* Changed Sequencer to match the battle version.
+* Changed Limited Time and Long Lecture arguments so they are countdowns, similar to Help Underway!
+* Renamed "Faith in Hesh" argument trait to "Devotion".
+* Fixed bug of advisor dialog not playing during Public Debate side quest.
+* Changes to Ctenophorian Mystery quest (spoilers): fanatics now have a special negotiation behavior, quest progress now shows what Hesh could be, and there are changes to the Hesh dialogs.
+* Added cases for Gift From the Bog dialog where the delivery person is dead when you hand in the package.
+* Killing a person does not remove their room if that room is casted as a member of a quest.
+* Replaced temporary art.
+* Added negotiation version of Injury.
+* You can no longer visit the Grand Theater during your free time if something is going on at the theater.
+* Changed the structure of the start of day 4 a bit.
+* Day 3's end summary is immediately activated after the debate.
+* Battle card boons at the start of campaign can no longer be skipped, and no longer offer draft bounties.
+* An Admiralty can no longer be arrested by the Admiralty during Change My Mind.
+* You can no longer travel to locations you've already spread rumors at during Never Meet Your Heroes.
+* Winning a negotiation against Hesh during a quest now counts for boss defeated.
+* Couple of minor balance/dialog changes.
+* Propaganda posters now also record the custom data on the cards.
+* Fixed the source of propaganda poster creation.
+* Cleaned up code for Connected Line.
+* The convo about health loss and its consequences will no longer pop up while traveling.
+* Slightly tweaked how the start of day 4 works.
+* Some campaign options now correctly scale with the current difficulty.
+* Improved dole loaves convo now plays correctly if the target is grateful.
+* You can only deliver the package during free time in Gift From the Bog.
+
 ### 0.8.0
 
 * Day 4 of the campaign is added. It's a rough skeleton. It is subject to heavy changes.
