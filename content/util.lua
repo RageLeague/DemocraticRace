@@ -365,9 +365,8 @@ end
 function DemocracyUtil.AddAutofail(cxt, param)
     cxt:Opt("OPT_ACCEPT_FAILURE")
         :Fn(function(cxt)
-            cxt:Wait()
-            -- cxt.enc:YieldEncounter()
             TheGame:Lose()
+            cxt.enc:YieldEncounter()
         end)
     return DemocracyUtil.AddDebugBypass(cxt, (TheGame:GetLocalSettings().DEBUG or false) and param)
 end
@@ -600,13 +599,16 @@ function DemocracyUtil.DoSentientPromotion(agent, promotion_def)
     TheGame:GetGameState():GetPlayerAgent().graft_owner:AddSocialGraft(agent, agent:GetRelationship())
 end
 
-function DemocracyUtil.AddUnlockedLocationMarks(t, condition)
+function DemocracyUtil.AddUnlockedLocationMarks(quest, t, condition)
+    local add_locations = {}
     for i, id in ipairs(TheGame:GetGameState():GetMainQuest().param.unlocked_locations) do
         local location = TheGame:GetGameState():GetLocation(id)
         if not condition or condition(location) then
-            table.insert(t, location)
+            table.insert(add_locations, location)
         end
     end
+    TheGame:BroadcastEvent( "get_free_location_marks", quest, add_locations)
+    table.arrayadd(t, add_locations)
 end
 function DemocracyUtil.DoAlphaMessage()
     if TheGame:GetLocalSettings().ROBOTICS then
@@ -1092,6 +1094,7 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, post_fn, potential_offset)
     cxt:Dialog("DIALOG_ALLIANCE_TALK_INTRO")
     if not candidate_data then
         cxt:Dialog("DIALOG_ALLIANCE_TALK_INVALID")
+        post_fn(cxt, false)
     else
         local potential, problem_agent = DemocracyUtil.GetAlliancePotential(candidate_data.cast_id)
         local platform = candidate_data.platform
@@ -1398,6 +1401,23 @@ function DemocracyUtil.IsFirstAid(card)
     return table.arraycontains(DemocracyUtil.FIRST_AID_CARDS, card.id)
 end
 
+function DemocracyUtil.GetSignatureCardsDraft(signature_id, num_cards, player)
+    local negotiation_defs = require "negotiation/negotiation_defs"
+    local CARD_FLAGS = negotiation_defs.CARD_FLAGS
+    local rng = TheGame:GetGameState():GetRNG( "CARDS" )
+
+    local choices = NegotiationCardCollection(
+        function(cd)
+            return cd.advisor == signature_id and not CheckBits(cd.flags, CARD_FLAGS.UPGRADED)
+        end
+    ):SeededPick(num_cards, rng)
+    local cards = {}
+    for i, carddef in ipairs(choices) do
+        table.insert(cards, Negotiation.Card(carddef.id, player))
+    end
+    return cards
+end
+
 local main_branch_id = 2291214111
 local test_branch_id = 2503106782
 
@@ -1603,9 +1623,9 @@ function QuestDef:AddFreeTimeObjective( child )
             return loc.format(str, quest.param.free_time_actions or 0)
         end,
         desc = "You can choose to visit a location during your free time.",
-        mark = function(quest, t, in_location)
-            DemocracyUtil.AddUnlockedLocationMarks(t)
-        end,
+        -- mark = function(quest, t, in_location)
+        --     DemocracyUtil.AddUnlockedLocationMarks(quest, t)
+        -- end,
         on_activate = function(quest)
             local questdef = quest:GetQuestDef()
             local multiplier = questdef:GetObjective(questdef.free_time_objective_id).action_multiplier or 1

@@ -6,8 +6,19 @@ local QDEF = QuestDef.Define
     spawn_event_mask = QEVENT_TRIGGER.TRAVEL,
     on_init = function(quest)
         quest.param.wants_job = math.random() > .5
-        quest.param.request_quest, quest.param.traced_q = QuestUtil.SpawnInactiveQuest("DEMSIDE_REVENGE_STARVING_WORKER",
-            {cast = {worker = quest:GetCastMember("worker"), foreman = quest:GetCastMember("foreman")}})
+        -- Manually spawn because QuestUtil.SpawnInactiveQuest doesn't force spawn quests
+        local ok, result, quest_state = QuestUtil.TrySpawnQuest("DEMSIDE_REVENGE_STARVING_WORKER",
+            {
+                cast = {
+                    worker = quest:GetCastMember("worker"),
+                    foreman = quest:GetCastMember("foreman")
+                }
+            }, true)
+        if ok and result then
+            quest.param.request_quest = quest_state
+        else
+            quest.param.traced_q = quest_state
+        end
         quest:GetCastMember("worker"):OpinionEvent(OPINION.GOT_FIRED, nil, quest:GetCastMember("foreman"))
     end,
 }

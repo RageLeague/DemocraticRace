@@ -4,7 +4,7 @@ A pioneer campaign mod for Griftlands, the Democratic Race is a mod for Griftlan
 
 This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
-Version: 0.8.1(Alpha)
+Version: 0.9.0 (Alpha)
 
 Author: RageLeague
 
@@ -35,7 +35,7 @@ Discuss the mod at the discord server: https://discord.gg/g2gU3G8Qwv
 
 [h2]Alpha Notice[/h2]
 
-At the current stage, the mod is far from finished. You can play [b]3[/b] days out of 5 right now, and many mechanics are planned to be added. Some of these mechanics are:
+At the current stage, the mod is far from finished. You can play [b]4[/b] days out of 5 right now, and many mechanics are planned to be added. Some of these mechanics are:
 
 * More side quests and events.
 * More things to do at each locations, and more ways to "deal" with your enemies.
@@ -104,6 +104,28 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Flange Finnegan
 
 [h2]Changelog[/h2]
+
+[h3]0.9.0 (The Bog Update)[/h3]
+
+This is a major update that adds a brand new request quest, and a lot of small, but crucial polishing changes.
+
+Major Changes:
+
+* Added new request quest: "Gift From the Bog", and accompanying quests, "Parasite Killer" and "Rampaging Bog Monster".
+* Added 4 new advisor signature cards. Removed "Gaslighting". Additionally, signature cards can be drafted when you accept a primary advisor.
+* Garlic bread now exist in Havaria. It's an improved version of Dole Loaves, and people like them more compared to regular Dole Loaves. You can acquire it when you take the "Dole Out" quest with Benni as your primary advisor (Hmm... I wonder why).
+
+Minor Changes:
+
+* Reworked Day 3 debate negotiation music.
+* Renamed "Faith in Hesh" argument trait to "Devotion".
+* Changes to Ctenophorian Mystery quest (spoilers): fanatics now have a special negotiation behavior, quest progress now shows what Hesh could be, and there are changes to the Hesh dialogs.
+* Changed the structure of the start of day 4 a bit.
+* Propaganda posters now also record the custom data on the cards.
+* The convo about health loss and its consequences will no longer pop up while traveling.
+* Many bug fixes and balance changes.
+* Many dialog/text changes and additions.
+* Replaced temporary art.
 
 [h3]0.8.1[/h3]
 

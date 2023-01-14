@@ -142,6 +142,7 @@ local QDEF = QuestDef.Define
         txt = "Was impressed by your debate",
     },
 }
+DemocracyUtil.AddPrimaryAdvisor(QDEF)
 
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :Loc{

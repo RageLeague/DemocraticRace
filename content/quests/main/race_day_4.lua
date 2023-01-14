@@ -216,6 +216,11 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 end
             end
         end
+
+        cxt:Dialog("DIALOG_INTRO")
+        DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 3)
+        cxt:Dialog("DIALOG_INTRO_PST")
+
         -- Generate opposition alliance
         do
             local result = DemocracyUtil.SummarizeVotes(DemocracyUtil.SimulateVoting({
@@ -259,7 +264,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                             cxt.quest.param.low_player_votes = true
                         end
                     else
-                        if i >= 4 and vote_result[i][2] < 0.6 * best_votes then
+                        if i >= 4 and vote_result[i][2] < 0.5 * best_votes then
                             table.insert(low_vote_candidates, vote_result[i][1])
                         elseif DemocracyUtil.GetAlliance(vote_result[i][1]) then
                             if not seen_player or i <= 2 then
@@ -273,11 +278,16 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 if #low_vote_candidates == 0 and #vote_result >= 4 then
                     table.insert(low_vote_candidates, vote_result[#vote_result][1])
                 end
-                for i, agent in ipairs(low_vote_candidates) do
-                    DemocracyUtil.DropCandidate(agent)
-                end
+                table.stable_sort(low_vote_candidates, function(a, b)
+                    return not DemocracyUtil.GetAlliance(a) and DemocracyUtil.GetAlliance(b)
+                end)
+                -- for i, agent in ipairs(low_vote_candidates) do
+                --     DemocracyUtil.DropCandidate(agent)
+                -- end
                 if #low_vote_candidates > 0 then
-                    cxt.quest.param.has_potential_ally = true
+                    if #DemocracyUtil.GetAllOppositions() >= 2 then
+                        cxt.quest.param.has_potential_ally = true
+                    end
                     cxt.enc.scratch.low_vote_candidates = low_vote_candidates
                     -- cxt.enc.scratch.potential_ally = low_vote_candidates[#low_vote_candidates]
                 end
@@ -287,9 +297,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 end
             end
         end
-        cxt:Dialog("DIALOG_INTRO")
-        DemocracyUtil.TryMainQuestFn("DoRandomOpposition", 3)
-        cxt:Dialog("DIALOG_INTRO_PST")
+
         if cxt.enc.scratch.abstained_votes then
             cxt:Dialog("DIALOG_TOTAL", cxt.enc.scratch.total_votes, cxt.enc.scratch.total_votes - cxt.enc.scratch.abstained_votes)
         else
@@ -314,14 +322,13 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             if cxt.enc.scratch.conflicting_allies then
                 cxt:GoTo("STATE_CONFLICTING_ALLIES")
             else
-                for i, agent in ipairs(cxt.enc.scratch.low_vote_candidates) do
-                    if DemocracyUtil.GetAlliance(agent) then
-                        cxt.enc.scratch.dropped_ally = agent
-                        cxt:GoTo("STATE_ALLIED_DROP")
-                        return
-                    end
-                end
                 cxt.enc.scratch.potential_ally = cxt.enc.scratch.low_vote_candidates[#cxt.enc.scratch.low_vote_candidates]
+
+                if DemocracyUtil.GetAlliance(cxt.enc.scratch.potential_ally) then
+                    cxt:GoTo("STATE_ALLIED_DROP")
+                    return
+                end
+
                 local potential = DemocracyUtil.GetAlliancePotential(DemocracyUtil.GetOppositionID(cxt.enc.scratch.potential_ally))
                 if DemocracyUtil.GetEndorsement(potential) >= RELATIONSHIP.LIKED then
                     cxt:GoTo("STATE_ALLIANCE")
@@ -368,12 +375,35 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     !permit
                     But you drop out. We combine our supporters, and suddenly we'll both have a chance at this.
                     I promise you'll be treated right once I win, you just have to trust me.
+                {multiple_conflicts?
+                    * It seems like it's not just {opponent} who wants you to drop out.
+                    * {1#agent_list} {2*seems|seem} to be asking for the same thing.
+                    * Of course you don't want to drop out! You are here to win.
+                    * But if you don't want your alliances to fracture, you will need to convince each one of them to drop out of the race.
+                }
+                {not multiple_conflicts?
+                    * Of course you don't want to drop out! You are here to win.
+                    * But if you don't want your alliance to fracture, you will need to convince {opponent} to drop out of the race instead.
+                }
             ]],
             OPT_AGREE = "Agree to drop out of the race",
             DIALOG_AGREE = [[
-                player:
-                    !sigh
-                    You're not wrong. Our chances combined would be much better to get us in office.
+                opponent:
+                    !right
+                {not tried_convince_drop and not ally_dropped?
+                    player:
+                        !sigh
+                        You're not wrong. Our chances combined would be much better to get us in office.
+                }
+                {tried_convince_drop or ally_dropped?
+                    player:
+                        [p] I'm assuming that you aren't dropping out of the race then.
+                    opponent:
+                        No.
+                    player:
+                        !sigh
+                        ...I guess I don't have any other choice, do I?
+                }
                 opponent:
                     !intrigue
                     So that's a yes? You'll drop out of the race for me?
@@ -389,10 +419,27 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             ]],
             OPT_REFUSE = "Refuse to drop out",
             DIALOG_REFUSE = [[
-                player:
-                    !chuckle
-                    You seriously, <i>seriously</> doubt the power of political engineering.
-                    My chances are fine, thank you very much.
+                opponent:
+                    !right
+                {not tried_convince_drop and not ally_dropped?
+                    player:
+                        !chuckle
+                        You seriously, <i>seriously</> doubt the power of political engineering.
+                        My chances are fine, thank you very much.
+                }
+                {not tried_convince_drop and ally_dropped?
+                    player:
+                        [p] I'm assuming that you aren't dropping out of the race then.
+                    opponent:
+                        No.
+                    player:
+                        I'm not dropping either. I like my chances at this election.
+                }
+                {tried_convince_drop?
+                    player:
+                        [p] Well, it seems like we can't reach a compromise.
+                        I'm not dropping out of the race. I would like to see the whole thing through.
+                }
                 opponent:
                     !disappoint
                     Well, that's a shame. Truly it is.
@@ -410,10 +457,17 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     May the best candidate win.
                     !exit
             ]],
-            OPT_CONVINCE = "Convince {opponent} to drop out instead",
+            OPT_CONVINCE = "Convince {1#agent} to drop out instead",
             DIALOG_CONVINCE = [[
+                opponent:
+                    !right
                 player:
+                {ally_dropped?
+                    [p] I think you should drop out of the race as well.
+                }
+                {not ally_dropped?
                     [p] I think you should drop out of the race instead.
+                }
                 opponent:
                     Really now?
                 {higher_ranking?
@@ -432,6 +486,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     We will have a better chance of winning if you drop out of the race.
                 opponent:
                     Okay fine. I'll drop out instead.
+                    !exit
             ]],
             DIALOG_CONVINCE_FAILURE = [[
                 player:
@@ -441,25 +496,65 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     But we must all make sacrifice if we want to still win the election.
                     So, please, {player}. Consider dropping out of the race.
             ]],
+            DIALOG_CONVINCED_SOME_LEFT = [[
+                * [p] You've convinced {opponent} to drop out of the race.
+                * Now you just need to convince {1#agent_list} as well.
+            ]],
+            DIALOG_CONVINCED_ALL = [[
+                * [p] Well, it seems like you convinced all of your allies to drop out of the race.
+                * Now, there is no need to worry about infighting anymore.
+            ]],
             SIT_MOD = "Doesn't want to drop out of the race",
             SIT_MOD_RANKING = "Is more popular than you",
         }
+        :SetLooping()
         :Fn(function(cxt)
-            cxt:ReassignCastMember("opponent", cxt.enc.scratch.conflicting_allies[1])
-            cxt:GetCastMember("opponent"):MoveToLocation(cxt:GetCastMember("home"))
-
-            local player_votes, opponent_votes
-            for i, data in ipairs(cxt.quest.param.vote_result) do
-                if data[1] == cxt.player then
-                    player_votes = data[2]
-                elseif data[1] == cxt:GetCastMember("opponent") then
-                    opponent_votes = data[2]
+            cxt.enc.scratch.multiple_conflicts = #cxt.enc.scratch.conflicting_allies > 1
+            if cxt:FirstLoop() then
+                cxt:ReassignCastMember("opponent", cxt.enc.scratch.conflicting_allies[1])
+                for i, agent in ipairs(cxt.enc.scratch.conflicting_allies) do
+                    agent:MoveToLocation(cxt:GetCastMember("home"))
                 end
+
+                cxt.enc.scratch.player_votes = 0
+                cxt.enc.scratch.opponent_votes = {}
+                local opponent_votes = 0
+
+                for i, data in ipairs(cxt.quest.param.vote_result) do
+                    if data[1] == cxt.player then
+                        cxt.enc.scratch.player_votes = data[2]
+                    elseif table.arraycontains(cxt.enc.scratch.conflicting_allies, data[1]) then
+                        cxt.enc.scratch.opponent_votes[data[1]] = data[2]
+                    end
+                end
+                opponent_votes = cxt.enc.scratch.opponent_votes[cxt.enc.scratch.conflicting_allies[1]] or 0
+                local player_votes = cxt.enc.scratch.player_votes
+                if player_votes < opponent_votes then
+                    cxt.enc.scratch.higher_ranking = true
+                end
+                local other_candidates = shallowcopy(cxt.enc.scratch.conflicting_allies)
+                table.remove(other_candidates, 1)
+
+                cxt:TalkTo("opponent")
+                cxt:Dialog("DIALOG_INTRO", other_candidates, #other_candidates)
             end
-            if player_votes < opponent_votes then
-                cxt.enc.scratch.higher_ranking = true
+            if #cxt.enc.scratch.conflicting_allies == 0 then
+                cxt:Dialog("DIALOG_CONVINCED_ALL")
+                if cxt.enc.scratch.low_vote_candidates and #cxt.enc.scratch.low_vote_candidates > 0 then
+                    for i = #cxt.enc.scratch.low_vote_candidates, 1, -1 do
+                        local agent = cxt.enc.scratch.low_vote_candidates[i]
+                        if #DemocracyUtil.GetAllOppositions() >= 2 then
+                            DemocracyUtil.DropCandidate(agent)
+                        end
+                    end
+                end
+                cxt.quest:Complete("starting_out")
+                StateGraphUtil.AddLeaveLocation(cxt)
+                return
             end
-            cxt:Dialog("DIALOG_INTRO")
+
+            cxt:ReassignCastMember("opponent", cxt.enc.scratch.conflicting_allies[1])
+            cxt:TalkTo("opponent")
 
             cxt:Opt("OPT_AGREE")
                 :Dialog("DIALOG_AGREE")
@@ -467,28 +562,63 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     DemocracyUtil.AddAutofail(cxt, false)
                 end)
 
-            cxt:BasicNegotiation("CONVINCE", {
-                target_agent = cxt:GetCastMember("opponent"),
-                flags = NEGOTIATION_FLAGS.WORDSMITH,
-                situation_modifiers = {
-                    { value = 20, text = cxt:GetLocString("SIT_MOD") },
-                    cxt.enc.scratch.higher_ranking and { value = math.min(math.ceil((opponent_votes - player_votes) / (player_votes + 1) * 6) * 5, 30), text = cxt:GetLocString("SIT_MOD_RANKING") }
-                },
-            }):OnSuccess()
-                :Fn(function(cxt)
-                    DemocracyUtil.DropCandidate(cxt:GetCastMember("opponent"))
-                    cxt.quest:Complete("starting_out")
-                    cxt:GetCastMember("opponent"):MoveToLimbo()
-                    StateGraphUtil.AddLeaveLocation(cxt)
-                end)
+            if not cxt.enc.scratch.tried_convince_drop then
+                for i, agent in ipairs(cxt.enc.scratch.conflicting_allies) do
+                    local player_votes = cxt.enc.scratch.player_votes
+                    local opponent_votes = cxt.enc.scratch.opponent_votes[agent]
+                    cxt:Opt("OPT_CONVINCE", agent)
+                        :Fn(function(cxt)
+                            cxt:ReassignCastMember("opponent", agent)
+                            cxt:TalkTo("opponent")
+                            cxt.enc.scratch.higher_ranking = player_votes < opponent_votes
+                        end)
+                        :Dialog("DIALOG_CONVINCE")
+                        :Negotiation{
+                            target_agent = agent,
+                            flags = NEGOTIATION_FLAGS.WORDSMITH,
+                            situation_modifiers = {
+                                { value = 20, text = cxt:GetLocString("SIT_MOD") },
+                                cxt.enc.scratch.higher_ranking and { value = math.min(math.ceil((opponent_votes - player_votes) / (player_votes + 1) * 6) * 5, 30), text = cxt:GetLocString("SIT_MOD_RANKING") }
+                            },
+                        }:OnSuccess()
+                            :Dialog("DIALOG_CONVINCE_SUCCESS")
+                            :Fn(function(cxt)
+                                DemocracyUtil.DropCandidate(agent)
+                                -- cxt.quest:Complete("starting_out")
+                                table.arrayremove(cxt.enc.scratch.conflicting_allies, agent)
+                                agent:MoveToLimbo()
+                                if #cxt.enc.scratch.conflicting_allies > 0 then
+                                    cxt:Dialog("DIALOG_CONVINCED_SOME_LEFT", cxt.enc.scratch.conflicting_allies, #cxt.enc.scratch.conflicting_allies)
+                                end
+                                cxt.enc.scratch.ally_dropped = true
+                            end)
+                        :OnFailure()
+                            :Dialog("DIALOG_CONVINCE_FAILURE")
+                            :Fn(function(cxt)
+                                cxt.enc.scratch.tried_convince_drop = true
+                            end)
+                end
+            end
 
             cxt:Opt("OPT_REFUSE")
                 :Dialog("DIALOG_REFUSE")
                 :Fn(function(cxt)
-                    DemocracyUtil.SetAlliance(cxt:GetCastMember("opponent"), false)
-                    cxt:GetCastMember("opponent"):OpinionEvent(OPINIONS.REFUSED_TO_DROP_OUT)
+                    for i, agent in ipairs(cxt.enc.scratch.conflicting_allies) do
+                        DemocracyUtil.SetAlliance(agent, false)
+                        agent:OpinionEvent(OPINION.REFUSED_TO_DROP_OUT)
+                        agent:MoveToLimbo()
+                    end
                     cxt.quest:Complete("starting_out")
-                    cxt:GetCastMember("opponent"):MoveToLimbo()
+
+                    if cxt.enc.scratch.low_vote_candidates and #cxt.enc.scratch.low_vote_candidates > 0 then
+                        for i = #cxt.enc.scratch.low_vote_candidates, 1, -1 do
+                            local agent = cxt.enc.scratch.low_vote_candidates[i]
+                            if #DemocracyUtil.GetAllOppositions() >= 2 then
+                                DemocracyUtil.DropCandidate(agent)
+                            end
+                        end
+                    end
+
                     StateGraphUtil.AddLeaveLocation(cxt)
                 end)
         end)
@@ -496,6 +626,7 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         :Loc{
             DIALOG_INTRO = [[
                 opponent:
+                    !right
                     !crossed
                     {player}, I came to tell you some news.
                 player:
@@ -518,13 +649,27 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             ]],
         }
         :Fn(function(cxt)
-            cxt:ReassignCastMember("opponent", cxt.enc.scratch.dropped_ally)
+            cxt:ReassignCastMember("opponent", cxt.enc.scratch.potential_ally)
             cxt:GetCastMember("opponent"):MoveToLocation(cxt:GetCastMember("home"))
             cxt:Dialog("DIALOG_INTRO")
 
+            if cxt.enc.scratch.low_vote_candidates and #cxt.enc.scratch.low_vote_candidates > 0 then
+                for i = #cxt.enc.scratch.low_vote_candidates, 1, -1 do
+                    local agent = cxt.enc.scratch.low_vote_candidates[i]
+                    if #DemocracyUtil.GetAllOppositions() >= 2 then
+                        DemocracyUtil.DropCandidate(agent)
+                    end
+                end
+            end
+
             cxt.quest:Complete("starting_out")
             cxt:GetCastMember("opponent"):MoveToLimbo()
-            StateGraphUtil.AddLeaveLocation(cxt)
+
+            if not cxt.enc.scratch.advisor_favor then
+                StateGraphUtil.AddLeaveLocation(cxt)
+            else
+                cxt:GoTo("STATE_FAVOR")
+            end
         end)
     :State("STATE_INFORM")
         :Loc{
@@ -546,11 +691,26 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         :Fn(function(cxt)
             cxt:ReassignCastMember("opponent", cxt.enc.scratch.potential_ally)
             cxt:GetCastMember("opponent"):MoveToLocation(cxt:GetCastMember("home"))
+            cxt:TalkTo("opponent")
             cxt:Dialog("DIALOG_INTRO")
+
+            if cxt.enc.scratch.low_vote_candidates and #cxt.enc.scratch.low_vote_candidates > 0 then
+                for i = #cxt.enc.scratch.low_vote_candidates, 1, -1 do
+                    local agent = cxt.enc.scratch.low_vote_candidates[i]
+                    if #DemocracyUtil.GetAllOppositions() >= 2 then
+                        DemocracyUtil.DropCandidate(agent)
+                    end
+                end
+            end
 
             cxt.quest:Complete("starting_out")
             cxt:GetCastMember("opponent"):MoveToLimbo()
-            StateGraphUtil.AddLeaveLocation(cxt)
+
+            if not cxt.enc.scratch.advisor_favor then
+                StateGraphUtil.AddLeaveLocation(cxt)
+            else
+                cxt:GoTo("STATE_FAVOR")
+            end
         end)
     :State("STATE_ALLIANCE")
         :Loc{
@@ -582,6 +742,15 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             cxt:TalkTo(cxt.enc.scratch.potential_ally)
             cxt:Dialog("DIALOG_INTRO")
 
+            if cxt.enc.scratch.low_vote_candidates and #cxt.enc.scratch.low_vote_candidates > 0 then
+                for i = #cxt.enc.scratch.low_vote_candidates, 1, -1 do
+                    local agent = cxt.enc.scratch.low_vote_candidates[i]
+                    if #DemocracyUtil.GetAllOppositions() >= 2 then
+                        DemocracyUtil.DropCandidate(agent)
+                    end
+                end
+            end
+
             DemocracyUtil.DoAllianceConvo(cxt, cxt.enc.scratch.potential_ally, function(cxt, allied)
                 cxt.enc.scratch.allied = allied
                 cxt:Dialog("DIALOG_CHOOSE_PST")
@@ -594,6 +763,13 @@ QDEF:AddConvo("starting_out", "primary_advisor")
     :State("STATE_FAVOR")
         :Loc{
             DIALOG_INTRO = [[
+                agent:
+                    !right
+                {has_potential_ally?
+                    * As your visitor leaves, you are left alone with {agent} again.
+                    agent:
+                        Before I was interrupted, there was something I want to ask of you.
+                }
                 agent:
                     I know you're working hard to campaign, but I want you to do something for me.
                     Of course, you don't have to accept it.
@@ -629,6 +805,8 @@ QDEF:AddConvo("starting_out", "primary_advisor")
         }
         :RunLoopingFn(function(cxt)
             if cxt:FirstLoop() then
+                cxt:TalkTo("primary_advisor")
+
                 cxt:Dialog("DIALOG_INTRO")
             end
             cxt:QuestOpt( cxt.enc.scratch.favor_request )
@@ -667,7 +845,11 @@ QDEF:AddConvo("get_job")
             cxt:Opt("OPT_GET_JOB")
                 :SetQuestMark()
                 :Fn( function(cxt)
-                    UIHelpers.DoSpecificConvo( nil, cxt.convodef.id, "STATE_GET_JOB" ,nil,nil,cxt.quest)
+                    -- Okay there's like precisely one frame where get_job is not active, but this option is
+                    -- So I have to do this
+                    if cxt.quest:IsActive("get_job") then
+                        UIHelpers.DoSpecificConvo( nil, cxt.convodef.id, "STATE_GET_JOB" ,nil,nil,cxt.quest)
+                    end
                 end )
         end
     end)

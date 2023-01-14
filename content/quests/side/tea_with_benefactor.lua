@@ -62,7 +62,7 @@ local FOLLOWUP
 
 local QDEF = QuestDef.Define
 {
-    title = "Tea with a benefactor",
+    title = "Tea With A Benefactor",
     desc = "An influential citizen has taken interest in your campaign and invited you for a cup of tea. See if you can turn some of that support into cash.",
     icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/tea_with_benefactor.png"),
 
@@ -129,7 +129,7 @@ local QDEF = QuestDef.Define
     -- when = QWHEN.MANUAL,
     -- no_validation = true,
     condition = function(agent, quest)
-        return BENEFACTOR_DEFS[agent:GetContentID()] ~= nil -- might generalize it later
+        return BENEFACTOR_DEFS[agent:GetContentID()] ~= nil and agent:GetRelationship() >= RELATIONSHIP.NEUTRAL -- might generalize it later
     end,
     -- don't use cast_fn by default if you want to use existing agents.
     -- cast_fn = function(quest, t)

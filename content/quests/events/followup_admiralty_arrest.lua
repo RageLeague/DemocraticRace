@@ -1205,7 +1205,7 @@ QDEF:AddConvo("action")
                 cxt.quest:GetCastMember("target"):GainAspect("stripped_influence", 5)
                 cxt.quest:GetCastMember("target"):Retire()
             end
-            cxt.quest:GetCastMember("admiralty"):MoveToLocation(cxt.quest:GetCastMember("station"))
+            -- cxt.quest:GetCastMember("admiralty"):MoveToLocation(cxt.quest:GetCastMember("station"))
             DoPromoteAdmiralty(cxt)
             StateGraphUtil.AddLeaveLocation(cxt)
         end)

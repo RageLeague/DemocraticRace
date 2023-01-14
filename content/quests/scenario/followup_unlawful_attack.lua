@@ -8,6 +8,7 @@ local QDEF = QuestDef.Define
 }
 :AddCast{
     cast_id = "hunter",
+    no_validation = true,
     events = {
         agent_retired = function(quest, agent)
             quest:Fail()
@@ -99,7 +100,7 @@ QDEF:AddConvo("report")
                     player:
                         !chuckle
                         Oh how terrible! Who could let such a thing happen?
-                    target:
+                    hunter:
                         !wink
                         I don't know. It could be <i>anyone</>.
                     }

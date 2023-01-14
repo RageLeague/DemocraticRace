@@ -146,7 +146,7 @@ local CARDS = {
         end,
 
         icon = "negotiation/decency.tex",
-        -- hide_in_cardex = true,
+        hide_in_cardex = true,
         manual_desc = true,
 
         cost = 0,
@@ -228,7 +228,8 @@ local CARDS = {
                 if self.userdata.imprints then
                     local res = ""
                     for i, card in ipairs(self.userdata.imprints) do
-                        res = res .. loc.format("{1#card}\n", card)
+                        local card_id = type(card) == "string" and card or card[1]
+                        res = res .. loc.format("{1#card}\n", card_id)
                     end
                     return loc.format(fmt_str, res)
                 end
@@ -244,7 +245,7 @@ local CARDS = {
         OnPostResolve = function( self, minigame, targets )
             local propaganda_mod = Negotiation.Modifier("PROPAGANDA_POSTER_MODIFIER", self.negotiator)
             propaganda_mod:SetData(self.userdata.imprints, self.userdata.prop_mod)
-            self.negotiator:CreateModifier(propaganda_mod)
+            self.negotiator:CreateModifier(propaganda_mod, 1, self)
         end,
     },
 
@@ -746,6 +747,138 @@ local CARDS = {
             local incept_count = DemocracyUtil.CalculateBossScale(self.base_incept) + minigame:GetDifficulty()
             self.anti_negotiator:CreateModifier( "PLANTED_EVIDENCE", incept_count, self )
         end,
+    },
+    dem_opportunistic_retreat =
+    {
+        name = "Opportunistic Retreat",
+        desc = "Remove {1} {DISTRACTED} from the opponent: One member of your party escapes the scene. You win the negotiation if you escape.",
+        alt_desc = "Requires at least {1} <b>Distracted</b>",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.stacks_needed)
+        end,
+        flavour = "When all else fails, you can always run away.",
+        icon = "DEMOCRATICRACE:assets/cards/opportunistic_retreat.png",
+
+        cost = 1,
+        flags = CARD_FLAGS.MANIPULATE,
+        rarity = CARD_RARITY.UNIQUE,
+
+        stacks_needed = 3,
+
+        PreReq = function( self, minigame )
+            return self:CanPlayCard( self, minigame )
+        end,
+
+        CanPlayCard = function( self, card, engine, target )
+            if self.anti_negotiator:GetModifierStacks("DISTRACTED") < self.stacks_needed then
+                return false, loc.format( (self.def or self):GetLocalizedString("ALT_DESC"), self.stacks_needed )
+            end
+            return true
+        end,
+
+        OnPostResolve = function( self, minigame )
+            self.anti_negotiator:DeltaModifier("DISTRACTED", -self.stacks_needed, self)
+            local cards = {}
+            local party = self.owner:GetParty()
+            if party then
+                for i, member in party:Members() do
+                    if not (minigame.escaped_people and table.arraycontains(minigame.escaped_people, member)) then
+                        local card = Negotiation.Card( "dem_retreat_target", self.owner )
+                        card:SetAgent(member)
+                        table.insert(cards, card)
+                    end
+                end
+            end
+            local pick = self.engine:ImproviseCards( cards, 1, nil, nil, nil, self )[1]
+            if pick then
+                table.insert(minigame.escaped_people, pick.retreat_agent)
+                self.engine:ExpendCard(pick)
+                if pick.retreat_agent == self.owner then
+                    minigame:Win()
+                end
+            end
+        end,
+    },
+    dem_retreat_target =
+    {
+        name = "Retreat Target",
+        name_fn = function(self, fmt_str)
+            if self.retreat_agent then
+                return self.retreat_agent:GetName()
+            end
+            return loc.format(fmt_str)
+        end,
+        desc = "Let <b>{1}</> run away from the scene.",
+        alt_desc = "Let a party member run away from the scene.",
+        desc_fn = function(self, fmt_str)
+            if self.retreat_agent then
+                return loc.format(fmt_str, self.retreat_agent:GetFullName())
+            end
+            return loc.format((self.def or self):GetLocalizedString("ALT_DESC"))
+        end,
+        icon = "DEMOCRATICRACE:assets/cards/opportunistic_retreat.png",
+
+        -- icon = "negotiation/decency.tex",
+        hide_in_cardex = true,
+        manual_desc = true,
+
+        cost = 0,
+        flags = CARD_FLAGS.UNPLAYABLE | CARD_FLAGS.DIPLOMACY,
+        rarity = CARD_RARITY.UNIQUE,
+
+        SetAgent = function(self, agent)
+            self.retreat_agent = agent
+            self:NotifyChanged()
+        end,
+    },
+    dem_random_rare_parasite =
+    {
+        name = "Thriving Parasites",
+        desc = "Transforms into a random Rare Parasite card when added to your deck.",
+        icon = "battle/bog_symbiosis.tex",
+
+        cost = 0,
+        flags = CARD_FLAGS.UNPLAYABLE | CARD_FLAGS.STATUS,
+        rarity = CARD_RARITY.UNIQUE,
+        manual_desc = true,
+
+        global_event_handlers =
+        {
+            [ "card_added" ] = function( self, card )
+                if card == self then
+                    local parasites = {}
+                    local negotiation_defs = require "negotiation/negotiation_defs"
+                    for i, def in ipairs( Content.GetAllNegotiationCards() ) do
+                        if CheckBits( def.flags, negotiation_defs.CARD_FLAGS.PARASITE ) then
+                            parasites[ def.id ] = def
+                        end
+                    end
+
+                    local fun = require "util/fun"
+                    local new_card_id = fun(parasites)
+                            :filter(function(v) return v.rarity == CARD_RARITY.RARE end)
+                            :keys()
+                            :shuffle()
+                            :first()
+                    if new_card_id then
+                        local card = self.owner.negotiator:LearnCard(new_card_id)
+                    end
+                    self.owner.negotiator:RemoveCard(card)
+                end
+            end,
+        },
+    },
+    status_injury_negotiation =
+    {
+        name = "Injury",
+        flavour = "'Ouch.'",
+        icon = "battle/status_injury.tex",
+
+        cost = 1,
+        flags = CARD_FLAGS.STATUS | CARD_FLAGS.EXPEND,
+        rarity = CARD_RARITY.UNIQUE,
+
+        battle_counterpart = "status_injury",
     },
 }
 for i, id, def in sorted_pairs( CARDS ) do

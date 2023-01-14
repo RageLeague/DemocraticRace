@@ -100,7 +100,7 @@ local QDEF = QuestDef.Define
                 end
             end
         else
-            DemocracyUtil.AddUnlockedLocationMarks(t)
+            DemocracyUtil.AddUnlockedLocationMarks(quest, t)
         end
         table.insert(t, quest:GetCastMember("primary_advisor"))
     end,
@@ -118,7 +118,7 @@ local QDEF = QuestDef.Define
                 end
             end
         else
-            DemocracyUtil.AddUnlockedLocationMarks(t, function(location)
+            DemocracyUtil.AddUnlockedLocationMarks(quest, t, function(location)
                 return location:GetProprietor() and
                     not (quest.param.posted_location and table.arraycontains(quest.param.posted_location, location:GetContentID()))
             end)
@@ -797,7 +797,7 @@ QDEF:AddConvo("commission")
                 else
                     cxt:Dialog("DIALOG_FINISH_TOO_FEW_CARDS")
                     while #recorded_cards < 3 do
-                        table.insert(recorded_cards, "fast_talk")
+                        table.insert(recorded_cards, {"fast_talk", {}})
                     end
                 end
                 local cards = cxt:GainCards({"propaganda_poster"})

@@ -7,8 +7,8 @@ local function CanFeed(agent, quest)
 end
 
 local QDEF = QuestDef.Define{
-    title = "Dole out",
-    desc = "Give Bread to the poor to gain support.",
+    title = "Dole Out",
+    desc = "Give out bread to the poor to gain support.",
     icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/dole_out.png"),
 
     qtype = QTYPE.SIDE,
@@ -68,7 +68,7 @@ local QDEF = QuestDef.Define{
                 end
             end
         else
-            DemocracyUtil.AddUnlockedLocationMarks(t)
+            DemocracyUtil.AddUnlockedLocationMarks(quest, t)
         end
     end,
 }
@@ -109,31 +109,7 @@ local QDEF = QuestDef.Define{
         table.insert( t, quest:GetCastMember("dealer_workplace"):GetProprietor())
     end,
 }
-:AddOpinionEvents{
-    politic = {
-        delta = OPINION_DELTAS.LIKE,
-        txt = "Changed political opinion for them.",
-    },
-    paid = {
-        delta = OPINION_DELTAS.LIKE,
-        txt = "Gave them money and bread.",
-    },
-    peeved = {
-        delta = OPINION_DELTAS.BAD,
-        txt = "Called a populist.",
-    },
-    political_waffle = {
-        delta = OPINION_DELTAS.LIKE,
-        txt = "Agreed with them on all the big issues.",
-    },
-    political_angry = {
-        delta = OPINION_DELTAS.BAD,
-        txt = "Let them call you a straw man.",
-    },
-}
--- Added true to make primary advisor mandatory.
--- Otherwise the game will softlock.
--- Fair enough.
+
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :Loc{
@@ -165,6 +141,11 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
             agent:
                 I know some people who are willing to bulk sell them to you.
                 You can visit them to buy some loaves.
+            {advisor_manipulate?
+                agent:
+                    Also, I should mention that the contact I know also sells loaves that taste better.
+                    Logically, they would be more expensive, too, but if you think you can spare the shills for the sake of charity, then go for it.
+            }
         ]],
     }
     :State("START")
@@ -174,6 +155,9 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
             cxt.quest:Activate("buy_loaves")
             cxt.quest:Activate("time_countdown")
             cxt.quest:Activate("request_funds")
+            if cxt:GetAgent():GetContentID() == "ADVISOR_MANIPULATE" then
+                cxt.quest.param.access_to_upgrade = true
+            end
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{
@@ -192,7 +176,8 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
         end)
-QDEF:AddConvo("dole_out_three")
+
+local CONVO = QDEF:AddConvo("dole_out_three")
     :Loc{
         DIALOG_SATISFIES_CONDITIONS = [[
             player:
@@ -210,9 +195,9 @@ QDEF:AddConvo("dole_out_three")
             cxt.quest.param.gifted_people = cxt.quest.param.gifted_people or {}
             cxt.quest.param.rejected_people = cxt.quest.param.rejected_people or {}
             local cards = {}
-            for i, card in ipairs(cxt.player.battler.cards.cards) do
+            for i, card in ipairs(cxt.player.negotiator.cards.cards) do
                 print(card.id)
-                if card.id == "dole_loaves" then
+                if card.id == "dole_loaves_negotiation" or card.id == "dole_loaves_negotiation_plus" then
                     table.insert(cards, card)
                 end
             end
@@ -226,7 +211,7 @@ QDEF:AddConvo("dole_out_three")
                         cards,
                         cxt:GetLocString("SELECT_TITLE"),
                         cxt:GetLocString("SELECT_DESC"),
-                        Widget.BattleCard,
+                        Widget.NegotiationCard,
                         function(card)
                             cxt.enc:ResumeEncounter( card )
                         end
@@ -235,11 +220,13 @@ QDEF:AddConvo("dole_out_three")
                     if card then
                         cxt.quest:DefFn("DeltaActions", -1)
 
+                        cxt.enc.scratch.improved_bread = card.id == "dole_loaves_negotiation_plus"
+
                         cxt:Dialog("DIALOG_SATISFIES_CONDITIONS")
 
                         card:ConsumeCharge()
                         if card:IsSpent() then
-                            cxt.player.battler:RemoveCard( card )
+                            cxt.player.negotiator:RemoveCard( card )
                         end
                         -- Wumpus; Huh. Didn't know Weighted Pick was an option for the code. That shrank a lot of the code bloat that I had...hopefully I keep that in mind when the need arises.
                         local weight = {
@@ -250,6 +237,9 @@ QDEF:AddConvo("dole_out_three")
                         }
                         if who:GetFactionID() == "RISE" then
                             weight.STATE_POLITICAL = weight.STATE_POLITICAL + 1
+                        end
+                        if card.id == "dole_loaves_negotiation_plus" then
+                            weight.STATE_GRATEFUL = weight.STATE_GRATEFUL + 3
                         end
                         local state = weightedpick(weight)
                         cxt:GoTo(state)
@@ -266,10 +256,16 @@ QDEF:AddConvo("dole_out_three")
                 player:
                     Is something the matter?
                 agent:
-                    Just...I've been eating this for the past...how long?
+                {not improved_bread?
+                    Just... I've been eating this for the past... how long?
                     Wish I could have something else...
+                }
+                {improved_bread?
+                    Don't get me wrong, these loaves are great.
+                    It's just... I wish I can have more than just bread.
+                }
             ]],
-            OPT_GIVE = "Give them some Shills",
+            OPT_GIVE = "Give them some shills",
             DIALOG_GIVE = [[
                 player:
                     Well, let them never say I'm not benevolent.
@@ -279,12 +275,12 @@ QDEF:AddConvo("dole_out_three")
                     Oh wow! This is more than I make in a week!
                     Thanks, {player}!
             ]],
-            OPT_NO_MONEY = "Give them the bread...then a wide berth",
+            OPT_NO_MONEY = "Give them the bread... then a wide berth",
             DIALOG_NO_MONEY = [[
                 player:
                     My sympathies, I have been in the same position as you before.
                 agent:
-                    I mean...it's fine, it's fine. Thank you for the food, regardless.
+                    I mean... It's fine, it's fine. Thank you for the food, regardless.
             ]],
         }
         :Fn(function(cxt)
@@ -294,7 +290,7 @@ QDEF:AddConvo("dole_out_three")
             cxt:Opt("OPT_GIVE")
                 :Dialog("DIALOG_GIVE")
                 :DeliverMoney(100)
-                :ReceiveOpinion("paid")
+                :ReceiveOpinion(OPINION.DEEPENED_RELATIONSHIP)
                 :DoneConvo()
                     -- :CompleteQuest("feed_pan")
             cxt:Opt("OPT_NO_MONEY")
@@ -312,7 +308,7 @@ QDEF:AddConvo("dole_out_three")
                     !question
                     Are you in support of a UBI? So this kind of thing doesn't have to happen anymore?
             ]],
-            OPT_AGREE = "Agree to {agent.hisher} ideas.",
+            OPT_AGREE = "Agree to {agent.hisher} ideas",
             DIALOG_AGREE = [[
                 player:
                     Viva la Rise, am I right?
@@ -324,7 +320,7 @@ QDEF:AddConvo("dole_out_three")
                     We're told to work, work, work and barely make it out with our equipment and plunder.
             ]],
 
-            OPT_DISAGREE = "Respectfully disagree with their opinions.",
+            OPT_DISAGREE = "Respectfully disagree with {agent.hisher} opinions",
             DIALOG_DISAGREE = [[
                 player:
                     I don't think my opinion matters here.
@@ -339,7 +335,6 @@ QDEF:AddConvo("dole_out_three")
 
             cxt:Opt("OPT_AGREE")
                 :UpdatePoliticalStance("FISCAL_POLICY", 2, false, true)
-                :ReceiveOpinion("politic")
                 :Dialog("DIALOG_AGREE")
                 :GoTo("STATE_AGREE")
             cxt:Opt("OPT_DISAGREE")
@@ -348,14 +343,14 @@ QDEF:AddConvo("dole_out_three")
         end)
     :State("STATE_AGREE")
         :Loc{
-            OPT_AGREE_2 = "Agree to their second stance.",
+            OPT_AGREE_2 = "Agree to their second stance",
             DIALOG_AGREE_2 = [[
                 player:
                     It makes no sense to have people work, work, work like they do now.
                 agent:
                     Thank you!
             ]],
-            OPT_DISAGREE_2 = "Tell them you don't agree with the second stance.",
+            OPT_DISAGREE_2 = "Tell them you don't agree with the second stance",
             DIALOG_DISAGREE_2 = [[
                 player:
                     Now, now. Let's not get ahead of ourselves.
@@ -367,7 +362,7 @@ QDEF:AddConvo("dole_out_three")
         :Fn(function(cxt)
             cxt:Opt("OPT_AGREE_2")
                 :UpdatePoliticalStance("LABOR_LAW", 2, false, true)--random stance. might change once I get a minute to look.
-                :ReceiveOpinion("political_waffle")
+                :ReceiveOpinion(OPINION.SHARE_IDEOLOGY)
                 :Dialog("DIALOG_AGREE_2")
                 -- :CompleteQuest("feed_politic")
                 :Fn(function(cxt)
@@ -381,7 +376,7 @@ QDEF:AddConvo("dole_out_three")
 
     :State("STATE_DISAGREE")
         :Loc{
-            OPT_CALM_DOWN = "Tell them how wrong they are.",
+            OPT_CALM_DOWN = "Tell them how wrong {agent.gender:he is|she is|they are}",
             DIALOG_CALM_DOWN = [[
                 player:
                     !crossed
@@ -411,7 +406,7 @@ QDEF:AddConvo("dole_out_three")
                 agent:
                     Get out of my face, you filthy capitalist. You'll profit no longer from this mere worker.
             ]],
-            OPT_IGNORE = "Ignore their complaints",
+            OPT_IGNORE = "Ignore {agent.hisher} complaints",
             DIALOG_IGNORE = [[
                 * You put on the best poker face you can manage.
                 * It doesn't help.
@@ -431,21 +426,21 @@ QDEF:AddConvo("dole_out_three")
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_CALM_DOWN_FAIL")
-                        cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("political_angry"))
+                        cxt:GetAgent():OpinionEvent(OPINION.DISLIKE_IDEOLOGY)
                         StateGraphUtil.AddEndOption(cxt)
                     end
                 }
             cxt:Opt("OPT_IGNORE")
                 :Dialog("DIALOG_IGNORE")
-                :ReceiveOpinion("political_angry")
+                :ReceiveOpinion(OPINION.DISLIKE_IDEOLOGY)
                 -- :CompleteQuest("feed_politic")
                 :DoneConvo()
         end)
     :State("STATE_DISAGREE_2")
         :Loc{
-            OPT_CALM_DOWN_2 = "Elaborate on how wrong they are.",
+            OPT_CALM_DOWN_2 = "Elaborate on how wrong {agent.gender:he is|she is|they are}",
             DIALOG_CALM_DOWN_2 = [[
-                * You start telling them exactly how wrong they are, to put it bluntly.
+                * You start telling them exactly how wrong {agent.gender:he is|she is|they are}, to put it bluntly.
             ]],
             DIALOG_CALM_DOWN_2_SUCCESS = [[
                 player:
@@ -475,7 +470,7 @@ QDEF:AddConvo("dole_out_three")
                     Of course you can! You would be the president!
                     Emphasis on the "would", because I am certainly not voting for <i>you</> now!
             ]],
-            OPT_IGNORE_2 = "Ignore their complaints.",
+            OPT_IGNORE_2 = "Ignore {agent.hisher} complaints",
             DIALOG_IGNORE_2 = [[
                 player:
                     !crossed
@@ -496,13 +491,13 @@ QDEF:AddConvo("dole_out_three")
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_CALM_DOWN_2_FAIL")
-                        cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("political_angry"))
+                        cxt:GetAgent():OpinionEvent(OPINION.DISLIKE_IDEOLOGY)
                         StateGraphUtil.AddEndOption(cxt)
                     end
                 }
             cxt:Opt("OPT_IGNORE_2")
                 :Dialog("DIALOG_IGNORE_2")
-                :ReceiveOpinion("political_angry")
+                :ReceiveOpinion(OPINION.DISLIKE_IDEOLOGY)
                 :DoneConvo()
         end)
     :State("STATE_UNGRATEFUL")
@@ -513,7 +508,7 @@ QDEF:AddConvo("dole_out_three")
                     Do you believe I can't afford my own food?
                     I'll have you know I don't stand for this kind of pandering.
             ]],
-            OPT_CONVINCE = "Try to calm them down",
+            OPT_CONVINCE = "Try to calm {agent.himher} down",
             DIALOG_CONVINCE = [[
                 player:
                     !placate
@@ -537,7 +532,7 @@ QDEF:AddConvo("dole_out_three")
                     !angry_accuse
                     I hate people who make empty gestures to make themselves feel superior.
             ]],
-            OPT_IGNORE = "Ignore their complaints",
+            OPT_IGNORE = "Ignore {agent.hisher} complaints",
             DIALOG_IGNORE = [[
                 player:
                     !crossed
@@ -558,21 +553,19 @@ QDEF:AddConvo("dole_out_three")
                     end,
                     on_success = function(cxt)
                         cxt:Dialog("DIALOG_CONVINCE_SUCCESS")
-                        -- cxt.quest:Complete("feed_ungrate")
                         table.insert(cxt.quest.param.gifted_people, cxt:GetAgent())
                         StateGraphUtil.AddEndOption(cxt)
                     end,
                     on_fail = function(cxt)
                         cxt:Dialog("DIALOG_CONVINCE_FAIL")
-                        -- cxt:ReceiveOpinion("peeved")
-                        cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("peeved"))
+                        cxt:GetAgent():OpinionEvent(OPINION.INSULT)
                         table.insert(cxt.quest.param.rejected_people, cxt:GetAgent())
                         StateGraphUtil.AddEndOption(cxt)
                     end,
                 }
             cxt:Opt("OPT_IGNORE")
                 :Dialog("DIALOG_IGNORE")
-                :ReceiveOpinion("peeved")
+                :ReceiveOpinion(OPINION.INSULT)
                 :Fn(function(cxt)
                     table.insert(cxt.quest.param.rejected_people, cxt:GetAgent())
                 end)
@@ -580,9 +573,6 @@ QDEF:AddConvo("dole_out_three")
             end)
     :State("STATE_GRATEFUL")
         :Loc{
-            DIALOG_GRATE = [[
-                %gift_bread
-            ]],
         }
         :Quips{
             {
@@ -629,12 +619,39 @@ QDEF:AddConvo("dole_out_three")
                         I'll happily take some. Thanks!
                 ]],
             },
+            {
+                tags = "gift_bread, improved_bread",
+                [[
+                    player:
+                        !permit
+                        Hey there. You want some bread?
+                    agent:
+                        !take
+                        I like this! These taste way better than what I usually eat.
+                ]],
+                [[
+                    player:
+                        !permit
+                        Do you want some free bread?
+                    agent:
+                        !take
+                        Can't say no to some free bread.
+                        !happy
+                        And it's one of the better tasting ones! Thanks!
+                    player:
+                        !happy
+                        That's the spirit!
+                ]],
+            },
         }
         :Fn(function(cxt)
-            cxt:Dialog("DIALOG_GRATE")
+            cxt:Quip( cxt:GetAgent(), "gift_bread", cxt.enc.scratch.improved_bread and "improved_bread" or nil)
             table.insert(cxt.quest.param.gifted_people, cxt:GetAgent())
             StateGraphUtil.AddEndOption(cxt)
         end)
+
+CONVO.quip_db.tag_scores["improved_bread"] = 0
+
 QDEF:AddConvo("dole_out_three", "primary_advisor")
     :Loc{
         OPT_END_EARLY = "Finish quest early",
@@ -766,6 +783,7 @@ QDEF:AddConvo("go_to_advisor", "primary_advisor")
 QDEF:AddConvo("buy_loaves", "dealer")
     :Loc{
         OPT_BUY = "Buy loaves",
+        OPT_BUY_IMPROVED = "Buy improved loaves",
         DIALOG_BUY = [[
             player:
                 I will buy a bundle.
@@ -781,6 +799,15 @@ QDEF:AddConvo("buy_loaves", "dealer")
             :DeliverMoney(80)
             :GainCards{"dole_loaves"}
             :Fn(function(cxt) cxt.quest.param.bought_at_least_one = true end)
+        if cxt.quest.param.access_to_upgrade then
+            cxt:Opt("OPT_BUY_IMPROVED")
+                :SetQuestMark()
+                :Dialog("DIALOG_BUY")
+                :PostCard("dole_loaves_plus")
+                :DeliverMoney(90)
+                :GainCards{"dole_loaves_plus"}
+                :Fn(function(cxt) cxt.quest.param.bought_at_least_one = true end)
+        end
     end)
     :AttractState("STATE_ATTRACT")
         :Loc{

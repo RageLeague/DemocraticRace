@@ -675,7 +675,7 @@ local CARDS = {
     {
         name = "Sequencer",
         flavour = "'Universal energy my friend, that's what the blue is all about.'",
-        desc = "Restore all uses to an item card in your hand.",
+        desc = "Restore all uses to an item card in your deck.",
         icon = "battle/sequencer.tex",
 
         item_tags = ITEM_TAGS.UTILITY,
@@ -689,18 +689,19 @@ local CARDS = {
         flags = CARD_FLAGS.REPLENISH | CARD_FLAGS.EXPEND,
 
         GetCardsOwnedBySelf = function(self)
-            -- if self.negotiator:IsPlayer() and self.engine then
-            --     return table.merge( self.engine.hand_deck.cards, self.engine.discard_deck.cards, self.engine.draw_deck.cards )
-            -- end
-            return self.engine:GetHandDeck()
+            if self.negotiator:IsPlayer() and self.engine then
+                return table.merge( self.engine.hand_deck.cards, self.engine.discard_deck.cards, self.engine.draw_deck.cards )
+            end
+            return {}
+            -- return self.engine:GetHandDeck()
         end,
 
         CanPlayCard = function( self, card, engine, target )
             if not self:GetCardsOwnedBySelf() then
                 return false, CARD_PLAY_REASONS.NO_VALID_TARGETS
             end
-            for i, card in ipairs(self:GetCardsOwnedBySelf().cards) do
-                if card:IsPartiallySpent() then
+            for i, card in ipairs(self:GetCardsOwnedBySelf()) do
+                if card ~= self and card:IsPartiallySpent() then
                     return true
                 end
             end
@@ -708,12 +709,16 @@ local CARDS = {
         end,
 
         OnPostResolve = function( self, minigame, targets )
-            local card = minigame:ChooseCardsFromTable( self:GetCardsOwnedBySelf(), 1, 1, Negotiation.Card.IsPartiallySpent, LOC "CARD_ENGINE.CHOOSE_SPENT_CARD", self )[1]
+            local card = minigame:ChooseCardsFromTable( self:GetCardsOwnedBySelf(), 1, 1, function(c)
+                return c:IsPartiallySpent() and c ~= self
+            end, LOC "CARD_ENGINE.CHOOSE_SPENT_CARD", self )[1]
             if card then
                 local original_deck = card.deck
                 -- card:TransferCard(minigame.trash_deck)
                 -- minigame:GetTrashDeck():InsertCard( card )
+                original_deck:RemoveCard(card)
                 card:RestoreCharges()
+                card:TransferCard(original_deck)
                 -- card.show_dealt = false
                 -- minigame:DealCard( card, original_deck )
                 -- card:TransferCard(original_deck)
@@ -853,7 +858,56 @@ local CARDS = {
             },
         },
     },
+    dole_loaves_negotiation =
+    {
+        name = "Dole Loaves",
+        desc = "The owner of target argument heals {1} health.",
+        alt_desc = " (Health: {1}/{2})",
+        desc_fn = function(self, fmt_str)
+            local result = loc.format( fmt_str, self.heal_amount, self.resolve_amount )
+            if self.target and self.target.owner and self.target.owner.health then
+                local health, max_health = self.target.owner.health:Get()
+                result = result .. loc.format((self.def or self):GetLocalizedString("ALT_DESC"), health, max_health)
+            end
+            return result
+        end,
+        flavour = "Made from 'high quality' spollop, these are definitely some of the food ever.",
+        icon = "DEMOCRATICRACE:assets/cards/dole_loaves.png",
 
+        cost = 1,
+        target_self = TARGET_ANY_RESOLVE,
+        target_enemy = TARGET_ANY_RESOLVE,
+        flags = CARD_FLAGS.ITEM,
+        rarity = CARD_RARITY.UNIQUE,
+        max_xp = 0,
+
+        max_charges = 4,
+        heal_amount = 4,
+
+        battle_counterpart = "dole_loaves",
+
+        OnPostResolve = function( self, minigame, targets )
+            for i, target in ipairs(targets) do
+                if self.resolve_amount then
+                    target:ModifyResolve(self.resolve_amount, self)
+                end
+                if target.owner and target.owner.health then
+                    target.owner.health:Delta(self.heal_amount)
+                end
+            end
+        end,
+    },
+
+    dole_loaves_negotiation_plus =
+    {
+        name = "Improved Dole Loaves",
+        desc = "Target argument gains {2} resolve. Its owner heals {1} health.",
+        flavour = "Compared to regular dole loaves, these ones have some garlic butter on top.",
+
+        resolve_amount = 4,
+
+        battle_counterpart = "dole_loaves_plus",
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     def.item_tags = (def.item_tags or 0) | ITEM_TAGS.NEGOTIATION

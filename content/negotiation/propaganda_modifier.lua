@@ -82,11 +82,17 @@ Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
         if self.imprints then
             local res = ""
             for i, card in ipairs(self.imprints) do
+                local card_id, card_data
+                if type(card) == "string" then
+                    card_id, card_data = card, {}
+                else
+                    card_id, card_data = card[1], card[2]
+                end
                 if i == self.pointer then
-                    local carddef = Content.GetNegotiationCard( card )
+                    local carddef = Content.GetNegotiationCard( card_id )
                     res = res .. loc.format("<#BONUS>{1}</>\n", carddef:GetLocalizedName())
                 else
-                    res = res .. loc.format("{1#card}\n", card)
+                    res = res .. loc.format("{1#card}\n", card_id)
                 end
             end
             rval = rval .. "\n" .. loc.format((self.def or self):GetLocalizedString("ALT_DESC"), res)
@@ -112,9 +118,16 @@ Content.AddNegotiationModifier( "PROPAGANDA_POSTER_MODIFIER", {
         self.pointer = self.pointer or 1
 
         -- play card
-        local card_id = self.imprints[self.pointer]
-        if card_id then
-            local card = Negotiation.Card(card_id, self.owner )
+        local card_info = self.imprints[self.pointer]
+        if card_info then
+            local card_id, card_data
+            if type(card_info) == "string" then
+                card_id, card_data = card_info, {}
+            else
+                card_id, card_data = card_info[1], shallowcopy(card_info[2])
+            end
+            local card = Negotiation.Card(card_id, self.owner, card_data)
+            card.userdata.xp = nil
             card.show_dealt = false
             card.special_prepared = true
             card.play_source = self

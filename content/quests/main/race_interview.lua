@@ -79,20 +79,18 @@ local QDEF = QuestDef.Define
         -- end
         table.insert(t, { agent = quest:GetCastMember("host"), location = quest:GetCastMember('theater')})
     end,
-    -- on_start = function(quest)
-
-    -- end,
-    -- on_complete = function(quest)
-    --     if quest:GetCastMember("primary_advisor") then
-    --         quest:GetCastMember("primary_advisor"):GetBrain():SendToWork()
-    --     end
-    -- end,
     on_destroy = function(quest)
         quest:GetCastMember("primary_advisor"):GetBrain():SendToWork()
         if quest.param.parent_quest then
             quest.param.parent_quest.param.did_interview = true
         end
     end,
+    events =
+    {
+        get_free_location_marks = function(quest, free_quest, locations)
+            table.arrayremove(locations, quest:GetCastMember("theater"))
+        end,
+    },
 }
 :AddCast{
     cast_id = "host",
@@ -446,7 +444,12 @@ QDEF:AddConvo("do_interview")
             ]],
 
             DIALOG_UNRECOGNIZE_PEOPLE = [[
-                * There are some people you don't recognize though.
+                {know_at_least_one?
+                    * There are some people you don't recognize though.
+                }
+                {not know_at_least_one?
+                    * Looking out to the crowd, you don't recognize anyone here.
+                }
                 * You see {1#listing}.
                 * No doubt to see who you are about and what you bring to the table before choosing a candidate.
             ]],
@@ -546,6 +549,7 @@ QDEF:AddConvo("do_interview")
                     table.insert(agent_supports, {agent, DemocracyUtil.TryMainQuestFn("GetSupportForAgent", agent)})
                     if agent:KnowsPlayer() then
                         table.insert(recognized_people, agent)
+                        cxt.enc.scratch.know_at_least_one = true
                     else
                         agent:GenerateLocTable()
                         table.insert(unrecognized_descs, agent.loc_table.a_desc)
@@ -553,9 +557,13 @@ QDEF:AddConvo("do_interview")
                 end
             end
 
-            cxt:Dialog("DIALOG_RECOGNIZE_PEOPLE", recognized_people)
+            if #recognized_people > 0 then
+                cxt:Dialog("DIALOG_RECOGNIZE_PEOPLE", recognized_people)
+            end
 
-            cxt:Dialog("DIALOG_UNRECOGNIZE_PEOPLE", unrecognized_descs)
+            if #unrecognized_descs > 0 then
+                cxt:Dialog("DIALOG_UNRECOGNIZE_PEOPLE", unrecognized_descs)
+            end
 
             cxt:Dialog("DIALOG_INTERVIEW")
 

@@ -330,7 +330,93 @@ lines:
     agent:
       Yeah, you're right.
     }
+- tags: [advisor_diplomacy]
+  score: 10
+  dialog:
+  - |
+    agent:
+      !angry
+      There are many cringe people in Havaria, but there is a type of people that is the cringiest of them all:
+      Those who you thought were your mutual, but they betray your trust when you needed them the most.
+    player:
+      !interest
+      You seem to despite them very much. Is there perhaps a personal reason for that?
+    agent:
+      Of course. There are two people who I despise because of this.
+      A man who stabbed me in the back when I thought I could trust him.
+      And a... Actually, another man who abandoned me when I needed him the most.
+    player:
+      !chuckle
+      Hah! This is Havaria, after all. Backstabbing is common, and no one could be truly trusted.
+    agent:
+      !sigh
+      Yeah, and I have learned that lesson the hard way.
+      !cruel
+      Doesn't matter anymore. I dealt with the first man already, and the second man is out of my life anyway.
+      The point is, don't betray my trust.
+    {player_rook?
+      * You feel like the last line of {agent.hishers} is directed at you, for some reason.
+    }
+- tags: [advisor_diplomacy]
+  score: 10
+  dialog:
+  - |
+    agent:
+      !angry
+      There are many cringe people in Havaria, but there is a type of people that is the cringiest of them all:
+      Those who you thought were your mutual, but they betray your trust when you needed them the most.
+    player:
+      !interest
+      You seem to despite them very much. Is there perhaps a personal reason for that?
+    agent:
+      Of course. There are two people who I despise because of this.
+      A man who stabbed me in the back when I thought I could trust him.
+      And a... Actually, another man who abandoned me when I needed him the most.
+    player:
+      !chuckle
+      Hah! This is Havaria, after all. Backstabbing is common, and no one could be truly trusted.
+    agent:
+      !sigh
+      Yeah, and I have learned that lesson the hard way.
+      !cruel
+      Doesn't matter anymore. I dealt with the first man already, and the second man is out of my life anyway.
+      The point is, don't betray my trust.
+    {player_rook?
+      * You feel like the last line of {agent.hishers} is directed at you, for some reason.
+    }
+- tags: [advisor_hostile]
+  score: 10
+  dialog:
+  - |
+    agent:
+      You know how I constantly say "nobody knows better than me"? It's true.
+      Among those who are still alive, that is.
+    player:
+      !interest
+      Oh?
+    agent:
+      My father was the smartest person I know. The most competent person, too.
+      He was a bit hateful sometimes, but he was able to make a name for himself when the world was against him.
+    player:
+      Wait, you keep describing him in past tense. Does that mean that...
+    agent:
+      !agree
+      Yeah.
+      He died in a surgery accident, from what I heard.
+      The surgeon leading the surgery ended his own life, so I never learned what happened.
+    player:
+      Oh.
+    agent:
+      !handwave
+      Eh, don't worry about it. It's been nine years. I'm already over it.
+      !hips
+      Besides, now, there is truly no one who knows better than me.
+    {player_sober_today?
+      * Despite {agent}'s bravado, you can still see the self-doubt in {agent.hisher} eyes.
+    }
+
 - tags: [democratic_race, astal]
+  score: 10
   dialog:
   - |
     agent:
@@ -344,30 +430,78 @@ lines:
       !agree
       Yeah. Kind of an eccentric guy, I must admit.
     agent:
-      Did you know that he is one of the richest barons out there?
+      Did you know that he is one of the barons with the highest net worth out there?
     player:
       !surprised
       Really? I have no idea!
     agent:
       !thought
-      To think... When he was first found, he had no family, no friends, no money.
+      To think... When he first joined the Spark Barons, he had no family, no friends, no money.
       But nobody cares about that anymore. Everyone knows him as a rich baron, with an eccentric speech pattern.
     player:
       !dubious
       Why are you telling me this now? What is your point?
     agent:
       People don't care about who you were in the past. They only care about who you are right now.
+      !hips
       This is the Spark Baron way. The Havarian way.
+      ...
     {player_arint?
       * You've heard of this exact sentiment from exactly one other Spark Baron, and you are pretty sure that he got discharged for corporate espionage.
       player:
         !thought
       * Yet... despite that, you feel as though there's a grain of truth in that, judging from your own experience.
     }
-      What I'm trying to say is... Don't let your past drag you down, alright?
+    {player_sober_today?
+      {not player_arint?
+        * There seems to be something on {agent}'s mind.
+      }
+      {player_arint?
+        * Hold on. There seems to be something on {agent}'s mind.
+      }
+      player:
+        !interest
+        What's wrong?
+      agent:
+        !thought
+        Nothing, it's just... I still agree with this on principle, but I'm just thinking that some people might not deserve such benefit of doubt.
+    }
+    agent:
+      Anyway, what I'm trying to say is... Don't let your past drag you down, alright?
       Let the world remember who you are: a capable leader, able to bring Havaria to the right path.
 
+- tags: [democratic_race, imiko]
+  score: 10
+  dialog:
+  - |
+    agent:
+      !think
+      The Cult has gotten Hesh's tentacles all over the populace, stifling the mind of the people.
+      It would be better for the people if they are just... gone.
+    player:
+      !chuckle
+      $miscMocking
+      What, are you gonna kill Hesh itself?
+    agent:
+      !handwave
+      Nah, that won't be enough. Without Hesh, there are other beings with tentacles that the Cult will worship next.
+      No, what I'm talking about is something more definitive.
+      Be it jellyfish, octopuses, or squids. It would be better for everyone if the Cult can't find any tentacled creature of worship, if you catch my drift.
+    player:
+      !chuckle
+      $miscMocking
+      So what, are you going to start a Hairmaggedon on tentacled marine life?
+    agent:
+      !placate
+      Ah, please don't call it "Hairmaggedon".
+      Bad for PR, you understand.
+    {not player_drunk?
+      * {agent} doesn't sound like {agent.gender:he's|she's|they're} joking, but you can never really tell with {agent.himher}.
+      * For the sake of marine biodiversity, you hope that {agent.gender:he is|she is|they are}.
+    }
+
 - tags: [democratic_race, nand]
+  score: 10
   dialog:
   - |
     agent:
@@ -392,6 +526,7 @@ lines:
       Thanks for the chat, {player}. That was enlightening.
 
 - tags: [democratic_race, hiqu]
+  score: 10
   dialog:
   - |
     {indoors?
@@ -435,6 +570,110 @@ lines:
       agent:
         !happy
         Thanks. Glad to find another person who enjoys a good poetry.
+    }
+- tags: [democratic_race, rise_pamphleteer]
+  dialog:
+  - |
+    agent:
+      !happy
+      I've been cooking up something that will surely get the workers on our side!
+    player:
+      !clap
+      Well, what are you waiting for? Lay it on me!
+    agent:
+      !permit
+      Here it is. Take a good look.
+    player:
+      !take
+    * {agent} hands you a propaganda poster.
+    * Depicted on it is a laborer's hand holding up a hammer.
+    * At the bottom of the poster is the caption "Till death, we fight".
+    player:
+      !dubious
+      "Till death, we fight"?
+    agent:
+      !agree
+      Yeah. Time has proven over and over again that nothing ever changes, if people sacrifice their ideals to save their own skin.
+      If you really want any changes, you must be willing to sacrifice your life for the cause.
+    {anti_labor_law?
+      player:
+        !crossed
+        If your cause requires the sacrifice of innocent lives, then perhaps it isn't a cause worth fighting for.
+      agent:
+        !thought
+        Hmm... I suppose that it does come out that way. I need to rethink the slogan a bit.
+    }
+    {pro_labor_law?
+      player:
+        While I don't disagree, I feel like this is a bit exclusionary.
+        The revolution can't happen with just a few radicals willing to sacrifice their lives.
+        !thumb
+        If we want the revolution to succeed, we need to get lots of people on board, not just the ones willing to fight to the death.
+      agent:
+        !agree
+        I suppose you do have a point.
+    }
+    {not pro_labor_law and not anti_labor_law?
+      player:
+        !thumb
+        I can't speak for everyone, but personally, I don't really want to die.
+        And I'm pretty sure most people don't, either.
+      agent:
+        !thought
+        Hmm... I suppose if I want my message to reach the masses, it needs to be more palatable.
+    }
+    agent:
+      !happy
+      Thanks for the feedback, {player}.
+- tags: [democratic_race, dredger]
+  dialog:
+  - |
+    agent:
+      !bashful
+      Say, {player}, have I showed you my fascinating specimen named Jeremy?
+    player:
+      !dubious
+      "Fascinating specimen"? Is that how you refer to your pet?
+    agent:
+      Oh! So those are what pets are! I've been wondering about that for a while!
+      !permit
+      Anyway, here they are!
+    * {agent} hands you a petri dish full of a popping gunk of Hesh-knows-what.
+    {player_drunk?
+      player:
+        !drunk
+        I have to agree. Hesh-knows-whats are fascinating creatures.
+        They are between life and death, between plants and fungi, between bliss and agony, between-
+      agent:
+        !placate
+        Okay, now you lost me.
+      player:
+        !disgust
+      * Uh oh. It seems your stomach begins to turn.
+      * You are not sure if it's from all the alcohol you drank, or the Hesh-knows-whats, or both.
+      agent:
+        !bashful
+        You know what? I'm just going to put them away.
+    }
+    {not player_drunk?
+      * They emit a smell that is hard to describe.
+      player:
+        !disgust
+        Wh- What is that?
+      agent:
+        Well, I am developing an enzyme capable of synthesizing fuel from common materials.
+        This is the 984th Jeremy.
+      player:
+        !bashful
+        Well, that's quite a lot of Jeremys.
+      agent:
+        !neutral_notepad
+        Seems like there are a couple of tweaks that need to be made.
+        Anyway, I'm sure the next batch is going to be great.
+      player:
+        Yeah.
+        $scaredStammering
+        Totally.
     }
 - tags: [democratic_race, player_sal, laborer]
   dialog:
