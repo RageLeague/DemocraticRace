@@ -116,7 +116,14 @@ local QDEF = QuestDef.Define
     provider = true,
     unimportant = true,
     condition = function(agent, quest)
-        return agent:GetFactionID() == "CULT_OF_HESH"
+        if agent:GetContentID() == "ADVISOR_MANIPULATE" then
+            return true
+        end
+        local advisor = DemocracyUtil.GetMainQuestCast("primary_advisor")
+        if advisor and advisor:GetContentID() == "ADVISOR_MANIPULATE" then
+            return false
+        end
+        return not agent:HasTag("curated_request_quest") and agent:GetFactionID() == "CULT_OF_HESH"
     end,
 }
 :AddObjective{

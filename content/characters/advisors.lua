@@ -10,7 +10,7 @@ local chars =
         loved_bio = "To this day, Aellon still hasn't figured out what \"based\" means as an adjective, but he would describe it as an adjective that applies to you.",
         hated_bio = "While Aellon doesn't know what \"based\" means as an adjective, he certainly figured out the meaning of the word \"cringe\", and you won't like it.",
 
-        tags = {"advisor", "advisor_diplomacy"},
+        tags = {"advisor", "advisor_diplomacy", "curated_request_quest"},
         gender = "MALE",
         species = "HUMAN",
 
@@ -67,7 +67,7 @@ local chars =
         loved_bio = "Facts don't care about your feelings, but Benni does.",
         hated_bio = "Benni's facts and logic cannot predict your shear incompetence. Then again, her facts and logic works better as hindsight.",
 
-        tags = {"advisor", "advisor_manipulate"},
+        tags = {"advisor", "advisor_manipulate", "curated_request_quest"},
         gender = "FEMALE",
         species = "KRADESHI",
 
@@ -125,7 +125,7 @@ local chars =
         loved_bio = "It's no doubt that Dronumph loves himself the most. There's no way to chance that due to his narcissistic nature. You however, comes quite close.",
         hated_bio = "Dronumph used to believe that he is the best at everything. Now, he learnt his mistake: his ability to recognize talent is certainly troubling, considering that he somehow trusted <b>you</>.",
 
-        tags = {"advisor", "advisor_hostile"},
+        tags = {"advisor", "advisor_hostile", "curated_request_quest"},
         gender = "MALE",
         species = "JARACKLE",
 

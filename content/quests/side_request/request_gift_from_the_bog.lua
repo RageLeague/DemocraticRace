@@ -1,3 +1,5 @@
+local ACCEPTED_GIVER_FACTION = {"JAKES", "BILEBROKERS"}
+
 local QDEF = QuestDef.Define
 {
     title = "Gift From The Bog",
@@ -70,7 +72,7 @@ local QDEF = QuestDef.Define
     provider = true,
     unimportant = true,
     condition = function(agent, quest)
-        return (agent:GetFactionID() == "JAKES" and not agent:HasTag("advisor"))
+        return not agent:HasTag("curated_request_quest") and table.arraycontains(ACCEPTED_GIVER_FACTION, agent:GetFactionID())
     end,
     on_assign = function(quest, agent)
     end,
