@@ -1,33 +1,5 @@
 -- This only matters in regards to the desire to find about Hesh's classification.
-local HeshBelief = MakeEnum{ "ANTI", "CAUTIOUS", "FANATIC" }
-local function GetHeshBelief(agent)
-    if agent:GetContentID() == "ADVISOR_MANIPULATE" then
-        return HeshBelief.CAUTIOUS
-    elseif agent:GetContentID() == "TEI" then
-        return HeshBelief.ANTI
-    end
-    return agent:CalculateProperty("HESH_BELIEF", function(agent)
-        local omni_hesh_chance = agent:GetRenown() * .12
-        if agent:GetFactionID() ~= "CULT_OF_HESH" then
-            if agent:GetFactionID() == "ADMIRALTY" then
-                omni_hesh_chance = omni_hesh_chance - .15
-            elseif agent:GetFactionID() == "FEUD_CITIZEN" then
-                omni_hesh_chance = omni_hesh_chance - .25
-            elseif agent:GetFactionID() == "SPARK_BARONS" then
-                omni_hesh_chance = omni_hesh_chance - .5
-            else
-                omni_hesh_chance = omni_hesh_chance - .35
-            end
-        end
-        if math.random() < omni_hesh_chance then
-            return HeshBelief.ANTI
-        end
-        if math.random() < 0.35 then
-            return HeshBelief.FANATIC
-        end
-        return HeshBelief.CAUTIOUS
-    end)
-end
+local HeshBelief = MakeEnum{ "ANTI", "CAUTIOUS", "FANATIC", "NOT_KNOW" }
 
 local HESH_CLASSIFICATION = {"is_hesh_ctenophore", "is_hesh_cnidarian", "is_hesh_unclassifiable"}
 
@@ -109,6 +81,63 @@ local QDEF = QuestDef.Define
             DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 2, "CULT_OF_HESH", "POOR_QUEST")
         end
     end,
+
+    HeshBelief = HeshBelief,
+
+    CanTalkAboutHesh = function(quest, agent)
+        if agent == quest:GetCastMember("giver") then
+            return false -- The giver of the quest can't talk about Hesh.
+        end
+        if agent:GetContentID() == "ADVISOR_MANIPULATE" then
+            return false -- Benni can't talk about Hesh.
+        end
+        if table.arraycontains(quest.param.people_asked or {}, cxt:GetAgent()) then
+            return false -- Already asked
+        end
+        return cxt:GetAgent():GetFactionID() == "CULT_OF_HESH" or cxt:GetAgent():GetFactionID() == "FEUD_CITIZEN"
+    end,
+
+    FIXED_BELIEF = {
+        ADVISOR_MANIPULATE = HeshBelief.NOT_KNOW,
+        TEI = HeshBelief.ANTI,
+    },
+
+    GetHeshBelief = function (quest, agent)
+        if quest:GetQuestDef().FIXED_BELIEF[agent:GetAlias()] then
+            return quest:GetQuestDef().FIXED_BELIEF[agent:GetAlias()]
+        end
+        return agent:CalculateProperty("HESH_BELIEF", function(agent)
+            local omni_hesh_chance = agent:GetRenown() / 8
+            local hesh_knowledge = agent:GetRenown() / 4
+            if agent:GetFactionID() ~= "CULT_OF_HESH" then
+                if agent:GetFactionID() == "ADMIRALTY" then
+                    omni_hesh_chance = omni_hesh_chance - .15
+                    hesh_knowledge = hesh_knowledge / 4
+                elseif agent:GetFactionID() == "FEUD_CITIZEN" then
+                    omni_hesh_chance = omni_hesh_chance - .25
+                    hesh_knowledge = hesh_knowledge / 4
+                elseif agent:GetFactionID() == "SPARK_BARONS" then
+                    omni_hesh_chance = omni_hesh_chance - .5
+                    hesh_knowledge = hesh_knowledge / 2
+                elseif agent:GetFactionID() == "BILEBROKERS" then
+                    omni_hesh_chance = omni_hesh_chance - .5
+                else
+                    omni_hesh_chance = omni_hesh_chance - .35
+                    hesh_knowledge = hesh_knowledge / 4
+                end
+            end
+            if math.random() < hesh_knowledge then
+                return HeshBelief.NOT_KNOW
+            end
+            if math.random() < omni_hesh_chance then
+                return HeshBelief.ANTI
+            end
+            if math.random() < 0.35 then
+                return HeshBelief.FANATIC
+            end
+            return HeshBelief.CAUTIOUS
+        end)
+    end
 }
 :AddCast{
     cast_id = "giver",
@@ -146,6 +175,15 @@ local QDEF = QuestDef.Define
             end
         end,
     },
+    mark = function(quest, t, in_location)
+        if in_location and DemocracyUtil.IsFreeTimeActive() then
+            for _, agent in TheGame:GetGameState():GetPlayerAgent():GetLocation():Agents() do
+                if quest:DefFn("CanTalkAboutHesh", agent) then
+                    table.insert(t, agent)
+                end
+            end
+        end
+    end,
 }
 :AddObjective{
     id = "is_hesh_ctenophore",
@@ -244,27 +282,125 @@ QDEF:AddConvo("ask_info")
     :Loc{
         OPT_ASK_HESH = "Ask about Hesh",
     }
+    :Quips{
+        {
+            tags = "asked_hesh_fail",
+            [[
+                player:
+                    Say, you wouldn't happen to know what kind of jellyfish Hesh is?
+                agent:
+                    !dubious
+                    What kind of person just "happens" to know that?
+                    Well, even if they do exist, I am not one of these people.
+                player:
+                    Well, thanks anyway.
+                agent:
+                    !shrug
+                    Maybe you will find better luck asking this question to actual Heshians.
+            ]],
+            [[
+                player:
+                    Do you know what kind of jellyfish Hesh is?
+                agent:
+                    !dubious
+                    What do you mean "what kind"? There are different kinds of jellyfish?
+                player:
+                    !shrug
+                    Apparently so. I don't know too much about jellyfish myself, you see.
+                    Well, thanks anyway.
+                agent:
+                    You should ask people who would actually know about jellyfish.
+                    Like actual Heshians. Or biologists.
+            ]],
+            [[
+                player:
+                    Do you know anything about Hesh and its behaviour?
+                agent:
+                    !shrug
+                    Well, it exists. Probably.
+                    It swims in the ocean. Again, probably.
+                    {agent_against_hesh?
+                        It wraps its slimy tentacles around the people's brains. Most definitely.
+                    }
+                {not (agent_against_hesh and pro_religious_policy)?
+                    player:
+                        Great. Nothing I don't already know.
+                    agent:
+                        !shrug
+                        Perhaps you should ask a person who actually know about these stuff next time.
+                }
+                {agent_against_hesh and pro_religious_policy?
+                    player:
+                        I am going to ignore that last statement of yours.
+                        Actually, make that <i>all</> statements of yours, since you didn't tell me anything I don't already know.
+                    agent:
+                        !shrug
+                        Perhaps next time you should ask someone who <i>actually</> care about that jellyfish than me.
+                }
+            ]],
+        },
+        {
+            tags = "asked_hesh_fail, disliked",
+            [[
+                player:
+                    Do you know what kind of jellyfish Hesh is?
+                agent:
+                    !crossed
+                    Ha! I'm not telling you that.
+                player:
+                    !dubious
+                    Because you don't like me, or because you don't know about it yourself?
+                agent:
+                    ...
+                    !crossed
+                    Like I said, I'm not telling you that.
+            ]],
+        },
+        {
+            tags = "asked_hesh_fail, cult_of_hesh",
+            [[
+                player:
+                    Do you know what kind of jellyfish Hesh is?
+                agent:
+                    !sigh
+                    It pains me to admit it, but I don't know.
+                    The Cult is very elusive about any details of Hesh.
+                player:
+                    I... see.
+            ]],
+        },
+    }
     :Hub(function(cxt)
         cxt.quest.param.people_asked = cxt.quest.param.people_asked or {}
-        if cxt:GetAgent() and cxt:GetAgent() ~= cxt:GetCastMember("giver") and
-            not table.arraycontains(cxt.quest.param.people_asked, cxt:GetAgent())
-            and (cxt:GetAgent():GetFactionID() == "CULT_OF_HESH" or cxt:GetAgent():GetFactionID() == "FEUD_CITIZEN") then
-
+        if cxt:GetAgent() and cxt.quest:DefFn("CanTalkAboutHesh", cxt:GetAgent()) and DemocracyUtil.IsFreeTimeActive() then
             cxt:Opt("OPT_ASK_HESH")
                 :SetQuestMark()
                 :Fn(function(cxt)
                     table.insert(cxt.quest.param.people_asked, cxt:GetAgent())
-                    local belief = GetHeshBelief(cxt:GetAgent())
+                    local belief = cxt.quest:DefFn("GetHeshBelief", cxt:GetAgent())
                     if belief == HeshBelief.FANATIC then
                         cxt:GoTo("STATE_FANATIC")
                     elseif belief == HeshBelief.ANTI then
                         cxt:GoTo("STATE_ANTI")
-                    else
+                    elseif belief == HeshBelief.CAUTIOUS then
                         cxt:GoTo("STATE_CAUTIOUS")
+                    else
+                        cxt:GoTo("STATE_NOT_KNOW")
                     end
                 end)
         end
     end)
+    :State("STATE_NOT_KNOW")
+        :Fn(function(cxt)
+            local stance_tag
+            local other_stance = DemocracyUtil.GetAgentStanceIndex("RELIGIOUS_POLICY", cxt:GetAgent())
+            if other_stance < 0 then
+                stance_tag = "agent_against_hesh"
+            elseif other_stance > 0 then
+                stance_tag = "agent_support_hesh"
+            end
+            cxt:Quip( cxt:GetAgent(), "asked_hesh_fail", "stance_tag")
+        end)
     :State("STATE_CAUTIOUS")
         :Loc{
             DIALOG_TALK = [[
@@ -600,7 +736,7 @@ QDEF:AddConvo("ask_info")
                 local candidates = {}
                 for i, agent in cxt.location:Agents() do
                     if not agent:IsInPlayerParty() and agent:IsSentient() and agent:GetFactionID() == "CULT_OF_HESH"
-                        and GetHeshBelief(agent) == HeshBelief.ANTI then
+                        and cxt.quest:DefFn("GetHeshBelief", cxt:GetAgent()) == HeshBelief.ANTI then
 
                         table.insert(candidates, agent)
                     end
