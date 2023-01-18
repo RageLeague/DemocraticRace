@@ -1,7 +1,7 @@
 -- This only matters in regards to the desire to find about Hesh's classification.
 local HeshBelief = MakeEnum{ "ANTI", "CAUTIOUS", "FANATIC", "NOT_KNOW" }
 
-local HESH_CLASSIFICATION = {"is_hesh_ctenophore", "is_hesh_cnidarian", "is_hesh_unclassifiable"}
+local HESH_CLASSIFICATION = {"ctenophore", "cnidarian", "unclassifiable"}
 
 local FANATIC_BEHAVIOUR =
 {
@@ -94,12 +94,14 @@ local QDEF = QuestDef.Define
         if table.arraycontains(quest.param.people_asked or {}, cxt:GetAgent()) then
             return false -- Already asked
         end
-        return cxt:GetAgent():GetFactionID() == "CULT_OF_HESH" or cxt:GetAgent():GetFactionID() == "FEUD_CITIZEN"
+        -- return cxt:GetAgent():GetFactionID() == "CULT_OF_HESH" or cxt:GetAgent():GetFactionID() == "FEUD_CITIZEN"
+        return true
     end,
 
     FIXED_BELIEF = {
         ADVISOR_MANIPULATE = HeshBelief.NOT_KNOW,
         TEI = HeshBelief.ANTI,
+        VIXMALLI = HeshBelief.ANTI,
     },
 
     GetHeshBelief = function (quest, agent)
@@ -137,7 +139,16 @@ local QDEF = QuestDef.Define
             end
             return HeshBelief.CAUTIOUS
         end)
-    end
+    end,
+
+    IncreaseHeshKnowledge = function(quest, belief)
+        quest.param.hesh_id = quest.param.hesh_id or {}
+        quest.param.hesh_id[belief] = (cxt.quest.param.hesh_id[belief] or 0) + 1
+        cxt.quest.param["hesh_" .. HESH_CLASSIFICATION[belief]] = true
+        if not cxt.quest:IsActive("is_hesh_" .. HESH_CLASSIFICATION[belief]) then
+            cxt.quest:Activate("is_hesh_" .. HESH_CLASSIFICATION[belief])
+        end
+    end,
 }
 :AddCast{
     cast_id = "giver",
@@ -168,7 +179,7 @@ local QDEF = QuestDef.Define
                     opinion_count = opinion_count + 1
                     asked_people = asked_people + val
                 end
-                if opinion_count >= 2 and asked_people >= 3 then
+                if opinion_count >= 2 then
                     param.override_quip = true
                     cxt:PlayQuestConvo(quest, "HOOK_SLEEP")
                 end
@@ -243,39 +254,73 @@ local QDEF = QuestDef.Define
 QDEF:AddIntro(
     --attract spiel
     [[
-        agent:
-            We all worship Hesh.
-        {player_sal or player_arint?
-        player:
-            !crossed
-            What do you mean, "we"?
-        agent:
-            Okay, <i>some</> of us worship Hesh.
+        {advisor_manipulate?
+            agent:
+                I've been thinking about something for a while now.
+            player:
+                !interest
+                Oh yeah? What is it?
+            agent:
+                Hesh is truly a great leviathan feared by all.
+                !thought
+                Yet, we know very little about Hesh.
+                Its living environment, its form, or even what kind of jellyfish it is.
+                Which, logically leads me to wonder, do we truly fear Hesh for what it is, or do we simply fear the unknown?
+            player:
+                !dubious
+                Uhh... What are you getting at?
+            agent:
+                You should try study the facts about Hesh. Understand it.
+                And tell me your findings when you know something.
         }
-            !think
-            But in the end, do we truly understand Hesh?
-        player:
-            !dubious
-            Uhh... What are you getting at?
-        agent:
-            For instance, what is Hesh, factually speaking?
-            What does it look like? What is its living environment? We don't know.
-            We don't even know what kind of jellyfish it is.
-            !point
-            That's where you come in.
-            Go ask around, see if anyone knows anything about it.
+        {not advisor_manipulate?
+            agent:
+                We all worship Hesh.
+            {player_sal or player_arint?
+            player:
+                !crossed
+                What do you mean, "we"?
+            agent:
+                Okay, <i>some</> of us worship Hesh.
+            }
+                !thought
+                But in the end, do we truly understand Hesh?
+            player:
+                !dubious
+                Uhh... What are you getting at?
+            agent:
+                For instance, what is Hesh?
+                What does it look like? What is its living environment? We don't know.
+                We don't even know what kind of jellyfish it is.
+                !point
+                That's where you come in.
+                You should try to study Hesh and tell me your findings.
+        }
     ]],
 
     --on accept
     [[
         player:
+            !interest
             You got me interested.
             Just one question: where do I start?
+        {advisor_manipulate?
+            agent:
+                Logically speaking, there are so many worshippers of Hesh, there is bound to be someone who knows at least <i>something</>.
+                Therefore, you should start by asking around.
+        }
+        {not advisor_manipulate?
+            agent:
+                Perhaps you should start asking around.
+                With that many Heshians, someone must know at least <i>something</>.
+        }
+        player:
+            And how do I find such "someone"?
         agent:
-            Logically speaking, you should ask people who at least believe in Hesh.
-            The Heretical Spark Barons knows nothing about Hesh, so you would get nothing of value out of them.
-            But if you ask other people in the cult, or even civilians who worship Hesh, you might get an answer out of them.
-            That would be a good place to start.
+            !point
+            That's for you to find out.
+            I would venture that someone from the Cult, especially priests or other important figures, would likely know something about it.
+            If you are desperate, you can ask people outside of the Cult, though the likelihood of them knowing anything is very small.
     ]])
 
 QDEF:AddConvo("ask_info")
@@ -652,19 +697,13 @@ QDEF:AddConvo("ask_info")
                 cxt:Opt("OPT_THANK")
                     :Dialog("DIALOG_THANK")
                     :Fn(function(cxt)
-                        cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] = (cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] or 0) + 1
-                        if not cxt.quest:IsActive(HESH_CLASSIFICATION[cxt.enc.scratch.hesh_identity]) then
-                            cxt.quest:Activate(HESH_CLASSIFICATION[cxt.enc.scratch.hesh_identity])
-                        end
+                        cxt.quest:DefFn("IncreaseHeshKnowledge", cxt.enc.scratch.hesh_identity)
                     end)
             else
                 cxt:BasicNegotiation("EXCUSE", {})
                     :OnSuccess()
                         :Fn(function(cxt)
-                            cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] = (cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] or 0) + 1
-                            if not cxt.quest:IsActive(HESH_CLASSIFICATION[cxt.enc.scratch.hesh_identity]) then
-                                cxt.quest:Activate(HESH_CLASSIFICATION[cxt.enc.scratch.hesh_identity])
-                            end
+                            cxt.quest:DefFn("IncreaseHeshKnowledge", cxt.enc.scratch.hesh_identity)
                         end)
                     :OnFailure()
                         :ReceiveOpinion("suspicious")
@@ -676,28 +715,78 @@ QDEF:AddConvo("ask_info")
                 agent:
                 {1:
                     Hesh is a ctenophore.
-                player:
-                    !surprised
-                    It's a what-for?
-                agent:
-                    $miscMocking
-                    C-te-no-phore.
-                    They've got little hair-thingys that they use for swimming.
+                    {not hesh_ctenophore?
+                        player:
+                            !surprised
+                            It's a what-for?
+                        agent:
+                            $miscMocking
+                            C-te-no-phore.
+                            They've got little hair-thingys that they use for swimming.
+                    }
+                    {hesh_ctenophore?
+                        player:
+                            !bashful
+                            Yeah, that. Remind me what that is again?
+                        agent:
+                            Well, ctenophores have these little hair-thingys that they use for swimming.
+                    }
                 player:
                     !dubious
                     Sounds... Cute?
                 agent:
                     I assure you, it's anything but cute.
                     Most ctenophores are very capable predators.
-                    !hesh_greeting
-                    And Hesh is the most fearful predator of them all.
-                player:
-                    I'll... Keep that in mind.
+                    {cult_of_hesh?
+                        !hesh_greeting
+                        And Hesh is the most fearful predator of them all.
+                    }
+                    {hesh_cnidarian?
+                        player:
+                            !surprised
+                            Wait, I've heard that Hesh is another kind of jellyfish from some other people.
+                            Cni-something or the other?
+                        agent:
+                            !thought
+                            Ah, yes, some people do believe that Hesh is a cnidarian.
+                            !handwave
+                            They are, of course, wrong.
+                            From the descriptions of Hesh in the Waterlogged Tomes, it is clear that Hesh is a ctenophore.
+                        player:
+                            I see.
+                        |
+                        {hesh_unclassifiable?
+                            player:
+                                !surprised
+                                Wait, I was under the impression that they can't be classified using conventional biology?
+                                Or so I've heard someone claimed.
+                            agent:
+                                !thought
+                                Ah, yes. The official stance of the Cult.
+                                But is that really the case?
+                                !shrug
+                                Perhaps the Cult is trying to hide their ignorance.
+                                !thought
+                                Or perhaps they are trying to hide the horrifying truth from the public ear.
+                                In either case, the fact of the matter is, Hesh is a ctenophore.
+                            player:
+                                I see.
+                            |
+                            player:
+                                I'll... Keep that in mind.
+                        }
+                    }
                     |
                     Hesh is a cnidarian.
-                player:
-                    !surprised
-                    So Hesh is...a durian?
+                    player:
+                        {not hesh_cnidarian?
+                            !surprised
+                            So Hesh is...a durian?
+                        }
+                        {hesh_cnidarian?
+                            !hips
+                            Ah, yes, the durian. I've heard something like that.
+                        }
                 agent:
                     $miscMocking
                     C-ni-da-rian.
@@ -706,20 +795,95 @@ QDEF:AddConvo("ask_info")
                     !wince
                     $scaredFearful
                     Sounds gruesome to be on the wrong end of it.
-                    And you worship that thing?
-                agent:
-                    !hesh_greeting
-                    Hesh consumes all eventually. We simply wish to prevent unnecessary suffering.
+                    {cult_of_hesh?
+                        player:
+                            And you worship that thing?
+                        agent:
+                            !hesh_greeting
+                            Hesh consumes all eventually. We simply wish to prevent unnecessary suffering.
+                    }
+                    {hesh_ctenophore?
+                        player:
+                            !surprised
+                            Wait, I've heard that Hesh is another kind of jellyfish from some other people.
+                            Cteno-something or the other?
+                        agent:
+                            !thought
+                            Ah, yes, some people do believe that Hesh is a ctenophore.
+                            !handwave
+                            They are, of course, wrong.
+                            From the descriptions of Hesh in the Waterlogged Tomes, it is clear that Hesh is a cnidarian.
+                        player:
+                            I see.
+                        |
+                        {hesh_unclassifiable?
+                            player:
+                                !surprised
+                                Wait, I was under the impression that they can't be classified using conventional biology?
+                                Or so I've heard someone claimed.
+                            agent:
+                                !thought
+                                Ah, yes. The official stance of the Cult.
+                                But is that really the case?
+                                !shrug
+                                Perhaps the Cult is trying to hide their ignorance.
+                                !thought
+                                Or perhaps they are trying to hide the horrifying truth from the public ear.
+                                In either case, the fact of the matter is, Hesh is a cnidarian.
+                            player:
+                                I see.
+                            |
+                            player:
+                                I'll... Keep that in mind.
+                        }
+                    }
                     |
-                    Hesh is not ctenophorian, nor is it cnidarian.
-                    Hesh is a multi-faceted being, and to classify it is to waste what precious time we have before being consumed.
-                player:
-                    Thanks for the answer.
-                    $miscMocking
-                    You've <i>really</> cleared up my questions about Hesh's identity.
-                agent:
-                    !shrug
-                    It is what it is.
+                    {cult_of_hesh?
+                        Hesh is a multi-faceted being, and to classify it is to waste what precious time we have before being consumed.
+                    }
+                    {not cult_of_hesh?
+                        Hesh is a multi-faceted being, and classifying it is simply an impossibility.
+                    }
+                    {hesh_ctenophore or hesh_cnidarian?
+                        {hesh_ctenophore and not hesh_cnidarian?
+                            player:
+                                !surprised
+                                Wait, I've heard people calling Hesh a cteno-something or the other.
+                                Isn't that a classification?
+                            agent:
+                                Ah yes, I do hear that people call Hesh a ctenophore.
+                        }
+                        {not hesh_ctenophore and hesh_cnidarian?
+                            player:
+                                !surprised
+                                Wait, I've heard people calling Hesh a cni-something or the other.
+                                Isn't that a classification?
+                            agent:
+                                Ah yes, I do hear that people call Hesh a cnidarian.
+                        }
+                        {hesh_ctenophore and hesh_cnidarian?
+                            player:
+                                !surprised
+                                Wait, I've heard some people calling Hesh a cteno-something or the other.
+                                While others calling it a cni-something or the other.
+                                Aren't those classifications?
+                            agent:
+                                Well, ctenophora and cnidaria are indeed both phyla of jellyfish.
+                        }
+                        agent:
+                            But the truth is, there are many aspects of Hesh that overlaps multiple categories, and putting Hesh in one single category is simply not possible because of its nature.
+                        player:
+                            I... see.
+                    }
+                    {not (hesh_ctenophore or hesh_cnidarian)?
+                        player:
+                            Thanks for the answer.
+                            $miscMocking
+                            You've <i>really</> cleared up my questions about Hesh's identity.
+                        agent:
+                            !shrug
+                            You may feel disappointed by this answer, but it is the truth.
+                    }
                 }
                 * You seem to understand Hesh a bit more from this conversation.
             ]],
@@ -727,11 +891,7 @@ QDEF:AddConvo("ask_info")
         :Fn(function(cxt)
             cxt.enc.scratch.hesh_identity = cxt.enc.scratch.hesh_identity or math.random(1, 3)
             cxt:Dialog("DIALOG_ANSWER", cxt.enc.scratch.hesh_identity)
-            cxt.quest.param.hesh_id = cxt.quest.param.hesh_id or {}
-            cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] = (cxt.quest.param.hesh_id[cxt.enc.scratch.hesh_identity] or 0) + 1
-            if not cxt.quest:IsActive(HESH_CLASSIFICATION[cxt.enc.scratch.hesh_identity]) then
-                cxt.quest:Activate(HESH_CLASSIFICATION[cxt.enc.scratch.hesh_identity])
-            end
+            cxt.quest:DefFn("IncreaseHeshKnowledge", cxt.enc.scratch.hesh_identity)
             if not cxt.quest.param.spawned_interrupt then
                 local candidates = {}
                 for i, agent in cxt.location:Agents() do
@@ -809,8 +969,8 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 * The knowledge feels like it slips out of your hands like sand through a sieve.
                 * Sand. The ground closest to Hesh, at the beaches. The closest anyone will ever be to seeing the true Hesh.
                 agent:
-                !exit
-                * it is the sand of the beach you are confined to, the sand that you cannot go beyond, as the creature of your dreams slips further into the murky blue.
+                    !exit
+                * It is the sand of the beach you are confined to, the sand that you cannot go beyond, as the creature of your dreams slips further into the murky blue.
                 * Its face still shifts between identities, but you were so close to understanding, if only you could reach beyond the sand, if only you could see, IF ONLY-
                 * Yet you cannot, and you are plagued with those thoughts, unable to decipher anything.
             ]],
