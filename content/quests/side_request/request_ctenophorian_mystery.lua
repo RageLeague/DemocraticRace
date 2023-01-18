@@ -416,12 +416,10 @@ QDEF:AddConvo("ask_info")
         },
     }
     :Hub(function(cxt)
-        cxt.quest.param.people_asked = cxt.quest.param.people_asked or {}
         if cxt:GetAgent() and cxt.quest:DefFn("CanTalkAboutHesh", cxt:GetAgent()) and DemocracyUtil.IsFreeTimeActive() then
             cxt:Opt("OPT_ASK_HESH")
                 :SetQuestMark()
                 :Fn(function(cxt)
-                    table.insert(cxt.quest.param.people_asked, cxt:GetAgent())
                     local belief = cxt.quest:DefFn("GetHeshBelief", cxt:GetAgent())
                     if belief == HeshBelief.FANATIC then
                         cxt:GoTo("STATE_FANATIC")
@@ -445,6 +443,8 @@ QDEF:AddConvo("ask_info")
                 stance_tag = "agent_support_hesh"
             end
             cxt:Quip( cxt:GetAgent(), "asked_hesh_fail", "stance_tag")
+            cxt.quest.param.people_asked = cxt.quest.param.people_asked or {}
+            table.insert(cxt.quest.param.people_asked, cxt:GetAgent())
         end)
     :State("STATE_CAUTIOUS")
         :Loc{
@@ -458,12 +458,18 @@ QDEF:AddConvo("ask_info")
                 player:
                     Oh, pardon.
                 agent:
-                    It's...fine. Hesh forgives the cautious, but will also punish the curious.
+                    It's...fine.
+                    {cult_of_hesh?
+                        Hesh forgives the cautious, but will also punish the curious.
+                    }
+                    {not cult_of_hesh?
+                        The Cult isn't forgiving to those who are too curious.
+                    }
                     Do you understand that?
                 player:
                     Well enough, {agent}.
             ]],
-            OPT_PROBE = "Probe info",
+            OPT_PROBE = "Convince {agent} to tell you",
             DIALOG_PROBE = [[
                 player:
                     But why is it a sensitive topic? Surely a question like this should be common lore.
@@ -497,6 +503,10 @@ QDEF:AddConvo("ask_info")
                 -- Opponent will have a secret intel bounty.
             })
                 :OnSuccess()
+                :Fn(function(cxt)
+                    cxt.quest.param.people_asked = cxt.quest.param.people_asked or {}
+                    table.insert(cxt.quest.param.people_asked, cxt:GetAgent())
+                end)
                 :GoTo("STATE_SUCCESS")
             cxt:Opt("OPT_DROP")
                 :Dialog("DIALOG_DROP")
@@ -512,9 +522,20 @@ QDEF:AddConvo("ask_info")
                     But I want to talk about Hesh right now. Anything you know about Its classification?
                 agent:
                     This is so great! I have so many notes on Hesh from all the snippets of lore I've found.
-                    !dubious
+                    !handwring
                     Say...how much time do you have to burn?
                 * This sounds like it could take a while.
+            ]],
+            OPT_DROP = "Drop the topic",
+            DIALOG_DROP = [[
+                player:
+                    !placate
+                    You know what? I think I'm good.
+                agent:
+                    !disappoint
+                    Really? But there are so much to talk about!
+                player:
+                    Maybe another time, then.
             ]],
             OPT_ENDURE = "Endure {agent}'s lecture",
             DIALOG_ENDURE = [[
@@ -569,6 +590,9 @@ QDEF:AddConvo("ask_info")
             cxt:Opt("OPT_ENDURE")
                 :Dialog("DIALOG_ENDURE")
                 :Fn(function(cxt)
+                    cxt.quest.param.people_asked = cxt.quest.param.people_asked or {}
+                    table.insert(cxt.quest.param.people_asked, cxt:GetAgent())
+
                     cxt:GetAgent():SetTempNegotiationBehaviour(FANATIC_BEHAVIOUR)
                 end)
                 :Negotiation{
@@ -596,6 +620,8 @@ QDEF:AddConvo("ask_info")
                             cxt.caravan:DeltaMaxResolve(-2)
                         end)
                         :DoneConvo()
+            cxt:Opt("OPT_DROP")
+                :Dialog("DIALOG_DROP")
         end)
     :State("STATE_ANTI")
         :Loc{
@@ -690,7 +716,11 @@ QDEF:AddConvo("ask_info")
             ]],
         }
         :Fn(function(cxt)
+            cxt.quest.param.people_asked = cxt.quest.param.people_asked or {}
+            table.insert(cxt.quest.param.people_asked, cxt:GetAgent())
+
             cxt:Dialog("DIALOG_TALK")
+
             cxt.enc.scratch.hesh_identity = 3
             cxt.quest.param.hesh_id = cxt.quest.param.hesh_id or {}
             if cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL then
@@ -979,13 +1009,17 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 * As such, your mind is consumed by Hesh's madness.
             ]],
             OPT_LOSE = "Embrace the madness",
-            DIALOG_BENNI_INTERFERE = [[
-                * Yet just before you get completely consumed by Hesh's madness, you wake up, with {giver} violently shaking you.
+            DIALOG_BENNI_INTERFERE_PRE = [[
                 player:
                     !left
                     !scared
                 giver:
                     !right
+                    !scared
+                * Yet just before you get completely consumed by Hesh's madness, you wake up, with {giver} violently shaking you.
+            ]],
+            DIALOG_BENNI_INTERFERE = [[
+                giver:
                     !scared
                     {player}!
                 player:
@@ -1049,12 +1083,16 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                     :GoTo("STATE_QUESTIONS")
                 :OnFailure()
                     :Fn(function(cxt)
+                        cxt:FadeOut()
                         -- You earn a special card or something.
                         cxt.quest.param.went_crazy = true
                         -- cxt.caravan:DeltaMaxResolve(-5)
                         cxt:ForceTakeCards{"status_fracturing_mind"}
 
                         if cxt:GetCastMember("giver") == TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and cxt:GetCastMember("giver"):GetContentID() == "ADVISOR_MANIPULATE" and cxt:GetCastMember("giver"):GetRelationship() >= RELATIONSHIP.LIKED then
+                            cxt.location:SetPlax()
+                            cxt:Dialog("DIALOG_BENNI_INTERFERE_PRE")
+                            cxt:FadeIn()
                             cxt:Dialog("DIALOG_BENNI_INTERFERE")
                             cxt.quest.extra_reward = EXTRA_QUEST_REWARD.FREE_ITEM
                             cxt.quest.extra_reward_data = "white_lie"
