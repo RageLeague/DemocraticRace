@@ -162,7 +162,7 @@ local QDEF = QuestDef.Define
         if advisor and advisor:GetContentID() == "ADVISOR_MANIPULATE" then
             return false
         end
-        return not agent:HasTag("curated_request_quest") and agent:GetFactionID() == "CULT_OF_HESH"
+        return not agent:HasTag("curated_request_quest") and (agent:GetFactionID() == "CULT_OF_HESH" or agent:GetFactionID() == "FEUD_CITIZEN") and quest:DefFn("GetHeshBelief", agent) == HeshBelief.NOT_KNOW
     end,
 }
 :AddObjective{
