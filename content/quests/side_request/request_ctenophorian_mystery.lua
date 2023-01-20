@@ -91,10 +91,10 @@ local QDEF = QuestDef.Define
         if agent:GetContentID() == "ADVISOR_MANIPULATE" then
             return false -- Benni can't talk about Hesh.
         end
-        if table.arraycontains(quest.param.people_asked or {}, cxt:GetAgent()) then
+        if table.arraycontains(quest.param.people_asked or {}, agent) then
             return false -- Already asked
         end
-        -- return cxt:GetAgent():GetFactionID() == "CULT_OF_HESH" or cxt:GetAgent():GetFactionID() == "FEUD_CITIZEN"
+        -- return agent:GetFactionID() == "CULT_OF_HESH" or agent:GetFactionID() == "FEUD_CITIZEN"
         return true
     end,
 
@@ -110,25 +110,24 @@ local QDEF = QuestDef.Define
         end
         return agent:CalculateProperty("HESH_BELIEF", function(agent)
             local omni_hesh_chance = agent:GetRenown() / 8
-            local hesh_knowledge = agent:GetRenown() / 4
+            local hesh_knowledge = agent:GetRenown() / 8
             if agent:GetFactionID() ~= "CULT_OF_HESH" then
                 if agent:GetFactionID() == "ADMIRALTY" then
-                    omni_hesh_chance = omni_hesh_chance - .15
-                    hesh_knowledge = hesh_knowledge / 4
-                elseif agent:GetFactionID() == "FEUD_CITIZEN" then
                     omni_hesh_chance = omni_hesh_chance - .25
-                    hesh_knowledge = hesh_knowledge / 4
+                    hesh_knowledge = hesh_knowledge + 0.5
+                elseif agent:GetFactionID() == "FEUD_CITIZEN" then
+                    omni_hesh_chance = 0
                 elseif agent:GetFactionID() == "SPARK_BARONS" then
-                    omni_hesh_chance = omni_hesh_chance - .5
-                    hesh_knowledge = hesh_knowledge / 2
+                    omni_hesh_chance = 0
+                    hesh_knowledge = hesh_knowledge + 0.25
                 elseif agent:GetFactionID() == "BILEBROKERS" then
-                    omni_hesh_chance = omni_hesh_chance - .5
+                    omni_hesh_chance = 0
+                    hesh_knowledge = hesh_knowledge + 0.5
                 else
-                    omni_hesh_chance = omni_hesh_chance - .35
-                    hesh_knowledge = hesh_knowledge / 4
+                    omni_hesh_chance = 0
                 end
             end
-            if math.random() < hesh_knowledge then
+            if math.random() >= hesh_knowledge then
                 return HeshBelief.NOT_KNOW
             end
             if math.random() < omni_hesh_chance then
@@ -143,10 +142,10 @@ local QDEF = QuestDef.Define
 
     IncreaseHeshKnowledge = function(quest, belief)
         quest.param.hesh_id = quest.param.hesh_id or {}
-        quest.param.hesh_id[belief] = (cxt.quest.param.hesh_id[belief] or 0) + 1
-        cxt.quest.param["hesh_" .. HESH_CLASSIFICATION[belief]] = true
-        if not cxt.quest:IsActive("is_hesh_" .. HESH_CLASSIFICATION[belief]) then
-            cxt.quest:Activate("is_hesh_" .. HESH_CLASSIFICATION[belief])
+        quest.param.hesh_id[belief] = (quest.param.hesh_id[belief] or 0) + 1
+        quest.param["hesh_" .. HESH_CLASSIFICATION[belief]] = true
+        if not quest:IsActive("is_hesh_" .. HESH_CLASSIFICATION[belief]) then
+            quest:Activate("is_hesh_" .. HESH_CLASSIFICATION[belief])
         end
     end,
 }
@@ -1059,6 +1058,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 player:
                     !exit
                 * That night, you didn't have any more dreams, which is quite a relief.
+                * Yet, no matter how hard you try, you can never forget your attempt to understand Hesh that almost drives you to madness.
             ]],
             SIT_MOD = "Hard to understand",
         }
@@ -1087,7 +1087,6 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                         -- You earn a special card or something.
                         cxt.quest.param.went_crazy = true
                         -- cxt.caravan:DeltaMaxResolve(-5)
-                        cxt:ForceTakeCards{"status_fracturing_mind"}
 
                         if cxt:GetCastMember("giver") == TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and cxt:GetCastMember("giver"):GetContentID() == "ADVISOR_MANIPULATE" and cxt:GetCastMember("giver"):GetRelationship() >= RELATIONSHIP.LIKED then
                             cxt.location:SetPlax()
@@ -1100,6 +1099,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                             ConvoUtil.GiveQuestRewards(cxt)
                             cxt:GetCastMember("giver"):AddTag("white_liar")
                             cxt:Dialog("DIALOG_BENNI_INTERFERE_PST")
+                            cxt:ForceTakeCards{"status_fracturing_mind"}
                         else
                             cxt:Dialog("DIALOG_NO_INTERFERE")
                             -- Nah you just lose lol
