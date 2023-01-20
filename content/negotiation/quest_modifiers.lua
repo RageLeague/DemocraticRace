@@ -372,23 +372,6 @@ local MODIFIERS =
         end,
         event_handlers =
         {
-            [ EVENT.MODIFIER_ADDED ] = function ( self, modifier, source )
-                if modifier == self and self.engine then
-                    if self.negotiator:GetModifierInstances(self.id) > 1 then
-                        self.negotiator:RemoveModifier(self)
-                        return
-                    end
-                    -- local has_card = false
-                    -- for k,v in pairs(self.engine:GetHandDeck().cards) do
-                    --     if v.id == "assassin_fight_describe_information" then
-                    --         has_card = true
-                    --     end
-                    -- end
-                    -- if not has_card then
-                    --     self.engine:InsertCard(Negotiation.Card( "assassin_fight_describe_information", self.engine:GetPlayer() ))
-                    -- end
-                end
-            end,
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
                 self.negotiator:AddModifier(self, 1, self)
             end,
@@ -402,7 +385,7 @@ local MODIFIERS =
                         self.negotiator:AddModifier("HELP_UNDERWAY", stacks)
                     end
 
-                    self.negotiator:RemoveModifier(self)
+                    self.negotiator:RemoveModifier(self.id, math.huge, self)
                     self.anti_negotiator:AddModifier("IMPATIENCE", 1)
                     -- self:CleanUpCard("assassin_fight_describe_information")
                 end

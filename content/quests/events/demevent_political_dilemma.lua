@@ -5,10 +5,10 @@ local QDEF = QuestDef.Define
     spawn_event_mask = QEVENT_TRIGGER.TRAVEL,
     precondition = function(quest)
         local issues = DemocracyConstants.issue_data
-        quest.param.issue = table.arraypick(copyvalues(issues))
+        quest.param.issue = table.arraypick(copykeys(issues))
         quest.param.inverted = math.random() < 0.5
-        assert_warning(is_instance(quest.param.issue, DemocracyClass.IssueLocDef), "Invalid class for quest.param.issue")
-        return is_instance(quest.param.issue, DemocracyClass.IssueLocDef), "Invalid class for quest.param.issue"
+        assert_warning(is_instance(DemocracyConstants.issue_data[quest.param.issue], DemocracyClass.IssueLocDef), "Invalid class for quest.param.issue")
+        return is_instance(DemocracyConstants.issue_data[quest.param.issue], DemocracyClass.IssueLocDef), "Invalid class for quest.param.issue"
     end,
     on_init = function(quest)
 
@@ -18,10 +18,11 @@ local QDEF = QuestDef.Define
     cast_id = "extremist_pos",
     -- when = QWHEN.MANUAL,
     condition = function(agent, quest)
+        local issue = DemocracyConstants.issue_data[quest.param.issue]
         if quest.param.inverted then
-            return quest.param.issue:GetAgentStanceIndex(agent) <= -2, loc.format("Req stance -2(has {1})", quest.param.issue:GetAgentStanceIndex(agent))
+            return issue:GetAgentStanceIndex(agent) <= -2, loc.format("Req stance -2(has {1})", issue:GetAgentStanceIndex(agent))
         else
-            return quest.param.issue:GetAgentStanceIndex(agent) >= 2, loc.format("Req stance 2(has {1})", quest.param.issue:GetAgentStanceIndex(agent))
+            return issue:GetAgentStanceIndex(agent) >= 2, loc.format("Req stance 2(has {1})", issue:GetAgentStanceIndex(agent))
         end
     end,
 }
@@ -30,10 +31,11 @@ local QDEF = QuestDef.Define
     cast_id = "extremist_neg",
     -- when = QWHEN.MANUAL,
     condition = function(agent, quest)
+        local issue = DemocracyConstants.issue_data[quest.param.issue]
         if quest.param.inverted then
-            return quest.param.issue:GetAgentStanceIndex(agent) >= 2, loc.format("Req stance 2(has {1})", quest.param.issue:GetAgentStanceIndex(agent))
+            return issue:GetAgentStanceIndex(agent) >= 2, loc.format("Req stance 2(has {1})", issue:GetAgentStanceIndex(agent))
         else
-            return quest.param.issue:GetAgentStanceIndex(agent) <= -2, loc.format("Req stance -2(has {1})", quest.param.issue:GetAgentStanceIndex(agent))
+            return issue:GetAgentStanceIndex(agent) <= -2, loc.format("Req stance -2(has {1})", issue:GetAgentStanceIndex(agent))
         end
     end,
 }
@@ -124,13 +126,18 @@ QDEF:AddConvo()
         }
         :Fn(function(cxt)
             cxt.quest:Complete()
-            cxt.quest.param.issue_name = cxt.quest.param.issue:GetLocalizedName()
+            if not cxt.quest.param.issue then
+                LOGWARN("Incorrectly saved issue. Assuming the issue in question is SECURITY")
+                cxt.quest.param.issue = "SECURITY"
+            end
+            local issue = DemocracyConstants.issue_data[cxt.quest.param.issue]
+            cxt.quest.param.issue_name = issue:GetLocalizedName()
             -- cxt.quest.param.pos_stance = :GetLocalizedName()
             -- cxt.quest.param.neg_stance = :GetLocalizedName()
             cxt:Dialog("DIALOG_INTRO")
-            DemocracyUtil.QuipStance(cxt, cxt:GetCastMember("extremist_neg"), cxt.quest.param.issue.stances[cxt.quest.param.inverted and 2 or -2], "statement")
+            DemocracyUtil.QuipStance(cxt, cxt:GetCastMember("extremist_neg"), issue.stances[cxt.quest.param.inverted and 2 or -2], "statement")
             cxt:Dialog("DIALOG_INTRO_2")
-            DemocracyUtil.QuipStance(cxt, cxt:GetCastMember("extremist_pos"), cxt.quest.param.issue.stances[cxt.quest.param.inverted and -2 or 2], "exclaim", "insult")
+            DemocracyUtil.QuipStance(cxt, cxt:GetCastMember("extremist_pos"), issue.stances[cxt.quest.param.inverted and -2 or 2], "exclaim", "insult")
             cxt:Dialog("DIALOG_INTRO_3")
 
             cxt:Opt("OPT_SIDE_WITH", cxt.quest:GetCastMember("extremist_pos"))

@@ -1,3 +1,5 @@
+local ACCEPTED_GIVER_FACTION = {"JAKES", "BILEBROKERS"}
+
 local QDEF = QuestDef.Define
 {
     title = "Gift From The Bog",
@@ -70,7 +72,7 @@ local QDEF = QuestDef.Define
     provider = true,
     unimportant = true,
     condition = function(agent, quest)
-        return (agent:GetFactionID() == "JAKES" and not agent:HasTag("advisor"))
+        return not agent:HasTag("curated_request_quest") and table.arraycontains(ACCEPTED_GIVER_FACTION, agent:GetFactionID())
     end,
     on_assign = function(quest, agent)
     end,
@@ -272,7 +274,14 @@ QDEF:AddConvo("pick_up_package")
                 agent:
                     Fine.
                 * You pick up the package and bring {agent} with you.
-                * And tell everyone about this contagious parasite.
+                * But as you try to lift {agent} up, you contract the bog parasites!
+                {vaccinated?
+                    * The vaccine protected you.
+                }
+            ]],
+            DIALOG_ESCORT_SUCCESS_PST = [[
+                * [p] These parasites are really contagious.
+                * You need to tell everyone about it.
             ]],
             DIALOG_ESCORT_FAILURE = [[
                 agent:
@@ -308,6 +317,11 @@ QDEF:AddConvo("pick_up_package")
 
                 }):OnSuccess()
                     :Fn(function(cxt)
+                        if not cxt.enc.scratch.vaccinated then
+                            cxt:GainCards{"twig", "stem"}
+                        end
+
+                        cxt:Dialog("DIALOG_ESCORT_SUCCESS_PST")
                         cxt.quest:Complete("pick_up_package")
                         local overrides = {
                             cast = {
@@ -338,7 +352,7 @@ QDEF:AddConvo("pick_up_package")
                         local fighter = battle:GetFighterForAgent(cxt:GetAgent())
                         if fighter then
                             fighter:AddCondition("DEM_PARASITIC_INFECTION", 1)
-                            fighter:AddCondition("DISEASED", 5)
+                            fighter:AddCondition("DISEASED", 4)
                         end
 
                         local cards = {}

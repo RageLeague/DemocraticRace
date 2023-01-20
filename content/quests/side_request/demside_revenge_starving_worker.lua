@@ -151,7 +151,7 @@ local QDEF = QuestDef.Define
     provider = true,
     unimportant = true,
     condition = function(agent, quest)
-        return not AgentUtil.HasPlotArmour(agent) and agent:GetBrain():GetWorkPosition() == nil and ((agent:GetFactionID() == "FEUD_CITIZEN" and agent:GetRenown() <= 2)
+        return not agent:HasTag("curated_request_quest") and agent:GetBrain():GetWorkPosition() == nil and ((agent:GetFactionID() == "FEUD_CITIZEN" and agent:GetRenown() <= 2)
             or (agent:GetFactionID() == "RISE" and agent:GetRenown() <= 3))
     end,
     cast_fn = function(quest, t)
