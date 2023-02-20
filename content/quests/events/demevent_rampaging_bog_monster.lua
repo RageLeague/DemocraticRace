@@ -152,42 +152,35 @@ QDEF:AddConvo("action")
     :State("STATE_PARTY")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] Something seems wrong with {infected}.
-                player:
-                    !left
-                infected:
-                    !right
-                    !injured
-                    {player.gender:Mr.|Ms.|Mx.} {player}, I don't feel so good.
-                * You didn't have time to bring {infected} to help! {infected} seems to be transforming into something!
-                * You only have moments to spare!
+                * Everything changes in a minute.
+                * before, you had been walking with a deteriorating but still functional {infected}.
+                * Now, {infected} is on {infected.hisher} knees, sitting in a puddle of vomit, {infected.hisher} skin turning a sickly color.
+                * Passerbys, before giving you space, now stare dumbfoundedly as you cradle {infected}'s head in your arms.
+                * That minute has passed. Now you only have another minute before something <i>truly</> terrible happens.
             ]],
             OPT_KILL = "Kill {infected} before {infected.heshe} can transform!",
             DIALOG_KILL = [[
                 player:
                     !fight
-                    [p] This is for your own good.
-                infected:
-                    !surprised
-                    Wha-
+                * You brandish your weapon, aligning it with {infected}'s throat.
+                * However, {infected} suddenly gets up with a sudden, struggling strength, and swats you away.
+                * {infected.HeShe} produces {infected.hisher} weapon, prepared to fight you to both your deaths.
             ]],
             DIALOG_KILL_DEAD = [[
-                * [p] You successfully put {infected} out of {infected.hisher} misery and prevented a huge disaster.
-                * Passer-bys see you as a killer, blissfully unaware of the danger that would've occur should you allow {infected} to live.
-                * It is a thankless task, but it must be done.
-                * For a true hero will do what is right, even if they receive no praise from the world.
-                * You just wish that the world will see you as the hero that you are, and have your support reflect that.
+                * {infected} curls up into an unnatural position as {infected.heshe} dies, coughing a variety of fluids and viscera.
+                * The fascination of the bystanders turns to confusion, then whispers. Accusations of betrayal permeate the air.
+                * For your part, there isn't much you can do. You'll go down as a minor hero or a minor villain for this act. 
+                * All you really can do is wipe what's left of {infected} off of your weapon and walk away, eyes burning into the back of your neck.
             ]],
             DIALOG_KILL_SPARED = [[
-                * [p] There is not enough time.
+                * Before the fighting can continue, {infected} knocks you over with a sudden gust of strength before collapsing into a heap.
                 beast:
                     !right
-                * Before you can finish {infected} off, {infected} transforms into a huge monster right before your eyes!
+                * By the time you're upright, {infected} is no longer there. 
             ]],
             DIALOG_KILL_RUNAWAY = [[
-                * [p] It's too late, there is nothing you can do.
-                * You run away from {infected}.
-                * The last thing you hear is a loud screech, followed by the sound of screaming.
+                * You leave your half-finished work where {infected.heshe} lays, exhausted and squirming with protruding pain.
+                * A choir of screams reward your half-measures. 
             ]],
             OPT_REASSURE = "Reassure {infected} that everything is going to be alright",
             DIALOG_REASSURE = [[
@@ -222,24 +215,33 @@ QDEF:AddConvo("action")
             ]],
             DIALOG_REASSURE_FAILURE = [[
                 infected:
-                    !scared
-                    [p] I don't wanna go. Please! I don't wanna go!
-                * Seems like the bog parasites don't care what {infected} wants.
+                    !injured
+                player:
+                    !hips
+                    Now I'm not saying you're going to transform into a monster fueled by fruit flys and rage...
+                    But if you happen to, I want you to remember one thing.
+                    !point
+                    Don't eat my face. 
+                    I need it for my campaign.
+                infected:
+                    I...don't...AAAAHH!
+                    !exit
             ]],
             DIALOG_REASSURE_FAILURE_PST = [[
                 beast:
                     !right
                 * Before your very eyes, {infected} transforms into a huge monster!
+                player:
+                    !placate
+                    {infected}? Remember what I told you.
+                    My face. Don't eat it.
+                * {beast} lurches towards you, evidently discarding your advice.
             ]],
             OPT_LEAVE = "Leave {infected}",
             DIALOG_LEAVE = [[
-                * [p] It's too late, there is nothing you can do.
-                * You leave {infected}.
-                * The last thing you hear is a loud screech, followed by the sound of screaming.
-                beast:
-                    !right
-                * When you look back, you see where {infected} used to be is a mutant bog monster, and people are running away from it.
-                * Is it really alright for you to leave?
+                * You turn tail and run, to the demeaning stares of the bystanders.
+                * However, you stop. As you look back, {infected} has turned into a warped beast, ravaging the people previously focused on you.
+                * It was the screams that brought you back. Something in you couldn't live with yourself if you left them now.
             ]],
             REASON_TXT = "Kill {infected} within <#PENALTY>{1} {1*turn|turns}!</>",
         }
