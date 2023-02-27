@@ -327,11 +327,10 @@ QDEF:AddConvo("action")
     :State("STATE_ROAD")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] You are minding your own business when you saw a bunch of people running away something.
-                * They seem very scared.
-                * You look at who they are running from, and it turns out it's some sort of bog mutant.
+                * A small flurry of harried hands and voices push past you as you pass through another busy intersection.
                 beast:
                     !right
+                * One look up the road tells you why.
                 {know_infected?
                     * Wait, that face... Is that {infected}?
                 }
@@ -355,7 +354,7 @@ QDEF:AddConvo("action")
                     !scared
                 player:
                     !left
-                    [p] If we work together, we can take down the monster!
+                    Form up, soldiers!
             ]],
             DIALOG_GATHER_SUCCESS = [[
                 * [p] You gathered a bunch of people who are willing to fight.
@@ -371,7 +370,7 @@ QDEF:AddConvo("action")
                 player:
                     !left
                     !fight
-                    [p] Attack!
+                    Alright! Let's settle this Grout Bog style!
             ]],
             DIALOG_ATTACK_WIN = [[
                 player:
@@ -401,6 +400,7 @@ QDEF:AddConvo("action")
                     }
                 }
                 {not has_survivor?
+                    * The dawning silence sticks to the air like a fly to the ointment.
                     {not took_parasites?
                         * Too bad there is no one here to notice your heroic deed.
                         {not player_drunk?
@@ -413,7 +413,7 @@ QDEF:AddConvo("action")
                         }
                     }
                     {took_parasites?
-                        * No matter. There is no one here to witness you, anyway.
+                        * You wipe the gunk and viscera off your weapons, already sure you've been infected. 
                     }
                 }
             ]],
@@ -423,12 +423,13 @@ QDEF:AddConvo("action")
                     !exit
                 right:
                     !exit
-                * [p] You watch as {1*{2} fights the monster by {2.self}|the people you gathered fight the monster}.
+                * You send {1*{2}your ally to fight the monster|the small squad to fight the monster}.
             ]],
             DIALOG_ORDER_SUCCESS = [[
-                * [p] It was a tough battle, but eventually, the monster is killed.
+                * You watch your allies beat down on the beast with pipe, pike, and pamphlet alike. 
+                * Eventually, the monster goes still, lying on the ground and oozing numerous fluids.
                 {people_died?
-                    * However, there are some casualties.
+                    * You take the time to count the newly dead.
                     * {1#agent_list} died during battle.
                 }
                 player:
@@ -452,14 +453,19 @@ QDEF:AddConvo("action")
                 }
             ]],
             DIALOG_ORDER_FAILURE = [[
-                * [p] Clearly, that wasn't enough, as the monster killed {1#agent_list}.
+                * You've sent them to a meat grinder. 
+                * One by one, the beast put each of them down, leaving you the only one left to fight it.
                 player:
                     !left
                     !scared
-                * There are only moments left before it notices you!
+                * You watch from your spot in the gore soaked road, as it looks up at you, dripping blood from it's jaw.
             ]],
             OPT_RUN_AWAY = "Run away from the scene",
             DIALOG_RUN_AWAY = [[
+                * You put as much distance as you can between you and the monster, and then some. 
+                {tried_order?
+                    * A deep feeling of shame blooms in your chest as you think of the people who died following your hasty orders.
+                }
                 * [p] To save your own skin, you decided to run away.
                 * You don't want to imagine what happens to the people left behind.
                 * You hope that the monster gets taken down, and such attack does not happen again.
