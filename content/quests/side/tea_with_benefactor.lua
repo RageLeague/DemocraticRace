@@ -264,14 +264,14 @@ QDEF:AddConvo("go_to_diner", "benefactor")
 
                 on_start_negotiation = function(minigame)
                     -- just so you get at least something on win instead of nothing.
-                    minigame.player_negotiator:CreateModifier("SECURED_INVESTMENTS", 5)
+                    minigame.player_negotiator:CreateModifier("SECURED_FUNDS", 5)
                     minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 5)
                     minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 10)
                     minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 20)
                 end,
 
                 on_success = function(cxt, minigame)
-                    cxt.quest.param.funds = minigame:GetPlayerNegotiator():GetModifierStacks( "SECURED_INVESTMENTS" )
+                    cxt.quest.param.funds = minigame:GetPlayerNegotiator():GetModifierStacks( "SECURED_FUNDS" )
                     cxt.quest.param.poor_performance = cxt.quest.param.funds < 20 + 10 * cxt.quest:GetRank()
                     if cxt.quest.param.poor_performance then
                         cxt:Dialog("DIALOG_BENEFACTOR_POOR")

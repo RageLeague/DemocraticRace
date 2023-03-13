@@ -1,4 +1,3 @@
-
 local LOCATION_DEF =
 {
     id = "POPULOUS_JUNCTION",
@@ -17,7 +16,7 @@ local CROWD_BEHAVIOR = {
     OnInit = function( self, difficulty )
         -- self.bog_boil = self:AddCard("bog_boil")
         self:SetPattern( self.BasicCycle )
-        local modifier = self.negotiator:AddModifier("PREACH_CROWD")
+        local modifier = self.negotiator:AddModifier("SELL_MERCH_CROWD")
         modifier.agents = shallowcopy(self.agents)
         modifier:InitModifiers()
     end,
@@ -48,11 +47,12 @@ local CROWD_BEHAVIOR = {
         -- end
     end,
 }
+
 local QDEF = QuestDef.Define
 {
-    title = "Roadside Preaching",
-    desc = "Preach on the roadside. You might convince people to join your ideology!",
-    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/roadside_preaching.png"),
+    title = "Fundraising",
+    desc = "Sell merchandise to your supporters to raise funds for your campaign!",
+    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/roadside_preaching.png"),
 
     qtype = QTYPE.SIDE,
     act_filter = DemocracyUtil.DemocracyActFilter,
@@ -81,10 +81,10 @@ local QDEF = QuestDef.Define
         end
     end,
     on_complete = function( quest )
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 4 * #quest.param.convinced_people, "COMPLETED_QUEST")
+        -- DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 4 * #quest.param.convinced_people, "COMPLETED_QUEST")
     end,
     on_fail = function(quest)
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2 * #quest.param.crowd, "FAILED_QUEST")
+        -- DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2 * #quest.param.crowd, "FAILED_QUEST")
     end,
 }
 :AddLocationCast{
@@ -95,7 +95,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "go_to_junction",
     title = "Go to {junction#location}",
-    desc = "Go to {junction#location} to preach there.",
+    desc = "Go to {junction#location} to sell your merch there.",
     mark = { "junction" },
     state = QSTATUS.ACTIVE,
 
@@ -107,9 +107,9 @@ local QDEF = QuestDef.Define
     end,
 }
 :AddObjective{
-    id = "preach",
-    title = "Preach",
-    desc = "Start preaching until you can convert significant amount of people."
+    id = "sell_merch",
+    title = "Sell merch",
+    desc = "Convince as many people as possible to buy your merch to raise money for your campaign!"
 }
 :AddCast{
     cast_id = "crowd",
@@ -124,17 +124,11 @@ local QDEF = QuestDef.Define
     -- score_fn = score_fn,
 }
 :AddOpinionEvents{
-    convinced_political_idea =
-    {
-        delta = OPINION_DELTAS.LIKE,
-        txt = "Enlightened them with your ideology.",
-    },
-    annoyed_by_preach = {
+    annoyed_by_sellout = {
         delta = OPINION_DELTAS.OPINION_DOWN,
-        txt = "Annoyed by your preaching.",
+        txt = "Annoyed by your sellout.",
     },
 }
-DemocracyUtil.AddPrimaryAdvisor(QDEF)
 
 QDEF:AddConvo("go_to_junction")
 
@@ -146,22 +140,23 @@ QDEF:AddConvo("go_to_junction")
     :State("STATE_INTRO")
         :Loc{
             DIALOG_INTRO = [[
-                * You find a crossroads, busy with activity and rushing passer-bys.
-                * You begin to preach to those who would listen. A few gather around you.
+                * [p] You find a crossroads and set up your stand.
             ]],
-            OPT_PREACH = "Preach!",
-            REASON_PREACH = "Convince as many people as you can to join your side!",
+            OPT_SELL = "Sell merchandise!",
+            REASON_SELL = "Sell your merchandise to as many people as you can!",
 
-            DIALOG_CONVINCED_PEOPLE = [[
-                * You count about {1} {1*person|people} staying close, cheering on your beliefs.
-                * {1:Not great, but that's something.|That's a good start.|Well done!}
+            DIALOG_GOT_FUNDS = [[
+                * [p] You raised {1#money}.
+                {not poor_performance?
+                    * Well done!
+                }
+                {poor_performance?
+                    * Could be better. Could be worse.
+                }
             ]],
-            DIALOG_UNCONVINCED_PEOPLE = [[
-                player:
-                    Hear ye, Hear ye! I bring free thoughts on the-
-                    Wait...where are you going?
-                * The crowd around you disperses. It's clear you haven't enticed them further than the initial interest.
-                * With their leave, you leave as well. You wonder if you simply needed a better technique.
+            DIALOG_NO_FUNDS = [[
+                * [p] You raised no money at all.
+                * How is that possible?
             ]],
         }
         :Fn(function(cxt)
@@ -183,39 +178,28 @@ QDEF:AddConvo("go_to_junction")
 
             local postProcessingFn = function(cxt, minigame)
                 local core = minigame:GetOpponentNegotiator():FindCoreArgument()
-                cxt.quest.param.convinced_people = {}
                 cxt.quest.param.unconvinced_people = core and core.ignored_agents or {}
 
-                for i, modifier in minigame:GetPlayerNegotiator():Modifiers() do
-                    if modifier.id == "PREACH_TARGET_INTERESTED" and modifier.target_agent then
-                        table.insert( cxt.quest.param.convinced_people, modifier.target_agent )
-                    end
-                end
-
-                for i, agent in ipairs(cxt.quest.param.convinced_people) do
-                    agent:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("convinced_political_idea"))
-                end
                 for i, agent in ipairs(cxt.quest.param.unconvinced_people) do
-                    agent:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("annoyed_by_preach"))
+                    agent:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("annoyed_by_sellout"))
                 end
-                if #cxt.quest.param.convinced_people > 0 then
-                    cxt:Dialog("DIALOG_CONVINCED_PEOPLE", #cxt.quest.param.convinced_people)
-                    if #cxt.quest.param.convinced_people == 1 then
-                        cxt.quest.param.poor_performance = true
-                    end
+                cxt.quest.param.funds = minigame:GetPlayerNegotiator():GetModifierStacks( "SECURED_FUNDS" )
+                if cxt.quest.param.funds > 0 then
+                    cxt.quest.param.poor_performance = cxt.quest.param.funds < 20 + 10 * cxt.quest:GetRank()
+                    cxt:Dialog("DIALOG_GOT_FUNDS", #cxt.quest.param.funds)
                     cxt.quest:Complete()
                     ConvoUtil.GiveQuestRewards(cxt)
                 else
-                    cxt:Dialog("DIALOG_UNCONVINCED_PEOPLE")
+                    cxt:Dialog("DIALOG_NO_FUNDS")
                     cxt.quest:Fail()
                 end
             end
 
-            cxt:Opt("OPT_PREACH")
+            cxt:Opt("OPT_SELL")
                 :Negotiation{
                     flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE | NEGOTIATION_FLAGS.NO_BYSTANDERS,
                     reason_fn = function(minigame)
-                        return cxt:GetLocString("REASON_PREACH")
+                        return cxt:GetLocString("REASON_SELL")
                     end,
                     on_start_negotiation = function(minigame)
                     end,
@@ -231,37 +215,20 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
         DIALOG_INTRO = [[
             player:
                 !left
-            {not has_primary_advisor?
-                What's the classic way of getting ideologies out into the world?
-                A good workday's worth of political soapboxing!
-                Who knows? Might even rally some support!
-            }
-            {has_primary_advisor?
             agent:
-                I think we should get back to the roots of campaigning.
-                You're going to stand out in a populous crossroads and preach to the passer-bys.
-                You'll need to reel the listeners in before they can get annoyed, but it should be a slam dunk.
-            }
+                [p] Wanna sell some merch?
         ]],
     }
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
         end)
+
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :Loc{
         DIALOG_INTRO = [[
             player:
-                !left
-                Might be worth a shot.
-            {not has_primary_advisor?
-                Think I know where to hit the trail to start preaching.
-            }
-            {has_primary_advisor?
-            agent:
-                Good.
-                Now, there is a junction where many people visits. You should go there and start preaching.
-            }
+                [p] Sure!
         ]],
     }
     :State("START")
@@ -269,19 +236,12 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Activate("go_to_junction")
         end)
+
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.DECLINED )
     :Loc{
         DIALOG_INTRO = [[
             player:
-                !left
-                Y'know what? Maybe it'll be a bit too much work for too little reward.
-            {not has_primary_advisor?
-                What else could I do...
-            }
-            {has_primary_advisor?
-            agent:
-                Back to the drawing board. Let's see what else we could do...
-            }
+                [p] Nah.
         ]],
     }
     :State("START")
