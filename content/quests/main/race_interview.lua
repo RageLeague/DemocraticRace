@@ -1,60 +1,3 @@
-local INTERVIEWER_BEHAVIOR = {
-    QUESTION_STACKS = {3, 3, 3, 3},
-    OnInit = function( self, difficulty )
-        -- self.bog_boil = self:AddCard("bog_boil")
-        local relationship_delta = self.agent and (self.agent:GetRelationship() - RELATIONSHIP.NEUTRAL) or 0
-        self:SetPattern( self.BasicCycle )
-        local modifier = self.negotiator:AddModifier("INTERVIEWER")
-        -- modifier.agents = shallowcopy(self.agents)
-        -- modifier:InitModifiers()
-        self.cont_question_card = self:AddCard("contemporary_question_card")
-        self.cont_question_card.stacks = DemocracyUtil.CalculateBossScale(self.QUESTION_STACKS)
-
-        self.modifier_picker = self:MakePicker()
-
-        local _, card = self.modifier_picker:AddArgument("LOADED_QUESTION", 2 + math.max(0, -relationship_delta))
-        card.stacks = DemocracyUtil.CalculateBossScale(self.QUESTION_STACKS)
-        local _, card = self.modifier_picker:AddArgument("PLEASANT_QUESTION", 2 + math.max(0, relationship_delta))
-        card.stacks = DemocracyUtil.CalculateBossScale(self.QUESTION_STACKS)
-        local _, card = self.modifier_picker:AddArgument("GENERIC_QUESTION", 4)
-        card.stacks = DemocracyUtil.CalculateBossScale(self.QUESTION_STACKS)
-
-        if not self.params then self.params = {} end
-        self.params.questions_answered = 0
-        self.available_issues = copyvalues(DemocracyConstants.issue_data)
-    end,
-    BasicCycle = function( self, turns )
-        -- Double attack every 2 rounds; Single attack otherwise.
-        if self.difficulty >= 4 and turns % 2 == 0 then
-            self:ChooseGrowingNumbers( 3, -1 )
-        elseif turns % 2 == 0 then
-            self:ChooseGrowingNumbers( 2, 0 )
-        else
-            self:ChooseGrowingNumbers( 1, 1 )
-        end
-        -- if turns == 1 then
-        --     self:ChooseGrowingNumbers( 1, 2 )
-        -- end
-        local question_count = 0
-        for i, data in self.negotiator:Modifiers() do
-            if data.AddressQuestion then
-                question_count = question_count + 1
-            end
-        end
-        if turns % 3 == 1 then
-            self:ChooseCard(self.cont_question_card)
-            if question_count < 4 then
-                self.modifier_picker:ChooseCards(1)
-            end
-        -- elseif turns % 3 == 2 then
-        --     self.modifier_picker:ChooseCards(2)
-        else
-            -- self:ChooseGrowingNumbers( 1, 1 )
-            self.modifier_picker:ChooseCards(question_count < 4 and 2 or 1)
-        end
-    end,
-}
-
 local RELATION_OFFSET = {
     [RELATIONSHIP.HATED] = -16,
     [RELATIONSHIP.DISLIKED] = -8,
@@ -62,7 +5,6 @@ local RELATION_OFFSET = {
     [RELATIONSHIP.LIKED] = 8,
     [RELATIONSHIP.LOVED] = 16,
 }
-
 
 local QDEF = QuestDef.Define
 {
@@ -567,7 +509,7 @@ QDEF:AddConvo("do_interview")
 
             cxt:Dialog("DIALOG_INTERVIEW")
 
-            local BEHAVIOUR_INSTANCE = shallowcopy(INTERVIEWER_BEHAVIOR)
+            local BEHAVIOUR_INSTANCE = shallowcopy(DemocracyUtil.BEHAVIOURS.INTERVIEWER_BOSS)
             BEHAVIOUR_INSTANCE.params = {}
             cxt:GetAgent():SetTempNegotiationBehaviour(BEHAVIOUR_INSTANCE)
 

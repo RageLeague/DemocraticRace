@@ -26,18 +26,6 @@ end
 local POOR_ART = {"PROP_PO_MESSY", "PROP_PO_SUPERFICIAL"}
 local GOOD_ART = {"PROP_PO_INSPIRING", "PROP_PO_THOUGHT_PROVOKING"}
 
-local DRAFT_BEHAVIOUR = {
-	OnInit = function( self, difficulty )
-		-- self.bog_boil = self:AddCard("bog_boil")
-		self:SetPattern( self.BasicCycle )
-        self.negotiator:AddModifier("POSTER_SIMULATION_ENVIRONMENT")
-    end,
-
-    BasicCycle = function( self, turns )
-        -- literally does nothing.
-	end,
-}
-
 local function CanMakePoster(agent)
     -- Maybe in the future I can make it so you can ask allies to make a poster for you.
     -- if DemocracyUtil.GetAlliance(agent) then
@@ -783,7 +771,7 @@ QDEF:AddConvo("commission")
             if not cxt.quest.param.cards then
                 cxt.quest.param.cards = {}
             end
-            cxt:GetAgent():SetTempNegotiationBehaviour(DRAFT_BEHAVIOUR)
+            cxt:GetAgent():SetTempNegotiationBehaviour(DemocracyUtil.BEHAVIOURS.PROPAGANDA_DRAFT)
             cxt:Question("OPT_HINT", "DIALOG_HINT")
 
             local recorded_cards = {}

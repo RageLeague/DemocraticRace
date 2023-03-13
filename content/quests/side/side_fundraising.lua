@@ -12,42 +12,6 @@ if not Content.GetLocationContent(LOCATION_DEF.id) then
     Content.AddLocationContent(LOCATION_DEF)
 end
 
-local CROWD_BEHAVIOR = {
-    OnInit = function( self, difficulty )
-        -- self.bog_boil = self:AddCard("bog_boil")
-        self:SetPattern( self.BasicCycle )
-        local modifier = self.negotiator:AddModifier("SELL_MERCH_CROWD")
-        modifier.agents = shallowcopy(self.agents)
-        modifier:InitModifiers()
-    end,
-    agents = {},
-    -- ignored_agents = {},
-
-    -- Duplicated from Bandits. Needs revision
-    BasicCycle = function( self, turns )
-        local scaling = 1.5
-
-        local adv_scale = GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_RESOLVE_DAMAGE )
-        if adv_scale then
-            scaling = scaling * adv_scale
-        end
-        local VARIANCE = 0.2
-        scaling = scaling * ((math.random() - 0.5) * 2 * VARIANCE + 1)
-
-        -- Double attack every 2 rounds; Single attack otherwise.
-        if self.difficulty >= 4 and turns % 2 == 0 then
-            self:ChooseNumbers( 3, 2 + math.random(-1,1), scaling * 0.6 )
-        elseif turns % 2 == 0 then
-            self:ChooseNumbers( 2, 1 + math.random(-1,1), scaling * 0.8 )
-        else
-            self:ChooseNumbers( 1, 1 + math.random(-1,1), scaling )
-        end
-        -- if turns % 3 == 0 then
-        -- 	self:ChooseCard(self.bog_boil)
-        -- end
-    end,
-}
-
 local QDEF = QuestDef.Define
 {
     title = "Fundraising",
@@ -172,7 +136,7 @@ QDEF:AddConvo("go_to_junction")
             cxt.quest:Activate("preach")
             cxt.enc:SetPrimaryCast(cxt.quest.param.crowd[1])
 
-            local BEHAVIOR = shallowcopy(CROWD_BEHAVIOR)
+            local BEHAVIOR = shallowcopy(DemocracyUtil.BEHAVIOURS.SELL_MERCH_CROWD)
             BEHAVIOR.agents = cxt.quest.param.crowd
             cxt:GetAgent():SetTempNegotiationBehaviour(BEHAVIOR)
 

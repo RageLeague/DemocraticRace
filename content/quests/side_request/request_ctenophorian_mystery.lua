@@ -3,36 +3,6 @@ local HeshBelief = MakeEnum{ "ANTI", "CAUTIOUS", "FANATIC", "NOT_KNOW" }
 
 local HESH_CLASSIFICATION = {"ctenophore", "cnidarian", "unclassifiable"}
 
-local FANATIC_BEHAVIOUR =
-{
-    OnInit = function( self, difficulty )
-        local modifier = self.negotiator:AddModifier("ZEAL")
-        self.faith = self:AddArgument("FAITH_IN_HESH")
-        self.wrath = self:AddArgument( "wrath_of_hesh" )
-        self.hesh_arguments = table.shuffle({
-            self:AddArgument("STINGING_NETTLE"),
-            self:AddArgument("COMB_BEARER")
-        })
-
-        self:SetPattern( self.BasicCycle )
-    end,
-
-    BasicCycle = function( self, turns )
-        self:ChooseGrowingNumbers( 2, 1, 2 )
-        self:ChooseComposure( 2, 1, 3 )
-        if turns < 4 then
-            self:ChooseCard(self.faith)
-        else
-            self:ChooseCard(self.wrath)
-        end
-        if (turns - 1) % 2 == 0 then
-            if turns < 4 and ((turns - 1) / 2) < #self.hesh_arguments then
-                self:ChooseCard(self.hesh_arguments[1 + ((turns - 1) / 2)])
-            end
-        end
-    end,
-}
-
 local QDEF = QuestDef.Define
 {
     title = "Ctenophorian Mystery",
@@ -592,7 +562,7 @@ QDEF:AddConvo("ask_info")
                     cxt.quest.param.people_asked = cxt.quest.param.people_asked or {}
                     table.insert(cxt.quest.param.people_asked, cxt:GetAgent())
 
-                    cxt:GetAgent():SetTempNegotiationBehaviour(FANATIC_BEHAVIOUR)
+                    cxt:GetAgent():SetTempNegotiationBehaviour(DemocracyUtil.BEHAVIOURS.HESHIAN_FANATIC)
                 end)
                 :Negotiation{
                     -- This will be a special negotiation.
