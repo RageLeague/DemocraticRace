@@ -153,7 +153,7 @@ QDEF:AddConvo("action")
         :Loc{
             DIALOG_INTRO = [[
                 * Everything changes in a minute.
-                * before, you had been walking with a deteriorating but still functional {infected}.
+                * Before, you had been walking with a deteriorating but still functional {infected}.
                 * Now, {infected} is on {infected.hisher} knees, sitting in a puddle of vomit, {infected.hisher} skin turning a sickly color.
                 * Passerbys, before giving you space, now stare dumbfoundedly as you cradle {infected}'s head in your arms.
                 * That minute has passed. Now you only have another minute before something <i>truly</> terrible happens.
@@ -185,32 +185,43 @@ QDEF:AddConvo("action")
             OPT_REASSURE = "Reassure {infected} that everything is going to be alright",
             DIALOG_REASSURE = [[
                 player:
-                    [p] Hold on, {infected}. Everything is going to be alright.
+                    Stay with me, {infected}! Just focus on breathing...
             ]],
             DIALOG_REASSURE_SUCCESS = [[
                 infected:
-                    [p] Thanks, {player}, I appreciate your confidence.
-                    !happy
-                * {infected} let out a agonizing smile.
+                    !injured
+                player:
+                    Listen here, {infected}. You've gotten a few decades under your belt up until now.
+                    !eureka
+                    And as Hesh as my witness, you're gonna live decades more! Do you hear me?
+                infected:
+                    Y-yeah! I'm gonna be okay!
+                * A tear or two wells up in {infected}'s eyes as a glowing warmth radiates off of {infected.himher}.
+                {player_drunk?
+                player:
+                    !drunk
+                    Aw, c'mere! You deserve a hug.
+                * You grab {infected} in a hug, not letting go until you are forcibly pulled by one of the bystanders. 
+                * You sober up at the sight of what you were just hugging.
+                }
                 {not player_drunk?
-                    * Despite everything, you can see that {infected} still has hope, and thank you for the courage you gave {infected.himher}.
+                * An <i>uncomfortable</> warmth. You unconsciously take a step back as the heat turns nauseatingly thick.
+                infected:
+                    I'm gonna be okay. I'm gonna be okay. I'm...gonna...
                 }
             ]],
             DIALOG_REASSURE_SUCCESS_PST = [[
                 {not player_drunk?
-                    * [p] Unfortunately that's not how it works at all.
-                    * Hope doesn't prevent someone from transforming into a terrifying bog monster.
                     beast:
                         !right
-                    * Before your very eyes, {infected} transforms into a huge monster!
+                    * A sickening transformation takes place in front of everyone. You look away, afraid to vomit in front of it.
+                    * When you look back, a bestial thing stands before you. A humanoid face protrudes from it, with a dying mantra on it's lips.
                 }
                 {player_drunk?
                     beast:
                         !right
-                    * [p] Just as you thought everything is going to be alright, {infected} transforms into a huge monster!
-                    player:
-                        !drunk
-                    * Dang. You really hoped that would work.
+                    * A bestial thing stands before you, dripping goop that covered your clothes.
+                    * You hastily wipe it off as this monster's rationality drains away, leaving only a survival instinct...to <i>feed</>.
                 }
             ]],
             DIALOG_REASSURE_FAILURE = [[
