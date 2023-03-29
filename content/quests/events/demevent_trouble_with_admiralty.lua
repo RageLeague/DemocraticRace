@@ -32,38 +32,119 @@ QDEF:AddConvo()
     :ConfrontState("STATE_CONFRONT")
         :Loc{
             DIALOG_INTRO = [[
-                * You were minding your own business when you are stopped by and Admiralty.
-                player:
-                    !left
+                * A purple wave of bodies confront you on the road. Badges gleam on their uniforms.
                 agent:
                     !right
-                    [p] Stop right there, criminal scum!
-                    You've violated the law!
-                    Pay the court a fine, or serve your sentence.
+                player:
+                    !left
+                {player_drunk?
+                    !drunk
+                    What seems to be the officer, problem?
+                agent:
+                    !notepad
+                    "Being drunk without a liscense"...I'm sure there's a reason to lock you up for that.
+                    On top of everything else you've done.
+                }
+                {not player_drunk?
+                    Is everything alright?
+                agent:
+                    Oh, everything's gonna be alright in the next 5 minutes. 
+                }
+                {assaulted?
+                    agent:
+                        {player}, do you by chance know why an officer of the law came into the infirmary with multiple broken bones?
+                    player:
+                        !shrug
+                        Look, when that happened I had eaten a <i>Lot</> of bananas, I can't be blamed for-
+                    agent:
+                        !notepad
+                        "Improper disposal of food waste". That's worth almost as much as serial murder.
+                    player:
+                        !crossed
+                        You guys really need to sort out your legal code.
+                }
+                {not assaulted?
+                    agent:
+                        Who do you think runs the elections? Who do you think <i>keeps the electors safe?</>
+                    player:
+                        !thought
+                        Well I was going to say the Oshnu that made it's way into my bowl but I'm assuming that's not the answer you want.
+                    agent:
+                        !thumb
+                        It's us. <i>We</> keep the elections safe and above board.
+                        And that gives us a <b>lot</> of capacity to be <i>underhanded</>.
+                }
+                agent:
+                    !fight
+                    {player}, you are under arrest for {assaulted?assaulting an Admiralty officer|defying our authority}.
                 ** This event happened because you {assaulted?are wanted by the Admiralty for committing a crime|are unpopular among the Admiralty}.
             ]],
             OPT_PAY = "Pay the court a fine",
             DIALOG_PAY = [[
-                * [p] You paid the court a fine, so that you don't have to serve a sentence.
+                player:
+                    !hips
+                    Well, let me ask you this.
+                    !give
+                    Do you think someone with <i>this</> many shills would do well in prison?
+                agent:
+                    !taken_aback
+                    Oh, well, uhm.
+                    !take
+                    No, I guess you wouldn't do too well in prison.
+                player:
+                    !happy
+                    Hmm, yes. I'm much too popular to go to prison.
+                    !chuckle
+                    Much too <i>beautiful</> to-
+                agent:
+                    !point
+                    Okay, bub, you're pushing it. 
+                    You've bought your hide another day or two, if I can throw enough paperwork in front of it.
+                    !salute
+                    Be not-seeing you, {player}.
             ]],
             OPT_CONVINCE = "Convince {agent} that they got the wrong person",
             DIALOG_CONVINCE = [[
-                player:
-                    [p] It wasn't me, it was the man in the chicken costume.
-                agent:
-                    A likely story, go on.
+                {not assaulted?
+                    player:
+                        !chuckle
+                        Wow. Never did I expect the misinformation mill to have the ear of the government!
+                    agent:
+                        !crossed
+                        What are you talking about?
+                }   
             ]],
             SIT_MOD = "The Admiralty is cautious of you",
             DIALOG_CONVINCE_SUCCESS = [[
-                agent:
-                    [p] Hesh damn poultry man!
-                    I'll get them.
-                    !exit
+                {not assaulted?
+                    player:
+                        
             ]],
             DIALOG_CONVINCE_FAILURE = [[
-                agent:
-                    [p] A great story you have there.
-                    A shame that it doesn't absolve your duty.
+                {not assaulted?
+                    player:
+                        !hips
+                        I'm a massive proponent of government policies! Ask me any, I'll tell you.
+                    agent:
+                        !thought
+                        Okay, we should raise tax-
+                    player:
+                        !exit
+                    * You collapse on the ground, face first. 
+                    agent:
+                        !intrigue
+                        Are you...okay, {player}?
+                    player:
+                        !left
+                        !injured
+                        Yeah, I just...my heart couldn't take that kind of policy decision.
+                        !injuredshrug
+                        Mind giving me something a little easier to swallow?
+                    agent:
+                        !angry
+                        And here I was thinking you were a massive Admiralty Ally.
+                        !angryshrug
+                        Guess I must've <i>misheard</>, huh?
             ]],
             OPT_INTIMIDATE = "Scare {agent} away",
             DIALOG_INTIMIDATE = [[
