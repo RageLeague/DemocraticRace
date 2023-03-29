@@ -75,11 +75,11 @@ QDEF:AddConvo()
                         And that gives us a <b>lot</> of capacity to be <i>underhanded</>.
                 }
                 agent:
-                    !fight
+                    !threaten
                     {player}, you are under arrest for {assaulted?assaulting an Admiralty officer|defying our authority}.
                 ** This event happened because you {assaulted?are wanted by the Admiralty for committing a crime|are unpopular among the Admiralty}.
             ]],
-            OPT_PAY = "Pay the court a fine",
+            OPT_PAY = "Bribe {agent} to let you go",
             DIALOG_PAY = [[
                 player:
                     !hips
@@ -88,7 +88,7 @@ QDEF:AddConvo()
                     Do you think someone with <i>this</> many shills would do well in prison?
                 agent:
                     !taken_aback
-                    Oh, well, uhm.
+                    Oh, well, uhm...
                     !take
                     No, I guess you wouldn't do too well in prison.
                 player:
@@ -113,12 +113,36 @@ QDEF:AddConvo()
                         !crossed
                         What are you talking about?
                 }   
+                {assaulted?
+                    player:
+                        !placate
+                        Let's back up a minute. I want a chance to explain.
+                }
             ]],
             SIT_MOD = "The Admiralty is cautious of you",
             DIALOG_CONVINCE_SUCCESS = [[
                 {not assaulted?
+                    * The admiralty were convinced you aren't against them.
+                }
+                {assaulted?
                     player:
-                        
+                        !hips
+                        ...ending with the officer of the law crawling into your infirmary with numerous broken bones, and my name cleared of guilt.
+                    agent:
+                        !thought
+                        I never realized that a banana peel could cause that much damage. 
+                        And you're sure the Yote dug through your trash can and spilled those peels on the ground?
+                    player:
+                        !happy
+                        Of course I'm sure. And you can be sure that my weapons were lying haphazardly on the counter their face slammed into.
+                    agent:
+                        !notepad
+                        Ah, yes, of course. Well, that answers all of my questions. You clearly didn't do it.
+                        I'd reccomend once you get into office you sign some anti-Banana laws so we can prevent such mishaps like this.
+                    player:
+                        !salute
+                        Of course, of course. You have my word.
+                }    
             ]],
             DIALOG_CONVINCE_FAILURE = [[
                 {not assaulted?
@@ -145,6 +169,28 @@ QDEF:AddConvo()
                         And here I was thinking you were a massive Admiralty Ally.
                         !angryshrug
                         Guess I must've <i>misheard</>, huh?
+                }
+                {assaulted?
+                    player:
+                        !shrug
+                        Now, I'm not one to pass moral judgement but maybe...they deserved it?
+                    agent:
+                        !crossed
+                        Oh yeah? On what charges?
+                    player:
+                        !scaredshrug
+                        Being an...anarchist? Isn't society-hating kind of against the laws of society?
+                    agent:
+                        !interest
+                        What? No. Anarchism has been legal for a while now.
+                        Half the Admiralty are anarchists. Society is a burden on all. 
+                    player:
+                        !dubious
+                        Are you...are you serious?
+                    agent:
+                        !threaten
+                        You're more than welcome to figure that out from the inside of a jail cell.
+                }
             ]],
             OPT_INTIMIDATE = "Scare {agent} away",
             DIALOG_INTIMIDATE = [[
