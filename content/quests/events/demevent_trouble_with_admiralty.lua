@@ -195,19 +195,32 @@ QDEF:AddConvo()
             OPT_INTIMIDATE = "Scare {agent} away",
             DIALOG_INTIMIDATE = [[
                 player:
-                    [p] Look at me.
-                    I'm scary.
+                    You've got me wondering. Do Switches bleed ink, paperwork, or just plain old corruption?
             ]],
             DIALOG_INTIMIDATE_SUCCESS_SOLO = [[
+                player:
+                    Think about it. You've got no backup going against a trained fighter.
+                    !throatcut
+                    Maybe I'll get the message across if I send you home in a body bag.
                 agent:
-                    [p] Oh no I'm scared!
+                    !crossed
+                    Hmph. You've got a point.
+                    But I'll be back, and when I get back, I'll be bringing the whole Deltrean calavry to take you in.
                     !exit
             ]],
             DIALOG_INTIMIDATE_SUCCESS = [[
-                * [p] {agent}'s followers ran away.
                 agent:
-                    I'll win next time!
-                    !exit
+                    !angrypoint
+                    You can't resist arrest! We're taking you in!
+                player:
+                    !humoring
+                    Oh yeah? You and what army?
+                * Behind {agent}, {agent.hisher} squad members quiver nervously, tentative to fight you.
+                agent:
+                    !angrypoint
+                    I'll be back for you once I have more than spineless cretins backing me up.
+                * The squad sulks away, trying to not seem fazed by the daggers you stare into their backs.
+                * They fail spectacularly.
             ]],
             DIALOG_INTIMIDATE_OUTNUMBER = [[
                 * [p] Some of {agent}'s followers ran away.
@@ -216,12 +229,21 @@ QDEF:AddConvo()
                     No matter. I can still win!
             ]],
             DIALOG_INTIMIDATE_FAILURE = [[
+                player:
+                    !angry
+                    Go on, throw the first punch. Make it self defense.
                 agent:
-                    Wait, this guy isn't that strong.
+                    !angry
+                    Gladly.
+                * {agent} socks you in the gut. You stagger briefly.
+                player:
+                    !injured
                 {some_ran?
-                    Come back, you cowards!
-                * The routed followers came back,
+                    * The routed followers see this and steel themselves.
                 }
+                agent:
+                    !angrypoint
+                    News Flash, it isn't self defense if we've got a warrant for your arrest.
             ]],
             DIALOG_FIGHT_WIN = [[
                 {dead?
@@ -247,10 +269,12 @@ QDEF:AddConvo()
             OPT_ARREST = "Serve your sentence",
             DIALOG_ARREST = [[
                 player:
-                    Fine, I'll come.
-                    But you'll be hearing from my lawyers!
+                    Y'know what? Fine.
+                    !permit
+                    You need my wrists or would you perfer to just walk me to the station?
                 agent:
-                    Yeah, sure. Whatever.
+                    !hips
+                    Just your compliance will do. Now get a move on.
             ]],
         }
         :SetLooping(true)
