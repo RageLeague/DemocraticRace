@@ -121,8 +121,42 @@ QDEF:AddConvo()
             ]],
             SIT_MOD = "The Admiralty is cautious of you",
             DIALOG_CONVINCE_SUCCESS = [[
-                {not assaulted?
-                    * The admiralty were convinced you aren't against them.
+                 {not assaulted?
+                    player:
+                        I'll have you know that my place as a politician got me an audience with Gaft herself!
+                    agent:
+                        !dubious
+                        You got to talk to Gaft?
+                    player:
+                        !eureka
+                        Yes, and after I explained my positions to her, do you know what she said?
+                        {advisor_diplomacy?
+                                She said all my positions were "hip" and "based".
+                            agent:
+                                !dubious
+                                ...
+                            player:
+                                !hips
+                                Those are good things to be called, apparently.
+                            agent:
+                                !notepad
+                                Ah, well, if you're "based" with Gaft, you must be all clear.
+                                !salute
+                                Safe travels, {player}.
+                                !exit
+                            * You <i>really</> need to hang around Aellon less often. He's rubbing off on you.
+                        }
+                        {not advisor_diplomacy?
+                                !hips
+                                She said I would be great for the Admiralty once I get into office.
+                                Absolutely approved of my populist strategy so I could promote the Admiralty's goals while in office.
+                            agent:
+                                !notepad
+                                Ah, I see. A time tested strategy, as I understand.
+                                I'll have a memo that Gaft gave you the go-ahead. 
+                                !salute
+                                You have a good day, {player}.
+                        }
                 }
                 {assaulted?
                     player:
@@ -223,21 +257,28 @@ QDEF:AddConvo()
                 * They fail spectacularly.
             ]],
             DIALOG_INTIMIDATE_OUTNUMBER = [[
-                * [p] Some of {agent}'s followers ran away.
+                player:
+                    !angryshrug
+                    Well? You want to take me away or do you want to live?
+                * You see a foot or two shuffle behind {agent}, turning away from you.
+                * {agent} barely notices.
                 agent:
                     !fight
-                    No matter. I can still win!
+                    You're still outnumbered, {player}. I'd be mighty impressed if you live long enough to reach prison after we're through.
+                * Some, but not all of the squad members, step towards you, brandishing their weapons.
             ]],
             DIALOG_INTIMIDATE_FAILURE = [[
-                player:
-                    !angry
-                    Go on, throw the first punch. Make it self defense.
                 agent:
                     !angry
+                player:
+                    !threaten
+                    Go on, throw the first punch. Make it self defense.
+                agent:
+                    !fight
                     Gladly.
-                * {agent} socks you in the gut. You stagger briefly.
                 player:
                     !injured
+                * {agent} socks you in the gut. You stagger briefly.
                 {some_ran?
                     * The routed followers see this and steel themselves.
                 }
@@ -247,24 +288,30 @@ QDEF:AddConvo()
             ]],
             DIALOG_FIGHT_WIN = [[
                 {dead?
-                    * Oh good, now you killed an Admiralty. I'm sure that they will be happy.
+                    {assaulted?
+                        * You scratch another mark into your list of switches dead at your hand.
+                        * You're sure the Admiralty will notice that list getting longer. They'll be back for more.
                 }
                 {not dead?
                     agent:
                         !injured
                     player:
-                        [p] Had enough?
+                        !angryshrug
+                        You want to take me in now? Got your handcuffs for me?
                     agent:
-                        Fine, you win this time.
-                        Just know that you made a terrible enemy.
+                        !spit
+                        Resisting arrest...is a criminal offense. This...will bite you sooner rather than later.
                         !exit
+                    player:
+                        !handwave
+                        Things always turn out to bite me. What's new here?
                 }
             ]],
             OPT_RESIST = "Resist Arrest",
             DIALOG_RESIST = [[
                 player:
-                    !fight
-                    You'll never get me alive!
+                    !reach_weapon
+                    Just try me.
             ]],
             OPT_ARREST = "Serve your sentence",
             DIALOG_ARREST = [[
