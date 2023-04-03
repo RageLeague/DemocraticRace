@@ -368,11 +368,16 @@ QDEF:AddConvo("action")
                     Form up, soldiers!
             ]],
             DIALOG_GATHER_SUCCESS = [[
-                * [p] You gathered a bunch of people who are willing to fight.
-                * Now you need to decide if you want to let them fight, or join in on the battle.
+                * The people you've gathered organize behind you, attracting the monster's attention.
+                * It stares at you with a melting gaze. It awaits your next move.
             ]],
             DIALOG_GATHER_FAILURE = [[
-                * [p] Dammit! You didn't gather anyone to fight by your side!
+                agent:
+                    !exit
+                * Your constant yelling does nothing to calm the crowd. If anything, people are running even more erratically.
+                beast:
+                    !right
+                * You did achieve one thing, though. You got the monster's attention.
             ]],
             OPT_ATTACK = "Fight the monster",
             DIALOG_ATTACK = [[
@@ -386,7 +391,7 @@ QDEF:AddConvo("action")
             DIALOG_ATTACK_WIN = [[
                 player:
                     !left
-                * [p] You killed the beast!
+                * The body is already dissolving in it's own stomach acid. The situation has been taken care of. 
                 {took_parasites?
                     * Don't know why you took the parasites and purposefully infect yourself, though. I thought you would know better.
                 }
@@ -395,8 +400,8 @@ QDEF:AddConvo("action")
                         !left
                     agent:
                         !right
-                        That was horrifying.
-                        Let's hope we don't have more of these things attacking.
+                        !sweat
+                        Phew! We killed that thing. 
                     {know_infected and spawned_from_quest?
                         * [p] You fear that it is not likely going to be the case.
                         * The bog parasites are already here, in the Pearl, and they're spreading.
