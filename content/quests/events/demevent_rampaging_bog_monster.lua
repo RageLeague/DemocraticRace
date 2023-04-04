@@ -402,10 +402,17 @@ QDEF:AddConvo("action")
                         !right
                         !sweat
                         Phew! We killed that thing. 
+                        Do you think there'll be more to come or is this one and done?
                     {know_infected and spawned_from_quest?
-                        * [p] You fear that it is not likely going to be the case.
-                        * The bog parasites are already here, in the Pearl, and they're spreading.
-                        * It's only a matter of time before such incident occurs again.
+                        player:
+                            !crossed
+                            More. A lot more. The Pearl's been infected with Bog parasites recently. 
+                        agent:
+                            !taken_aback
+                            Are you...you're not kidding, are you?
+                        player:
+                            !disappoint
+                            [p].
                     }
                         Thanks again.
                         Without your help, the monster would probably kill us all.
@@ -418,14 +425,17 @@ QDEF:AddConvo("action")
                 {not has_survivor?
                     * The dawning silence sticks to the air like a fly to the ointment.
                     {not took_parasites?
-                        * Too bad there is no one here to notice your heroic deed.
                         {not player_drunk?
                             {tried_order?
-                                * Was it truly heroic if it is your own cowardice that killed everyone?
+                                * Brief glimpses of blood, screams, and buzzing smells are the only things you feel.
+                                * You numbly push the thought of those who died for you to the side. 
                             }
                             {not tried_order and monster_in_party?
-                                * Was it truly heroic if it is your own indecisiveness that killed everyone?
+                                * In your mind's eye, you stare into {infected}'s eyes one last time before pushing the thought away. 
                             }
+                        }
+                        {player_drunk?
+                            * You sway slightly in the wind, inebriation filling the void of adrenaline.
                         }
                     }
                     {took_parasites?
