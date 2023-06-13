@@ -45,10 +45,13 @@ local QDEF = QuestDef.Define
         end
     end,
     on_complete = function( quest )
-        -- DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 4 * #quest.param.convinced_people, "COMPLETED_QUEST")
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", quest.param.funds and math.max(math.round(quest.param.funds / 10), 5) or 5, "COMPLETED_QUEST" )
     end,
     on_fail = function(quest)
-        -- DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2 * #quest.param.crowd, "FAILED_QUEST")
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5, "FAILED_QUEST" )
+    end,
+    precondition = function(quest)
+        return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and TheGame:GetGameState():GetMainQuest().param.day >= 2
     end,
 }
 :AddLocationCast{
@@ -93,6 +96,7 @@ local QDEF = QuestDef.Define
         txt = "Annoyed by your sellout.",
     },
 }
+DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 
 QDEF:AddConvo("go_to_junction")
 
@@ -151,6 +155,7 @@ QDEF:AddConvo("go_to_junction")
                 if cxt.quest.param.funds > 0 then
                     cxt.quest.param.poor_performance = cxt.quest.param.funds < 20 + 10 * cxt.quest:GetRank()
                     cxt:Dialog("DIALOG_GOT_FUNDS", #cxt.quest.param.funds)
+                    cxt.enc:GainMoney( cxt.quest.param.funds )
                     cxt.quest:Complete()
                     ConvoUtil.GiveQuestRewards(cxt)
                 else
