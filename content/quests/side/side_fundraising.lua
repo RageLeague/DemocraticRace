@@ -137,7 +137,7 @@ QDEF:AddConvo("go_to_junction")
             end
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Complete("go_to_junction")
-            cxt.quest:Activate("preach")
+            cxt.quest:Activate("sell_merch")
             cxt.enc:SetPrimaryCast(cxt.quest.param.crowd[1])
 
             local BEHAVIOR = shallowcopy(DemocracyUtil.BEHAVIOURS.SELL_MERCH_CROWD)
@@ -154,7 +154,7 @@ QDEF:AddConvo("go_to_junction")
                 cxt.quest.param.funds = minigame:GetPlayerNegotiator():GetModifierStacks( "SECURED_FUNDS" )
                 if cxt.quest.param.funds > 0 then
                     cxt.quest.param.poor_performance = cxt.quest.param.funds < 20 + 10 * cxt.quest:GetRank()
-                    cxt:Dialog("DIALOG_GOT_FUNDS", #cxt.quest.param.funds)
+                    cxt:Dialog("DIALOG_GOT_FUNDS", cxt.quest.param.funds)
                     cxt.enc:GainMoney( cxt.quest.param.funds )
                     cxt.quest:Complete()
                     ConvoUtil.GiveQuestRewards(cxt)
