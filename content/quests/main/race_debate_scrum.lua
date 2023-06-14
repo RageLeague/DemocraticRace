@@ -1,15 +1,5 @@
 local QUESTION_COUNT = 3
 
-local HOST_BEHAVIOUR =
-{
-    OnInit = function( self, difficulty )
-        self.impatience_delay = 3 - math.floor((GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_BOSS_DIFFICULTY ) or 1) / 2)
-        self.negotiator:AddModifier("DEBATE_SCRUM_TRACKER")
-    end,
-    Cycle = function(self, turns)
-    end,
-}
-
 local QDEF = QuestDef.Define
 {
     title = "Debate Scrum",
@@ -691,7 +681,7 @@ QDEF:AddConvo("do_debate")
             end
 
             cxt:TalkTo(cxt:GetCastMember("host"))
-            cxt:GetAgent():SetTempNegotiationBehaviour(HOST_BEHAVIOUR)
+            cxt:GetAgent():SetTempNegotiationBehaviour(DemocracyUtil.BEHAVIOR.DEBATE_SCRUM_HOST)
             cxt:Quip(cxt:GetAgent(), "debate_question", string.lower(cxt.quest.param.topic))
             CreateDebateOption(cxt, neg_helper, neg_hinder, cxt.quest.param.topic, -1)
             CreateDebateOption(cxt, pos_helper, pos_hinder, cxt.quest.param.topic, 1)

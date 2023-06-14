@@ -1,63 +1,8 @@
--- don't declare variables that ties to the quest outside of quest defs unless they are constant
--- local main_negotiator
--- local main_negotiator_limiter = 0
-local BENEFACTOR_DEFS = {
-    WEALTHY_MERCHANT = "PROPOSITION",
-    SPARK_BARON_TASKMASTER = "APPROPRIATOR",
-    PRIEST = "ZEAL",
-}
--- for balancing reasons
-local SIGNATURE_ARGUMENT = {
-    WEALTHY_MERCHANT = "TRIBUTE",
-    PRIEST = "prayer_of_hesh", -- why this is lower case, I have no idea
-}
-
 local score_fn = function(agent, quest)
     local score = DemocracyUtil.SupportScore(agent)
     return score + math.random() * 120
 end
 
-local BENEFACTOR_BEHAVIOR = {
-    OnInit = function( self, difficulty )
-        -- local modifier
-        self.arguments = self:MakePicker()
-            :AddArgument( "CAUTIOUS_SPENDER", 1 )
-
-        local _, card = self.arguments:AddArgument( "HOSPITALITY", 1 )
-        card.stacks = 1 + math.floor( difficulty / 2 ) + (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ARGUMENT_PLUS ) and 1 or 0)
-
-        if SIGNATURE_ARGUMENT[self.agent:GetContentID()] then
-            self.signature = self:AddArgument(SIGNATURE_ARGUMENT[self.agent:GetContentID()])
-        end
-
-        self:SetPattern( self.BasicCycle )
-
-        self.negotiator:AddModifier(BENEFACTOR_DEFS[self.agent:GetContentID()])
-
-    end,
-    agents = {},
-
-    BasicCycle = function( self, turns )
-        if turns % 3 == 0 then
-            self:ChooseGrowingNumbers(2, -1)
-        else
-            self:ChooseGrowingNumbers(1, 1)
-        end
-
-        if turns % 3 == 1 then
-            self.arguments:ChooseCard()
-        elseif turns % 3 == 2 then
-            if self.signature and math.random(0, self.signature_played or 0) == 0 then
-                self:ChooseCard(self.signature)
-                self.signature_played = (self.signature_played or 0) + 1
-            end
-        end
-        if turns % 2 == 0 then
-            self:ChooseComposure( 1, self.difficulty, self.difficulty + 2 )
-        end
-
-	end,
-}
 local FOLLOWUP
 
 local QDEF = QuestDef.Define
@@ -119,40 +64,16 @@ local QDEF = QuestDef.Define
         -- quest:AssignCastMember("diner", location )
     end,
 }
--- :AddObjective{
---     id = "secure_funding",
---     title = "Secure Funding",
---     desc = "Persuade the benefactor into financing your campaign.",
--- }
 :AddCast{
     cast_id = "benefactor",
-    -- when = QWHEN.MANUAL,
-    -- no_validation = true,
     condition = function(agent, quest)
-        return BENEFACTOR_DEFS[agent:GetContentID()] ~= nil and agent:GetRelationship() >= RELATIONSHIP.NEUTRAL -- might generalize it later
+        return DemocracyUtil.BEHAVIOURS.TEA_BENEFACTOR.BENEFACTOR_DEFS[agent:GetContentID()] ~= nil and agent:GetRelationship() >= RELATIONSHIP.NEUTRAL -- might generalize it later
     end,
-    -- don't use cast_fn by default if you want to use existing agents.
-    -- cast_fn = function(quest, t)
-
-    --     local options = {}
-    --     table.insert(options, "WEALTHY_MERCHANT")
-    --     table.insert(options, "SPARK_BARON_TASKMASTER")
-    --     table.insert(options, "PRIEST")
-
-    --     local def = options[math.random(#options)]
-    --     table.insert( t, quest:CreateSkinnedAgent( def ) )
-
-    --     if main_negotiator_limiter == 0 then
-    --         main_negotiator = def
-    --         main_negotiator_limiter = 1
-    --     end
-
-    -- end,
     score_fn = score_fn,
 }
 :AddCastFallback{
     cast_fn = function(quest, t)
-        local options = copykeys(BENEFACTOR_DEFS)
+        local options = copykeys(DemocracyUtil.BEHAVIOURS.TEA_BENEFACTOR.BENEFACTOR_DEFS)
         local def = table.arraypick(options)
         table.insert( t, quest:CreateSkinnedAgent(def) )
     end,
@@ -253,7 +174,7 @@ QDEF:AddConvo("go_to_diner", "benefactor")
             :SetQuestMark(cxt.quest)
             :Dialog("DIALOG_TALK")
             :Fn(function(cxt)
-                cxt:GetAgent():SetTempNegotiationBehaviour(BENEFACTOR_BEHAVIOR)
+                cxt:GetAgent():SetTempNegotiationBehaviour(DemocracyUtil.BEHAVIOURS.TEA_BENEFACTOR)
             end)
             :Negotiation{
                 cooldown = 0,
@@ -264,14 +185,14 @@ QDEF:AddConvo("go_to_diner", "benefactor")
 
                 on_start_negotiation = function(minigame)
                     -- just so you get at least something on win instead of nothing.
-                    minigame.player_negotiator:CreateModifier("SECURED_INVESTMENTS", 5)
+                    minigame.player_negotiator:CreateModifier("SECURED_FUNDS", 5)
                     minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 5)
                     minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 10)
                     minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 20)
                 end,
 
                 on_success = function(cxt, minigame)
-                    cxt.quest.param.funds = minigame:GetPlayerNegotiator():GetModifierStacks( "SECURED_INVESTMENTS" )
+                    cxt.quest.param.funds = minigame:GetPlayerNegotiator():GetModifierStacks( "SECURED_FUNDS" )
                     cxt.quest.param.poor_performance = cxt.quest.param.funds < 20 + 10 * cxt.quest:GetRank()
                     if cxt.quest.param.poor_performance then
                         cxt:Dialog("DIALOG_BENEFACTOR_POOR")
