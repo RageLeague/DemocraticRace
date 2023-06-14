@@ -151,8 +151,8 @@ local MODIFIERS =
         composure_gain = 2,
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
-        funding_delta = 10,
-        additional_delta = 10,
+        funding_delta = 15,
+        additional_delta = 5,
         is_first_turn = true,
 
         SetAgent = function (self, agent)
