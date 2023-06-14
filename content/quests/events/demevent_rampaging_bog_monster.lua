@@ -155,7 +155,7 @@ QDEF:AddConvo("action")
                 * Everything changes in a minute.
                 * Before, you had been walking with a deteriorating but still functional {infected}.
                 * Now, {infected} is on {infected.hisher} knees, sitting in a puddle of vomit, {infected.hisher} skin turning a sickly color.
-                * Passerbys, before giving you space, now stare dumbfoundedly as you cradle {infected}'s head in your arms.
+                * Passer-bys, before giving you space, now stare dumbfoundedly as you cradle {infected}'s head in your arms.
                 * That minute has passed. Now you only have another minute before something <i>truly</> terrible happens.
             ]],
             OPT_KILL = "Kill {infected} before {infected.heshe} can transform!",
@@ -229,13 +229,13 @@ QDEF:AddConvo("action")
                     !injured
                 player:
                     !hips
-                    Now I'm not saying you're going to transform into a monster fueled by fruit flys and rage...
+                    Now I'm not saying you're going to transform into a monster fueled by fruit flies and rage...
                     But if you happen to, I want you to remember one thing.
                     !point
                     Don't eat my face.
                     I need it for my campaign.
                 infected:
-                    I...don't...AAAAHH!
+                    I... don't... AAAAHH!
                     !exit
             ]],
             DIALOG_REASSURE_FAILURE_PST = [[

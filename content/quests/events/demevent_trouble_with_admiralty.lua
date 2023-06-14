@@ -42,20 +42,20 @@ QDEF:AddConvo()
                     What seems to be the officer, problem?
                 agent:
                     !notepad
-                    "Being drunk without a liscense"...I'm sure there's a reason to lock you up for that.
+                    "Being drunk without a license"... I'm sure there's a reason to lock you up for that.
                     On top of everything else you've done.
                 }
                 {not player_drunk?
                     Is everything alright?
                 agent:
-                    Oh, everything's gonna be alright in the next 5 minutes. 
+                    Oh, everything's gonna be alright in the next 5 minutes.
                 }
                 {assaulted?
                     agent:
-                        {player}, do you by chance know why an officer of the law came into the infirmary with multiple broken bones?
+                        {player}, do you by chance know why we received reports of you assaulting an officer of the law?
                     player:
                         !shrug
-                        Look, when that happened I had eaten a <i>Lot</> of bananas, I can't be blamed for-
+                        Look, when that happened I had eaten a <i>lot</> of bananas, I can't be blamed for-
                     agent:
                         !notepad
                         "Improper disposal of food waste". That's worth almost as much as serial murder.
@@ -68,11 +68,19 @@ QDEF:AddConvo()
                         Who do you think runs the elections? Who do you think <i>keeps the electors safe?</>
                     player:
                         !thought
-                        Well I was going to say the Oshnu that made it's way into my bowl but I'm assuming that's not the answer you want.
+                        Well I was going to say the oshnu that made it's way into my bowl but I'm assuming that's not the answer you want.
                     agent:
                         !thumb
                         It's us. <i>We</> keep the elections safe and above board.
-                        And that gives us a <b>lot</> of capacity to be <i>underhanded</>.
+                        And someone doesn't seem to <i>appreciate</> the hard work we've done.
+                    {anti_security?
+                        player:
+                            !crosses
+                            Uh huh. Great work you have done.
+                        agent:
+                            !threaten
+                            Enough!
+                    }
                 }
                 agent:
                     !threaten
@@ -98,7 +106,7 @@ QDEF:AddConvo()
                     Much too <i>beautiful</> to-
                 agent:
                     !point
-                    Okay, bub, you're pushing it. 
+                    Okay, bub, you're pushing it.
                     You've bought your hide another day or two, if I can throw enough paperwork in front of it.
                     !salute
                     Be not-seeing you, {player}.
@@ -108,11 +116,11 @@ QDEF:AddConvo()
                 {not assaulted?
                     player:
                         !chuckle
-                        Wow. Never did I expect the misinformation mill to have the ear of the government!
+                        Wow. Never did I expect the misinformation mill to have the ear of the Admiralty!
                     agent:
                         !crossed
                         What are you talking about?
-                }   
+                }
                 {assaulted?
                     player:
                         !placate
@@ -121,7 +129,7 @@ QDEF:AddConvo()
             ]],
             SIT_MOD = "The Admiralty is cautious of you",
             DIALOG_CONVINCE_SUCCESS = [[
-                 {not assaulted?
+                {not assaulted?
                     player:
                         I'll have you know that my place as a politician got me an audience with Gaft herself!
                     agent:
@@ -139,8 +147,10 @@ QDEF:AddConvo()
                                 !hips
                                 Those are good things to be called, apparently.
                             agent:
-                                !notepad
-                                Ah, well, if you're "based" with Gaft, you must be all clear.
+                                !thought
+                                That sounds uncharacteristic of Gaft.
+                                !shrug
+                                Then again, I don't know her personally, and I don't get paid enough to question her.
                                 !salute
                                 Safe travels, {player}.
                                 !exit
@@ -151,9 +161,10 @@ QDEF:AddConvo()
                                 She said I would be great for the Admiralty once I get into office.
                                 Absolutely approved of my populist strategy so I could promote the Admiralty's goals while in office.
                             agent:
-                                !notepad
-                                Ah, I see. A time tested strategy, as I understand.
-                                I'll have a memo that Gaft gave you the go-ahead. 
+                                !dubious
+                                With you? Doubtful.
+                                !shrug
+                                Then again, I don't get paid enough to question Gaft's judgement.
                                 !salute
                                 You have a good day, {player}.
                         }
@@ -161,69 +172,49 @@ QDEF:AddConvo()
                 {assaulted?
                     player:
                         !hips
-                        ...ending with the officer of the law crawling into your infirmary with numerous broken bones, and my name cleared of guilt.
+                        ...Ending with the officer of the law lying on the ground, and my name cleared of guilt.
                     agent:
                         !thought
-                        I never realized that a banana peel could cause that much damage. 
-                        And you're sure the Yote dug through your trash can and spilled those peels on the ground?
+                        I never realized that a banana peel could cause that much damage.
+                        And you're sure the yote dug through your trash can and spilled those peels on the ground?
                     player:
                         !happy
                         Of course I'm sure. And you can be sure that my weapons were lying haphazardly on the counter their face slammed into.
                     agent:
                         !notepad
                         Ah, yes, of course. Well, that answers all of my questions. You clearly didn't do it.
-                        I'd reccomend once you get into office you sign some anti-Banana laws so we can prevent such mishaps like this.
+                        I'd recommend once you get into office you sign some anti-banana laws so we can prevent such mishaps like this.
                     player:
                         !salute
                         Of course, of course. You have my word.
-                }    
+                }
             ]],
             DIALOG_CONVINCE_FAILURE = [[
                 {not assaulted?
                     player:
                         !hips
-                        I'm a massive proponent of government policies! Ask me any, I'll tell you.
+                        I'm a massive proponent of Admiralty policy!
                     agent:
-                        !thought
-                        Okay, we should raise tax-
-                    player:
-                        !exit
-                    * You collapse on the ground, face first. 
-                    agent:
-                        !intrigue
-                        Are you...okay, {player}?
-                    player:
-                        !left
-                        !injured
-                        Yeah, I just...my heart couldn't take that kind of policy decision.
-                        !injuredshrug
-                        Mind giving me something a little easier to swallow?
-                    agent:
-                        !angry
-                        And here I was thinking you were a massive Admiralty Ally.
-                        !angryshrug
-                        Guess I must've <i>misheard</>, huh?
+                        !dubious
+                        Coming from <i>you</>? That's rich.
+                        !angry_accuse
+                        You can talk more about your supposed support in the interrogation room.
                 }
                 {assaulted?
                     player:
                         !shrug
-                        Now, I'm not one to pass moral judgement but maybe...they deserved it?
+                        Now, I'm not one to pass moral judgement but maybe... they deserved it?
                     agent:
                         !crossed
-                        Oh yeah? On what charges?
-                    player:
-                        !scaredshrug
-                        Being an...anarchist? Isn't society-hating kind of against the laws of society?
-                    agent:
-                        !interest
-                        What? No. Anarchism has been legal for a while now.
-                        Half the Admiralty are anarchists. Society is a burden on all. 
-                    player:
-                        !dubious
-                        Are you...are you serious?
-                    agent:
-                        !threaten
-                        You're more than welcome to figure that out from the inside of a jail cell.
+                        Whether or not they deserved it, it's up to us to judge, not you.
+                        And I believe vigilantism is a crime as well.
+                        !fight
+                        You are coming with us either way.
+                    {anti_security?
+                        player:
+                            !angry
+                            Oh come on! You are just making up charges by this point.
+                    }
                 }
             ]],
             OPT_INTIMIDATE = "Scare {agent} away",
@@ -238,27 +229,27 @@ QDEF:AddConvo()
                     Maybe I'll get the message across if I send you home in a body bag.
                 agent:
                     !crossed
-                    Hmph. You've got a point.
-                    But I'll be back, and when I get back, I'll be bringing the whole Deltrean calavry to take you in.
+                    Humph. You've got a point.
+                    But I'll be back, and when I get back, I'll be bringing the whole Deltrean calvary to take you in.
                     !exit
             ]],
             DIALOG_INTIMIDATE_SUCCESS = [[
                 agent:
-                    !angrypoint
+                    !angry_point
                     You can't resist arrest! We're taking you in!
                 player:
                     !humoring
                     Oh yeah? You and what army?
                 * Behind {agent}, {agent.hisher} squad members quiver nervously, tentative to fight you.
                 agent:
-                    !angrypoint
+                    !angry_point
                     I'll be back for you once I have more than spineless cretins backing me up.
                 * The squad sulks away, trying to not seem fazed by the daggers you stare into their backs.
                 * They fail spectacularly.
             ]],
             DIALOG_INTIMIDATE_OUTNUMBER = [[
                 player:
-                    !angryshrug
+                    !angry_shrug
                     Well? You want to take me away or do you want to live?
                 * You see a foot or two shuffle behind {agent}, turning away from you.
                 * {agent} barely notices.
@@ -283,20 +274,21 @@ QDEF:AddConvo()
                     * The routed followers see this and steel themselves.
                 }
                 agent:
-                    !angrypoint
-                    News Flash, it isn't self defense if we've got a warrant for your arrest.
+                    !angry_point
+                    News flash, it isn't self defense if we've got a warrant for your arrest.
             ]],
             DIALOG_FIGHT_WIN = [[
                 {dead?
                     {assaulted?
                         * You scratch another mark into your list of switches dead at your hand.
                         * You're sure the Admiralty will notice that list getting longer. They'll be back for more.
+                    }
                 }
                 {not dead?
                     agent:
                         !injured
                     player:
-                        !angryshrug
+                        !angry_shrug
                         You want to take me in now? Got your handcuffs for me?
                     agent:
                         !spit
@@ -318,7 +310,7 @@ QDEF:AddConvo()
                 player:
                     Y'know what? Fine.
                     !permit
-                    You need my wrists or would you perfer to just walk me to the station?
+                    You need my wrists or would you prefer to just walk me to the station?
                 agent:
                     !hips
                     Just your compliance will do. Now get a move on.
