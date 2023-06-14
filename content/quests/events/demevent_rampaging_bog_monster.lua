@@ -164,23 +164,23 @@ QDEF:AddConvo("action")
                     !fight
                 * You brandish your weapon, aligning it with {infected}'s throat.
                 * However, {infected} suddenly gets up with a sudden, struggling strength, and swats you away.
-                * {infected.HeShe} produces {infected.hisher} weapon, prepared to fight you to both your deaths.
+                * {infected.gender:He produces|She produces|They produce} {infected.hisher} weapon, prepared to fight you to both your deaths.
             ]],
             DIALOG_KILL_DEAD = [[
                 * {infected} curls up into an unnatural position as {infected.heshe} dies, coughing a variety of fluids and viscera.
                 * The fascination of the bystanders turns to confusion, then whispers. Accusations of betrayal permeate the air.
-                * For your part, there isn't much you can do. You'll go down as a minor hero or a minor villain for this act. 
+                * For your part, there isn't much you can do. You'll go down as a minor hero or a minor villain for this act.
                 * All you really can do is wipe what's left of {infected} off of your weapon and walk away, eyes burning into the back of your neck.
             ]],
             DIALOG_KILL_SPARED = [[
                 * Before the fighting can continue, {infected} knocks you over with a sudden gust of strength before collapsing into a heap.
                 beast:
                     !right
-                * By the time you're upright, {infected} is no longer there. 
+                * By the time you're upright, {infected} is no longer there.
             ]],
             DIALOG_KILL_RUNAWAY = [[
                 * You leave your half-finished work where {infected.heshe} lays, exhausted and squirming with protruding pain.
-                * A choir of screams reward your half-measures. 
+                * A choir of screams reward your half-measures.
             ]],
             OPT_REASSURE = "Reassure {infected} that everything is going to be alright",
             DIALOG_REASSURE = [[
@@ -201,7 +201,7 @@ QDEF:AddConvo("action")
                 player:
                     !drunk
                     Aw, c'mere! You deserve a hug.
-                * You grab {infected} in a hug, not letting go until you are forcibly pulled by one of the bystanders. 
+                * You grab {infected} in a hug, not letting go until you are forcibly pulled by one of the bystanders.
                 * You sober up at the sight of what you were just hugging.
                 }
                 {not player_drunk?
@@ -232,7 +232,7 @@ QDEF:AddConvo("action")
                     Now I'm not saying you're going to transform into a monster fueled by fruit flys and rage...
                     But if you happen to, I want you to remember one thing.
                     !point
-                    Don't eat my face. 
+                    Don't eat my face.
                     I need it for my campaign.
                 infected:
                     I...don't...AAAAHH!
@@ -246,7 +246,7 @@ QDEF:AddConvo("action")
                     !placate
                     {infected}? Remember what I told you.
                     My face. Don't eat it.
-                * {beast} lurches towards you, evidently discarding your advice.
+                * {beast} lurches towards you, evidently discarding your request.
             ]],
             OPT_LEAVE = "Leave {infected}",
             DIALOG_LEAVE = [[
@@ -391,7 +391,7 @@ QDEF:AddConvo("action")
             DIALOG_ATTACK_WIN = [[
                 player:
                     !left
-                * The body is already dissolving in it's own stomach acid. The situation has been taken care of. 
+                * The body is already dissolving in it's own stomach acid. The situation has been taken care of.
                 {took_parasites?
                     * Don't know why you took the parasites and purposefully infect yourself, though. I thought you would know better.
                 }
@@ -400,21 +400,31 @@ QDEF:AddConvo("action")
                         !left
                     agent:
                         !right
-                        !sweat
-                        Phew! We killed that thing. 
+                        !tired
+                        Phew! We killed that thing.
                         Do you think there'll be more to come or is this one and done?
                     {know_infected and spawned_from_quest?
                         player:
-                            !crossed
-                            More. A lot more. The Pearl's been infected with Bog parasites recently. 
+                            !scared
+                            More. A lot more. The Pearl's been infected with Bog parasites recently.
                         agent:
-                            !taken_aback
-                            Are you...you're not kidding, are you?
+                            !chuckle
+                            $scaredStammering
+                            Y-you're kidding, right?
                         player:
-                            !disappoint
-                            [p].
+                            !scared
+                            ...
+                        agent:
+                            !bashful
+                            $scaredStammering
+                            A-anyway, thanks again.
+                        |
+                        player:
+                            !sigh
+                            I don't know. I sure hope we don't have to deal with any more of this.
+                        agent:
+                            Anyway, thanks again.
                     }
-                        Thanks again.
                         Without your help, the monster would probably kill us all.
                     {monster_in_party and not player_drunk?
                         * Sure, you are the <i>hero</> saving everyone here.
@@ -428,10 +438,10 @@ QDEF:AddConvo("action")
                         {not player_drunk?
                             {tried_order?
                                 * Brief glimpses of blood, screams, and buzzing smells are the only things you feel.
-                                * You numbly push the thought of those who died for you to the side. 
+                                * You numbly push the thought of those who died for you to the side.
                             }
                             {not tried_order and monster_in_party?
-                                * In your mind's eye, you stare into {infected}'s eyes one last time before pushing the thought away. 
+                                * In your mind's eye, you stare into {infected}'s eyes one last time before pushing the thought away.
                             }
                         }
                         {player_drunk?
@@ -439,7 +449,7 @@ QDEF:AddConvo("action")
                         }
                     }
                     {took_parasites?
-                        * You wipe the gunk and viscera off your weapons, already sure you've been infected. 
+                        * You wipe the gunk and viscera off your weapons, already sure you've been infected.
                     }
                 }
             ]],
@@ -449,10 +459,10 @@ QDEF:AddConvo("action")
                     !exit
                 right:
                     !exit
-                * You send {1*{2}your ally to fight the monster|the small squad to fight the monster}.
+                * You send {1*your ally to fight the monster|the small squad to fight the monster}.
             ]],
             DIALOG_ORDER_SUCCESS = [[
-                * You watch your allies beat down on the beast with pipe, pike, and pamphlet alike. 
+                * You watch your allies beat down on the beast with pipe, pike, and pamphlet alike.
                 * Eventually, the monster goes still, lying on the ground and oozing numerous fluids.
                 {people_died?
                     * You take the time to count the newly dead.
@@ -479,7 +489,7 @@ QDEF:AddConvo("action")
                 }
             ]],
             DIALOG_ORDER_FAILURE = [[
-                * You've sent them to a meat grinder. 
+                * You've sent them to a meat grinder.
                 * One by one, the beast put each of them down, leaving you the only one left to fight it.
                 player:
                     !left
@@ -488,7 +498,7 @@ QDEF:AddConvo("action")
             ]],
             OPT_RUN_AWAY = "Run away from the scene",
             DIALOG_RUN_AWAY = [[
-                * You put as much distance as you can between you and the monster, and then some. 
+                * You put as much distance as you can between you and the monster, and then some.
                 {tried_order?
                     * A deep feeling of shame blooms in your chest as you think of the people who died following your hasty orders.
                 }
