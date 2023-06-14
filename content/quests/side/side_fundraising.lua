@@ -158,9 +158,11 @@ QDEF:AddConvo("go_to_junction")
                     cxt.enc:GainMoney( cxt.quest.param.funds )
                     cxt.quest:Complete()
                     ConvoUtil.GiveQuestRewards(cxt)
+                    StateGraphUtil.AddEndOption(cxt)
                 else
                     cxt:Dialog("DIALOG_NO_FUNDS")
                     cxt.quest:Fail()
+                    StateGraphUtil.AddEndOption(cxt)
                 end
             end
 

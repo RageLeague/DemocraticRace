@@ -170,9 +170,11 @@ QDEF:AddConvo("go_to_junction")
                     end
                     cxt.quest:Complete()
                     ConvoUtil.GiveQuestRewards(cxt)
+                    StateGraphUtil.AddEndOption(cxt)
                 else
                     cxt:Dialog("DIALOG_UNCONVINCED_PEOPLE")
                     cxt.quest:Fail()
+                    StateGraphUtil.AddEndOption(cxt)
                 end
             end
 
