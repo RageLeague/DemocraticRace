@@ -71,8 +71,8 @@ QDEF:AddConvo()
                     !hips
                     Well, {escort}. Do you want this docked from your pay <i>now</> or <i>later</>?
                 escort:
-                    !injuredshrug
-                    Whichever gets you to work sooner. I don't exactly have time to haggle here. 
+                    !injured_shrug
+                    Whichever gets you to work sooner. I don't exactly have time to haggle here.
                 giver:
                     !placate
                     Alright alright, let's get started.
@@ -105,16 +105,15 @@ QDEF:AddConvo()
                     Of course I can help!
                 {not cult_of_hesh?
                     agent:
-                        ...
                         !neutral
                         ...
-                        Cash or Credit?
+                        Cash or credit?
                     escort:
-                        !injuredpalm
+                        !injured_palm
                         Of course. I don't know what else I expected.
                     agent:
                         !shrug
-                        Hey, you don't go to Bog college just to brag about it. 
+                        Hey, you don't study medicine just to brag about it.
                         I'll keep the scarring to a minimum, I'll tell you that.
                         !eureka
                         But we can work that out later. Time to cauterize.
@@ -124,56 +123,52 @@ QDEF:AddConvo()
                         Free of charge?
                     agent:
                         Of course. Hesh prefers its meal untainted by the heresy that is the Bog.
-                        !think
-                        We might have to shave you down for the salt-soak, though.
                     escort:
-                        !taken_aback
-                        All my hair?!
+                        !injured_palm
+                        Honestly, I would rather pay shills.
                     agent:
-                        !happy
-                        Don't worry, we'll glue it back on!
                         !eureka
-                        Now let's get started. 
+                        Now let's get started.
                 }
             }
             left:
                 !exit
             right:
                 !exit
-            ]],
-    
-            DIALOG_MEDICAL_MAGIC = [[
-                * {agent} get right to work.
-                * It's a bit gruesome, but one by one the growths recede, and whatever medical magic gets performed cures {escort} completely.
-            ]],
-    
-            DIALOG_CURE_PST = [[
-                agent:
-                    !right
-                escort:
-                    !left
-                    !injured
-                agent:
-                    !happy
-                    There you go, healthy as a tadpole!
-                escort:
-                    A tadpole in a lot of pain, mind you.
-                agent:
-                    Oh hush. The pain's keeping you upright and alive right now.
-                player:
-                    !left
-                escort:
-                    !right
-                    Thank you, {player}.
-                    Without your help, I would probably slowly dying away in my hovel.
-                player:
-                    My pleasure.
-                agent:
-                    !right
-                    !point
-                    Now, remember to keep pressure off your neck and shoulder blades. And drink a lot of water.
-                * {escort} stumbles away, looking a little more confident with each step. You're left with {agent}.
-            ]],
+        ]],
+
+        DIALOG_MEDICAL_MAGIC = [[
+            * {agent} get right to work.
+            * It's a bit gruesome, but one by one the growths recede, and whatever medical magic gets performed cures {escort} completely.
+        ]],
+
+        DIALOG_CURE_PST = [[
+            agent:
+                !right
+            escort:
+                !left
+                !injured
+            agent:
+                !happy
+                There you go, healthy as a tadpole!
+            escort:
+                A tadpole in a lot of pain, mind you.
+            agent:
+                Oh hush. The pain's keeping you upright and alive right now.
+            player:
+                !left
+            escort:
+                !right
+                Thank you, {player}.
+                Without your help, I would probably slowly dying away in my hovel.
+            player:
+                My pleasure.
+            agent:
+                !right
+                !point
+                Now, remember to keep pressure off your neck and shoulder blades. And drink a lot of water.
+            * {escort} stumbles away, looking a little more confident with each step. You're left with {agent}.
+        ]],
     }
     :Hub(function(cxt, who)
         if who and table.arraycontains(cxt.quest:GetQuestDef().ALLOWED_HEALER, who:GetContentID()) then
