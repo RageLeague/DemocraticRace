@@ -152,94 +152,107 @@ QDEF:AddConvo("action")
     :State("STATE_PARTY")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] Something seems wrong with {infected}.
-                player:
-                    !left
-                infected:
-                    !right
-                    !injured
-                    {player.gender:Mr.|Ms.|Mx.} {player}, I don't feel so good.
-                * You didn't have time to bring {infected} to help! {infected} seems to be transforming into something!
-                * You only have moments to spare!
+                * Everything changes in a minute.
+                * Before, you had been walking with a deteriorating but still functional {infected}.
+                * Now, {infected} is on {infected.hisher} knees, sitting in a puddle of vomit, {infected.hisher} skin turning a sickly color.
+                * Passer-bys, before giving you space, now stare dumbfoundedly as you cradle {infected}'s head in your arms.
+                * That minute has passed. Now you only have another minute before something <i>truly</> terrible happens.
             ]],
             OPT_KILL = "Kill {infected} before {infected.heshe} can transform!",
             DIALOG_KILL = [[
                 player:
                     !fight
-                    [p] This is for your own good.
-                infected:
-                    !surprised
-                    Wha-
+                * You brandish your weapon, aligning it with {infected}'s throat.
+                * However, {infected} suddenly gets up with a sudden, struggling strength, and swats you away.
+                * {infected.gender:He produces|She produces|They produce} {infected.hisher} weapon, prepared to fight you to both your deaths.
             ]],
             DIALOG_KILL_DEAD = [[
-                * [p] You successfully put {infected} out of {infected.hisher} misery and prevented a huge disaster.
-                * Passer-bys see you as a killer, blissfully unaware of the danger that would've occur should you allow {infected} to live.
-                * It is a thankless task, but it must be done.
-                * For a true hero will do what is right, even if they receive no praise from the world.
-                * You just wish that the world will see you as the hero that you are, and have your support reflect that.
+                * {infected} curls up into an unnatural position as {infected.heshe} dies, coughing a variety of fluids and viscera.
+                * The fascination of the bystanders turns to confusion, then whispers. Accusations of betrayal permeate the air.
+                * For your part, there isn't much you can do. You'll go down as a minor hero or a minor villain for this act.
+                * All you really can do is wipe what's left of {infected} off of your weapon and walk away, eyes burning into the back of your neck.
             ]],
             DIALOG_KILL_SPARED = [[
-                * [p] There is not enough time.
+                * Before the fighting can continue, {infected} knocks you over with a sudden gust of strength before collapsing into a heap.
                 beast:
                     !right
-                * Before you can finish {infected} off, {infected} transforms into a huge monster right before your eyes!
+                * By the time you're upright, {infected} is no longer there.
             ]],
             DIALOG_KILL_RUNAWAY = [[
-                * [p] It's too late, there is nothing you can do.
-                * You run away from {infected}.
-                * The last thing you hear is a loud screech, followed by the sound of screaming.
+                * You leave your half-finished work where {infected.heshe} lays, exhausted and squirming with protruding pain.
+                * A choir of screams reward your half-measures.
             ]],
             OPT_REASSURE = "Reassure {infected} that everything is going to be alright",
             DIALOG_REASSURE = [[
                 player:
-                    [p] Hold on, {infected}. Everything is going to be alright.
+                    Stay with me, {infected}! Just focus on breathing...
             ]],
             DIALOG_REASSURE_SUCCESS = [[
                 infected:
-                    [p] Thanks, {player}, I appreciate your confidence.
-                    !happy
-                * {infected} let out a agonizing smile.
+                    !injured
+                player:
+                    Listen here, {infected}. You've gotten a few decades under your belt up until now.
+                    !eureka
+                    And as Hesh as my witness, you're gonna live decades more! Do you hear me?
+                infected:
+                    Y-yeah! I'm gonna be okay!
+                * A tear or two wells up in {infected}'s eyes as a glowing warmth radiates off of {infected.himher}.
+                {player_drunk?
+                player:
+                    !drunk
+                    Aw, c'mere! You deserve a hug.
+                * You grab {infected} in a hug, not letting go until you are forcibly pulled by one of the bystanders.
+                * You sober up at the sight of what you were just hugging.
+                }
                 {not player_drunk?
-                    * Despite everything, you can see that {infected} still has hope, and thank you for the courage you gave {infected.himher}.
+                * An <i>uncomfortable</> warmth. You unconsciously take a step back as the heat turns nauseatingly thick.
+                infected:
+                    I'm gonna be okay. I'm gonna be okay. I'm...gonna...
                 }
             ]],
             DIALOG_REASSURE_SUCCESS_PST = [[
                 {not player_drunk?
-                    * [p] Unfortunately that's not how it works at all.
-                    * Hope doesn't prevent someone from transforming into a terrifying bog monster.
                     beast:
                         !right
-                    * Before your very eyes, {infected} transforms into a huge monster!
+                    * A sickening transformation takes place in front of everyone. You look away, afraid to vomit in front of it.
+                    * When you look back, a bestial thing stands before you. A humanoid face protrudes from it, with a dying mantra on it's lips.
                 }
                 {player_drunk?
                     beast:
                         !right
-                    * [p] Just as you thought everything is going to be alright, {infected} transforms into a huge monster!
-                    player:
-                        !drunk
-                    * Dang. You really hoped that would work.
+                    * A bestial thing stands before you, dripping goop that covered your clothes.
+                    * You hastily wipe it off as this monster's rationality drains away, leaving only a survival instinct...to <i>feed</>.
                 }
             ]],
             DIALOG_REASSURE_FAILURE = [[
                 infected:
-                    !scared
-                    [p] I don't wanna go. Please! I don't wanna go!
-                * Seems like the bog parasites don't care what {infected} wants.
+                    !injured
+                player:
+                    !hips
+                    Now I'm not saying you're going to transform into a monster fueled by fruit flies and rage...
+                    But if you happen to, I want you to remember one thing.
+                    !point
+                    Don't eat my face.
+                    I need it for my campaign.
+                infected:
+                    I... don't... AAAAHH!
+                    !exit
             ]],
             DIALOG_REASSURE_FAILURE_PST = [[
                 beast:
                     !right
                 * Before your very eyes, {infected} transforms into a huge monster!
+                player:
+                    !placate
+                    {infected}? Remember what I told you.
+                    My face. Don't eat it.
+                * {beast} lurches towards you, evidently discarding your request.
             ]],
             OPT_LEAVE = "Leave {infected}",
             DIALOG_LEAVE = [[
-                * [p] It's too late, there is nothing you can do.
-                * You leave {infected}.
-                * The last thing you hear is a loud screech, followed by the sound of screaming.
-                beast:
-                    !right
-                * When you look back, you see where {infected} used to be is a mutant bog monster, and people are running away from it.
-                * Is it really alright for you to leave?
+                * You turn tail and run, to the demeaning stares of the bystanders.
+                * However, you stop. As you look back, {infected} has turned into a warped beast, ravaging the people previously focused on you.
+                * It was the screams that brought you back. Something in you couldn't live with yourself if you left them now.
             ]],
             REASON_TXT = "Kill {infected} within <#PENALTY>{1} {1*turn|turns}!</>",
         }
@@ -325,11 +338,10 @@ QDEF:AddConvo("action")
     :State("STATE_ROAD")
         :Loc{
             DIALOG_INTRO = [[
-                * [p] You are minding your own business when you saw a bunch of people running away something.
-                * They seem very scared.
-                * You look at who they are running from, and it turns out it's some sort of bog mutant.
+                * A small flurry of harried hands and voices push past you as you pass through another busy intersection.
                 beast:
                     !right
+                * One look up the road tells you why.
                 {know_infected?
                     * Wait, that face... Is that {infected}?
                 }
@@ -353,14 +365,19 @@ QDEF:AddConvo("action")
                     !scared
                 player:
                     !left
-                    [p] If we work together, we can take down the monster!
+                    Form up, soldiers!
             ]],
             DIALOG_GATHER_SUCCESS = [[
-                * [p] You gathered a bunch of people who are willing to fight.
-                * Now you need to decide if you want to let them fight, or join in on the battle.
+                * The people you've gathered organize behind you, attracting the monster's attention.
+                * It stares at you with a melting gaze. It awaits your next move.
             ]],
             DIALOG_GATHER_FAILURE = [[
-                * [p] Dammit! You didn't gather anyone to fight by your side!
+                agent:
+                    !exit
+                * Your constant yelling does nothing to calm the crowd. If anything, people are running even more erratically.
+                beast:
+                    !right
+                * You did achieve one thing, though. You got the monster's attention.
             ]],
             OPT_ATTACK = "Fight the monster",
             DIALOG_ATTACK = [[
@@ -369,12 +386,12 @@ QDEF:AddConvo("action")
                 player:
                     !left
                     !fight
-                    [p] Attack!
+                    Alright! Let's settle this Grout Bog style!
             ]],
             DIALOG_ATTACK_WIN = [[
                 player:
                     !left
-                * [p] You killed the beast!
+                * The body is already dissolving in it's own stomach acid. The situation has been taken care of.
                 {took_parasites?
                     * Don't know why you took the parasites and purposefully infect yourself, though. I thought you would know better.
                 }
@@ -383,14 +400,31 @@ QDEF:AddConvo("action")
                         !left
                     agent:
                         !right
-                        That was horrifying.
-                        Let's hope we don't have more of these things attacking.
+                        !tired
+                        Phew! We killed that thing.
+                        Do you think there'll be more to come or is this one and done?
                     {know_infected and spawned_from_quest?
-                        * [p] You fear that it is not likely going to be the case.
-                        * The bog parasites are already here, in the Pearl, and they're spreading.
-                        * It's only a matter of time before such incident occurs again.
+                        player:
+                            !scared
+                            More. A lot more. The Pearl's been infected with Bog parasites recently.
+                        agent:
+                            !chuckle
+                            $scaredStammering
+                            Y-you're kidding, right?
+                        player:
+                            !scared
+                            ...
+                        agent:
+                            !bashful
+                            $scaredStammering
+                            A-anyway, thanks again.
+                        |
+                        player:
+                            !sigh
+                            I don't know. I sure hope we don't have to deal with any more of this.
+                        agent:
+                            Anyway, thanks again.
                     }
-                        Thanks again.
                         Without your help, the monster would probably kill us all.
                     {monster_in_party and not player_drunk?
                         * Sure, you are the <i>hero</> saving everyone here.
@@ -399,19 +433,23 @@ QDEF:AddConvo("action")
                     }
                 }
                 {not has_survivor?
+                    * The dawning silence sticks to the air like a fly to the ointment.
                     {not took_parasites?
-                        * Too bad there is no one here to notice your heroic deed.
                         {not player_drunk?
                             {tried_order?
-                                * Was it truly heroic if it is your own cowardice that killed everyone?
+                                * Brief glimpses of blood, screams, and buzzing smells are the only things you feel.
+                                * You numbly push the thought of those who died for you to the side.
                             }
                             {not tried_order and monster_in_party?
-                                * Was it truly heroic if it is your own indecisiveness that killed everyone?
+                                * In your mind's eye, you stare into {infected}'s eyes one last time before pushing the thought away.
                             }
+                        }
+                        {player_drunk?
+                            * You sway slightly in the wind, inebriation filling the void of adrenaline.
                         }
                     }
                     {took_parasites?
-                        * No matter. There is no one here to witness you, anyway.
+                        * You wipe the gunk and viscera off your weapons, already sure you've been infected.
                     }
                 }
             ]],
@@ -421,12 +459,13 @@ QDEF:AddConvo("action")
                     !exit
                 right:
                     !exit
-                * [p] You watch as {1*{2} fights the monster by {2.self}|the people you gathered fight the monster}.
+                * You send {1*your ally to fight the monster|the small squad to fight the monster}.
             ]],
             DIALOG_ORDER_SUCCESS = [[
-                * [p] It was a tough battle, but eventually, the monster is killed.
+                * You watch your allies beat down on the beast with pipe, pike, and pamphlet alike.
+                * Eventually, the monster goes still, lying on the ground and oozing numerous fluids.
                 {people_died?
-                    * However, there are some casualties.
+                    * You take the time to count the newly dead.
                     * {1#agent_list} died during battle.
                 }
                 player:
@@ -450,14 +489,19 @@ QDEF:AddConvo("action")
                 }
             ]],
             DIALOG_ORDER_FAILURE = [[
-                * [p] Clearly, that wasn't enough, as the monster killed {1#agent_list}.
+                * You've sent them to a meat grinder.
+                * One by one, the beast put each of them down, leaving you the only one left to fight it.
                 player:
                     !left
                     !scared
-                * There are only moments left before it notices you!
+                * You watch from your spot in the gore soaked road, as it looks up at you, dripping blood from it's jaw.
             ]],
             OPT_RUN_AWAY = "Run away from the scene",
             DIALOG_RUN_AWAY = [[
+                * You put as much distance as you can between you and the monster, and then some.
+                {tried_order?
+                    * A deep feeling of shame blooms in your chest as you think of the people who died following your hasty orders.
+                }
                 * [p] To save your own skin, you decided to run away.
                 * You don't want to imagine what happens to the people left behind.
                 * You hope that the monster gets taken down, and such attack does not happen again.

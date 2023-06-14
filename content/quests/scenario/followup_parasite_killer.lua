@@ -63,15 +63,21 @@ QDEF:AddConvo()
         DIALOG_CURE = [[
             {is_giver and not package_delivered?
                 player:
-                    [p] Before I give you the package, here's {escort}.
-                    {escort.gender:He's|She's|They've} been infected with the bog parasites, and perhaps you can help.
+                    !wave
+                    I found {escort} for you. I also found why I had to find {escort.himher}.
                 escort:
                     !left
                     !injured
-                agent:
-                    !surprised
-                    Hesh! That looks horrible!
-                    I- I'll see what I can do. Just give me a sec.
+                    Hi, boss. Think you could help me out?
+                giver:
+                    !hips
+                    Well, {escort}. Do you want this docked from your pay <i>now</> or <i>later</>?
+                escort:
+                    !injured_shrug
+                    Whichever gets you to work sooner. I don't exactly have time to haggle here.
+                giver:
+                    !placate
+                    Alright alright, let's get started.
             }
             {is_giver and package_delivered?
                 player:
@@ -85,58 +91,85 @@ QDEF:AddConvo()
             }
             {not is_giver?
                 player:
-                    [p] From my understanding, you can get rid of {escort}'s parasite, yes?
+                    !hips
+                    Word on the vine says you have expertise in parasites from the Bog.
                 agent:
                     !agree
                     That's right.
+                player:
+                    !overthere
+                    Well, here's a new patient for you. Can you help?
+                escort:
+                    !left
+                    !injured
+                agent:
+                    !happy
+                    Of course I can help!
                 {not cult_of_hesh?
                     agent:
-                        Provided that {escort.heshe} can pay, of course.
+                        !neutral
+                        ...
+                        Cash or credit?
                     escort:
-                        !left
-                        !injured
+                        !injured_palm
                         Of course. I don't know what else I expected.
+                    agent:
+                        !shrug
+                        Hey, you don't study medicine just to brag about it.
+                        I'll keep the scarring to a minimum, I'll tell you that.
+                        !eureka
+                        But we can work that out later. Time to cauterize.
                 }
                 {cult_of_hesh?
                     escort:
-                        !left
-                        !injured
                         Free of charge?
                     agent:
                         Of course. Hesh prefers its meal untainted by the heresy that is the Bog.
                     escort:
-                        I guess I can't complain, given that you are getting rid of my parasites for free.
-                        But honestly, I would rather pay shills.
+                        !injured_palm
+                        Honestly, I would rather pay shills.
+                    agent:
+                        !eureka
+                        Now let's get started.
                 }
             }
             left:
                 !exit
             right:
                 !exit
+        ]],
+
+        DIALOG_MEDICAL_MAGIC = [[
             * {agent} get right to work.
-            * It's a bit gruesome, but it gets the job done, and {escort} is now free of parasites.
+            * It's a bit gruesome, but one by one the growths recede, and whatever medical magic gets performed cures {escort} completely.
+        ]],
+
+        DIALOG_CURE_PST = [[
             agent:
                 !right
             escort:
                 !left
                 !injured
-                Ow, it hurts so much!
-                At least my parasites are gone.
             agent:
-                Now, you just need to rest well, and you can go back to your old self.
+                !happy
+                There you go, healthy as a tadpole!
             escort:
-                Thank you. You saved my life.
+                A tadpole in a lot of pain, mind you.
+            agent:
+                Oh hush. The pain's keeping you upright and alive right now.
             player:
                 !left
             escort:
                 !right
-                And you too.
+                Thank you, {player}.
                 Without your help, I would probably slowly dying away in my hovel.
             player:
                 My pleasure.
             agent:
                 !right
-            * {escort} left, leaving you with {agent}.
+                !point
+                Now, remember to keep pressure off your neck and shoulder blades. And drink a lot of water.
+            * {escort} stumbles away, looking a little more confident with each step. You're left with {agent}.
         ]],
     }
     :Hub(function(cxt, who)
@@ -149,6 +182,10 @@ QDEF:AddConvo()
                     end
                 end)
                 :Dialog("DIALOG_CURE")
+                :FadeOut()
+                :Dialog("DIALOG_MEDICAL_MAGIC")
+                :FadeIn()
+                :Dialog("DIALOG_CURE_PST")
                 :ReceiveOpinion(OPINION.SAVED_LIFE, nil, "escort")
                 :Fn(function(cxt)
                     cxt:GetCastMember("escort"):OpinionEvent(OPINION.SAVED_LIFE, nil, cxt:GetAgent())

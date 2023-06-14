@@ -32,98 +32,288 @@ QDEF:AddConvo()
     :ConfrontState("STATE_CONFRONT")
         :Loc{
             DIALOG_INTRO = [[
-                * You were minding your own business when you are stopped by and Admiralty.
-                player:
-                    !left
+                * A purple wave of bodies confront you on the road. Badges gleam on their uniforms.
                 agent:
                     !right
-                    [p] Stop right there, criminal scum!
-                    You've violated the law!
-                    Pay the court a fine, or serve your sentence.
+                player:
+                    !left
+                {player_drunk?
+                    !drunk
+                    What seems to be the officer, problem?
+                agent:
+                    !notepad
+                    "Being drunk without a license"... I'm sure there's a reason to lock you up for that.
+                    On top of everything else you've done.
+                }
+                {not player_drunk?
+                    Is everything alright?
+                agent:
+                    Oh, everything's gonna be alright in the next 5 minutes.
+                }
+                {assaulted?
+                    agent:
+                        {player}, do you by chance know why we received reports of you assaulting an officer of the law?
+                    player:
+                        !shrug
+                        Look, when that happened I had eaten a <i>lot</> of bananas, I can't be blamed for-
+                    agent:
+                        !notepad
+                        "Improper disposal of food waste". That's worth almost as much as serial murder.
+                    player:
+                        !crossed
+                        You guys really need to sort out your legal code.
+                }
+                {not assaulted?
+                    agent:
+                        Who do you think runs the elections? Who do you think <i>keeps the electors safe?</>
+                    player:
+                        !thought
+                        Well I was going to say the oshnu that made it's way into my bowl but I'm assuming that's not the answer you want.
+                    agent:
+                        !thumb
+                        It's us. <i>We</> keep the elections safe and above board.
+                        And someone doesn't seem to <i>appreciate</> the hard work we've done.
+                    {anti_security?
+                        player:
+                            !crosses
+                            Uh huh. Great work you have done.
+                        agent:
+                            !threaten
+                            Enough!
+                    }
+                }
+                agent:
+                    !threaten
+                    {player}, you are under arrest for {assaulted?assaulting an Admiralty officer|defying our authority}.
                 ** This event happened because you {assaulted?are wanted by the Admiralty for committing a crime|are unpopular among the Admiralty}.
             ]],
-            OPT_PAY = "Pay the court a fine",
+            OPT_PAY = "Bribe {agent} to let you go",
             DIALOG_PAY = [[
-                * [p] You paid the court a fine, so that you don't have to serve a sentence.
+                player:
+                    !hips
+                    Well, let me ask you this.
+                    !give
+                    Do you think someone with <i>this</> many shills would do well in prison?
+                agent:
+                    !taken_aback
+                    Oh, well, uhm...
+                    !take
+                    No, I guess you wouldn't do too well in prison.
+                player:
+                    !happy
+                    Hmm, yes. I'm much too popular to go to prison.
+                    !chuckle
+                    Much too <i>beautiful</> to-
+                agent:
+                    !point
+                    Okay, bub, you're pushing it.
+                    You've bought your hide another day or two, if I can throw enough paperwork in front of it.
+                    !salute
+                    Be not-seeing you, {player}.
             ]],
             OPT_CONVINCE = "Convince {agent} that they got the wrong person",
             DIALOG_CONVINCE = [[
-                player:
-                    [p] It wasn't me, it was the man in the chicken costume.
-                agent:
-                    A likely story, go on.
+                {not assaulted?
+                    player:
+                        !chuckle
+                        Wow. Never did I expect the misinformation mill to have the ear of the Admiralty!
+                    agent:
+                        !crossed
+                        What are you talking about?
+                }
+                {assaulted?
+                    player:
+                        !placate
+                        Let's back up a minute. I want a chance to explain.
+                }
             ]],
             SIT_MOD = "The Admiralty is cautious of you",
             DIALOG_CONVINCE_SUCCESS = [[
-                agent:
-                    [p] Hesh damn poultry man!
-                    I'll get them.
-                    !exit
+                {not assaulted?
+                    player:
+                        I'll have you know that my place as a politician got me an audience with Gaft herself!
+                    agent:
+                        !dubious
+                        You got to talk to Gaft?
+                    player:
+                        !eureka
+                        Yes, and after I explained my positions to her, do you know what she said?
+                        {advisor_diplomacy?
+                                She said all my positions were "hip" and "based".
+                            agent:
+                                !dubious
+                                ...
+                            player:
+                                !hips
+                                Those are good things to be called, apparently.
+                            agent:
+                                !thought
+                                That sounds uncharacteristic of Gaft.
+                                !shrug
+                                Then again, I don't know her personally, and I don't get paid enough to question her.
+                                !salute
+                                Safe travels, {player}.
+                                !exit
+                            * You <i>really</> need to hang around Aellon less often. He's rubbing off on you.
+                        }
+                        {not advisor_diplomacy?
+                                !hips
+                                She said I would be great for the Admiralty once I get into office.
+                                Absolutely approved of my populist strategy so I could promote the Admiralty's goals while in office.
+                            agent:
+                                !dubious
+                                With you? Doubtful.
+                                !shrug
+                                Then again, I don't get paid enough to question Gaft's judgement.
+                                !salute
+                                You have a good day, {player}.
+                        }
+                }
+                {assaulted?
+                    player:
+                        !hips
+                        ...Ending with the officer of the law lying on the ground, and my name cleared of guilt.
+                    agent:
+                        !thought
+                        I never realized that a banana peel could cause that much damage.
+                        And you're sure the yote dug through your trash can and spilled those peels on the ground?
+                    player:
+                        !happy
+                        Of course I'm sure. And you can be sure that my weapons were lying haphazardly on the counter their face slammed into.
+                    agent:
+                        !notepad
+                        Ah, yes, of course. Well, that answers all of my questions. You clearly didn't do it.
+                        I'd recommend once you get into office you sign some anti-banana laws so we can prevent such mishaps like this.
+                    player:
+                        !salute
+                        Of course, of course. You have my word.
+                }
             ]],
             DIALOG_CONVINCE_FAILURE = [[
-                agent:
-                    [p] A great story you have there.
-                    A shame that it doesn't absolve your duty.
+                {not assaulted?
+                    player:
+                        !hips
+                        I'm a massive proponent of Admiralty policy!
+                    agent:
+                        !dubious
+                        Coming from <i>you</>? That's rich.
+                        !angry_accuse
+                        You can talk more about your supposed support in the interrogation room.
+                }
+                {assaulted?
+                    player:
+                        !shrug
+                        Now, I'm not one to pass moral judgement but maybe... they deserved it?
+                    agent:
+                        !crossed
+                        Whether or not they deserved it, it's up to us to judge, not you.
+                        And I believe vigilantism is a crime as well.
+                        !fight
+                        You are coming with us either way.
+                    {anti_security?
+                        player:
+                            !angry
+                            Oh come on! You are just making up charges by this point.
+                    }
+                }
             ]],
             OPT_INTIMIDATE = "Scare {agent} away",
             DIALOG_INTIMIDATE = [[
                 player:
-                    [p] Look at me.
-                    I'm scary.
+                    You've got me wondering. Do Switches bleed ink, paperwork, or just plain old corruption?
             ]],
             DIALOG_INTIMIDATE_SUCCESS_SOLO = [[
+                player:
+                    Think about it. You've got no backup going against a trained fighter.
+                    !throatcut
+                    Maybe I'll get the message across if I send you home in a body bag.
                 agent:
-                    [p] Oh no I'm scared!
+                    !crossed
+                    Humph. You've got a point.
+                    But I'll be back, and when I get back, I'll be bringing the whole Deltrean calvary to take you in.
                     !exit
             ]],
             DIALOG_INTIMIDATE_SUCCESS = [[
-                * [p] {agent}'s followers ran away.
                 agent:
-                    I'll win next time!
-                    !exit
+                    !angry_point
+                    You can't resist arrest! We're taking you in!
+                player:
+                    !humoring
+                    Oh yeah? You and what army?
+                * Behind {agent}, {agent.hisher} squad members quiver nervously, tentative to fight you.
+                agent:
+                    !angry_point
+                    I'll be back for you once I have more than spineless cretins backing me up.
+                * The squad sulks away, trying to not seem fazed by the daggers you stare into their backs.
+                * They fail spectacularly.
             ]],
             DIALOG_INTIMIDATE_OUTNUMBER = [[
-                * [p] Some of {agent}'s followers ran away.
+                player:
+                    !angry_shrug
+                    Well? You want to take me away or do you want to live?
+                * You see a foot or two shuffle behind {agent}, turning away from you.
+                * {agent} barely notices.
                 agent:
                     !fight
-                    No matter. I can still win!
+                    You're still outnumbered, {player}. I'd be mighty impressed if you live long enough to reach prison after we're through.
+                * Some, but not all of the squad members, step towards you, brandishing their weapons.
             ]],
             DIALOG_INTIMIDATE_FAILURE = [[
                 agent:
-                    Wait, this guy isn't that strong.
+                    !angry
+                player:
+                    !threaten
+                    Go on, throw the first punch. Make it self defense.
+                agent:
+                    !fight
+                    Gladly.
+                player:
+                    !injured
+                * {agent} socks you in the gut. You stagger briefly.
                 {some_ran?
-                    Come back, you cowards!
-                * The routed followers came back,
+                    * The routed followers see this and steel themselves.
                 }
+                agent:
+                    !angry_point
+                    News flash, it isn't self defense if we've got a warrant for your arrest.
             ]],
             DIALOG_FIGHT_WIN = [[
                 {dead?
-                    * Oh good, now you killed an Admiralty. I'm sure that they will be happy.
+                    {assaulted?
+                        * You scratch another mark into your list of switches dead at your hand.
+                        * You're sure the Admiralty will notice that list getting longer. They'll be back for more.
+                    }
                 }
                 {not dead?
                     agent:
                         !injured
                     player:
-                        [p] Had enough?
+                        !angry_shrug
+                        You want to take me in now? Got your handcuffs for me?
                     agent:
-                        Fine, you win this time.
-                        Just know that you made a terrible enemy.
+                        !spit
+                        Resisting arrest...is a criminal offense. This...will bite you sooner rather than later.
                         !exit
+                    player:
+                        !handwave
+                        Things always turn out to bite me. What's new here?
                 }
             ]],
             OPT_RESIST = "Resist Arrest",
             DIALOG_RESIST = [[
                 player:
-                    !fight
-                    You'll never get me alive!
+                    !reach_weapon
+                    Just try me.
             ]],
             OPT_ARREST = "Serve your sentence",
             DIALOG_ARREST = [[
                 player:
-                    Fine, I'll come.
-                    But you'll be hearing from my lawyers!
+                    Y'know what? Fine.
+                    !permit
+                    You need my wrists or would you prefer to just walk me to the station?
                 agent:
-                    Yeah, sure. Whatever.
+                    !hips
+                    Just your compliance will do. Now get a move on.
             ]],
         }
         :SetLooping(true)
