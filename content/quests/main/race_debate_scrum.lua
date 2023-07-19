@@ -681,7 +681,7 @@ QDEF:AddConvo("do_debate")
             end
 
             cxt:TalkTo(cxt:GetCastMember("host"))
-            cxt:GetAgent():SetTempNegotiationBehaviour(DemocracyUtil.BEHAVIOR.DEBATE_SCRUM_HOST)
+            cxt:GetAgent():SetTempNegotiationBehaviour(DemocracyUtil.BEHAVIOURS.DEBATE_SCRUM_HOST)
             cxt:Quip(cxt:GetAgent(), "debate_question", string.lower(cxt.quest.param.topic))
             CreateDebateOption(cxt, neg_helper, neg_hinder, cxt.quest.param.topic, -1)
             CreateDebateOption(cxt, pos_helper, pos_hinder, cxt.quest.param.topic, 1)

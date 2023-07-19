@@ -994,7 +994,10 @@ local QDEF = QuestDef.Define
     end,
     GetAlliance = function(quest, agent)
         quest.param.alliances = quest.param.alliances or {}
-        return table.arraycontains(quest.param.alliances, agent)
+        if agent then
+            return table.arraycontains(quest.param.alliances, agent)
+        end
+        return quest.param.alliances
     end,
 
     SetSubdayProgress = function(quest, progress)

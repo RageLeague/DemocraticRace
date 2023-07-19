@@ -170,7 +170,8 @@ QDEF:AddConvo("starting_out", "primary_advisor")
             end
         end
         -- Generate opposition alliance
-        do
+        -- Only do alliances if there doesn't already exist an ally
+        if #DemocracyUtil.GetAlliance() == 0 then
             local best_characters = {}
             local best_score = RELATIONSHIP.LIKED
             for id, data in pairs(DemocracyConstants.opposition_data) do
