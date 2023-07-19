@@ -1,5 +1,22 @@
 # Full Changelog
 
+### 0.10.0
+
+* Added new side quest: "Fundraising".
+* Renamed "Secured Investments" to "Secured Funds" in order to make it quest-agnostic.
+* Reworked description for "Potential Interest".
+* Reworked restrictions for request quest spawning. Now, if your primary advisor has a special request quest, that request quest won't be spawned for a generic person so that the advisor can get it.
+* Made Connected Line work better with argument duplication.
+* Fixed debate issue not saving correctly in Political Dilemma.
+* Escorting the delivery person in Gift From the Bog will now force you to gain bog parasite cards.
+* Changed how to gain info about Hesh in Ctenophorian Mystery. Now you can ask anyone about Hesh, but not everyone actually know anything about it.
+* Minor dialog changes.
+* Refactored special negotiation behaviours into one single file.
+* Added Chemists and Ximmon to the list of available healers for "Gift from the Bog".
+* Updated some dialogs.
+* If you already have an alliance by day 3 morning, you will no longer be offered an alliance that morning.
+* Fixed crash on night 3's encounter.
+
 ### 0.9.0
 
 * Added new request quest: "Gift From the Bog", and accompanying quests, "Parasite Killer" and "Rampaging Bog Monster".

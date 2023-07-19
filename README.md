@@ -4,7 +4,7 @@ A pioneer campaign mod for Griftlands, the Democratic Race is a mod for Griftlan
 
 This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
-Version: 0.9.0 (Alpha)
+Version: 0.10.0 (Alpha)
 
 Author: RageLeague
 
@@ -104,6 +104,20 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Flange Finnegan
 
 ## Changelog
+
+### 0.10.0 (The First Update After Seven Months)
+
+This is a small update that adds a brand new rally quest, as I shift my focus and rethink my priorities.
+
+Major Changes:
+
+* Added new side quest: "Fundraising".
+
+Minor Changes:
+
+* Reworked a couple of arguments and quests.
+* Added some new dialogs.
+* Fixed a couple of bugs.
 
 ### 0.9.0 (The Bog Update)
 
