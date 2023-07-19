@@ -1,4 +1,5 @@
 local ADVERTISEMENT_REQ = 20
+local ACCEPTED_GIVER_FACTION = {"SPARK_BARONS", "FEUD_CITIZEN", "JAKES"}
 
 local QDEF = QuestDef.Define
 {
@@ -59,8 +60,14 @@ local QDEF = QuestDef.Define
     provider = true,
     unimportant = true,
     condition = function(agent, quest)
-        return (agent:GetFactionID() == "SPARK_BARONS" or agent:GetFactionID() == "FEUD_CITIZEN" or agent:GetFactionID() == "JAKES") and
-            (DemocracyUtil.GetWealth(agent) > 2) and agent:GetContentID() ~= "ADVISOR_HOSTILE"
+        if agent:GetContentID() == "ADVISOR_DIPLOMACY" then
+            return true
+        end
+        local advisor = DemocracyUtil.GetMainQuestCast("primary_advisor")
+        if advisor and advisor:GetContentID() == "ADVISOR_DIPLOMACY" then
+            return false
+        end
+        return not agent:HasTag("curated_request_quest") and table.arraycontains(ACCEPTED_GIVER_FACTION, agent:GetFactionID()) and (DemocracyUtil.GetWealth(agent) >= 2)
     end,
     -- cast_fn = function(quest, t)
     --     table.insert( t, quest:CreateSkinnedAgent( "LABORER" ) )

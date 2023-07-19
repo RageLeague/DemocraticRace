@@ -54,6 +54,187 @@ local MODIFIERS =
             end,
         },
     },
+    SELL_MERCH_CROWD =
+    {
+        name = "Potential Customers",
+        desc = "At the beginning of the player's turn, create a new <b>Potential Customer</> argument({1} left).",
+        desc_fn = function(self, fmt_str )
+
+            return loc.format(fmt_str, #self.agents)
+        end,
+        icon = "negotiation/modifiers/heckler.tex",
+        modifier_type = MODIFIER_TYPE.CORE,
+        agents = {},
+        ignored_agents = {},
+        CreateTarget = function(self, agent)
+            local modifier = Negotiation.Modifier("SELL_MERCH_TARGET_INTEREST", self.negotiator)
+            modifier:SetAgent(agent)
+            self.negotiator:CreateModifier(modifier)
+        end,
+        TryCreateNewTarget = function(self)
+            if self.agents and #self.agents > 0 then
+                self:CreateTarget(self.agents[1])
+                table.remove(self.agents, 1)
+                return true
+            end
+            return false
+        end,
+        event_priorities =
+        {
+            [ EVENT.BEGIN_PLAYER_TURN ] = 999,
+        },
+        event_handlers = {
+            [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
+                if minigame.turns > 1 then
+                    -- for i = 1, math.floor(self.engine:GetDifficulty() / 3 + 1) do
+                        self:TryCreateNewTarget()
+                    -- end
+                end
+                if #self.agents == 0 and self.negotiator:GetModifierInstances( "SELL_MERCH_TARGET_INTEREST" ) == 0 then
+                    minigame:Win()
+                end
+            end,
+        },
+        InitModifiers = function(self)
+            self.ignored_agents = {}
+            for i = 1, 2 + math.floor(self.engine:GetDifficulty() / 2) do
+                self:TryCreateNewTarget()
+            end
+        end,
+    },
+    SELL_MERCH_TARGET_INTEREST =
+    {
+        name = "Potential Customer",
+        desc = "Each turn, this argument attacks an opponent argument or gain resolve.\n\n" ..
+            "When this argument is destroyed, gain {2} {SECURED_FUNDS} from {1.fullname}, plus {3} additional stacks for each remaining stack on <b>Potential Customer</>.\n\n" ..
+            "Remove a stack at the start of the player's turn. <#PENALTY>When the last stack is removed, if this argument has more than {4} resolve, {1.name} will become annoyed and dislike you.</>",
+        loc_strings = {
+            BONUS_LOVED = "<#BONUS><b>{1.name} loves you.</> {2} max resolve.</>",
+            BONUS_LIKED = "<#BONUS><b>{1.name} likes you.</> {2} max resolve.</>",
+            BONUS_DISLIKED = "<#PENALTY><b>{1.name} dislikes you.</> +{2} max resolve.</>",
+            BONUS_HATED = "<#PENALTY><b>{1.name} hates you.</> +{2} max resolve.</>",
+            BONUS_BRIBED = "<#BONUS><b>{1.name} is bribed.</> {2} max resolve.</>",
+        },
+        delta_max_resolve = {
+            [RELATIONSHIP.LOVED] = -8,
+            [RELATIONSHIP.LIKED] = -4,
+            [RELATIONSHIP.DISLIKED] = 4,
+            [RELATIONSHIP.HATED] = 8,
+        },
+        bribe_delta = -4,
+        key_maps = {
+            [RELATIONSHIP.LOVED] = "BONUS_LOVED",
+            [RELATIONSHIP.LIKED] = "BONUS_LIKED",
+            [RELATIONSHIP.DISLIKED] = "BONUS_DISLIKED",
+            [RELATIONSHIP.HATED] = "BONUS_HATED",
+        },
+        desc_fn = function( self, fmt_str, minigame, widget )
+            if self.target_agent and widget and widget.PostPortrait then
+                widget:PostPortrait( self.target_agent )
+            end
+            local result_strings = {}
+            if self.target_agent then
+                if self.key_maps[self.target_agent:GetRelationship()] then
+                    table.insert(result_strings, loc.format(self.def:GetLocalizedString(self.key_maps[self.target_agent:GetRelationship()]), self.target_agent, self.delta_max_resolve[self.target_agent:GetRelationship()]))
+                end
+                if self.target_agent:HasAspect("bribed") then
+                    table.insert(result_strings, loc.format(self.def:GetLocalizedString("BONUS_BRIBED"), self.target_agent, self.bribe_delta))
+                end
+            end
+            table.insert(result_strings, loc.format(fmt_str, self.target_agent and self.target_agent:LocTable(), self.funding_delta, self.additional_delta, self.annoyed_threshold or 12))
+            return table.concat(result_strings, "\n")
+        end,
+        no_damage_tt = true,
+        icon = engine.asset.Texture("negotiation/modifiers/voice_of_the_people.tex"),
+
+        target_enemy = TARGET_ANY_RESOLVE,
+        composure_gain = 2,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        funding_delta = 15,
+        additional_delta = 5,
+        is_first_turn = true,
+
+        SetAgent = function (self, agent)
+            local difficulty = self.engine and self.engine:GetDifficulty() or 1
+            self.target_agent = agent
+            self.max_resolve = difficulty * 5 + 7
+            self.annoyed_threshold = self.max_resolve - (difficulty) * 4
+            self.annoyed_threshold = math.max(1, self.annoyed_threshold)
+            if agent:HasAspect("bribed") then
+                self.max_resolve = self.max_resolve + self.bribe_delta
+            end
+            self.max_resolve = math.max(1, self.max_resolve + (self.delta_max_resolve[agent:GetRelationship()] or 0))
+            self:SetResolve(math.max(self.max_resolve, 1))
+
+            self.annoyed_threshold = math.min(self.max_resolve, math.floor((self.max_resolve + self.annoyed_threshold) / 2))
+
+            self.min_persuasion = math.floor((difficulty - 1) / 2)
+            self.max_persuasion = 2 + math.floor(difficulty / 2)
+
+            if agent:GetRelationship() > RELATIONSHIP.NEUTRAL then
+                self.max_persuasion = self.max_persuasion - 1
+            elseif agent:GetRelationship() < RELATIONSHIP.NEUTRAL then
+                self.max_persuasion = self.max_persuasion + 1
+            end
+
+            if agent:HasAspect("bribed") then
+                self.max_persuasion = self.max_persuasion - 1
+            end
+
+            -- ensures max_persuasion is greater than min_persuasion
+            self.max_persuasion = math.max(self.min_persuasion, self.max_persuasion)
+
+            if agent.negotiation_ally_image then
+                self.icon = agent.negotiation_ally_image
+                self.engine:BroadcastEvent( EVENT.UPDATE_MODIFIER_ICON, self)
+                -- self:NotifyTriggered()
+            end
+            self.stacks = 3
+
+            self:NotifyChanged()
+        end,
+
+        OnBounty = function(self, source)
+            if source and source ~= self then
+                self.anti_negotiator:DeltaModifier("SECURED_FUNDS", self.funding_delta + self.additional_delta * self.stacks, self)
+            end
+        end,
+
+        OnEndTurn = function( self, minigame )
+            if self.target_enemy then
+                self:ApplyPersuasion()
+            end
+        end,
+
+        event_handlers = {
+            [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
+                if not self.is_first_turn then
+                    self.negotiator:RemoveModifier(self, 1)
+                    -- self.turns_left = self.turns_left - 1
+                    if self.stacks <= 0 then
+                        local core = self.negotiator:FindCoreArgument()
+                        if core and core.ignored_agents then
+                            if self.resolve > self.annoyed_threshold then
+                                table.insert(core.ignored_agents, self.target_agent)
+                            end
+                        end
+                        -- self.negotiator:RemoveModifier(self)
+                    end
+                    -- self:NotifyChanged()
+                end
+                if self.stacks > 0 then
+                    self.target_enemy = math.random() < 0.5 and TARGET_ANY_RESOLVE or nil
+                    if not self.target_enemy then
+                        self:DeltaComposure(self.composure_gain, self)
+                    end
+                end
+            end,
+            [ EVENT.END_TURN ] = function( self, minigame, negotiator )
+                self.is_first_turn = false
+            end,
+        },
+    },
     PREACH_CROWD =
     {
         name = "Crowd Mentality",
@@ -107,13 +288,13 @@ local MODIFIERS =
         name = "Potential Interest",
         desc = "Each turn, this argument attacks an opponent argument or gain resolve.\n\n" ..
             "Destroy this argument to convince <b>{1.fullname}</> to join your side.\n\n"..
-            "After {2} {2*turn|turns}, this argument removes itself. <#PENALTY>When this happens, if "..
-            "this argument has more than {4} resolve, {1.name} will become annoyed and dislike you.</>",
+            "Remove a stack at the start of the player's turn. <#PENALTY>When the last stack is removed, if "..
+            "this argument has more than {2} resolve, {1.name} will become annoyed and dislike you.</>",
         loc_strings = {
-            BONUS_LOVED = "<#BONUS><b>{1.name} loves you.</> {3} max resolve.</>",
-            BONUS_LIKED = "<#BONUS><b>{1.name} likes you.</> {3} max resolve.</>",
-            BONUS_DISLIKED = "<#PENALTY><b>{1.name} dislikes you.</> +{3} max resolve.</>",
-            BONUS_HATED = "<#PENALTY><b>{1.name} hates you.</> +{3} max resolve.</>",
+            BONUS_LOVED = "<#BONUS><b>{1.name} loves you.</> {2} max resolve.</>",
+            BONUS_LIKED = "<#BONUS><b>{1.name} likes you.</> {2} max resolve.</>",
+            BONUS_DISLIKED = "<#PENALTY><b>{1.name} dislikes you.</> +{2} max resolve.</>",
+            BONUS_HATED = "<#PENALTY><b>{1.name} hates you.</> +{2} max resolve.</>",
             BONUS_BRIBED = "<#BONUS><b>{1.name} is bribed.</> {2} max resolve.</>",
         },
         delta_max_resolve = {
@@ -131,26 +312,19 @@ local MODIFIERS =
         },
         desc_fn = function( self, fmt_str, minigame, widget )
             if self.target_agent and widget and widget.PostPortrait then
-                --local txt = loc.format( "{1#agent} is not ready to fight!", self.ally_agent )
                 widget:PostPortrait( self.target_agent )
             end
-            local result_string = ""
+            local result_strings = {}
             if self.target_agent then
                 if self.key_maps[self.target_agent:GetRelationship()] then
-                    result_string = self.def:GetLocalizedString(self.key_maps[self.target_agent:GetRelationship()])
+                    table.insert(result_strings, loc.format(self.def:GetLocalizedString(self.key_maps[self.target_agent:GetRelationship()]), self.target_agent, self.delta_max_resolve[self.target_agent:GetRelationship()]))
                 end
                 if self.target_agent:HasAspect("bribed") then
-                    result_string = result_string .. "\n" .. loc.format(self.def:GetLocalizedString("BONUS_BRIBED"), self.target_agent, self.bribe_delta)
+                    table.insert(result_strings, loc.format(self.def:GetLocalizedString("BONUS_BRIBED"), self.target_agent, self.bribe_delta))
                 end
             end
-            result_string = result_string .. "\n\n" .. fmt_str
-            print(result_string)
-            return loc.format(result_string, self.target_agent and self.target_agent:LocTable(),
-                self.stacks, self.delta_max_resolve[self.target_agent:GetRelationship()], self.annoyed_threshold or 12)
-            -- else
-            --     return loc.format(fmt_str, self.target_agent and self.target_agent:LocTable(), self.stacks)
-            -- end
-
+            table.insert(result_strings, loc.format(fmt_str, self.target_agent and self.target_agent:LocTable(), self.annoyed_threshold or 12))
+            return table.concat(result_strings, "\n")
         end,
         no_damage_tt = true,
         icon = engine.asset.Texture("negotiation/modifiers/voice_of_the_people.tex"),
@@ -372,23 +546,6 @@ local MODIFIERS =
         end,
         event_handlers =
         {
-            [ EVENT.MODIFIER_ADDED ] = function ( self, modifier, source )
-                if modifier == self and self.engine then
-                    if self.negotiator:GetModifierInstances(self.id) > 1 then
-                        self.negotiator:RemoveModifier(self)
-                        return
-                    end
-                    -- local has_card = false
-                    -- for k,v in pairs(self.engine:GetHandDeck().cards) do
-                    --     if v.id == "assassin_fight_describe_information" then
-                    --         has_card = true
-                    --     end
-                    -- end
-                    -- if not has_card then
-                    --     self.engine:InsertCard(Negotiation.Card( "assassin_fight_describe_information", self.engine:GetPlayer() ))
-                    -- end
-                end
-            end,
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
                 self.negotiator:AddModifier(self, 1, self)
             end,
@@ -402,7 +559,7 @@ local MODIFIERS =
                         self.negotiator:AddModifier("HELP_UNDERWAY", stacks)
                     end
 
-                    self.negotiator:RemoveModifier(self)
+                    self.negotiator:RemoveModifier(self.id, math.huge, self)
                     self.anti_negotiator:AddModifier("IMPATIENCE", 1)
                     -- self:CleanUpCard("assassin_fight_describe_information")
                 end
@@ -616,9 +773,9 @@ local MODIFIERS =
             -- end
         end,
     },
-    SECURED_INVESTMENTS =
+    SECURED_FUNDS =
     {
-        name = "Secured Investments",
+        name = "Secured Funds",
         icon = "negotiation/modifiers/frisk.tex",
         desc = "Gain {1} shills if the negotiation is successful.",
         alt_desc = "Gain shills equal to the number of stacks on this argument if the negotiation is successful.",
@@ -638,8 +795,8 @@ local MODIFIERS =
     {
         name = "Investment Opportunity",
         icon = "negotiation/modifiers/frisk.tex",
-        desc = "{MYRIAD_MODIFIER {2}}\n\nWhen destroyed, gain {1} {SECURED_INVESTMENTS}.",
-        alt_desc = "{MYRIAD_MODIFIER {1}}\n\nWhen destroyed, gain {SECURED_INVESTMENTS} equal to the number of stacks on this bounty.",
+        desc = "{MYRIAD_MODIFIER {2}}\n\nWhen destroyed, gain {1} {SECURED_FUNDS}.",
+        alt_desc = "{MYRIAD_MODIFIER {1}}\n\nWhen destroyed, gain {SECURED_FUNDS} equal to the number of stacks on this bounty.",
 
         desc_fn = function(self, fmt_str)
             if self.stacks then
@@ -666,7 +823,7 @@ local MODIFIERS =
 
         OnBounty = function(self, source)
             -- self.negotiator:CreateModifier("CAUTIOUS_SPENDER")
-            self.anti_negotiator:AddModifier("SECURED_INVESTMENTS", self.stacks)
+            self.anti_negotiator:AddModifier("SECURED_FUNDS", self.stacks)
             CreateNewSelfMod(self)
         end,
     },

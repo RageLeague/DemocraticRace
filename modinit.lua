@@ -133,6 +133,7 @@ local function OnLoad( mod )
     require "DEMOCRATICRACE:content/grifts"
     require "DEMOCRATICRACE:content/more_boon_services"
     require "DEMOCRATICRACE:content/combat_parties"
+    require "DEMOCRATICRACE:content/custom_behaviours"
     require "DEMOCRATICRACE:content/debug_commands"
     -- we load slides before we load act data. who knows what would happen if we didn't?
     for k, filepath in ipairs( filepath.list_files( "DEMOCRATICRACE:content/slides/", "*.lua", true )) do
@@ -371,7 +372,7 @@ local MOD_OPTIONS =
 }
 -- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {
-    version = "0.9.0",
+    version = "0.10.0",
     alias = "DEMOCRATICRACE",
 
     OnLoad = OnLoad,

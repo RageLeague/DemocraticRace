@@ -13165,7 +13165,7 @@ msgstr "主持人"
 msgctxt "MODIFIER.INVESTMENT_OPPORTUNITY.ALT_DESC"
 msgid ""
 "{MYRIAD_MODIFIER {1}}\n"
-"When destroyed, gain {SECURED_INVESTMENTS} equal to the number of stacks on "
+"When destroyed, gain {SECURED_FUNDS} equal to the number of stacks on "
 "this bounty."
 msgstr ""
 
@@ -13173,7 +13173,7 @@ msgstr ""
 msgctxt "MODIFIER.INVESTMENT_OPPORTUNITY.DESC"
 msgid ""
 "{MYRIAD_MODIFIER {2}}\n"
-"When destroyed, gain {1} {SECURED_INVESTMENTS}."
+"When destroyed, gain {1} {SECURED_FUNDS}."
 msgstr ""
 
 #: MODIFIER.INVESTMENT_OPPORTUNITY.NAME
@@ -13442,20 +13442,20 @@ msgctxt "MODIFIER.RISE_MINI_NEGOTIATOR.PENALTY_TXT"
 msgid "-1 Action"
 msgstr ""
 
-#: MODIFIER.SECURED_INVESTMENTS.ALT_DESC
-msgctxt "MODIFIER.SECURED_INVESTMENTS.ALT_DESC"
+#: MODIFIER.SECURED_FUNDS.ALT_DESC
+msgctxt "MODIFIER.SECURED_FUNDS.ALT_DESC"
 msgid ""
 "Gain shills equal to the number of stacks on this argument if the "
 "negotiation is successful."
 msgstr ""
 
-#: MODIFIER.SECURED_INVESTMENTS.DESC
-msgctxt "MODIFIER.SECURED_INVESTMENTS.DESC"
+#: MODIFIER.SECURED_FUNDS.DESC
+msgctxt "MODIFIER.SECURED_FUNDS.DESC"
 msgid "Gain {1} shills if the negotiation is successful."
 msgstr ""
 
-#: MODIFIER.SECURED_INVESTMENTS.NAME
-msgctxt "MODIFIER.SECURED_INVESTMENTS.NAME"
+#: MODIFIER.SECURED_FUNDS.NAME
+msgctxt "MODIFIER.SECURED_FUNDS.NAME"
 msgid "Secured Investments"
 msgstr ""
 
@@ -13934,7 +13934,7 @@ msgstr "主持人"
 msgctxt "NEGOTIATION_FEATURE.INVESTMENT_OPPORTUNITY.DESC"
 msgid ""
 "{MYRIAD_MODIFIER {2}}\n"
-"When destroyed, gain {1} {SECURED_INVESTMENTS}."
+"When destroyed, gain {1} {SECURED_FUNDS}."
 msgstr ""
 
 #: NEGOTIATION_FEATURE.INVESTMENT_OPPORTUNITY.NAME
@@ -14198,13 +14198,13 @@ msgctxt "NEGOTIATION_FEATURE.RISE_MINI_NEGOTIATOR.NAME"
 msgid "Kalandra's Call to Rise"
 msgstr ""
 
-#: NEGOTIATION_FEATURE.SECURED_INVESTMENTS.DESC
-msgctxt "NEGOTIATION_FEATURE.SECURED_INVESTMENTS.DESC"
+#: NEGOTIATION_FEATURE.SECURED_FUNDS.DESC
+msgctxt "NEGOTIATION_FEATURE.SECURED_FUNDS.DESC"
 msgid "Gain {1} shills if the negotiation is successful."
 msgstr ""
 
-#: NEGOTIATION_FEATURE.SECURED_INVESTMENTS.NAME
-msgctxt "NEGOTIATION_FEATURE.SECURED_INVESTMENTS.NAME"
+#: NEGOTIATION_FEATURE.SECURED_FUNDS.NAME
+msgctxt "NEGOTIATION_FEATURE.SECURED_FUNDS.NAME"
 msgid "Secured Investments"
 msgstr ""
 

@@ -8,49 +8,6 @@ local function GetWinChance(eloa, elob)
     return 1 / (1 + 10 ^ ((elob - eloa) / 400))
 end
 
-local DEPRESSION_BEHAVIOUR =
-{
-    OnInit = function( self, difficulty )
-        local modifier = self.negotiator:AddModifier("PESSIMIST")
-
-        if self.negotiator:FindCoreArgument() and self.negotiator:FindCoreArgument():GetResolve() then
-            self.negotiator:FindCoreArgument():ModifyResolve(-math.floor(0.7 * self.negotiator:FindCoreArgument():GetResolve()), self)
-        end
-        -- self.negotiator:CreateModifier("RESTORE_RESOLVE_GOAL", 1, self)
-
-        self.self_loathe = self:AddArgument("SELF_LOATHE")
-
-        self.negotiator:AddModifier("ENCOURAGEMENT")
-
-        self:SetPattern( self.BasicCycle )
-    end,
-
-	BasicCycle = function( self, turns )
-        if turns == 1 or math.random() < 0.5 then
-            self:ChooseCard(self.self_loathe)
-        else
-            self:ChooseGrowingNumbers( 1, -1 )
-        end
-		if turns % 3 == 0 then
-            self:ChooseGrowingNumbers( 3, 0 )
-        else
-            self:ChooseGrowingNumbers( 2, 1 )
-        end
-
-        local candidates = {}
-        for i, card in ipairs(self.prepared_cards) do
-            if card.id == "default" and card.target_enemy then
-                table.insert(candidates, card)
-            end
-        end
-        if #candidates > 0 then
-            local chosen = table.arraypick(candidates)
-            chosen.target_self = TARGET_FLAG.CORE
-            chosen.target_enemy = nil
-        end
-	end,
-}
-
 local GOOD_PLAYER_THRESHOLD = 1000
 
 local FOLLOW_UP
@@ -112,7 +69,14 @@ local QDEF = QuestDef.Define
     provider = true,
     unimportant = true,
     condition = function(agent, quest)
-        return agent:GetContentID() == "ADVISOR_HOSTILE" or (DemocracyUtil.GetWealth(agent) >= 3 and not agent:HasTag("advisor"))
+        if agent:GetContentID() == "ADVISOR_HOSTILE" then
+            return true
+        end
+        local advisor = DemocracyUtil.GetMainQuestCast("primary_advisor")
+        if advisor and advisor:GetContentID() == "ADVISOR_HOSTILE" then
+            return false
+        end
+        return DemocracyUtil.GetWealth(agent) >= 3 and not agent:HasTag("curated_request_quest")
     end,
     -- cast_fn = function(quest, t)
     --     table.insert( t, quest:CreateSkinnedAgent( "LABORER" ) )
@@ -1389,7 +1353,7 @@ FOLLOW_UP:AddConvo("comfort", "giver")
             cxt:Opt("OPT_COMFORT")
                 :Dialog("DIALOG_COMFORT")
                 :Fn(function(cxt)
-                    cxt:GetAgent():SetTempNegotiationBehaviour(DEPRESSION_BEHAVIOUR)
+                    cxt:GetAgent():SetTempNegotiationBehaviour(DemocracyUtil.BEHAVIOURS.DRONUMPH_DEPRESSION)
                 end)
                 :Negotiation{
                     reason_fn = function(minigame) return cxt:GetLocString("NEGOTIATION_REASON") end,
