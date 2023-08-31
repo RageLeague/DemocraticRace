@@ -843,7 +843,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                             minigame.help_turns = SURVIVAL_TURNS + 4
                             minigame.player_negotiator:AddModifier("HELP_UNDERWAY", minigame.help_turns)
                             minigame.opponent_negotiator:CreateModifier( "IMPATIENCE", 2 )
-                            minigame.opponent_negotiator.behaviour.impatience_delay = 0
+                            -- minigame.opponent_negotiator.behaviour.impatience_delay = 0
                         end
 
                         local METRIC_DATA =
