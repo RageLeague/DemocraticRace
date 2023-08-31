@@ -320,7 +320,7 @@ QDEF:AddConvo("meet_opponent")
                     end,
                     on_start_negotiation = function(minigame)
                         minigame:GetOpponentNegotiator():CreateModifier("CROWD_OPINION", 1)
-                        minigame:GetOpponentNegotiator():CreateModifier("INSTIGATE_CROWD", 1)
+                        minigame:GetOpponentNegotiator():CreateModifier("INSTIGATE_CROWD", 2)
                     end,
                     on_success = function(cxt,minigame)
                         cxt.quest.param.audience_stage = minigame:GetOpponentNegotiator():GetModifierStacks("CROWD_OPINION") - 1
