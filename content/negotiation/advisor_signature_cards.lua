@@ -307,6 +307,7 @@ local CARDS = {
             return loc.format(fmt_str, AutoUpgradeText(self, "heal_amount", true), AutoUpgradeText(self, "damage_amount"))
         end,
         flavour = "'People would rather pull one person out of the gutter than make it so a thousand more don't need to live in it in the first place.'",
+        icon = "DEMOCRATICRACE:assets/cards/virtue_signal.png",
 
         advisor = "ADVISOR_DIPLOMACY",
         flags = CARD_FLAGS.DIPLOMACY,
@@ -690,6 +691,7 @@ local CARDS = {
         name = "False Dichotomy",
         desc = "Restore target non-core argument to full resolve if its resolve is at least half of its max resolve, or destroy it otherwise.",
         flavour = "'What are nuances? You must always choose between two extremes.'",
+        icon = "DEMOCRATICRACE:assets/cards/false_dichotomy.png",
 
         advisor = "ADVISOR_MANIPULATE",
         flags = CARD_FLAGS.MANIPULATE,
@@ -1051,6 +1053,7 @@ local CARDS = {
     {
         name = "Mask Off",
         desc = "For the rest of the negotiation, a card of your choice in your hand becomes a Hostility card and loses all other card types.",
+        icon = "DEMOCRATICRACE:assets/cards/mask_off.png",
 
         advisor = "ADVISOR_HOSTILE",
         flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND,

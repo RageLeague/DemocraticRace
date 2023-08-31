@@ -469,50 +469,18 @@ local MODIFIERS =
             self:ApplyPersuasion()
         end,
     },
-    CONNECTED_LINE =
+    DEM_HELP_REQUEST_PROGRESS =
     {
-        name = "Connected Line",
-        -- Me wall of text
-        desc = "Reach {1} stacks for the help to be sent. <#PENALTY>The opponent will also "..
-            "gain 1 {IMPATIENCE} when that happens.</>\n\n"..
-            "Gain 1 stack at the beginning of each turn.\n\n"..
-            "<#PENALTY>If this gets destroyed, the opponent gains 1 {IMPATIENCE}, and you need to play "..
-            "Call For Help again!</>",
+        name = "Help Request Progress",
+        desc = "You need to describe your current situation enough in order for help to be on your way. Reach {1} stacks for the help to be sent.",
+        icon = "negotiation/modifiers/hard_facts.tex",
 
-        desc_fn = function(self, fmt_str, minigame, widget)
-            -- if self.ally_agent and widget and widget.PostPortrait then
-            --     --local txt = loc.format( "{1#agent} is not ready to fight!", self.ally_agent )
-            --     widget:PostPortrait( self.ally_agent )
-            -- end
+        modifier_type = MODIFIER_TYPE.PERMANENT,
+
+        calls_required = 6,
+
+        desc_fn = function(self, fmt_str)
             return loc.format( fmt_str, self.calls_required )
-            -- return loc.format( fmt_str, self.ally_agent and self.ally_agent:LocTable(), self.negotiator and self.negotiator.agent:LocTable() )
-        end,
-
-        icon = "DEMOCRATICRACE:assets/modifiers/connected_line.png",
-
-        calls_required = 5,
-        modifier_type = MODIFIER_TYPE.ARGUMENT,
-        max_resolve = 3,
-        max_stacks = 10,
-
-        OnApply = function(self)
-            local count = self.negotiator:GetModifierStacks("CONNECTED_LINE")
-            if count and count ~= 0 then
-                TheGame:GetMusic():SetParameter("radio_layer", 1)
-            end
-        end,
-
-        OnUnapply = function(self)
-            local phase_3 = self.negotiator:GetModifierStacks("HELP_UNDERWAY") > 0
-            if not phase_3 then
-                TheGame:GetMusic():SetParameter("radio_layer", 0)
-
-                local card = Negotiation.Card( "assassin_fight_call_for_help", self.engine:GetPlayer() )
-                if self.stacks > 1 then
-                    card.init_help_count = self.stacks
-                end
-                self.engine:DealCard(card, self.engine:GetDiscardDeck())
-            end
         end,
 
         CleanUpCard = function(self, card_id)
@@ -539,16 +507,8 @@ local MODIFIERS =
                 end
             end
         end,
-        OnBounty = function(self, source)
-            if source ~= self then
-                self.anti_negotiator:AddModifier("IMPATIENCE", 1)
-            end
-        end,
-        event_handlers =
-        {
-            [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
-                self.negotiator:AddModifier(self, 1, self)
-            end,
+
+        event_handlers = {
             [ EVENT.MODIFIER_CHANGED ] = function( self, modifier, delta, clone )
                 if modifier == self and modifier.stacks >= self.calls_required then
                     if self.negotiator:GetModifierStacks("HELP_UNDERWAY") <= 0 then
@@ -560,9 +520,106 @@ local MODIFIERS =
                     end
 
                     self.negotiator:RemoveModifier(self.id, math.huge, self)
-                    self.anti_negotiator:AddModifier("IMPATIENCE", 1)
-                    -- self:CleanUpCard("assassin_fight_describe_information")
+                    self.negotiator:RemoveModifier("CONNECTED_LINE", self.negotiator:GetModifierStacks("CONNECTED_LINE"), self)
+                    self:CleanUpCard("assassin_fight_call_for_help")
                 end
+            end,
+        },
+    },
+    DEM_HASTENED_IMPATIENCE =
+    {
+        hidden = true,
+
+        event_handlers =
+        {
+            [ EVENT.PREPARE_INTENTS ] = function(self, behaviour, prepared_cards)
+                if behaviour ~= self.negotiator.behaviour then
+                    return
+                end
+                self.delay = self.delay or 2
+                print(loc.format("Getting impatient... Turn {1} delay {2}", self.engine.turns, self.delay))
+                self.delay = self.delay - 1
+                if self.delay == 0 then
+                    self.delay = 1
+                    local impatience = behaviour:AddCard("impatience")
+                    table.insert(prepared_cards, impatience)
+                end
+            end,
+        }
+    },
+    -- Prevents player softlocking by exhausting all call for help card while no help is arriving
+    DEM_ASSASSIN_SOFTLOCK_PROTECTION =
+    {
+        hidden = true,
+
+        OnBeginTurn = function(self, minigame)
+            if self.negotiator:GetModifierStacks("CONNECTED_LINE") == 0 and self.negotiator:GetModifierStacks("HELP_UNDERWAY") == 0 then
+                local card_id = "assassin_fight_call_for_help"
+                for i,card in self.engine:GetHandDeck():Cards() do
+                    if card.id == card_id then
+                        return
+                    end
+                end
+                for i,card in self.engine:GetDrawDeck():Cards() do
+                    if card.id == card_id then
+                        return
+                    end
+                end
+                for i,card in self.engine:GetDiscardDeck():Cards() do
+                    if card.id == card_id then
+                        return
+                    end
+                end
+
+                -- At this point we softlocked ourselves. Give the player a card in draw pile
+                local card = Negotiation.Card( "assassin_fight_call_for_help", minigame.player_negotiator.agent )
+                card.show_dealt = true
+                card:TransferCard(minigame:GetDrawDeck())
+            end
+        end,
+    },
+    CONNECTED_LINE =
+    {
+        name = "Connected Line",
+        -- Me wall of text
+        desc = "Gain 1 {DEM_HELP_REQUEST_PROGRESS} at the beginning of each turn.\n\n"..
+            "If this gets destroyed, the opponent gains 1 {IMPATIENCE}.",
+
+        icon = "DEMOCRATICRACE:assets/modifiers/connected_line.png",
+
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+        max_resolve = 3,
+        max_stacks = 10,
+
+        OnApply = function(self)
+            local count = self.negotiator:GetModifierStacks("CONNECTED_LINE")
+            if count and count ~= 0 then
+                TheGame:GetMusic():SetParameter("radio_layer", 1)
+            end
+        end,
+
+        OnUnapply = function(self)
+            local phase_3 = self.negotiator:GetModifierStacks("HELP_UNDERWAY") > 0
+            if not phase_3 then
+                TheGame:GetMusic():SetParameter("radio_layer", 0)
+
+                -- local card = Negotiation.Card( "assassin_fight_call_for_help", self.engine:GetPlayer() )
+                -- if self.stacks > 1 then
+                --     card.init_help_count = self.stacks
+                -- end
+                -- self.engine:DealCard(card, self.engine:GetDiscardDeck())
+            end
+        end,
+
+        OnBounty = function(self, source)
+            if source ~= self then
+                self.anti_negotiator:AddModifier("IMPATIENCE", 1)
+            end
+        end,
+        event_handlers =
+        {
+            [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
+                self.negotiator:AddModifier("DEM_HELP_REQUEST_PROGRESS", 1, self)
             end,
         },
     },
@@ -595,7 +652,7 @@ local MODIFIERS =
                 elseif minigame.turns > 1 then
                     self.negotiator:RemoveModifier(self, 1)
                     self:NotifyChanged()
-                    if self.stacks <= 4 then
+                    if self.stacks <= 3 then
                         self.engine:BroadcastEvent( EVENT.CUSTOM, function( panel )
                             panel:SetMusicPhase(4)
                         end )
@@ -607,7 +664,7 @@ local MODIFIERS =
     DISTRACTION_ENTERTAINMENT =
     {
         name = "Distraction: Entertainment",
-        desc = "{MYRIAD_MODIFIER {2}}.\n\nWhen destroyed, {1} loses 1 {IMPATIENCE} if able.",
+        desc = "{MYRIAD_MODIFIER {2}}.\n\nWhen destroyed, {1} loses 2 {IMPATIENCE} if able.",
         icon = "negotiation/modifiers/card_draw.tex",
 
         modifier_type = MODIFIER_TYPE.BOUNTY,
@@ -630,7 +687,7 @@ local MODIFIERS =
         end,
         OnBounty = function(self)
             if self.negotiator:GetModifierStacks("IMPATIENCE") > 0 then
-                self.negotiator:RemoveModifier("IMPATIENCE", 1)
+                self.negotiator:RemoveModifier("IMPATIENCE", 2, self)
             end
             CreateNewSelfMod(self)
         end,
@@ -1716,12 +1773,12 @@ local MODIFIERS =
             return loc.format(fmt_str, self:GetOwnerName())
         end,
 
-        max_resolve = 4,
+        max_resolve = 3,
 
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
         OnInit = function(self)
-            self:SetResolve(self.max_resolve + 4 * self.engine:GetDifficulty())
+            self:SetResolve(self.max_resolve + 3 * self.engine:GetDifficulty())
         end,
 
         OnBeginTurn = function( self, minigame )

@@ -2,7 +2,7 @@ local negotiation_defs = require "negotiation/negotiation_defs"
 local CARD_FLAGS = negotiation_defs.CARD_FLAGS
 local EVENT = negotiation_defs.EVENT
 
-local SURVIVAL_TURNS = 12
+local SURVIVAL_TURNS = 8
 
 local QDEF = QuestDef.Define
 {
@@ -813,14 +813,14 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                     TheGame:SetTempMusicOverride("DEMOCRATICRACE|event:/democratic_race/music/negotiation/assassin", cxt.enc)
                 end)
                 :Negotiation{
-                    flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE | NEGOTIATION_FLAGS.WORDSMITH, -- this is the boss
+                    flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE | NEGOTIATION_FLAGS.WORDSMITH | NEGOTIATION_FLAGS.NO_IMPATIENCE, -- this is the boss
                     reason_fn = function(minigame)
                         local help_inst = minigame.player_negotiator:FindModifier("HELP_UNDERWAY")
                         local call_inst = minigame.player_negotiator:FindModifier("CONNECTED_LINE")
                         if help_inst then
                             return loc.format(cxt:GetLocString("GOAL_AWAIT_RESCUE"), help_inst.stacks, help_inst.stacks * 2 )
                         elseif call_inst then
-                            return loc.format(cxt:GetLocString("GOAL_MAINTAIN_CONNECTION"), call_inst.stacks, call_inst.calls_required )
+                            return loc.format(cxt:GetLocString("GOAL_MAINTAIN_CONNECTION"), minigame:GetPlayerNegotiator():GetModifierStacks("DEM_HELP_REQUEST_PROGRESS"), Content.GetNegotiationModifier("DEM_HELP_REQUEST_PROGRESS").calls_required )
                         end
                         return cxt:GetLocString("GOAL_CALL_HELP")
                     end,
@@ -828,18 +828,22 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                         minigame.opponent_negotiator:CreateModifier( "DISTRACTION_ENTERTAINMENT" )
                         minigame.opponent_negotiator:CreateModifier( "DISTRACTION_GUILTY_CONSCIENCE" )
                         minigame.opponent_negotiator:CreateModifier( "DISTRACTION_CONFUSION" )
+                        minigame.opponent_negotiator:CreateModifier( "DEM_HASTENED_IMPATIENCE" )
+                        minigame.player_negotiator:CreateModifier( "DEM_ASSASSIN_SOFTLOCK_PROTECTION" )
 
                         if not cxt.quest.param.advisor_intervention then
-                            local card = Negotiation.Card( "assassin_fight_call_for_help", minigame.player_negotiator.agent )
-                            card.show_dealt = true
-                            card:TransferCard(minigame:GetDrawDeck())
+                            for i = 1, 3 do
+                                local card = Negotiation.Card( "assassin_fight_call_for_help", minigame.player_negotiator.agent )
+                                card.show_dealt = true
+                                card:TransferCard(minigame:GetDrawDeck())
+                            end
 
                             minigame.help_turns = SURVIVAL_TURNS
                         else
                             minigame.help_turns = SURVIVAL_TURNS + 4
                             minigame.player_negotiator:AddModifier("HELP_UNDERWAY", minigame.help_turns)
                             minigame.opponent_negotiator:CreateModifier( "IMPATIENCE", 2 )
-                            minigame.opponent_negotiator.behaviour.impatience_delay = 0
+                            -- minigame.opponent_negotiator.behaviour.impatience_delay = 0
                         end
 
                         local METRIC_DATA =
