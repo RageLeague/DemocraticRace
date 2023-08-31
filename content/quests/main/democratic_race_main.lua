@@ -594,7 +594,7 @@ local QDEF = QuestDef.Define
         if not delta_type and type(notification) == "string" then
             delta_type = notification
         end
-        if notification and amt ~= 0 then
+        if notification and amt ~= 0 and quest.param.enable_support_screen then
             TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_GENERAL_SUPPORT, amt, quest:DefFn("GetGeneralSupport"), delta_type )
         end
         if amt > 0 then
@@ -614,7 +614,7 @@ local QDEF = QuestDef.Define
         if not delta_type and type(notification) == "string" then
             delta_type = notification
         end
-        if notification and amt ~= 0 then
+        if notification and amt ~= 0 and quest.param.enable_support_screen then
             TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_FACTION_SUPPORT, amt, quest:DefFn("GetFactionSupport", faction), TheGame:GetGameState():GetFaction(faction), delta_type )
         end
         if amt > 0 then
@@ -634,7 +634,7 @@ local QDEF = QuestDef.Define
         if not delta_type and type(notification) == "string" then
             delta_type = notification
         end
-        if notification and amt ~= 0 then
+        if notification and amt ~= 0 and quest.param.enable_support_screen then
             TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_WEALTH_SUPPORT, amt, quest:DefFn("GetWealthSupport", r), r, delta_type )
         end
         if amt > 0 then
@@ -738,7 +738,7 @@ local QDEF = QuestDef.Define
         quest:DefFn("DeltaGeneralSupport", general_amt, false, delta_type)
         quest:DefFn("DeltaFactionSupport", additional_amt, agent, false, delta_type)
         quest:DefFn("DeltaWealthSupport", additional_amt, agent, false, delta_type)
-        if notification and additional_amt then
+        if notification and additional_amt and quest.param.enable_support_screen then
             TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_AGENT_SUPPORT, general_amt, additional_amt, agent, delta_type )
         end
     end,
@@ -761,7 +761,7 @@ local QDEF = QuestDef.Define
             actual_group[id] = math.round(val * multiplier)
             quest:DefFn("DeltaFactionSupport", actual_group[id], id, false, delta_type)
         end
-        if notification then
+        if notification and quest.param.enable_support_screen then
             TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_GROUP_FACTION_SUPPORT, actual_group, delta_type)
         end
     end,
@@ -778,7 +778,7 @@ local QDEF = QuestDef.Define
             actual_group[id] = math.round(val * multiplier)
             quest:DefFn("DeltaWealthSupport", math.round(val * multiplier), id, false, delta_type)
         end
-        if notification then
+        if notification and quest.param.enable_support_screen then
             TheGame:GetGameState():LogNotification( NOTIFY.DEM_DELTA_GROUP_WEALTH_SUPPORT, actual_group, delta_type)
         end
     end,
