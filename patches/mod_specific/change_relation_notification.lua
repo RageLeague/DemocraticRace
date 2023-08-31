@@ -4,7 +4,7 @@ local function GetReason(txt)
     return LOC("DEMOCRACY.DELTA_SUPPORT_REASON." .. txt)
 end
 function NOTIFY.RELATIONSHIP_CHANGED:FormatNotification(notification, agent, old_rel, new_rel, ...)
-    if not DemocracyUtil.IsDemocracyCampaign() then
+    if not DemocracyUtil.IsDemocracyCampaign() or not TheGame:GetGameState():GetMainQuest().param.enable_support_screen then
         return old_fn(self, notification, agent, old_rel, new_rel, ...)
     else
         local result = old_fn(self, notification, agent, old_rel, new_rel, ...)
