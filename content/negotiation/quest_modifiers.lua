@@ -547,6 +547,37 @@ local MODIFIERS =
             end,
         }
     },
+    -- Prevents player softlocking by exhausting all call for help card while no help is arriving
+    DEM_ASSASSIN_SOFTLOCK_PROTECTION =
+    {
+        hidden = true,
+
+        OnBeginTurn = function(self, minigame)
+            if self.negotiator:GetModifierStacks("CONNECTED_LINE") == 0 and self.negotiator:GetModifierStacks("HELP_UNDERWAY") == 0 then
+                local card_id = "assassin_fight_call_for_help"
+                for i,card in self.engine:GetHandDeck():Cards() do
+                    if card.id == card_id then
+                        return
+                    end
+                end
+                for i,card in self.engine:GetDrawDeck():Cards() do
+                    if card.id == card_id then
+                        return
+                    end
+                end
+                for i,card in self.engine:GetDiscardDeck():Cards() do
+                    if card.id == card_id then
+                        return
+                    end
+                end
+
+                -- At this point we softlocked ourselves. Give the player a card in draw pile
+                local card = Negotiation.Card( "assassin_fight_call_for_help", minigame.player_negotiator.agent )
+                card.show_dealt = true
+                card:TransferCard(minigame:GetDrawDeck())
+            end
+        end,
+    },
     CONNECTED_LINE =
     {
         name = "Connected Line",

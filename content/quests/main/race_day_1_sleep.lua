@@ -829,6 +829,7 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                         minigame.opponent_negotiator:CreateModifier( "DISTRACTION_GUILTY_CONSCIENCE" )
                         minigame.opponent_negotiator:CreateModifier( "DISTRACTION_CONFUSION" )
                         minigame.opponent_negotiator:CreateModifier( "DEM_HASTENED_IMPATIENCE" )
+                        minigame.player_negotiator:CreateModifier( "DEM_ASSASSIN_SOFTLOCK_PROTECTION" )
 
                         if not cxt.quest.param.advisor_intervention then
                             for i = 1, 3 do
