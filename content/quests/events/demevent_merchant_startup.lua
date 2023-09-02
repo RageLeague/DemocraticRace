@@ -98,21 +98,6 @@ QDEF:AddConvo( "startup" )
                     You Heshians are going to be swept way by progress, with your close-mindedness.
             ]],
 
-            OPT_ROB = "Take the prototype",
-            DIALOG_ROB = [[
-                player:
-                   That little doo-hickey is valuable, huh?
-                    Why don't I just take it for a spin, then?
-                merchant:
-                    O-oh, well, I'd rather not trust--
-                player:
-                    I should trust you with my shills, but you won't trust me with your thingy?
-                    Excuse me, <i>our</i> thingy. 'Cause that's what you were suggesting, after all.
-                    Here's a proposal for you: give me that thing now, or I'll hurt you.
-                merchant:
-                    !scared
-                ]],
-
             DIALOG_LEAVE = [[
                 player:
                     !thumb
