@@ -152,15 +152,6 @@ QDEF:AddConvo( "startup" )
                         :CancelQuest()
                         :Travel()
 
-            cxt:Opt("OPT_ROB")
-                :Dialog("DIALOG_ROB")
-                :Battle{
-                    loot = { grafts = { "neural_braid" }}
-                }
-                :CancelQuest()
-                :OnWin() -- Suppress greeting quip
-                :Travel()
-
             cxt:Opt("OPT_LEAVE")
                 :Dialog("DIALOG_LEAVE")
                 :CancelQuest()
