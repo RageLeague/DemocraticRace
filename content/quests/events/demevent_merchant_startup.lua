@@ -2,6 +2,7 @@ local QDEF = QuestDef.Define
 {
     qtype = QTYPE.EVENT,
     spawn_event_mask = QEVENT_TRIGGER.TRAVEL,
+    act_filter = DemocracyUtil.DemocracyActFilter,
     postcondition = function(quest)
         quest.param.investment_cost = table.arraypick{ 50, 100, 150, 200 }
         local cost, reason = CalculatePayment(quest:GetCastMember("merchant"), quest.param.investment_cost, 1, {})
