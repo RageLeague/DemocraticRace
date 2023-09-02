@@ -368,6 +368,15 @@ QDEF:AddConvo("tell_news", "worker")
                         Thank you for what you did for me.
                         I am truly grateful.
                 }
+                {not foreman_dead and stripped_influence?
+                    player:
+                        [p] I stripped {foreman.hisher} influence.
+                        {fired_from_job?
+                            [p] {foreman} is fired from {foreman.hisher} job.
+                        }
+                    agent:
+                        Nice.
+                }
             }
             {organize_strike?
             player:
