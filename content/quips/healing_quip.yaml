@@ -1,0 +1,57 @@
+lines:
+
+- tags: [request_healing]
+  dialog:
+  - |
+    player:
+      I need some healing.
+
+  - |
+    player:
+      Can you heal me?
+
+- tags: [request_healing, food]
+  pre: |
+    player:
+  dialog:
+  - |
+    player:
+      I could go for a meal right now.
+  - |
+    player:
+      This is what I'm going to order.
+  - |
+    agent:
+      !give
+      Eat up.
+
+- tags: [request_healing_pst]
+  dialog:
+  - |
+    player:
+      There we go.
+- tags: [request_healing_pst, food]
+  dialog:
+  - |
+    player:
+      That is certainly food, alright.
+- tags: [request_healing_pst, food, restaurant, fancy]
+  dialog:
+  - |
+    player:
+      Wish I could eat this forever, if not for the prohibiting cost.
+
+- tags: [shared_a_meal, disliked]
+  dialog:
+    - |
+        Now what's the catch?
+        !dubious
+    -   You're not a total piece of drek after all.
+
+- tags: [shared_a_meal]
+  dialog:
+    - |
+        Thanks for that.
+        !happy
+    -   That hit the spot, pal.
+    -   I'm guessing you want to be friends now?

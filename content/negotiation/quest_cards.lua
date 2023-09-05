@@ -885,6 +885,17 @@ local CARDS = {
 
         battle_counterpart = "status_injury",
     },
+    dem_lightheaded =
+    {
+        name = "Lightheaded",
+        desc = "At the end of your turn, {EXPEND} this card.",
+        flavour = "'Can't focus'",
+        icon = "battle/status_winded.tex",
+
+        cost = 1,
+        flags = CARD_FLAGS.STATUS | CARD_FLAGS.CONSUME | CARD_FLAGS.SLEEP_IT_OFF,
+        rarity = CARD_RARITY.UNIQUE,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     if not def.series then
