@@ -160,7 +160,7 @@ QDEF:AddConvo( "followup" )
                     {not disliked?
                         !wave
                         Ah, {player}! There you are!
-                        You're a hard man to find when rewards are ready for reaping.
+                        You're a hard {player.gender:man|woman|person} to find when rewards are ready for reaping.
                         Thanks to your help, our prototype has blossomed into a beautiful butterfly!
                         Figuratively, of course.
                     }
