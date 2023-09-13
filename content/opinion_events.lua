@@ -108,6 +108,10 @@ local OPINIONS = {
         delta = OPINION_DELTAS.LIKE,
         txt = "Had meaningful discussion with them",
     },
+    SHARED_A_MEAL = {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Shared a meal with them",
+    },
 }
 
 for id, data in pairs(OPINIONS) do
