@@ -54,6 +54,15 @@ QDEF:AddConvo()
                 agent:
                     This isn't about your family's tithes. This is about <i>your</> personal tithes.
                 }
+                {player_arint?
+                player:
+                    !crossed
+                    ...
+                    You are asking for Heshian tithes. From a Spark Baron lieutenant.
+                agent:
+                    !angry_accuse
+                    Do you think being a Spark Baron lieutenant exempt you from paying your proper tithes?
+                }
                 {not (player_sal or player_rook or player_smith)?
                 player:
                     !angry_accuse
@@ -125,7 +134,7 @@ QDEF:AddConvo()
                     * With that, {agent} is thoroughly scared away.
                     * All of that admiralty training is paying off, evidently.
                     }
-                    {not player_smith? and not player_rook?
+                    {not player_smith and not player_rook?
                         I've donated more than my fair share to the Cult all this time.
                         So I went up to the Bishop and-
                     agent:
@@ -185,7 +194,7 @@ QDEF:AddConvo()
                         agent:
                             That's what an alias is. If you're not paying for {player}'s tithes, how about we start with "Coin Flipster"'s tithes.
                     }
-                    {not player_smith? and not player_rook?
+                    {not player_smith and not player_rook?
                         player:
                             !crossed
                             I had my exemptions notarized by the local priest.
