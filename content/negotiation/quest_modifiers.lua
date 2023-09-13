@@ -645,6 +645,15 @@ local MODIFIERS =
             end )
         end,
 
+        -- In the rare case where you somehow remove the argument prematurely, you don't softlock yourself
+        OnUnapply = function( self, minigame )
+            if self.stacks > 0 then
+                self.negotiator:CreateModifier(self.id, self.stacks, self)
+            else
+                minigame:Win()
+            end
+        end,
+
         event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
                 if self.stacks <= 1 then
@@ -2158,7 +2167,6 @@ local MODIFIERS =
             end
         end,
     },
-    --Wumpus; So I finally found the horrendous indenting. Turns out it only randomly indents when my back is turned.
     FANATIC_LECTURE =
     {
         name = "Long Lecture",
@@ -2171,13 +2179,13 @@ local MODIFIERS =
         event_handlers = {
             [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
                 if minigame.turns > 1 then
-                    self.negotiator:RemoveModifier(self, 1)
-                    if self.stacks <= 0 then
-                        minigame:Win()
-                    end
+                    self.negotiator:RemoveModifier(self, 1, self)
                 end
             end,
         },
+        OnUnapply = function( self, minigame )
+            minigame:Win()
+        end,
     },
     SHORT_TEMPERED =
     {
