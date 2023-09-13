@@ -201,7 +201,7 @@ QDEF:AddConvo( "followup" )
                         Perhaps I was wrong about you. Maybe you give back more than you let on.
                     }
                     {not disliked?
-                        You, sir, are a true philanthropist!
+                        You, {player.gender:sir|ma'am|my friend}, are a true philanthropist!
                     }
             ]],
         }
