@@ -490,7 +490,7 @@ local CARDS = {
 
         OnPostResolve = function( self, minigame, targets )
             for i, target in ipairs(targets) do
-                local new_mod = target.negotiator:CreateModifier(self.id, 1, self)
+                local new_mod = target.negotiator:CreateModifier("advisor_manipulate_cognitive_dissonance", 1, self)
                 new_mod.stored_mod = target:Clone()
                 target.negotiator:RemoveModifier( target )
             end
