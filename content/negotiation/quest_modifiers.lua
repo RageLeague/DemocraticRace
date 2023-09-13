@@ -2191,6 +2191,9 @@ local MODIFIERS =
         },
         OnUnapply = function( self, minigame )
             minigame:Win()
+            if self.stacks > 0 then
+                minigame.ended_prematurely = true
+            end
         end,
     },
     SHORT_TEMPERED =

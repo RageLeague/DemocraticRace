@@ -516,11 +516,19 @@ QDEF:AddConvo("ask_info")
                     So it all starts with the symmetry...
             ]],
             DIALOG_ENDURE_SUCCESS = [[
+                {ended_prematurely?
+                agent:
+                    [p] Okay. What the Hesh.
+                    You are even confusing me, with how much arguments you are making.
+                    I will just skip straight to the point, then.
+                }
+                {not ended_prematurely?
                 agent:
                     But, I say, what of the lumin that Hesh supposedly shed in it's birthing?
                     !eureka
                     Well, the solution was obvious once I looked at it like that.
                     In conclusion...
+                }
             ]],
             DIALOG_ENDURE_FAILURE = [[
                 * As {agent} drones on, {agent.hisher} words start to glaze over.
@@ -577,6 +585,9 @@ QDEF:AddConvo("ask_info")
                     end,
                 }
                     :OnSuccess()
+                        :Fn(function(cxt, minigame)
+                            cxt.enc.scratch.ended_prematurely = minigame.ended_prematurely
+                        end)
                         :Dialog("DIALOG_ENDURE_SUCCESS")
                         :GoTo("STATE_SUCCESS")
                     :OnFailure()
