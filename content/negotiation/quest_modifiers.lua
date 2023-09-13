@@ -856,6 +856,12 @@ local MODIFIERS =
         max_stacks = 999,
 
         modifier_type = MODIFIER_TYPE.PERMANENT,
+
+        OnUnapply = function( self, minigame )
+            if self.stacks > 0 then
+                self.negotiator:CreateModifier(self.id, self.stacks, self)
+            end
+        end,
     },
     INVESTMENT_OPPORTUNITY  =
     {
