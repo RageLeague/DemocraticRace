@@ -760,7 +760,7 @@ QDEF:AddConvo("go_to_advisor", "primary_advisor")
             :SetQuestMark()
             :Dialog("DIALOG_TALK_PROGRESS")
             :Fn(function(cxt)
-                local count = #cxt.quest.param.gifted_people
+                local count = #(cxt.quest.param.gifted_people or {})
                 if count == 0 then
                     cxt:Dialog("DIALOG_NO_GIFT", count)
                     cxt.quest:Fail()
