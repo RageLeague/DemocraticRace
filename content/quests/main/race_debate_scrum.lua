@@ -212,7 +212,22 @@ local QDEF = QuestDef.Define
 
 DemocracyUtil.AddPrimaryAdvisor(QDEF, true)
 DemocracyUtil.AddHomeCasts(QDEF)
-DemocracyUtil.AddOppositionCast(QDEF)
+-- DemocracyUtil.AddOppositionCast(QDEF)
+
+for id, data in pairs(DemocracyConstants.opposition_data) do
+    QDEF:AddCast{
+        cast_id = data.cast_id,
+        no_validation = true,
+        optional = true,
+        cast_fn = function(quest, t)
+            local agent = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
+            if agent then
+                table.insert(t, agent)
+            end
+        end,
+    }
+end
+
 local function ProcessMinigame(minigame, win_minigame, cxt)
     local data = {
         won_game = win_minigame,
@@ -578,7 +593,7 @@ QDEF:AddConvo("do_debate")
                         DeltaPopularity(cxt.quest.param.popularity, cxt.player, 1)
                     end
                     for id, data in pairs(DemocracyConstants.opposition_data) do
-                        if agent:GetFactionID() == data.main_supporter then
+                        if cxt:GetCastMember(data.cast_id) and agent:GetFactionID() == data.main_supporter then
                             DeltaPopularity(cxt.quest.param.popularity, cxt:GetCastMember(data.cast_id), 1)
                         end
                     end
