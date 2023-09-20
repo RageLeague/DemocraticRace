@@ -1707,7 +1707,7 @@ local MODIFIERS =
     CROWD_OPINION =
     {
         name = "Crowd Opinion",
-        desc = "Whenever {1}'s argument is destroyed, gain 1 stack (max {2} {2*stack|stacks}).\n\nWhenever your argument is destroyed, lose 1 stack (min 1 stack).",
+        desc = "Whenever {1}'s argument is destroyed, lose 1 stack (min 1 stack).",
         loc_strings = {
             CURRENT_OPINION = "The crowd's current opinion is {1}.",
             NAME_1 = "<#PENALTY>Hostile</>",
@@ -1737,7 +1737,7 @@ local MODIFIERS =
                 -- end
             end
             -- table.insert(desc_lst, loc.format(fmt_str, self:GetOwnerName(), "appeal_to_crowd_quest"))
-            table.insert(desc_lst, loc.format(fmt_str, self:GetOwnerName(), self.max_stacks or 5))
+            table.insert(desc_lst, loc.format(fmt_str, self:GetOpponentName()))
             return table.concat(desc_lst, "\n")
         end,
 
@@ -1760,18 +1760,18 @@ local MODIFIERS =
                         if self.stacks > 1 then
                             self.negotiator:RemoveModifier(self, 1, self)
                         end
-                    elseif modifier.negotiator == self.negotiator then
-                        if self.stacks < self.max_stacks then
-                            self.negotiator:AddModifier(self, 1, self)
-                        end
+                    -- elseif modifier.negotiator == self.negotiator then
+                    --     if self.stacks < self.max_stacks then
+                    --         self.negotiator:AddModifier(self, 1, self)
+                    --     end
                     end
                 end
             end,
             [ EVENT.PREPARE_INTENTS ] = function(self, behaviour, prepared_cards)
-                if not self.negotiator:IsPlayer() and self.negotiator.prepared_cards and self.negotiator:GetModifierStacks("INSTIGATE_CROWD") == 0 then
+                if not self.negotiator:IsPlayer() and self.negotiator.prepared_cards then
                     if not self.instigate_card then
                         self.instigate_card = self.negotiator.behaviour:AddArgument("INSTIGATE_CROWD")
-                        self.instigate_card.stacks = 2
+                        -- self.instigate_card.stacks = 2
                     end
                     table.insert(prepared_cards, self.instigate_card)
                 end
@@ -1781,14 +1781,15 @@ local MODIFIERS =
     INSTIGATE_CROWD =
     {
         name = "Instigate Crowd",
-        desc = "At the start of {1}'s turn, remove a stack. If the last stack is removed, remove 1 stack of {CROWD_OPINION} (min 1 stack).",
+        desc = "When destroyed, gain 1 {CROWD_OPINION}.\n\nWhen the number of stacks on this argument increases, if this argument reaches {1} stacks and there is at least 1 {CROWD_OPINION}, remove 1 {CROWD_OPINION} and reset the number of stacks on this argument to 1.",
         icon = "negotiation/modifiers/influence.tex",
 
         desc_fn = function(self, fmt_str)
-            return loc.format(fmt_str, self:GetOwnerName())
+            return loc.format(fmt_str, self.stack_trigger)
         end,
 
         max_resolve = 3,
+        stack_trigger = 3,
 
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
@@ -1796,14 +1797,22 @@ local MODIFIERS =
             self:SetResolve(self.max_resolve + 3 * self.engine:GetDifficulty())
         end,
 
-        OnBeginTurn = function( self, minigame )
-            self.negotiator:RemoveModifier(self, 1, self)
-            if self.stacks <= 0 then
-                if self.negotiator:GetModifierStacks("CROWD_OPINION") > 1 then
-                    self.negotiator:RemoveModifier("CROWD_OPINION", 1, self)
-                end
-            end
+        OnBounty = function(self)
+            self.negotiator:AddModifier("CROWD_OPINION", 1, self)
         end,
+
+        event_handlers =
+        {
+
+            [ EVENT.MODIFIER_CHANGED ] = function( self, modifier, delta, clone, source )
+                if modifier == self and delta > 0 and self.stacks >= self.stack_trigger then
+                    if self.negotiator:GetModifierStacks("CROWD_OPINION") > 1 then
+                        self.negotiator:RemoveModifier("CROWD_OPINION", 1, self)
+                        self.negotiator:RemoveModifier(self, self.stacks - 1, self)
+                    end
+                end
+            end,
+        },
     },
     FELLOW_GRIFTER = {
         name = "Fellow Grifter",
