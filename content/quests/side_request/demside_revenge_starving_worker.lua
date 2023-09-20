@@ -197,8 +197,8 @@ local QDEF = QuestDef.Define
             if battle.result == BATTLE_RESULT.WON then
                 if battle:GetEnemyTeam():GetFighterForAgent(quest:GetCastMember("foreman")) then
                     quest.param.beat_up_primary = primary_enemy == quest:GetCastMember("foreman")
+                    quest.param.beat_up = true
                 end
-                quest.param.beat_up = true
             end
         end,
     },

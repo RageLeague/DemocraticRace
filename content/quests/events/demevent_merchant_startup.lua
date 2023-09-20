@@ -123,7 +123,7 @@ QDEF:AddConvo( "startup" )
 
             cxt:Opt("OPT_CONVINCE")
                 :UpdatePoliticalStance("RELIGIOUS_POLICY", 1)
-                :Dialog("DIALOG_CONVINCE_SUCCESS")
+                :Dialog("DIALOG_CONVINCE")
                 :Negotiation{
 
                 }

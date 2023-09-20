@@ -54,7 +54,16 @@ QDEF:AddConvo()
                 agent:
                     This isn't about your family's tithes. This is about <i>your</> personal tithes.
                 }
-                {not (player_sal or player_rook or player_smith)?
+                {player_arint?
+                player:
+                    !crossed
+                    ...
+                    You are asking for Heshian tithes. From a Spark Baron lieutenant.
+                agent:
+                    !angry_accuse
+                    Do you think being a Spark Baron lieutenant exempt you from paying your proper tithes?
+                }
+                {not (player_sal or player_rook or player_smith or player_arint)?
                 player:
                     !angry_accuse
                     I've paid all my tithes on time, just like the rest of us.
@@ -74,72 +83,99 @@ QDEF:AddConvo()
             ]],
             OPT_CONVINCE_EXEMPT = "Convince {agent} to leave you alone",
             DIALOG_CONVINCE_EXEMPT = [[
-                player:
                 {not paid_all?
-                    !hips
-                    Your records must be wrong. I was told that I was exempt from the next round of tithes.
-                agent:
-                    The "next round"?
+                    {not player_arint?
+                        player:
+                            !hips
+                            Your records must be wrong. I was told that I was exempt from the next round of tithes.
+                        agent:
+                            The "next round"?
+                    }
+                    {player_arint?
+                        player:
+                            !crossed
+                            And? What are you going to do about it?
+                    }
                 }
                 {paid_all?
+                player:
                     !bashful
-                    Look, that's all i've got. I promise i'll come up with the money next time, okay?
+                    Look, that's all I've got. I promise I'll come up with the money next time, okay?
                 }
             ]],
             DIALOG_CONVINCE_EXEMPT_SUCCESS = [[
                 {not paid_all?
-                player:
                     {player_smith?
-                        Vix gave me an exemption. Said I could beat the face in of anyone saying otherwise.
-                    agent:
-                        !question
-                        Vixmalli said this specifically?
-                    player:
-                        !shrug
-                        What, d'you need to see the decree?
-                        Sure he said trying to refuse a cardinal was worth some sort of punishment.
-                    agent:
-                        !scared
-                        Oh, I would never question Vixmalli.
-                        You...may have a good day, now.
-                        * It's hard to live with, but having Vix in your back pocket always helped in these kinds of ruts.
+                        player:
+                            Vix gave me an exemption. Said I could beat the face in of anyone saying otherwise.
+                        agent:
+                            !question
+                            Vixmalli said this specifically?
+                        player:
+                            !shrug
+                            What, d'you need to see the decree?
+                            Sure he said trying to refuse a cardinal was worth some sort of punishment.
+                        agent:
+                            !scared
+                            Oh, I would never question Vixmalli.
+                            You...may have a good day, now.
+                            * It's hard to live with, but having Vix in your back pocket always helped in these kinds of ruts.
                     }
                     {player_rook?
-                        !give
-                        ...and my records of all times I've been tithed, timestamped for your convenience, and my-
-                    agent:
-                        !scared
-                        How does someone have so many papers on just their tithes?
-                    player:
-                        !shrug
-                        I'm a thorough person. You'll find my exemptions in there.
-                    agent:
-                        I...
-                        This is too much trouble. You win, {player}.
-                    player:
-                        Really? I found it was quite simple once you looked-
-                    agent:
-                        !crossed
-                        I am not reading all of this paperwork just to ask you for money.
-                        !exit
-                    * With that, {agent} is thoroughly scared away.
-                    * All of that admiralty training is paying off, evidently.
+                        player:
+                            !give
+                            ...and my records of all times I've been tithed, timestamped for your convenience, and my-
+                        agent:
+                            !scared
+                            How does someone have so many papers on just their tithes?
+                        player:
+                            !shrug
+                            I'm a thorough person. You'll find my exemptions in there.
+                        agent:
+                            I...
+                            This is too much trouble. You win, {player}.
+                        player:
+                            Really? I found it was quite simple once you looked-
+                        agent:
+                            !crossed
+                            I am not reading all of this paperwork just to ask you for money.
+                            !exit
+                        * With that, {agent} is thoroughly scared away.
+                        * All of that admiralty training is paying off, evidently.
                     }
-                    {not player_smith? and not player_rook?
-                        I've donated more than my fair share to the Cult all this time.
-                        So I went up to the Bishop and-
-                    agent:
-                        This is an exemption from the Bishop?
-                    player:
-                        !point
-                        That's the one.
-                        Heard he liked enforcing these kinds of exemptions a little too much.
-                        !nudge_nudge
-                        If you get my meaning.
-                    agent:
-                        !scared
-                        Ah...of course.
-                        Well, we can take our holy work elsewhere. May you continue walking in the shallows.
+                    {player_arint?
+                        player:
+                            !angry_shrug
+                            Are you going to start a war between the Cult and the Barons?
+                            And break the peace treaty that your superior agreed to?
+                            In the middle of an election specifically designed to prevent such occurrence, no less?
+                        agent:
+                            !angry_accuse
+                            Ah! Curse you and your so called "election"!
+                            !crossed
+                            Fine, have it your way then.
+                            !point
+                            But Hesh will not forget this!
+                            !exit
+                        player:
+                            That's what I thought.
+                    }
+                    {not player_smith and not player_rook and not player_arint?
+                        player:
+                            I've donated more than my fair share to the Cult all this time.
+                            So I went up to the Bishop and-
+                        agent:
+                            This is an exemption from the Bishop?
+                        player:
+                            !point
+                            That's the one.
+                            Heard he liked enforcing these kinds of exemptions a little too much.
+                            !nudge_nudge
+                            If you get my meaning.
+                        agent:
+                            !scared
+                            Ah...of course.
+                            Well, we can take our holy work elsewhere. May you continue walking in the shallows.
                     }
                 }
                 {paid_all?
@@ -160,7 +196,7 @@ QDEF:AddConvo()
                             !question
                             You're Vix's brother?
                         player:
-                            Yeah, the heshian cardinal himself!
+                            Yeah, the Heshian cardinal himself!
                         agent:
                             !think
                             Strange. He said he never gave exemptions to siblings.
@@ -185,7 +221,14 @@ QDEF:AddConvo()
                         agent:
                             That's what an alias is. If you're not paying for {player}'s tithes, how about we start with "Coin Flipster"'s tithes.
                     }
-                    {not player_smith? and not player_rook?
+                    {player_arint?
+                        agent:
+                            ...
+                            You being a Spark Baron means nothing here.
+                            I can make you pay, right now.
+                            It's just a matter of whether you prefer the easy way, or the hard way.
+                    }
+                    {not player_smith and not player_rook and not player_arint?
                         player:
                             !crossed
                             I had my exemptions notarized by the local priest.

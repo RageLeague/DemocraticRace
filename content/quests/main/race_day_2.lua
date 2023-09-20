@@ -329,8 +329,6 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                 agent:
                     A long day, isn't it?
                     Wanna go to bed soon?
-                player:
-                    Not yet.
             ]],
         }
         :Fn(function(cxt)
