@@ -90,7 +90,7 @@ local QDEF = QuestDef.Define
             while not has_candidate and #GENERIC_OPPOSITION > 0 do
                 local chosen_id = table.arraypick(GENERIC_OPPOSITION)
                 table.arrayremove(GENERIC_OPPOSITION, chosen_id)
-                local agent = AgentUtil.GetOrSpawnAgentbyAlias(alias)
+                local agent = AgentUtil.GetOrSpawnAgentbyAlias(chosen_id)
                 if agent and not agent:IsRetired() and agent:GetRelationship() <= RELATIONSHIP.NEUTRAL then
                     table.insert(t, agent)
                     -- if agent.guid == nil then
