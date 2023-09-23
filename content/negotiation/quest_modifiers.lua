@@ -1707,7 +1707,7 @@ local MODIFIERS =
     CROWD_OPINION =
     {
         name = "Crowd Opinion",
-        desc = "Whenever {1}'s argument is destroyed, lose 1 stack (min 1 stack).",
+        desc = "Whenever {1} creates an argument with an intent, it gains {2} resolve. If that argument is destroyed, gain 1 stack (max {3} {3*stack|stacks}).\n\nWhenever {4}'s argument is destroyed, lose 1 stack (min 1 stack).",
         loc_strings = {
             CURRENT_OPINION = "The crowd's current opinion is {1}.",
             NAME_1 = "<#PENALTY>Hostile</>",
@@ -1726,10 +1726,13 @@ local MODIFIERS =
             "DEMOCRATICRACE:assets/modifiers/crowd_opinion_4.png",
             "DEMOCRATICRACE:assets/modifiers/crowd_opinion_5.png",
         },
+        GetStage = function(self)
+            return clamp(math.ceil(self.stacks / 2), 1, 5)
+        end,
         desc_fn = function(self, fmt_str)
             local desc_lst = {}
             if self.engine and self.stacks then
-                table.insert(desc_lst, loc.format((self.def or self):GetLocalizedString("CURRENT_OPINION"), (self.def or self):GetLocalizedString("NAME_" .. self.stacks)))
+                table.insert(desc_lst, loc.format((self.def or self):GetLocalizedString("CURRENT_OPINION"), (self.def or self):GetLocalizedString("NAME_" .. self:GetStage())))
                 -- if self.stacks < 3 then
                 --     table.insert(desc_lst, loc.format((self.def or self):GetLocalizedString("BONUS_DMG"), self:GetOwnerName(), self:GetOpponentName()))
                 -- elseif self.stacks > 3 then
@@ -1737,15 +1740,23 @@ local MODIFIERS =
                 -- end
             end
             -- table.insert(desc_lst, loc.format(fmt_str, self:GetOwnerName(), "appeal_to_crowd_quest"))
-            table.insert(desc_lst, loc.format(fmt_str, self:GetOpponentName()))
-            return table.concat(desc_lst, "\n")
+            table.insert(desc_lst, loc.format(fmt_str, self:GetOwnerName(), self.max_resolve_gain, self.max_stacks, self:GetOpponentName()))
+            return table.concat(desc_lst, "\n\n")
         end,
 
         modifier_type = MODIFIER_TYPE.PERMANENT,
-        max_stacks = 5,
+        max_stacks = 9,
+
+        max_resolve_gain = 2,
+
+        OnInit = function( self )
+            if self.engine then
+                self.max_resolve_gain = 1 + (GetAdvancementModifier( ADVANCEMENT_OPTION.NPC_ABILITY_STRENGTH ) or 0) + self.engine:GetDifficulty()
+            end
+        end,
 
         OnSetStacks = function(self, old_stacks)
-            local new_stacks = self.stacks
+            local new_stacks = self:GetStage()
             -- print(new_stacks)
             -- print("newicon: ", self.icon_levels[new_stacks])
             self.icon = self.icon_levels[new_stacks] and engine.asset.Texture(self.icon_levels[new_stacks]) or self.icon
@@ -1760,10 +1771,10 @@ local MODIFIERS =
                         if self.stacks > 1 then
                             self.negotiator:RemoveModifier(self, 1, self)
                         end
-                    -- elseif modifier.negotiator == self.negotiator then
-                    --     if self.stacks < self.max_stacks then
-                    --         self.negotiator:AddModifier(self, 1, self)
-                    --     end
+                    elseif modifier.negotiator == self.negotiator and modifier.created_by_intent then
+                        if self.stacks < self.max_stacks then
+                            self.negotiator:AddModifier(self, 1, self)
+                        end
                     end
                 end
             end,
@@ -1776,12 +1787,20 @@ local MODIFIERS =
                     table.insert(prepared_cards, self.instigate_card)
                 end
             end,
+            [ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
+                if modifier.modifier_type == MODIFIER_TYPE.ARGUMENT and source and is_instance(source, Negotiation.Card) and source.negotiator == self.negotiator then
+                    self.engine:PushPostHandler( function()
+                        modifier:ModifyResolve(self.max_resolve_gain, self)
+                        modifier.created_by_intent = true
+                    end )
+                end
+            end,
         },
     },
     INSTIGATE_CROWD =
     {
         name = "Instigate Crowd",
-        desc = "When destroyed, gain 1 {CROWD_OPINION}.\n\nWhen the number of stacks on this argument increases, if this argument reaches {1} stacks and there is at least 1 {CROWD_OPINION}, remove 1 {CROWD_OPINION} and reset the number of stacks on this argument to 1.",
+        desc = "When the number of stacks on this argument increases, if this argument reaches {1} stacks and there is at least 1 {CROWD_OPINION}, remove 1 {CROWD_OPINION} and reset the number of stacks on this argument to 1.",
         icon = "negotiation/modifiers/influence.tex",
 
         desc_fn = function(self, fmt_str)
@@ -1794,12 +1813,12 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.ARGUMENT,
 
         OnInit = function(self)
-            self:SetResolve(self.max_resolve + 3 * self.engine:GetDifficulty())
+            self:SetResolve(self.max_resolve, MODIFIER_SCALING.MED)
         end,
 
-        OnBounty = function(self)
-            self.negotiator:AddModifier("CROWD_OPINION", 1, self)
-        end,
+        -- OnBounty = function(self)
+        --     self.negotiator:AddModifier("CROWD_OPINION", 1, self)
+        -- end,
 
         event_handlers =
         {

@@ -79,7 +79,7 @@ local QDEF = QuestDef.Define
         if quest_rank >= 3 then
             for id, data in pairs(DemocracyConstants.opposition_data) do
                 local candidate = TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id)
-                if candidate:GetContentID() ~= "VIXMALLI" and candidate:GetRelationship() < RELATIONSHIP.NEUTRAL or DemocracyUtil.GetFactionEndorsement(data.main_supporter) < RELATIONSHIP.NEUTRAL then
+                if candidate:GetRelationship() < RELATIONSHIP.NEUTRAL or DemocracyUtil.GetFactionEndorsement(data.main_supporter) < RELATIONSHIP.NEUTRAL then
                     table.insert(t, candidate)
                     has_candidate = true
                 end
@@ -90,12 +90,12 @@ local QDEF = QuestDef.Define
             while not has_candidate and #GENERIC_OPPOSITION > 0 do
                 local chosen_id = table.arraypick(GENERIC_OPPOSITION)
                 table.arrayremove(GENERIC_OPPOSITION, chosen_id)
-                local agent = TheGame:GetGameState():GetAgentOrMemento( chosen_id )
-                if not agent then
-                    agent = TheGame:GetGameState():AddSkinnedAgent(chosen_id)
-                end
+                local agent = AgentUtil.GetOrSpawnAgentbyAlias(alias)
                 if agent and not agent:IsRetired() and agent:GetRelationship() <= RELATIONSHIP.NEUTRAL then
                     table.insert(t, agent)
+                    -- if agent.guid == nil then
+                    --     TheGame:GetGameState():AddAgent(agent)
+                    -- end
                     has_candidate = true
                 end
             end
@@ -319,11 +319,16 @@ QDEF:AddConvo("meet_opponent")
                         return cxt:GetLocString("REASON_TXT", minigame:GetOpponentNegotiator():GetModifierStacks("CROWD_OPINION"), Content.GetNegotiationModifier( "CROWD_OPINION" ).max_stacks)
                     end,
                     on_start_negotiation = function(minigame)
-                        minigame:GetOpponentNegotiator():CreateModifier("CROWD_OPINION", 1)
-                        minigame:GetOpponentNegotiator():CreateModifier("INSTIGATE_CROWD", 1)
+                        minigame:GetOpponentNegotiator():CreateModifier("CROWD_OPINION", 4)
+                        -- minigame:GetOpponentNegotiator():CreateModifier("INSTIGATE_CROWD", 1)
                     end,
                     on_success = function(cxt,minigame)
-                        cxt.quest.param.audience_stage = minigame:GetOpponentNegotiator():GetModifierStacks("CROWD_OPINION") - 1
+                        local opinion = minigame:GetOpponentNegotiator():FindModifier("CROWD_OPINION")
+                        if opinion then
+                            cxt.quest.param.audience_stage = opinion:GetStage() - 1
+                        else
+                            cxt.quest.param.audience_stage = 0
+                        end
                         cxt:GoTo("STATE_RESULTS")
                     end,
                     on_fail = function(cxt,minigame)

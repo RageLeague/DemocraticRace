@@ -21,6 +21,7 @@
 * Fixed the game thinking you beat up the foreman in Revenge Starving Worker even if you don't fight them, as long as you win a fight.
 * Slightly reworked crowd opinion negotiation because it was too easy after the previous rework, especially if the opponent creates a lot of arguments.
 * Updated art for Virtue Signal.
+* Reworked crowd opinion negotiation again. The goal is to destroy arguments again, but arguments get more resolve when they enter play, and crowd opinion is a lot more granular. However, you start with a higher crowd opinion.
 
 ### 0.10.0
 
