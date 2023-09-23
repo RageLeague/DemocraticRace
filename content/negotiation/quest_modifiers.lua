@@ -1740,8 +1740,8 @@ local MODIFIERS =
                 -- end
             end
             -- table.insert(desc_lst, loc.format(fmt_str, self:GetOwnerName(), "appeal_to_crowd_quest"))
-            table.insert(desc_lst, loc.format(fmt_str, self:GetOwnerName(), self.max_stacks or 5))
-            return table.concat(desc_lst, "\n")
+            table.insert(desc_lst, loc.format(fmt_str, self:GetOwnerName(), self.max_resolve_gain, self.max_stacks, self:GetOpponentName()))
+            return table.concat(desc_lst, "\n\n")
         end,
 
         modifier_type = MODIFIER_TYPE.PERMANENT,
@@ -1771,7 +1771,7 @@ local MODIFIERS =
                         if self.stacks > 1 then
                             self.negotiator:RemoveModifier(self, 1, self)
                         end
-                    elseif modifier.negotiator == self.negotiator then
+                    elseif modifier.negotiator == self.negotiator and modifier.created_by_intent then
                         if self.stacks < self.max_stacks then
                             self.negotiator:AddModifier(self, 1, self)
                         end
@@ -1800,7 +1800,7 @@ local MODIFIERS =
     INSTIGATE_CROWD =
     {
         name = "Instigate Crowd",
-        desc = "At the start of {1}'s turn, remove a stack. If the last stack is removed, remove 1 stack of {CROWD_OPINION} (min 1 stack).",
+        desc = "When the number of stacks on this argument increases, if this argument reaches {1} stacks and there is at least 1 {CROWD_OPINION}, remove 1 {CROWD_OPINION} and reset the number of stacks on this argument to 1.",
         icon = "negotiation/modifiers/influence.tex",
 
         desc_fn = function(self, fmt_str)
