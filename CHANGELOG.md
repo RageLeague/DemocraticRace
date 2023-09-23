@@ -22,6 +22,10 @@
 * Slightly reworked crowd opinion negotiation because it was too easy after the previous rework, especially if the opponent creates a lot of arguments.
 * Updated art for Virtue Signal.
 * Reworked crowd opinion negotiation again. The goal is to destroy arguments again, but arguments get more resolve when they enter play, and crowd opinion is a lot more granular. However, you start with a higher crowd opinion.
+* Updated plax for main map and Grand Theater.
+* Fixed crash at start of day 4 if you get way too few votes and the opponents have way too many votes.
+* Fixed incorrect meal sharing options.
+* Fixed public debate casting issues.
 
 ### 0.10.0
 
