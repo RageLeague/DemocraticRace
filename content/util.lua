@@ -576,7 +576,7 @@ function DemocracyUtil.GetOppositionID(agent)
         return nil
     end
     for id, data in pairs(DemocracyConstants.opposition_data) do
-        if data.character and data.character == agent:GetContentID() then
+        if data.cast_id and TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id) == agent then
             return id
         end
     end
