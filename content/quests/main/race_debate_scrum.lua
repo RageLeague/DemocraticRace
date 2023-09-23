@@ -13,7 +13,7 @@ local QDEF = QuestDef.Define
         else
             table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('backroom'), role = CHARACTER_ROLES.VISITOR})
         end
-        table.insert(t, { agent = quest:GetCastMember("host"), location = quest:GetCastMember('theater')})
+        table.insert(t, { agent = quest:GetCastMember("host"), location = quest:GetCastMember('theater'), role = CHARACTER_ROLES.PROPRIETOR})
         for id, data in pairs(DemocracyConstants.opposition_data) do
             table.insert(t, { agent = quest:GetCastMember(id), location = quest:GetCastMember('theater'), role = CHARACTER_ROLES.VISITOR})
         end

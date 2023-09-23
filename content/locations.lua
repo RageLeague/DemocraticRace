@@ -162,7 +162,7 @@ Content.AddLocationContent{
     id = "GRAND_THEATER",
     name = "The Grand Theater",
     show_agents = true,
-    plax = "INT_AuctionHouse_01",
+    plax = "INT_Dem_Grand_Theater",
     desc = "A place where significant events are held frequently.",
     icon = engine.asset.Texture("DEMOCRATICRACE:assets/locations/location_grand_theater.png"),
 

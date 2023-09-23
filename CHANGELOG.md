@@ -1,5 +1,32 @@
 # Full Changelog
 
+### 0.11.0
+
+* Reworked how Public Debate works: there are no damage scaling anymore from Crowd Opinion, and you gain and lose crowd opinion by destroying each other's arguments.
+* Reworked the final negotiation of Night 1. It is shorter, but the impatience ramps up a lot quicker, so each turn is a lot more meaningful.
+* Added temporary art for signature cards.
+* Reduced max resolve for Instigate Crowd.
+* Implement "Merchant Startup" and "Loan Shark" event into the Democratic Race.
+* Added a dialog case for stripping the foreman's influence in "Revenge Starving Worker".
+* Added meal sharing dialog at several restaurants, as well as healing options at different locations.
+* Replaced temporary art for "Mask Off" and "False Dichotomy".
+* Support change notification is disabled until after support mechanic is unlocked.
+* Fixed Stripped Influence crash.
+* Fixed upgraded Cognitive Dissonance crashing.
+* Added special cases for when timer modifiers gets removed by other means (for example, when they get removed due to argument limit).
+* Added special dialog cases.
+* Fixed some dialogs.
+* Fixed crash during Dole Out if the player didn't gift anyone.
+* Fixed (hopefully for the last time) the opposition duplication bug.
+* Fixed the game thinking you beat up the foreman in Revenge Starving Worker even if you don't fight them, as long as you win a fight.
+* Slightly reworked crowd opinion negotiation because it was too easy after the previous rework, especially if the opponent creates a lot of arguments.
+* Updated art for Virtue Signal.
+* Reworked crowd opinion negotiation again. The goal is to destroy arguments again, but arguments get more resolve when they enter play, and crowd opinion is a lot more granular. However, you start with a higher crowd opinion.
+* Updated plax for main map and Grand Theater.
+* Fixed crash at start of day 4 if you get way too few votes and the opponents have way too many votes.
+* Fixed incorrect meal sharing options.
+* Fixed public debate casting issues.
+
 ### 0.10.0
 
 * Added new side quest: "Fundraising".

@@ -140,7 +140,7 @@ QDEF:AddConvo()
                 :Quip( who, "request_healing", table.unpack(quest_def.heal_info[loc_type].tags))
             DoEat(opt, 1)
             opt:Quip( who, "request_healing_pst", table.unpack(quest_def.heal_info[loc_type].tags))
-        elseif who:GetBrain():IsPatronizing() then
+        elseif who:GetBrain():IsPatronizing() and quest_def.heal_info[loc_type].can_share then
             local rel = who:GetRelationship()
             if rel == RELATIONSHIP.NEUTRAL or rel == RELATIONSHIP.DISLIKED then
                 local opt = cxt:Opt("OPT_SHARE_MEAL")
