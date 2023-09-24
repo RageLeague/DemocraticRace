@@ -7,30 +7,35 @@ local CARDS = {
     assassin_fight_call_for_help =
     {
         name = "Call For Help",
-        desc = "Attempt to call for help and ask someone to deal with the assassin.",
+        desc = "Gain 1 {CONNECTED_LINE} if one does not exist. Otherwise, gain 1 {DEM_HELP_REQUEST_PROGRESS}.",
         icon = "DEMOCRATICRACE:assets/cards/call_for_help.png",
 
         cost = 1,
         -- min_persuasion = 1,
         -- max_persuasion = 3,
-        flags = CARD_FLAGS.DIPLOMACY | CARD_FLAGS.EXPEND,
+        flags = CARD_FLAGS.DIPLOMACY,
         rarity = CARD_RARITY.UNIQUE,
-        init_help_count = 1,
 
         OnPostResolve = function( self, minigame, targets )
-            self.negotiator:AddModifier("CONNECTED_LINE", self.init_help_count)
-        end,
-        deck_handlers = ALL_DECKS,
-        event_handlers =
-        {
-            [ EVENT.CARD_MOVED ] = function( self, card, source_deck, source_idx, target_deck, target_idx )
-                if card == self and target_deck and target_deck:GetDeckType() == DECK_TYPE.TRASH
-                    and self.negotiator:GetModifierStacks( "CONNECTED_LINE" ) <= 0 then
-                    self.show_dealt = true
-                    self:TransferCard(self.engine.hand_deck)
+            if self.negotiator:GetModifierStacks("HELP_UNDERWAY") == 0 then
+                if self.negotiator:GetModifierInstances("CONNECTED_LINE") > 0 then
+                    self.negotiator:AddModifier("DEM_HELP_REQUEST_PROGRESS", 1, self)
+                else
+                    self.negotiator:AddModifier("CONNECTED_LINE", 1, self)
                 end
-            end,
-        },
+            end
+        end,
+        -- deck_handlers = ALL_DECKS,
+        -- event_handlers =
+        -- {
+        --     [ EVENT.CARD_MOVED ] = function( self, card, source_deck, source_idx, target_deck, target_idx )
+        --         if card == self and target_deck and target_deck:GetDeckType() == DECK_TYPE.TRASH
+        --             and self.negotiator:GetModifierStacks( "CONNECTED_LINE" ) <= 0 then
+        --             self.show_dealt = true
+        --             self:TransferCard(self.engine.hand_deck)
+        --         end
+        --     end,
+        -- },
     },
     -- this is too boring.
     -- assassin_fight_describe_information =
@@ -879,6 +884,17 @@ local CARDS = {
         rarity = CARD_RARITY.UNIQUE,
 
         battle_counterpart = "status_injury",
+    },
+    dem_lightheaded =
+    {
+        name = "Lightheaded",
+        desc = "At the end of your turn, {EXPEND} this card.",
+        flavour = "'Can't focus'",
+        icon = "battle/status_winded.tex",
+
+        cost = 1,
+        flags = CARD_FLAGS.STATUS | CARD_FLAGS.CONSUME | CARD_FLAGS.SLEEP_IT_OFF,
+        rarity = CARD_RARITY.UNIQUE,
     },
 }
 for i, id, def in sorted_pairs( CARDS ) do

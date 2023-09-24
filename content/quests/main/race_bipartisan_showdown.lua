@@ -7,7 +7,7 @@ local QDEF = QuestDef.Define
     qtype = QTYPE.STORY,
     collect_agent_locations = function(quest, t)
         table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('backroom'), role = CHARACTER_ROLES.VISITOR})
-        table.insert(t, { agent = quest:GetCastMember("host"), location = quest:GetCastMember('theater')})
+        table.insert(t, { agent = quest:GetCastMember("host"), location = quest:GetCastMember('theater'), role = CHARACTER_ROLES.PROPRIETOR})
     end,
 
     on_destroy = function(quest)

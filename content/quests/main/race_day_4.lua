@@ -276,7 +276,11 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                     end
                 end
                 if #low_vote_candidates == 0 and #vote_result >= 4 then
-                    table.insert(low_vote_candidates, vote_result[#vote_result][1])
+                    if vote_result[#vote_result][1] == cxt.player then
+                        table.insert(low_vote_candidates, vote_result[#vote_result - 1][1])
+                    else
+                        table.insert(low_vote_candidates, vote_result[#vote_result][1])
+                    end
                 end
                 table.stable_sort(low_vote_candidates, function(a, b)
                     return not DemocracyUtil.GetAlliance(a) and DemocracyUtil.GetAlliance(b)

@@ -4,7 +4,7 @@ A pioneer campaign mod for Griftlands, the Democratic Race is a mod for Griftlan
 
 This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
-Version: 0.10.0 (Alpha)
+Version: 0.11.0 (Alpha)
 
 Author: RageLeague
 
@@ -104,6 +104,23 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Flange Finnegan
 
 [h2]Changelog[/h2]
+
+[h3]0.11.0 (Debater's Update)[/h3]
+
+This is a small update that reworks some negotiations so they are more enjoyable.
+
+Major Changes:
+
+* Reworked how Public Debate works: You lose Crowd Opinion by getting your arguments destroyed, and you gain Opinion by destroying your opponent's Instigate Crowd argument (which will reduce Crowd Opinion if left unchecked).
+* Reworked the final negotiation of Night 1. It is shorter, but the impatience ramps up a lot quicker, so each turn is a lot more meaningful.
+* Added meal sharing dialog at several restaurants, as well as healing options at different locations.
+
+Minor Changes:
+
+* Support change notification is disabled until after support mechanic is unlocked.
+* Fixed several crashes and bugs.
+* Added, changed, and fixed several dialogs.
+* Added art for some advisor signature cards.
 
 [h3]0.10.0 (The First Update After Seven Months)[/h3]
 

@@ -576,7 +576,7 @@ function DemocracyUtil.GetOppositionID(agent)
         return nil
     end
     for id, data in pairs(DemocracyConstants.opposition_data) do
-        if data.character and data.character == agent:GetContentID() then
+        if data.cast_id and TheGame:GetGameState():GetMainQuest():GetCastMember(data.cast_id) == agent then
             return id
         end
     end
@@ -1191,16 +1191,17 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, post_fn, potential_offset)
         end
     end
 end
-function DemocracyUtil.GenerateGenericOppositionTable()
+function DemocracyUtil.GenerateGenericOppositionTable(difficulty)
+    difficulty = difficulty or 1
     local GENERIC_OPPOSITION = {"GAMBLER", "TEI", "DANGEROUS_STRANGER", "NAND"}
     local player_id = TheGame:GetGameState():GetPlayerAgent():GetContentID()
-    if player_id ~= "SAL" then
+    if player_id ~= "SAL" and difficulty >= 2 then
         table.insert(GENERIC_OPPOSITION, "NPC_SAL")
     end
     -- if player_id ~= "ROOK" then
     --     table.insert(GENERIC_OPPOSITION, "NPC_ROOK")
     -- end
-    if player_id ~= "SMITH" then
+    if player_id ~= "SMITH" and difficulty >= 2 then
         local def = Content.GetCharacterDef("NPC_SMITH")
         if def and def.negotiation_data and def.negotiation_data.behaviour and def.negotiation_data.behaviour.Cycle then
             table.insert(GENERIC_OPPOSITION, "NPC_SMITH")

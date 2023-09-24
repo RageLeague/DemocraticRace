@@ -722,11 +722,12 @@ QDEF:AddConvo("debate_people")
                         return loc.format(cxt:GetLocString("NEGOTIATION_REASON") )
                     end,
                     on_start_negotiation = function(minigame)
-                        minigame:GetOpponentNegotiator():CreateModifier("CROWD_OPINION", 3)
-                        minigame:GetOpponentNegotiator():CreateModifier("INSTIGATE_CROWD", 1)
+                        minigame:GetOpponentNegotiator():CreateModifier("CROWD_OPINION", 5)
+                        -- minigame:GetOpponentNegotiator():CreateModifier("INSTIGATE_CROWD", 1)
                     end,
                     on_success = function(cxt,minigame)
-                        local stage = minigame:GetOpponentNegotiator():GetModifierStacks("CROWD_OPINION") - 1
+                        local opinion = minigame:GetOpponentNegotiator():FindModifier("CROWD_OPINION")
+                        local stage = opinion and opinion:GetStage() - 1 or 0
                         if stage >= 3 then
                             SuccessFn(cxt)
                         else

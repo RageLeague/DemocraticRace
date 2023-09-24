@@ -4800,7 +4800,7 @@ return {
               node2 = 36
             },
             {
-              node1 = 36,
+              node1 = 35,
               node2 = 37
             },
             {
@@ -4808,31 +4808,19 @@ return {
               node2 = 38
             },
             {
-              node1 = 38,
-              node2 = 39
-            },
-            {
-              node1 = 37,
-              node2 = 40
-            },
-            {
               node1 = 33,
-              node2 = 40
+              node2 = 38
             },
             {
-              node1 = 34,
+              node1 = 39,
               node2 = 40
-            },
-            {
-              node1 = 38,
-              node2 = 41
             },
             {
               node1 = 41,
               node2 = 42
             },
             {
-              node1 = 42,
+              node1 = 41,
               node2 = 43
             },
             {
@@ -4844,11 +4832,11 @@ return {
               node2 = 45
             },
             {
-              node1 = 45,
+              node1 = 17,
               node2 = 46
             },
             {
-              node1 = 45,
+              node1 = 46,
               node2 = 47
             },
             {
@@ -4856,11 +4844,11 @@ return {
               node2 = 48
             },
             {
-              node1 = 48,
+              node1 = 9,
               node2 = 49
             },
             {
-              node1 = 17,
+              node1 = 49,
               node2 = 50
             },
             {
@@ -4872,12 +4860,16 @@ return {
               node2 = 52
             },
             {
-              node1 = 9,
-              node2 = 53
+              node1 = 14,
+              node2 = 52
             },
             {
-              node1 = 53,
-              node2 = 54
+              node1 = 15,
+              node2 = 52
+            },
+            {
+              node1 = 1,
+              node2 = 53
             },
             {
               node1 = 54,
@@ -4888,16 +4880,12 @@ return {
               node2 = 56
             },
             {
-              node1 = 14,
-              node2 = 56
-            },
-            {
-              node1 = 15,
-              node2 = 56
-            },
-            {
-              node1 = 1,
+              node1 = 56,
               node2 = 57
+            },
+            {
+              node1 = 57,
+              node2 = 58
             },
             {
               node1 = 58,
@@ -4912,7 +4900,7 @@ return {
               node2 = 61
             },
             {
-              node1 = 61,
+              node1 = 59,
               node2 = 62
             },
             {
@@ -4928,7 +4916,7 @@ return {
               node2 = 65
             },
             {
-              node1 = 63,
+              node1 = 56,
               node2 = 66
             },
             {
@@ -4936,15 +4924,15 @@ return {
               node2 = 67
             },
             {
-              node1 = 67,
+              node1 = 66,
               node2 = 68
             },
             {
-              node1 = 68,
+              node1 = 66,
               node2 = 69
             },
             {
-              node1 = 60,
+              node1 = 69,
               node2 = 70
             },
             {
@@ -4952,11 +4940,15 @@ return {
               node2 = 71
             },
             {
-              node1 = 70,
+              node1 = 71,
               node2 = 72
             },
             {
-              node1 = 70,
+              node1 = 53,
+              node2 = 72
+            },
+            {
+              node1 = 53,
               node2 = 73
             },
             {
@@ -4972,11 +4964,7 @@ return {
               node2 = 76
             },
             {
-              node1 = 57,
-              node2 = 76
-            },
-            {
-              node1 = 57,
+              node1 = 76,
               node2 = 77
             },
             {
@@ -5000,14 +4988,6 @@ return {
               node2 = 82
             },
             {
-              node1 = 82,
-              node2 = 83
-            },
-            {
-              node1 = 83,
-              node2 = 84
-            },
-            {
               node1 = 84,
               node2 = 85
             },
@@ -5016,11 +4996,19 @@ return {
               node2 = 86
             },
             {
+              node1 = 86,
+              node2 = 87
+            },
+            {
+              node1 = 87,
+              node2 = 88
+            },
+            {
               node1 = 88,
               node2 = 89
             },
             {
-              node1 = 89,
+              node1 = 88,
               node2 = 90
             },
             {
@@ -5040,7 +5028,7 @@ return {
               node2 = 94
             },
             {
-              node1 = 94,
+              node1 = 87,
               node2 = 95
             },
             {
@@ -5052,16 +5040,24 @@ return {
               node2 = 97
             },
             {
-              node1 = 96,
+              node1 = 97,
               node2 = 98
             },
             {
-              node1 = 91,
-              node2 = 99
+              node1 = 82,
+              node2 = 98
             },
             {
-              node1 = 99,
-              node2 = 100
+              node1 = 83,
+              node2 = 98
+            },
+            {
+              node1 = 84,
+              node2 = 98
+            },
+            {
+              node1 = 95,
+              node2 = 99
             },
             {
               node1 = 100,
@@ -5072,20 +5068,12 @@ return {
               node2 = 102
             },
             {
-              node1 = 86,
-              node2 = 102
-            },
-            {
-              node1 = 87,
-              node2 = 102
-            },
-            {
-              node1 = 88,
-              node2 = 102
-            },
-            {
-              node1 = 99,
+              node1 = 102,
               node2 = 103
+            },
+            {
+              node1 = 103,
+              node2 = 104
             },
             {
               node1 = 104,
@@ -5104,7 +5092,15 @@ return {
               node2 = 108
             },
             {
-              node1 = 108,
+              node1 = 99,
+              node2 = 108
+            },
+            {
+              node1 = 100,
+              node2 = 108
+            },
+            {
+              node1 = 82,
               node2 = 109
             },
             {
@@ -5120,28 +5116,20 @@ return {
               node2 = 112
             },
             {
-              node1 = 103,
-              node2 = 112
-            },
-            {
-              node1 = 104,
-              node2 = 112
-            },
-            {
-              node1 = 86,
-              node2 = 113
-            },
-            {
               node1 = 113,
               node2 = 114
             },
             {
-              node1 = 114,
+              node1 = 113,
               node2 = 115
             },
             {
               node1 = 115,
               node2 = 116
+            },
+            {
+              node1 = 116,
+              node2 = 117
             },
             {
               node1 = 117,
@@ -5164,11 +5152,11 @@ return {
               node2 = 122
             },
             {
-              node1 = 121,
+              node1 = 122,
               node2 = 123
             },
             {
-              node1 = 123,
+              node1 = 121,
               node2 = 124
             },
             {
@@ -5184,12 +5172,8 @@ return {
               node2 = 127
             },
             {
-              node1 = 125,
+              node1 = 127,
               node2 = 128
-            },
-            {
-              node1 = 128,
-              node2 = 129
             },
             {
               node1 = 129,
@@ -5204,8 +5188,24 @@ return {
               node2 = 132
             },
             {
+              node1 = 128,
+              node2 = 132
+            },
+            {
+              node1 = 129,
+              node2 = 132
+            },
+            {
+              node1 = 132,
+              node2 = 133
+            },
+            {
               node1 = 133,
               node2 = 134
+            },
+            {
+              node1 = 117,
+              node2 = 135
             },
             {
               node1 = 134,
@@ -5216,32 +5216,12 @@ return {
               node2 = 136
             },
             {
-              node1 = 132,
-              node2 = 136
-            },
-            {
-              node1 = 133,
-              node2 = 136
-            },
-            {
-              node1 = 136,
-              node2 = 137
-            },
-            {
               node1 = 137,
               node2 = 138
             },
             {
-              node1 = 121,
-              node2 = 139
-            },
-            {
               node1 = 138,
               node2 = 139
-            },
-            {
-              node1 = 139,
-              node2 = 140
             },
             {
               node1 = 141,
@@ -5250,6 +5230,14 @@ return {
             {
               node1 = 142,
               node2 = 143
+            },
+            {
+              node1 = 143,
+              node2 = 144
+            },
+            {
+              node1 = 144,
+              node2 = 145
             },
             {
               node1 = 145,
@@ -5264,7 +5252,15 @@ return {
               node2 = 148
             },
             {
-              node1 = 148,
+              node1 = 140,
+              node2 = 148
+            },
+            {
+              node1 = 141,
+              node2 = 148
+            },
+            {
+              node1 = 147,
               node2 = 149
             },
             {
@@ -5280,15 +5276,7 @@ return {
               node2 = 152
             },
             {
-              node1 = 144,
-              node2 = 152
-            },
-            {
-              node1 = 145,
-              node2 = 152
-            },
-            {
-              node1 = 151,
+              node1 = 152,
               node2 = 153
             },
             {
@@ -5296,12 +5284,12 @@ return {
               node2 = 154
             },
             {
-              node1 = 154,
-              node2 = 155
+              node1 = 113,
+              node2 = 154
             },
             {
-              node1 = 155,
-              node2 = 156
+              node1 = 139,
+              node2 = 155
             },
             {
               node1 = 156,
@@ -5312,24 +5300,20 @@ return {
               node2 = 158
             },
             {
-              node1 = 117,
-              node2 = 158
-            },
-            {
-              node1 = 143,
+              node1 = 156,
               node2 = 159
-            },
-            {
-              node1 = 160,
-              node2 = 161
             },
             {
               node1 = 161,
               node2 = 162
             },
             {
-              node1 = 160,
+              node1 = 162,
               node2 = 163
+            },
+            {
+              node1 = 164,
+              node2 = 165
             },
             {
               node1 = 165,
@@ -5340,31 +5324,31 @@ return {
               node2 = 167
             },
             {
-              node1 = 168,
-              node2 = 169
+              node1 = 161,
+              node2 = 168
             },
             {
               node1 = 169,
               node2 = 170
             },
             {
-              node1 = 170,
-              node2 = 171
+              node1 = 160,
+              node2 = 170
             },
             {
-              node1 = 165,
+              node1 = 161,
+              node2 = 170
+            },
+            {
+              node1 = 171,
               node2 = 172
             },
             {
+              node1 = 172,
+              node2 = 173
+            },
+            {
               node1 = 173,
-              node2 = 174
-            },
-            {
-              node1 = 164,
-              node2 = 174
-            },
-            {
-              node1 = 165,
               node2 = 174
             },
             {
@@ -5376,7 +5360,15 @@ return {
               node2 = 177
             },
             {
-              node1 = 177,
+              node1 = 159,
+              node2 = 177
+            },
+            {
+              node1 = 160,
+              node2 = 177
+            },
+            {
+              node1 = 176,
               node2 = 178
             },
             {
@@ -5384,7 +5376,15 @@ return {
               node2 = 179
             },
             {
-              node1 = 179,
+              node1 = 155,
+              node2 = 179
+            },
+            {
+              node1 = 156,
+              node2 = 179
+            },
+            {
+              node1 = 172,
               node2 = 180
             },
             {
@@ -5396,31 +5396,11 @@ return {
               node2 = 182
             },
             {
-              node1 = 163,
-              node2 = 182
-            },
-            {
-              node1 = 164,
-              node2 = 182
-            },
-            {
               node1 = 181,
-              node2 = 183
-            },
-            {
-              node1 = 183,
               node2 = 184
             },
             {
-              node1 = 159,
-              node2 = 184
-            },
-            {
-              node1 = 160,
-              node2 = 184
-            },
-            {
-              node1 = 176,
+              node1 = 184,
               node2 = 185
             },
             {
@@ -5428,11 +5408,11 @@ return {
               node2 = 186
             },
             {
-              node1 = 186,
-              node2 = 187
+              node1 = 187,
+              node2 = 188
             },
             {
-              node1 = 186,
+              node1 = 187,
               node2 = 189
             },
             {
@@ -5444,15 +5424,35 @@ return {
               node2 = 191
             },
             {
+              node1 = 186,
+              node2 = 191
+            },
+            {
+              node1 = 187,
+              node2 = 191
+            },
+            {
+              node1 = 190,
+              node2 = 192
+            },
+            {
               node1 = 192,
               node2 = 193
             },
             {
-              node1 = 192,
+              node1 = 193,
               node2 = 194
             },
             {
-              node1 = 194,
+              node1 = 54,
+              node2 = 194
+            },
+            {
+              node1 = 72,
+              node2 = 194
+            },
+            {
+              node1 = 188,
               node2 = 195
             },
             {
@@ -5460,19 +5460,19 @@ return {
               node2 = 196
             },
             {
-              node1 = 191,
-              node2 = 196
-            },
-            {
-              node1 = 192,
-              node2 = 196
-            },
-            {
-              node1 = 195,
+              node1 = 196,
               node2 = 197
             },
             {
-              node1 = 197,
+              node1 = 5,
+              node2 = 197
+            },
+            {
+              node1 = 6,
+              node2 = 197
+            },
+            {
+              node1 = 196,
               node2 = 198
             },
             {
@@ -5480,15 +5480,7 @@ return {
               node2 = 199
             },
             {
-              node1 = 58,
-              node2 = 199
-            },
-            {
-              node1 = 76,
-              node2 = 199
-            },
-            {
-              node1 = 193,
+              node1 = 199,
               node2 = 200
             },
             {
@@ -5497,14 +5489,6 @@ return {
             },
             {
               node1 = 201,
-              node2 = 202
-            },
-            {
-              node1 = 5,
-              node2 = 202
-            },
-            {
-              node1 = 6,
               node2 = 202
             },
             {
@@ -5528,7 +5512,15 @@ return {
               node2 = 207
             },
             {
-              node1 = 206,
+              node1 = 11,
+              node2 = 207
+            },
+            {
+              node1 = 12,
+              node2 = 207
+            },
+            {
+              node1 = 205,
               node2 = 208
             },
             {
@@ -5548,23 +5540,23 @@ return {
               node2 = 212
             },
             {
-              node1 = 11,
-              node2 = 212
-            },
-            {
-              node1 = 12,
-              node2 = 212
-            },
-            {
-              node1 = 210,
+              node1 = 212,
               node2 = 213
             },
             {
-              node1 = 213,
+              node1 = 6,
+              node2 = 213
+            },
+            {
+              node1 = 7,
+              node2 = 213
+            },
+            {
+              node1 = 20,
               node2 = 214
             },
             {
-              node1 = 214,
+              node1 = 12,
               node2 = 215
             },
             {
@@ -5576,23 +5568,19 @@ return {
               node2 = 217
             },
             {
-              node1 = 217,
-              node2 = 218
+              node1 = 214,
+              node2 = 217
             },
             {
-              node1 = 6,
-              node2 = 218
+              node1 = 42,
+              node2 = 217
             },
             {
-              node1 = 7,
-              node2 = 218
-            },
-            {
-              node1 = 20,
+              node1 = 218,
               node2 = 219
             },
             {
-              node1 = 12,
+              node1 = 219,
               node2 = 220
             },
             {
@@ -5604,15 +5592,7 @@ return {
               node2 = 222
             },
             {
-              node1 = 219,
-              node2 = 222
-            },
-            {
-              node1 = 46,
-              node2 = 222
-            },
-            {
-              node1 = 41,
+              node1 = 222,
               node2 = 223
             },
             {
@@ -5624,7 +5604,15 @@ return {
               node2 = 225
             },
             {
-              node1 = 225,
+              node1 = 163,
+              node2 = 225
+            },
+            {
+              node1 = 164,
+              node2 = 225
+            },
+            {
+              node1 = 22,
               node2 = 226
             },
             {
@@ -5637,6 +5625,10 @@ return {
             },
             {
               node1 = 228,
+              node2 = 42
+            },
+            {
+              node1 = 42,
               node2 = 229
             },
             {
@@ -5644,15 +5636,7 @@ return {
               node2 = 230
             },
             {
-              node1 = 167,
-              node2 = 230
-            },
-            {
-              node1 = 168,
-              node2 = 230
-            },
-            {
-              node1 = 22,
+              node1 = 230,
               node2 = 231
             },
             {
@@ -5664,11 +5648,15 @@ return {
               node2 = 233
             },
             {
-              node1 = 233,
-              node2 = 46
+              node1 = 182,
+              node2 = 233
             },
             {
-              node1 = 46,
+              node1 = 183,
+              node2 = 233
+            },
+            {
+              node1 = 183,
               node2 = 234
             },
             {
@@ -5677,6 +5665,10 @@ return {
             },
             {
               node1 = 235,
+              node2 = 200
+            },
+            {
+              node1 = 184,
               node2 = 236
             },
             {
@@ -5688,27 +5680,23 @@ return {
               node2 = 238
             },
             {
-              node1 = 187,
-              node2 = 238
-            },
-            {
-              node1 = 188,
-              node2 = 238
-            },
-            {
-              node1 = 188,
+              node1 = 238,
               node2 = 239
             },
             {
-              node1 = 239,
+              node1 = 147,
+              node2 = 239
+            },
+            {
+              node1 = 171,
+              node2 = 239
+            },
+            {
+              node1 = 152,
               node2 = 240
             },
             {
               node1 = 240,
-              node2 = 205
-            },
-            {
-              node1 = 189,
               node2 = 241
             },
             {
@@ -5724,15 +5712,19 @@ return {
               node2 = 244
             },
             {
-              node1 = 151,
+              node1 = 149,
               node2 = 244
             },
             {
-              node1 = 175,
+              node1 = 139,
               node2 = 244
             },
             {
-              node1 = 156,
+              node1 = 140,
+              node2 = 244
+            },
+            {
+              node1 = 242,
               node2 = 245
             },
             {
@@ -5744,7 +5736,15 @@ return {
               node2 = 247
             },
             {
-              node1 = 247,
+              node1 = 136,
+              node2 = 247
+            },
+            {
+              node1 = 137,
+              node2 = 247
+            },
+            {
+              node1 = 79,
               node2 = 248
             },
             {
@@ -5752,19 +5752,7 @@ return {
               node2 = 249
             },
             {
-              node1 = 153,
-              node2 = 249
-            },
-            {
-              node1 = 143,
-              node2 = 249
-            },
-            {
-              node1 = 144,
-              node2 = 249
-            },
-            {
-              node1 = 247,
+              node1 = 249,
               node2 = 250
             },
             {
@@ -5773,18 +5761,11 @@ return {
             },
             {
               node1 = 251,
-              node2 = 252
+              node2 = 252,
+              userdata = {}
             },
             {
-              node1 = 140,
-              node2 = 252
-            },
-            {
-              node1 = 141,
-              node2 = 252
-            },
-            {
-              node1 = 83,
+              node1 = 252,
               node2 = 253
             },
             {
@@ -5801,15 +5782,14 @@ return {
             },
             {
               node1 = 256,
-              node2 = 257,
-              userdata = {}
+              node2 = 257
             },
             {
               node1 = 257,
               node2 = 258
             },
             {
-              node1 = 258,
+              node1 = 257,
               node2 = 259
             },
             {
@@ -5825,11 +5805,11 @@ return {
               node2 = 262
             },
             {
-              node1 = 262,
+              node1 = 105,
               node2 = 263
             },
             {
-              node1 = 262,
+              node1 = 263,
               node2 = 264
             },
             {
@@ -5845,7 +5825,7 @@ return {
               node2 = 267
             },
             {
-              node1 = 109,
+              node1 = 267,
               node2 = 268
             },
             {
@@ -5853,7 +5833,15 @@ return {
               node2 = 269
             },
             {
-              node1 = 269,
+              node1 = 261,
+              node2 = 269
+            },
+            {
+              node1 = 258,
+              node2 = 269
+            },
+            {
+              node1 = 112,
               node2 = 270
             },
             {
@@ -5873,24 +5861,20 @@ return {
               node2 = 274
             },
             {
-              node1 = 266,
-              node2 = 274
-            },
-            {
-              node1 = 263,
-              node2 = 274
-            },
-            {
-              node1 = 116,
+              node1 = 274,
               node2 = 275
             },
             {
-              node1 = 275,
-              node2 = 276
+              node1 = 112,
+              node2 = 275
             },
             {
-              node1 = 276,
-              node2 = 277
+              node1 = 154,
+              node2 = 275
+            },
+            {
+              node1 = 138,
+              node2 = 276
             },
             {
               node1 = 277,
@@ -5905,16 +5889,32 @@ return {
               node2 = 280
             },
             {
-              node1 = 116,
-              node2 = 280
-            },
-            {
-              node1 = 158,
-              node2 = 280
-            },
-            {
-              node1 = 142,
+              node1 = 280,
               node2 = 281
+            },
+            {
+              node1 = 167,
+              node2 = 281
+            },
+            {
+              node1 = 168,
+              node2 = 281
+            },
+            {
+              node1 = 169,
+              node2 = 281
+            },
+            {
+              node1 = 156,
+              node2 = 282
+            },
+            {
+              node1 = 276,
+              node2 = 282
+            },
+            {
+              node1 = 277,
+              node2 = 282
             },
             {
               node1 = 282,
@@ -5929,35 +5929,15 @@ return {
               node2 = 285
             },
             {
-              node1 = 285,
+              node1 = 130,
               node2 = 286
             },
             {
-              node1 = 171,
-              node2 = 286
-            },
-            {
-              node1 = 172,
-              node2 = 286
-            },
-            {
-              node1 = 173,
-              node2 = 286
-            },
-            {
-              node1 = 160,
+              node1 = 129,
               node2 = 287
             },
             {
-              node1 = 281,
-              node2 = 287
-            },
-            {
-              node1 = 282,
-              node2 = 287
-            },
-            {
-              node1 = 287,
+              node1 = 233,
               node2 = 288
             },
             {
@@ -5967,6 +5947,106 @@ return {
             {
               node1 = 289,
               node2 = 290
+            },
+            {
+              node1 = 290,
+              node2 = 291
+            },
+            {
+              node1 = 41,
+              node2 = 291
+            },
+            {
+              node1 = 289,
+              node2 = 292
+            },
+            {
+              node1 = 292,
+              node2 = 293
+            },
+            {
+              node1 = 37,
+              node2 = 294
+            },
+            {
+              node1 = 293,
+              node2 = 294
+            },
+            {
+              node1 = 39,
+              node2 = 294
+            },
+            {
+              node1 = 218,
+              node2 = 294
+            },
+            {
+              node1 = 45,
+              node2 = 295
+            },
+            {
+              node1 = 34,
+              node2 = 295
+            },
+            {
+              node1 = 38,
+              node2 = 295
+            },
+            {
+              node1 = 34,
+              node2 = 296
+            },
+            {
+              node1 = 40,
+              node2 = 296
+            },
+            {
+              node1 = 291,
+              node2 = 296
+            },
+            {
+              node1 = 292,
+              node2 = 297
+            },
+            {
+              node1 = 297,
+              node2 = 298
+            },
+            {
+              node1 = 298,
+              node2 = 299
+            },
+            {
+              node1 = 299,
+              node2 = 300
+            },
+            {
+              node1 = 174,
+              node2 = 300
+            },
+            {
+              node1 = 175,
+              node2 = 300
+            },
+            {
+              node1 = 299,
+              node2 = 301
+            },
+            {
+              node1 = 301,
+              node2 = 302
+            },
+            {
+              node1 = 62,
+              node2 = 303
+            },
+            {
+              node1 = 303,
+              node2 = 304
+            },
+            {
+              node1 = 304,
+              node2 = 305
             }
           },
           hidden_in_editor = false,
@@ -6141,11 +6221,6 @@ return {
             },
             {
               userdata = {},
-              x = 804.0,
-              y = 493.0
-            },
-            {
-              userdata = {},
               x = 863.0,
               y = 498.0
             },
@@ -6166,11 +6241,6 @@ return {
             },
             {
               userdata = {},
-              x = 986.0,
-              y = 455.0
-            },
-            {
-              userdata = {},
               x = 726.0,
               y = 522.0
             },
@@ -6183,16 +6253,6 @@ return {
               userdata = {},
               x = 872.0,
               y = 473.0
-            },
-            {
-              userdata = {},
-              x = 812.0,
-              y = 465.0
-            },
-            {
-              userdata = {},
-              x = 653.0,
-              y = 422.0
             },
             {
               userdata = {},
@@ -6866,11 +6926,6 @@ return {
             },
             {
               userdata = {},
-              x = 1163.0,
-              y = 197.0
-            },
-            {
-              userdata = {},
               x = 1246.0,
               y = 196.0
             },
@@ -7086,8 +7141,8 @@ return {
             },
             {
               userdata = {},
-              x = 1060.0,
-              y = 488.0
+              x = 1064.0,
+              y = 494.0
             },
             {
               userdata = {},
@@ -7423,6 +7478,106 @@ return {
               userdata = {},
               x = 1359.0,
               y = -53.0
+            },
+            {
+              userdata = {},
+              x = 1696.0,
+              y = -102.0
+            },
+            {
+              userdata = {},
+              x = 1547.0,
+              y = -225.0
+            },
+            {
+              userdata = {},
+              x = 810.0,
+              y = 241.0
+            },
+            {
+              userdata = {},
+              x = 827.0,
+              y = 361.0
+            },
+            {
+              userdata = {},
+              x = 733.0,
+              y = 372.0
+            },
+            {
+              userdata = {},
+              x = 665.0,
+              y = 419.0
+            },
+            {
+              userdata = {},
+              x = 953.0,
+              y = 403.0
+            },
+            {
+              userdata = {},
+              x = 989.0,
+              y = 457.0
+            },
+            {
+              userdata = {},
+              x = 1010.0,
+              y = 489.0
+            },
+            {
+              userdata = {},
+              x = 799.0,
+              y = 498.0
+            },
+            {
+              userdata = {},
+              x = 812.0,
+              y = 465.0
+            },
+            {
+              userdata = {},
+              x = 989.0,
+              y = 349.0
+            },
+            {
+              userdata = {},
+              x = 1082.0,
+              y = 269.0
+            },
+            {
+              userdata = {},
+              x = 1169.0,
+              y = 250.0
+            },
+            {
+              userdata = {},
+              x = 1164.0,
+              y = 198.0
+            },
+            {
+              userdata = {},
+              x = 1235.0,
+              y = 309.0
+            },
+            {
+              userdata = {},
+              x = 1356.0,
+              y = 329.0
+            },
+            {
+              userdata = {},
+              x = 589.0,
+              y = 20.0
+            },
+            {
+              userdata = {},
+              x = 775.0,
+              y = 18.0
+            },
+            {
+              userdata = {},
+              x = 839.0,
+              y = 60.0
             }
           },
           plax_flags = 119,
@@ -7437,7 +7592,7 @@ return {
           location_tags = "",
           node_type = "LOCATION",
           plax_flags = 119,
-          x = 173,
+          x = 159,
           y = 353
         },
         {
@@ -7489,8 +7644,8 @@ return {
           location_tags = "quarters",
           node_type = "LOCATION",
           plax_flags = 119,
-          x = -473,
-          y = -240
+          x = -452,
+          y = -202
         },
         {
           enter_x = 0,
@@ -7500,8 +7655,8 @@ return {
           location_tags = "quarters",
           node_type = "LOCATION",
           plax_flags = 119,
-          x = -707,
-          y = 134
+          x = -692,
+          y = 153
         },
         {
           enter_x = 0,
@@ -7521,8 +7676,8 @@ return {
           location_tags = "",
           node_type = "LOCATION",
           plax_flags = 119,
-          x = 707,
-          y = 25
+          x = 754,
+          y = 51
         },
         {
           enter_x = 0,
@@ -7612,8 +7767,8 @@ return {
           location_tags = "building",
           node_type = "LOCATION",
           plax_flags = 119,
-          x = -788,
-          y = -160
+          x = -805,
+          y = -143
         },
         {
           enter_x = 0,
@@ -7662,8 +7817,8 @@ return {
           location_tags = "quarters",
           node_type = "LOCATION",
           plax_flags = 119,
-          x = -744,
-          y = -117
+          x = -739,
+          y = -100
         },
         {
           enter_x = 0,
@@ -7931,8 +8086,8 @@ return {
           location_tags = "intersection",
           node_type = "LOCATION",
           plax_flags = 119,
-          x = -618,
-          y = -203
+          x = -399,
+          y = -98
         },
         {
           enter_x = 0,
@@ -8027,8 +8182,139 @@ return {
           location_tags = "",
           node_type = "LOCATION",
           plax_flags = 119,
-          x = 651,
-          y = 222
+          x = 633,
+          y = 224
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 307,
+          location_name = "PEARL_FANCY_EATS",
+          location_tags = "",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -390,
+          y = -259
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 308,
+          location_tags = "barracks",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -640,
+          y = -248
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 309,
+          location_tags = "barracks",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -666,
+          y = -311
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 310,
+          location_tags = "barracks",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -858,
+          y = -220
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 311,
+          location_tags = "tents",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = 830,
+          y = -244
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 312,
+          location_tags = "tents",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = 769,
+          y = -312
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 313,
+          location_tags = "tents",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = 633,
+          y = 109
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 314,
+          location_tags = "tents",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = 699,
+          y = 218
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 315,
+          location_tags = "tents",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = 687,
+          y = 13
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 316,
+          location_tags = "lumin",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = 588,
+          y = -463
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 317,
+          location_tags = "lumin",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = 146,
+          y = -356
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 318,
+          location_tags = "lumin",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -431,
+          y = -489
+        },
+        {
+          enter_x = 0,
+          enter_y = 0,
+          id = 319,
+          location_tags = "lumin",
+          node_type = "LOCATION",
+          plax_flags = 119,
+          x = -307,
+          y = -456
         }
       },
       name = "PATHS",

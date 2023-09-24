@@ -197,8 +197,8 @@ local QDEF = QuestDef.Define
             if battle.result == BATTLE_RESULT.WON then
                 if battle:GetEnemyTeam():GetFighterForAgent(quest:GetCastMember("foreman")) then
                     quest.param.beat_up_primary = primary_enemy == quest:GetCastMember("foreman")
+                    quest.param.beat_up = true
                 end
-                quest.param.beat_up = true
             end
         end,
     },
@@ -367,6 +367,15 @@ QDEF:AddConvo("tell_news", "worker")
                         Well, in that case, everything worked out fine.
                         Thank you for what you did for me.
                         I am truly grateful.
+                }
+                {not foreman_dead and stripped_influence?
+                    player:
+                        [p] I stripped {foreman.hisher} influence.
+                        {fired_from_job?
+                            [p] {foreman} is fired from {foreman.hisher} job.
+                        }
+                    agent:
+                        Nice.
                 }
             }
             {organize_strike?

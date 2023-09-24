@@ -52,12 +52,12 @@ function StrippedInfluence:OnTimePass()
             -- if a person cannot recover for too long(stripped influence failed to decrease too many times)
             -- they will die, because they cannot pull themselves up together.
             -- this will be more of a problem if their renown is low or cs is low
-            if self.critical > ((agent:GetRenown() or 1) + agent:GetCombatStrength()) / 2 then
+            if self.critical > ((self.agent:GetRenown() or 1) + self.agent:GetCombatStrength()) / 2 then
                 local rel = self.agent:GetRelationship()
                 if rel > RELATIONSHIP.NEUTRAL then
-                    TheGame:GetGameState():LogNotification( NOTIFY.FRIEND_KILLED, self.agent ) 
+                    TheGame:GetGameState():LogNotification( NOTIFY.FRIEND_KILLED, self.agent )
                 elseif rel < RELATIONSHIP.NEUTRAL then
-                    TheGame:GetGameState():LogNotification( NOTIFY.ENEMY_KILLED, self.agent ) 
+                    TheGame:GetGameState():LogNotification( NOTIFY.ENEMY_KILLED, self.agent )
                 end
                 self.agent:Kill()
 
@@ -117,7 +117,7 @@ end
 local old_ref_fn = RelationshipsScreenBoon.Refresh
 
 function RelationshipsScreenBoon:Refresh(boon, active, agent)
-    
+
 
     if boon then
         if agent and agent:HasAspect("stripped_influence") then
