@@ -97,7 +97,10 @@ local MODIFIERS =
         },
         InitModifiers = function(self)
             self.ignored_agents = {}
-            for i = 1, 2 + math.floor(self.engine:GetDifficulty() / 2) do
+            if self.engine:GetDifficulty() >= 3 then
+                count = count + 1
+            end
+            for i = 1, count do
                 self:TryCreateNewTarget()
             end
         end,
@@ -198,6 +201,7 @@ local MODIFIERS =
         OnBounty = function(self, source)
             if source and source ~= self then
                 self.anti_negotiator:DeltaModifier("SECURED_FUNDS", self.funding_delta + self.additional_delta * self.stacks, self)
+                self.engine.convinced_people = (self.engine.convinced_people or 0) + 1
             end
         end,
 
@@ -278,7 +282,11 @@ local MODIFIERS =
         },
         InitModifiers = function(self)
             self.ignored_agents = {}
-            for i = 1, 2 + math.floor(self.engine:GetDifficulty() / 2) do
+            local count = 2
+            if self.engine:GetDifficulty() >= 3 then
+                count = count + 1
+            end
+            for i = 1, count do
                 self:TryCreateNewTarget()
             end
         end,
@@ -385,6 +393,7 @@ local MODIFIERS =
                     modifier:SetAgent(self.target_agent)
                 end
                 self.anti_negotiator:CreateModifier( modifier )
+                self.engine.convinced_people = (self.engine.convinced_people or 0) + 1
             end
         end,
 

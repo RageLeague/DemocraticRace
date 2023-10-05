@@ -45,10 +45,14 @@ local QDEF = QuestDef.Define
         end
     end,
     on_complete = function( quest )
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", quest.param.funds and math.max(math.round(quest.param.funds / 10), 5) or 5, "COMPLETED_QUEST" )
-    end,
-    on_fail = function(quest)
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5, "FAILED_QUEST" )
+        local support = DemocracyUtil.GetBaseRallySupport(quest:GetDifficulty()) - 4
+        local count = quest.param.convinced_count or 0
+        if count > 2 then
+            support = support + 2 + count
+        else
+            support = support + 2 * count
+        end
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", support, "COMPLETED_QUEST")
     end,
     precondition = function(quest)
         return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and TheGame:GetGameState():GetMainQuest().param.day >= 2
@@ -152,8 +156,9 @@ QDEF:AddConvo("go_to_junction")
                     agent:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("annoyed_by_sellout"))
                 end
                 cxt.quest.param.funds = minigame:GetPlayerNegotiator():GetModifierStacks( "SECURED_FUNDS" )
-                if cxt.quest.param.funds > 0 then
-                    cxt.quest.param.poor_performance = cxt.quest.param.funds < 20 + 10 * cxt.quest:GetRank()
+                cxt.quest.param.convinced_count = minigame.convinced_people or 0
+                if cxt.quest.param.convinced_count > 0 then
+                    cxt.quest.param.poor_performance = cxt.quest.param.convinced_count <= 1
                     cxt:Dialog("DIALOG_GOT_FUNDS", cxt.quest.param.funds)
                     cxt.enc:GainMoney( cxt.quest.param.funds )
                     cxt.quest:Complete()

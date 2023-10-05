@@ -1419,6 +1419,16 @@ function DemocracyUtil.GetSignatureCardsDraft(signature_id, num_cards, player)
     return cards
 end
 
+function DemocracyUtil.GetBaseRallySupport(qrank)
+    local base = TheGame:GetGameState():GetCurrentBaseDifficulty()
+    qrank = qrank or base
+    local support = 8 + 2 * qrank
+    if qrank > base then
+        support = support + 2
+    end
+    return support
+end
+
 local main_branch_id = 2291214111
 local test_branch_id = 2503106782
 

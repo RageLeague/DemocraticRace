@@ -26,12 +26,9 @@ local QDEF = QuestDef.Define{
     end,
 
     on_complete = function(quest)
-        -- if quest.param.poor_performance then
-        --     DemocracyUtil.DeltaGeneralSupport(2 * #quest.param.posted_location, "POOR_QUEST")
-        -- else
-        local score = 3 * (quest.param.gifted_people and #quest.param.gifted_people or 0)
+        local score = DemocracyUtil.GetBaseRallySupport(quest:GetDifficulty()) - 3
+        score = score + (quest.param.gifted_people and #quest.param.gifted_people or 0)
         DemocracyUtil.DeltaGeneralSupport(score, "COMPLETED_QUEST")
-        -- end
     end,
 
     precondition = function(quest)

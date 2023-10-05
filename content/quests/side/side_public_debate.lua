@@ -38,6 +38,15 @@ local QDEF = QuestDef.Define
         -- quest:AssignCastMember("junction", location )
         -- quest:Activate("meet_opponent")
     end,
+    on_complete = function( quest )
+        local support = DemocracyUtil.GetBaseRallySupport(quest:GetDifficulty()) - 4
+        support = support + 2 * quest.param.audience_stage
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", support, "COMPLETED_QUEST")
+        local opposition_id = DemocracyUtil.GetOppositionID(quest:GetCastMember("opponent"))
+        if opposition_id then
+            DemocracyUtil.TryMainQuestFn("DeltaOppositionSupport", opposition_id, (quest.param.audience_stage - 2) * 4)
+        end
+    end,
     on_destroy = function( quest )
         if quest:GetCastMember("junction") then
             TheGame:GetGameState():MarkLocationForDeletion(quest:GetCastMember("junction"))
@@ -485,18 +494,13 @@ QDEF:AddConvo("meet_opponent")
                     agent:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("disliked_debate"))
                 end
             end
-            local opposition_id = DemocracyUtil.GetOppositionID(cxt:GetCastMember("opponent"))
-            if opposition_id then
-                DemocracyUtil.TryMainQuestFn("DeltaOppositionSupport", opposition_id, (cxt.quest.param.audience_stage - 2) * 4)
-            end
-            if cxt.quest.param.lost_negotiation or cxt.quest.param.audience_stage <= 0 then
+            if cxt.quest.param.lost_negotiation then
                 cxt.quest:Fail()
             else
-                if cxt.quest.param.audience_stage <= 2 then
+                if cxt.quest.param.audience_stage <= 1 then
                     cxt.quest.param.poor_performance = true
                 end
                 cxt.quest:Complete()
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", cxt.quest.param.audience_stage * 4, "COMPLETED_QUEST")
                 ConvoUtil.GiveQuestRewards(cxt)
             end
             StateGraphUtil.AddLeaveLocation(cxt)
