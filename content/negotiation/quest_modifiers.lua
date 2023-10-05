@@ -894,7 +894,9 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.BOUNTY,
 
         OnInit = function(self)
-            local scale = math.log(math.max(1, self.stacks / 10)) / math.log(2) + 1
+            local scale = math.log(math.max(1, self.stacks / 8)) / math.log(2)
+            scale = math.floor(scale * 2) / 2
+            scale = scale + 1
             local difficulty = self.engine and self.engine:GetDifficulty() or 1
             self.bonus_per_generation = math.round(2 * scale)
             if not self.init_max_resolve then
