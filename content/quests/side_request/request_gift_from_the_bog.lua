@@ -51,17 +51,16 @@ local QDEF = QuestDef.Define
     on_complete = function(quest)
         if not (quest.param.sub_optimal or quest.param.poor_performance) then
             quest:GetCastMember("giver"):OpinionEvent(OPINION.DID_LOYALTY_QUEST)
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 4, "COMPLETED_QUEST_REQUEST")
             DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 2, "COMPLETED_QUEST_REQUEST")
             DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 5, "JAKES", "COMPLETED_QUEST_REQUEST")
         elseif quest.param.sub_optimal then
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 3, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 8, 2, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 4, "JAKES", "COMPLETED_QUEST_REQUEST")
+        elseif quest.param.poor_performance then
             DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 2, "COMPLETED_QUEST_REQUEST")
             DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 3, "JAKES", "COMPLETED_QUEST_REQUEST")
-        elseif quest.param.poor_performance then
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2, "COMPLETED_QUEST_REQUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 2, "COMPLETED_QUEST_REQUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 2, "JAKES", "COMPLETED_QUEST_REQUEST")
         end
     end,
 
