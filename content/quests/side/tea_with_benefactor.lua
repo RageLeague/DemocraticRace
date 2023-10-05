@@ -35,7 +35,10 @@ local QDEF = QuestDef.Define
         -- end
     end,
     on_complete = function( quest )
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", quest.param.funds and math.max(math.round(quest.param.funds / 10), 5) or 5, "COMPLETED_QUEST" )
+        local support = DemocracyUtil.GetBaseRallySupport(quest:GetDifficulty()) - 4
+        local funds = quest.param.funds and math.max(math.round(quest.param.funds / 10), 10) or 10
+        support = support + math.floor (funds / 25)
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", support, "COMPLETED_QUEST")
     end,
 }
 :AddLocationCast{
@@ -113,14 +116,9 @@ QDEF:AddConvo("go_to_diner", "benefactor")
     :Loc{
         OPT_TALK = "Start the meeting",
         DIALOG_TALK = [[
-            * {agent} flags down a waiter and puts in 2 orders for tea as you sit down.
-            player:
-                I don't mind free drinks, but I'm going to wager that isn't why we're here today.
-            agent:
-                Afraid not. I hear that you're running for president.
-		        And I didn't amass my wealth by ignoring opportunities.
-	    	    Lets get down to brass tacks. Tell me why my shills of indiscriminate origin should go to you.
 	        * The drinks arrive.
+            agent:
+                Let's get down to brass tacks. Tell me why my shills of indiscriminate origin should go to you.
         ]],
 
         REASON_TALK = "Secure as much shills as you can!",
@@ -140,7 +138,7 @@ QDEF:AddConvo("go_to_diner", "benefactor")
         ]],
         DIALOG_BENEFACTOR_POOR = [[
             agent:
-                You show promise...but atop that promise is much bluster.
+                You show promise... but atop that promise is much bluster.
 		        I can't give you Havaria, but I'm willing to give you {funds#money}.
             player:
                 I guess this is better than nothing.
@@ -182,15 +180,15 @@ QDEF:AddConvo("go_to_diner", "benefactor")
 
                 on_start_negotiation = function(minigame)
                     -- just so you get at least something on win instead of nothing.
-                    minigame.player_negotiator:CreateModifier("SECURED_FUNDS", 5)
-                    minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 5)
+                    minigame.player_negotiator:CreateModifier("SECURED_FUNDS", 10)
                     minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 10)
                     minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 20)
+                    minigame.opponent_negotiator:CreateModifier("INVESTMENT_OPPORTUNITY", 40)
                 end,
 
                 on_success = function(cxt, minigame)
                     cxt.quest.param.funds = minigame:GetPlayerNegotiator():GetModifierStacks( "SECURED_FUNDS" )
-                    cxt.quest.param.poor_performance = cxt.quest.param.funds < 20 + 10 * cxt.quest:GetRank()
+                    cxt.quest.param.poor_performance = cxt.quest.param.funds < 50
                     if cxt.quest.param.poor_performance then
                         cxt:Dialog("DIALOG_BENEFACTOR_POOR")
                     else
@@ -212,6 +210,46 @@ QDEF:AddConvo("go_to_diner", "benefactor")
                 end,
             }
     end)
+    :AttractState("STATE_ATTRACT")
+        :Loc{
+            DIALOG_INTRO = [[
+                {first_time?
+                    player:
+                        So, you are the one who invited me here?
+                    {met?
+                        agent:
+                            !agree
+                            {player}, yes. I do believe I invited you here.
+                    }
+                    {not met?
+                        agent:
+                            Depends. Are you {player}?
+                        player:
+                            Yes. I am indeed {player}, in the flesh.
+                        agent:
+                            !agree
+                            In that case, yes, I did invite you here.
+                    }
+                    agent:
+                        !overthere
+                        Have a seat. Make yourself comfortable.
+                    * {agent} flags down a waiter and puts in two orders for tea as you sit down.
+                    player:
+                        I don't mind free drinks, but I'm going to wager that isn't why we're here today.
+                    agent:
+                        Afraid not. I hear that you're running for president.
+                        And I didn't amass my wealth by ignoring opportunities.
+                        We can discuss more when the tea arrives.
+                }
+                {not first_time?
+                    agent:
+                        So, are we ready to start our talk?
+                }
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+        end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :Loc{
         DIALOG_INTRO = [[
