@@ -1,11 +1,3 @@
-local RELATION_OFFSET = {
-    [RELATIONSHIP.HATED] = -16,
-    [RELATIONSHIP.DISLIKED] = -8,
-    [RELATIONSHIP.NEUTRAL] = 0,
-    [RELATIONSHIP.LIKED] = 8,
-    [RELATIONSHIP.LOVED] = 16,
-}
-
 local QDEF = QuestDef.Define
 {
     title = "Interview",
@@ -488,7 +480,11 @@ QDEF:AddConvo("do_interview")
 
             for i, agent in cxt.quest:GetCastMember("theater"):Agents() do
                 if agent:GetBrain():IsPatronizing() then
-                    table.insert(agent_supports, {agent, DemocracyUtil.TryMainQuestFn("GetSupportForAgent", agent)})
+                    table.insert(agent_supports, {
+                        agent,
+                        DemocracyUtil.TryMainQuestFn("GetSupportForAgent", agent),
+                        DemocracyUtil.SupportScore(agent, 50)
+                    })
                     if agent:KnowsPlayer() then
                         table.insert(recognized_people, agent)
                         cxt.enc.scratch.know_at_least_one = true
@@ -498,6 +494,8 @@ QDEF:AddConvo("do_interview")
                     end
                 end
             end
+
+            table.sort(agent_supports, function(a, b) return a[3] < b[3] end)
 
             if #recognized_people > 0 then
                 cxt:Dialog("DIALOG_RECOGNIZE_PEOPLE", recognized_people)
@@ -513,17 +511,27 @@ QDEF:AddConvo("do_interview")
             BEHAVIOUR_INSTANCE.params = {}
             cxt:GetAgent():SetTempNegotiationBehaviour(BEHAVIOUR_INSTANCE)
 
-            local function ResolvePostInterview()
+            local function ResolvePostInterview(questions)
                 local agent_response = {}
                 cxt.quest.param.num_likes = 0
                 cxt.quest.param.num_dislikes = 0
+
+                local support_delta_list = {}
+                local agent_count = #agent_supports
+
+                for i = 1, agent_count do
+                    local rel_val = 2 * (i - 1) / (agent_count - 1) - 1
+                    table.insert(support_delta_list, rel_val * rel_val * sign(rel_val) * 20 + math.random(-5, 5))
+                end
+
                 for i, data in ipairs(agent_supports) do
                     local current_support = DemocracyUtil.TryMainQuestFn("GetSupportForAgent", data[1])
-                    local support_delta = current_support - data[2] + RELATION_OFFSET[data[1]:GetRelationship()] - DemocracyUtil.GetBaseRallySupport(cxt.quest:GetDifficulty() + 1) + math.random(-30, 30)
-                    if support_delta > 25 then
+                    local support_delta = current_support - data[2] - DemocracyUtil.GetBaseRallySupport(TheGame:GetGameState():GetCurrentBaseDifficulty() + 1) + support_delta_list[i]
+                    support_delta = support_delta + (questions - 8) / 2
+                    if support_delta >= 12 then
                         table.insert(agent_response, {data[1], "likes_interview"})
                         cxt.quest.param.num_likes = cxt.quest.param.num_likes + 1
-                    elseif support_delta < -25 then
+                    elseif support_delta <= -12 then
                         table.insert(agent_response, {data[1], "dislikes_interview"})
                         cxt.quest.param.num_dislikes = cxt.quest.param.num_dislikes + 1
                     end
@@ -572,11 +580,11 @@ QDEF:AddConvo("do_interview")
                     on_success = function(cxt, minigame)
                         local questions_answered = (BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0)
                         cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
-                        local support = DemocracyUtil.GetBaseRallySupport(cxt.quest:GetDifficulty() + 1) - 4
+                        local support = DemocracyUtil.GetBaseRallySupport(TheGame:GetGameState():GetCurrentBaseDifficulty() + 1) - 4
                         support = support + math.floor(questions_answered / 2)
                         DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", support, "COMPLETED_QUEST_MAIN")
                         -- Big calculations that happens.
-                        ResolvePostInterview()
+                        ResolvePostInterview(questions_answered)
                         cxt.quest:Complete()
                         -- cxt.quest:Complete("do_interview")
                         -- cxt.quest:Activate("return_to_advisor")

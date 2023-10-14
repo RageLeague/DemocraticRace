@@ -211,14 +211,15 @@ local SUPPORT_DELTA = {
 -- Has a built-in randomizer. Generally speaking, an agent that likes you more, whose
 -- faction supports you more, and whose wealth class supports you more, will be more
 -- likely to be casted.
-function DemocracyUtil.SupportScore(agent)
+function DemocracyUtil.SupportScore(agent, random_range)
+    random_range = random_range or 100
     return DemocracyUtil.TryMainQuestFn("GetSupportForAgent", agent)
-        + SUPPORT_DELTA[agent:GetRelationship()] + math.random(-100, 100)
+        + SUPPORT_DELTA[agent:GetRelationship()] + math.random(-random_range, random_range)
 end
 
 -- The opposite of SupportScore
-function DemocracyUtil.OppositionScore(agent)
-    return -DemocracyUtil.SupportScore(agent)
+function DemocracyUtil.OppositionScore(agent, random_range)
+    return -DemocracyUtil.SupportScore(agent, random_range)
 end
 
 -- Check if an agent is a valid random bystander.
