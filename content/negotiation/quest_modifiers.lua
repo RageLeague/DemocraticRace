@@ -834,8 +834,8 @@ local MODIFIERS =
                 card.show_dealt = false
                 minigame:DealCards( {card}, minigame:GetHandDeck() )
             end,
-            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier )
-                if modifier.AddressQuestion then
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, source )
+                if modifier.AddressQuestion and modifier.negotiator == self.negotiator and (modifier.stacks > 0 or modifier.is_addressed) then
                     local behaviour = self.negotiator.behaviour
                     if not behaviour.params then behaviour.params = {} end
                     behaviour.params.questions_answered = (behaviour.params.questions_answered or 0) + 1

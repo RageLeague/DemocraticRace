@@ -114,7 +114,8 @@ local CARDS = {
             for i, target in ipairs(targets) do
                 if is_instance( target, Negotiation.Modifier ) and target.AddressQuestion then
                     target:AddressQuestion()
-                    target:GetNegotiator():RemoveModifier( target )
+                    target.is_addressed = true
+                    target:GetNegotiator():RemoveModifier( target, nil, self )
                 end
             end
         end,
