@@ -519,7 +519,7 @@ QDEF:AddConvo("do_interview")
                 cxt.quest.param.num_dislikes = 0
                 for i, data in ipairs(agent_supports) do
                     local current_support = DemocracyUtil.TryMainQuestFn("GetSupportForAgent", data[1])
-                    local support_delta = current_support - data[2] + RELATION_OFFSET[data[1]:GetRelationship()] + math.random(-40, 30)
+                    local support_delta = current_support - data[2] + RELATION_OFFSET[data[1]:GetRelationship()] - DemocracyUtil.GetBaseRallySupport(cxt.quest:GetDifficulty() + 1) + math.random(-30, 30)
                     if support_delta > 25 then
                         table.insert(agent_response, {data[1], "likes_interview"})
                         cxt.quest.param.num_likes = cxt.quest.param.num_likes + 1
@@ -572,8 +572,9 @@ QDEF:AddConvo("do_interview")
                     on_success = function(cxt, minigame)
                         local questions_answered = (BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0)
                         cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
-                        -- TheGame:GetDebug():CreatePanel(DebugTable(INTERVIEWER_BEHAVIOR))
-                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", questions_answered, "COMPLETED_QUEST_MAIN")
+                        local support = DemocracyUtil.GetBaseRallySupport(cxt.quest:GetDifficulty() + 1) - 4
+                        support = support + math.floor(questions_answered / 2)
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", support, "COMPLETED_QUEST_MAIN")
                         -- Big calculations that happens.
                         ResolvePostInterview()
                         cxt.quest:Complete()

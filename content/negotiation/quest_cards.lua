@@ -93,6 +93,7 @@ local CARDS = {
         cost = 1,
         flags = CARD_FLAGS.DIPLOMACY,
         rarity = CARD_RARITY.UNIQUE,
+        target_self = TARGET_FLAG.ARGUMENT | TARGET_FLAG.BOUNTY,
         target_enemy = TARGET_FLAG.ARGUMENT | TARGET_FLAG.BOUNTY,
         deck_handlers = ALL_DECKS,
         event_handlers =

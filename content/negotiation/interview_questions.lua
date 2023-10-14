@@ -6,32 +6,21 @@ local MODIFIERS = {
     LOADED_QUESTION =
     {
         name = "Loaded Question",
-        desc = "After {1} {1*turn|turns}, remove itself and deal {2} damage to a random opponent argument.\n\nWhen destroyed, the player loses support equal to {3}.\n\nWhen {address_question|addressed}, the player loses {4} support.",
-        loc_strings = {
-            NORMAL = "{1}x the splash damage, rounded up",
-            HALF = "half the splash damage, rounded up",
-            WHOLE = "the splash damage",
-        },
+        desc = "After {1} {1*turn|turns}, remove itself and deal {2} damage to a random opponent argument.\n\nWhen destroyed, {INCEPT} 1 {DEM_INCRIMINATING_QUESTION} for every {3} splash damage (max {4}).\n\nWhen {address_question|addressed}, {INCEPT} {5} {DEM_INCRIMINATING_QUESTION}.",
 
         desc_fn = function(self, fmt_str)
-            local str_id = self.multiplier_strings[self.multiplier] or "NORMAL"
-            local str = loc.format((self.def or self):GetLocalizedString(str_id), self.multiplier)
-            return loc.format( fmt_str, self.stacks, self.random_damage, str, self.address_cost)
+            return loc.format( fmt_str, self.stacks, self.random_damage, self.damage_per_stack, self.max_incept, self.address_cost)
         end,
         icon = "DEMOCRATICRACE:assets/modifiers/loaded_question.png",
 
         random_damage = 5,
 
-        address_cost = 3,
-        address_cost_scale = {2, 3, 4, 5},
+        address_cost = 2,
 
-        multiplier_strings = {
-            [0.5] = "HALF",
-            -- [0.75] = "THREE_QUARTER",
-            [1] = "WHOLE",
-        },
-        multiplier = 0.5,
-        multiplier_scale = {0.3, 0.5, 0.75, 1},
+        damage_per_stack = 2,
+        stack_scale = {3, 2, 2, 1},
+
+        max_incept = 5,
 
         target_enemy = TARGET_ANY_RESOLVE,
 
@@ -40,8 +29,7 @@ local MODIFIERS = {
         OnInit = function( self )
             self:SetResolve( 4, MODIFIER_SCALING.HIGH )
             if CheckBits(self.engine:GetFlags(), NEGOTIATION_FLAGS.WORDSMITH) then
-                self.address_cost = DemocracyUtil.CalculateBossScale(self.address_cost_scale)
-                self.multiplier = DemocracyUtil.CalculateBossScale(self.multiplier_scale)
+                self.damage_per_stack = DemocracyUtil.CalculateBossScale(self.stack_scale)
             end
         end,
 
@@ -55,11 +43,11 @@ local MODIFIERS = {
         OnBounty = function(self)
             local mod = self.negotiator:CreateModifier("LOADED_QUESTION_DEATH_TRIGGER")
             mod.tracked_mod = self
-            mod.multiplier = self.multiplier
+            mod.damage_per_stack = self.damage_per_stack
         end,
 
         AddressQuestion = function(self)
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -self.address_cost)
+            self.anti_negotiator:AddModifier("DEM_INCRIMINATING_QUESTION", self.address_cost, self)
         end,
     },
     -- Kinda have to do it this way, since removed modifier no longer listens to events that happened because of the removal of self.
@@ -67,18 +55,43 @@ local MODIFIERS = {
     {
         -- name = "Loaded Question(Death Trigger)",
         hidden = true,
+        damage_per_stack = 2,
+        max_incept = 5,
         event_handlers =
         {
             [ EVENT.SPLASH_RESOLVE ] = function( self, modifier, overflow, params )
                 if self.tracked_mod and self.tracked_mod == modifier then
                     print("overflow damage:" .. overflow .. ", deal resolve damage")
-                    local support_dmg = math.floor((self.multiplier or 1) * overflow)
-                    DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", support_dmg)
+                    local incept_count = math.floor(-overflow / self.damage_per_stack)
+                    if incept_count > 0 then
+                        self.anti_negotiator:AddModifier("DEM_INCRIMINATING_QUESTION", math.min(incept_count, self.max_incept), self)
+                    end
                 end
                 print("triggered lul")
                 self.negotiator:RemoveModifier(self)
             end
         },
+    },
+    DEM_INCRIMINATING_QUESTION =
+    {
+        name = "Incriminating Question",
+        desc = "When destroyed, the player loses support equal to half the number of stacks, rounded up.\n\nWhen {address_question|addressed}, if there are at least 2 stacks, create an {DEM_INCRIMINATING_QUESTION} argument with half the number of stacks, rounded down.",
+
+        icon = "DEMOCRATICRACE:assets/modifiers/loaded_question.png",
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+
+        max_resolve = 2,
+
+        OnBounty = function(self)
+            local support_dmg = math.ceil(self.stacks / 2)
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -support_dmg)
+        end,
+
+        AddressQuestion = function(self)
+            if self.stacks >= 2 then
+                self.negotiator:CreateModifier(self.id, math.floor(self.stacks / 2), self)
+            end
+        end,
     },
     GENERIC_QUESTION =
     {
