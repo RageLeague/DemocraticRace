@@ -64,18 +64,18 @@ t.DELTA_SUPPORT = {
     [RELATIONSHIP.HATED] = -6,
 }
 -- Determines the support level change when an agent is killed.
-t.DEATH_DELTA = -10
-t.DEATH_GENERAL_DELTA = -5
+-- t.DEATH_DELTA = -10
+t.DEATH_GENERAL_DELTA = -3
 
--- Determines the support level change when an agent is killed in an isolated scenario.
--- Still reduce support, but people won't know for sure it's you.
-t.ISOLATED_DEATH_DELTA = -2
-t.ISOLATED_DEATH_GENERAL_DELTA = -1
+-- -- Determines the support level change when an agent is killed in an isolated scenario.
+-- -- Still reduce support, but people won't know for sure it's you.
+-- t.ISOLATED_DEATH_DELTA = -2
+-- t.ISOLATED_DEATH_GENERAL_DELTA = -1
 
 -- Determines the support change if you didn't kill someone, but you're an accomplice
 -- or someone dies from negligence
-t.ACCOMPLICE_KILLING_DELTA = -5
-t.ACCOMPLICE_KILLING_GENERAL_DELTA = -2
+t.ACCOMPLICE_KILLING_DELTA = -3
+t.ACCOMPLICE_KILLING_GENERAL_DELTA = -1
 local QDEF = QuestDef.Define
 {
     title = "The Democratic Race",
@@ -376,7 +376,7 @@ local QDEF = QuestDef.Define
                 local agent = fighter.agent
                 if agent:IsSentient() and agent:IsDead() then
                     if CheckBits( battle:GetScenario():GetFlags(), BATTLE_FLAGS.ISOLATED ) then
-                        quest:DefFn("DeltaAgentSupport", t.ISOLATED_DEATH_GENERAL_DELTA, t.ISOLATED_DEATH_DELTA, agent, "SUSPICION")
+                        -- quest:DefFn("DeltaAgentSupport", t.ISOLATED_DEATH_GENERAL_DELTA, t.ISOLATED_DEATH_DELTA, agent, "SUSPICION")
                     elseif fighter:GetKiller() and fighter:GetKiller():IsPlayer() then
                         -- killing already comes with a heavy drawback of someone hating you, thus reducing support significantly.
                         -- quest:DefFn("DeltaAgentSupport", t.DEATH_GENERAL_DELTA, t.DEATH_DELTA, agent, "MURDER")
