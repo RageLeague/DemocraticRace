@@ -101,11 +101,11 @@ local QDEF = QuestDef.Define
     end,
     events = {
         agent_retired = function(quest, agent)
-            quest:UnassignCastMember("challenger")
             if quest:IsActive("go_to_game") then
+                quest:UnassignCastMember("challenger")
                 quest:Cancel("go_to_game")
+                quest:Activate("find_challenger")
             end
-            quest:Activate("find_challenger")
         end,
     },
 }
@@ -335,6 +335,7 @@ QDEF:AddConvo("go_to_game")
         :Fn(function(cxt)
             local ELO = GetELO(cxt:GetCastMember("challenger"))
             cxt.enc.scratch.good_player = ELO >= GOOD_PLAYER_THRESHOLD
+            cxt.quest:Complete("go_to_game")
             cxt:Dialog("DIALOG_INTRO")
             cxt:Opt("OPT_OBSERVE")
                 :Fn(function(cxt)
@@ -616,24 +617,6 @@ QDEF:AddConvo("go_to_game")
                         But still! You could have finish what you have started.
                         At least that cheater would think twice before showing {challenger.hisher} face in front of me again.
                 }
-                giver:
-                    Anyway, thanks for helping me rid the world of this dirty cheater.
-                player:
-                    !dubious
-                    Out of curiosity, did you really believe that {challenger} cheated?
-                giver:
-                    !crossed
-                    As I said numerous times before, nobody knows Grout Bog Flip 'Em better than me.
-                    How else would you explain that {challenger.heshe} beat me?
-                player:
-                    Uh huh.
-                giver:
-                    Anyway, thanks for your aid in the test of my mental faculties against others.
-                    And helping me out when I needed you the most.
-                    For that, I am truly indebted to you.
-                * You feel like it is immoral to just kill people who are better than you at flipping coins.
-                * Then again, if you care about morals, you wouldn't be a grifter.
-                * Besides, getting into {giver}'s good grace is way more valuable.
             ]],
 
             OPT_ORDER = "Order a bodyguard to kill {challenger}...",
