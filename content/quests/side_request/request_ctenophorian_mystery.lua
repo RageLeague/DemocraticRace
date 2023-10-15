@@ -82,21 +82,21 @@ local QDEF = QuestDef.Define
         return agent:CalculateProperty("HESH_BELIEF", function(agent)
             local omni_hesh_chance = agent:GetRenown() / 8
             local hesh_knowledge = agent:GetRenown() / 8
-            if agent:GetFactionID() ~= "CULT_OF_HESH" then
-                if agent:GetFactionID() == "ADMIRALTY" then
-                    omni_hesh_chance = omni_hesh_chance - .25
-                    hesh_knowledge = hesh_knowledge + 0.5
-                elseif agent:GetFactionID() == "FEUD_CITIZEN" then
-                    omni_hesh_chance = 0
-                elseif agent:GetFactionID() == "SPARK_BARONS" then
-                    omni_hesh_chance = 0
-                    hesh_knowledge = hesh_knowledge + 0.25
-                elseif agent:GetFactionID() == "BILEBROKERS" then
-                    omni_hesh_chance = 0
-                    hesh_knowledge = hesh_knowledge + 0.5
-                else
-                    omni_hesh_chance = 0
-                end
+            if agent:GetFactionID() == "CULT_OF_HESH" then
+                hesh_knowledge = hesh_knowledge + 0.5
+            elseif agent:GetFactionID() == "ADMIRALTY" then
+                omni_hesh_chance = omni_hesh_chance - .25
+                hesh_knowledge = hesh_knowledge + 0.5
+            elseif agent:GetFactionID() == "FEUD_CITIZEN" then
+                omni_hesh_chance = 0
+            elseif agent:GetFactionID() == "SPARK_BARONS" then
+                omni_hesh_chance = 0
+                hesh_knowledge = hesh_knowledge + 0.25
+            elseif agent:GetFactionID() == "BILEBROKERS" then
+                omni_hesh_chance = 0
+                hesh_knowledge = hesh_knowledge + 0.5
+            else
+                omni_hesh_chance = 0
             end
             if math.random() >= hesh_knowledge then
                 return HeshBelief.NOT_KNOW
