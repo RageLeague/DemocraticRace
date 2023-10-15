@@ -581,7 +581,11 @@ QDEF:AddConvo("do_interview")
                         local questions_answered = (BEHAVIOUR_INSTANCE.params and BEHAVIOUR_INSTANCE.params.questions_answered or 0)
                         cxt:Dialog("DIALOG_INTERVIEW_SUCCESS")
                         local support = DemocracyUtil.GetBaseRallySupport(TheGame:GetGameState():GetCurrentBaseDifficulty() + 1) - 4
-                        support = support + math.floor(questions_answered / 2)
+                        if questions_answered <= 12 then
+                            support = support + math.floor(questions_answered / 2)
+                        else
+                            support = support + 3 + math.floor(questions_answered / 4)
+                        end
                         DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", support, "COMPLETED_QUEST_MAIN")
                         -- Big calculations that happens.
                         ResolvePostInterview(questions_answered)
