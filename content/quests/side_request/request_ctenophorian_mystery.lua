@@ -74,8 +74,10 @@ local QDEF = QuestDef.Define
     },
 
     GetHeshBelief = function (quest, agent)
-        if quest:GetQuestDef().FIXED_BELIEF[agent:GetAlias()] then
-            return quest:GetQuestDef().FIXED_BELIEF[agent:GetAlias()]
+        if agent:GetAlias() then
+            if quest:GetQuestDef().FIXED_BELIEF[agent:GetAlias()] then
+                return quest:GetQuestDef().FIXED_BELIEF[agent:GetAlias()]
+            end
         end
         return agent:CalculateProperty("HESH_BELIEF", function(agent)
             local omni_hesh_chance = agent:GetRenown() / 8

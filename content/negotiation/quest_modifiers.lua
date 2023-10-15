@@ -444,7 +444,7 @@ local MODIFIERS =
         end,
 
         target_enemy = TARGET_ANY_RESOLVE,
-        modifier_type = MODIFIER_TYPE.BOUNTY,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
 
         icon = engine.asset.Texture("negotiation/modifiers/voice_of_the_people.tex"),
 
