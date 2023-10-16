@@ -97,6 +97,7 @@ local MODIFIERS =
         },
         InitModifiers = function(self)
             self.ignored_agents = {}
+            local count = 2
             if self.engine:GetDifficulty() >= 3 then
                 count = count + 1
             end
