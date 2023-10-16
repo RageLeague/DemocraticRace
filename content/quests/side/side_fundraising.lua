@@ -132,7 +132,7 @@ QDEF:AddConvo("go_to_junction")
             ]],
         }
         :Fn(function(cxt)
-            local interested_people = 5 + cxt.quest:GetRank()
+            local interested_people = 6 + math.floor(cxt.quest:GetRank() / 2)
             for i = 1, interested_people do
                 cxt.quest:AssignCastMember("crowd")
                 cxt.quest:GetCastMember("crowd"):MoveToLocation(cxt.location)
