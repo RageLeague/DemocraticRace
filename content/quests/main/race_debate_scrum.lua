@@ -1033,7 +1033,9 @@ QDEF:AddConvo("do_debate")
                 if agent:IsPlayer() then
                     cxt.quest.param.player_rank = i
                 else
-                    DemocracyUtil.TryMainQuestFn("DeltaOppositionSupport", DemocracyUtil.GetOppositionID(agent), (cxt.quest.param.popularity[agent:GetID()] or 0) - 15)
+                    if i >= 3 then
+                        DemocracyUtil.TryMainQuestFn("DeltaOppositionSupport", DemocracyUtil.GetOppositionID(agent), 30 - i * 10)
+                    end
                 end
             end
             if not cxt.quest.param.player_rank then
@@ -1065,22 +1067,12 @@ QDEF:AddConvo("do_debate")
 
             local your_score = cxt.quest.param.popularity[cxt.player:GetID()] or 0
             local main_quest = TheGame:GetGameState():GetMainQuest()
-            if cxt.quest.param.good_debate then
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.5), "COMPLETED_QUEST_MAIN")
-                if main_quest then
-                    main_quest.param.good_debate_scrum = true
-                end
-            elseif cxt.quest.param.bad_debate then
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.25), "COMPLETED_QUEST_MAIN")
-                if main_quest then
-                    main_quest.param.good_debate_scrum = false
-                end
-            else
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.35), "COMPLETED_QUEST_MAIN")
-                if main_quest then
-                    main_quest.param.good_debate_scrum = true
-                end
+            local support_offset = {3, -3, -12}
+            if cxt.quest.param.player_rank <= #support_offset then
+                local support = DemocracyUtil.GetBaseRallySupport(TheGame:GetGameState():GetCurrentBaseDifficulty() + 1) + support_offset[cxt.quest.param.player_rank]
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", support, "COMPLETED_QUEST_MAIN")
             end
+            main_quest.param.good_debate_scrum = not cxt.quest.param.bad_debate
             if main_quest then
                 main_quest.param.debate_scrum_result = cxt.quest.param.popularity_rankings
             end

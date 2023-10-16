@@ -38,17 +38,16 @@ local QDEF = QuestDef.Define
     on_complete = function(quest)
         if not (quest.param.sub_optimal or quest.param.poor_performance) then
             quest:GetProvider():OpinionEvent(OPINION.DID_LOYALTY_QUEST)
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 4, "COMPLETED_QUEST_REQUEST")
             DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 4, "COMPLETED_QUEST_REQUEST")
             DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 5, "CULT_OF_HESH", "COMPLETED_QUEST_REQUEST")
         elseif quest.param.sub_optimal then
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 3, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 8, 4, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 4, "CULT_OF_HESH", "COMPLETED_QUEST_REQUEST")
+        elseif quest.param.poor_performance then
             DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 4, "COMPLETED_QUEST_REQUEST")
             DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 3, "CULT_OF_HESH", "COMPLETED_QUEST_REQUEST")
-        elseif quest.param.poor_performance then
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2, "POOR_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 4, "POOR_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 2, "CULT_OF_HESH", "POOR_QUEST")
         end
     end,
 
@@ -75,27 +74,29 @@ local QDEF = QuestDef.Define
     },
 
     GetHeshBelief = function (quest, agent)
-        if quest:GetQuestDef().FIXED_BELIEF[agent:GetAlias()] then
-            return quest:GetQuestDef().FIXED_BELIEF[agent:GetAlias()]
+        if agent:GetAlias() then
+            if quest:GetQuestDef().FIXED_BELIEF[agent:GetAlias()] then
+                return quest:GetQuestDef().FIXED_BELIEF[agent:GetAlias()]
+            end
         end
         return agent:CalculateProperty("HESH_BELIEF", function(agent)
             local omni_hesh_chance = agent:GetRenown() / 8
             local hesh_knowledge = agent:GetRenown() / 8
-            if agent:GetFactionID() ~= "CULT_OF_HESH" then
-                if agent:GetFactionID() == "ADMIRALTY" then
-                    omni_hesh_chance = omni_hesh_chance - .25
-                    hesh_knowledge = hesh_knowledge + 0.5
-                elseif agent:GetFactionID() == "FEUD_CITIZEN" then
-                    omni_hesh_chance = 0
-                elseif agent:GetFactionID() == "SPARK_BARONS" then
-                    omni_hesh_chance = 0
-                    hesh_knowledge = hesh_knowledge + 0.25
-                elseif agent:GetFactionID() == "BILEBROKERS" then
-                    omni_hesh_chance = 0
-                    hesh_knowledge = hesh_knowledge + 0.5
-                else
-                    omni_hesh_chance = 0
-                end
+            if agent:GetFactionID() == "CULT_OF_HESH" then
+                hesh_knowledge = hesh_knowledge + 0.5
+            elseif agent:GetFactionID() == "ADMIRALTY" then
+                omni_hesh_chance = omni_hesh_chance - .25
+                hesh_knowledge = hesh_knowledge + 0.5
+            elseif agent:GetFactionID() == "FEUD_CITIZEN" then
+                omni_hesh_chance = 0
+            elseif agent:GetFactionID() == "SPARK_BARONS" then
+                omni_hesh_chance = 0
+                hesh_knowledge = hesh_knowledge + 0.25
+            elseif agent:GetFactionID() == "BILEBROKERS" then
+                omni_hesh_chance = 0
+                hesh_knowledge = hesh_knowledge + 0.5
+            else
+                omni_hesh_chance = 0
             end
             if math.random() >= hesh_knowledge then
                 return HeshBelief.NOT_KNOW

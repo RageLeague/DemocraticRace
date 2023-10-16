@@ -97,7 +97,11 @@ local MODIFIERS =
         },
         InitModifiers = function(self)
             self.ignored_agents = {}
-            for i = 1, 2 + math.floor(self.engine:GetDifficulty() / 2) do
+            local count = 2
+            if self.engine:GetDifficulty() >= 3 then
+                count = count + 1
+            end
+            for i = 1, count do
                 self:TryCreateNewTarget()
             end
         end,
@@ -198,6 +202,7 @@ local MODIFIERS =
         OnBounty = function(self, source)
             if source and source ~= self then
                 self.anti_negotiator:DeltaModifier("SECURED_FUNDS", self.funding_delta + self.additional_delta * self.stacks, self)
+                self.engine.convinced_people = (self.engine.convinced_people or 0) + 1
             end
         end,
 
@@ -278,7 +283,11 @@ local MODIFIERS =
         },
         InitModifiers = function(self)
             self.ignored_agents = {}
-            for i = 1, 2 + math.floor(self.engine:GetDifficulty() / 2) do
+            local count = 2
+            if self.engine:GetDifficulty() >= 3 then
+                count = count + 1
+            end
+            for i = 1, count do
                 self:TryCreateNewTarget()
             end
         end,
@@ -385,6 +394,7 @@ local MODIFIERS =
                     modifier:SetAgent(self.target_agent)
                 end
                 self.anti_negotiator:CreateModifier( modifier )
+                self.engine.convinced_people = (self.engine.convinced_people or 0) + 1
             end
         end,
 
@@ -435,7 +445,7 @@ local MODIFIERS =
         end,
 
         target_enemy = TARGET_ANY_RESOLVE,
-        modifier_type = MODIFIER_TYPE.BOUNTY,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
 
         icon = engine.asset.Texture("negotiation/modifiers/voice_of_the_people.tex"),
 
@@ -825,8 +835,8 @@ local MODIFIERS =
                 card.show_dealt = false
                 minigame:DealCards( {card}, minigame:GetHandDeck() )
             end,
-            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier )
-                if modifier.AddressQuestion then
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, source )
+                if modifier.AddressQuestion and modifier.negotiator == self.negotiator and (modifier.stacks > 0 or modifier.is_addressed) then
                     local behaviour = self.negotiator.behaviour
                     if not behaviour.params then behaviour.params = {} end
                     behaviour.params.questions_answered = (behaviour.params.questions_answered or 0) + 1
@@ -885,12 +895,17 @@ local MODIFIERS =
         modifier_type = MODIFIER_TYPE.BOUNTY,
 
         OnInit = function(self)
+            local scale = math.log(math.max(1, self.stacks / 8)) / math.log(2)
+            scale = math.floor(scale * 2) / 2
+            scale = scale + 1
+            local difficulty = self.engine and self.engine:GetDifficulty() or 1
+            self.bonus_per_generation = math.round(2 * scale)
             if not self.init_max_resolve then
-                self.init_max_resolve = math.ceil(self.stacks / 2.5)
+                self.init_max_resolve = math.round((4 + 2 * difficulty) / 3 * scale)
             else
                 self.init_max_resolve = self.init_max_resolve + self.bonus_per_generation
             end
-            self:SetResolve(self.init_max_resolve, MODIFIER_SCALING.LOW)
+            self:SetResolve(self.init_max_resolve)
         end,
 
         OnBounty = function(self, source)

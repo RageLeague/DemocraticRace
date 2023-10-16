@@ -93,6 +93,7 @@ local CARDS = {
         cost = 1,
         flags = CARD_FLAGS.DIPLOMACY,
         rarity = CARD_RARITY.UNIQUE,
+        target_self = TARGET_FLAG.ARGUMENT | TARGET_FLAG.BOUNTY,
         target_enemy = TARGET_FLAG.ARGUMENT | TARGET_FLAG.BOUNTY,
         deck_handlers = ALL_DECKS,
         event_handlers =
@@ -113,7 +114,8 @@ local CARDS = {
             for i, target in ipairs(targets) do
                 if is_instance( target, Negotiation.Modifier ) and target.AddressQuestion then
                     target:AddressQuestion()
-                    target:GetNegotiator():RemoveModifier( target )
+                    target.is_addressed = true
+                    target:GetNegotiator():RemoveModifier( target, nil, self )
                 end
             end
         end,

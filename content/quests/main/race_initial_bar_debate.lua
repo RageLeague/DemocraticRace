@@ -442,7 +442,7 @@ QDEF:AddConvo("win_argument")
                         cxt:Dialog("DIALOG_DEBATE_WIN")
                         cxt.quest:GetCastMember("heckler"):OpinionEvent(OPINION.INSULT)
                         cxt.enc:GetPrimaryCast():GetBrain():MoveToHome()
-                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST_MAIN")
+                        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 2, "COMPLETED_QUEST_MAIN")
                         -- cxt:GoTo("STATE_PICK_SIDE")
                         cxt:GoTo("STATE_DEVELOP_IDEA")
                     end,

@@ -46,10 +46,14 @@ local QDEF = QuestDef.Define
         end
     end,
     on_complete = function( quest )
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 4 * #quest.param.convinced_people, "COMPLETED_QUEST")
-    end,
-    on_fail = function(quest)
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2 * #quest.param.crowd, "FAILED_QUEST")
+        local support = DemocracyUtil.GetBaseRallySupport(quest:GetDifficulty()) - 4
+        local count = quest.param.convinced_count or 0
+        if count > 2 then
+            support = support + 2 + count
+        else
+            support = support + 2 * count
+        end
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", support, "COMPLETED_QUEST")
     end,
 }
 :AddLocationCast{
@@ -130,7 +134,7 @@ QDEF:AddConvo("go_to_junction")
             ]],
         }
         :Fn(function(cxt)
-            local interested_people = 5 + cxt.quest:GetRank()
+            local interested_people = 6 + math.floor(cxt.quest:GetRank() / 2)
             for i = 1, interested_people do
                 cxt.quest:AssignCastMember("crowd")
                 cxt.quest:GetCastMember("crowd"):MoveToLocation(cxt.location)
@@ -163,9 +167,10 @@ QDEF:AddConvo("go_to_junction")
                 for i, agent in ipairs(cxt.quest.param.unconvinced_people) do
                     agent:OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("annoyed_by_preach"))
                 end
-                if #cxt.quest.param.convinced_people > 0 then
-                    cxt:Dialog("DIALOG_CONVINCED_PEOPLE", #cxt.quest.param.convinced_people)
-                    if #cxt.quest.param.convinced_people == 1 then
+                cxt.quest.param.convinced_count = minigame.convinced_people or 0
+                if cxt.quest.param.convinced_count > 0 then
+                    cxt:Dialog("DIALOG_CONVINCED_PEOPLE", cxt.quest.param.convinced_count)
+                    if cxt.quest.param.convinced_count == 1 then
                         cxt.quest.param.poor_performance = true
                     end
                     cxt.quest:Complete()

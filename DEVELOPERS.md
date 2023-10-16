@@ -128,8 +128,8 @@ Oppositions are other candidates that are also participating in this election. T
 * **Spree Candidate(Nadan)**
 * **Spark Baron Candidate(Fellemo)**
 * **Rise Candidate(Kalandra)**
-* **Cult Candidate(Vixmalli or the new bishop)**
-* **Jakes Candidate(Right now it's Andwanette until we get Jakes uniques that cares about politics)**
+* **Cult Candidate(Vixmalli)**
+* **Jakes Candidate(Andwanette)**
 
 Potential meme candidates:
 
@@ -143,3 +143,50 @@ They may or may not be added. It might be too much work. If they were to be adde
 * **Fssh** The barkeep at Grog n' Dog, she is not participating in the election, thanks for asking.
 * **Interviewer(The auctioneer)** The guy who works at the Grand Theater as a host there. It used to be just an auction house, but now it has been expanded and is used for other activities as well.
 * Shopkeeps at market place, including Rake, Endo, Plocka and Phloruk.
+
+## Support Baseline
+
+I am going to rework the baseline of support. This is how support is gained as a baseline. The idea is to have the support less varied across each run and less reliant on luck. These are some changes:
+
+* Rally quests are the main source of general support, and there should be less variance based on performance. The important part is the completion of the quest, and anything else is bonus. Furthermore, the more difficult the quest is, the greater the support gain is.
+* Support gains from relationship, dialog options, and shilling should be marginal. They should build up overtime to provide a nice bonus instead of being the core of the support gains.
+* Request quests should provide a minor, but significant bonus to general support (about 1/3 pr 1/2 of a general rally quest at level 2 or 3). Their main purpose is to improve specific support and give a loved relationship.
+* Alliances should provide a significant bonus to general support (less than a rally quest, but still decent). Furthermore, alliances should be harder to get as you get more allies.
+* Day end bosses are counted as rally quests (of about 1 level higher) for the purpose of how much support you should get during it, and should follow the same rule (completion should be the top priority).
+* Specific support are more swingy than general support. Generally speaking, the amount of specific support gained is about 2.5x the amount of general support gained from the same action (for example, befriending someone gives 3 specific support and 1 general support)
+
+These are the baseline for support gain/loss:
+
+* Rally quests: avg. 8 + 2 * diff support if completed (max +4 support; min -4 support). +2 support (in addition to the difficulty modifier) if the rally quest is above current base difficulty.
+* Relationship: 1 per stage.
+* Request quest: 4 per request done.
+* Actions taken:
+  * Trivial: 1 support. For support gain, you did something that ever so slightly makes Havaria better. For example, keeping a promise you made to someone.
+  * Minor: 2 support. For support gain, you did something that helps the community a bit, even if you might antagonize someone. For example, convincing a foreman to stop harassing a laborer.
+  * Major: 4 support. For support gain, you did something significant that helps the community, even if you might make an enemy. For example, arresting a criminal.
+  * Significant: 8 support. For support gain, you did something that very significant that potentially changes Havaria for the better.
+
+Ratings at the end of each day depends on your support:
+
+* S (>2e): Exceed expectation. Advisor is very happy
+* A (1e ~ 2e): Slightly above average. Advisor is happy
+* B (0e ~ 1e): Dead average expectation
+* C (-1e ~ 0e): Below average expectation. Advisor is slightly unhappy
+* D (-2e ~ -1e): Below expectation. Advisor very unhappy, and can leave you unless your relationship is at least liked.
+* F (<-2e): Way below expectation. Advisor immediately leaves you unless you are loved.
+
+When determining the expectations for each day, we calculate the average case scenario (0e), the good scenario (+2e), and the bad scenario (-2e).
+
+Based on these baselines, we can derive expectations for each day:
+
+* Day 1: On average, complete both rally quests with average rating (2 * 10 = 20), for a total of 20 support. To excel, complete both rally quests with above average rating (2 * 14 = 28), and get some additional sources of support (2), for a total of 30 support. To fail, complete both rally quest extremely poorly (2 * 6 = 12), and get some support losses (-2), for a total of 10 support.
+* Day 2: On average, perform average on day 1, and: perform average on both quests (12 + 16 = 28). Additionally, gain support from a bunch of sources, like good relationship, good deeds, or even finishing a request (or just do well on rallies) (7), for a total of 35 support.
+* Day 3: On average, perform average on day 2, and: succeed both quests (14 + 18 = 32), at least excel in one (4), form good relationship and do good deeds (9), for a total of 45 support.
+* Day 4: On average, perform average on day 3, and: succeed both quests (16 + 20 = 36), at least excel in an additional (4), form good relationship and do good deeds (15), for a total of 55 support.
+
+The support data is as such:
+
+* Day 1 (10, 20), with e=5
+* Day 2 (23, 38, 55), with e=10
+* Day 3 (60, 80, 100), with e=15
+* Day 4 (105, 130, 155), with e=15
