@@ -450,6 +450,21 @@ local QDEF = QuestDef.Define
             end
             quest.param.drinks_today = 0
         end,
+        dialog_event_broadcast = function( quest, agent, broadcast_type, ...)
+            if broadcast_type == "remember_info" then
+                local info = {...}
+                for i, val in ipairs(info) do
+                    TheGame:GetGameState():GetPlayerAgent():Remember(val:upper())
+                end
+            elseif broadcast_type == "unlock_agent_info" then
+                if agent and agent:GetUniqueID() then
+                    local info = {...}
+                    for i, val in ipairs(info) do
+                        TheGame:GetGameProfile():SetCustomAgentUnlock(agent:GetUniqueID(), val:upper())
+                    end
+                end
+            end
+        end,
     },
     SpawnPoolJob = function(quest, pool_name, excluded_ids, spawn_as_inactive, spawn_as_challenge)
         local event_id = pool_name
