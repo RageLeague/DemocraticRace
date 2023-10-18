@@ -457,10 +457,23 @@ local QDEF = QuestDef.Define
                     TheGame:GetGameState():GetPlayerAgent():Remember(val:upper())
                 end
             elseif broadcast_type == "unlock_agent_info" then
-                if agent and agent:GetUniqueID() then
-                    local info = {...}
-                    for i, val in ipairs(info) do
-                        TheGame:GetGameProfile():SetCustomAgentUnlock(agent:GetUniqueID(), val:upper())
+                local info = {...}
+                if info[1] and info[2] then
+                    local skin_id = info[1]
+                    local is_valid = false
+                    local content_id, skin_table = Content.GetCharacterSkinByAlias( skin_id )
+                    if skin_table then
+                        skin_id = skin_table:GetContentID()
+                        is_valid = true
+                    end
+                    if not is_valid then
+                        is_valid = Content.GetCharacterDef( skin_id ) and true
+                    end
+                    if not is_valid then
+                        is_valid = Content.GetCharacterSkin( skin_id ) and true
+                    end
+                    if is_valid then
+                        TheGame:GetGameProfile():SetCustomAgentUnlock(skin_id, val:upper())
                     end
                 end
             end
