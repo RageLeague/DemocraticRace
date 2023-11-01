@@ -43,17 +43,24 @@ end
 
 function Agent:GetLoreUnlocks()
     local unlocks = shallowcopy( self.lore_unlocks ) or {}
+    local function GetKey(field, key_fn)
+        for i = #self.def, 1, -1 do
+            if self.def[i][field] then
+                return self.def[i][key_fn]
+            end
+        end
+    end
     if self.loved_bio then
-        unlocks.loved_bio = self.loved_bio
+        unlocks.loved_bio = GetKey("loved_bio", "GetLocLovedBioKey")(self)
     end
     if self.hated_bio then
-        unlocks.hated_bio = self.hated_bio
+        unlocks.hated_bio = GetKey("hated_bio", "GetLocHatedBioKey")(self)
     end
     if self.killed_bio then
-        unlocks.killed_bio = self.killed_bio
+        unlocks.killed_bio = GetKey("killed_bio", "GetLocKilledBioKey")(self)
     end
     if self.drank_bio then
-        unlocks.drank_bio = self.drank_bio
+        unlocks.drank_bio = GetKey("drank_bio", "GetLocDrankBioKey")(self)
     end
 
     return unlocks
@@ -79,4 +86,94 @@ function GameProfile:HasCustomAgentUnlock(skin_id, action, ...)
         end
     end
     return false
+end
+
+local old_refresh_fn = Widget.AgentDetailsLore.Refresh
+
+function Widget.AgentDetailsLore:Refresh(agent, ...)
+    -- Remove old blocks, if any
+    self.block_container:DestroyAllChildren()
+
+    -- Reset the count
+    self.unlocked = 0
+    self.unlockable = 0
+
+    -- Check if there are any lore blocks to show for this agent
+    local lore_unlocks = agent:GetLoreUnlocks()
+    -- Go through them and add them to the list
+    for idx, action, unlock_text in sorted_pairs( lore_unlocks ) do
+        self.unlockable = self.unlockable + 1
+        -- Check if this has been done
+        local is_unlocked = TheGame:GetGameProfile():HasCustomAgentUnlock( agent:GetUniqueID(), action ) or Screen.Compendium.ShowAllUnlocks()
+        if is_unlocked then self.unlocked = self.unlocked + 1 end
+
+        local substr = unlock_text:match("^[.][.][.](.+)$")
+        if substr then
+            for i = #agent.def, 1, -1 do
+                local str_id = agent.def[i]:GetLocPrefix() .. "." .. substr
+                if Content.LookupString(str_id) then
+                    unlock_text = agent.def[i]:GetLocPrefix() .. "." .. substr
+                    break
+                end
+            end
+        end
+
+        self.block_container:AddChild( Widget.AgentLoreBlock( self.block_w, action, LOC(unlock_text), is_unlocked ) )
+            :LayoutBounds( "center", "below" )
+            :Offset( 0, -10 )
+    end
+
+    -- Layout the scroll area
+    self.block_container:SetPos( self.block_w/2, 0 )
+    self.scroll_root:SetVirtualMargin( 15 )
+    self.scroll_root:RefreshView()
+
+    return self
+end
+
+function CharacterDef:GetLocLovedBioKey()
+    return self:GetLocPrefix() .. ".LOVED_BIO"
+end
+
+function CharacterDef:GetLocHatedBioKey()
+    return self:GetLocPrefix() .. ".HATED_BIO"
+end
+
+function CharacterDef:GetLocKilledBioKey()
+    return self:GetLocPrefix() .. ".KILLED_BIO"
+end
+
+function CharacterDef:GetLocDrankBioKey()
+    return self:GetLocPrefix() .. ".DRANK_BIO"
+end
+
+local old_char_def_harvest = CharacterDef.HarvestStrings
+
+function CharacterDef:HarvestStrings(t, ...)
+    local result = old_char_def_harvest(self, t, ...)
+    if self.loved_bio then
+        t[self:GetLocLovedBioKey()] = self.loved_bio
+    end
+    if self.hated_bio then
+        t[self:GetLocHatedBioKey()] = self.hated_bio
+    end
+    if self.killed_bio then
+        t[self:GetLocKilledBioKey()] = self.killed_bio
+    end
+    if self.drank_bio then
+        t[self:GetLocDrankBioKey()] = self.drank_bio
+    end
+    return result
+end
+
+local old_skin_harvest = CharacterSkin.HarvestStrings
+
+function CharacterSkin:HarvestStrings(t, ...)
+    local result = old_skin_harvest(self, t, ...)
+    if self.loc_strings then
+        for key, str in pairs( self.loc_strings ) do
+            self:HarvestString( t, key, str )
+        end
+    end
+    return result
 end
