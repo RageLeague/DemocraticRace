@@ -8,7 +8,7 @@ local chars =
         nickname = "*The Based",
 
         loved_bio = "He doesn't see eye to eye with a lot of people in Havaria. Not a lot of people understand him. Not a lot of people understand his ambition. For the people who do understand, though, he call these people \"based\".",
-        hated_bio = "There are many people whose lives have been ruined by Aellon. Some people, like Kyrtus and Azta, are perceived by him as \"cringe\" for wronging him. Others are perceived by him as \"beta\" for being too easy to be taken advantage of. It's hard to tell which category you would fall under, but the outcome stays the same.",
+        hated_bio = "It is quite obvious that Aellon trying to be relatable to you is merely a facade. Once your usefulness runs out, he shows his true colors: cold, impersonal, and will ruin your life.",
 
         tags = {"advisor", "advisor_diplomacy", "curated_request_quest"},
         gender = "MALE",
@@ -24,12 +24,18 @@ local chars =
 
         lore_unlocks =
         {
-            foreigner_lore = "...LORE_FOREIGNER",
+            -- story_1a_foreigner = "...LORE_1A_FOREIGNER",
         },
 
         loc_strings =
         {
-            LORE_FOREIGNER = "It is entirely possible that Aellon is not Havarian. After all, \"Aellon\" is not a Havarian name. If he is not from Havaria, where does Aellon come from? He is not willing to share, in any case.",
+            LORE_1A_FOREIGNER = "It is entirely possible that Aellon is not Havarian. After all, \"Aellon\" is not a Havarian name. If he is not from Havaria, where does Aellon come from? He is not willing to share, in any case.",
+            LORE_OUTSIDER = "Maybe it's because of this, or perhaps it's because of the strange vocabulary that he uses, people treat him like an outsider. This is despite the fact that he lived in Havaria for at least fifteen years, and despite the fact that he tries to be approachable and relatable.",
+            LORE_EXPLOITATION = "Of course, like any Spark Baron, there are countless workers and other barons that he exploited in order to bring him wealth and influences. Though, Aellon consider these people to be \"betas\" for allowing him to exploit them.",
+            LORE_TRUST = "Aellon doesn't trust anyone. A generally sound strategy in Havaria, though it seems that Aellon has learned this lesson the hard way.",
+            LORE_PARENTAL = "There are two people that Aellon used to consider parental figures. Kyrtus Markov and Azta [INSERT SURNAME]. They took him in as a Spark Baron when he was facing the biggest change of his life.",
+            LORE_KYRTUS = "He felt betrayed by Kyrtus when he tried to steal Aellon's technological inventions as his own. Inventions that Aellon rightfully stolen from the Vagrant. Of course, he got Kyrtus back by ruining his reputation as a Spark Baron and condemning him to the derricks.",
+            LORE_AZTA = "He felt betrayed by Azta when she abandoned him, during the time he got betrayed by another person close to him and needed someone he can trust. He tried to contact her, but she never responded. He tried to find her, but he couldn't find her anywhere. Of course, that's because a woman named Azta no longer exists.",
         },
 
         -- social_boons = table.empty,
@@ -89,32 +95,34 @@ local chars =
 
         lore_unlocks =
         {
-            heshian_fear_lore = "...LORE_HESHIAN_FEAR",
-            heshian_fear_lore_2 = "...LORE_HESHIAN_FEAR_2",
-            ace_lore = "...LORE_ACE",
-            ace_lore_2 = "...LORE_ACE_2",
-            loss_lore = "...LORE_LOSS",
-            husband_lore = "...LORE_HUSBAND",
-            facts_lore = "...LORE_FACTS",
-            facts_lore_2 = "...LORE_FACTS_2",
-            facts_lore_3 = "...LORE_FACTS_3",
-            logic_lore = "...LORE_LOGIC",
-            logic_lore_2 = "...LORE_LOGIC_2",
+            -- story_1a_garlic_bread = "...LORE_1A_GARLIC_BREAD",
+            -- story_1b_ace = "...LORE_1B_ACE",
+            -- story_2a_heshian_fear = "...LORE_2A_HESHIAN_FEAR",
+            -- story_2b_alienation = "...LORE_2B_ALIENATION",
+            -- story_2c_tei = "...LORE_2C_TEI",
+            -- story_3a_loss = "...LORE_3A_LOSS",
+            story_4a_husbands = "...LORE_4A_HUSBAND",
+            -- story_5a_facts = "...LORE_5A_FACTS",
+            -- story_5b_alt_fact_hope = "...LORE_5B_ALT_FACT_HOPE",
+            -- story_5c_alt_fact_election = "...LORE_5C_ALT_FACT_ELECTION",
+            -- story_6a_logic = "...LORE_6A_LOGIC",
+            -- story_6b_use_in_cult = "...LORE_6B_USE_IN_CULT",
         },
 
         loc_strings =
         {
-            LORE_ACE = "Benni enjoys a nice dole loaf with a nice spread of garlic butter on top. It really makes the bland dole loaf taste ten times better.",
-            LORE_ACE_2 = "On an unrelated note, Benni is asexual.",
-            LORE_HESHIAN_FEAR = "Like any good Heshian, Benni's faith comes from her genuine fear of Hesh. However, while others revere Hesh because of such fear, Benni seek to understand the fear.",
-            LORE_HESHIAN_FEAR_2 = "Perhaps it is due to this difference in how she expresses her faith that she is alienated by the other Heshians. That, or maybe it's because of her atypical mannerism that many find pretentious.",
-            LORE_LOSS = "While she does want to understand the nature of Hesh, she doesn't want to see anyone getting hurt while doing so. Benni has already lost Ascle this way, and she is not about to lose another person that she cares about.",
-            LORE_HUSBAND = "Benni has a husband, everyone. A husband who is a doctor. That is what she lets everyone believe. Why have we never seen him? Well... He's in another city! Doing surgeries on people! And he is very busy!",
-            LORE_FACTS = "\"Facts don't care about your feelings.\" That is something Benni likes to say. It is supposed to help her get over the news of the passing of her friend and crush, but instead, it just cause her to sink further and further into denial.",
-            LORE_FACTS_2 = "When she is suggested that what are considered \"facts\" can be relative, she is elated. If what is considered \"factual\" depends on a person's believe, then, maybe, if she believes hard enough, maybe Ascle is still alive out there, somewhere.",
-            LORE_FACTS_3 = "Of course, if \"facts\" are relative, even if her candidate loses the election in reality, if she can convince enough people to believe in an \"alternative fact\" that it is them who actually won the election, they might as well actually win the election in reality.",
-            LORE_LOGIC = "Benni's \"logical reasoning\" does sounds reasonable, as long as you don't think too hard. Still, you would be surprised at how many people are convinced and indoctrinated by her surface level logical rhetorics.",
-            LORE_LOGIC_2 = "You would think that her \"logical rhetorics\" would be undesirable for the Cult of Hesh, but the opposite is true. It shouldn't come across as a surprise, though. After all, her rhetorics attracts gullible people under the pretense of logical reasoning, and the Cult loves no one more than gullible people.",
+            LORE_1A_GARLIC_BREAD = "Benni enjoys a nice dole loaf with a nice spread of garlic butter on top. It really makes the bland dole loaf taste ten times better.",
+            LORE_1B_ACE = "On an unrelated note, Benni is asexual.",
+            LORE_2A_HESHIAN_FEAR = "Like any good Heshian, Benni's faith comes from her genuine fear of Hesh. However, while others revere Hesh because of such fear, Benni seek to understand the fear.",
+            LORE_2B_ALIENATION = "Perhaps it is due to this difference in how she expresses her faith that she is alienated by the other Heshians. That, or maybe it's because of her atypical mannerism that many find pretentious.",
+            LORE_2C_TEI = "Yet, despite that, there is someone in the Cult that accepts Benni, treats her respectfully, and recognizes her talent and devotion, despite her differences. Tei Utaro. No wonder Benni feels a strong attraction towards her.",
+            LORE_3A_LOSS = "While she does want to understand the nature of Hesh, she doesn't want to see anyone getting hurt while doing so. Benni has already lost Clepius this way, and she is not about to lose another person that she cares about.",
+            LORE_4A_HUSBAND = "Benni has a husband, everyone. A husband who is a doctor. That is what she lets everyone believe. Why have we never seen him? Well... He's in another city! Doing surgeries on people! And he is very busy!",
+            LORE_5A_FACTS = "\"Facts don't care about your feelings.\" That is something Benni likes to say. It is supposed to help her get over the news of the passing of her friend and crush, but instead, it just cause her to sink further and further into denial.",
+            LORE_5B_ALT_FACT_HOPE = "When she is suggested that what are considered \"facts\" can be relative, she is elated. If what is considered \"factual\" depends on a person's believe, then, maybe, if she believes hard enough, maybe Clepius is still alive out there, somewhere.",
+            LORE_5C_ALT_FACT_ELECTION = "Of course, if \"facts\" are relative, even if her candidate loses the election in reality, if she can convince enough people to believe in an \"alternative fact\" that it is them who actually won the election, they might as well actually win the election in reality.",
+            LORE_6A_LOGIC = "Benni's \"logical reasoning\" does sounds reasonable, as long as you don't think too hard. Still, you would be surprised at how many people are convinced and indoctrinated by her surface level logical rhetorics.",
+            LORE_6B_USE_IN_CULT = "You would think that her \"logical rhetorics\" would be undesirable for the Cult of Hesh, but the opposite is true. It shouldn't come across as a surprise, though. After all, her rhetorics attracts gullible people under the pretense of logical reasoning, and the Cult loves no one more than gullible people.",
         },
 
         -- social_boons = table.empty,
@@ -174,12 +182,15 @@ local chars =
 
         lore_unlocks =
         {
-            inferiority_lore = "...LORE_INFERIORITY",
+            -- inferiority_lore = "...LORE_INFERIORITY",
         },
 
         loc_strings =
         {
             LORE_INFERIORITY = "As a child of the renowned Trunoomiel family, Dronumph has been bombarded with impossible expectations right from his birth, not just from his family, but from himself. He always seeks to prove himself to be superior to others at every given opportunity, to the point of being potentially self destructive.",
+            LORE_GUNTER = "Gunter Trunoomiel is a legend among merchants. Born a jarackle with nothing in his name, he built a massive business empire using purely his abilities and business insight. The type of story that the rich uses to justify their own wealth, while the poor uses to give them hope that maybe one day, they can be as successful as him.",
+            LORE_GUNTER_DEATH = "Gunter died after an unfortunate surgery accident, ten years ago. It was caused by a number of factors, such as the inexperience and panic of the surgeon, as well as the skepticism and uncooperativeness of Gunter.",
+            LORE_TOMOPHOBIA = "The death of his father at the hands of a surgeon caused Dronumph to develop tomophobia, a fear of surgeries. Even when he lost his eye and can easily replace it with the amount of wealth he has, he is not willing to undergo the procedure because of this fear.",
         },
 
         -- We'll work on a proper negotiation later.

@@ -473,7 +473,7 @@ local QDEF = QuestDef.Define
                         is_valid = Content.GetCharacterSkin( skin_id ) and true
                     end
                     if is_valid then
-                        TheGame:GetGameProfile():SetCustomAgentUnlock(skin_id, val:upper())
+                        TheGame:GetGameProfile():SetCustomAgentUnlock(skin_id, info[2])
                     end
                 end
             end
