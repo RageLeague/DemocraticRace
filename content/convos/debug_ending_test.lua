@@ -4,7 +4,7 @@ Convo("DEBUG_ENDING_TEST")
         DIALOG_TEST = [[
             player:
                 Something interesting is going on here.
-                !<unlock_agent_info;ADVISOR_MANIPULATE;story_4a_husbands>
+                !<unlock_agent_info;ADVISOR_MANIPULATE;lore_husband>
         ]],
     }
     :Hub(function(cxt)

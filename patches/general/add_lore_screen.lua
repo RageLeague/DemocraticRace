@@ -100,8 +100,23 @@ function Widget.AgentDetailsLore:Refresh(agent, ...)
 
     -- Check if there are any lore blocks to show for this agent
     local lore_unlocks = agent:GetLoreUnlocks()
+
+    local actions = copykeys(lore_unlocks)
+    local lore_order = agent.lore_unlocks_ordering or {}
+    table.sort(actions, function(a, b)
+        local a_idx = table.arrayfind(lore_order, a)
+        local b_idx = table.arrayfind(lore_order, b)
+        if a_idx and b_idx then
+            return a_idx < b_idx
+        elseif not a_idx and not b_idx then
+            return a < b
+        else
+            return a ~= nil
+        end
+    end)
     -- Go through them and add them to the list
-    for idx, action, unlock_text in sorted_pairs( lore_unlocks ) do
+    for idx, action in ipairs( actions ) do
+        local unlock_text = lore_unlocks[action]
         self.unlockable = self.unlockable + 1
         -- Check if this has been done
         local is_unlocked = TheGame:GetGameProfile():HasCustomAgentUnlock( agent:GetUniqueID(), action ) or Screen.Compendium.ShowAllUnlocks()

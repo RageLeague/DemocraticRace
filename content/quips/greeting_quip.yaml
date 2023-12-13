@@ -26,13 +26,15 @@ lines:
 
 - tags: [advisor, advisor_manipulate, met]
   dialog:
-  - By the way, do you know that my husband is a doctor?
+  - |
+    !<unlock_agent_info;ADVISOR_MANIPULATE;lore_husband>
+    By the way, do you know that my husband is a doctor?
 
 - tags: [advisor, advisor_hostile]
   dialog:
   - Make Havaria Great Again!
 
-- tags: [advisor, met]
+- tags: [advisor, primary_advisor]
   notags: [liked]
   # score: 100
   dialog:

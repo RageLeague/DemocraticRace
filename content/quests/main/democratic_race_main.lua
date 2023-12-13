@@ -465,12 +465,15 @@ local QDEF = QuestDef.Define
                     if skin_table then
                         skin_id = skin_table:GetContentID()
                         is_valid = true
+                        print("Found unlock by alias")
                     end
                     if not is_valid then
                         is_valid = Content.GetCharacterDef( skin_id ) and true
+                        print("Found unlock by def")
                     end
                     if not is_valid then
                         is_valid = Content.GetCharacterSkin( skin_id ) and true
+                        print("Found unlock by skin")
                     end
                     if is_valid then
                         TheGame:GetGameProfile():SetCustomAgentUnlock(skin_id, info[2])
