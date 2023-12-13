@@ -288,7 +288,7 @@ lines:
       In fact, more than that. He wants to be good at everything, no matter what.
       And it seems like he truly believes that, even though it is physically impossible to do so.
       That makes him insufferable, and people generally don't want to work with him.
-      !<unlock_agent_info;ADVISOR_HOSTILE;lore_inferiority>
+      !<unlock_agent_info;ADVISOR_HOSTILE;lore_insufferable>
     player:
       That seems extreme.
     agent:

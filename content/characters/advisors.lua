@@ -29,6 +29,15 @@ local chars =
             lore_exploitation = "...LORE_EXPLOITATION",
         },
 
+        lore_unlocks_ordering =
+        {
+            "lore_foreigner",
+            "lore_competence",
+            "lore_exploitation",
+            "hated_bio",
+            "loved_bio",
+        },
+
         loc_strings =
         {
             LORE_FOREIGNER = "It is entirely possible that Aellon is not Havarian. After all, \"Aellon\" is not a Havarian name. If he is not from Havaria, where does Aellon come from? He is not willing to share, in any case.",
@@ -98,6 +107,7 @@ local chars =
 
         lore_unlocks =
         {
+            lore_garlic_bread = "...LORE_GARLIC_BREAD",
             lore_alienation = "...LORE_ALIENATION",
             lore_husband = "...LORE_HUSBAND",
             lore_use_in_cult = "...LORE_USE_IN_CULT",
@@ -105,10 +115,12 @@ local chars =
 
         lore_unlocks_ordering =
         {
-            "lore_alienation"
-            "hated_bio",
+            "lore_alienation",
             "lore_husband",
+            "lore_use_in_cult",
+            "hated_bio",
             "loved_bio",
+            "lore_garlic_bread",
         },
 
         loc_strings =
@@ -186,11 +198,22 @@ local chars =
         {
             lore_gunter = "...LORE_GUNTER",
             lore_inferiority = "...LORE_INFERIORITY",
+            lore_insufferable = "...LORE_INSUFFERABLE",
+        },
+
+        lore_unlocks_ordering =
+        {
+            "lore_gunter",
+            "lore_inferiority",
+            "lore_insufferable",
+            "hated_bio",
+            "loved_bio",
         },
 
         loc_strings =
         {
-            LORE_INFERIORITY = "As a child of the renowned Trunoomiel family, Dronumph has been bombarded with impossible expectations right from his birth, not just from his family, but from himself. He always seeks to prove himself to be superior to others at every given opportunity, which made him insufferable.",
+            LORE_INFERIORITY = "As a child of the renowned Trunoomiel family, Dronumph has been bombarded with impossible expectations right from his birth, not just from his family, but from himself. He always seeks to prove himself to be superior to others at every given opportunity, and can't seem to accept the fact that no one can be superior in everything.",
+            LORE_INSUFFERABLE = "Because he constantly tries to prove himself to be superior to everyone and live up to his family name, he is prone to tantrums. People who knows him will pretend to lose to not get on his bad side, even though they think that he is insufferable. Funny how much weight a powerful family name can carry.",
             LORE_GUNTER = "Gunter Trunoomiel is a legend among merchants. Born a jarackle with nothing in his name, he built a massive business empire using purely his abilities and business insight. The type of story that the rich uses to pretend they live in a meritocracy, while the poor uses to give them hope that maybe one day, they can be as successful as him.",
             LORE_UNACCEPTED = "Despite this, people, especially those in power, don't treat Gunter with due respect. Perhaps it's because of his shabby clothing, his lack of high class etiquette, or the uncommon but still present belief that a poor jarackle like him can't possibly become a tycoon. This has taught Gunter, as well as his family, not to trust anyone, because they will never be accepted by others deep down.",
             LORE_GUNTER_DEATH = "Gunter died after an unfortunate surgery accident, ten years ago. It was caused by a number of factors, such as the inexperience and panic of the surgeon, as well as the skepticism and uncooperativeness of Gunter.",
