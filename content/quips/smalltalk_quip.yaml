@@ -452,6 +452,7 @@ lines:
       People don't care about who you were in the past. They only care about who you are right now.
       !hips
       This is the Spark Baron way. The Havarian way.
+      !<unlock_agent_info;ASTAL;lore_ideal>
       ...
     {player_arint?
       * You've heard of this exact sentiment from exactly one other Spark Baron, and you are pretty sure that he got discharged for corporate espionage.
@@ -521,6 +522,7 @@ lines:
     agent:
       There are already so many strong candidates, like Oolo, and I feel like I don't stand a chance against them.
       Plus, if I do run, I will just be taking votes away to people who I would rather win.
+      !<unlock_agent_info;NAND;lore_democracy>
     player:
       Is that so? You want to give up before you even begin to try?
       People aren't going to elect you if you don't do anything.

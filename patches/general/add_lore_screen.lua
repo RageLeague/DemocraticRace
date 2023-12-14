@@ -181,6 +181,19 @@ function CharacterDef:HarvestStrings(t, ...)
     return result
 end
 
+function CharacterSkin:HarvestString(t, key, str)
+    if str == nil then
+        str = self[ key ]
+    end
+    if type(str) == "string" then
+        key = self:GetLocPrefix() .. "." .. key:upper()
+        assert_warning( t[ key ] == nil, "Duplicate loc key: %s", key )
+        t[ key ] = str
+    else
+        LOGWARN( "Missing key '%s'", key )
+    end
+end
+
 local old_skin_harvest = CharacterSkin.HarvestStrings
 
 function CharacterSkin:HarvestStrings(t, ...)
