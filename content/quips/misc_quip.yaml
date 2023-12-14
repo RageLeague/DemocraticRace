@@ -236,6 +236,36 @@ lines:
       I don't know how you got this far by spouting nonsense like this.
       !angry_accuse
       But it's time for someone to give you a wake-up call!
+- tags: [pre_dual_argument, player_sal, kalandra, anti_labor_law]
+  dialog:
+  - |
+    player:
+      !sigh
+      [p] I was hoping that we wouldn't meet like this.
+      Though, this outcome seems inevitable, given our... ideological differences.
+    agent:
+      So, you've realized it as well, I see.
+      !sigh
+      You've changed, {player}. You used to have more fight in your eyes.
+      !angry_accuse
+      But now, look at you. Licking the boots of our oppressors, while turning your back to the ones who were once your comrades.
+      !spit
+      If your parents are still here, they would've been so disappointed in what you have become.
+    player:
+      !angry_accuse
+      Don't speak for my parents as if you know them!
+      They are gone! They should be resting in peace!
+      Yet you dig them up, use them as your own mouthpiece for your own agenda! Knowing full well the dead cannot speak for themselves!
+    agent:
+      !scared
+      I'm sorry, {player}, I didn't mean to-
+    player:
+      It seems like the Prindo I know is gone, too.
+      Instead, only {agent} is left, a despot who uses whatever underhanded tactics {agent.heshe} can to manipulate others to pursue her agenda that would send millions to their deaths.
+    agent:
+      !sigh
+      I'm truly disappointed in you, {player}. You are too blinded by grief to see the big picture.
+      Regardless, the flames of revolution will spread, with or without you!
 
 - tags: [confront_argument]
   dialog:
