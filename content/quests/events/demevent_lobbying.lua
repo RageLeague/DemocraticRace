@@ -80,6 +80,7 @@ QDEF:AddConvo()
                     I wouldn't be here if I didn't think you already had a good chance of winning.
                     Your campaign will be fine, regardless of how much money I give you, which I still offer {1#money}.
             ]],
+            NEGOTIATION_REASON = "Convince {agent} to offer more (the offer increases by {1#money} on win)",
         }
         :SetLooping(true)
         :Fn(function(cxt)
@@ -136,13 +137,14 @@ QDEF:AddConvo()
                             end
                             cxt.quest.param.lobby_money = cxt.quest.param.lobby_money + total_bonus
                             cxt.quest.param.haggled_money = true
+                            cxt:Dialog("DIALOG_ASK_FOR_MORE_SUCCESS", cxt.quest.param.lobby_money)
                         end)
-                        :Dialog("DIALOG_ASK_FOR_MORE_SUCCESS")
+
                     :OnFailure()
                         :Fn(function(cxt)
                             cxt.quest.param.haggled_money = true
+                            cxt:Dialog("DIALOG_ASK_FOR_MORE_FAILURE", cxt.quest.param.lobby_money)
                         end)
-                        :Dialog("DIALOG_ASK_FOR_MORE_FAILURE")
             end
 
             cxt:Opt("OPT_ACCEPT")
