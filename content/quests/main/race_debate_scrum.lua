@@ -1052,7 +1052,7 @@ QDEF:AddConvo("do_debate")
             for id, delta in pairs(cxt.quest.param.candidate_opinion) do
                 if delta <= -1 then
                     local agent = TheGame:GetGameState():GetAgent(id)
-                    if agent:GetRelationship() >= RELATIONSHIP.LIKED then
+                    if agent:GetRelationship() >= RELATIONSHIP.LIKED or DemocracyUtil.GetAlliance(agent) then
                         table.insert(betrayed_friends, agent)
                         agent:OpinionEvent(OPINION.DISLIKE_IDEOLOGY)
                     end
@@ -1268,11 +1268,12 @@ QDEF:AddConvo("talk_to_candidates")
 
                     }:OnSuccess()
                         :Dialog("DIALOG_APOLOGIZE_SUCCESS")
-                        :ReceiveOpinion(OPINION.SHARE_IDEOLOGY)
-                        -- :Fn(function(cxt)
-                        --     -- Okay there needs to be something else here
-                        --     DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
-                        -- end)
+                        :Fn(function(cxt)
+                            if who:GetRelationship() < RELATIONSHIP.NEUTRAL then
+                                who:OpinionEvent(OPINION.RECONCILED_GRUDGE)
+                            end
+                            table.arrayremove(cxt.quest.param.betrayed_friends, who)
+                        end)
                     :OnFailure()
                         :Dialog("DIALOG_APOLOGIZE_FAILURE")
                 cxt:Opt("OPT_IGNORE_CONCERN")
