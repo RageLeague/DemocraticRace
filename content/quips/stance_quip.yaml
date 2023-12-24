@@ -323,12 +323,12 @@ lines:
   score: 2
   dialog:
   - |
-    agent:
+    quipper:
       !spit
       Typical politicians. All bark, but no bite.
     other:
       What?
-    agent:
+    quipper:
       Land of opportunity? Havarian dream? It's all oshnu dung!
       The success of a nation is determined by materialistic and socioeconomic factors.
       !angry_accuse
