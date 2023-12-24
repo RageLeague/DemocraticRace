@@ -755,10 +755,15 @@ QDEF:AddConvo("starting_out", "primary_advisor")
                 end
             end
 
+            local opposition = DemocracyUtil.GetOppositionData(cxt.enc.scratch.potential_ally)
+            cxt.enc.scratch.ally_work_pos = opposition and opposition.workplace
+
             DemocracyUtil.DoAllianceConvo(cxt, cxt.enc.scratch.potential_ally, function(cxt, allied)
                 cxt.enc.scratch.allied = allied
-                cxt:Dialog("DIALOG_CHOOSE_PST")
-                DemocracyUtil.DoLocationUnlock(cxt, cxt.enc.scratch.ally_work_pos)
+                if cxt.enc.scratch.ally_work_pos then
+                    cxt:Dialog("DIALOG_CHOOSE_PST")
+                    DemocracyUtil.DoLocationUnlock(cxt, cxt.enc.scratch.ally_work_pos)
+                end
                 cxt.quest:Complete("starting_out")
                 cxt.enc.scratch.potential_ally:MoveToLimbo()
                 StateGraphUtil.AddLeaveLocation(cxt)
