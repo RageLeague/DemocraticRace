@@ -760,6 +760,7 @@ QDEF:AddConvo("go_to_game")
                     !scared_shrug
                     But... I can't lose.
                     The Trunoomiel family didn't come this far by losing.
+                    !<unlock_agent_info;ADVISOR_HOSTILE;lore_inferiority>
                     So... Why...?
                     I... Need to think.
                 player:
@@ -1093,6 +1094,7 @@ QDEF:AddConvo("go_to_game")
                         !scared_shrug
                         But... I can't lose.
                         The Trunoomiel family didn't come this far by losing.
+                        !<unlock_agent_info;ADVISOR_HOSTILE;lore_inferiority>
                         So... Why...?
                         I... Need to think.
                     player:

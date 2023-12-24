@@ -142,6 +142,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
                 agent:
                     Also, I should mention that the contact I know also sells loaves that taste better.
                     Logically, they would be more expensive, too, but if you think you can spare the shills for the sake of charity, then go for it.
+                    !<unlock_agent_info;ADVISOR_MANIPULATE;lore_garlic_bread>
             }
         ]],
     }

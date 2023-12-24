@@ -212,7 +212,7 @@ local SUPPORT_DELTA = {
 -- faction supports you more, and whose wealth class supports you more, will be more
 -- likely to be casted.
 function DemocracyUtil.SupportScore(agent, random_range)
-    random_range = random_range or 100
+    random_range = type(random_range) == "number" and random_range or 100
     return DemocracyUtil.TryMainQuestFn("GetSupportForAgent", agent)
         + SUPPORT_DELTA[agent:GetRelationship()] + math.random(-random_range, random_range)
 end
@@ -1111,6 +1111,7 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, post_fn, potential_offset)
                     -- :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
                     :Fn(function(cxt)
                         DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
+                        ally:OpinionEvent(OPINION.ALLIED_WITH)
                         post_fn(cxt, true)
                     end)
                     -- :DoneConvo()
@@ -1122,6 +1123,7 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, post_fn, potential_offset)
                     -- :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
                     :Fn(function(cxt)
                         DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
+                        ally:OpinionEvent(OPINION.ALLIED_WITH)
                         post_fn(cxt, true)
                     end)
                     -- :DoneConvo()
@@ -1166,6 +1168,7 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, post_fn, potential_offset)
                     cxt:Dialog("DIALOG_ALLIANCE_TALK_ACCEPT_CONDITIONAL")
                     -- ally:OpinionEvent(OPINION.ALLIED_WITH)
                     DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
+                    ally:OpinionEvent(OPINION.ALLIED_WITH)
                     -- StateGraphUtil.AddEndOption(cxt)
                     post_fn(cxt, true)
                     return

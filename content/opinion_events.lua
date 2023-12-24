@@ -104,6 +104,10 @@ local OPINIONS = {
         delta = OPINION_DELTAS.DISLIKE,
         txt = "Refused to drop out of the race when asked to"
     },
+    BROKE_ALLIANCE = {
+        delta = OPINION_DELTAS.DISLIKE,
+        txt = "Broke their alliance"
+    },
     HAD_MEANINGFUL_DISCUSSION = {
         delta = OPINION_DELTAS.LIKE,
         txt = "Had meaningful discussion with them",

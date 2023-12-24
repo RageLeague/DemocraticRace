@@ -306,6 +306,12 @@ local QDEF = QuestDef.Define
         if (quest.param.drinks_today or 0) == 0 then
             table.insert_unique(tags, "player_sober_today")
         end
+        if quest:DefFn("GetAlliance", agent) then
+            table.insert_unique(tags, "political_ally")
+        end
+        if quest:DefFn("IsCandidateInRace", agent) then
+            table.insert_unique(tags, "political_opposition")
+        end
         if TheGame:GetGameState():GetPlayerAgent() then
             local player = TheGame:GetGameState():GetPlayerAgent()
             local num_drunks = (player.battler and player.battler:GetCardCount("drunk") or 0) + (player.negotiator and player.negotiator:GetCardCount("drunk_player") or 0)
@@ -449,6 +455,37 @@ local QDEF = QuestDef.Define
                 -- Do something special for being sober
             end
             quest.param.drinks_today = 0
+        end,
+        dialog_event_broadcast = function( quest, agent, broadcast_type, ...)
+            if broadcast_type == "remember_info" then
+                local info = {...}
+                for i, val in ipairs(info) do
+                    TheGame:GetGameState():GetPlayerAgent():Remember(val:upper())
+                end
+            elseif broadcast_type == "unlock_agent_info" then
+                local info = {...}
+                if info[1] and info[2] then
+                    local skin_id = info[1]
+                    local is_valid = false
+                    local content_id, skin_table = Content.GetCharacterSkinByAlias( skin_id )
+                    if skin_table then
+                        skin_id = skin_table:GetContentID()
+                        is_valid = true
+                        print("Found unlock by alias")
+                    end
+                    if not is_valid then
+                        is_valid = Content.GetCharacterDef( skin_id ) and true
+                        print("Found unlock by def")
+                    end
+                    if not is_valid then
+                        is_valid = Content.GetCharacterSkin( skin_id ) and true
+                        print("Found unlock by skin")
+                    end
+                    if is_valid then
+                        TheGame:GetGameProfile():SetCustomAgentUnlock(skin_id, info[2])
+                    end
+                end
+            end
         end,
     },
     SpawnPoolJob = function(quest, pool_name, excluded_ids, spawn_as_inactive, spawn_as_challenge)

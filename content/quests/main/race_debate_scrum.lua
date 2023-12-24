@@ -1052,7 +1052,7 @@ QDEF:AddConvo("do_debate")
             for id, delta in pairs(cxt.quest.param.candidate_opinion) do
                 if delta <= -1 then
                     local agent = TheGame:GetGameState():GetAgent(id)
-                    if agent:GetRelationship() >= RELATIONSHIP.LIKED then
+                    if agent:GetRelationship() >= RELATIONSHIP.LIKED or DemocracyUtil.GetAlliance(agent) then
                         table.insert(betrayed_friends, agent)
                         agent:OpinionEvent(OPINION.DISLIKE_IDEOLOGY)
                     end
@@ -1162,14 +1162,14 @@ QDEF:AddConvo("talk_to_candidates")
             DIALOG_GENERAL = [[
                 agent:
                 {good_debate?
-                    {liked?
+                    {political_ally?
                         !clap
                         Well done, {player}! I knew you had it in you.
                         Clearly, I made the right choice by allying with you.
                     player:
                         Great, thanks.
                     }
-                    {not liked?
+                    {not political_ally?
                         !clap
                         Wow! Impressive trick you pulled here.
                         Now I have to be careful.
@@ -1215,10 +1215,10 @@ QDEF:AddConvo("talk_to_candidates")
                 {disliked?
                     Perhaps I judged you too harshly.
                 }
-                {liked?
+                {liked or political_ally?
                     I know I could count on you!
                 }
-                {not disliked and not liked?
+                {not disliked and not liked and not political_ally?
                     Maybe we are more alike than we thought.
                 }
             ]],
@@ -1268,11 +1268,13 @@ QDEF:AddConvo("talk_to_candidates")
 
                     }:OnSuccess()
                         :Dialog("DIALOG_APOLOGIZE_SUCCESS")
-                        :ReceiveOpinion(OPINION.SHARE_IDEOLOGY)
-                        -- :Fn(function(cxt)
-                        --     -- Okay there needs to be something else here
-                        --     DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
-                        -- end)
+                        :Fn(function(cxt)
+                            if who:GetRelationship() < RELATIONSHIP.NEUTRAL then
+                                who:OpinionEvent(OPINION.RECONCILED_GRUDGE)
+                            end
+                            table.arrayremove(cxt.quest.param.betrayed_friends, who)
+                            -- TODO: Actually do something about not reconciling with the ally you betrayed
+                        end)
                     :OnFailure()
                         :Dialog("DIALOG_APOLOGIZE_FAILURE")
                 cxt:Opt("OPT_IGNORE_CONCERN")

@@ -236,6 +236,159 @@ lines:
       I don't know how you got this far by spouting nonsense like this.
       !angry_accuse
       But it's time for someone to give you a wake-up call!
+  - |
+    agent:
+      {not player_arint?
+        [p] I'm surprised that you made it this far, {player}, considering that you are a mere grifter with no affiliation with any faction.
+      }
+      {player_arint?
+        [p] I'm surprised that you made it this far, {player}, considering that Lellyn Fellemo is in the race, and you are just his lieutenant.
+      }
+    player:
+      !shrug
+      Well, what can I say. I'm full of surprises.
+    agent:
+      I don't know how you got this far, whether through some questionable grifts pulled or through sheer dumb luck.
+      Regardless, this ends here, {player}.
+    player:
+      I agree. This ends here. For you.
+      You are getting complacent, {agent}. You underestimates your opponent.
+      {not player_arint?
+        For this "mere grifter" will do what needs to be done a long time ago.
+      }
+      {player_arint?
+        For this "lieutenant" will do what needs to be done a long time ago.
+      }
+      The people are suffering, but people like you would rather seize power for yourself than doing anything to actually help the people.
+      The people have spoken. And they chose me.
+    agent:
+      Right, as if the people actually believe in this drivel of yours.
+      You speak as if it's not just another grift for you. As if you actually care about the people you are supposed to be helping.
+      It matters not. One way or another, this will end very soon.
+- tags: [pre_dual_argument, player_arint, spark_contact]
+  dialog:
+  - |
+    agent:
+      !angry_accuse
+      [p] {player}, you are supposed to be helping me run my campaign!
+      So why are you running your own campaign against me instead of helping me?
+    player:
+      First off, I recall you explicitly telling me that you don't need my help.
+      Second, I don't trust you with your campaign.
+      You clearly don't have a plan. You barely even have a platform!
+      You could've let me run and enjoy your cosy retirement life with the Spark Barons, but <i>no</>! You just had to run your own campaign, just for an ego trip.
+    agent:
+      Right, as if I would trust <i>you</> with the Spark Barons' best interest.
+      {pro_labor_law?
+        Do you really think I wouldn't notice all the Rise rhetorics that you are parroting?
+        I knew from the beginning that if I let you run the campaign freely, you are going to just hand over what the Rise want.
+        !cruel
+        And we can't have that, now can we?
+      }
+      {not pro_labor_law and pro_religious_policy?
+          <i>You</>, an ex-Luminari?
+        player:
+          !crossed
+          What does that have to do with anything.
+        agent:
+          Of course, that means nothing by itself, if not for the fact that you still parrot their beliefs.
+          !cruel
+          Can't have decades of technological progress set back by a few tentacle-worshipping fanatics, now can we?
+      }
+      {not pro_labor_law and not pro_religious_policy?
+        The moment I allow you to take over, you would backstab and discard me.
+        Do you think I have never noticed your discontent towards me?
+      }
+    player:
+      !surprised
+      Ach-
+    agent:
+      !handwave
+      Oh, please, {player}. Do you really think I got this far by being incompetent?
+      Besides, your duplicity is so obvious, even a child could figure it out.
+      Don't forget who you are working for.
+    player:
+      Well, I guess the jig is up. No matter.
+      You have been dragging down the Spark Barons for long enough. Let's end this.
+- tags: [pre_dual_argument, kalandra, anti_labor_law]
+  dialog:
+  - |
+    agent:
+      !clap
+      [p] Well done, {player}. You are doing way better than I have expected, considering your competition.
+      Though, I do have to wonder how many boots you have licked to get this far.
+    {player_smith?
+      player:
+        !handwave
+        Oh, please. I have tasted my fair share of boots. Boots polished with Roaloch polish are by far the tastiest.
+        !thought
+        It does have a weird aftertaste, though.
+      agent:
+        !palm
+        What? No. I was being figurative.
+      player:
+        !chuckle
+        Oh? Is that so?
+    }
+    {not player_smith?
+      player:
+        !hips
+        Surprisingly few, I will have to know.
+    }
+    player:
+      But enough about me. Let's talk about what you have been doing.
+      How is your so called revolution? Is it going well?
+      Is it worth the lives that you have endangered, and the millions of shills worth of property damage that you have inflicted?
+    agent:
+      If changes are to happen, there will bound to be some casualties.
+      Like how forest fires destroy many things in its path.
+      But forest fires clear forests of old, dead trees that take up precious resources for other trees, and recycle the nutrients for the younger trees.
+      Without them, the forest becomes sick, and no new life can grow.
+      Havaria is a dying forest. The old, rich people hoard resources they don't need, while the others suffer.
+    player:
+      And it's solely up to you to decide what people should do with their lives? Who gets to live and who gets to die?
+      You are an egotistical despot, sending many to their deaths for your so called "revolution". Your so called "change".
+    agent:
+      No, you are free to do what you like.
+      But if what you are doing harms the good people of Havaria, then I will gladly put an end to this.
+      Change is coming, {player}. If you can't see that, then you will be swept way by the flames of the revolution.
+- tags: [pre_dual_argument, player_sal, kalandra, anti_labor_law]
+  dialog:
+  - |
+    player:
+      !sigh
+      [p] I was hoping that we wouldn't meet like this.
+      Though, this outcome seems inevitable, given our... ideological differences.
+    agent:
+      So, you've realized it as well, I see.
+      !sigh
+      You've changed, {player}. You used to have more fight in your eyes.
+      !angry_accuse
+      But now, look at you. Licking the boots of our oppressors, while turning your back to all the Havarians who are in the same boat as you once were.
+      Where is the fire in your eyes? Where is your rebellious spirit?
+      All I see now is a lapdog, content with the leash on {player.hisher} neck after tasting a fraction of what {player.hisher} master eat every day.
+      !spit
+      If your parents are still here, they would've been so disappointed in what you have become.
+    player:
+      !angry_accuse
+      Don't speak for my parents as if you know them!
+      Our parents might have been friends, but that doesn't mean you can speak for them as if you are their own {agent.gender:son|daughter|child}!
+      They're gone! You should've understood that!
+    agent:
+      !scared
+      I'm sorry, {player}, I didn't mean to-
+    player:
+      There will always be injustice. There will always be inequality. And there will always be exploitation. This is Havarian nature.
+      There is nothing we can do to change that.
+      Many died in this pointless fight for change, and my parents are one of the victims.
+      Yet you wish to send more people to die for this pointless fight.
+      For what? For your own ego? For feeling good about yourself for being the "good guy"?
+    agent:
+      It's not about "feeling good". It's doing what is necessary.
+      For if you don't fight for changes, nothing will ever change.
+      Even if we can't solve everyone's problem overnight, a better future for millions of Havarians is always worth fighting for.
+      And change is coming, {player}. The fact that we are even having an election in the first place is the living proof of that.
+      And by the looks of it, you will not be the part of the change.
 
 - tags: [confront_argument]
   dialog:
