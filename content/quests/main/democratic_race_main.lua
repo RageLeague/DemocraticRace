@@ -306,6 +306,12 @@ local QDEF = QuestDef.Define
         if (quest.param.drinks_today or 0) == 0 then
             table.insert_unique(tags, "player_sober_today")
         end
+        if quest:DefFn("GetAlliance", agent) then
+            table.insert_unique(tags, "political_ally")
+        end
+        if quest:DefFn("IsCandidateInRace", agent) then
+            table.insert_unique(tags, "political_opposition")
+        end
         if TheGame:GetGameState():GetPlayerAgent() then
             local player = TheGame:GetGameState():GetPlayerAgent()
             local num_drunks = (player.battler and player.battler:GetCardCount("drunk") or 0) + (player.negotiator and player.negotiator:GetCardCount("drunk_player") or 0)

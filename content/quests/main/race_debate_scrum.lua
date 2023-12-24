@@ -1162,14 +1162,14 @@ QDEF:AddConvo("talk_to_candidates")
             DIALOG_GENERAL = [[
                 agent:
                 {good_debate?
-                    {liked?
+                    {political_ally?
                         !clap
                         Well done, {player}! I knew you had it in you.
                         Clearly, I made the right choice by allying with you.
                     player:
                         Great, thanks.
                     }
-                    {not liked?
+                    {not political_ally?
                         !clap
                         Wow! Impressive trick you pulled here.
                         Now I have to be careful.
@@ -1215,10 +1215,10 @@ QDEF:AddConvo("talk_to_candidates")
                 {disliked?
                     Perhaps I judged you too harshly.
                 }
-                {liked?
+                {liked or political_ally?
                     I know I could count on you!
                 }
-                {not disliked and not liked?
+                {not disliked and not liked and not political_ally?
                     Maybe we are more alike than we thought.
                 }
             ]],
@@ -1273,6 +1273,7 @@ QDEF:AddConvo("talk_to_candidates")
                                 who:OpinionEvent(OPINION.RECONCILED_GRUDGE)
                             end
                             table.arrayremove(cxt.quest.param.betrayed_friends, who)
+                            -- TODO: Actually do something about not reconciling with the ally you betrayed
                         end)
                     :OnFailure()
                         :Dialog("DIALOG_APOLOGIZE_FAILURE")
