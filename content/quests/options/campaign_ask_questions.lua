@@ -70,6 +70,9 @@ CONVO:Loc{
                 if question_defs[id].dialog then
                     opt:Dialog("DIALOG_ASK_" .. id)
                 end
+                if question_defs[id].post_fn then
+                    opt:Fn(question_defs[id].post_fn)
+                end
             end
             StateGraphUtil.AddBackButton(cxt)
         end)
