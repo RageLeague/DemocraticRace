@@ -2,6 +2,23 @@ local QDEF = QuestDef.Define
 {
     qtype = QTYPE.STORY,
     questions = {
+        AELLON_BASED = {
+            condition = function(self, agent, cxt)
+                return agent:GetContentID() == "ADVISOR_DIPLOMACY"
+            end,
+            option = "Ask about the meaning of the word \"Based\"",
+            dialog = [[
+                player:
+                    I keep hearing you say the word "based".
+                    Do you know what it means?
+                agent:
+                    It means that a liquid contains less than ten millionth moles of Hydronium ion per liter of water under room temperature?
+                player:
+                    Uhh...
+                    Sure?
+                * That would be "basic", but close enough.
+            ]],
+        },
         TEST = {
             condition = function(self, agent, cxt)
                 return agent:GetFactionID() == "ADMIRALTY"
@@ -46,7 +63,7 @@ CONVO:Loc{
         OPT_ASK = "Ask about {agent}...",
     }
     :Hub(function(cxt, who)
-        if who then
+        if who and who:GetRelationship() > RELATIONSHIP.NEUTRAL then
             if #GetQuestions(cxt, who) > 0 then
                 cxt:Opt("OPT_ASK")
                     :GoTo("STATE_QUESTIONS")
