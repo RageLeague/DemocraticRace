@@ -65,21 +65,30 @@ local CONVO = QDEF:AddConvo()
 
 local function GetQuestions(cxt, agent)
     local questions_available = {}
+    local questions_total = {}
     for i, id, data in sorted_pairs(QDEF.questions) do
-        if not agent:HasMemory("ASKED_ABOUT_" .. id) and (not data.condition or data:condition(agent, cxt)) then
-            table.insert(questions_available, id)
+        if not data.condition or data:condition(agent, cxt) then
+            table.insert(questions_total, id)
+            if not agent:HasMemory("ASKED_ABOUT_" .. id) then
+                table.insert(questions_available, id)
+            end
         end
     end
-    return questions_available
+    return questions_available, questions_total
 end
 
 CONVO:Loc{
         OPT_ASK = "Ask about {agent}...",
+        REQ_MUST_LIKE_YOU = "{agent} will only answer questions for {agent.hisher} friends",
+        REQ_NO_QUESTIONS_LEFT = "You have asked all the questions available",
     }
     :Hub(function(cxt, who)
-        if who and who:GetRelationship() > RELATIONSHIP.NEUTRAL then
-            if #GetQuestions(cxt, who) > 0 then
+        if who then
+            local questions_available, questions_total = GetQuestions(cxt, who)
+            if #questions_total > 0 then
                 cxt:Opt("OPT_ASK")
+                    :ReqCondition( who:GetRelationship() > RELATIONSHIP.NEUTRAL, "REQ_MUST_LIKE_YOU" )
+                    :ReqCondition( #questions_available > 0, "REQ_NO_QUESTIONS_LEFT" )
                     :GoTo("STATE_QUESTIONS")
             end
         end
