@@ -449,6 +449,7 @@ QDEF:AddConvo("discuss_plan", "primary_advisor")
                         So, having established that, we can assume that you need strong logical skills in order to convince the masses.
                         From what I've see in the morning, you certainly have strong rhetorical skills. The masses are convinced by your facts and logic.
                         I'm sure that my husband, who is a doctor, can agree as well.
+                        !<unlock_agent_info;ADVISOR_MANIPULATE;lore_husband>
                     player:
                         Thanks, I guess.
                         Not sure if the last remark is necessary, but thanks anyway.

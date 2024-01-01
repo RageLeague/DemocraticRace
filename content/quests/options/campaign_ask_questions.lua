@@ -6,7 +6,7 @@ local QDEF = QuestDef.Define
             condition = function(self, agent, cxt)
                 return agent:GetContentID() == "ADVISOR_DIPLOMACY"
             end,
-            option = "Ask about the meaning of the word \"Based\"",
+            option = "Ask about the meaning of the word \"based\"",
             dialog = [[
                 player:
                     I keep hearing you say the word "based".
@@ -14,30 +14,44 @@ local QDEF = QuestDef.Define
                 agent:
                     It means that a liquid contains less than ten millionth moles of Hydronium ion per liter of water under room temperature?
                 player:
-                    Uhh...
-                    Sure?
-                * That would be "basic", but close enough.
+                    Uhh... What?
+                agent:
+                    Oh, you asked for what "based" means. Not "basic".
+                    My mistake. Havarian is a confusing language.
+                    Well, it's hard to describe exactly what "based" means, but I can give an example.
+                    If you win the election, no matter what it takes, it would be "based" of you to do so.
+                player:
+                    !dubious
+                    So... It's an adjective describing a positive thing?
+                agent:
+                    !crossed
+                    It's more than just that, but frankly, it's hard to explain.
+                    You will figure it out.
+                player:
+                    !dubious
+                    Uh huh.
             ]],
         },
-        TEST = {
+        BENNI_HUSBAND = {
             condition = function(self, agent, cxt)
-                return agent:GetFactionID() == "ADMIRALTY"
+                return agent:GetContentID() == "ADVISOR_MANIPULATE" and TheGame:GetGameProfile():HasCustomAgentUnlock( agent:GetUniqueID(), "lore_husband" )
             end,
-            option = "[Test] Ask about the Admiralty!",
+            option = "Ask about {agent}'s husband",
             dialog = [[
+                player:
+                    You keep mentioning you have a husband, but I don't see him around.
+                    Where is he?
                 agent:
-                    [p] They cool lol.
-            ]],
-        },
-        TEST_RICK = {
-            condition = function(self, agent, cxt)
-                return agent:GetRenown() >= 3
-            end,
-            option = "[Test] Ask about rich people!",
-            dialog = [[
+                    Well, he <i>is</> a doctor, currently working in Deltree.
+                    Logically, this is why he is not around.
+                player:
+                    Right. He works in Deltree. The other side of the Heshian sea.
                 agent:
-                    [p] We are rich lol.
-                    Now fie, thou peasant.
+                    Don't you have anything better to do than interrogating me about my marital status?
+                    Say, hypothetically, actually working on your campaign?
+                player:
+                    !bashful
+                    Right. Apologies.
             ]],
         },
     },
