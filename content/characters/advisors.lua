@@ -201,11 +201,13 @@ local chars =
             lore_gunter = "...LORE_GUNTER",
             lore_inferiority = "...LORE_INFERIORITY",
             lore_insufferable = "...LORE_INSUFFERABLE",
+            lore_tomophobia = "...LORE_TOMOPHOBIA",
         },
 
         lore_unlocks_ordering =
         {
             "lore_gunter",
+            "lore_tomophobia",
             "lore_inferiority",
             "lore_insufferable",
             "hated_bio",

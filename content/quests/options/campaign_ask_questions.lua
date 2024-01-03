@@ -98,6 +98,61 @@ local QDEF = QuestDef.Define
                     That... does make a lot of sense.
             ]],
         },
+        DRONUMPH_EYE = {
+            condition = function(self, agent, cxt)
+                return agent:GetContentID() == "ADVISOR_HOSTILE"
+            end,
+            option = "Ask about {agent}'s eye",
+            dialog = [[
+                player:
+                    I see that one of your eyes is not working.
+                agent:
+                    That's not that uncommon in Havaria.
+                {not depressed?
+                    Some ingrate caused it before learning to never cross the Trunoomiel family.
+                }
+                {depressed?
+                    Honestly, I probably deserve it, seeing how worthless I am.
+                }
+                    What about it?
+                player:
+                    Have you thought about replacing it?
+                {not depressed?
+                    agent:
+                        !angry
+                        No.
+                        Absolutely not.
+                        Nobody knows surgeons better than I do, and believe me when I say that they are the most treacherous scums out there.
+                }
+                {depressed?
+                    agent:
+                        !handwave
+                        No. There is no point anyway. It is not something that I deserve.
+                        Besides, it is not something I want, anyway.
+                        Surgeons. Don't trust them. Bunch of backstabbin' bastards.
+                }
+                player:
+                    That's... an interesting opinion.
+                agent:
+                    My father got a surgery once to treat his wounds.
+                    {depressed?
+                        He deserves to live a better life than I do.
+                    }
+                    The surgeon that did the surgery was the same one that my father helped to get him into med school, Clepius.
+                    What did that backstabbin' bastard do? Killed him straight up, with no mercy.
+                    The investigators ruled it a "surgery accident", but I know better.
+                    !<unlock_agent_info;ADVISOR_HOSTILE;lore_tomophobia>
+                player:
+                    I see.
+                {accept_limits?
+                    agent:
+                        !thought
+                        ...
+                        Do I, though?
+                        Maybe I should look past my grief in order to see things for what they actually are.
+                }
+            ]],
+        },
     },
 }
 :AddObjective{
