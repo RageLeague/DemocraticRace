@@ -109,6 +109,7 @@ local chars =
         {
             lore_garlic_bread = "...LORE_GARLIC_BREAD",
             lore_alienation = "...LORE_ALIENATION",
+            lore_tei = "...LORE_TEI",
             lore_husband = "...LORE_HUSBAND",
             lore_use_in_cult = "...LORE_USE_IN_CULT",
         },
@@ -116,6 +117,7 @@ local chars =
         lore_unlocks_ordering =
         {
             "lore_alienation",
+            "lore_tei",
             "lore_husband",
             "lore_use_in_cult",
             "hated_bio",

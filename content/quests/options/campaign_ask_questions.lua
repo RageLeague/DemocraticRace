@@ -54,6 +54,50 @@ local QDEF = QuestDef.Define
                     Right. Apologies.
             ]],
         },
+        BENNI_TEI_RELATION = {
+            condition = function(self, agent, cxt)
+                return agent:GetContentID() == "ADVISOR_MANIPULATE" and TheGame:GetGameProfile():HasCustomAgentUnlock( agent:GetUniqueID(), "know_about_tei" )
+            end,
+            option = "Ask about Tei",
+            dialog = [[
+                player:
+                    [p] So, you and Tei, do you know each other well?
+                agent:
+                    W- why did you ask that?
+                player:
+                    I noticed that you seem to treat her a lot better than other people.
+                    Why is that?
+                agent:
+                    W- well, let's say, hypothetically, you are a priest for the Cult of Hesh.
+                    !angry
+                    Who, despite your genuine reverence and fear for Hesh, is treated like an outsider, simply because of your different way of expressing your faith.
+                player:
+                    I feel like it's not as hypothetical as you make it out to be, but I'm following.
+                agent:
+                    And let's say, hypothetically, that there is another person.
+                    Someone who doesn't treat others differently despite such difference.
+                    Someone who recognizes your for your contribution rather than your conformity.
+                player:
+                    Yeah I can see why you like-
+                agent:
+                    ...Someone who is also kind, and compassionate, and charming, and pretty, and...
+                {player_sal or player_smith?
+                    player:
+                        !chuckle
+                        Oh I can <i>definitely</> see why you like them.
+                }
+                {not (player_sal or player_smith)?
+                    player:
+                        I see your point. You can stop listing these positive adjectives now.
+                }
+                agent:
+                    Anyway, wouldn't you agree that you would reciprocate this kindness back?
+                    !<unlock_agent_info;ADVISOR_MANIPULATE;lore_tei>
+                player:
+                    !thought
+                    That... does make a lot of sense.
+            ]],
+        },
     },
 }
 :AddObjective{

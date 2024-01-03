@@ -1694,6 +1694,7 @@ QDEF:AddConvo("rat_out_aftermath")
                     It makes {tei} sad.
                 player:
                     Oh, okay.
+                    !<unlock_agent_info;ADVISOR_MANIPULATE;know_about_tei>
             ]],
         }
         :Fn(function(cxt)
@@ -1701,7 +1702,6 @@ QDEF:AddConvo("rat_out_aftermath")
             cxt:GetCastMember("tei"):MoveToLocation(cxt.location)
             cxt:Dialog("DIALOG_INTRO")
             cxt.quest:Cancel()
-            QuestUtil.SpawnQuest( "FOLLOWUP_INTERWEAVING_BONDS" )
             StateGraphUtil.AddEndOption(cxt)
         end)
     :State("STATE_ARREST")
