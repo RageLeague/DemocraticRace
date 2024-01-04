@@ -199,6 +199,7 @@ local QDEF = QuestDef.Define
         -- Rook now has his flourish. This isn't necessary anymore.
         -- QuestUtil.SpawnQuest("CAMPAIGN_RANDOM_COIN_FIND")
         QuestUtil.SpawnQuest("CAMPAIGN_ASK_LOCATION")
+        QuestUtil.SpawnQuest("CAMPAIGN_ASK_QUESTIONS")
         QuestUtil.SpawnQuest("LOCATION_OSHNUDROME_RACES")
         QuestUtil.SpawnQuest("LOCATION_PARTY_STORE")
         QuestUtil.SpawnQuest("DEM_LOCATION_HEALING")
@@ -259,7 +260,7 @@ local QDEF = QuestDef.Define
             end
         end
 
-        local required_quests = {"CAMPAIGN_SHILLING", "CAMPAIGN_ASK_LOCATION", "LOCATION_OSHNUDROME_RACES", "LOCATION_PARTY_STORE", "SAL_STORY_MERCHANTS", "DEM_LOCATION_HEALING"}
+        local required_quests = {"CAMPAIGN_SHILLING", "CAMPAIGN_ASK_LOCATION", "CAMPAIGN_ASK_QUESTIONS", "LOCATION_OSHNUDROME_RACES", "LOCATION_PARTY_STORE", "SAL_STORY_MERCHANTS", "DEM_LOCATION_HEALING"}
         for i, id in ipairs(required_quests) do
             if #TheGame:GetGameState():GetActiveQuestWithContentID(id) == 0 then
                 QuestUtil.SpawnQuest(id)

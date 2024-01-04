@@ -148,7 +148,7 @@ local QDEF = QuestDef.Define
                     agent:
                         !thought
                         ...
-                        Do I, though?
+                        Do I really know better, though?
                         Maybe I should look past my grief in order to see things for what they actually are.
                 }
             ]],
