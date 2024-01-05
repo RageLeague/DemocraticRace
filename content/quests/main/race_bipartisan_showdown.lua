@@ -561,8 +561,27 @@ QDEF:AddConvo("do_debate")
                 * Nobody learned anything about you or your opponent other than you can argue well.
             ]],
             DIALOG_DEBATE_FAILURE = [[
-                * [p] You get very agitated and break down on the stand.
-                * You lose!
+                agent:
+                    !hips
+                    This is why your ideologies have no future, {player}.
+                player:
+                    !fight
+                {player_sal?
+                    Well, this is why you have a dagger in your face!
+                    * You are so agitated by {opponent}'s argument that you draw your weapons and throw it at your opponent!
+                }
+                {player_rook?
+                    Well, this is why you have a bullet hole in your face!
+                    * You are so agitated by {opponent}'s argument that you draw your weapons and shoot it at your opponent!
+                }
+                {not player_sal and not player_rook?
+                    Well, this is why you have a fist in your face!
+                    * You are so agitated by {opponent}'s argument that you throw a punch at your opponent!
+                }
+                * {opponent} saw it coming, though, as {opponent.gender:he dodges|she dodges|they dodge} out of the way easily.
+                * There is no taking it back though.
+                * The crowd panics at the violence on the stage, while security forces close in and subdue you.
+                * You are quickly subdued and arrested. Your reputation is in shambles. You can no longer continue your campaign.
             ]],
         }
         :Fn(function(cxt)
@@ -621,8 +640,27 @@ QDEF:AddConvo("do_debate_double")
                 * Nobody learned anything about you or your opponent other than you can argue well.
             ]],
             DIALOG_DEBATE_FAILURE = [[
-                * [p] You get very agitated and break down on the stand.
-                * You lose!
+                agent:
+                    !hips
+                    This is why your ideologies have no future, {player}.
+                player:
+                    !fight
+                {player_sal?
+                    Well, this is why you have a dagger in your face!
+                    * You are so agitated by {opponent}'s argument that you draw your weapons and throw it at your opponent!
+                }
+                {player_rook?
+                    Well, this is why you have a bullet hole in your face!
+                    * You are so agitated by {opponent}'s argument that you draw your weapons and shoot it at your opponent!
+                }
+                {not player_sal and not player_rook?
+                    Well, this is why you have a fist in your face!
+                    * You are so agitated by {opponent}'s argument that you throw a punch at your opponent!
+                }
+                * {opponent} saw it coming, though, as {opponent.gender:he dodges|she dodges|they dodge} out of the way easily.
+                * There is no taking it back though.
+                * The crowd panics at the violence on the stage, while security forces close in and subdue you.
+                * You are quickly subdued and arrested. Your reputation is in shambles. You can no longer continue your campaign.
             ]],
         }
         :Fn(function(cxt)
