@@ -45,7 +45,7 @@ local chars =
             LORE_COMPETENCE = "The story of Aellon is truly an inspiration to many. Starting with nothing under his name, and working his way up the Spark Baron's ranks all because of his ability? That is the dream of many Spark Barons and Spark Baron aspirants.",
             LORE_EXPLOITATION = "Of course, like any Spark Baron, there are countless workers and other barons that he exploited in order to bring him wealth and influences. Though, Aellon consider these people to be \"betas\" for allowing him to exploit them.",
             LORE_TRUST = "Aellon doesn't trust anyone. A generally sound strategy in Havaria, though it seems that Aellon has learned this lesson the hard way.",
-            LORE_PARENTAL = "There are two people that Aellon used to consider parental figures. Kyrtus Markov and Azta [INSERT SURNAME]. They took him in as a Spark Baron when he was facing the biggest change of his life.",
+            LORE_PARENTAL = "There are two people that Aellon used to consider parental figures. Kyrtus Markov and Azta Heien. They took him in as a Spark Baron when he was facing the biggest change of his life.",
             LORE_KYRTUS = "He felt betrayed by Kyrtus when he tried to steal Aellon's technological inventions as his own. Inventions that Aellon rightfully stolen from the Vagrant. Of course, he got Kyrtus back by ruining his reputation as a Spark Baron and condemning him to the derricks.",
             LORE_AZTA = "He felt betrayed by Azta when she abandoned him, during the time he got betrayed by another person close to him and needed someone he can trust. He tried to contact her, but she never responded. He tried to find her, but he couldn't find her anywhere. Of course, that's because a woman named Azta no longer exists.",
         },
@@ -109,6 +109,7 @@ local chars =
         {
             lore_garlic_bread = "...LORE_GARLIC_BREAD",
             lore_alienation = "...LORE_ALIENATION",
+            lore_tei = "...LORE_TEI",
             lore_husband = "...LORE_HUSBAND",
             lore_use_in_cult = "...LORE_USE_IN_CULT",
         },
@@ -116,6 +117,7 @@ local chars =
         lore_unlocks_ordering =
         {
             "lore_alienation",
+            "lore_tei",
             "lore_husband",
             "lore_use_in_cult",
             "hated_bio",
@@ -199,11 +201,13 @@ local chars =
             lore_gunter = "...LORE_GUNTER",
             lore_inferiority = "...LORE_INFERIORITY",
             lore_insufferable = "...LORE_INSUFFERABLE",
+            lore_tomophobia = "...LORE_TOMOPHOBIA",
         },
 
         lore_unlocks_ordering =
         {
             "lore_gunter",
+            "lore_tomophobia",
             "lore_inferiority",
             "lore_insufferable",
             "hated_bio",

@@ -179,6 +179,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
                         I guess that is going on, huh?
                         Logically speaking, you need to do whatever you have to do to gather support.
                         However, if, hypothetically, you don't embarrass {opponent.himher} in front of a large crowd, wouldn't that be better for everyone involved?
+                        !<unlock_agent_info;ADVISOR_MANIPULATE;know_about_tei>
                 }
             }
         ]],
@@ -186,9 +187,6 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :State("START")
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
-            if cxt:GetCastMember("primary_advisor") and cxt:GetCastMember("primary_advisor"):GetContentID() == "ADVISOR_MANIPULATE" and cxt:GetCastMember("opponent"):GetContentID() == "TEI" then
-                QuestUtil.SpawnQuest( "FOLLOWUP_INTERWEAVING_BONDS", { parameters = { avoid_tei = true } } )
-            end
         end)
 QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
     :Loc{

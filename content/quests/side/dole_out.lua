@@ -52,6 +52,7 @@ local QDEF = QuestDef.Define{
     title = "Purchase some dole loaves",
     desc = "{dealer} can sell you some dole loaves, given that you can pay.",
     mark = {"dealer"},
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/dole_out_seller.png"),
 }
 :AddObjective{
     id = "dole_out_three",
