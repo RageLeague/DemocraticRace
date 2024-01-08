@@ -12,7 +12,7 @@ local QUEST_IDS = {
     "REVENGE_KILLED_FRIEND",
     -- "THE_TOTEM", -- TODO: Change the text to be less Sal-centric
     "WANDERING_CHEF",
-    "ANIMAL_CONTROL", -- TODO: Rework this to account for mech pets, as well as tie in with certain political stances
+    -- "ANIMAL_CONTROL", -- TODO: Rework this to account for mech pets, as well as tie in with certain political stances
     "PET_RESCUE",
     "PET_SELLER",
 
