@@ -46,12 +46,6 @@ local QDEF = QuestDef.Define
     -- end,
     on_destroy = function(quest)
         quest:GetCastMember("primary_advisor"):GetBrain():SendToWork()
-        if quest.param.parent_quest then
-            quest.param.parent_quest.param.did_debate_scrum = true
-            quest.param.parent_quest.param.good_debate = quest.param.good_debate
-            quest.param.parent_quest.param.bad_debate = quest.param.bad_debate
-            quest.param.parent_quest.param.popularity_rankings = quest.param.popularity_rankings
-        end
     end,
     events =
     {
@@ -1033,7 +1027,9 @@ QDEF:AddConvo("do_debate")
                 if agent:IsPlayer() then
                     cxt.quest.param.player_rank = i
                 else
-                    DemocracyUtil.TryMainQuestFn("DeltaOppositionSupport", DemocracyUtil.GetOppositionID(agent), (cxt.quest.param.popularity[agent:GetID()] or 0) - 15)
+                    if i >= 3 then
+                        DemocracyUtil.TryMainQuestFn("DeltaOppositionSupport", DemocracyUtil.GetOppositionID(agent), 30 - i * 10)
+                    end
                 end
             end
             if not cxt.quest.param.player_rank then
@@ -1044,13 +1040,22 @@ QDEF:AddConvo("do_debate")
             elseif cxt.quest.param.player_rank > 2 then
                 cxt.quest.param.bad_debate = true
             end
+
+
+            if cxt.quest.param.parent_quest then
+                cxt.quest.param.parent_quest.param.did_debate_scrum = true
+                cxt.quest.param.parent_quest.param.good_debate = cxt.quest.param.good_debate
+                cxt.quest.param.parent_quest.param.bad_debate = cxt.quest.param.bad_debate
+                cxt.quest.param.parent_quest.param.popularity_rankings = cxt.quest.param.popularity_rankings
+            end
+
             cxt:Dialog("DIALOG_CHEER", cxt.quest.param.popularity_rankings[1])
 
             local betrayed_friends = {}
             for id, delta in pairs(cxt.quest.param.candidate_opinion) do
                 if delta <= -1 then
                     local agent = TheGame:GetGameState():GetAgent(id)
-                    if agent:GetRelationship() >= RELATIONSHIP.LIKED then
+                    if agent:GetRelationship() >= RELATIONSHIP.LIKED or DemocracyUtil.GetAlliance(agent) then
                         table.insert(betrayed_friends, agent)
                         agent:OpinionEvent(OPINION.DISLIKE_IDEOLOGY)
                     end
@@ -1065,22 +1070,12 @@ QDEF:AddConvo("do_debate")
 
             local your_score = cxt.quest.param.popularity[cxt.player:GetID()] or 0
             local main_quest = TheGame:GetGameState():GetMainQuest()
-            if cxt.quest.param.good_debate then
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.5), "COMPLETED_QUEST_MAIN")
-                if main_quest then
-                    main_quest.param.good_debate_scrum = true
-                end
-            elseif cxt.quest.param.bad_debate then
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.25), "COMPLETED_QUEST_MAIN")
-                if main_quest then
-                    main_quest.param.good_debate_scrum = false
-                end
-            else
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", math.floor(your_score * 0.35), "COMPLETED_QUEST_MAIN")
-                if main_quest then
-                    main_quest.param.good_debate_scrum = true
-                end
+            local support_offset = {3, -3, -12}
+            if cxt.quest.param.player_rank <= #support_offset then
+                local support = DemocracyUtil.GetBaseRallySupport(TheGame:GetGameState():GetCurrentBaseDifficulty() + 1) + support_offset[cxt.quest.param.player_rank]
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", support, "COMPLETED_QUEST_MAIN")
             end
+            main_quest.param.good_debate_scrum = not cxt.quest.param.bad_debate
             if main_quest then
                 main_quest.param.debate_scrum_result = cxt.quest.param.popularity_rankings
             end
@@ -1170,14 +1165,14 @@ QDEF:AddConvo("talk_to_candidates")
             DIALOG_GENERAL = [[
                 agent:
                 {good_debate?
-                    {liked?
+                    {political_ally?
                         !clap
                         Well done, {player}! I knew you had it in you.
                         Clearly, I made the right choice by allying with you.
                     player:
                         Great, thanks.
                     }
-                    {not liked?
+                    {not political_ally?
                         !clap
                         Wow! Impressive trick you pulled here.
                         Now I have to be careful.
@@ -1223,10 +1218,10 @@ QDEF:AddConvo("talk_to_candidates")
                 {disliked?
                     Perhaps I judged you too harshly.
                 }
-                {liked?
+                {liked or political_ally?
                     I know I could count on you!
                 }
-                {not disliked and not liked?
+                {not disliked and not liked and not political_ally?
                     Maybe we are more alike than we thought.
                 }
             ]],
@@ -1276,11 +1271,13 @@ QDEF:AddConvo("talk_to_candidates")
 
                     }:OnSuccess()
                         :Dialog("DIALOG_APOLOGIZE_SUCCESS")
-                        :ReceiveOpinion(OPINION.SHARE_IDEOLOGY)
-                        -- :Fn(function(cxt)
-                        --     -- Okay there needs to be something else here
-                        --     DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
-                        -- end)
+                        :Fn(function(cxt)
+                            if who:GetRelationship() < RELATIONSHIP.NEUTRAL then
+                                who:OpinionEvent(OPINION.RECONCILED_GRUDGE)
+                            end
+                            table.arrayremove(cxt.quest.param.betrayed_friends, who)
+                            -- TODO: Actually do something about not reconciling with the ally you betrayed
+                        end)
                     :OnFailure()
                         :Dialog("DIALOG_APOLOGIZE_FAILURE")
                 cxt:Opt("OPT_IGNORE_CONCERN")

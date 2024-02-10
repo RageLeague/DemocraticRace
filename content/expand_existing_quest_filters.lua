@@ -10,33 +10,24 @@ local QUEST_IDS = {
     "FORAGING_CHEMIST",
     "MORTAL_COIL",
     "REVENGE_KILLED_FRIEND",
-    "THE_TOTEM",
+    -- "THE_TOTEM", -- TODO: Change the text to be less Sal-centric
     "WANDERING_CHEF",
-    "ANIMAL_CONTROL",
-    -- Yeah this doesn't work as you get to fight a monster
-    -- "EVENT_SAL_GETS_AN_ENVELOPE",
+    -- "ANIMAL_CONTROL", -- TODO: Rework this to account for mech pets, as well as tie in with certain political stances
     "PET_RESCUE",
     "PET_SELLER",
 
     -- Rook's events
     "EVENT_FANTASTIC_TRAINER",
     "EVENT_FOUND_A_ROBOT",
-    -- "EVENT_LOAN_SHARK",
-    -- "EVENT_LOAN_SHARK_REPAY",
-    -- "EVENT_DEEP_BOGGER_01",
     "EVENT_FILTHY_GRAFT",
-    "EVENT_FOUND_BY_LUMICYTE",
-    -- This doesn't help
-    -- "EVENT_HESHIAN_MEDITATION",
-    "EVENT_ROOK_POINTS_A_FINGER",
+    "EVENT_FOUND_BY_LUMICYTE", -- TODO: Add political stances to some options
+    "EVENT_ROOK_POINTS_A_FINGER", -- TODO: Add political stances to some options
     "EVENT_SCRAP_COLLECTOR",
 
     -- Smith's events
-    "EVENT_UNATTENDED_BAG_OF_MONEY",
-    "EVENT_BREAK_IT_DOWN",
-    -- "EVENT_DRUNKEN_MASTER",
-    -- "EVENT_MERCHANT_STARTUP",
-    "EVENT_STUBBORN_OSHNU",
+    "EVENT_UNATTENDED_BAG_OF_MONEY", -- TODO: Add political stances to some options
+    "EVENT_BREAK_IT_DOWN", -- TODO: Add political stances to some options
+    "EVENT_STUBBORN_OSHNU", -- TODO: Add political stances to some options
 }
 
 for i, id in ipairs(QUEST_IDS) do

@@ -1,3 +1,5 @@
+-- TODO: Remove this quest after finish writing the dialog since it's deprecated
+-- This quest is kept in for now for backward compatibility and some lore references.
 local QDEF = QuestDef.Define
 {
     title = "Interweaving Bonds",

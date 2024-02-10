@@ -21,16 +21,29 @@ local QDEF = QuestDef.Define
             quest:GetCastMember("target"):OpinionEvent(quest:GetQuestDef():GetOpinionEvent("spread_rumors"))
         end
         if quest.param.convinced_factions then
-            local score = quest.param.poor_performance and 3 or 4
-            score = score * #quest.param.convinced_factions
-            DemocracyUtil.DeltaGeneralSupport(score, "COMPLETED_QUEST")
+            local score = DemocracyUtil.GetBaseRallySupport(quest:GetDifficulty()) - 4
+            local count = #quest.param.convinced_factions
+            local delta
+            if count > 3 then
+                delta = 3 + count
+            else
+                delta = 2 * count
+            end
+            if quest.param.poor_performance then
+                delta = delta - 2
+            end
+            DemocracyUtil.DeltaGeneralSupport(score + delta, "COMPLETED_QUEST")
+
+            local opposition_id = DemocracyUtil.GetOppositionID(quest:GetCastMember("target"))
+            if opposition_id then
+                DemocracyUtil.TryMainQuestFn("DeltaOppositionSupport", opposition_id, delta)
+            end
         end
     end,
     on_fail = function(quest)
         if quest:GetCastMember("target") then
             quest:GetCastMember("target"):OpinionEvent(quest:GetQuestDef():GetOpinionEvent("spread_rumors"))
         end
-        DemocracyUtil.DeltaGeneralSupport(-5, "FAILED_QUEST")
     end,
     precondition = function(quest)
         return TheGame:GetGameState():GetMainQuest():GetCastMember("primary_advisor") and TheGame:GetGameState():GetMainQuest().param.day >= 2

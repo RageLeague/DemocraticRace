@@ -31,17 +31,16 @@ local QDEF = QuestDef.Define
     on_complete = function(quest)
         if not (quest.param.sub_optimal or quest.param.poor_performance) then
             quest:GetProvider():OpinionEvent(OPINION.DID_LOYALTY_QUEST)
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 10, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 4, "COMPLETED_QUEST_REQUEST")
             DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 4, "COMPLETED_QUEST_REQUEST")
             DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 3, "COMPLETED_QUEST_REQUEST")
         elseif quest.param.sub_optimal then
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 5, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 3, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 8, 4, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 4, 3, "COMPLETED_QUEST_REQUEST")
+        elseif quest.param.poor_performance then
             DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 4, "COMPLETED_QUEST_REQUEST")
             DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 3, "COMPLETED_QUEST_REQUEST")
-        elseif quest.param.poor_performance then
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2, "POOR_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 3, 4, "POOR_QUEST")
-            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 2, 3, "POOR_QUEST")
         end
     end,
 
@@ -548,20 +547,6 @@ QDEF:AddConvo("tell_giver")
         end)
 
 QDEF:AddConvo("tell_giver")
-    :Loc{
-        OPT_ASK_BASED = "Ask about the meaning of the word \"Based\"",
-        DIALOG_ASK_BASED = [[
-            player:
-                I keep hearing you say the word "based".
-                Do you know what it means?
-            agent:
-                It means that a liquid contains less than ten millionth moles of Hydronium ion per liter of water under room temperature?
-            player:
-                Uhh...
-                Sure?
-            * That would be "basic", but close enough.
-        ]],
-    }
     :ConfrontState("STATE_GIVER", function(cxt)
         if cxt:GetCastMember("giver"):GetLocation() == cxt.location then
             return true
@@ -701,9 +686,6 @@ QDEF:AddConvo("tell_giver")
                 cxt:Dialog("DIALOG_INTRO_NO_SELL")
                 cxt.quest:Complete()
                 ConvoUtil.GiveQuestRewards(cxt)
-                if cxt:GetAgent():GetContentID() == "ADVISOR_DIPLOMACY" then
-                    cxt:QST("ASK_BASED")
-                end
                 StateGraphUtil.AddEndOption(cxt)
             else
                 local intro_id = {"DIALOG_INTRO_SELL_THIRD", "DIALOG_INTRO_SELL_TWO_THIRD", "DIALOG_INTRO_SELL_ALL"}
@@ -811,9 +793,6 @@ QDEF:AddConvo("tell_giver")
                     end)
                     :CompleteQuest()
                     :Fn(function(cxt)
-                        if cxt:GetAgent():GetContentID() == "ADVISOR_DIPLOMACY" then
-                            cxt:QST("ASK_BASED")
-                        end
                         StateGraphUtil.AddEndOption(cxt)
                     end)
                 :OnFailure()

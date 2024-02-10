@@ -26,12 +26,9 @@ local QDEF = QuestDef.Define{
     end,
 
     on_complete = function(quest)
-        -- if quest.param.poor_performance then
-        --     DemocracyUtil.DeltaGeneralSupport(2 * #quest.param.posted_location, "POOR_QUEST")
-        -- else
-        local score = 3 * (quest.param.gifted_people and #quest.param.gifted_people or 0)
+        local score = DemocracyUtil.GetBaseRallySupport(quest:GetDifficulty()) - 3
+        score = score + (quest.param.gifted_people and #quest.param.gifted_people or 0)
         DemocracyUtil.DeltaGeneralSupport(score, "COMPLETED_QUEST")
-        -- end
     end,
 
     precondition = function(quest)
@@ -55,6 +52,7 @@ local QDEF = QuestDef.Define{
     title = "Purchase some dole loaves",
     desc = "{dealer} can sell you some dole loaves, given that you can pay.",
     mark = {"dealer"},
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/dole_out_seller.png"),
 }
 :AddObjective{
     id = "dole_out_three",
@@ -145,6 +143,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
                 agent:
                     Also, I should mention that the contact I know also sells loaves that taste better.
                     Logically, they would be more expensive, too, but if you think you can spare the shills for the sake of charity, then go for it.
+                    !<unlock_agent_info;ADVISOR_MANIPULATE;lore_garlic_bread>
             }
         ]],
     }

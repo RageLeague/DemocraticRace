@@ -140,7 +140,7 @@ lines:
       Finally, someone's looking out for us.
   - |
     agent:
-      There was this Spark Baron I worked for, once.
+      [p] There was this Spark Baron I worked for, once.
       Always rambling about wanting to be relatable to the common folk.
       But he went about it very strangely.
     player:
@@ -151,6 +151,7 @@ lines:
       Besides, he wasn't actually concerned with workers' well-being.
       Even if it wasn't your fault, if you missed your quota, you got a demerit.
       He would just talk over anybody who protested.
+      !<unlock_agent_info;ADVISOR_DIPLOMACY;lore_exploitation>
     player:
       !shrug
       That's a Spark Baron for you.
@@ -178,13 +179,14 @@ lines:
       Same thing can be said to you, my friend.
   - |
     agent:
-      [Have you heard of the tale of Gunter Trunoomiel?
+      [p] Have you heard of the tale of Gunter Trunoomiel?
     player:
       !thought
       Can't say I have, no.
     agent:
       He's like a small legend among us poor merchants.
       As a jarackle who owns nothing, he built up his business empire from the ground up.
+      !<unlock_agent_info;ADVISOR_HOSTILE;lore_gunter>
     player:
       Sounds pretty impressive.
       I mean, I never dealt with the business side of things, but it seems virtually impossible for someone to make that much without a substantial starting funds.
@@ -200,7 +202,8 @@ lines:
   dialog:
   - |
     player:
-      How hard it is to pass the priest school?
+      !<unlock_agent_info;ADVISOR_MANIPULATE;lore_alienation>
+      [p] How hard it is to pass the priest school?
     agent:
       You would imagine it's pretty hard.
       You gotta pay a lot of tithes to get in, and even after that, it is extremely hard to pass.
@@ -225,6 +228,7 @@ lines:
       Just the other day, someone came to the Admiralty headquarters asking for some paperwork.
       What was his name again? Al- El-? I can't exactly remember.
       It's obviously a fake name. Never in Havaria have I heard of this name.
+      !<unlock_agent_info;ADVISOR_DIPLOMACY;lore_foreigner>
     player:
       Uhh... What's the point?
     agent:
@@ -284,6 +288,7 @@ lines:
       In fact, more than that. He wants to be good at everything, no matter what.
       And it seems like he truly believes that, even though it is physically impossible to do so.
       That makes him insufferable, and people generally don't want to work with him.
+      !<unlock_agent_info;ADVISOR_HOSTILE;lore_insufferable>
     player:
       That seems extreme.
     agent:
@@ -295,7 +300,7 @@ lines:
   dialog:
   - |
     agent:
-      The Cult of Hesh is filled with a bunch of lunatics, worshipping a giant jellyfish that is probably going to kill us all.
+      [p] The Cult of Hesh is filled with a bunch of lunatics, worshipping a giant jellyfish that is probably going to kill us all.
     player:
       Wow, what a conversation starter!
     {not pro_religious_policy?
@@ -309,6 +314,7 @@ lines:
       I know of a priest who is very collected and logical.
       She is probably more logical than some of my colleagues.
       Which makes me wonder: Why would such a logical person join the Cult, where logic is punished and only mindless fanaticism is accepted?
+      !<unlock_agent_info;ADVISOR_MANIPULATE;lore_use_in_cult>
     player:
     {pro_religious_policy?
       Maybe she is right, and maybe the illogical one here is you.
@@ -438,6 +444,7 @@ lines:
       !thought
       To think... When he first joined the Spark Barons, he had no family, no friends, no money.
       But nobody cares about that anymore. Everyone knows him as a rich baron, with an eccentric speech pattern.
+      !<unlock_agent_info;ADVISOR_DIPLOMACY;lore_competence>
     player:
       !dubious
       Why are you telling me this now? What is your point?
@@ -445,6 +452,7 @@ lines:
       People don't care about who you were in the past. They only care about who you are right now.
       !hips
       This is the Spark Baron way. The Havarian way.
+      !<unlock_agent_info;ASTAL;lore_ideal>
       ...
     {player_arint?
       * You've heard of this exact sentiment from exactly one other Spark Baron, and you are pretty sure that he got discharged for corporate espionage.
@@ -514,6 +522,7 @@ lines:
     agent:
       There are already so many strong candidates, like Oolo, and I feel like I don't stand a chance against them.
       Plus, if I do run, I will just be taking votes away to people who I would rather win.
+      !<unlock_agent_info;NAND;lore_democracy>
     player:
       Is that so? You want to give up before you even begin to try?
       People aren't going to elect you if you don't do anything.

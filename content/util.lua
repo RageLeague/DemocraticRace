@@ -211,14 +211,15 @@ local SUPPORT_DELTA = {
 -- Has a built-in randomizer. Generally speaking, an agent that likes you more, whose
 -- faction supports you more, and whose wealth class supports you more, will be more
 -- likely to be casted.
-function DemocracyUtil.SupportScore(agent)
+function DemocracyUtil.SupportScore(agent, random_range)
+    random_range = type(random_range) == "number" and random_range or 100
     return DemocracyUtil.TryMainQuestFn("GetSupportForAgent", agent)
-        + SUPPORT_DELTA[agent:GetRelationship()] + math.random(-100, 100)
+        + SUPPORT_DELTA[agent:GetRelationship()] + math.random(-random_range, random_range)
 end
 
 -- The opposite of SupportScore
-function DemocracyUtil.OppositionScore(agent)
-    return -DemocracyUtil.SupportScore(agent)
+function DemocracyUtil.OppositionScore(agent, random_range)
+    return -DemocracyUtil.SupportScore(agent, random_range)
 end
 
 -- Check if an agent is a valid random bystander.
@@ -1110,6 +1111,7 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, post_fn, potential_offset)
                     -- :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
                     :Fn(function(cxt)
                         DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
+                        ally:OpinionEvent(OPINION.ALLIED_WITH)
                         post_fn(cxt, true)
                     end)
                     -- :DoneConvo()
@@ -1121,6 +1123,7 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, post_fn, potential_offset)
                     -- :ReceiveOpinion(OPINION.ALLIED_WITH, nil, ally)
                     :Fn(function(cxt)
                         DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
+                        ally:OpinionEvent(OPINION.ALLIED_WITH)
                         post_fn(cxt, true)
                     end)
                     -- :DoneConvo()
@@ -1165,6 +1168,7 @@ function DemocracyUtil.DoAllianceConvo(cxt, ally, post_fn, potential_offset)
                     cxt:Dialog("DIALOG_ALLIANCE_TALK_ACCEPT_CONDITIONAL")
                     -- ally:OpinionEvent(OPINION.ALLIED_WITH)
                     DemocracyUtil.TryMainQuestFn("SetAlliance", ally)
+                    ally:OpinionEvent(OPINION.ALLIED_WITH)
                     -- StateGraphUtil.AddEndOption(cxt)
                     post_fn(cxt, true)
                     return
@@ -1417,6 +1421,16 @@ function DemocracyUtil.GetSignatureCardsDraft(signature_id, num_cards, player)
         table.insert(cards, Negotiation.Card(carddef.id, player))
     end
     return cards
+end
+
+function DemocracyUtil.GetBaseRallySupport(qrank)
+    local base = TheGame:GetGameState():GetCurrentBaseDifficulty()
+    qrank = qrank or base
+    local support = 8 + 2 * qrank
+    if qrank > base then
+        support = support + 2
+    end
+    return support
 end
 
 local main_branch_id = 2291214111

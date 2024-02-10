@@ -43,10 +43,10 @@ local function InitNamedChars()
 end
 
 t.DAY_SCHEDULE = {
-    {quest = "RACE_DAY_1", difficulty = 1, support_expectation = {0,10,25}},
-    {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {25,40,55}},
+    {quest = "RACE_DAY_1", difficulty = 1, support_expectation = {0,10,20}},
+    {quest = "RACE_DAY_2", difficulty = 2, support_expectation = {23,38,55}},
     {quest = "RACE_DAY_3", difficulty = 3, support_expectation = {60,80,100}},
-    {quest = "RACE_DAY_4", difficulty = 4, support_expectation = {110,135,150}},
+    {quest = "RACE_DAY_4", difficulty = 4, support_expectation = {105,130,155}},
     -- {quest = "RACE_DAY_5", difficulty = 5},
 }
 
@@ -64,18 +64,18 @@ t.DELTA_SUPPORT = {
     [RELATIONSHIP.HATED] = -6,
 }
 -- Determines the support level change when an agent is killed.
-t.DEATH_DELTA = -10
-t.DEATH_GENERAL_DELTA = -5
+-- t.DEATH_DELTA = -10
+t.DEATH_GENERAL_DELTA = -3
 
--- Determines the support level change when an agent is killed in an isolated scenario.
--- Still reduce support, but people won't know for sure it's you.
-t.ISOLATED_DEATH_DELTA = -2
-t.ISOLATED_DEATH_GENERAL_DELTA = -1
+-- -- Determines the support level change when an agent is killed in an isolated scenario.
+-- -- Still reduce support, but people won't know for sure it's you.
+-- t.ISOLATED_DEATH_DELTA = -2
+-- t.ISOLATED_DEATH_GENERAL_DELTA = -1
 
 -- Determines the support change if you didn't kill someone, but you're an accomplice
 -- or someone dies from negligence
-t.ACCOMPLICE_KILLING_DELTA = -5
-t.ACCOMPLICE_KILLING_GENERAL_DELTA = -2
+t.ACCOMPLICE_KILLING_DELTA = -3
+t.ACCOMPLICE_KILLING_GENERAL_DELTA = -1
 local QDEF = QuestDef.Define
 {
     title = "The Democratic Race",
@@ -199,6 +199,7 @@ local QDEF = QuestDef.Define
         -- Rook now has his flourish. This isn't necessary anymore.
         -- QuestUtil.SpawnQuest("CAMPAIGN_RANDOM_COIN_FIND")
         QuestUtil.SpawnQuest("CAMPAIGN_ASK_LOCATION")
+        QuestUtil.SpawnQuest("CAMPAIGN_ASK_QUESTIONS")
         QuestUtil.SpawnQuest("LOCATION_OSHNUDROME_RACES")
         QuestUtil.SpawnQuest("LOCATION_PARTY_STORE")
         QuestUtil.SpawnQuest("DEM_LOCATION_HEALING")
@@ -259,7 +260,7 @@ local QDEF = QuestDef.Define
             end
         end
 
-        local required_quests = {"CAMPAIGN_SHILLING", "CAMPAIGN_ASK_LOCATION", "LOCATION_OSHNUDROME_RACES", "LOCATION_PARTY_STORE", "SAL_STORY_MERCHANTS", "DEM_LOCATION_HEALING"}
+        local required_quests = {"CAMPAIGN_SHILLING", "CAMPAIGN_ASK_LOCATION", "CAMPAIGN_ASK_QUESTIONS", "LOCATION_OSHNUDROME_RACES", "LOCATION_PARTY_STORE", "SAL_STORY_MERCHANTS", "DEM_LOCATION_HEALING"}
         for i, id in ipairs(required_quests) do
             if #TheGame:GetGameState():GetActiveQuestWithContentID(id) == 0 then
                 QuestUtil.SpawnQuest(id)
@@ -305,6 +306,12 @@ local QDEF = QuestDef.Define
         end
         if (quest.param.drinks_today or 0) == 0 then
             table.insert_unique(tags, "player_sober_today")
+        end
+        if quest:DefFn("GetAlliance", agent) then
+            table.insert_unique(tags, "political_ally")
+        end
+        if quest:DefFn("IsCandidateInRace", agent) then
+            table.insert_unique(tags, "political_opposition")
         end
         if TheGame:GetGameState():GetPlayerAgent() then
             local player = TheGame:GetGameState():GetPlayerAgent()
@@ -376,7 +383,7 @@ local QDEF = QuestDef.Define
                 local agent = fighter.agent
                 if agent:IsSentient() and agent:IsDead() then
                     if CheckBits( battle:GetScenario():GetFlags(), BATTLE_FLAGS.ISOLATED ) then
-                        quest:DefFn("DeltaAgentSupport", t.ISOLATED_DEATH_GENERAL_DELTA, t.ISOLATED_DEATH_DELTA, agent, "SUSPICION")
+                        -- quest:DefFn("DeltaAgentSupport", t.ISOLATED_DEATH_GENERAL_DELTA, t.ISOLATED_DEATH_DELTA, agent, "SUSPICION")
                     elseif fighter:GetKiller() and fighter:GetKiller():IsPlayer() then
                         -- killing already comes with a heavy drawback of someone hating you, thus reducing support significantly.
                         -- quest:DefFn("DeltaAgentSupport", t.DEATH_GENERAL_DELTA, t.DEATH_DELTA, agent, "MURDER")
@@ -449,6 +456,37 @@ local QDEF = QuestDef.Define
                 -- Do something special for being sober
             end
             quest.param.drinks_today = 0
+        end,
+        dialog_event_broadcast = function( quest, agent, broadcast_type, ...)
+            if broadcast_type == "remember_info" then
+                local info = {...}
+                for i, val in ipairs(info) do
+                    TheGame:GetGameState():GetPlayerAgent():Remember(val:upper())
+                end
+            elseif broadcast_type == "unlock_agent_info" then
+                local info = {...}
+                if info[1] and info[2] then
+                    local skin_id = info[1]
+                    local is_valid = false
+                    local content_id, skin_table = Content.GetCharacterSkinByAlias( skin_id )
+                    if skin_table then
+                        skin_id = skin_table:GetContentID()
+                        is_valid = true
+                        print("Found unlock by alias")
+                    end
+                    if not is_valid then
+                        is_valid = Content.GetCharacterDef( skin_id ) and true
+                        print("Found unlock by def")
+                    end
+                    if not is_valid then
+                        is_valid = Content.GetCharacterSkin( skin_id ) and true
+                        print("Found unlock by skin")
+                    end
+                    if is_valid then
+                        TheGame:GetGameProfile():SetCustomAgentUnlock(skin_id, info[2])
+                    end
+                end
+            end
         end,
     },
     SpawnPoolJob = function(quest, pool_name, excluded_ids, spawn_as_inactive, spawn_as_challenge)

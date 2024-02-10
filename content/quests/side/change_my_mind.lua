@@ -56,16 +56,9 @@ local QDEF = QuestDef.Define
         end
     end,
     on_complete = function( quest )
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 2 * quest.param.debated_people + #quest.param.crowd, "COMPLETED_QUEST")
-        -- if quest.param.poor_performance then
-        --     DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5, "POOR_QUEST")
-        -- end
-    end,
-    on_fail = function( quest )
-        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2 * quest.param.debated_people - #quest.param.crowd, "FAILED_QUEST")
-        -- if quest.param.poor_performance then
-        --     DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5)
-        -- end
+        local support = DemocracyUtil.GetBaseRallySupport(quest:GetDifficulty()) - 4
+        support = support + 2 * (quest.param.debated_people or 0)
+        DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", support, "COMPLETED_QUEST")
     end,
 }
 :AddLocationCast{
@@ -165,7 +158,8 @@ QDEF:AddConvo("go_to_junction")
 QDEF:AddConvo("debate_people")
     :Confront(function(cxt)
         if cxt.location == cxt.quest:GetCastMember("junction") then
-            if math.random() < cxt.quest.param.debated_people * 0.15 - 0.05 then
+            cxt.quest.param.total_debate_count = cxt.quest.param.total_debate_count or math.ceil(math.sqrt(math.random(1, 25)))
+            if cxt.quest.param.debated_people >= cxt.quest.param.total_debate_count then
                 return "STATE_ARREST"
             else
                 return "STATE_DEBATE"
@@ -634,7 +628,7 @@ QDEF:AddConvo("debate_people")
             cxt:Opt("OPT_CONVINCE")
                 :Dialog("DIALOG_CONVINCE")
                 :UpdatePoliticalStance("SECURITY", 1)
-                :DeltaSupport(-2)
+                :DeltaSupport(-1)
                 :Negotiation{
                     target_agent = cxt:GetCastMember("patrol"),
                     hinders = {"debater"},

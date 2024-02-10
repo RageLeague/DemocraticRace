@@ -5,6 +5,13 @@ local QDEF = QuestDef.Define
     -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/interview.png"),
 
     qtype = QTYPE.STORY,
+
+    old_acquaintances = {
+        SPARK_CONTACT = { "ROOK", "PC_ARINT" },
+        KALANDRA = { "SAL" },
+        VIXMALLI = { "SMITH" },
+    },
+
     collect_agent_locations = function(quest, t)
         table.insert(t, { agent = quest:GetCastMember("primary_advisor"), location = quest:GetCastMember('backroom'), role = CHARACTER_ROLES.VISITOR})
         table.insert(t, { agent = quest:GetCastMember("host"), location = quest:GetCastMember('theater'), role = CHARACTER_ROLES.PROPRIETOR})
@@ -149,6 +156,16 @@ local QDEF = QuestDef.Define
     no_validation = true,
     optional = true,
     when = QWHEN.MANUAL,
+
+    on_assign = function(quest, agent)
+        local why_event = agent.social_connections and agent.social_connections:GetRelationshipReason(TheGame:GetGameState():GetPlayerAgent())
+        if why_event and why_event.id == "REFUSED_TO_DROP_OUT" then
+            quest.param.opponent_refused_drop = true
+        end
+        if quest:GetQuestDef().old_acquaintances[agent:GetContentID()] and table.arraycontains(quest:GetQuestDef().old_acquaintances[agent:GetContentID()], TheGame:GetGameState():GetPlayerAgent():GetContentID()) then
+            quest.param.opponent_old_acquaintance = true
+        end
+    end,
 }
 :AddCast{
     cast_id = "secondary_opponent",
@@ -267,7 +284,47 @@ QDEF:AddConvo("go_to_debate")
                     !left
                 primary_advisor:
                     !right
-                    [p] Your opponent is {opponent}.
+                    I hope you are ready, {player}.
+                    For you debate with {opponent} soon.
+                {opponent_refused_drop?
+                    player:
+                        !sigh
+                        I knew it would come to this when neither of us refused to drop out of the campaign.
+                        !thumb
+                        Of course, we've come this far. I don't plan to lose.
+                }
+                {not opponent_refused_drop and opponent_old_acquaintance?
+                    player:
+                        !sigh
+                        I wished it wouldn't come to this, but it seems like I need to face {opponent.himher} eventually.
+                        !thumb
+                        Of course, we've come this far. I don't plan to lose.
+                }
+                {not opponent_refused_drop and not opponent_old_acquaintance?
+                    player:
+                        !spit
+                        I ain't scared of {opponent.himher}.
+                        !thumb
+                        We've come this far. I don't plan to lose.
+                }
+                {advisor_diplomacy?
+                    agent:
+                        !happy
+                        That's based.
+                }
+                {not advisor_diplomacy and depressed?
+                    agent:
+                        I see you still have the fighting spirit.
+                        !sigh
+                        I wish I could help you more, but I'm too useless for that.
+                    player:
+                        !placate
+                        No, no. You helped a lot.
+                }
+                {not advisor_diplomacy and not depressed?
+                    agent:
+                        That's the spirit.
+                }
             ]],
             OPT_ASK_INTERVIEW = "Q1",
             DIALOG_ASK_INTERVIEW = [[
@@ -351,10 +408,63 @@ QDEF:AddConvo("go_to_debate")
                 }
                 player:
                     !left
-                primary_advisor:
+                agent:
                     !right
-                    [p] {opponent} and {secondary_opponent} are on the stage.
-                    We aren't invited, that's why we are here to crash the party.
+                    Soon, there is supposed to be a debate between {opponent} and {secondary_opponent}.
+                {depressed?
+                    agent:
+                        !sigh
+                        Someone as useless as me couldn't offer you any help here.
+                        !point
+                        But, you are way more competent than me, and there is something you could do that I cannot.
+                    player:
+                        !dubious
+                        What are you suggesting?
+                    agent:
+                        I suggest that you break in and join the debate anyway.
+                        It is a risky plan, and it's a terrible plan that comes from a terrible person.
+                        But... it is the only way to keep you in the game.
+                }
+                {not depressed and can_manipulate_truth?
+                    agent:
+                        These are the facts, but as we know, facts can be changed.
+                    player:
+                        !dubious
+                        What are you suggesting?
+                    agent:
+                        I suggest that you break in and join the debate anyway.
+                        It is a risky plan, but the fact is, if you don't do so, there will be no hope of you winning the election.
+                        !point
+                        And <i>that</>> is a fact that doesn't care about your feelings.
+                }
+                {not depressed and not can_manipulate_truth and advisor_diplomacy?
+                    agent:
+                        {host} is cringe for not inviting you to the debate.
+                        But, who cares about what cringe people think? You are going to join the debate regardless.
+                    player:
+                        !thumb
+                        Wait, so you are suggesting that I break in?
+                    agent:
+                        That is exactly what I am suggesting. What an Intelligence 100 moment.
+                }
+                {not depressed and not can_manipulate_truth and not advisor_diplomacy?
+                    agent:
+                        Well, the keyword here is <i>supposed to</>.
+                        !point
+                        Because you are going to break in and join the debate anyway.
+                    player:
+                        !dubious
+                        That is your plan?
+                    agent:
+                    {advisor_hostile and not accept_limits?
+                        !crossed
+                        Nobody knows how to plan a comeback like this better than me.
+                        Unless you think you have a better plan, you better be ready to cause some chaos.
+                    }
+                    {not (advisor_hostile and not accept_limits)?
+                        It is the only way to keep us in the game.
+                    }
+                }
             ]],
             OPT_ASK_INTERVIEW = "Q1",
             DIALOG_ASK_INTERVIEW = [[
@@ -451,8 +561,27 @@ QDEF:AddConvo("do_debate")
                 * Nobody learned anything about you or your opponent other than you can argue well.
             ]],
             DIALOG_DEBATE_FAILURE = [[
-                * [p] You get very agitated and break down on the stand.
-                * You lose!
+                agent:
+                    !hips
+                    This is why your ideologies have no future, {player}.
+                player:
+                    !fight
+                {player_sal?
+                    Well, this is why you have a dagger in your face!
+                    * You are so agitated by {opponent}'s argument that you draw your weapons and throw it at your opponent!
+                }
+                {player_rook?
+                    Well, this is why you have a bullet hole in your face!
+                    * You are so agitated by {opponent}'s argument that you draw your weapons and shoot it at your opponent!
+                }
+                {not player_sal and not player_rook?
+                    Well, this is why you have a fist in your face!
+                    * You are so agitated by {opponent}'s argument that you throw a punch at your opponent!
+                }
+                * {opponent} saw it coming, though, as {opponent.gender:he dodges|she dodges|they dodge} out of the way easily.
+                * There is no taking it back though.
+                * The crowd panics at the violence on the stage, while security forces close in and subdue you.
+                * You are quickly subdued and arrested. Your reputation is in shambles. You can no longer continue your campaign.
             ]],
         }
         :Fn(function(cxt)
@@ -472,6 +601,7 @@ QDEF:AddConvo("do_debate")
                     end,
                 }:OnSuccess()
                     :Dialog("DIALOG_DEBATE_SUCCESS")
+                    :DeltaSupport(DemocracyUtil.GetBaseRallySupport(TheGame:GetGameState():GetCurrentBaseDifficulty() + 1))
                     :CompleteQuest()
                     :DoneConvo()
                 :OnFailure()
@@ -510,8 +640,27 @@ QDEF:AddConvo("do_debate_double")
                 * Nobody learned anything about you or your opponent other than you can argue well.
             ]],
             DIALOG_DEBATE_FAILURE = [[
-                * [p] You get very agitated and break down on the stand.
-                * You lose!
+                agent:
+                    !hips
+                    This is why your ideologies have no future, {player}.
+                player:
+                    !fight
+                {player_sal?
+                    Well, this is why you have a dagger in your face!
+                    * You are so agitated by {opponent}'s argument that you draw your weapons and throw it at your opponent!
+                }
+                {player_rook?
+                    Well, this is why you have a bullet hole in your face!
+                    * You are so agitated by {opponent}'s argument that you draw your weapons and shoot it at your opponent!
+                }
+                {not player_sal and not player_rook?
+                    Well, this is why you have a fist in your face!
+                    * You are so agitated by {opponent}'s argument that you throw a punch at your opponent!
+                }
+                * {opponent} saw it coming, though, as {opponent.gender:he dodges|she dodges|they dodge} out of the way easily.
+                * There is no taking it back though.
+                * The crowd panics at the violence on the stage, while security forces close in and subdue you.
+                * You are quickly subdued and arrested. Your reputation is in shambles. You can no longer continue your campaign.
             ]],
         }
         :Fn(function(cxt)
@@ -551,6 +700,7 @@ QDEF:AddConvo("do_debate_double")
                         end,
                     }:OnSuccess()
                         :Dialog("DIALOG_DEBATE_SUCCESS")
+                        :DeltaSupport(DemocracyUtil.GetBaseRallySupport(TheGame:GetGameState():GetCurrentBaseDifficulty() + 1) + 4)
                         :CompleteQuest()
                         :DoneConvo()
                     :OnFailure()

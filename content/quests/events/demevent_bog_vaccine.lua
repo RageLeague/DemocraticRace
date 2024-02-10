@@ -104,29 +104,29 @@ QDEF:AddConvo()
                     If it will help prevent the disease from spreading...
                     Very well. We hadn't made the vaccine as quickly as we tell people.
                     !bashful
-                    It was...supplied to us.
+                    It was... supplied to us.
                 player:
                     !question
                     Supplied from where?
                 agent:
                     The Spark Barons had prepared an inoculative agent against it, although they hadn't made it particularly consumer friendly.
-                    !over_there
-                    But we had no choice. We had to protect the pious masses, so we "acquired" some and helped as many as we could.
-                player:
-                    And I'm assuming that "many as you could" is your voters?
-                agent:
-                    They were...the most receptive to the vaccine. They understood the importance of preparing the soul for consumption, you see.
+                    !overthere
+                    But we had no choice! We had to protect the pious masses, so we "acquired" some and helped as many as we could.
+                {not player_arint?
+                    player:
+                        And I'm assuming that "as many as you could" refers to mostly your voters, right?
+                    agent:
+                        They were... the most receptive to the vaccine. They understood the importance of preparing the soul for consumption, you see.
+                }
+                {player_arint?
+                    player:
+                        !thought
+                        Ah, that explains the missing shipment last month, then.
+                        How typical of you to steal from others and claim them as your own.
+                    agent:
+                        Like I said, we had no choice! Not like the Barons would ever willing cooperate with us, or vice versa.
+                }
             ]],
-            --I was going to use this bit but felt it was a bit too upfront or just mean spirited
-            --[[
-            player:
-                    Oddly generous for the Cult to turn heel on their MO like that.
-                    Are you sure it's not just to keep the Cult vote safe?
-                agent:
-                    Blashphemer! We are more charitable than you make us out to be, hence why we wish to vaccinate and help those who walk in the shallows.
-                player:
-                    So that's a yes?
-            ]]
             DIALOG_CONVINCE_NO_INTEL = [[
                 agent:
                     Surely you know of Hesh's miracles?
@@ -160,25 +160,35 @@ QDEF:AddConvo()
             OPT_REFUSE = "Refuse the vaccine",
             DIALOG_REFUSE = [[
                 {asked_info?
-                    player:
-                        !hips
-                        I don't think I'll be getting shot up with this vaccine you called "not consumer-friendly".
-                    agent:
-                        !angry_accuse
-                        Do you wish for eternal damnation?
-                    player:
-                        Tough words for the Priest using deemed heretical tools to do holy work.
-                    agent:
-                        It's out of necces-
-                    player:
-                        Necessity to keep the voter base alive. Necessity to keep <i>your<\> voter base alive.
-                    agent:
-                        !point
-                        I-
-                        !sigh
-                        I guess you're right. These are the tools of the enemies we're using.
-                        Still, I wish you luck in not being infected.
-                        !exit
+                    {not player_arint?
+                        player:
+                            !hips
+                            I don't think I'll be getting shot up with this vaccine you called "not consumer-friendly".
+                        agent:
+                            !angry_accuse
+                            Do you wish for eternal damnation?
+                        player:
+                            Tough words for the Priest using deemed heretical tools to do holy work.
+                        agent:
+                            It's out of necces-
+                        player:
+                            Necessity to keep the voter base alive. Necessity to keep <i>your<\> voter base alive.
+                        agent:
+                            !point
+                            I-
+                            !sigh
+                            I guess you're right. These are the tools of the enemies we're using.
+                            Still, I wish you luck in not being infected.
+                            !exit
+                    }
+                    {player_arint?
+                        player:
+                            [p] Just be glad I am not forcefully taking back stolen property.
+                            Now get out of here.
+                        agent:
+                            Yes, {player.gender:sir|ma'am|boss}!
+                            !exit
+                    }
                 }
                 {not asked_info?
                     player:
@@ -188,7 +198,7 @@ QDEF:AddConvo()
                         And risk eternal damnation? What if you become infected?
                     player:
                         !shrug
-                        Mind over matter, what can I say?
+                        Eh, don't worry about it. I won't.
                     agent:
                         !angry
                         You'd better watch yourself, Grifter. Wouldn't want to go out at night without a scarf.

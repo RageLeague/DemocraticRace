@@ -4,7 +4,7 @@ A pioneer campaign mod for Griftlands, the Democratic Race is a mod for Griftlan
 
 This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
-Version: 0.11.0 (Alpha)
+Version: 0.12.0 (Alpha)
 
 Author: RageLeague
 
@@ -104,6 +104,24 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Flange Finnegan
 
 ## Changelog
+
+### 0.12.0 (The Lore Update)
+
+This is a small update that reworks the support system and added the lore tab.
+
+Major Changes:
+
+* Massive change: Overhaul of how much support is gained. There is now a standardized range of support that rally quests and main quests provide. Additionally, toned down how much support the player gets after completing request quests.
+* Re-added lore screens. Certain characters, especially advisors, now have lore associated with them. This makes 100% Griftlands compendium more of a nightmare.
+* Added a question system. You can ask certain people lore questions if you are at least liked by them. These questions does not affect gameplay, but they reveal some lore about them. They might also affect minor endings in the future.
+
+Minor Changes:
+
+* Refactored lots of dialog to fit the new systems.
+* Replaced temporary dialog.
+* Reworked a couple of quests to fit the new balance.
+* Added special icon for bread sellers in Dole Out.
+* Bug fixes.
 
 ### 0.11.0 (Debater's Update)
 
