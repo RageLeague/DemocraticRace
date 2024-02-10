@@ -60,6 +60,9 @@ local QDEF = QuestDef.Define
         if agent:GetContentID() == "ADVISOR_MANIPULATE" then
             return false -- Benni can't talk about Hesh.
         end
+        if not agent:IsSentient() then
+            return false -- Robots doesn't know religion.
+        end
         if table.arraycontains(quest.param.people_asked or {}, agent) then
             return false -- Already asked
         end
