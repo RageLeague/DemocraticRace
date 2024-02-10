@@ -1,5 +1,31 @@
 # Full Changelog
 
+### 0.12.0
+
+* Massive change: Overhaul of how much support is gained. There is now a standardized range of support that rally quests and main quests provide. Additionally, toned down how much support the player gets after completing request quests.
+* Reworked several quests.
+* Fixed Vixmalli not being a unique agent with an alias.
+* Reworked Loaded Questions. Instead of dropping support right away, it incepts a question bounty when destroyed that causes the player to lose support. Since the bounty is a question, it can be addressed.
+* Toned down the number of starting people in Roadside Preaching and Fundraising.
+* Interested Target is now an argument instead of a bounty.
+* Fixed the number of addressed questions incorrectly counting questions that gets removed without being addressed at all (when they count down and remove itself).
+* Fixed the challenger incorrectly being unassigned when they are killed in Battle of Wits.
+* Added lore screens. Certain characters, especially advisors, now have lore associated with them. This makes 100% Griftlands compendium more of a nightmare.
+* Making alliances with a candidate now makes them like you.
+* Added a couple of character specific interactions at the end of day 4.
+* Changed a couple of dialogs.
+* Fixed a couple of bugs.
+* Added a question system. You can ask certain people lore questions if you are at least liked by them. These questions does not affect gameplay, but they reveal some lore about them. They might also affect minor endings in the future.
+* Refactored some existing dialog to use the new question system.
+* Added a special quest icon for Dole Out to indicate the seller of dole loaves.
+* Fixed dialog priorities when greeted by opponent.
+* Replaced some temporary dialog on day 4.
+* Reworked two events to better fit into the Democratic Race.
+* Reduced support changes in Deltree event.
+* Crowd Hater event will no longer cast liked or loved people as haters.
+* Fixed summary dialog for debate not playing.
+* You can no longer ask non-sentient creatures about Hesh in Ctenophorean Mystery.
+
 ### 0.11.0
 
 * Reworked how Public Debate works: there are no damage scaling anymore from Crowd Opinion, and you gain and lose crowd opinion by destroying each other's arguments.
