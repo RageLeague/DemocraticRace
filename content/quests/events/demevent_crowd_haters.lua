@@ -37,7 +37,7 @@ local QDEF = QuestDef.Define
         if agent:GetFaction():GetFactionRelationship( quest:GetCastMember("hater_leader"):GetFactionID() ) < RELATIONSHIP.NEUTRAL then
             return false, "Bad faction relation"
         end
-        if not (agent:GetRelationship() < RELATIONSHIP.NEUTRAL or DemocracyUtil.GetAgentEndorsement(agent) < RELATIONSHIP.NEUTRAL) then
+        if not (agent:GetRelationship() < RELATIONSHIP.NEUTRAL or (agent:GetRelationship() == RELATIONSHIP.NEUTRAL and DemocracyUtil.GetAgentEndorsement(agent) < RELATIONSHIP.NEUTRAL)) then
             return false, "Not bad relationship"
         end
         if agent == quest:GetCastMember("hater_leader") or quest.param.other_haters and table.arraycontains(quest.param.other_haters, agent) then

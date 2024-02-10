@@ -46,12 +46,6 @@ local QDEF = QuestDef.Define
     -- end,
     on_destroy = function(quest)
         quest:GetCastMember("primary_advisor"):GetBrain():SendToWork()
-        if quest.param.parent_quest then
-            quest.param.parent_quest.param.did_debate_scrum = true
-            quest.param.parent_quest.param.good_debate = quest.param.good_debate
-            quest.param.parent_quest.param.bad_debate = quest.param.bad_debate
-            quest.param.parent_quest.param.popularity_rankings = quest.param.popularity_rankings
-        end
     end,
     events =
     {
@@ -1046,6 +1040,15 @@ QDEF:AddConvo("do_debate")
             elseif cxt.quest.param.player_rank > 2 then
                 cxt.quest.param.bad_debate = true
             end
+
+
+            if cxt.quest.param.parent_quest then
+                cxt.quest.param.parent_quest.param.did_debate_scrum = true
+                cxt.quest.param.parent_quest.param.good_debate = cxt.quest.param.good_debate
+                cxt.quest.param.parent_quest.param.bad_debate = cxt.quest.param.bad_debate
+                cxt.quest.param.parent_quest.param.popularity_rankings = cxt.quest.param.popularity_rankings
+            end
+
             cxt:Dialog("DIALOG_CHEER", cxt.quest.param.popularity_rankings[1])
 
             local betrayed_friends = {}
