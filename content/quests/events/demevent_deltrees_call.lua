@@ -277,14 +277,14 @@ QDEF:AddConvo()
                         on_start_negotiation = function(minigame)
                             local n = math.max(1, math.round( minigame.player_negotiator.agent.negotiator:GetCardCount() / 5 ))
                             for k = 1, n do
-                                local card = Negotiation.Card( "insult", minigame.player_negotiator.agent )
+                                local card = Negotiation.Card( insult_card, minigame.player_negotiator.agent )
                                 card.show_dealt = true
                                 card:TransferCard(minigame:GetDrawDeck())
                             end
                         end,
                         on_success = function(cxt)
                             cxt:Dialog("DIALOG_INSULT_SUCCESS")
-                            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 6)
+                            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 4)
                             cxt.quest:OpinionEvent("delto", "actively_pushing_separatism")
                             -- Enable special flag for main quest
                             -- Probably lead to a special ending
@@ -296,7 +296,7 @@ QDEF:AddConvo()
                         end,
                         on_fail = function(cxt)
                             cxt:Dialog("DIALOG_INSULT_FAILURE")
-                            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -3)
+                            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2)
                             cxt:GetCastMember("delto"):OpinionEvent(OPINION.INSULT)
                             StateGraphUtil.AddLeaveLocation(cxt)
                         end,
