@@ -27,19 +27,20 @@ local QDEF = QuestDef.Define
     end,
 
     on_complete = function(quest)
-        -- if not (quest.param.sub_optimal or quest.param.poor_performance) then
-        --     quest:GetCastMember("giver"):OpinionEvent(OPINION.DID_LOYALTY_QUEST)
-        --     DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 4, "COMPLETED_QUEST_REQUEST")
-        --     DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, 2, "COMPLETED_QUEST_REQUEST")
-        --     DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 5, "JAKES", "COMPLETED_QUEST_REQUEST")
-        -- elseif quest.param.sub_optimal then
-        --     DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 3, "COMPLETED_QUEST_REQUEST")
-        --     DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 8, 2, "COMPLETED_QUEST_REQUEST")
-        --     DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 4, "JAKES", "COMPLETED_QUEST_REQUEST")
-        -- elseif quest.param.poor_performance then
-        --     DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, 2, "COMPLETED_QUEST_REQUEST")
-        --     DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 3, "JAKES", "COMPLETED_QUEST_REQUEST")
-        -- end
+        local giver = quest:GetCastMember("giver")
+        if not (quest.param.sub_optimal or quest.param.poor_performance) then
+            giver:OpinionEvent(OPINION.DID_LOYALTY_QUEST)
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 4, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 10, DemocracyUtil.GetWealth(giver), "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 5, DemocracyUtil.GetWealth(giver), "COMPLETED_QUEST_REQUEST")
+        elseif quest.param.sub_optimal then
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 3, "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 8, DemocracyUtil.GetWealth(giver), "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 4, DemocracyUtil.GetWealth(giver), "COMPLETED_QUEST_REQUEST")
+        elseif quest.param.poor_performance then
+            DemocracyUtil.TryMainQuestFn("DeltaWealthSupport", 5, DemocracyUtil.GetWealth(giver), "COMPLETED_QUEST_REQUEST")
+            DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 3, DemocracyUtil.GetWealth(giver), "COMPLETED_QUEST_REQUEST")
+        end
     end,
 }
 :AddCast{
@@ -152,6 +153,52 @@ QDEF:AddIntro(
             Excellent!
     ]])
 
+QDEF:AddConvo("punish_target")
+    :Priority(CONVO_PRIORITY_LOW)
+    :Confront(function(cxt)
+        if cxt.quest.param.beat_up and not cxt.quest:GetCastMember("target"):IsDead()
+            and cxt.quest:GetCastMember("target"):GetLocation() == cxt.location then
+
+            return "STATE_BEAT_UP"
+        end
+    end)
+    :State("STATE_BEAT_UP")
+        :Loc{
+            DIALOG_FOLLOWUP = [[
+                {beat_up_primary?
+                    target:
+                        !right
+                        !injured
+                    player:
+                        !left
+                        !angry
+                        By the way, {target}.
+                }
+                {not beat_up_primary?
+                    player:
+                        !left
+                        !angry
+                        I'm not done yet.
+                        !angry_accuse
+                        {target}!
+                    target:
+                        !right
+                        !injured
+                        What?
+                    player:
+                }
+                    [p] {giver} sends {giver.hisher} regards.
+                target:
+                    {giver}, huh?
+                    I'll leave you and {giver} alone.
+                    But I won't forget this.
+                    !exit
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt.quest:Complete("punish_target")
+            cxt:Dialog("DIALOG_FOLLOWUP")
+        end)
 
 QDEF:AddConvo("report_success", "giver")
     :Loc{
