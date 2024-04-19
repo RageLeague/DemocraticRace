@@ -162,7 +162,7 @@ QDEF:AddIntro(
             [p] There is a person that I absolutely hate.
             {target.HisHer} name is {target}.
             I want you to send {target.himher} a message. Let {target.himher} know that {agent} is not to be messed with.
-            Just... try not to kill {target.himher}. That would put too much suspicion on myself.
+            It would be better if you leave {target.himher} alive. Let {target.himher} live with the consequences of messing with me.
     ]],
 
     --on accept
@@ -397,12 +397,9 @@ QDEF:AddConvo("report_success", "giver")
             player:
                 So... What happens now?
             agent:
-                Now suspicion will be placed on me.
-                I will need to lay low for a bit thanks to your stunt.
                 Well, at least {target}'s dead, so that's something I guess.
                 Never have to deal with that vroc dung anymore.
                 Thanks, I suppose.
-                Please never return.
         ]],
     }
     :Hub(function(cxt)
