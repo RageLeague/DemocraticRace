@@ -52,7 +52,9 @@ local QDEF = QuestDef.Define
         return not agent:HasTag("curated_request_quest")
     end,
     on_assign = function(quest, agent)
-        quest:AssignCastMember("target")
+        if not quest:GetCastMember("target") then
+            quest:AssignCastMember("target")
+        end
     end,
 }
 :AddCast{
@@ -73,13 +75,15 @@ local QDEF = QuestDef.Define
         return not AgentUtil.HasPlotArmour(agent)
     end,
     on_assign = function(quest, agent)
-        agent:OpinionEvent(OPINION.DISAPPROVE_MAJOR, nil, quest:GetCastMember("giver"))
+        if agent:GetRelationship(quest:GetCastMember("giver")) == RELATIONSHIP.NEUTRAL then
+            agent:OpinionEvent(OPINION.DISAPPROVE_MAJOR, nil, quest:GetCastMember("giver"))
+        end
     end,
     events = {
         agent_retired = function(quest, agent)
             if agent:IsDead() then
                 quest.param.target_dead = true
-                quest.param.poor_performance = true
+                quest.param.sub_optimal = true
             else
                 quest.param.target_retired = true
             end
@@ -107,6 +111,11 @@ local QDEF = QuestDef.Define
     on_complete = function(quest)
         quest:Activate("report_success")
     end,
+    mark = function(quest, t, in_location)
+        if in_location or DemocracyUtil.IsFreeTimeActive() then
+            table.insert(t, quest:GetCastMember("target"))
+        end
+    end,
     events = {
         resolve_battle = function(quest, battle, primary_enemy, repercussions )
             if battle.result == BATTLE_RESULT.WON then
@@ -115,6 +124,9 @@ local QDEF = QuestDef.Define
                     quest.param.beat_up = true
                     if quest:GetCastMember("target"):IsDead() then
                         quest.param.target_killed_in_battle = true
+                    end
+                    if battle:GetPlayerTeam():GetFighterForAgent(quest:GetCastMember("giver")) then
+                        quest.param.giver_in_fight = true
                     end
                 end
             end
@@ -133,6 +145,14 @@ local QDEF = QuestDef.Define
     on_complete = function(quest)
 
     end,
+}
+:AddOpinionEvents{
+
+    warned =
+    {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Warned them about their enemy",
+    },
 }
 
 QDEF:AddIntro(
@@ -199,6 +219,103 @@ QDEF:AddConvo("punish_target")
             cxt.quest:Complete("punish_target")
             cxt:Dialog("DIALOG_FOLLOWUP")
         end)
+
+QDEF:AddConvo("punish_target")
+    :Loc{
+        OPT_WARN = "Warn {agent} about {giver}'s animosity towards {agent.himher}",
+        DIALOG_WARN = [[
+            player:
+                [p] {giver} is after you.
+            agent:
+            {liked?
+                Thank you for telling me.
+            }
+            {not liked?
+                Why should I care?
+            }
+        ]],
+        DIALOG_WARN_SUCCESS = [[
+            agent:
+                [p] Thank you for your warning.
+                Now I know who to look out for.
+
+        ]],
+        DIALOG_WARN_FAILURE = [[
+            agent:
+                [p] Are you trying to threaten me?
+                You don't scare me. Neither does {giver}.
+                Leave.
+        ]],
+        DIALOG_BETRAYAL = [[
+            agent:
+                [p] Say... How about we turn this back on {giver}? Let {giver.himher} have a taste of {giver.hisher} own medicine.
+        ]],
+        DIALOG_BETRAYAL_ACCEPT = [[
+            player:
+                [p] You have a deal.
+            agent:
+                Excellent! I can't wait to see {giver}'s face!
+        ]],
+        DIALOG_BETRAYAL_REJECT = [[
+            player:
+                [p] No, I cannot accept.
+            agent:
+                Very well, I understand.
+                Still, thanks for the warning.
+        ]],
+    }
+    :Hub(function(cxt)
+        local function ReassignQuest(cxt)
+            local ok, result, quest_state = QuestUtil.TrySpawnQuest("REQUEST_SEND_A_MESSAGE",
+                {
+                    cast = {
+                        giver = cxt.quest:GetCastMember("target"),
+                        target = cxt.quest:GetCastMember("giver"),
+                    },
+                    parameters = {
+                        betrayal = true,
+                    },
+                    when = QWHEN.MANUAL,
+                }, true)
+            if ok and result then
+                DBG(quest_state)
+                cxt:Dialog("DIALOG_BETRAYAL")
+
+                cxt:QuestOpt( quest_state )
+                    :ShowQuestAsInactive()
+                    :Fn(function(cxt)
+                        DemocracyUtil.PresentRequestQuest(cxt, quest_state, function(cxt,quest)
+                            cxt:Dialog("DIALOG_BETRAYAL_ACCEPT")
+                        end, function(cxt, quest)
+                            cxt:Dialog("DIALOG_BETRAYAL_REJECT")
+                        end)
+                    end)
+            end
+        end
+        if not cxt.quest.param.betrayal then
+            if cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL then
+                cxt:Opt("OPT_WARN")
+                    :Dialog("DIALOG_WARN")
+                    :ReceiveOpinion(OPINION.BETRAYED, nil, "giver")
+                    :FailQuest()
+                    :ReceiveOpinion("warned")
+                    :Fn(ReassignQuest)
+            elseif cxt:GetAgent():GetRelationship() == RELATIONSHIP.NEUTRAL then
+                cxt:Opt("OPT_WARN")
+                    :Dialog("DIALOG_WARN")
+                    :ReceiveOpinion(OPINION.BETRAYED, nil, "giver")
+                    :FailQuest()
+                    :Negotiation{}
+                        :OnSuccess()
+                            :Dialog("DIALOG_WARN_SUCCESS")
+                            :ReceiveOpinion("warned")
+                            :Fn(ReassignQuest)
+                        :OnFailure()
+                            :Dialog("DIALOG_WARN_FAILURE")
+                            :ReceiveOpinion(OPINION.INSULT)
+            end
+        end
+    end)
 
 QDEF:AddConvo("report_success", "giver")
     :Loc{
