@@ -351,16 +351,23 @@ QDEF:AddConvo("report_success", "giver")
             {beat_up?
                 player:
                     I beat {target.himher} up.
-                agent:
-                    That seems a bit aggressive. Did you make sure {target.heshe} got the message?
-                player:
-                    Yeah, definitely.
-                agent:
-                    $scaredFearful
-                    You didn't kill {target.himher}, right?
-                player:
-                    !handwave
-                    Nah.
+                {not giver_in_fight?
+                    agent:
+                        That seems a bit aggressive. Did you make sure {target.heshe} got the message?
+                    player:
+                        Yeah, definitely.
+                    agent:
+                        $scaredFearful
+                        You didn't kill {target.himher}, right?
+                    player:
+                        !handwave
+                        Nah.
+                }
+                {giver_in_fight?
+                    agent:
+                        Right, we did, didn't we?
+                        We beat {target.himher} up real good.
+                }
                 agent:
                     Well, in that case, everything worked out fine.
                     Thank you for what you did for me.
@@ -381,10 +388,19 @@ QDEF:AddConvo("report_success", "giver")
             agent:
                 [p] I recall specifically telling you not to kill {target}.
             {target_killed_in_battle?
-                player:
-                    Look, the opportunity arose-
-                agent:
-                    So what? You shouldn't just kill {target.himher} when I told you not to.
+                {giver_in_fight?
+                    player:
+                        Hey, you played a part too, you know?
+                    agent:
+                        !sigh
+                        You are right.
+                }
+                {not giver_in_fight?
+                    player:
+                        Look, the opportunity arose-
+                    agent:
+                        So what? You shouldn't just kill {target.himher} when I told you not to.
+                }
             }
             {not target_killed_in_battle?
                 player:
