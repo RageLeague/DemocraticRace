@@ -30,6 +30,16 @@ local QDEF = QuestDef.Define
 
         end
     },
+    precondition = function(quest)
+        local current_time = Now()
+        local max_time = 2 * 4
+        local wait_period = 2
+        if current_time + wait_period > max_time then
+            return false
+        end
+        quest.param.trial_time = math.random(current_time + wait_period, max_time)
+        return true
+    end,
 
     on_start = function(quest)
     end,
@@ -50,4 +60,36 @@ local QDEF = QuestDef.Define
             DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 3, DemocracyUtil.GetWealth(giver), "COMPLETED_QUEST_REQUEST")
         end
     end,
+}
+:AddCast{
+    cast_id = "giver",
+    no_validation = true,
+    provider = true,
+    unimportant = true,
+    condition = function(agent, quest)
+        if agent:HasTag("curated_request_quest") then
+            return false
+        end
+        if DemocracyUtil.GetWealth(agent) > 2 then
+            return false
+        end
+        if agent:GetFactionID() == "ADMIRALTY" then
+            return false
+        end
+        if agent:GetFaction():IsLawful() or agent:GetFactionID() == "RISE" then
+            return true
+        end
+        return false
+    end,
+    on_assign = function(quest, agent)
+
+    end,
+}
+:AddObjective{
+    id = "prepare_trial",
+    title = "Prepare for the trial ({1#relative_time})",
+    title_fn = function(quest, str)
+        return loc.format(str, (quest.param.trial_time or 0) - Now())
+    end,
+    desc = "Make enough preparations before the trial begins.",
 }
