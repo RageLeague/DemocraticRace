@@ -1,11 +1,9 @@
 -- Outline:
 -- The defendant is accused of stealing something valuable from the plaintiff.
 -- Potential evidence:
---   * Connection of the accused to the plaintiff.
---     * Circumstance evidence, only affects trial difficulty.
 --   * Witness saw accused leaving the estate.
 --     * If innocent, either witness misremembered or witness fabricated testimony
---   * Accused left earings behind.
+--   * Accused left earrings behind.
 --     * If innocent, someone stole the earings from the accused.
 -- You can forge or find alibi, replace evidence, or "deal" with witness/plaintiff/prosecutor before the trial.
 
@@ -62,14 +60,16 @@ local QDEF = QuestDef.Define
             quest.param.have_evidence = math.random() < 0.65
         end
 
-        quest.param.have_alibi = math.random() < 0.2
+        if quest.param.have_witness then
+            quest:AssignCastMember("witness")
+        end
+
+        quest.param.have_alibi = math.random() < 0.3
     end,
 
     on_start = function(quest)
         quest:Activate("prepare_trial")
-        quest:Activate("talk_to_accused")
-        quest:Activate("talk_to_plaintiff")
-        quest:Activate("talk_to_prosecutor")
+        quest:Activate("talk_to_defendant")
     end,
 
     on_complete = function(quest)
@@ -122,6 +122,18 @@ local QDEF = QuestDef.Define
     end,
 }
 :AddDefCast("prosecutor", "ADMIRALTY_INVESTIGATOR")
+:AddCast{
+    cast_id = "witness",
+    when = QWHEN.MANUAL,
+    condition = function(agent, quest)
+        return agent:GetFaction():IsLawful()
+    end,
+}
+:AddCastFallback{
+    cast_fn = function(quest, t)
+        table.insert( t, quest:CreateSkinnedAgent( "WEALTHY_MERCHANT" ) )
+    end,
+}
 :AddObjective{
     id = "prepare_trial",
     title = "Prepare for the trial ({1#relative_time})",
@@ -131,7 +143,7 @@ local QDEF = QuestDef.Define
     desc = "Make enough preparations before the trial begins.",
 }
 :AddObjective{
-    id = "talk_to_accused",
+    id = "talk_to_defendant",
     title = "Talk to {giver}, the defendant",
     desc = "Talk to {giver} to learn more about the case.",
     mark = function(quest, t, in_location)
@@ -160,3 +172,179 @@ local QDEF = QuestDef.Define
         end
     end,
 }
+
+QDEF:AddConvo("talk_to_defendant", "giver")
+    :Loc{
+        OPT_ASK = "Ask about the case",
+        DIALOG_ASK = [[
+            player:
+                I would like to learn about the case.
+            agent:
+                What would you like to know?
+        ]],
+    }
+    :Hub(function(cxt)
+        cxt:Opt("OPT_ASK")
+            :Dialog("DIALOG_ASK")
+            :GoTo("STATE_QUESTIONS")
+    end)
+    :State("STATE_QUESTIONS")
+        :Loc{
+            OPT_SUMMARY = "Ask for a summary of the case",
+            DIALOG_SUMMARY = [[
+                player:
+                    [p] What are you accused of?
+                agent:
+                    Apparently stealing {plaintiff}'s expensive jewelry.
+                    Honestly, I didn't do it!
+                    I mean, that's what they all say, but I genuinely didn't do it.
+            ]],
+        }
+        :SetLooping()
+        :Fn(function(cxt)
+            cxt:Question("OPT_SUMMARY", "DIALOG_SUMMARY", function()
+                cxt.quest:Activate("talk_to_plaintiff")
+            end)
+            StateGraphUtil.AddBackButton(cxt)
+        end)
+
+QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
+    :Loc{
+        OPT_ASK = "Ask for information about the case",
+        DIALOG_ASK = [[
+            {first_time?
+                player:
+                    You are the one accusing {giver} of theft?
+                {not liked?
+                    agent:
+                        So I am. What's it to you?
+                    player:
+                        It just so happens that I am representing {giver.himher} in court.
+                    agent:
+                        Oh, great. You are helping that leech.
+                    player:
+                        You haven't proved that in court yet.
+                        Which is exactly why I am here. To learn about the case.
+                }
+                {liked?
+                    agent:
+                        So I am. What about it?
+                    player:
+                        It just so happens that I am representing {giver.himher} in court.
+                    agent:
+                        Why? Why are you representing that leech, {player}?
+                    player:
+                        Well, everyone deserves representation.
+                        Besides, you haven't proved that in court yet.
+                        Which is exactly why I am here. To learn about the case.
+                }
+            }
+            {not first_time?
+                player:
+                    Let's talk about the case once more.
+            }
+        ]],
+        DIALOG_ASK_SUCCESS = [[
+            agent:
+                Fine. What do you wish to know?
+        ]],
+        DIALOG_ASK_FAILURE = [[
+            agent:
+                No. I'm not obligated to tell you anything.
+                This conversation is over.
+        ]],
+    }
+    :Hub(function(cxt)
+        cxt:Opt("OPT_ASK")
+            :Dialog("DIALOG_ASK")
+            :Negotiation{
+                on_start_negotiation = function(minigame)
+                    -- for i = 1, 3 do
+                    minigame:GetOpponentNegotiator():CreateModifier( "secret_intel", 1 )
+                    -- end
+                end,
+                on_success = function(cxt, minigame)
+                    local count = minigame:GetPlayerNegotiator():GetModifierStacks( "secret_intel" )
+                    cxt:Dialog("DIALOG_ASK_SUCCESS")
+                    if count > 0 then
+                        cxt.enc.scratch.extra_info = count
+                    end
+                    cxt:GoTo("STATE_QUESTIONS")
+                end,
+                on_fail = function(cxt, minigame)
+                    cxt:Dialog("DIALOG_ASK_FAILURE")
+                    cxt.quest:Fail("talk_to_plaintiff")
+                end,
+            }
+    end)
+    :State("STATE_QUESTIONS")
+        :Loc{
+            OPT_SUMMARY = "Ask for a summary of the case",
+            DIALOG_SUMMARY = [[
+                player:
+                    [p] Tell me what happened.
+                agent:
+                    I planned to go to a party Saturday night.
+                    Turns out I can't find my expensive jewelry!
+                    I'm sure that I had it the previous day, so {giver} must have stolen it during the day.
+            ]],
+            OPT_EVIDENCE = "Ask for evidence",
+            DIALOG_EVIDENCE = [[
+                player:
+                {not (asked_plaintiff_witness and not have_witness)?
+                    [p] Do you have evidence proving {giver} has stolen your jewelry?
+                }
+                {asked_plaintiff_witness and not have_witness?
+                    [p] You mentioned that you have decisive evidence against {giver}?
+                }
+                {have_evidence?
+                    agent:
+                        As a matter of fact, I do.
+                        A piece of earring, left behind by {giver}.
+                        If you want to take a look, {prosecutor} has the evidence.
+                }
+                {not have_evidence?
+                    agent:
+                        {prosecutor} is trying to find decisive evidence against {giver}.
+                        You can talk to {prosecutor.himher} about it.
+                    player:
+                        The keyword here is "trying".
+                        Sounds like your accusation against my client has no basis.
+                    agent:
+                        That's not true.
+                        We have witness testimony that proves {giver}'s guilt.
+                }
+            ]],
+            OPT_WITNESS = "Ask for witness",
+            DIALOG_WITNESS = [[
+                player:
+                {not (asked_plaintiff_evidence and not have_evidence)?
+                    [p] Do you have witnesses that saw {giver} stealing your jewelry?
+                }
+                {asked_plaintiff_evidence and not have_evidence?
+                    [p] You mentioned that you have witness testimony against {giver}?
+                }
+                {have_evidence?
+                    agent:
+                        As a matter of fact, I do.
+                        {witness} saw {giver} stealing the jewelry.
+                        Go ask {witness} about it, if you are curious.
+                }
+                {not have_evidence?
+                    agent:
+                        Unfortunately, I do not.
+                    player:
+                        Sounds like your accusation against my client has no basis.
+                    agent:
+                        That's not true.
+                        We have decisive evidence that proves {giver}'s guilt.
+                }
+            ]],
+        }
+        :SetLooping()
+        :Fn(function(cxt)
+            cxt:Question("OPT_SUMMARY", "DIALOG_SUMMARY", function()
+                cxt.quest:Activate("talk_to_plaintiff")
+            end)
+            StateGraphUtil.AddBackButton(cxt)
+        end)
