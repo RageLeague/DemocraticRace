@@ -64,7 +64,9 @@ local QDEF = QuestDef.Define
             quest:AssignCastMember("witness")
         end
 
-        quest.param.have_alibi = math.random() < 0.3
+        if not quest.param.actually_guilty then
+            quest.param.have_alibi = math.random() < 0.3
+        end
     end,
 
     on_start = function(quest)
@@ -92,6 +94,10 @@ local QDEF = QuestDef.Define
     AddEvidenceList = function(quest, evidence)
         quest.param.evidence_list = quest.param.evidence_list or {}
         table.insert(quest.param.evidence_list, evidence)
+    end,
+    HasEvidence = function(quest, evidence)
+        quest.param.evidence_list = quest.param.evidence_list or {}
+        return table.arraycontains(quest.param.evidence_list, evidence)
     end,
 }
 :AddCast{
@@ -214,12 +220,45 @@ QDEF:AddConvo("talk_to_defendant", "giver")
                     Honestly, I didn't do it!
                     I mean, that's what they all say, but I genuinely didn't do it.
             ]],
+            OPT_ALIBI = "Ask about Saturday afternoon",
+            DIALOG_ALIBI = [[
+                player:
+                    [p] Turns out, the accusation against you is that you stole the jewelry at Saturday afternoon.
+                agent:
+                    But I didn't!
+                player:
+                    Do you happen to have an alibi during that time? That would certainly help.
+                {have_alibi?
+                    agent:
+                        Actually, I do.
+                        I was working the entire afternoon.
+                        You can easily verify it by talking to everyone at the worksite.
+                    player:
+                        That is perfect, thanks.
+                    *** {agent} has an airtight alibi when the crime occured.
+                }
+                {not have_alibi?
+                    agent:
+                        No, I don't.
+                    player:
+                        Ahh... We will figure something out.
+                }
+            ]],
         }
         :SetLooping()
         :Fn(function(cxt)
             cxt:Question("OPT_SUMMARY", "DIALOG_SUMMARY", function()
-                cxt.quest:Activate("talk_to_plaintiff")
+                if cxt.quest:IsInactive("talk_to_plaintiff") then
+                    cxt.quest:Activate("talk_to_plaintiff")
+                end
             end)
+            if cxt.quest:DefFn("HasEvidence", "plaintiff_summary") then
+                cxt:Question("OPT_ALIBI", "DIALOG_ALIBI", function()
+                    if cxt.quest.param.have_alibi then
+                        cxt.quest:AddEvidenceList("airtight_alibi")
+                    end
+                end)
+            end
             StateGraphUtil.AddBackButton(cxt)
         end)
 
@@ -303,8 +342,8 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
                 agent:
                     I planned to go to a party Saturday night.
                     Turns out I can't find my expensive jewelry!
-                    I'm sure that I had it the previous day, so {giver} must have stolen it during the day.
-                *** According to {agent}, the theft happened on Saturday during the day.
+                    I'm sure that I had it the previous day, and I stayed at home during the morning, so {giver} must have stolen it during the afternoon.
+                *** According to {agent}, the theft happened at Saturday afternoon.
             ]],
             OPT_EVIDENCE = "Ask for evidence",
             DIALOG_EVIDENCE = [[
@@ -366,31 +405,25 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
                 return
             end
             if not table.arraycontains(cxt.quest.param.plaintiff_questions_asked, "summary") then
-                cxt:Opt("OPT_SUMMARY")
-                    :Dialog("DIALOG_SUMMARY")
-                    :Fn(function(cxt)
-                        table.insert(cxt.quest.param.plaintiff_questions_asked, "summary")
-                        cxt.enc.scratch.info_count = cxt.enc.scratch.info_count - 1
-                        cxt.quest:DefFn("AddEvidenceList", "plaintiff_summary")
-                    end)
+                cxt:Question("OPT_SUMMARY", "DIALOG_SUMMARY", function()
+                    table.insert(cxt.quest.param.plaintiff_questions_asked, "summary")
+                    cxt.enc.scratch.info_count = cxt.enc.scratch.info_count - 1
+                    cxt.quest:DefFn("AddEvidenceList", "plaintiff_summary")
+                end)
             end
             if not table.arraycontains(cxt.quest.param.plaintiff_questions_asked, "evidence") then
-                cxt:Opt("OPT_EVIDENCE")
-                    :Dialog("DIALOG_EVIDENCE")
-                    :Fn(function(cxt)
-                        table.insert(cxt.quest.param.plaintiff_questions_asked, "evidence")
-                        cxt.enc.scratch.info_count = cxt.enc.scratch.info_count - 1
-                        cxt.quest:Activate("talk_to_prosecutor")
-                    end)
+                cxt:Question("OPT_EVIDENCE", "DIALOG_EVIDENCE", function()
+                    table.insert(cxt.quest.param.plaintiff_questions_asked, "evidence")
+                    cxt.enc.scratch.info_count = cxt.enc.scratch.info_count - 1
+                    cxt.quest:Activate("talk_to_prosecutor")
+                end)
             end
             if not table.arraycontains(cxt.quest.param.plaintiff_questions_asked, "witness") then
-                cxt:Opt("OPT_WITNESS")
-                    :Dialog("DIALOG_WITNESS")
-                    :Fn(function(cxt)
-                        table.insert(cxt.quest.param.plaintiff_questions_asked, "witness")
-                        cxt.enc.scratch.info_count = cxt.enc.scratch.info_count - 1
-                        cxt.quest:Activate("talk_to_witness")
-                    end)
+                cxt:Question("OPT_WITNESS", "DIALOG_WITNESS", function()
+                    table.insert(cxt.quest.param.plaintiff_questions_asked, "witness")
+                    cxt.enc.scratch.info_count = cxt.enc.scratch.info_count - 1
+                    cxt.quest:Activate("talk_to_witness")
+                end)
             end
             StateGraphUtil.AddBackButton(cxt)
         end)
