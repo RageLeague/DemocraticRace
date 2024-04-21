@@ -67,6 +67,8 @@ local QDEF = QuestDef.Define
         if not quest.param.actually_guilty then
             quest.param.have_alibi = math.random() < 0.3
         end
+
+        return true
     end,
 
     on_start = function(quest)
@@ -206,6 +208,7 @@ QDEF:AddConvo("talk_to_defendant", "giver")
     }
     :Hub(function(cxt)
         cxt:Opt("OPT_ASK")
+            :SetQuestMark()
             :Dialog("DIALOG_ASK")
             :GoTo("STATE_QUESTIONS")
     end)
@@ -300,7 +303,8 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
         ]],
         DIALOG_ASK_SUCCESS = [[
             agent:
-                Fine. What do you wish to know?
+                Fine. You can ask {info_count} {info_count*question|questions}.
+                What do you wish to know?
         ]],
         DIALOG_ASK_FAILURE = [[
             agent:
@@ -312,6 +316,7 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
         cxt.quest.param.plaintiff_questions_asked = cxt.quest.param.plaintiff_questions_asked or {}
         if #cxt.quest.param.plaintiff_questions_asked < 3 then
             cxt:Opt("OPT_ASK")
+                :SetQuestMark()
                 :Dialog("DIALOG_ASK")
                 :Negotiation{
                     on_start_negotiation = function(minigame)
@@ -322,8 +327,8 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
                     end,
                     on_success = function(cxt, minigame)
                         local count = minigame:GetPlayerNegotiator():GetModifierStacks( "secret_intel" )
-                        cxt:Dialog("DIALOG_ASK_SUCCESS")
                         cxt.enc.scratch.info_count = count + 1
+                        cxt:Dialog("DIALOG_ASK_SUCCESS")
                         cxt:GoTo("STATE_QUESTIONS")
                     end,
                     on_fail = function(cxt, minigame)
@@ -381,13 +386,13 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
                 {asked_plaintiff_evidence and not have_evidence?
                     [p] You mentioned that you have witness testimony against {giver}?
                 }
-                {have_evidence?
+                {have_witness?
                     agent:
                         As a matter of fact, I do.
                         {witness} saw {giver} stealing the jewelry.
                         Go ask {witness} about it, if you are curious.
                 }
-                {not have_evidence?
+                {not have_witness?
                     agent:
                         Unfortunately, I do not.
                     player:
@@ -422,7 +427,9 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
                 cxt:Question("OPT_WITNESS", "DIALOG_WITNESS", function()
                     table.insert(cxt.quest.param.plaintiff_questions_asked, "witness")
                     cxt.enc.scratch.info_count = cxt.enc.scratch.info_count - 1
-                    cxt.quest:Activate("talk_to_witness")
+                    if cxt.quest.param.have_witness then
+                        cxt.quest:Activate("talk_to_witness")
+                    end
                 end)
             end
             StateGraphUtil.AddBackButton(cxt)
