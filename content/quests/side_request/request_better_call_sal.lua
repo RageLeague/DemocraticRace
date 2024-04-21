@@ -1,3 +1,14 @@
+-- Outline:
+-- The defendant is accused of stealing something valuable from the plaintiff.
+-- Potential evidence:
+--   * Connection of the accused to the plaintiff.
+--     * Circumstance evidence, only affects trial difficulty.
+--   * Witness saw accused leaving the estate.
+--     * If innocent, either witness misremembered or witness fabricated testimony
+--   * Accused left earings behind.
+--     * If innocent, someone stole the earings from the accused.
+-- You can forge or find alibi, replace evidence, or "deal" with witness/plaintiff/prosecutor before the trial.
+
 local QDEF = QuestDef.Define
 {
     title = "Better Call {1}",
@@ -41,7 +52,24 @@ local QDEF = QuestDef.Define
         return true
     end,
 
+    postcondition = function(quest)
+        -- Whether the accused is actually guilty of the crime
+        quest.param.actually_guilty = math.random() < 0.3
+
+        -- Must have at least witness or evidence. Otherwise no case.
+        while not quest.param.have_witness and not quest.param.have_evidence do
+            quest.param.have_witness = math.random() < 0.65
+            quest.param.have_evidence = math.random() < 0.65
+        end
+
+        quest.param.have_alibi = math.random() < 0.2
+    end,
+
     on_start = function(quest)
+        quest:Activate("prepare_trial")
+        quest:Activate("talk_to_accused")
+        quest:Activate("talk_to_plaintiff")
+        quest:Activate("talk_to_prosecutor")
     end,
 
     on_complete = function(quest)
@@ -81,10 +109,19 @@ local QDEF = QuestDef.Define
         end
         return false
     end,
-    on_assign = function(quest, agent)
-
+}
+:AddCast{
+    cast_id = "plaintiff",
+    condition = function(agent, quest)
+        return agent:GetFaction():IsLawful() and DemocracyUtil.GetWealth(agent) >= 3
     end,
 }
+:AddCastFallback{
+    cast_fn = function(quest, t)
+        table.insert( t, quest:CreateSkinnedAgent( "WEALTHY_MERCHANT" ) )
+    end,
+}
+:AddDefCast("prosecutor", "ADMIRALTY_INVESTIGATOR")
 :AddObjective{
     id = "prepare_trial",
     title = "Prepare for the trial ({1#relative_time})",
@@ -92,4 +129,34 @@ local QDEF = QuestDef.Define
         return loc.format(str, (quest.param.trial_time or 0) - Now())
     end,
     desc = "Make enough preparations before the trial begins.",
+}
+:AddObjective{
+    id = "talk_to_accused",
+    title = "Talk to {giver}, the defendant",
+    desc = "Talk to {giver} to learn more about the case.",
+    mark = function(quest, t, in_location)
+        if in_location or DemocracyUtil.IsFreeTimeActive() then
+            table.insert(t, quest:GetCastMember("giver"))
+        end
+    end,
+}
+:AddObjective{
+    id = "talk_to_plaintiff",
+    title = "Talk to {plaintiff}, the plaintiff",
+    desc = "Talk to {plaintiff} to learn more about the case.",
+    mark = function(quest, t, in_location)
+        if in_location or DemocracyUtil.IsFreeTimeActive() then
+            table.insert(t, quest:GetCastMember("plaintiff"))
+        end
+    end,
+}
+:AddObjective{
+    id = "talk_to_prosecutor",
+    title = "Talk to {prosecutor}, the prosecutor",
+    desc = "Talk to {prosecutor} to learn more about the case.",
+    mark = function(quest, t, in_location)
+        if in_location or DemocracyUtil.IsFreeTimeActive() then
+            table.insert(t, quest:GetCastMember("prosecutor"))
+        end
+    end,
 }
