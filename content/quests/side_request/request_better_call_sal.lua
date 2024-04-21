@@ -88,6 +88,11 @@ local QDEF = QuestDef.Define
             DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 3, DemocracyUtil.GetWealth(giver), "COMPLETED_QUEST_REQUEST")
         end
     end,
+
+    AddEvidenceList = function(quest, evidence)
+        quest.param.evidence_list = quest.param.evidence_list or {}
+        table.insert(quest.param.evidence_list, evidence)
+    end,
 }
 :AddCast{
     cast_id = "giver",
@@ -169,6 +174,16 @@ local QDEF = QuestDef.Define
     mark = function(quest, t, in_location)
         if in_location or DemocracyUtil.IsFreeTimeActive() then
             table.insert(t, quest:GetCastMember("prosecutor"))
+        end
+    end,
+}
+:AddObjective{
+    id = "talk_to_witness",
+    title = "Talk to {witness}, the witness",
+    desc = "Talk to {witness} to learn more about the case.",
+    mark = function(quest, t, in_location)
+        if in_location or DemocracyUtil.IsFreeTimeActive() then
+            table.insert(t, quest:GetCastMember("witness"))
         end
     end,
 }
@@ -255,27 +270,29 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
         ]],
     }
     :Hub(function(cxt)
-        cxt:Opt("OPT_ASK")
-            :Dialog("DIALOG_ASK")
-            :Negotiation{
-                on_start_negotiation = function(minigame)
-                    -- for i = 1, 3 do
-                    minigame:GetOpponentNegotiator():CreateModifier( "secret_intel", 1 )
-                    -- end
-                end,
-                on_success = function(cxt, minigame)
-                    local count = minigame:GetPlayerNegotiator():GetModifierStacks( "secret_intel" )
-                    cxt:Dialog("DIALOG_ASK_SUCCESS")
-                    if count > 0 then
-                        cxt.enc.scratch.extra_info = count
-                    end
-                    cxt:GoTo("STATE_QUESTIONS")
-                end,
-                on_fail = function(cxt, minigame)
-                    cxt:Dialog("DIALOG_ASK_FAILURE")
-                    cxt.quest:Fail("talk_to_plaintiff")
-                end,
-            }
+        cxt.quest.param.plaintiff_questions_asked = cxt.quest.param.plaintiff_questions_asked or {}
+        if #cxt.quest.param.plaintiff_questions_asked < 3 then
+            cxt:Opt("OPT_ASK")
+                :Dialog("DIALOG_ASK")
+                :Negotiation{
+                    on_start_negotiation = function(minigame)
+                        local count = 3 - #cxt.quest.param.plaintiff_questions_asked - 1
+                        for i = 1, count do
+                            minigame:GetOpponentNegotiator():CreateModifier( "secret_intel", 1 )
+                        end
+                    end,
+                    on_success = function(cxt, minigame)
+                        local count = minigame:GetPlayerNegotiator():GetModifierStacks( "secret_intel" )
+                        cxt:Dialog("DIALOG_ASK_SUCCESS")
+                        cxt.enc.scratch.info_count = count + 1
+                        cxt:GoTo("STATE_QUESTIONS")
+                    end,
+                    on_fail = function(cxt, minigame)
+                        cxt:Dialog("DIALOG_ASK_FAILURE")
+                        -- cxt.quest:Fail("talk_to_plaintiff")
+                    end,
+                }
+        end
     end)
     :State("STATE_QUESTIONS")
         :Loc{
@@ -287,6 +304,7 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
                     I planned to go to a party Saturday night.
                     Turns out I can't find my expensive jewelry!
                     I'm sure that I had it the previous day, so {giver} must have stolen it during the day.
+                *** According to {agent}, the theft happened on Saturday during the day.
             ]],
             OPT_EVIDENCE = "Ask for evidence",
             DIALOG_EVIDENCE = [[
@@ -343,8 +361,36 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
         }
         :SetLooping()
         :Fn(function(cxt)
-            cxt:Question("OPT_SUMMARY", "DIALOG_SUMMARY", function()
-                cxt.quest:Activate("talk_to_plaintiff")
-            end)
+            if cxt.enc.scratch.info_count <= 0 then
+                cxt:Pop()
+                return
+            end
+            if not table.arraycontains(cxt.quest.param.plaintiff_questions_asked, "summary") then
+                cxt:Opt("OPT_SUMMARY")
+                    :Dialog("DIALOG_SUMMARY")
+                    :Fn(function(cxt)
+                        table.insert(cxt.quest.param.plaintiff_questions_asked, "summary")
+                        cxt.enc.scratch.info_count = cxt.enc.scratch.info_count - 1
+                        cxt.quest:DefFn("AddEvidenceList", "plaintiff_summary")
+                    end)
+            end
+            if not table.arraycontains(cxt.quest.param.plaintiff_questions_asked, "evidence") then
+                cxt:Opt("OPT_EVIDENCE")
+                    :Dialog("DIALOG_EVIDENCE")
+                    :Fn(function(cxt)
+                        table.insert(cxt.quest.param.plaintiff_questions_asked, "evidence")
+                        cxt.enc.scratch.info_count = cxt.enc.scratch.info_count - 1
+                        cxt.quest:Activate("talk_to_prosecutor")
+                    end)
+            end
+            if not table.arraycontains(cxt.quest.param.plaintiff_questions_asked, "witness") then
+                cxt:Opt("OPT_WITNESS")
+                    :Dialog("DIALOG_WITNESS")
+                    :Fn(function(cxt)
+                        table.insert(cxt.quest.param.plaintiff_questions_asked, "witness")
+                        cxt.enc.scratch.info_count = cxt.enc.scratch.info_count - 1
+                        cxt.quest:Activate("talk_to_witness")
+                    end)
+            end
             StateGraphUtil.AddBackButton(cxt)
         end)
