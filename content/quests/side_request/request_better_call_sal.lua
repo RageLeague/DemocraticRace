@@ -95,7 +95,7 @@ local QDEF = QuestDef.Define
 
     AddEvidenceList = function(quest, evidence)
         quest.param.evidence_list = quest.param.evidence_list or {}
-        table.insert(quest.param.evidence_list, evidence)
+        table.insert_unique(quest.param.evidence_list, evidence)
     end,
     HasEvidence = function(quest, evidence)
         quest.param.evidence_list = quest.param.evidence_list or {}
@@ -411,26 +411,127 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
             end
             if not table.arraycontains(cxt.quest.param.plaintiff_questions_asked, "summary") then
                 cxt:Question("OPT_SUMMARY", "DIALOG_SUMMARY", function()
-                    table.insert(cxt.quest.param.plaintiff_questions_asked, "summary")
+                    table.insert_unique(cxt.quest.param.plaintiff_questions_asked, "summary")
                     cxt.enc.scratch.info_count = cxt.enc.scratch.info_count - 1
                     cxt.quest:DefFn("AddEvidenceList", "plaintiff_summary")
                 end)
             end
             if not table.arraycontains(cxt.quest.param.plaintiff_questions_asked, "evidence") then
                 cxt:Question("OPT_EVIDENCE", "DIALOG_EVIDENCE", function()
-                    table.insert(cxt.quest.param.plaintiff_questions_asked, "evidence")
+                    table.insert_unique(cxt.quest.param.plaintiff_questions_asked, "evidence")
                     cxt.enc.scratch.info_count = cxt.enc.scratch.info_count - 1
                     cxt.quest:Activate("talk_to_prosecutor")
+                    if cxt.quest.param.have_evidence then
+                        cxt.quest:DefFn("AddEvidenceList", "plaintiff_evidence")
+                    end
                 end)
             end
             if not table.arraycontains(cxt.quest.param.plaintiff_questions_asked, "witness") then
                 cxt:Question("OPT_WITNESS", "DIALOG_WITNESS", function()
-                    table.insert(cxt.quest.param.plaintiff_questions_asked, "witness")
+                    table.insert_unique(cxt.quest.param.plaintiff_questions_asked, "witness")
                     cxt.enc.scratch.info_count = cxt.enc.scratch.info_count - 1
                     if cxt.quest.param.have_witness then
                         cxt.quest:Activate("talk_to_witness")
+                        cxt.quest:DefFn("AddEvidenceList", "plaintiff_witness")
                     end
                 end)
             end
             StateGraphUtil.AddBackButton(cxt)
         end)
+
+QDEF:AddConvo("talk_to_witness", "witness")
+    :Loc{
+        OPT_CAST_DOUBT = "Cast doubt on {agent}'s testimony",
+        DIALOG_CAST_DOUBT = [[
+            player:
+                [p] Are you certain your memory isn't faulty?
+        ]],
+        DIALOG_CAST_DOUBT_SUCCESS = [[
+            agent:
+                [p] I suppose I can't say for certain that it's {giver}.
+        ]],
+        DIALOG_CAST_DOUBT_FAILURE = [[
+            agent:
+                [p] I know what I saw.
+        ]],
+
+        OPT_INTIMIDATE = "Intimidate {agent} to prevent {agent.himher} from testifying",
+        DIALOG_INTIMIDATE = [[
+            player:
+                [p] Here's what's going to happen.
+                You are not going to testify. If you know what's good for you.
+        ]],
+        DIALOG_INTIMIDATE_SUCCESS = [[
+            agent:
+                [p] Fine, fine! It's too much trouble anyway.
+        ]],
+        DIALOG_INTIMIDATE_FAILURE = [[
+            agent:
+                [p] No! You can't scare me!
+        ]],
+
+        OPT_BRIBE = "Bribe {agent} to prevent {agent.himher} from testifying",
+        DIALOG_BRIBE = [[
+            player:
+                [p] How much do you get compensated for your effort of testifying?
+            agent:
+                Nothing, in fact.
+            player:
+                How about a counteroffer? A bit for your effort to... not put in any effort.
+            agent:
+                Now we're talking.
+                I love getting paid for doing nothing.
+        ]],
+    }
+    :Hub(function(cxt)
+        if not cxt.quest.param.tried_cast_doubt_witness then
+            cxt:BasicNegotiation("CAST_DOUBT")
+                :OnSuccess()
+                    :CompleteQuest("talk_to_witness")
+                    :Fn(function(cxt)
+                        cxt.quest:DefFn("AddEvidenceList", "doubtful_testimony")
+                    end)
+                :OnFailure()
+                    :Fn(function(cxt)
+                        cxt.quest.param.tried_cast_doubt_witness = true
+                    end)
+        end
+        if not cxt.quest.param.tried_intimidate_witness then
+            cxt:BasicNegotiation("INTIMIDATE", { flags = NEGOTIATION_FLAGS.INTIMIDATION })
+                :OnSuccess()
+                    :CompleteQuest("talk_to_witness")
+                    :Fn(function(cxt)
+                        cxt.quest.param.witness_unavailable = true
+                        cxt.quest.param.witness_intimidated = true
+                    end)
+                :OnFailure()
+                    :Fn(function(cxt)
+                        cxt.quest.param.tried_intimidate_witness = true
+                    end)
+        end
+        local bribe_cost = 100
+        cxt:Opt("OPT_BRIBE")
+            :DeliverMoney( bribe_cost )
+            :Dialog("DIALOG_BRIBE")
+            :CompleteQuest("talk_to_witness")
+            :Fn(function(cxt)
+                cxt.quest.param.witness_unavailable = true
+                cxt.quest.param.witness_bribed = true
+            end)
+    end)
+    :AttractState("STATE_ATTRACT", function(cxt) return not cxt.quest.param.talked_to_witness end)
+    :Loc{
+        DIALOG_INTRO = [[
+            player:
+                [p] You are a witness to the theft case, yes?
+            agent:
+                Yes.
+                I'm telling you! {giver} did it!
+                I saw it with my own eyes! {giver} leaving {plaintiff}'s estate at the time of the theft!
+            *** {agent} saw {giver} leaving {plaintiff}'s estate at the time of the theft.
+        ]],
+    }
+    :Fn(function(cxt)
+        cxt:Dialog("DIALOG_INTRO")
+        cxt.quest.param.talked_to_witness = true
+    end)
