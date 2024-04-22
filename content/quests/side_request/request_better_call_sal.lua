@@ -108,6 +108,9 @@ local QDEF = QuestDef.Define
         quest.param.evidence_list = quest.param.evidence_list or {}
         return table.arraycontains(quest.param.evidence_list, evidence)
     end,
+    CanSellFalseEvidence = function(quest, agent)
+        return agent:GetContentID() == "JAKES_SMUGGLER" or agent:GetContentID() == "POOR_MERCHANT"
+    end,
 }
 :AddCast{
     cast_id = "giver",
@@ -208,7 +211,12 @@ local QDEF = QuestDef.Define
     desc = "The prosecutor has {giver}'s ring. It might be best to replace it with another one that doesn't implicate {giver.himher}.",
     mark = function(quest, t, in_location)
         if in_location then
-            -- table.insert(t, quest:GetCastMember("prosecutor"))
+            local location = TheGame:GetGameState():GetPlayerAgent():GetLocation()
+            for i, agent in location:Agents() do
+                if quest:DefFn("CanSellFalseEvidence", agent) then
+                    table.insert(t, agent)
+                end
+            end
         end
     end,
 }
@@ -742,6 +750,18 @@ QDEF:AddConvo("talk_to_prosecutor", "prosecutor")
             cxt:Opt("OPT_RETURN_EVIDENCE")
                 :Dialog("DIALOG_RETURN_EVIDENCE")
 
+            if cxt.quest.param.got_false_evidence then
+                cxt:Opt("OPT_SWAP")
+                    :Dialog("DIALOG_SWAP")
+                    :Fn(function(cxt)
+                        cxt.quest.param.def_forged_evidence = true
+                        cxt:ForceTakeCards{"dem_incriminating_evidence"}
+                        if cxt.quest:IsActive("acquire_false_evidence") then
+                            cxt.quest:Complete("acquire_false_evidence")
+                        end
+                    end)
+                    :CompleteQuest("talk_to_prosecutor")
+            end
             cxt:Opt("OPT_TAKE")
                 :Dialog("DIALOG_TAKE")
                 :Fn(function(cxt)
@@ -788,4 +808,34 @@ QDEF:AddConvo("talk_to_prosecutor", "prosecutor")
     :Fn(function(cxt)
         cxt:Dialog("DIALOG_INTRO")
         cxt.quest.param.talked_to_prosecutor = true
+    end)
+
+QDEF:AddConvo("acquire_false_evidence")
+    :Loc{
+        OPT_GET = "Buy a cheap ring",
+        DIALOG_GET = [[
+            player:
+                [p] Do you have a ring that is extremely cheap, made of the cheapest materials?
+            agent:
+                Why would you ever-
+            player:
+                Don't ask.
+                Here's the money.
+            agent:
+                You know what? Sure.
+                Here you go.
+            * Now that you have a cheap ring, perhaps you can try to swap it with the evidence with {prosecutor}.
+        ]],
+    }
+    :Hub(function(cxt, who)
+        if who and cxt.quest:DefFn("CanSellFalseEvidence", who) then
+            cxt:Opt("OPT_GET")
+                :SetQuestMark()
+                :DeliverMoney(25)
+                :Dialog("DIALOG_GET")
+                :CompleteQuest("acquire_false_evidence")
+                :Fn(function(cxt)
+                    cxt.quest.param.got_false_evidence = true
+                end)
+        end
     end)
