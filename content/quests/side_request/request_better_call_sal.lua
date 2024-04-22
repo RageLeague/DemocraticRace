@@ -3,7 +3,7 @@
 -- Potential evidence:
 --   * Witness saw accused leaving the estate.
 --     * If innocent, either witness misremembered or witness fabricated testimony
---   * Accused left earrings behind.
+--   * Accused left a ring behind.
 --     * If innocent, someone stole the earings from the accused.
 -- You can forge or find alibi, replace evidence, or "deal" with witness/plaintiff/prosecutor before the trial.
 
@@ -62,6 +62,13 @@ local QDEF = QuestDef.Define
 
         if quest.param.have_witness then
             quest:AssignCastMember("witness")
+        end
+
+        if not quest.param.have_evidence then
+            quest.param.defendant_has_ring = true
+        elseif not quest.param.actually_guilty then
+            quest.param.defendant_has_ring = true
+            quest.param.pros_forged_evidence = true
         end
 
         if not quest.param.actually_guilty then
@@ -192,6 +199,16 @@ local QDEF = QuestDef.Define
     mark = function(quest, t, in_location)
         if in_location or DemocracyUtil.IsFreeTimeActive() then
             table.insert(t, quest:GetCastMember("witness"))
+        end
+    end,
+}
+:AddObjective{
+    id = "acquire_false_evidence",
+    title = "(Optional) Acquire false evidence",
+    desc = "The prosecutor has {giver}'s ring. It might be best to replace it with another one that doesn't implicate {giver.himher}.",
+    mark = function(quest, t, in_location)
+        if in_location then
+            -- table.insert(t, quest:GetCastMember("prosecutor"))
         end
     end,
 }
@@ -396,7 +413,7 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
                 {have_evidence?
                     agent:
                         As a matter of fact, I do.
-                        A piece of earring, left behind by {giver}.
+                        {giver}'s ring, left behind by {giver}.
                         If you want to take a look, {prosecutor} has the evidence.
                 }
                 {not have_evidence?
@@ -457,6 +474,7 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
                     cxt.quest:Activate("talk_to_prosecutor")
                     if cxt.quest.param.have_evidence then
                         cxt.quest:DefFn("AddEvidenceList", "plaintiff_evidence")
+                        cxt.quest:Activate("acquire_false_evidence")
                     end
                 end)
             end
@@ -568,4 +586,202 @@ QDEF:AddConvo("talk_to_witness", "witness")
     :Fn(function(cxt)
         cxt:Dialog("DIALOG_INTRO")
         cxt.quest.param.talked_to_witness = true
+    end)
+
+QDEF:AddConvo("talk_to_prosecutor", "prosecutor")
+    :Loc{
+        OPT_INTIMIDATE = "Intimidate {agent} to prevent {agent.himher} from representing {plaintiff}",
+        SIT_MOD = "Don't tell me you're actually threatening a prosecutor actively against your client?",
+        DIALOG_INTIMIDATE = [[
+            player:
+                [p] Here's what's going to happen.
+                You are not going to represent {plaintiff}. If you know what's good for you.
+            agent:
+                Are you kidding me? Do you have any idea what the consequences of interfering with justice is?
+        ]],
+        DIALOG_INTIMIDATE_SUCCESS = [[
+            player:
+                [p] Well? Do you know the consequence of pissing me off?
+            agent:
+                Hesh, if you are that insistent about it, fine, I will leave.
+                It's not like this actually improves your client's chance.
+                With that much evidence against your client, any third-rate lawyer can prove your clients guilt.
+        ]],
+        DIALOG_INTIMIDATE_FAILURE = [[
+            agent:
+                [p] Really, that's it?
+                Honestly, you just seem like a desperate vroc.
+        ]],
+        OPT_ASK_EVIDENCE = "Ask for evidence",
+        DIALOG_ASK_EVIDENCE = [[
+            player:
+                [p] You have evidence to prove {giver}'s guilt?
+                May I see it?
+        ]],
+        DIALOG_ASK_EVIDENCE_SUCCESS = [[
+            agent:
+                [p] Fine. Go take a look, then.
+        ]],
+        DIALOG_ASK_EVIDENCE_NO = [[
+            agent:
+                [p] I don't know what to show you.
+                We don't have anything to show you.
+            player:
+                Are you serious? Why are you so certain of my client's guilt?
+            agent:
+                I know {giver}'s guilty.
+                I will find concrete evidence. Mark my words.
+        ]],
+        DIALOG_ASK_EVIDENCE_FAILURE = [[
+            agent:
+                [p] I am not obligated to show you the evidence.
+                You will have plenty of opportunity to see the evidence in court.
+        ]],
+    }
+    :Hub(function(cxt)
+        if not cxt.quest.param.tried_intimidate_prosecutor then
+            cxt:BasicNegotiation("INTIMIDATE", {
+                flags = NEGOTIATION_FLAGS.INTIMIDATION,
+                situation_modifiers =
+                {
+                    { value = 30, text = cxt:GetLocString("SIT_MOD") }
+                },
+            })
+                :OnSuccess()
+                    :CompleteQuest("talk_to_prosecutor")
+                    :Fn(function(cxt)
+                        if cxt.quest:IsActive("acquire_false_evidence") then
+                            cxt.quest:Complete("acquire_false_evidence")
+                        end
+                        cxt.quest.param.prosecutor_unavailable = true
+                        cxt.quest.param.prosecutor_intimidated = true
+                    end)
+                :OnFailure()
+                    :Fn(function(cxt)
+                        cxt.quest.param.tried_intimidate_prosecutor = true
+                    end)
+        end
+        if not cxt.quest.param.tried_evidence_prosecutor then
+            cxt:Opt("OPT_ASK_EVIDENCE")
+                :Dialog("DIALOG_ASK_EVIDENCE")
+                :Fn(function(cxt)
+                    cxt.quest.param.tried_evidence_prosecutor = true
+                end)
+                :Negotiation{
+
+                }
+                    :OnSuccess()
+                        :Fn(function(cxt)
+                            if cxt.quest.param.have_evidence then
+                                cxt:Dialog("DIALOG_ASK_EVIDENCE_SUCCESS")
+                                cxt:GoTo("STATE_CHECK_EVIDENCE")
+                            else
+                                cxt:Dialog("DIALOG_ASK_EVIDENCE_NO")
+                            end
+                        end)
+                    :OnFailure()
+                        :Dialog("DIALOG_ASK_EVIDENCE_FAILURE")
+        end
+    end)
+    :State("STATE_CHECK_EVIDENCE")
+        :Loc{
+            DIALOG_INTRO = [[
+                * [p] You examine the ring.
+                * If what {agent} saying is true, this could be real bad for your client.
+            ]],
+            OPT_RETURN_EVIDENCE = "Return the evidence",
+            DIALOG_RETURN_EVIDENCE = [[
+                player:
+                    [p] Here is the evidence. Thank you for letting me see it.
+                agent:
+                    Anything else you need from me?
+            ]],
+            OPT_SWAP = "Swap the ring with a less incriminating one",
+            DIALOG_SWAP = [[
+                * You quickly swapped the evidence without {agent} noticing.
+                player:
+                    Here is the evidence. Thank you for letting me see it.
+                agent:
+                    Anything else you need from me?
+            ]],
+            OPT_TAKE = "Forcefully take the evidence from {agent}",
+            DIALOG_TAKE = [[
+                player:
+                    Thanks for the ring.
+                agent:
+                    ...
+                    Are you joking?
+                    Are you actually trying to take the evidence?
+                    Right here? Under broad daylight? In the witness of so many Admiralty officers?
+            ]],
+            OPT_TAKE_AGAIN = "Take it",
+            DIALOG_TAKE_AGAIN = [[
+                player:
+                    [p] Yes.
+                agent:
+                    ...
+                * Before you can make any move, sirens sound across the building.
+                * All exits lock themselves, as squads of Admiralty patrol quickly close on your location.
+                agent:
+                    You shouldn't have made an enemy of the Admiralty.
+            ]],
+            DIALOG_RETURN_EVIDENCE_AGAIN = [[
+                player:
+                    [p] Nah I'm just messing with you.
+                    Here is the evidence.
+                agent:
+                    Please do not do that again.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+
+            cxt.quest.param.seen_ring = true
+
+            cxt:Opt("OPT_RETURN_EVIDENCE")
+                :Dialog("DIALOG_RETURN_EVIDENCE")
+
+            cxt:Opt("OPT_TAKE")
+                :Dialog("DIALOG_TAKE")
+                :Fn(function(cxt)
+                    cxt:Opt("OPT_TAKE_AGAIN")
+                        :Dialog("DIALOG_TAKE_AGAIN")
+                        :Fn(function(cxt)
+                            local flags = {
+                                interfere_justice = true,
+                            }
+                            DemocracyUtil.DoEnding(cxt, "arrested", flags)
+                        end)
+
+                    cxt:Opt("OPT_RETURN_EVIDENCE")
+                        :Dialog("DIALOG_RETURN_EVIDENCE_AGAIN")
+                end)
+        end)
+    :AttractState("STATE_ATTRACT", function(cxt) return not cxt.quest.param.talked_to_prosecutor end)
+    :Loc{
+        DIALOG_INTRO = [[
+            player:
+                [p] You are the prosecutor of the theft case, yes?
+            agent:
+                Yes.
+                I'm representing {plaintiff} in this case.
+                I presume you are the defense lawyer representing {giver}?
+            player:
+                Indeed.
+            agent:
+                Your client stands no chance.
+            {have_evidence and not have_witness?
+                We have concrete evidence proving your client's guilt.
+            }
+            {not have_evidence and have_witness?
+                We have a witness that can testify against your client.
+            }
+            {have_evidence and have_witness?
+                We have evidence. And witness.
+            }
+        ]],
+    }
+    :Fn(function(cxt)
+        cxt:Dialog("DIALOG_INTRO")
+        cxt.quest.param.talked_to_prosecutor = true
     end)
