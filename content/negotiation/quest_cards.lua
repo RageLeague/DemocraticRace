@@ -897,6 +897,56 @@ local CARDS = {
         cost = 1,
         flags = CARD_FLAGS.STATUS | CARD_FLAGS.CONSUME | CARD_FLAGS.SLEEP_IT_OFF,
         rarity = CARD_RARITY.UNIQUE,
+        event_handlers =
+        {
+            [ EVENT.END_PLAYER_TURN ] = function( self, minigame )
+                minigame:ExpendCard(self)
+            end,
+        },
+    },
+    dem_incriminating_evidence =
+    {
+        name = "Incriminating Evidence",
+        desc = "{dem_incriminating_evidence 2|}Create: At the start of your turn, {INCEPT} 2 {VULNERABILITY}. Must be targeted before anything else.",
+        flavour = "'Can't focus'",
+        icon = "DEMOCRATICRACE:assets/cards/incriminating_evidence.png",
+
+        cost = 1,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
+        rarity = CARD_RARITY.UNIQUE,
+
+        OnPostResolve = function( self, minigame )
+            self.negotiator:CreateModifier(self.id, 2, self)
+        end,
+
+        modifier = {
+            desc = "Create: At the start of your turn, {INCEPT} {1} {VULNERABILITY}. Must be targeted before anything else.",
+            icon = "DEMOCRATICRACE:assets/modifiers/incriminating_evidence.png",
+
+            desc_fn = function(self, fmt_str)
+                return loc.format(fmt_str, self.stacks or 2)
+            end,
+
+            force_target = true,
+            max_resolve = 4,
+
+            OnBeginTurn = function( self, minigame )
+                self.anti_negotiator:InceptModifier("VULNERABILITY", self.stacks, self)
+            end,
+
+            CanPlayCard = function( self, source, engine, target )
+                -- Only verify forced targets if you are not targetting yourself
+                if source:IsAttack() and target:GetNegotiator() == self.negotiator then
+                    if source.modifier_type == MODIFIER_TYPE.INCEPTION or source:GetNegotiator() ~= self.negotiator then
+                        if not target.force_target then
+                            return false, loc.format( LOC "CONVO_COMMON.MUST_TARGET", self:GetName() )
+                        end
+                    end
+                end
+
+                return true
+            end,
+        },
     },
 }
 for i, id, def in sorted_pairs( CARDS ) do
