@@ -732,6 +732,7 @@ QDEF:AddConvo("talk_to_prosecutor", "prosecutor")
                 agent:
                     Please do not do that again.
             ]],
+            OPT_SURRENDER = "Surrender",
         }
         :Fn(function(cxt)
             cxt:Dialog("DIALOG_INTRO")
@@ -747,10 +748,13 @@ QDEF:AddConvo("talk_to_prosecutor", "prosecutor")
                     cxt:Opt("OPT_TAKE_AGAIN")
                         :Dialog("DIALOG_TAKE_AGAIN")
                         :Fn(function(cxt)
-                            local flags = {
-                                interfere_justice = true,
-                            }
-                            DemocracyUtil.DoEnding(cxt, "arrested", flags)
+                            cxt:Opt("OPT_SURRENDER")
+                                :Fn(function(cxt)
+                                    local flags = {
+                                        interfere_justice = true,
+                                    }
+                                    DemocracyUtil.DoEnding(cxt, "arrested", flags)
+                                end)
                         end)
 
                     cxt:Opt("OPT_RETURN_EVIDENCE")
