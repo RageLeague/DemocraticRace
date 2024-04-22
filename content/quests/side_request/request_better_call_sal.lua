@@ -205,12 +205,45 @@ QDEF:AddConvo("talk_to_defendant", "giver")
             agent:
                 What would you like to know?
         ]],
+        OPT_FORGE_ALIBI = "Ask {agent} to falsify an alibi",
+        DIALOG_FORGE_ALIBI = [[
+            player:
+                [p] Why don't you falsify an alibi?
+            agent:
+                What? But that's perjury!
+        ]],
+        DIALOG_FORGE_ALIBI_SUCCESS = [[
+            player:
+                [p] As long as you don't get caught.
+                Besides, just keep your story straight, and have someone back it up.
+                It's better than getting convicted.
+            agent:
+                If you say so.
+        ]],
+        DIALOG_FORGE_ALIBI_FAILURE = [[
+            agent:
+                [p] I thought you are a lawyer?
+                That was terrible advice. I'm not doing it.
+        ]],
     }
     :Hub(function(cxt)
         cxt:Opt("OPT_ASK")
             :SetQuestMark()
             :Dialog("DIALOG_ASK")
             :GoTo("STATE_QUESTIONS")
+
+        if cxt.quest.param.asked_defendant_alibi and not cxt.quest.param.have_alibi and not cxt.quest.param.try_forge_alibi then
+            cxt:BasicNegotiation("FORGE_ALIBI")
+                :OnSuccess()
+                    :Fn(function(cxt)
+                        cxt.quest.param.try_forge_alibi = true
+                        cxt.quest:DefFn("AddEvidenceList", "forged_alibi")
+                    end)
+                :OnFailure()
+                    :Fn(function(cxt)
+                        cxt.quest.param.try_forge_alibi = true
+                    end)
+        end
     end)
     :State("STATE_QUESTIONS")
         :Loc{
@@ -238,7 +271,7 @@ QDEF:AddConvo("talk_to_defendant", "giver")
                         You can easily verify it by talking to everyone at the worksite.
                     player:
                         That is perfect, thanks.
-                    *** {agent} has an airtight alibi when the crime occured.
+                    *** {agent} has an airtight alibi when the crime occurred.
                 }
                 {not have_alibi?
                     agent:
@@ -260,6 +293,7 @@ QDEF:AddConvo("talk_to_defendant", "giver")
                     if cxt.quest.param.have_alibi then
                         cxt.quest:AddEvidenceList("airtight_alibi")
                     end
+                    cxt.quest.param.asked_defendant_alibi = true
                 end)
             end
             StateGraphUtil.AddBackButton(cxt)
