@@ -55,7 +55,7 @@ local QDEF = QuestDef.Define
         quest.param.actually_guilty = math.random() < 0.3
 
         -- Must have at least witness or evidence. Otherwise no case.
-        while not quest.param.have_witness and not quest.param.have_evidence do
+        while (not quest.param.have_witness) and (not quest.param.have_evidence) do
             quest.param.have_witness = math.random() < 0.65
             quest.param.have_evidence = math.random() < 0.65
         end
@@ -75,7 +75,16 @@ local QDEF = QuestDef.Define
             quest.param.have_alibi = math.random() < 0.3
         end
 
+        -- Generate a random name for the spouse of the defendant to put on the ring
+        local name, nameid = Content.GenerateCharacterName( "NAMES" )
+        quest.param.spouse_name_id = nameid
+        quest.param.spouse_name, quest.param.spouse_name_declensions = Content.GetCharacterName( "NAMES", quest.param.spouse_name_id )
+
         return true
+    end,
+
+    on_post_load = function(quest)
+        quest.param.spouse_name, quest.param.spouse_name_declensions = Content.GetCharacterName( "NAMES", quest.param.spouse_name_id )
     end,
 
     on_start = function(quest)
@@ -109,7 +118,7 @@ local QDEF = QuestDef.Define
         return table.arraycontains(quest.param.evidence_list, evidence)
     end,
     CanSellFalseEvidence = function(quest, agent)
-        return agent:GetContentID() == "JAKES_SMUGGLER" or agent:GetContentID() == "POOR_MERCHANT"
+        return (agent:GetContentID() == "JAKES_SMUGGLER" or agent:GetContentID() == "POOR_MERCHANT") and not agent:IsCastInQuest(quest)
     end,
 }
 :AddCast{
@@ -481,6 +490,7 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
                     cxt.enc.scratch.info_count = cxt.enc.scratch.info_count - 1
                     cxt.quest:Activate("talk_to_prosecutor")
                     if cxt.quest.param.have_evidence then
+                        cxt.quest.param.learned_about_evidence = true
                         cxt.quest:DefFn("AddEvidenceList", "plaintiff_evidence")
                         cxt.quest:Activate("acquire_false_evidence")
                     end
@@ -695,7 +705,16 @@ QDEF:AddConvo("talk_to_prosecutor", "prosecutor")
         :Loc{
             DIALOG_INTRO = [[
                 * [p] You examine the ring.
-                * If what {agent} saying is true, this could be real bad for your client.
+                {pros_forged_evidence?
+                    * A fairly unique design, though nothing suggests that it belongs to {giver}.
+                    * If it does belong to {giver}, though, this could be real bad for your client.
+                }
+                {not pros_forged_evidence?
+                    * A fairly unique design.
+                    * The inside of the ring displays the text "{giver}+{spouse_name}".
+                    * You have no idea who this "{spouse_name}" is, but the ring definitely belongs to {giver}.
+                    * This looks really bad for your client.
+                }
             ]],
             OPT_RETURN_EVIDENCE = "Return the evidence",
             DIALOG_RETURN_EVIDENCE = [[
