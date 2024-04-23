@@ -259,6 +259,13 @@ QDEF:AddConvo("talk_to_defendant", "giver")
                 [p] I thought you are a lawyer?
                 That was terrible advice. I'm not doing it.
         ]],
+        OPT_GIVE_RING_BACK = "Return {agent}'s ring",
+        DIALOG_GIVE_RING_BACK = [[
+            player:
+                [p] Here's your ring.
+            agent:
+                Thanks.
+        ]],
     }
     :Hub(function(cxt)
         cxt:Opt("OPT_ASK")
@@ -314,6 +321,113 @@ QDEF:AddConvo("talk_to_defendant", "giver")
                         Ahh... We will figure something out.
                 }
             ]],
+            OPT_ASK_RING = "Ask about {agent}'s ring",
+            DIALOG_ASK_RING = [[
+                player:
+                    [p] Do you have a ring, by any chance?
+                agent:
+                    I do.
+                {defendant_has_ring?
+                    agent:
+                        It's right here with me.
+                        This is an engagement ring with my partner, {spouse_name}.
+                        Why do you ask?
+                    player:
+                        That's strange. {plaintiff} said that the prosecutor has your ring as evidence.
+                    agent:
+                        Well that's just false.
+                        I only have one ring.
+                    player:
+                        It seems like we are dealing with a prosecutor who is willing to forge evidence to win a case.
+                        Don't worry. We will prove your innocence in court.
+                }
+                {not defendant_has_ring?
+                    agent:
+                        It's... Oh Hesh, where is it?
+                        It's an expensive engagement ring with my partner, {spouse_name}.
+                    player:
+                    {not seen_ring?
+                        From what {plaintiff} told me, {plaintiff.heshe} said that the prosecutor has your ring as evidence.
+                        According to them, you left it while trying to steal {plaintiff}'s jewelry.
+                        {actually_guilty?
+                            agent:
+                                Ah, Hesh.
+                                Get it back.
+                            player:
+                                What?
+                            agent:
+                                Get the ring back. The ring is mine.
+                            player:
+                                I'll... see what I can do.
+                        }
+                        {not actually_guilty?
+                            agent:
+                                What? That's impossible.
+                                I am certain that I have my ring on Monday morning.
+                            {asked_defendant_alibi?
+                                agent:
+                                    <i>After</> the time of the theft.
+                            }
+                            player:
+                                Well... Maybe they're bluffing.
+                                I haven't seen the ring myself, so they could be lying.
+                            {asked_defendant_alibi?
+                                player:
+                                    But if they have your ring... That means they stole it. To frame you.
+                                agent:
+                                    Those bastards...
+                            }
+                        }
+                    }
+                    {seen_ring?
+                        {not (pros_forged_evidence or def_forged_evidence)?
+                            According to {plaintiff}, the prosecutor has it as evidence against you.
+                            But from what I've seen, the ring doesn't match the description you provided.
+                            Do you have any other ring, by any chance?
+                        agent:
+                            No, rings are expensive, you know?
+                            Besides, no other rings matter compared to the one from my love.
+                        player:
+                            It seems like we are dealing with a prosecutor who is willing to forge evidence to win a case.
+                            Don't worry. We will prove your innocence in court.
+                        }
+                        {pros_forged_evidence or def_forged_evidence?
+                            It's with the prosecutor as evidence.
+                            I've seen it with my own eyes. It matches the exact description you have provided.
+                            {actually_guilty?
+                                agent:
+                                    Ah, Hesh.
+                                    Get it back.
+                                player:
+                                    What?
+                                agent:
+                                    Get the ring back. The ring is mine.
+                                player:
+                                    I'll... see what I can do.
+                            }
+                            {not actually_guilty?
+                                agent:
+                                    What? That's impossible.
+                                    I am certain that I have my ring on Monday morning.
+                                {asked_defendant_alibi?
+                                    agent:
+                                        <i>After</> the time of the theft.
+                                }
+                                {knows_timeframe?
+                                    player:
+                                        But if they have your ring... That means they stole it. To frame you.
+                                    agent:
+                                        Those bastards...
+                                }
+                                {not knows_timeframe?
+                                    player:
+                                        Things are not looking good...
+                                }
+                            }
+                        }
+                    }
+                }
+            ]],
         }
         :SetLooping()
         :Fn(function(cxt)
@@ -322,12 +436,20 @@ QDEF:AddConvo("talk_to_defendant", "giver")
                     cxt.quest:Activate("talk_to_plaintiff")
                 end
             end)
-            if cxt.quest:DefFn("HasEvidence", "plaintiff_summary") then
+            if cxt.quest.param.knows_timeframe then
                 cxt:Question("OPT_ALIBI", "DIALOG_ALIBI", function()
                     if cxt.quest.param.have_alibi then
                         cxt.quest:AddEvidenceList("airtight_alibi")
                     end
                     cxt.quest.param.asked_defendant_alibi = true
+                end)
+            end
+            if cxt.quest.param.learned_about_evidence then
+                cxt:Question("OPT_ASK_RING", "DIALOG_ASK_RING", function()
+                    cxt.quest:AddEvidenceList("ring_description")
+                    if not cxt.quest.param.actually_guilty and not cxt.quest.param.defendant_has_ring then
+                        cxt.quest:AddEvidenceList("ring_loss_timeline")
+                    end
                 end)
             end
             StateGraphUtil.AddBackButton(cxt)
@@ -481,6 +603,7 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
                 cxt:Question("OPT_SUMMARY", "DIALOG_SUMMARY", function()
                     table.insert_unique(cxt.quest.param.plaintiff_questions_asked, "summary")
                     cxt.enc.scratch.info_count = cxt.enc.scratch.info_count - 1
+                    cxt.quest.param.knows_timeframe = true
                     cxt.quest:DefFn("AddEvidenceList", "plaintiff_summary")
                 end)
             end
