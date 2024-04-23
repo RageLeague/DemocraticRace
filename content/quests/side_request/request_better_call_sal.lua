@@ -37,7 +37,14 @@ local QDEF = QuestDef.Define
         end,
         quests_changed = function(quest, event_quest)
 
-        end
+        end,
+        phase_change = function(quest)
+            if Now() > (quest.param.trial_time or 0) then
+                quest:Fail()
+            elseif Now() == (quest.param.trial_time or 0) then
+                quest:Complete("prepare_trial")
+            end
+        end,
     },
     precondition = function(quest)
         local current_time = Now()
@@ -109,6 +116,12 @@ local QDEF = QuestDef.Define
         end
     end,
 
+    collect_agent_locations = function(quest, t)
+        if quest:IsActive("prepare_trial") then
+            table.insert(t, { agent = quest:GetCastMember("prosecutor"), location = quest:GetCastMember("hq")})
+        end
+    end,
+
     AddEvidenceList = function(quest, evidence)
         quest.param.evidence_list = quest.param.evidence_list or {}
         table.insert_unique(quest.param.evidence_list, evidence)
@@ -166,6 +179,28 @@ local QDEF = QuestDef.Define
         table.insert( t, quest:CreateSkinnedAgent( "WEALTHY_MERCHANT" ) )
     end,
 }
+:AddLocationCast{
+    cast_id = "hq",
+    no_validation = true,
+    cast_fn = function(quest, t)
+        table.insert(t, TheGame:GetGameState():GetLocation("ADMIRALTY_BARRACKS"))
+    end,
+}
+:AddLocationDefs{
+    COURTROOM = {
+        name = "The Courtroom",
+        plax = "INT_SMITH_HESHTEMPLE",
+        map_tags = {"barracks"},
+        indoors = true,
+        show_agents = true,
+    },
+}
+:AddLocationCast{
+    cast_id = "courtroom",
+    cast_fn = function(quest, t)
+        table.insert(t,  quest:SpawnTempLocation("COURTROOM"))
+    end,
+}
 :AddObjective{
     id = "prepare_trial",
     title = "Prepare for the trial ({1#relative_time})",
@@ -173,6 +208,15 @@ local QDEF = QuestDef.Define
         return loc.format(str, (quest.param.trial_time or 0) - Now())
     end,
     desc = "Make enough preparations before the trial begins.",
+    on_complete = function(quest)
+        quest:Activate("attend_trial")
+        local side_quests = {"talk_to_defendant", "talk_to_plaintiff", "talk_to_prosecutor", "talk_to_witness", "acquire_false_evidence"}
+        for i, quest_id in ipairs(side_quests) do
+            if quest:IsActive(quest_id) then
+                quest:Complete(quest_id)
+            end
+        end
+    end,
 }
 :AddObjective{
     id = "talk_to_defendant",
@@ -229,6 +273,16 @@ local QDEF = QuestDef.Define
         end
     end,
 }
+:AddObjective{
+    id = "attend_trial",
+    title = "Attend the trial",
+    desc = "The trial is about to start! Don't be late.",
+    mark = function(quest, t, in_location)
+        if DemocracyUtil.IsFreeTimeActive() then
+            table.insert(t, quest:GetCastMember("courtroom"))
+        end
+    end,
+}
 
 QDEF:AddConvo("talk_to_defendant", "giver")
     :Loc{
@@ -266,6 +320,28 @@ QDEF:AddConvo("talk_to_defendant", "giver")
             agent:
                 Thanks.
         ]],
+        OPT_GIVE_FAKE_RING = "Convince {agent} to take the fake ring",
+        DIALOG_GIVE_FAKE_RING = [[
+            player:
+                [p] Take this ring.
+                If anyone asks, that is your ring, and nothing else.
+            agent:
+                What? Why?
+        ]],
+        DIALOG_GIVE_FAKE_RING_SUCCESS = [[
+            player:
+                [p] If you say your actual ring is yours, you will implicate yourself since they have it to prove your guilt.
+                So just pretend this ring is yours. At least until the trial is over.
+            agent:
+                If you say so...
+        ]],
+        DIALOG_GIVE_FAKE_RING_FAILURE = [[
+            agent:
+                [p] No. Absolutely not.
+                This is absurd.
+        ]],
+        SELECT_TITLE = "Select a card",
+        SELECT_DESC = "Choose the item to give to this person, removing it from your deck.",
     }
     :Hub(function(cxt)
         cxt:Opt("OPT_ASK")
@@ -283,6 +359,50 @@ QDEF:AddConvo("talk_to_defendant", "giver")
                 :OnFailure()
                     :Fn(function(cxt)
                         cxt.quest.param.try_forge_alibi = true
+                    end)
+        end
+
+        local cards = {}
+        for i, card in ipairs(cxt.player.negotiator.cards.cards) do
+            print(card.id)
+            if card.id == "dem_incriminating_evidence" then
+                table.insert(cards, card)
+            end
+        end
+
+        if #cards > 0 then
+            cxt:Opt("OPT_GIVE_RING_BACK")
+                :SetQuestMark()
+                :Fn(function(cxt)
+                    cxt:Wait()
+                    DemocracyUtil.InsertSelectCardScreen(
+                        cards,
+                        cxt:GetLocString("SELECT_TITLE"),
+                        cxt:GetLocString("SELECT_DESC"),
+                        Widget.NegotiationCard,
+                        function(card)
+                            cxt.enc:ResumeEncounter( card )
+                        end
+                    )
+                    local card = cxt.enc:YieldEncounter()
+                    if card then
+                        cxt.player.negotiator:RemoveCard( card )
+                        cxt:Dialog("DIALOG_GIVE_RING_BACK")
+                        cxt.quest.param.defendant_has_ring = true
+                    end
+                end)
+        end
+
+        if cxt.quest.param.got_false_evidence and not cxt.quest.param.defendant_has_ring and not cxt.quest.param.defendant_has_false_ring and not cxt.quest.param.tried_give_false_ring then
+            cxt:BasicNegotiation("GIVE_FAKE_RING", {})
+                :OnSuccess()
+                    :Fn(function(cxt)
+                        cxt.quest.param.got_false_evidence = false
+                        cxt.quest.param.defendant_has_false_ring = true
+                    end)
+                :OnFailure()
+                    :Fn(function(cxt)
+                        cxt.quest.param.tried_give_false_ring = true
                     end)
         end
     end)
@@ -901,6 +1021,7 @@ QDEF:AddConvo("talk_to_prosecutor", "prosecutor")
                         if cxt.quest:IsActive("acquire_false_evidence") then
                             cxt.quest:Complete("acquire_false_evidence")
                         end
+                        cxt.quest.param.got_false_evidence = false
                     end)
                     :CompleteQuest("talk_to_prosecutor")
             end
