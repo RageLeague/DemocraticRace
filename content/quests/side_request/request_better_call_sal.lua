@@ -119,6 +119,13 @@ local QDEF = QuestDef.Define
     collect_agent_locations = function(quest, t)
         if quest:IsActive("prepare_trial") then
             table.insert(t, { agent = quest:GetCastMember("prosecutor"), location = quest:GetCastMember("hq")})
+        elseif quest:IsActive("attend_trial") then
+            local agents = {"giver", "prosecutor", "plaintiff", "witness", "judge"}
+            for i, id in ipairs(agents) do
+                if quest:GetCastMember(id) and not quest:GetCastMember(id):IsRetired() then
+                    table.insert(t, { agent = quest:GetCastMember(id), location = quest:GetCastMember("courtroom")})
+                end
+            end
         end
     end,
 
@@ -167,6 +174,7 @@ local QDEF = QuestDef.Define
     end,
 }
 :AddDefCast("prosecutor", "ADMIRALTY_INVESTIGATOR")
+:AddDefCast("judge", "ADMIRALTY_CLERK")
 :AddCast{
     cast_id = "witness",
     when = QWHEN.MANUAL,
@@ -567,6 +575,7 @@ QDEF:AddConvo("talk_to_defendant", "giver")
             if cxt.quest.param.learned_about_evidence then
                 cxt:Question("OPT_ASK_RING", "DIALOG_ASK_RING", function()
                     cxt.quest:AddEvidenceList("ring_description")
+                    cxt.quest.param.asked_ring = true
                     if not cxt.quest.param.actually_guilty and not cxt.quest.param.defendant_has_ring then
                         cxt.quest:AddEvidenceList("ring_loss_timeline")
                     end
@@ -914,7 +923,7 @@ QDEF:AddConvo("talk_to_prosecutor", "prosecutor")
                         if cxt.quest:IsActive("acquire_false_evidence") then
                             cxt.quest:Complete("acquire_false_evidence")
                         end
-                        cxt.quest.param.prosecutor_unavailable = true
+                        cxt.quest:UnassignCastMember("prosecutor")
                         cxt.quest.param.prosecutor_intimidated = true
                     end)
                 :OnFailure()
@@ -1102,3 +1111,187 @@ QDEF:AddConvo("acquire_false_evidence")
                 end)
         end
     end)
+
+QDEF:AddConvo("attend_trial", "courtroom")
+    :ConfrontState("STATE_CONF")
+        :Loc{
+            DIALOG_INTRO_RING = [[
+                * [p] You visit the courtroom.
+                giver:
+                    !right
+                player:
+                    !left
+                giver:
+                    Ah, you arrived, just before the trial.
+                    I hope you prepared enough for this.
+                {asked_ring?
+                    player:
+                        Ah, I see you are wearing your ring.
+                    giver:
+                        Of course. How could I not? It's important to me.
+                    player:
+                        Well, this is going to make things easier.
+                }
+                {not asked_ring?
+                    player:
+                        Ah, I see you are wearing a ring.
+                        It looks pretty.
+                    giver:
+                        Thanks!
+                        It's my engagement ring with my partner, {spouse_name}.
+                    player:
+                        I see.
+                }
+                player:
+                    Well, let's get you free.
+            ]],
+            DIALOG_INTRO_NO_RING = [[
+                * [p] You visit the courtroom.
+                giver:
+                    !right
+                player:
+                    !left
+                giver:
+                    Ah, you arrived, just before the trial.
+                    I hope you prepared enough for this.
+                    I have also just arrived. I couldn't find my ring anywhere.
+                {asked_ring?
+                    player:
+                    {seen_ring and not (pros_forged_evidence or def_forged_evidence)?
+                        That's because the prosecutor has it as evidence.
+                    }
+                    {not (seen_ring and not (pros_forged_evidence or def_forged_evidence))?
+                        Presumably the prosecutor has it as evidence.
+                    }
+                    giver:
+                        Right, those bastards.
+                    player:
+                        Let's get you free, first.
+                }
+                {not asked_ring?
+                    player:
+                        Your... ring?
+                    giver:
+                        Yeah! My engagement ring with my partner, {spouse_name}.
+                    {seen_ring and not (pros_forged_evidence or def_forged_evidence)?
+                        * Ah, Hesh. Isn't that the same name you saw on the ring that the prosecutor has?
+                    }
+                    player:
+                        Well... Let's focus on the trial first.
+                }
+            ]],
+            DIALOG_INTRO_FAKE_RING = [[
+                * [p] You visit the courtroom.
+                giver:
+                    !right
+                player:
+                    !left
+                giver:
+                    Ah, you arrived, just before the trial.
+                    I hope you prepared enough for this.
+                player:
+                    Ah, I see you are wearing "your ring".
+                giver:
+                    Right. Right.
+                    ...
+                player:
+                    Well, the trial is about to begin.
+                    Let's get you free, first.
+            ]],
+            OPT_CONTINUE = "Continue on to the trial",
+        }
+        :Fn(function(cxt)
+            if not cxt:GetCastMember("judge") or cxt:GetCastMember("judge"):IsRetired() then
+                cxt.quest:UnassignCastMember("judge")
+                cxt.quest:AssignCastMember("judge")
+            end
+            if cxt.quest.param.defendant_has_false_ring then
+                cxt:Dialog("DIALOG_INTRO_FAKE_RING")
+            elseif cxt.quest.param.defendant_has_ring then
+                cxt:Dialog("DIALOG_INTRO_RING")
+            else
+                cxt:Dialog("DIALOG_INTRO_NO_RING")
+            end
+
+            cxt:Opt("OPT_CONTINUE")
+                :Fn(function(cxt)
+                    cxt.enc:RemoveAllAgents()
+                end)
+                :GoTo("STATE_TRIAL")
+        end)
+    :State("STATE_TRIAL")
+        :Loc{
+            DIALOG_INTRO_NO_PLAINTIFF = [[
+                * [p] The trial begins.
+                * No one showed up as the plaintiff.
+                * Seems like there is not going to be a trial, and your client is automatically found not guilty.
+                {pros_available?
+                    * The prosecutor is mad, but {prosecutor.gender:he's|she's|they're} in charge of the theft case only, and a plaintiff is required for the trial to proceed by law, {prosecutor.heshe} can't do anything about it.
+                }
+                player:
+                    !left
+                giver:
+                    !right
+                    Well, I guess we won the trial.
+                    That was anti-climatic.
+                    Not sure what you did to make them unable to show up to the trial, but I'm grateful regardless.
+            ]],
+            DIALOG_INTRO_NO_PROS = [[
+                * [p] The trial begins.
+                plaintiff:
+                    !left
+                judge:
+                    !right
+                    Where is your attorney, plaintiff?
+                plaintiff:
+                    They left me hanging. I have to represent myself today.
+                judge:
+                    Very well. I presume you are ready, then?
+                plaintiff:
+                    Yes, your honour.
+                player:
+                    !left
+                judge:
+                    Is the defense ready?
+                player:
+                    Yes, your honour.
+                judge:
+                    Very well, then. Plaintiff, please begin your opening statement.
+            ]],
+            DIALOG_INTRO = [[
+                * [p] The trial begins.
+                prosecutor:
+                    !left
+                judge:
+                    !right
+                    Is the plaintiff ready?
+                prosecutor:
+                    Yes, your honour.
+                player:
+                    !left
+                judge:
+                    Is the defense ready?
+                player:
+                    Yes, your honour.
+                judge:
+                    Very well, then. Plaintiff, please begin your opening statement.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt.enc.scratch.plaintiff_available = cxt:GetCastMember("plaintiff") and not cxt:GetCastMember("plaintiff"):IsRetired()
+            cxt.enc.scratch.pros_available = cxt:GetCastMember("prosecutor") and not cxt:GetCastMember("prosecutor"):IsRetired()
+
+            if cxt.enc.scratch.plaintiff_available then
+                if cxt.enc.scratch.pros_available then
+                    cxt:Dialog("DIALOG_INTRO")
+                else
+                    cxt:Dialog("DIALOG_INTRO_NO_PROS")
+                end
+            else
+                cxt:Dialog("DIALOG_INTRO_NO_PLAINTIFF")
+                cxt.quest:Complete()
+                ConvoUtil.GiveQuestRewards(cxt)
+                StateGraphUtil.AddEndOption(cxt)
+                return
+            end
+        end)
