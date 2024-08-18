@@ -508,18 +508,22 @@ QDEF:AddConvo("talk_to_defendant", "giver")
                         }
                     }
                     {seen_ring?
-                        {not (pros_forged_evidence or def_forged_evidence)?
+                        {pros_forged_evidence or def_forged_evidence?
                             According to {plaintiff}, the prosecutor has it as evidence against you.
                             But from what I've seen, the ring doesn't match the description you provided.
                             Do you have any other ring, by any chance?
                         agent:
                             No, rings are expensive, you know?
                             Besides, no other rings matter compared to the one from my love.
+                        {not actually_guilty?
+                            I distinctly remember still having the ring on Monday.
+                        }
                         player:
                             It seems like we are dealing with a prosecutor who is willing to forge evidence to win a case.
                             Don't worry. We will prove your innocence in court.
+                            And hopefully find your ring in the process.
                         }
-                        {pros_forged_evidence or def_forged_evidence?
+                        {not (pros_forged_evidence or def_forged_evidence)?
                             It's with the prosecutor as evidence.
                             I've seen it with my own eyes. It matches the exact description you have provided.
                             {actually_guilty?
@@ -574,7 +578,7 @@ QDEF:AddConvo("talk_to_defendant", "giver")
             end
             if cxt.quest.param.learned_about_evidence then
                 cxt:Question("OPT_ASK_RING", "DIALOG_ASK_RING", function()
-                    cxt.quest:AddEvidenceList("ring_description")
+                    cxt.quest:AddEvidenceList("ring_desc")
                     cxt.quest.param.asked_ring = true
                     if not cxt.quest.param.actually_guilty and not cxt.quest.param.defendant_has_ring then
                         cxt.quest:AddEvidenceList("ring_loss_timeline")
@@ -733,7 +737,6 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
                     table.insert_unique(cxt.quest.param.plaintiff_questions_asked, "summary")
                     cxt.enc.scratch.info_count = cxt.enc.scratch.info_count - 1
                     cxt.quest.param.knows_timeframe = true
-                    cxt.quest:DefFn("AddEvidenceList", "plaintiff_summary")
                 end)
             end
             if not table.arraycontains(cxt.quest.param.plaintiff_questions_asked, "evidence") then
@@ -743,7 +746,6 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
                     cxt.quest:Activate("talk_to_prosecutor")
                     if cxt.quest.param.have_evidence then
                         cxt.quest.param.learned_about_evidence = true
-                        cxt.quest:DefFn("AddEvidenceList", "plaintiff_evidence")
                         cxt.quest:Activate("acquire_false_evidence")
                     end
                 end)
@@ -754,7 +756,6 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
                     cxt.enc.scratch.info_count = cxt.enc.scratch.info_count - 1
                     if cxt.quest.param.have_witness then
                         cxt.quest:Activate("talk_to_witness")
-                        cxt.quest:DefFn("AddEvidenceList", "plaintiff_witness")
                     end
                 end)
             end
@@ -764,17 +765,28 @@ QDEF:AddConvo("talk_to_plaintiff", "plaintiff")
 QDEF:AddConvo("talk_to_witness", "witness")
     :Loc{
         OPT_CAST_DOUBT = "Cast doubt on {agent}'s testimony",
+        SIT_MOD_ALIBI = "Your client has an alibi",
         DIALOG_CAST_DOUBT = [[
             player:
                 [p] Are you certain your memory isn't faulty?
+            {alibi?
+                {giver} has an alibi, you know.
+            }
         ]],
         DIALOG_CAST_DOUBT_SUCCESS = [[
+            {alibi?
+                player:
+                    [p] Even after hearing my client's alibi, can you still say it's {giver.himher}?
+            }
             agent:
                 [p] I suppose I can't say for certain that it's {giver}.
         ]],
         DIALOG_CAST_DOUBT_FAILURE = [[
             agent:
                 [p] I know what I saw.
+            {alibi?
+                You are probably lying about the alibi.
+            }
         ]],
 
         OPT_INTIMIDATE = "Intimidate {agent} to prevent {agent.himher} from testifying",
@@ -806,8 +818,16 @@ QDEF:AddConvo("talk_to_witness", "witness")
         ]],
     }
     :Hub(function(cxt)
+        if cxt.quest:DefFn("HasEvidence", "airtight_alibi") or cxt.quest:DefFn("HasEvidence", "forged_alibi") then
+            cxt.enc.scratch.alibi = true
+        end
         if not cxt.quest.param.tried_cast_doubt_witness then
-            cxt:BasicNegotiation("CAST_DOUBT")
+            cxt:BasicNegotiation("CAST_DOUBT", {
+                situation_modifiers =
+                {
+                    cxt.enc.scratch.alibi and { value = -20, text = cxt:GetLocString("SIT_MOD_ALIBI") } or nil
+                },
+            })
                 :OnSuccess()
                     :CompleteQuest("talk_to_witness")
                     :Fn(function(cxt)
@@ -1207,11 +1227,14 @@ QDEF:AddConvo("attend_trial", "courtroom")
             end
             if cxt.quest.param.defendant_has_false_ring then
                 cxt:Dialog("DIALOG_INTRO_FAKE_RING")
+                cxt.quest:DefFn("AddEvidenceList", "defendant_has_false_ring")
             elseif cxt.quest.param.defendant_has_ring then
                 cxt:Dialog("DIALOG_INTRO_RING")
+                cxt.quest:DefFn("AddEvidenceList", "defendant_has_ring")
             else
                 cxt:Dialog("DIALOG_INTRO_NO_RING")
             end
+            cxt.quest:DefFn("AddEvidenceList", "ring_desc")
 
             cxt:Opt("OPT_CONTINUE")
                 :Fn(function(cxt)
@@ -1276,6 +1299,8 @@ QDEF:AddConvo("attend_trial", "courtroom")
                 judge:
                     Very well, then. Plaintiff, please begin your opening statement.
             ]],
+
+            OPT_TRIAL = "Begin Trial",
         }
         :Fn(function(cxt)
             cxt.enc.scratch.plaintiff_available = cxt:GetCastMember("plaintiff") and not cxt:GetCastMember("plaintiff"):IsRetired()
@@ -1283,8 +1308,10 @@ QDEF:AddConvo("attend_trial", "courtroom")
 
             if cxt.enc.scratch.plaintiff_available then
                 if cxt.enc.scratch.pros_available then
+                    cxt:TalkTo("prosecutor")
                     cxt:Dialog("DIALOG_INTRO")
                 else
+                    cxt:TalkTo("plaintiff")
                     cxt:Dialog("DIALOG_INTRO_NO_PROS")
                 end
             else
@@ -1294,4 +1321,9 @@ QDEF:AddConvo("attend_trial", "courtroom")
                 StateGraphUtil.AddEndOption(cxt)
                 return
             end
+
+            cxt:Opt("OPT_TRIAL")
+                :Negotiation{
+
+                }
         end)

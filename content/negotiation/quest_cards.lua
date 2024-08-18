@@ -948,6 +948,156 @@ local CARDS = {
             end,
         },
     },
+    dem_court_objection =
+    {
+        name = "Objection!",
+        desc = "{DEM_COUNTERARGUMENT}",
+        alt_desc = "{DEM_COUNTERARGUMENT}, {DEM_PERJURY}",
+
+        desc_fn = function(self, fmt_str)
+            local argument_id = self.userdata.argument_id
+            local result = fmt_str
+            if argument_id and self.evidence[argument_id] and self.evidence[argument_id].perjury then
+                result = (self.def or self):GetLocalizedString("ALT_DESC")
+            end
+            if argument_id then
+                result = result .. "\n" .. (self.def or self):GetLocalizedString(argument_id:upper())
+            end
+            return result
+        end,
+
+        loc_strings =
+        {
+            NOT_AN_EVIDENCE = "Target is not an evidence",
+
+
+            -- The defendant is currently wearing a ring. Either because it's never lost, or you stole it from the prosecutor and gave it back
+            DEFENDANT_HAS_RING = "The defendant is currently wearing their ring, so it couldn't possibly be at the crime scene.",
+            -- The defendant is wearing a fake ring that they claim to be theirs. You must deliberately forge this evidence
+            DEFENDANT_HAS_FALSE_RING = "The defendant is currently wearing \"their ring\", so it couldn't possibly be at the crime scene.",
+            -- You casted doubt on the witness testimony
+            DOUBTFUL_TESTIMONY = "Even though the witness testified against the defendant, the witness is uncertain whether the person they saw is actually the defendant.",
+            -- You asked the defendant about their alibi, and it's airtight
+            AIRTIGHT_ALIBI = "The defendant was working at the time of the crime. Everyone at their worksite can attest to the fact.",
+            -- The defendant doesn't have an alibi, so you faked one
+            FORGED_ALIBI = "The defendant was at a friend's house at the time of the crime. The friend can attest to the \"fact\".",
+            -- You heard a description of the ring after asking the defendant about it
+            RING_DESC = "The defendant has a wedding ring of an elaborate design, with an engraving of the name of their partner and them.",
+            -- The client is not guilty and you asked them about their ring.
+            RING_LOSS_TIMELINE = "According to the defendant, they still have their ring, one day after the theft.",
+        },
+
+        evidence =
+        {
+            defendant_has_ring =
+            {
+                counterargument =
+                {
+                    evidence_ring_fake = 0.8,
+                    evidence_ring_real = 0.4,
+                },
+            },
+            defendant_has_false_ring =
+            {
+                counterargument =
+                {
+                    evidence_ring_fake = 0.4,
+                    evidence_ring_real = 0.4,
+                },
+                perjury = true,
+            },
+            doubtful_testimony =
+            {
+                counterargument =
+                {
+                    testimony = 0.6,
+                },
+            },
+            airtight_alibi =
+            {
+                counterargument =
+                {
+                    evidence_ring_fake = 0.9,
+                    evidence_ring_real = 0.9,
+                    testimony = 0.9,
+                },
+            },
+            forged_alibi =
+            {
+                counterargument =
+                {
+                    evidence_ring_fake = 0.6,
+                    evidence_ring_real = 0.6,
+                    testimony = 0.6,
+                },
+                perjury = true,
+            },
+            ring_desc =
+            {
+                counterargument =
+                {
+                    evidence_ring_fake = 0.6,
+                },
+            },
+            ring_loss_timeline =
+            {
+                counterargument =
+                {
+                    evidence_ring_fake = 0.4,
+                    evidence_ring_real = 0.4,
+                },
+            },
+        },
+
+        cost = 1,
+        flags = CARD_FLAGS.DIPLOMACY,
+        rarity = CARD_RARITY.UNIQUE,
+
+        target_enemy = TARGET_FLAG.ARGUMENT,
+
+        on_init = function( self )
+            if self.userdata.argument_id then
+                if self.evidence[self.userdata.argument_id] and self.evidence[self.userdata.argument_id].perjury then
+                    self.flags = ToggleBits(self.flags, CARD_FLAGS.DIPLOMACY | CARD_FLAGS.MANIPULATE)
+                end
+            end
+        end,
+
+        CanTarget = function(self, target)
+            if is_instance( target, Negotiation.Modifier ) and target.dem_evidence and target.max_resolve then
+                return true
+            end
+            return false, self.def:GetLocalizedString("NOT_AN_EVIDENCE")
+        end,
+
+        OnPostResolve = function( self, minigame, targets )
+            local argument_id = self.userdata.argument_id
+            if not argument_id then
+                return
+            end
+            for i, target in ipairs(targets) do
+                if is_instance( target, Negotiation.Modifier ) and target.dem_evidence and target.max_resolve then
+                    local evidence_id = target.evidence_id
+                    local resolve_loss = 0
+                    if self.evidence[argument_id] and self.evidence[argument_id].counterargument[evidence_id] then
+                        resolve_loss = self.evidence[argument_id].counterargument[evidence_id]
+                    end
+
+                    if resolve_loss > 0 then
+                        local true_loss = math.ceil(target.max_resolve * resolve_loss)
+                        target:ModifyResolve(-true_loss, scaredFearful)
+                        minigame:ExpendCard(self)
+                    else
+                        local damage = Content.GetNegotiationCardFeature("DEM_COUNTERARGUMENT").core_damage
+                        self.negotiator:AttackResolve(damage, self)
+                    end
+                end
+            end
+            if self.evidence[argument_id] and self.evidence[argument_id].perjury then
+                self.negotiator:CreateModifier("DEM_FALSE_EVIDENCE", 1, self)
+            end
+        end,
+    },
 }
 for i, id, def in sorted_pairs( CARDS ) do
     if not def.series then
@@ -966,6 +1116,22 @@ local FEATURES = {
     {
         name = "Imprint",
         desc = "Some cards are imprinted on this object through special means, and they will affect the behaviour of this object.",
+    },
+    DEM_COUNTERARGUMENT =
+    {
+        name = "Counterargument",
+        desc = "Target an {DEM_EVIDENCE} argument. If the counterargument contradicts the argument, the target lose a proportion of resolve depending on the effectiveness of the counterargument and {EXPEND}. Otherwise, you core takes {1} damage.",
+
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.core_damage)
+        end,
+
+        core_damage = 3,
+    },
+    DEM_PERJURY =
+    {
+        name = "Perjury",
+        desc = "When this card is played, create 1 {DEM_FALSE_EVIDENCE}",
     },
 }
 for id, data in pairs(FEATURES) do

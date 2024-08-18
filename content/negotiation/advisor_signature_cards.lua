@@ -772,7 +772,12 @@ local CARDS = {
                         -- else
                         --     source.negotiator:AttackResolve(damage, self)
                         -- end
-                        target.composure = target.composure + damage
+                        local damage_to_negate = damage
+                        local damage_negated = params.damage_negated or 0
+                        if damage_to_negate > damage_negated then
+                            target.composure = target.composure + damage_to_negate - damage_negated
+                            params.damage_negated = damage_to_negate
+                        end
                         self.negotiator:DeltaModifier(self, -1, self)
                     end
                 end,

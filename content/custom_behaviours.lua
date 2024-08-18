@@ -253,6 +253,36 @@ local t = {
             end
         end,
     },
+    COURT_OF_LAW =
+    {
+        OnInit = function( self, difficulty )
+            local modifier = self.negotiator:AddModifier("DEM_COURT_OF_LAW")
+
+            self.attacks = self:MakePicker()
+            self.attacks:AddArgument( "interrogate", 1 )
+            self.attacks:AddArgument( "THOROUGH_SEARCH", 1 )
+
+            self:SetPattern( self.BasicCycle )
+        end,
+
+        plaintiff_arguments = {},
+
+        BasicCycle = function( self, turns )
+            if turns % 3 == 2 then
+                self.attacks:ChooseCards(1)
+            elseif turns % 3 == 1 then
+                if self.engine:GetDifficulty() > 2 then
+                    self.attacks:ChooseCards(1)
+                else
+                    self:ChooseComposure( 1, 1 + self.difficulty, 1 + self.difficulty )
+                end
+            else
+                self:ChooseComposure( 1, 1 + self.difficulty, 1 + self.difficulty )
+            end
+            if self.plaintiff_arguments and #self.plaintiff_arguments > 0 then
+            end
+        end,
+    },
 }
 
 DemocracyUtil.BEHAVIOURS = t
