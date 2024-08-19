@@ -889,6 +889,7 @@ QDEF:AddConvo("go_to_game")
                     cxt:GetCastMember("challenger"):Kill()
 
                     cxt.quest:Complete()
+                    ConvoUtil.GiveQuestRewards(cxt)
 
                     StateGraphUtil.AddEndOption(cxt)
                 end)

@@ -571,17 +571,17 @@ QDEF:AddConvo("talk_to_defendant", "giver")
             if cxt.quest.param.knows_timeframe then
                 cxt:Question("OPT_ALIBI", "DIALOG_ALIBI", function()
                     if cxt.quest.param.have_alibi then
-                        cxt.quest:AddEvidenceList("airtight_alibi")
+                        cxt.quest:DefFn("AddEvidenceList", "airtight_alibi")
                     end
                     cxt.quest.param.asked_defendant_alibi = true
                 end)
             end
             if cxt.quest.param.learned_about_evidence then
                 cxt:Question("OPT_ASK_RING", "DIALOG_ASK_RING", function()
-                    cxt.quest:AddEvidenceList("ring_desc")
+                    cxt.quest:DefFn("AddEvidenceList", "ring_desc")
                     cxt.quest.param.asked_ring = true
                     if not cxt.quest.param.actually_guilty and not cxt.quest.param.defendant_has_ring then
-                        cxt.quest:AddEvidenceList("ring_loss_timeline")
+                        cxt.quest:DefFn("AddEvidenceList", "ring_loss_timeline")
                     end
                 end)
             end
@@ -1132,8 +1132,8 @@ QDEF:AddConvo("acquire_false_evidence")
         end
     end)
 
-QDEF:AddConvo("attend_trial", "courtroom")
-    :ConfrontState("STATE_CONF")
+QDEF:AddConvo("attend_trial")
+    :ConfrontState("STATE_CONF", function(cxt) return cxt.location == cxt:GetCastMember("courtroom") end)
         :Loc{
             DIALOG_INTRO_RING = [[
                 * [p] You visit the courtroom.
@@ -1225,6 +1225,9 @@ QDEF:AddConvo("attend_trial", "courtroom")
                 cxt.quest:UnassignCastMember("judge")
                 cxt.quest:AssignCastMember("judge")
             end
+            if not cxt:GetCastMember("witness") or cxt:GetCastMember("witness"):IsRetired() then
+                cxt.quest.param.witness_unavailable = true
+            end
             if cxt.quest.param.defendant_has_false_ring then
                 cxt:Dialog("DIALOG_INTRO_FAKE_RING")
                 cxt.quest:DefFn("AddEvidenceList", "defendant_has_false_ring")
@@ -1301,6 +1304,35 @@ QDEF:AddConvo("attend_trial", "courtroom")
             ]],
 
             OPT_TRIAL = "Begin Trial",
+            DIALOG_TRIAL_SUCCESS = [[
+                * [p] You win the trial!
+            ]],
+            DIALOG_TRIAL_FAILURE = [[
+                * [p] You lose the trial!
+            ]],
+            DIALOG_TRIAL_PERJURY = [[
+                * [p] Not only did you lose the trial, you are found with forged evidence!
+            ]],
+            OPT_DEFEAT = "Accept your defeat",
+            DIALOG_DEFEAT = [[
+                * [p] You gave up, and {giver} was arrested.
+            ]],
+            OPT_ARREST = "Accept your arrest",
+            DIALOG_ARREST = [[
+                * [p] You and your client are both arrested.
+            ]],
+            OPT_FIGHT = "Fight your way out",
+            DIALOG_FIGHT = [[
+                * [p] You aren't just going to take it lying down! You ain't respecting the trial.
+            ]],
+            DIALOG_FIGHT_WIN = [[
+                * [p] You won the fight and broke out of the courtroom!
+                * {giver} was kinda fussy about making the Admiralty mad, but you reminded {giver.himher} that {giver.gender:he's|she's|they're} technically not arrested.
+            ]],
+            DIALOG_FIGHT_RUNAWAY = [[
+                * [p] You alone escaped the courtroom, but {giver} was left behind and arrested instead.
+                * Oh well. At least you are free.
+            ]],
         }
         :Fn(function(cxt)
             cxt.enc.scratch.plaintiff_available = cxt:GetCastMember("plaintiff") and not cxt:GetCastMember("plaintiff"):IsRetired()
@@ -1323,7 +1355,83 @@ QDEF:AddConvo("attend_trial", "courtroom")
             end
 
             cxt:Opt("OPT_TRIAL")
+                :Fn(function(cxt)
+                    local BEHAVIOR = shallowcopy(DemocracyUtil.BEHAVIOURS.COURT_OF_LAW)
+                    BEHAVIOR.plaintiff_arguments = {}
+                    if cxt.quest.param.have_evidence then
+                        if cxt.quest.param.pros_forged_evidence or cxt.quest.param.def_forged_evidence then
+                            table.insert(BEHAVIOR.plaintiff_arguments, "evidence_ring_fake")
+                        else
+                            table.insert(BEHAVIOR.plaintiff_arguments, "evidence_ring_real")
+                        end
+                    end
+                    if cxt.quest.param.have_witness and not cxt.quest.param.witness_unavailable then
+                        table.insert(BEHAVIOR.plaintiff_arguments, "testimony")
+                    end
+                    cxt:GetAgent():SetTempNegotiationBehaviour(BEHAVIOR)
+                end)
                 :Negotiation{
-
+                    cooldown = 0,
+                    on_start_negotiation = function(minigame)
+                        for i, id in ipairs(cxt.quest.param.evidence_list or {}) do
+                            local card = Negotiation.Card( "dem_court_objection", minigame.player_negotiator.agent, { argument_id = id } )
+                            card.show_dealt = true
+                            card:TransferCard(minigame:GetDrawDeck())
+                        end
+                    end,
+                    on_success = function(cxt, minigame)
+                        cxt:Dialog("DIALOG_TRIAL_SUCCESS")
+                        cxt.quest:Complete()
+                        ConvoUtil.GiveQuestRewards(cxt)
+                        StateGraphUtil.AddEndOption(cxt)
+                    end,
+                    on_fail = function(cxt, minigame)
+                        if minigame.false_evidence then
+                            cxt.quest.param.guilty_of_forgery = true
+                        end
+                        if cxt.quest.param.guilty_of_forgery then
+                            cxt:Dialog("DIALOG_TRIAL_PERJURY")
+                            cxt:Opt("OPT_ARREST")
+                                :Dialog("DIALOG_ARREST")
+                                :Fn(function(cxt)
+                                    local flags = {
+                                        interfere_justice = true,
+                                    }
+                                    DemocracyUtil.DoEnding(cxt, "arrested", flags)
+                                end)
+                        else
+                            cxt:Dialog("DIALOG_TRIAL_FAILURE")
+                            cxt:Opt("OPT_DEFEAT")
+                                :Dialog("DIALOG_DEFEAT")
+                                :FailQuest()
+                                :Fn(function(cxt)
+                                    cxt.quest:GetCastMember("giver"):GainAspect("stripped_influence", 5)
+                                    cxt.quest:GetCastMember("giver"):Retire()
+                                end)
+                                :DoneConvo()
+                        end
+                        cxt.enc.scratch.opfor = CreateCombatParty("ADMIRALTY_PATROL", cxt.quest:GetRank() + 1, cxt.location, true)
+                        cxt:Opt("OPT_FIGHT")
+                            :DeltaSupport(-3, "ADMIRALTY")
+                            :Dialog("DIALOG_FIGHT")
+                            :Battle{
+                                enemies = cxt.enc.scratch.opfor,
+                                allies = {cxt:GetCastMember("giver")},
+                                on_win = function(cxt)
+                                    cxt:Dialog("DIALOG_FIGHT_WIN")
+                                    cxt.quest.param.poor_performance = true
+                                    cxt.quest:Complete()
+                                    ConvoUtil.GiveQuestRewards(cxt)
+                                    StateGraphUtil.AddLeaveLocation(cxt)
+                                end,
+                                on_runaway = function(cxt, battle)
+                                    cxt:Dialog("DIALOG_FIGHT_RUNAWAY")
+                                    StateGraphUtil.DoRunAwayEffects( cxt, battle )
+                                    cxt.quest:GetCastMember("giver"):GainAspect("stripped_influence", 5)
+                                    cxt.quest:GetCastMember("giver"):Retire()
+                                    StateGraphUtil.AddLeaveLocation(cxt)
+                                end,
+                            }
+                    end,
                 }
         end)

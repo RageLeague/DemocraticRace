@@ -3245,6 +3245,10 @@ local MODIFIERS =
                 local giver_name = self.quest and self.quest:GetCastMember("giver"):GetName() or "???"
                 return loc.format(fmt_str, giver_name)
             end,
+            testimony = function(self, fmt_str)
+                local witness_name = self.quest and self.quest:GetCastMember("witness"):GetName() or "???"
+                return loc.format(fmt_str, witness_name)
+            end,
         },
 
         loc_strings =
@@ -3268,9 +3272,9 @@ local MODIFIERS =
             self:SetResolve(self.max_resolve + (self.engine:GetDifficulty() - 1) * 8)
         end,
 
-        SetEvidence = function(self, evidence_id, quest)
+        SetEvidence = function(self, evidence_id)
             self.evidence_id = evidence_id
-            self.quest = quest
+            self.quest = self.engine.start_params.quest
             self.custom_name = (self.def or self):GetLocalizedString(evidence_id:upper() .. "_NAME")
         end,
 

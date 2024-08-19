@@ -259,8 +259,10 @@ local t = {
             local modifier = self.negotiator:AddModifier("DEM_COURT_OF_LAW")
 
             self.attacks = self:MakePicker()
-            self.attacks:AddArgument( "interrogate", 1 )
+            self.attacks:AddArgument( "INTERROGATE", 1 )
             self.attacks:AddArgument( "THOROUGH_SEARCH", 1 )
+
+            self.evidence_card = self:AddCard("dem_present_evidence")
 
             self:SetPattern( self.BasicCycle )
         end,
@@ -268,18 +270,20 @@ local t = {
         plaintiff_arguments = {},
 
         BasicCycle = function( self, turns )
-            if turns % 3 == 2 then
-                self.attacks:ChooseCards(1)
-            elseif turns % 3 == 1 then
-                if self.engine:GetDifficulty() > 2 then
+            if turns % 2 == 1 then
+                if self.plaintiff_arguments and #self.plaintiff_arguments > 0 then
+                    self:ChooseCard(self.evidence_card)
+                else
+                    self.attacks:ChooseCards(1)
+                end
+                self:ChooseGrowingNumbers(1, 0)
+            else
+                if turns < self.engine:GetDifficulty() then
                     self.attacks:ChooseCards(1)
                 else
                     self:ChooseComposure( 1, 1 + self.difficulty, 1 + self.difficulty )
                 end
-            else
-                self:ChooseComposure( 1, 1 + self.difficulty, 1 + self.difficulty )
-            end
-            if self.plaintiff_arguments and #self.plaintiff_arguments > 0 then
+                self:ChooseGrowingNumbers(2, -1)
             end
         end,
     },

@@ -1085,7 +1085,8 @@ local CARDS = {
 
                     if resolve_loss > 0 then
                         local true_loss = math.ceil(target.max_resolve * resolve_loss)
-                        target:ModifyResolve(-true_loss, scaredFearful)
+                        true_loss = math.min(true_loss, target.resolve)
+                        target:ModifyResolve(-true_loss, self)
                         minigame:ExpendCard(self)
                     else
                         local damage = Content.GetNegotiationCardFeature("DEM_COUNTERARGUMENT").core_damage
@@ -1098,6 +1099,49 @@ local CARDS = {
             end
         end,
     },
+    dem_present_evidence =
+    {
+        flags = CARD_FLAGS.SPECIAL | CARD_FLAGS.OPPONENT,
+        cost = 0,
+        stacks = 1,
+        rarity = CARD_RARITY.UNIQUE,
+
+        series = CARD_SERIES.NPC,
+
+        CanPlayCard = function( self, card, engine, target )
+            if card == self then
+                if not table.arraycontains(self.negotiator.behaviour.plaintiff_arguments, self.argument) then
+                    self.argument = nil
+                end
+                if self.argument then
+                    return true
+                else
+                    self:TrySelectArgument()
+                    return self.argument ~= nil
+                end
+            end
+            return true
+        end,
+        TrySelectArgument = function(self)
+            if self.negotiator and self.negotiator.behaviour.plaintiff_arguments then
+                self.argument = table.arraypick(self.negotiator.behaviour.plaintiff_arguments)
+            end
+        end,
+
+        OnPostResolve = function( self, engine, targets )
+            local modifier = Negotiation.Modifier("DEM_CONCRETE_EVIDENCE_ARGUMENT", self.negotiator, self.stacks)
+            if modifier then
+                modifier:SetEvidence(self.argument)
+            end
+            if self.argument and self.negotiator.behaviour.plaintiff_arguments then
+                table.arrayremove(self.negotiator.behaviour.plaintiff_arguments, self.argument)
+                self.argument = nil
+            end
+
+            self.negotiator:CreateModifier(modifier, nil, self)
+        end,
+    },
+
 }
 for i, id, def in sorted_pairs( CARDS ) do
     if not def.series then
