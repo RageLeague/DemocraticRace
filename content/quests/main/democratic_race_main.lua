@@ -197,7 +197,8 @@ local QDEF = QuestDef.Define
         QuestUtil.SpawnQuest("CAMPAIGN_SHILLING")
 
         -- Rook now has his flourish. This isn't necessary anymore.
-        -- QuestUtil.SpawnQuest("CAMPAIGN_RANDOM_COIN_FIND")
+        -- Actually, bring it back because plundak doesn't have the flourish and rook might not have it unlocked.
+        QuestUtil.SpawnQuest("CAMPAIGN_RANDOM_COIN_FIND")
         QuestUtil.SpawnQuest("CAMPAIGN_ASK_LOCATION")
         QuestUtil.SpawnQuest("CAMPAIGN_ASK_QUESTIONS")
         QuestUtil.SpawnQuest("LOCATION_OSHNUDROME_RACES")
