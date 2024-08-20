@@ -2637,7 +2637,12 @@ local MODIFIERS =
         {
             [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
                 if target == self and source.negotiator == self.anti_negotiator then
-                    target.composure = target.composure + math.min(damage, self:CalculateDamageReduction())
+                    local damage_negated = params.damage_negated or 0
+                    local damage_to_negate = math.min(damage - damage_negated, self:CalculateDamageReduction())
+                    if damage_to_negate > 0 then
+                        target.composure = target.composure + damage_to_negate
+                        params.damage_negated = damage_to_negate + (params.damage_negated or 0)
+                    end
                 end
             end,
         },
@@ -2847,8 +2852,8 @@ local MODIFIERS =
         desc = "When {1}'s {VOICE_OF_THE_PEOPLE_KALANDRA} argument is destroyed, gain an <b>Unrest</>. The real revolution begins when <b>Unrest</> reaches {2} {2*stack|stacks}.",
         loc_strings =
         {
-            name_2 = "Flames of Revolution",
-            desc_2 = "When any argument is destroyed, deal {1} damage to every argument. This amount cannot be modified.",
+            NAME_2 = "Flames of Revolution",
+            DESC_2 = "When any argument is destroyed, deal {1} damage to every argument. This amount cannot be modified.",
         },
         desc_fn = function(self, fmt_str)
             if not (self.engine and self.engine.revolution_activated) then
@@ -3161,6 +3166,152 @@ local MODIFIERS =
             CreateNewSelfMod(self)
         end,
     },
+    DEM_COURT_OF_LAW =
+    {
+        name = "Court of Law",
+        desc = "As long as there is an {DEM_EVIDENCE} argument, damage from cards against the owner of the argument's core argument is capped at {1}.\n\nWhen {2}'s {DEM_EVIDENCE} argument is destroyed, this argument takes {4} damage.\n\nIf you remove {2}'s {DEM_CONCRETE_EVIDENCE} argument without reducing the resolve to zero, your core argument takes {3} damage.",
+        icon = "negotiation/modifiers/auctioneer.tex",
+
+        desc_fn = function(self, fmt_str)
+            return loc.format( fmt_str, self.cap_amount, self:GetOwnerName(), self.contempt_damage, self.core_damage)
+        end,
+
+        modifier_type = MODIFIER_TYPE.CORE,
+
+        cap_amount = 3,
+        contempt_damage = 15,
+        core_damage = 8,
+        core_damage_bonus = 4,
+
+        OnInit = function(self)
+            self.core_damage = self.core_damage + (self.engine:GetDifficulty() - 1) * self.core_damage_bonus
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+                if target.modifier_type == MODIFIER_TYPE.CORE and is_instance(source, Negotiation.Card) then
+                    -- Check for evidence
+                    local found_evidence = false
+                    for i, mod in target.negotiator:Modifiers() do
+                        if mod.dem_evidence then
+                            found_evidence = true
+                            break
+                        end
+                    end
+                    if found_evidence and damage > self.cap_amount then
+                        local damage_to_negate = damage - self.cap_amount
+                        local damage_negated = params.damage_negated or 0
+                        if damage_to_negate > damage_negated then
+                            target.composure = target.composure + damage_to_negate - damage_negated
+                            params.damage_negated = damage_to_negate
+                        end
+                    end
+                end
+            end,
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, card )
+                if modifier.negotiator == self.negotiator and modifier.dem_concrete_evidence and modifier.resolve > 0 then
+                    if card and card.negotiator == self.anti_negotiator then
+                        local core = self.negotiator:FindCoreArgument()
+                        if core then
+                            core:AttackResolve(self.contempt_damage, self)
+                        end
+                    end
+                end
+                if modifier.negotiator == self.negotiator and modifier.dem_evidence and modifier.stacks > 0 then
+                    self:AttackResolve(self.core_damage, self)
+                end
+            end,
+        },
+    },
+    DEM_CONCRETE_EVIDENCE_ARGUMENT =
+    {
+        name = "Evidence",
+        desc = "{DEM_CONCRETE_EVIDENCE}",
+        icon = "negotiation/modifiers/secret_intel.tex",
+
+        dem_evidence = true,
+        dem_concrete_evidence = true,
+
+        desc_fn = function(self, fmt_str)
+            local result = fmt_str
+            if self.evidence_id then
+                local evidence_desc = (self.def or self):GetLocalizedString(self.evidence_id:upper() .. "_DESC")
+                local evidence_desc_fn = self.evidence_desc_fn[self.evidence_id]
+                if evidence_desc_fn then
+                    evidence_desc = evidence_desc_fn(self, evidence_desc)
+                end
+                result = result .. "\n\n" .. evidence_desc
+            end
+            return result
+        end,
+
+        evidence_desc_fn =
+        {
+            evidence_ring_real = function(self, fmt_str)
+                local giver_name = self.quest and self.quest:GetCastMember("giver"):GetName() or "???"
+                local spouse_name = self.quest and self.quest.param.spouse_name or "???"
+                return loc.format(fmt_str, giver_name, spouse_name)
+            end,
+            evidence_ring_fake = function(self, fmt_str)
+                local giver_name = self.quest and self.quest:GetCastMember("giver"):GetName() or "???"
+                return loc.format(fmt_str, giver_name)
+            end,
+            testimony = function(self, fmt_str)
+                local witness_name = self.quest and self.quest:GetCastMember("witness"):GetName() or "???"
+                return loc.format(fmt_str, witness_name)
+            end,
+        },
+
+        loc_strings =
+        {
+            EVIDENCE_RING_REAL_NAME = "Evidence: Ring",
+            EVIDENCE_RING_REAL_DESC = "This is a ring left at the crime scene, presumably by the culprit. It has a unique design. Inside of it has the text \"{1}+{2}\" carved onto it. It is clearly an engagement ring belonging to {1}.",
+
+            EVIDENCE_RING_FAKE_NAME = "Evidence: Ring",
+            EVIDENCE_RING_FAKE_DESC = "This is a ring left at the crime scene, presumably by the culprit. It has a unique design. According to the prosecution, it belongs to {1}.",
+
+            TESTIMONY_NAME = "Witness Testimony",
+            TESTIMONY_DESC = "There is a witness, {1}, who saw the defendant leaving the plaintiff's estate at the time of the theft.",
+
+        },
+
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        max_resolve = 16,
+
+        OnInit = function(self)
+            self:SetResolve(self.max_resolve + (self.engine:GetDifficulty() - 1) * 8)
+        end,
+
+        SetEvidence = function(self, evidence_id)
+            self.evidence_id = evidence_id
+            self.quest = self.engine.start_params.quest
+            self.custom_name = (self.def or self):GetLocalizedString(evidence_id:upper() .. "_NAME")
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+                local feature = Content.GetNegotiationCardFeature("DEM_CONCRETE_EVIDENCE")
+                feature:AttackResolveMod(self, source, target, damage, params, defended)
+            end,
+        },
+    },
+    DEM_FALSE_EVIDENCE =
+    {
+        name = "False Evidence",
+        desc = "When this bounty is destroyed, you automatically lose the negotiation and you will be charged with presenting false evidence!",
+        icon = "DEMOCRATICRACE:assets/modifiers/false_evidence.png",
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+        max_resolve = 3,
+
+        OnBounty = function(self)
+            self.engine.false_evidence = true
+            self.engine:Lose()
+        end,
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
@@ -3233,6 +3384,34 @@ local FEATURES = {
             end
             card.features = card.features or {}
             card.features.FERVOR = 1
+        end,
+    },
+    DEM_EVIDENCE =
+    {
+        name = "Evidence",
+        desc = "A type of argument. Does nothing on its own, but might affect some effects.",
+    },
+    DEM_CONCRETE_EVIDENCE =
+    {
+        name = "Concrete Evidence",
+        desc = "Counts as {DEM_EVIDENCE}. Additionally, damage from cards against this argument is capped at {1}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.cap_amount)
+        end,
+
+        cap_amount = 3,
+
+        AttackResolveMod = function(self, modifier, source, target, damage, params)
+            if target == modifier and is_instance(source, Negotiation.Card) then
+                if damage > self.cap_amount then
+                    local damage_to_negate = damage - self.cap_amount
+                    local damage_negated = params.damage_negated or 0
+                    if damage_to_negate > damage_negated then
+                        target.composure = target.composure + damage_to_negate - damage_negated
+                        params.damage_negated = damage_to_negate
+                    end
+                end
+            end
         end,
     },
 }

@@ -71,7 +71,7 @@ Content.AddStringTable("DEMOCRACY", {
         METRICS =
         {
             TITLE = "Metric Collection Enabled",
-            DESC = "Since the last update, the Democratic Race mod now has a metrics collection system in place. It helps us imrpove the mod. You may choose to continue with metrics collecction enabled, or, if you don't want to, you can disable it in the mod options menu.\nOh yeah we figured out how to do metrics collection in mods, I guess that is important.",
+            DESC = "Since the last update, the Democratic Race mod now has a metrics collection system in place. It helps us improve the mod. You may choose to continue with metrics collection enabled, or, if you don't want to, you can disable it in the mod options menu.\nOh yeah we figured out how to do metrics collection in mods, I guess that is important.",
         },
         NOTIFICATION =
         {
@@ -79,8 +79,8 @@ Content.AddStringTable("DEMOCRACY", {
             {
                 TITLE_INCREASE = "Gained Support From {1#agent}",
                 TITLE_DECREASE = "Lost Support From {1#agent}",
-                DETAIL_INCREASE = "Gained {1} general support, {2} support from {4#faction} and among {5#wealth_name} {2} due to {3}.",
-                DETAIL_DECREASE = "Lost {1} general support, {2} support from {4#faction} and among {5#wealth_name} {2} due to {3}.",
+                DETAIL_INCREASE = "Gained {1} general support, {2} support from {4#faction} and among {5#wealth_name} due to {3}.",
+                DETAIL_DECREASE = "Lost {1} general support, {2} support from {4#faction} and among {5#wealth_name} due to {3}.",
             },
             FACTION_SUPPORT =
             {
