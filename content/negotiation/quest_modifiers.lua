@@ -3169,16 +3169,22 @@ local MODIFIERS =
     DEM_COURT_OF_LAW =
     {
         name = "Court of Law",
-        desc = "As long as there is an {DEM_EVIDENCE} argument, damage from cards against the owner of the argument's core argument is capped at {1}.\n\nIf you destroy {2}'s {DEM_CONCRETE_EVIDENCE} argument without reducing the resolve to zero, your core argument takes {3} damage.",
+        desc = "As long as there is an {DEM_EVIDENCE} argument, damage from cards against the owner of the argument's core argument is capped at {1}.\n\nWhen {2}'s {DEM_EVIDENCE} argument is destroyed, this argument takes {4} damage.\n\nIf you remove {2}'s {DEM_CONCRETE_EVIDENCE} argument without reducing the resolve to zero, your core argument takes {3} damage.",
 
         desc_fn = function(self, fmt_str)
-            return loc.format( fmt_str, self.cap_amount, self:GetOwnerName(), self.contempt_damage)
+            return loc.format( fmt_str, self.cap_amount, self:GetOwnerName(), self.contempt_damage, self.core_damage)
         end,
 
         modifier_type = MODIFIER_TYPE.CORE,
 
         cap_amount = 3,
         contempt_damage = 15,
+        core_damage = 8,
+        core_damage_bonus = 4,
+
+        OnInit = function(self)
+            self.core_damage = self.core_damage + (self.engine:GetDifficulty() - 1) * self.core_damage_bonus
+        end,
 
         event_handlers =
         {
@@ -3211,6 +3217,9 @@ local MODIFIERS =
                         end
                     end
                 end
+                if modifier.negotiator == self.negotiator and modifier.dem_evidence and modifier.stacks > 0 then
+                    self:AttackResolve(self.core_damage, self)
+                end
             end,
         },
     },
@@ -3220,6 +3229,7 @@ local MODIFIERS =
         desc = "{DEM_CONCRETE_EVIDENCE}",
 
         dem_evidence = true,
+        dem_concrete_evidence = true,
 
         desc_fn = function(self, fmt_str)
             local result = fmt_str

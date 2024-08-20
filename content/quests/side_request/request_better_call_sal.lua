@@ -229,7 +229,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "talk_to_defendant",
     title = "Talk to {giver}, the defendant",
-    desc = "Talk to {giver} to learn more about the case.",
+    desc = "Talk to {giver}, the defendant, to learn more about the case.",
     mark = function(quest, t, in_location)
         if in_location or DemocracyUtil.IsFreeTimeActive() then
             table.insert(t, quest:GetCastMember("giver"))
@@ -239,7 +239,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "talk_to_plaintiff",
     title = "Talk to {plaintiff}, the plaintiff",
-    desc = "Talk to {plaintiff} to learn more about the case.",
+    desc = "Talk to {plaintiff}, the plaintiff, to learn more about the case.",
     mark = function(quest, t, in_location)
         if in_location or DemocracyUtil.IsFreeTimeActive() then
             table.insert(t, quest:GetCastMember("plaintiff"))
@@ -249,7 +249,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "talk_to_prosecutor",
     title = "Talk to {prosecutor}, the prosecutor",
-    desc = "Talk to {prosecutor} to learn more about the case.",
+    desc = "Talk to {prosecutor}, the prosecutor, to learn more about the case.",
     mark = function(quest, t, in_location)
         if in_location or DemocracyUtil.IsFreeTimeActive() then
             table.insert(t, quest:GetCastMember("prosecutor"))
@@ -259,7 +259,7 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "talk_to_witness",
     title = "Talk to {witness}, the witness",
-    desc = "Talk to {witness} to learn more about the case.",
+    desc = "Talk to {witness}, the witness, to learn more about the case.",
     mark = function(quest, t, in_location)
         if in_location or DemocracyUtil.IsFreeTimeActive() then
             table.insert(t, quest:GetCastMember("witness"))
@@ -291,6 +291,23 @@ local QDEF = QuestDef.Define
         end
     end,
 }
+
+QDEF:AddIntro(
+    --attract spiel
+    [[
+        agent:
+            [p] I've been accused of a crime, and I need someone represent me in court.
+            I know you are a politician and not a lawyer, but I don't know who else to rely on.
+            Besides, I neither have the money nor the time to hire a lawyer. Can you represent me in court?
+    ]],
+
+    --on accept
+    [[
+        player:
+            [p] That can be done.
+        agent:
+            Excellent!
+    ]])
 
 QDEF:AddConvo("talk_to_defendant", "giver")
     :Loc{
@@ -327,6 +344,37 @@ QDEF:AddConvo("talk_to_defendant", "giver")
                 [p] Here's your ring.
             agent:
                 Thanks.
+        ]],
+        DIALOG_GIVE_RING_BACK_FALSE = [[
+            player:
+                [p] Here's your ring.
+            agent:
+                My... ring?
+            {defendant_has_ring?
+                But I'm already wearing mine?
+                It's a wedding ring belonging to me and my partner, {spouse_name}.
+                Look! It has the engraving of our names on it!
+            player:
+                {not asked_ring?
+                    But the prosecutor said it's yours!
+                    Hesh dang it. All these effort to get this ring, and turns out this itself is forged.
+                }
+                {asked_ring?
+                    Right. I forgot.
+                }
+            }
+            {not defendant_has_ring?
+                But this isn't my ring?
+                It doesn't have the names of me and my partner, {spouse_name}.
+            player:
+                {not asked_ring?
+                    But the prosecutor said it's yours!
+                    Hesh dang it. All these effort to get this ring, and turns out this itself is forged.
+                }
+                {asked_ring?
+                    Right. I forgot.
+                }
+            }
         ]],
         OPT_GIVE_FAKE_RING = "Convince {agent} to take the fake ring",
         DIALOG_GIVE_FAKE_RING = [[
@@ -378,7 +426,7 @@ QDEF:AddConvo("talk_to_defendant", "giver")
             end
         end
 
-        if #cards > 0 then
+        if #cards > 0 and not cxt.quest.param.tried_return_ring then
             cxt:Opt("OPT_GIVE_RING_BACK")
                 :SetQuestMark()
                 :Fn(function(cxt)
@@ -394,9 +442,15 @@ QDEF:AddConvo("talk_to_defendant", "giver")
                     )
                     local card = cxt.enc:YieldEncounter()
                     if card then
-                        cxt.player.negotiator:RemoveCard( card )
-                        cxt:Dialog("DIALOG_GIVE_RING_BACK")
-                        cxt.quest.param.defendant_has_ring = true
+                        if not cxt.quest.param.pros_forged_evidence then
+                            cxt.player.negotiator:RemoveCard( card )
+                            cxt:Dialog("DIALOG_GIVE_RING_BACK")
+                            cxt.quest.param.defendant_has_ring = true
+                        else
+                            cxt:Dialog("DIALOG_GIVE_RING_BACK_FALSE")
+                            cxt.quest.param.asked_ring = true
+                            cxt.quest.param.tried_return_ring = true
+                        end
                     end
                 end)
         end
@@ -978,13 +1032,24 @@ QDEF:AddConvo("talk_to_prosecutor", "prosecutor")
             DIALOG_INTRO = [[
                 * [p] You examine the ring.
                 {pros_forged_evidence?
-                    * A fairly unique design, though nothing suggests that it belongs to {giver}.
-                    * If it does belong to {giver}, though, this could be real bad for your client.
+                    {asked_ring?
+                        * A fairly unique design, but it doesn't match the description provided by {giver}.
+                        * Did the prosecutor forge this evidence?
+                    }
+                    {not asked_ring?
+                        * A fairly unique design, though nothing suggests that it belongs to {giver}.
+                        * If it does belong to {giver}, though, this could be real bad for your client.
+                    }
                 }
                 {not pros_forged_evidence?
                     * A fairly unique design.
                     * The inside of the ring displays the text "{giver}+{spouse_name}".
-                    * You have no idea who this "{spouse_name}" is, but the ring definitely belongs to {giver}.
+                    {asked_ring?
+                        * Hesh. Doesn't it exactly match the description provided by {giver}?
+                    }
+                    {not asked_ring?
+                        * You have no idea who this "{spouse_name}" is, but the ring definitely belongs to {giver}.
+                    }
                     * This looks really bad for your client.
                 }
             ]],
@@ -997,6 +1062,10 @@ QDEF:AddConvo("talk_to_prosecutor", "prosecutor")
             ]],
             OPT_SWAP = "Swap the ring with a less incriminating one",
             DIALOG_SWAP = [[
+                {pros_forged_evidence and asked_ring?
+                    * [p] Even though you know this is not {giver}'s ring, you took it regardless.
+                    * After all, you spend money on this fake ring. It would be a shame to let it go to waste.
+                }
                 * You quickly swapped the evidence without {agent} noticing.
                 player:
                     Here is the evidence. Thank you for letting me see it.

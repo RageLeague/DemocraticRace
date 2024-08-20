@@ -52,13 +52,13 @@ local QDEF = QuestDef.Define
         return not agent:HasTag("curated_request_quest")
     end,
     on_assign = function(quest, agent)
-        if not quest:GetCastMember("target") then
-            quest:AssignCastMember("target")
-        end
+        -- if not quest:GetCastMember("target") then
+        --     quest:AssignCastMember("target")
+        -- end
     end,
 }
 :AddCast{
-    when = QWHEN.MANUAL,
+    -- when = QWHEN.MANUAL,
     cast_id = "target",
     no_validation = true,
     unimportant = true,
@@ -220,7 +220,7 @@ QDEF:AddConvo("punish_target")
             cxt:Dialog("DIALOG_FOLLOWUP")
         end)
 
-QDEF:AddConvo("punish_target")
+QDEF:AddConvo("punish_target", "target")
     :Loc{
         OPT_WARN = "Warn {agent} about {giver}'s animosity towards {agent.himher}",
         DIALOG_WARN = [[

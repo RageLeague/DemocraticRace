@@ -264,7 +264,12 @@ local t = {
 
             self.evidence_card = self:AddCard("dem_present_evidence")
 
-            self:SetPattern( self.BasicCycle )
+            if self.agent:GetContentID() == "ADMIRALTY_INVESTIGATOR" then
+                self:SetPattern( self.BasicCycle )
+            else
+                -- They are defending themselves. The pattern is significantly easier
+                self:SetPattern( self.EasyCycle )
+            end
         end,
 
         plaintiff_arguments = {},
@@ -286,6 +291,22 @@ local t = {
                 self:ChooseGrowingNumbers(2, -1)
             end
         end,
+        EasyCycle = function( self, turns )
+            if turns == 2 then
+                if self.plaintiff_arguments and #self.plaintiff_arguments > 0 then
+                    self:ChooseCard(self.evidence_card)
+                else
+                    self:ChooseComposure( 1, 1 + self.difficulty, 1 + self.difficulty )
+                end
+            end
+            if turns % 2 == 1 then
+                self:ChooseGrowingNumbers(1, 0)
+                self:ChooseComposure( 1, 1 + self.difficulty, 1 + self.difficulty )
+            else
+                self:ChooseGrowingNumbers(2, -1)
+            end
+        end,
+
     },
 }
 
