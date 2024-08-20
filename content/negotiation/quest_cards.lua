@@ -953,6 +953,7 @@ local CARDS = {
         name = "Objection!",
         desc = "{DEM_COUNTERARGUMENT}",
         alt_desc = "{DEM_COUNTERARGUMENT}, {DEM_PERJURY}",
+        icon = "negotiation/ad_lib.tex",
 
         desc_fn = function(self, fmt_str)
             local argument_id = self.userdata.argument_id

@@ -3170,6 +3170,7 @@ local MODIFIERS =
     {
         name = "Court of Law",
         desc = "As long as there is an {DEM_EVIDENCE} argument, damage from cards against the owner of the argument's core argument is capped at {1}.\n\nWhen {2}'s {DEM_EVIDENCE} argument is destroyed, this argument takes {4} damage.\n\nIf you remove {2}'s {DEM_CONCRETE_EVIDENCE} argument without reducing the resolve to zero, your core argument takes {3} damage.",
+        icon = "negotiation/modifiers/auctioneer.tex",
 
         desc_fn = function(self, fmt_str)
             return loc.format( fmt_str, self.cap_amount, self:GetOwnerName(), self.contempt_damage, self.core_damage)
@@ -3227,6 +3228,7 @@ local MODIFIERS =
     {
         name = "Evidence",
         desc = "{DEM_CONCRETE_EVIDENCE}",
+        icon = "negotiation/modifiers/secret_intel.tex",
 
         dem_evidence = true,
         dem_concrete_evidence = true,
@@ -3300,6 +3302,7 @@ local MODIFIERS =
     {
         name = "False Evidence",
         desc = "When this bounty is destroyed, you automatically lose the negotiation and you will be charged with presenting false evidence!",
+        icon = "DEMOCRATICRACE:assets/modifiers/false_evidence.png",
 
         modifier_type = MODIFIER_TYPE.BOUNTY,
         max_resolve = 3,
