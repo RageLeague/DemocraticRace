@@ -1081,6 +1081,13 @@ QDEF:AddConvo("talk_to_prosecutor", "prosecutor")
                     Are you joking?
                     Are you actually trying to take the evidence?
                     Right here? Under broad daylight? In the witness of so many Admiralty officers?
+                {night?
+                    player:
+                        !dubious
+                        But it's night time?
+                    agent:
+                        Bah, it's a figure of speech.
+                }
             ]],
             OPT_TAKE_AGAIN = "Take it",
             DIALOG_TAKE_AGAIN = [[
