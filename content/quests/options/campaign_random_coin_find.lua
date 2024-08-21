@@ -88,6 +88,10 @@ QDEF:AddConvo()
                     !left
                     I think I'm happy with my current coin.
             ]],
+            OPT_STOP = "Stop looking for random coins",
+            DIALOG_STOP = [[
+                * You decided that there is no further point in finding more random coins, so you stopped looking for them.
+            ]],
         }
         :Fn(function(cxt)
             local current_coin = cxt.player:GetAspect("graft_owner"):GetGrafts( GRAFT_TYPE.COIN )[1]
@@ -104,9 +108,15 @@ QDEF:AddConvo()
                         cxt.player.graft_owner:ReplaceGraft( current_coin, coin )
                     end)
                     :Dialog("DIALOG_REPLACE")
+                    :DoneConvo()
             end
+            cxt:Opt("OPT_STOP")
+                :Dialog("DIALOG_STOP")
+                :CancelQuest()
+                :DoneConvo()
             cxt:Opt("OPT_SKIP")
                 :MakeUnder()
                 :Dialog("DIALOG_SKIP")
+                :DoneConvo()
             cxt.quest.param.candidate_coins = nil
         end)

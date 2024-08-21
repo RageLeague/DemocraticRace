@@ -215,7 +215,10 @@ local QDEF = QuestDef.Define
 -- but adding another quest would be too much work.
 :AddObjective{
     id = "await_strike",
-    title = "Await the strike",
+    title = "Await the strike ({1#relative_time})",
+    title_fn = function(quest, str)
+        return loc.format(str, (quest.param.strike_time or 0) - Now())
+    end,
     desc = "The strike happens {1#relative_time}. {2#agent_list} will be there. Be prepared.",
     desc_fn = function(quest, str)
         return loc.format(str, (quest.param.strike_time or 0) - Now(), quest.param.strike_people or {})

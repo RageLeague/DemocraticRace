@@ -904,6 +904,30 @@ local CARDS = {
             end,
         },
     },
+    dem_weary_negotiation =
+    {
+        name = "Weary",
+        remove_on_rest = true,
+        desc = "When drawn, lose 1 action.",
+        flavour = "'I'm so tired.'",
+        icon = "battle/weary.tex",
+
+        cost = 1,
+        rarity = CARD_RARITY.BASIC,
+        flags = CARD_FLAGS.STATUS | CARD_FLAGS.CONSUME | CARD_FLAGS.SLEEP_IT_OFF,
+
+        battle_counterpart = "weary",
+        event_handlers =
+        {
+            [ EVENT.CARD_MOVED ] = function( self, card, source_deck, source_idx, target_deck, target_idx )
+                if card == self and target_deck == self.engine:GetHandDeck() and source_deck == self.engine:GetDrawDeck() then
+                    self:NotifyTriggeredPre()
+                    self.engine:ModifyActionCount( -1 )
+                    self:NotifyTriggeredPost()
+                end
+            end
+        },
+    },
     dem_incriminating_evidence =
     {
         name = "Incriminating Evidence",
