@@ -57,7 +57,7 @@ local MODIFIERS =
     SELL_MERCH_CROWD =
     {
         name = "Potential Customers",
-        desc = "At the beginning of the player's turn, create a new <b>Potential Customer</> argument({1} left).",
+        desc = "At the beginning of the player's turn, create a new <b>Potential Customer</> argument ({1} left).",
         desc_fn = function(self, fmt_str )
 
             return loc.format(fmt_str, #self.agents)
@@ -242,8 +242,8 @@ local MODIFIERS =
     },
     PREACH_CROWD =
     {
-        name = "Crowd Mentality",
-        desc = "At the beginning of the player's turn, create a new <b>Potential Interest</> argument({1} left).",
+        name = "Bustling Throng",
+        desc = "At the beginning of the player's turn, create a new <b>Potential Interest</> argument ({1} left).",
         desc_fn = function(self, fmt_str )
 
             return loc.format(fmt_str, #self.agents)

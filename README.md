@@ -97,7 +97,7 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 ### The Artists
 
 * Minespatch
-* Sei Bellissima
+* Lulubalu
 
 ### Special Thanks
 
