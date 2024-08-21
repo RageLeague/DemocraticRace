@@ -809,7 +809,7 @@ local CARDS = {
         icon = "DEMOCRATICRACE:assets/cards/ivory_tower.png",
 
         advisor = "ADVISOR_HOSTILE",
-        flags = CARD_FLAGS.HOSTILE,
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND,
         cost = 1,
         max_xp = 7,
 
@@ -852,7 +852,7 @@ local CARDS = {
     advisor_hostile_ivory_tower_plus2 =
     {
         name = "Initial Ivory Tower",
-        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.AMBUSH,
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.AMBUSH | CARD_FLAGS.EXPEND,
     },
     advisor_hostile_duckspeak =
     {
