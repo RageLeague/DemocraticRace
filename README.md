@@ -4,7 +4,7 @@ A pioneer campaign mod for Griftlands, the Democratic Race is a mod for Griftlan
 
 This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
-Version: 0.12.0 (Alpha)
+Version: 0.13.0 (Alpha)
 
 Author: RageLeague
 
@@ -104,6 +104,20 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Flange Finnegan
 
 ## Changelog
+
+### 0.13.0 (Light Work Update)
+
+Major Changes:
+
+* Added two new request quests: Send a Message and Better Call Sal (or whoever the player character is).
+* Added an option to work manual labour at certain locations. You exchange time and deck quality for money and support among the lower class.
+* Readded random coin find for Rook and Plundak (https://steamcommunity.com/sharedfiles/filedetails/?id=2771218278).
+
+Minor Changes:
+
+* Bug fixes.
+* Description updates.
+* Balance changes.
 
 ### 0.12.0 (The Lore Update)
 
