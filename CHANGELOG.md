@@ -1,5 +1,22 @@
 # Full Changelog
 
+### 0.13.0
+
+* Added two new request quests: Send a Message and Better Call Sal (or whoever the player character is).
+* Fixed some typos.
+* Fixed relative time function to make more sense (also applies to base game).
+* Fixed quest reward not giving out properly when ordering a bodyguard to kill the target in A Battle of Wits.
+* Reworked behaviour of damage prevention effects so they play nicely with each other.
+* Added an option to work manual labour at certain locations. You exchange time and deck quality for money and support among the lower class.
+* Readded random coin find for Rook and Plundak (modded).
+* Change some option in the Starving Worker event. Accepting the request from the worker ends the convo (without changing relationship), and if you don't have enough money, special dialog option can be selected.
+* No more restriction is placed on asking for competitor location type from workers.
+* Added time description for protest in A Worker's Revenge.
+* Added Expend to Ivory Tower.
+* Changed description and name of some arguments.
+* Added quest markers at locations for Never Meet Your Heroes.
+* Updated contribution list.
+
 ### 0.12.0
 
 * Massive change: Overhaul of how much support is gained. There is now a standardized range of support that rally quests and main quests provide. Additionally, toned down how much support the player gets after completing request quests.

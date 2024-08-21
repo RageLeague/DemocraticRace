@@ -163,8 +163,8 @@ QDEF:AddConvo()
                 player:
                     Okay, I'll see what I can do.
                 agent:
-                    Still, that doesn't solve the immediate problem.
-                    I need money, right now.
+                    Well, thank you for your effort.
+                    Maybe you can bring real change to this Hesh-forsaken place.
             ]],
 
             OPT_GIVE_A_LITTLE = "Give {agent} some spare change",
@@ -226,7 +226,7 @@ QDEF:AddConvo()
                     Do I look like a grifter to you? I'm not risking my neck for a few measly shills.
             ]],
 
-            OPT_SAY_NO = "Don't give {agent} anything",
+            OPT_SAY_NO = "Refuse to give {agent} anything",
 
             DIALOG_SAY_NO = [[
                 player:
@@ -264,7 +264,16 @@ QDEF:AddConvo()
                 * Not exactly something you should say to make a beggar like you.
                 * But still, you can help this person out, if you still want to do that.
                 }
+            ]],
 
+            OPT_NO_MONEY = "Apologize for not having enough money to give",
+            DIALOG_NO_MONEY = [[
+                player:
+                    I would help you, but uhh...
+                    I'm as broke as you, bud.
+                agent:
+                    Ah...
+                    Well, thanks for the effort I guess.
             ]],
         }
         :SetLooping()
@@ -296,6 +305,7 @@ QDEF:AddConvo()
                                 cxt:Dialog("DIALOG_OFFER_HELP")
                                 DemocracyUtil.TryMainQuestFn("UpdateStance", "LABOR_LAW", 1, false, true)
                                 cxt.quest.param.offered_to_help = true
+                                StateGraphUtil.AddLeaveLocation(cxt)
                             end)
 
                         end)
@@ -346,6 +356,10 @@ QDEF:AddConvo()
                 :UpdatePoliticalStance("FISCAL_POLICY", -1, false, true)
                 :ReceiveOpinion(cxt.quest:GetQuestDef():GetOpinionEvent("gave_nothing"))
                 :Travel()
-
+            if cxt.player:GetMoney() < SMALL_AMT then
+                cxt:Opt("OPT_NO_MONEY")
+                    :Dialog("DIALOG_NO_MONEY")
+                    :Travel()
+            end
         end)
 

@@ -772,7 +772,12 @@ local CARDS = {
                         -- else
                         --     source.negotiator:AttackResolve(damage, self)
                         -- end
-                        target.composure = target.composure + damage
+                        local damage_to_negate = damage
+                        local damage_negated = params.damage_negated or 0
+                        if damage_to_negate > damage_negated then
+                            target.composure = target.composure + damage_to_negate - damage_negated
+                            params.damage_negated = damage_to_negate
+                        end
                         self.negotiator:DeltaModifier(self, -1, self)
                     end
                 end,
@@ -804,7 +809,7 @@ local CARDS = {
         icon = "DEMOCRATICRACE:assets/cards/ivory_tower.png",
 
         advisor = "ADVISOR_HOSTILE",
-        flags = CARD_FLAGS.HOSTILE,
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND,
         cost = 1,
         max_xp = 7,
 
@@ -847,7 +852,7 @@ local CARDS = {
     advisor_hostile_ivory_tower_plus2 =
     {
         name = "Initial Ivory Tower",
-        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.AMBUSH,
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.AMBUSH | CARD_FLAGS.EXPEND,
     },
     advisor_hostile_duckspeak =
     {

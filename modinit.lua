@@ -372,7 +372,7 @@ local MOD_OPTIONS =
 }
 -- print("Debug mode: " .. tostring(TheGame:GetLocalSettings().DEBUG))
 return {
-    version = "0.12.0",
+    version = "0.13.0",
     alias = "DEMOCRATICRACE",
 
     OnLoad = OnLoad,
@@ -385,7 +385,7 @@ return {
     mod_options = MOD_OPTIONS,
 
     title = "The Democratic Race",
-    description = "The Pioneer campaign mod for the (currently) Early Access game Griftlands, Democratic Race is a mod for Griftlands that adds a negotiation based campaign mode to the game, in contrast to the direct combat.",
+    description = "The Pioneer campaign mod for Griftlands, Democratic Race is a mod for Griftlands that adds a negotiation based campaign mode to the game, in contrast to the direct combat.",
     previewImagePath = "preview.png",
 
     load_after = {
