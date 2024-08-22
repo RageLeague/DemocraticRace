@@ -24,7 +24,7 @@ local QDEF = QuestDef.Define
 
     on_start = function(quest)
         quest:Activate("find_evidence")
-        quest:Activate("acquire_contraband")
+        -- quest:Activate("acquire_contraband")
         quest:Activate("punish_target")
     end,
 
@@ -75,12 +75,14 @@ local QDEF = QuestDef.Define
     end,
     events = {
         agent_retired = function(quest, agent)
-            if agent:IsDead() then
-                quest.param.target_dead = true
-            else
-                quest.param.target_retired = true
+            if quest:IsActive("punish_target") then
+                if agent:IsDead() then
+                    quest.param.target_dead = true
+                else
+                    quest.param.target_retired = true
+                end
+                quest:Activate("report_success")
             end
-            quest:Activate("report_result")
         end,
         aspects_changed = function( quest, agent, added, aspect )
 
@@ -103,7 +105,7 @@ local QDEF = QuestDef.Define
     desc = "Alternatively, you can remove {target} from the picture without going through due process.",
 }
 :AddObjective{
-    id = "report_result",
+    id = "report_success",
     title = "Report to {giver}",
     desc = "The situation with {target} has been resolved. Report your results.",
     on_activate = function(quest)
@@ -133,3 +135,104 @@ QDEF:AddIntro(
         agent:
             Excellent!
     ]])
+
+QDEF:AddConvo("find_evidence", "giver")
+    :Loc{
+        OPT_ASK_CONTRABAND = "Ask about evidence",
+        DIALOG_ASK_CONTRABAND = [[
+            {not asked_contraband?
+                player:
+                    [p] What are some potential evidence of wrong doing that I can find?
+                agent:
+                    The easiest one is probably contraband.
+                    Generally speaking, this include illicit substances like stimulants, or things that a person should generally not have.
+                    Here is a list.
+            }
+            {asked_contraband?
+                player:
+                    [p] Remind me of what to look for again?
+                agent:
+                    Here is a list of contraband.
+            }
+        ]],
+        DIALOG_ASK_CONTRABAND_PST = [[
+            {not asked_contraband?
+                agent:
+                    [p] Certain dangerous weapons are also considered contraband, but you can't easily slip them in.
+                player:
+                    Slip them in? What do you mean-
+                agent:
+                    !give
+                    This is what I meant.
+            }
+            {asked_contraband?
+                agent:
+                    [p] Hopefully you can find something like that on {target}.
+                    Or "find" it on {target.himher}. Whatever works for you.
+            }
+        ]],
+        DIALOG_ASK_CONTRABAND_PST_GIFT = [[
+            player:
+                Oh. <i>Oh.</>
+                I see what you want me to do.
+        ]],
+        VIEW_TITLE = "Contraband list",
+        VIEW_DESC = "This is a list of contraband according to the Admiralty.",
+    }
+    :Hub(function(cxt)
+        cxt:Opt("OPT_ASK_CONTRABAND")
+            :Dialog("DIALOG_ASK_CONTRABAND")
+            :Fn(function(cxt)
+                local cards = {}
+                for i, id in ipairs(DemocracyUtil.CONTRABAND_CARDS) do
+                    table.insert(cards, Negotiation.Card(id))
+                end
+                cxt:Wait()
+                DemocracyUtil.InsertSelectCardScreen(
+                    cards,
+                    cxt:GetLocString("VIEW_TITLE"),
+                    cxt:GetLocString("VIEW_DESC"),
+                    Widget.NegotiationCard,
+                    function(card)
+                        cxt.enc:ResumeEncounter()
+                    end
+                )
+                cxt.enc:YieldEncounter()
+                cxt:Dialog("DIALOG_ASK_CONTRABAND_PST")
+                if not cxt.quest.param.asked_contraband then
+                    cxt.quest.param.asked_contraband = true
+                    cxt:GainCards{"gift_packaging"}
+                    cxt:Dialog("DIALOG_ASK_CONTRABAND_PST_GIFT")
+                    if cxt.quest:IsInactive("acquire_contraband") then
+                        cxt.quest:Activate("acquire_contraband")
+                    end
+                end
+            end)
+    end)
+
+QDEF:AddConvo("report_success", "giver")
+    :Loc{
+        OPT_TELL_NEWS = "Tell {agent} about what you did",
+        DIALOG_TELL_NEWS = [[
+            {target_dead?
+                player:
+                    [p] {target} is dead.
+                agent:
+                    Such a shame. {target} had a bright future in front of {target.himher}.
+                    Though, that is something we have no hands in.
+                    I'm not going to ask any more questions. I'm just glad that it happened.
+            }
+            {target_retired?
+                player:
+                    [p] {target} is out of the picture.
+                agent:
+                    Excellent work.
+            }
+        ]],
+    }
+    :Hub(function(cxt)
+        cxt:Opt("OPT_TELL_NEWS")
+            :SetQuestMark(cxt.quest)
+            :Dialog("DIALOG_TELL_NEWS")
+            :CompleteQuest()
+    end)
