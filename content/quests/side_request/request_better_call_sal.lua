@@ -426,7 +426,7 @@ QDEF:AddConvo("talk_to_defendant", "giver")
             end
         end
 
-        if #cards > 0 and not cxt.quest.param.tried_return_ring then
+        if #cards > 0 and cxt.quest.param.def_forged_evidence and not cxt.quest.param.tried_return_ring then
             cxt:Opt("OPT_GIVE_RING_BACK")
                 :SetQuestMark()
                 :Fn(function(cxt)
