@@ -737,7 +737,7 @@ local CARDS = {
         max_charges = 1,
         flags = CARD_FLAGS.REPLENISH,
 
-        item_tags = ITEM_TAGS.CHEMICAL,
+        item_tags = ITEM_TAGS.CHEMICAL | ITEM_TAGS.ILLICIT,
         rarity = CARD_RARITY.COMMON,
 
         battle_counterpart = "speed_tonic",
@@ -814,6 +814,7 @@ local CARDS = {
 
         rarity = CARD_RARITY.UNIQUE,
         flags = CARD_FLAGS.ITEM,
+        item_tags = ITEM_TAGS.CHEMICAL | ITEM_TAGS.ILLICIT,
 
         battle_counterpart = "vapor_vial",
 
