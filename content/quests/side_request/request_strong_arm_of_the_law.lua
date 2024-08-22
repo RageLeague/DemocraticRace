@@ -23,7 +23,9 @@ local QDEF = QuestDef.Define
     },
 
     on_start = function(quest)
-        -- quest:Activate("punish_target")
+        quest:Activate("find_evidence")
+        quest:Activate("acquire_contraband")
+        quest:Activate("punish_target")
     end,
 
     on_complete = function(quest)
@@ -43,3 +45,91 @@ local QDEF = QuestDef.Define
         end
     end,
 }
+:AddCast{
+    cast_id = "giver",
+    no_validation = true,
+    provider = true,
+    unimportant = true,
+    condition = function(agent, quest)
+        return not agent:HasTag("curated_request_quest") and agent:GetFactionID() == "ADMIRALTY"
+    end,
+}
+:AddCast{
+    -- when = QWHEN.MANUAL,
+    cast_id = "target",
+    no_validation = true,
+    unimportant = true,
+    condition = function(agent, quest)
+        if not agent:IsSentient() then
+            return false, "Don't be mean to the dog :( (or oshnu, mech, whatever)"
+        end
+        if not agent:GetFaction():IsLawful() and agent:GetFactionID() ~= "RISE" then
+            return false, "Wrong faction"
+        end
+        if DemocracyUtil.GetWealth(agent) <= 2 then
+            return false, "Not enough influence"
+        end
+        return not AgentUtil.HasPlotArmour(agent)
+    end,
+    on_assign = function(quest, agent)
+    end,
+    events = {
+        agent_retired = function(quest, agent)
+            if agent:IsDead() then
+                quest.param.target_dead = true
+            else
+                quest.param.target_retired = true
+            end
+            quest:Activate("report_result")
+        end,
+        aspects_changed = function( quest, agent, added, aspect )
+
+        end
+    }
+}
+:AddObjective{
+    id = "find_evidence",
+    title = "Find evidence",
+    desc = "Find any evidence of {target}'s wrongdoing."
+}
+:AddObjective{
+    id = "acquire_contraband",
+    title = "(Optional) Acquire contraband",
+    desc = "If you can't find real evidence, you can always pin a crime on {target} by planting contraband on {target.himher}.",
+}
+:AddObjective{
+    id = "punish_target",
+    title = "Eliminate target",
+    desc = "Alternatively, you can remove {target} from the picture without going through due process.",
+}
+:AddObjective{
+    id = "report_result",
+    title = "Report to {giver}",
+    desc = "The situation with {target} has been resolved. Report your results.",
+    on_activate = function(quest)
+        local sides = {"find_evidence", "acquire_contraband", "punish_target"}
+        for i, id in ipairs(sides) do
+            if quest:IsActive(id) then
+                quest:Complete(id)
+            end
+        end
+    end,
+}
+
+QDEF:AddIntro(
+    --attract spiel
+    [[
+        agent:
+            [p] {target} has been a thorn on our side for quite a while now.
+            We wish to get {target.himher} out of the picture, but we can't do anything about {target.himher} without a just cause.
+            Perhaps... you can be of assistance. Help us find anything that can be used against {target.himher}.
+            Or, if something unfortunate were to happen to {target}, well... The Admiralty can't be faulted, now can we?
+    ]],
+
+    --on accept
+    [[
+        player:
+            [p] That can be done.
+        agent:
+            Excellent!
+    ]])
