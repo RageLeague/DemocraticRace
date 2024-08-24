@@ -92,7 +92,12 @@ local QDEF = QuestDef.Define
 :AddObjective{
     id = "find_evidence",
     title = "Find evidence",
-    desc = "Find any evidence of {target}'s wrongdoing."
+    desc = "Find any evidence of {target}'s wrongdoing.",
+    mark = function(quest, t, in_location)
+        if in_location or DemocracyUtil.IsFreeTimeActive() then
+            table.insert(t, quest:GetCastMember("target"))
+        end
+    end,
 }
 :AddObjective{
     id = "acquire_contraband",
@@ -103,6 +108,12 @@ local QDEF = QuestDef.Define
     id = "punish_target",
     title = "Eliminate target",
     desc = "Alternatively, you can remove {target} from the picture without going through due process.",
+    combat_targets = {"target"},
+    mark = function(quest, t, in_location)
+        if in_location or DemocracyUtil.IsFreeTimeActive() then
+            table.insert(t, quest:GetCastMember("target"))
+        end
+    end,
 }
 :AddObjective{
     id = "report_success",
@@ -185,7 +196,10 @@ QDEF:AddConvo("find_evidence", "giver")
             :Fn(function(cxt)
                 local cards = {}
                 for i, id in ipairs(DemocracyUtil.CONTRABAND_CARDS) do
-                    table.insert(cards, Negotiation.Card(id))
+                    local card = Negotiation.Card(id)
+                    card.features = card.features or {}
+                    card.features.DEM_CONTRABAND = 1
+                    table.insert(cards, card)
                 end
                 cxt:Wait()
                 DemocracyUtil.InsertSelectCardScreen(
@@ -210,6 +224,70 @@ QDEF:AddConvo("find_evidence", "giver")
             end)
     end)
 
+QDEF:AddConvo("find_evidence", "target")
+    :Loc{
+        OPT_PROBE_EVIDENCE = "Probe for evidence",
+        DIALOG_PROBE_EVIDENCE = [[
+            {not met?
+                player:
+                    [p] So, random stranger, how are you doing on this fine {day?day|night}?
+            }
+            {met?
+                player:
+                    [p] So, {target}, how are you doing on this fine {day?day|night}?
+            }
+        ]],
+        DIALOG_PROBE_EVIDENCE_SUCCESS = [[
+            {planted_evidence?
+                * [p] You planted evidence of {target}'s wrongdoing.
+            }
+            {not planted_evidence?
+                * [p] You found evidence of {target}'s wrongdoing.
+            }
+        ]],
+        DIALOG_PROBE_EVIDENCE_NO_RESULT = [[
+            * [p] You tried to get evidence, but to no avail.
+        ]],
+        DIALOG_PROBE_EVIDENCE_FAILURE = [[
+            * [p] You fail to discover anything definitive.
+        ]],
+        DIALOG_PROBE_EVIDENCE_DISCOVERED = [[
+            agent:
+                [p] Hey! You ain't getting anything out of me!
+        ]],
+    }
+    :Hub(function(cxt)
+        if not cxt.quest.param.probe_discovered then
+            cxt:Opt("OPT_PROBE_EVIDENCE")
+                :Dialog("DIALOG_PROBE_EVIDENCE")
+                :Negotiation{
+                    on_start_negotiation = function(minigame)
+                        minigame:GetOpponentNegotiator():CreateModifier("DEM_PROBE_EVIDENCE")
+                        minigame:GetPlayerNegotiator():CreateModifier("DEM_CONTRABAND_TRACKER")
+                    end,
+                    on_success = function(cxt, minigame)
+                        local count = minigame:GetPlayerNegotiator():GetModifierStacks( "secret_intel" )
+                        cxt.enc.scratch.planted_evidence = minigame.planted_evidence
+                        if count > 0 then
+                            cxt:Dialog("DIALOG_PROBE_EVIDENCE_SUCCESS")
+                            cxt.quest.param.found_evidence = true
+                            cxt.quest:Activate("report_success")
+                        else
+                            cxt:Dialog("DIALOG_PROBE_EVIDENCE_NO_RESULT")
+                        end
+                    end,
+                    on_fail = function(cxt, minigame)
+                        if minigame.secret_intel_destroyed then
+                            cxt:Dialog("DIALOG_PROBE_EVIDENCE_DISCOVERED")
+                            cxt.quest.param.probe_discovered = true
+                        else
+                            cxt:Dialog("DIALOG_PROBE_EVIDENCE_FAILURE")
+                        end
+                    end,
+                }
+        end
+    end)
+
 QDEF:AddConvo("report_success", "giver")
     :Loc{
         OPT_TELL_NEWS = "Tell {agent} about what you did",
@@ -227,6 +305,12 @@ QDEF:AddConvo("report_success", "giver")
                     [p] {target} is out of the picture.
                 agent:
                     Excellent work.
+            }
+            {not (target_dead or target_retired) and found_evidence?
+                player:
+                    [p] I have proof of {target}'s wrongdoing.
+                agent:
+                    Excellent. That's something that we can work off of.
             }
         ]],
     }

@@ -156,7 +156,7 @@ local CARDS = {
 
         cost = 1,
         item_tags = ITEM_TAGS.UTILITY,
-        flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND | CARD_FLAGS.REPLENISH,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.REPLENISH,
         rarity = CARD_RARITY.COMMON,
 
         max_charges = 3,
