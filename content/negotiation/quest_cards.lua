@@ -937,6 +937,7 @@ local CARDS = {
 
         cost = 1,
         flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
+        item_tags = ITEM_TAGS.ILLICIT,
         rarity = CARD_RARITY.UNIQUE,
 
         OnPostResolve = function( self, minigame )
