@@ -119,6 +119,11 @@ local QDEF = QuestDef.Define
     id = "report_success",
     title = "Report to {giver}",
     desc = "The situation with {target} has been resolved. Report your results.",
+    mark = function(quest, t, in_location)
+        if in_location or DemocracyUtil.IsFreeTimeActive() then
+            table.insert(t, quest:GetCastMember("giver"))
+        end
+    end,
     on_activate = function(quest)
         local sides = {"find_evidence", "acquire_contraband", "punish_target"}
         for i, id in ipairs(sides) do
