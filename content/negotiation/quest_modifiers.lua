@@ -3399,7 +3399,10 @@ local MODIFIERS =
                 for i, mod in ipairs(self.tracked_mods) do
                     for j, card in ipairs(mod.stolen_cards or {}) do
                         if DemocracyUtil.IsContraband(card) then
-                            card:Consume()
+                            card:ConsumeCharge()
+                            if card:IsSpent() then
+                                card:Consume()
+                            end
                             minigame.planted_evidence = true
                         end
                     end
@@ -3512,7 +3515,7 @@ local FEATURES = {
     DEM_CONTRABAND =
     {
         name = "Contraband",
-        desc = "Proof of wrongdoing. When <b>Appropriated</>, create 1 {secret_intel} that remains as long as the card is <b>Appropriated</>. Remove this card from your deck if it remains <b>Appropriated</> at the end of the negotiation.",
+        desc = "Proof of wrongdoing. When <b>Appropriated</>, create 1 {secret_intel} that remains as long as the card is <b>Appropriated</>. Consume 1 use (if able) if it remains <b>Appropriated</> at the end of the negotiation.",
         feature_desc = "{DEM_CONTRABAND}",
     },
 }

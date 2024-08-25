@@ -255,6 +255,19 @@ QDEF:AddConvo("find_evidence", "target")
             agent:
                 [p] Hey! You ain't getting anything out of me!
         ]],
+        OPT_WARN = "Warn {agent}",
+        DIALOG_WARN = [[
+            player:
+                [p] The Admiralty is after you!
+        ]],
+        DIALOG_WARN_SUCCESS = [[
+            agent:
+                [p] Thanks for the heads up!
+        ]],
+        DIALOG_WARN_FAILURE = [[
+            agent:
+                [p] Nah I'd win.
+        ]],
     }
     :Hub(function(cxt)
         if not cxt.quest.param.probe_discovered then
@@ -264,6 +277,13 @@ QDEF:AddConvo("find_evidence", "target")
                     on_start_negotiation = function(minigame)
                         minigame:GetOpponentNegotiator():CreateModifier("DEM_PROBE_EVIDENCE")
                         minigame:GetPlayerNegotiator():CreateModifier("DEM_CONTRABAND_TRACKER")
+                        for k = 1, 3 do
+                            local card = Negotiation.Card( "gift_packaging", minigame.player_negotiator.agent )
+                            card.userdata.charges = nil
+                            card.userdata.max_charges = 0
+                            card.show_dealt = true
+                            card:TransferCard(minigame:GetDrawDeck())
+                        end
                     end,
                     on_success = function(cxt, minigame)
                         local count = minigame:GetPlayerNegotiator():GetModifierStacks( "secret_intel" )
@@ -285,6 +305,25 @@ QDEF:AddConvo("find_evidence", "target")
                         end
                     end,
                 }
+        end
+        if cxt:GetAgent():GetRelationship() > RELATIONSHIP.NEUTRAL then
+            cxt:Opt("OPT_WARN")
+                :Dialog("DIALOG_WARN")
+                :ReceiveOpinion(OPINION.BETRAYED, nil, "giver")
+                :FailQuest()
+                :ReceiveOpinion(OPINION.WARNED_ENEMY)
+        elseif cxt:GetAgent():GetRelationship() == RELATIONSHIP.NEUTRAL then
+            cxt:Opt("OPT_WARN")
+                :Dialog("DIALOG_WARN")
+                :ReceiveOpinion(OPINION.BETRAYED, nil, "giver")
+                :FailQuest()
+                :Negotiation{}
+                    :OnSuccess()
+                        :Dialog("DIALOG_WARN_SUCCESS")
+                        :ReceiveOpinion(OPINION.WARNED_ENEMY)
+                    :OnFailure()
+                        :Dialog("DIALOG_WARN_FAILURE")
+                        :ReceiveOpinion(OPINION.INSULT)
         end
     end)
 

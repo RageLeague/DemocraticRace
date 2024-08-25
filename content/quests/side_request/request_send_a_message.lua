@@ -146,14 +146,6 @@ local QDEF = QuestDef.Define
 
     end,
 }
-:AddOpinionEvents{
-
-    warned =
-    {
-        delta = OPINION_DELTAS.LIKE,
-        txt = "Warned them about their enemy",
-    },
-}
 
 QDEF:AddIntro(
     --attract spiel
@@ -298,7 +290,7 @@ QDEF:AddConvo("punish_target", "target")
                     :Dialog("DIALOG_WARN")
                     :ReceiveOpinion(OPINION.BETRAYED, nil, "giver")
                     :FailQuest()
-                    :ReceiveOpinion("warned")
+                    :ReceiveOpinion(OPINION.WARNED_ENEMY)
                     :Fn(ReassignQuest)
             elseif cxt:GetAgent():GetRelationship() == RELATIONSHIP.NEUTRAL then
                 cxt:Opt("OPT_WARN")
@@ -308,7 +300,7 @@ QDEF:AddConvo("punish_target", "target")
                     :Negotiation{}
                         :OnSuccess()
                             :Dialog("DIALOG_WARN_SUCCESS")
-                            :ReceiveOpinion("warned")
+                            :ReceiveOpinion(OPINION.WARNED_ENEMY)
                             :Fn(ReassignQuest)
                         :OnFailure()
                             :Dialog("DIALOG_WARN_FAILURE")
