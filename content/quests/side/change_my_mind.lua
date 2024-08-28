@@ -158,7 +158,7 @@ QDEF:AddConvo("go_to_junction")
 QDEF:AddConvo("debate_people")
     :Confront(function(cxt)
         if cxt.location == cxt.quest:GetCastMember("junction") then
-            cxt.quest.param.total_debate_count = cxt.quest.param.total_debate_count or math.ceil(math.sqrt(math.random(1, 25)))
+            cxt.quest.param.total_debate_count = cxt.quest.param.total_debate_count or math.ceil(math.sqrt(math.random(4, 25)))
             if cxt.quest.param.debated_people >= cxt.quest.param.total_debate_count then
                 return "STATE_ARREST"
             else
@@ -349,7 +349,7 @@ QDEF:AddConvo("debate_people")
                     !exit
                 * You leave before trouble arrives.
             ]],
-            OPT_KEEP_GOING = "Continue with the setup",
+            OPT_KEEP_GOING = "Keep going",
             TT_KEEP_GOING = "You can do more debates, potentially boosting your popularity; however, you can also run into trouble.",
             DIALOG_KEEP_GOING = [[
                 player:
@@ -471,6 +471,14 @@ QDEF:AddConvo("debate_people")
                             cxt:Opt("OPT_KEEP_GOING")
                                 :PostText("TT_KEEP_GOING")
                                 :Dialog("DIALOG_KEEP_GOING")
+                                :Fn(function(cxt)
+                                    cxt:End()
+                                end)
+                        else
+                            cxt:Opt("OPT_KEEP_GOING")
+                                :Fn(function(cxt)
+                                    cxt:End()
+                                end)
                         end
                         -- cxt:GoTo("STATE_PICK_SIDE")
                     end,
@@ -479,10 +487,31 @@ QDEF:AddConvo("debate_people")
                             cxt:Dialog("DIALOG_DEBATE_LOST_BRIBED")
                             if cxt:GetAgent():GetRelationship() < RELATIONSHIP.NEUTRAL then
                                 cxt.quest:GetCastMember("debater"):OpinionEvent(OPINION.BETRAYED)
-                                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -5)
+                                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -2)
                                 cxt:GoTo("STATE_FAIL")
                             else
-                                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -3)
+                                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", -1)
+                                cxt.quest.param.debated_people = cxt.quest.param.debated_people + 1
+                                if cxt.quest.param.debated_people >= 2 then
+                                    cxt:Dialog("DIALOG_MET_QUOTA")
+                                    cxt:Opt("OPT_LEAVE")
+                                        :PostText("TT_LEAVE")
+                                        :Dialog("DIALOG_LEAVE")
+                                        :CompleteQuest()
+                                        :DoneConvo()
+                                        -- :Fn(function(cxt) StateGraphUtil.AddLeaveLocation(cxt) end)
+                                    cxt:Opt("OPT_KEEP_GOING")
+                                        :PostText("TT_KEEP_GOING")
+                                        :Dialog("DIALOG_KEEP_GOING")
+                                        :Fn(function(cxt)
+                                            cxt:End()
+                                        end)
+                                else
+                                    cxt:Opt("OPT_KEEP_GOING")
+                                        :Fn(function(cxt)
+                                            cxt:End()
+                                        end)
+                                end
                             end
                         else
                             cxt:Dialog("DIALOG_DEBATE_LOST")
