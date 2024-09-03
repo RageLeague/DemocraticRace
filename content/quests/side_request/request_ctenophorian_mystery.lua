@@ -967,16 +967,18 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                     <i>I am Hesh.</>
                 player:
                     !surprised
-                    Whoa! Did Hesh just talk to me? Am I dreaming?
+                    W-what?! How?!
                 agent:
-                    <i>Technically, you are dreaming.</>
-                    <i>Your body is resting, anticipating the struggle of tomorrow, while your mind wanders, freely conversing with me.</>
-                    <i>Dreams are a reflection of reality, after all.</>
+                    <i>Your inquiries into the deeper lore of my being has opened your spirit to enter my realm, for a time.</>
+                    <i>While your mortal body lies in the sand-soft comforts of your bed, your consciousness has been brought to me.</>
                 player:
-                    There's a lot to take in. I need some time to think.
+                    !scared
+                    Wait, is my soul going to be consumed?
+                    Oh no, no, no, oh hess- uhhhh.
+                    My lord, I am uh-
                 agent:
-                    <i>Of course, I understand.</>
-                    <i>If you want to know anything, you only need to ask.</>
+                    <i>Be calm, for it is not your time yet.</>
+                    <i>You may have questions. I shall answer them as you wish.</>
             ]],
             DIALOG_UNDERSTAND_FAILURE = [[
                 * Sand.
@@ -1099,13 +1101,29 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
         end)
     :State("STATE_QUESTIONS")
         :Loc{
-            OPT_ASK_REAL = "Ask if Hesh is real",
+             OPT_ASK_REAL = "Ask if Hesh is real",
             DIALOG_ASK_REAL = [[
+                {not player_arint?
                 player:
-                    [p] Are you real?
+                    So are you uh...
+                    <i>Real?</>
                 agent:
-                    <i>I don't know. Maybe I am real, or maybe I am just a construct of your subconscience.</>
-                    <i>But reality is in the eyes of the beholder. If you believe I am real, then I am real to you.</>
+                    <i>I may be. I may not be. I must be. I must not be.</>
+                    <i>Your faith is what sustains me. What sustains my kingdom above water. If you believe in me, I shall be real.</>
+                }
+                {player_arint?
+                player:
+                    !crossed
+                    ...
+                agent:
+                    <i>You are skeptical.</>
+                player:
+                    You chose, of all of your followers, to abduct the soul of a Spark Baron.
+                    Apologies, my Lord, that I don't believe this is real.
+                agent:
+                    <i>You are excused. It is natural to become skeptical of such an experience.</>
+                    <i>I am only as real as those who believe in me do so believe I am real.</>
+}
             ]],
             OPT_ASK_CLASSIFICATION = "Ask what Hesh is",
             DIALOG_ASK_CLASSIFICATION = [[
@@ -1127,21 +1145,39 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
             OPT_ASK_CULT = "Ask what Hesh think of the Cult",
             DIALOG_ASK_CULT = [[
                 player:
-                    [p] What do you think of the Cult?
+                    Do you approve of the cult's... y'know. Everything?
                 agent:
-                    <i>I feel flattered that I am honored as a god by the Cult.</>
-                    <i>Although, I am slightly concerned by their desire to be consumed by me.</>
-                    <i>I mean, I'm not going to complain because of the free food, but still, it is concerning.</>
+                    <i>I hold no opinion over my followers. They assume to know what I desire, and I am in no position to dictate their beliefs.</>
                 player:
-                    What do you think of their politics?
-                    You know, like their whole deal of preserving artifacts, or treating lumin as a sacred fuel source.
-                {player_sal?
-                    !spit
-                    Or using indentured labor to harvest said fuel source.
+                    But you're Hesh!
+                {player_smith?
+                    Couldn't you just kill my parents again or something to prove a point?
+                }
+                {not player_smith?
+                    Can you not send some form of divine message to us, maybe give a priest a vision while they're black out drunk?
                 }
                 agent:
-                    <i>I don't care.</>
-                    <i>I mean, I'm just a jellyfish swimming at the bottom of the sea. What you people do does not concern me.</>
+                    <i>My powers do not work in such a way. What happens in the ocean beyond my control is beyond my control.</>
+                player:
+                    Well, okay, but they've been saying a lot of things in your name.
+                    !intrigue
+                    And with the election going on, they might actually get off the ground with some of those things.
+                {player_sal?
+                agent:
+                    I know of their misdeeds. I know of how they have affected you.
+                player:
+                    !scared
+                agent:
+                    <b>Ik-derrick</>
+                    <i>But have no fear. Though their institutions have lasted, they too shall be subsumed by the waves.</>
+                    <i>I hold no capability to change their minds, but immortality has given me perspectives beyond mortal ken.</>
+                }
+                {not player_sal?
+                agent:
+                    <i>I understand their decisions. To preserve what they see of my grandeur in.</>
+                    <i>I am appreciative, even though it does not affect me.</>
+                    <i>There will always be more artifacts. I will always be present, regardless of their idols revering me.</>
+                }
             ]],
             DIALOG_FINISH = [[
                 player:
