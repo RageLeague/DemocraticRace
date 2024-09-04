@@ -988,9 +988,9 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                     !exit
                 * It is the sand of the beach you are confined to, the sand that you cannot go beyond, as the creature of your dreams slips further into the murky blue.
                 * Its face still shifts between identities, but you were so close to understanding, if only you could reach beyond the sand, if only you could see, IF ONLY-
-                * Yet you cannot, and you are plagued with those thoughts, unable to decipher anything.
             ]],
             DIALOG_NO_INTERFERE = [[
+                * Yet you cannot, and you are plagued with those thoughts, unable to decipher anything.
                 * Every time you tried to decipher what you have seen, your mind frays further and further.
                 * As such, your mind is consumed by Hesh's madness.
             ]],
@@ -1181,41 +1181,57 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
             ]],
             DIALOG_FINISH = [[
                 player:
-                    [p] Thank you. I feel like I understand you better now.
+                    Thank you, Hesh. Conversing with you has made me understand your better.
                 agent:
-                    <i>It was nice talking to you, {player}.</>
-                    <i>Rarely do I find people who understand me.</>
+                    <i>It is rare for mortals to make such a journey to me. Many choose to avoid their curiosity for the sake of reverence.</>
                 player:
-                    Oh, Hesh?
-                agent:
-                    <i>Is there something you like to say?</>
+                    !point
+                    Oh, and Hesh?
             ]],
             OPT_COMPLIMENT = "Compliment on Hesh's magnificence",
             DIALOG_COMPLIMENT = [[
                 player:
-                    [p] Out of all the creatures I've seen, you are truly the most magnificent one.
+                    !scared
+                    I-I just wanted to remark on h-how magnificent you are. Truly, you uh-
                 agent:
-                    <i>Thank you.</>
-                    <i>Many people fear me. Many people blindly worship me. But not many people compliment me like you just did.</>
+                    <i>Why do you show fear in expressing your gratitude?</>
                 player:
-                    !bashful
-                    I- I feel honored.
+                    !scared_shrug
+                    Well it's just uh... I-I just feel honored to be in your presence, my uh-
+                agent:
+                    <i>It was not I who chose you. You had made an effort, and your choices have lead to this moment.</>
+                    <i>You need not feel to flatter me. I am honored to meet with someone such as yourself.</>
+                player:
+                    !happy
+                    W-wow. I... I wasn't expecting that. 
             ]],
             OPT_WEIRD = "Express how weird Hesh is",
             DIALOG_WEIRD = [[
                 player:
-                    [p] You are truly weird, Hesh.
-                    I feel like even if I asked all these questions, I still don't understand you at all.
+                    You are many things. A massive jellyfish, a god-like entity, the thing that will eat us all in the end.
+                    !bashful
+                    ...and you're also just kind of weird, if I may so blunt.
+                    I have asked you all of these questions, and I feel like I understand you on some intuitive level.
+                    !angry_shrug
+                    But all my logical explanations for you just seem to fall flat.
                 agent:
-                    <i>I understand.</>
-                    <i>Still, you manage to try and understand me. Not many people have the courage or the resolve to do that.</>
+                    <i>It may not be the ken of mortals to understand Gods.</>
+                    <i>But your experience has brought you closer to me, even if only your soul may comprehend it.</>
             ]],
             OPT_NOTHING = "Don't make additional comments",
             DIALOG_NOTHING = [[
                 player:
-                    [p] I was just exclaiming. Don't mind me.
+                    !scared
+                    I just rememebered that I didn't check if I left the stove on
+                    I-is this some sort of smoke inhalation dream, am I about to di-
                 agent:
-                    <i>Oh. Okay.</>
+                    <i>It has been dealt with.</>
+                player:
+                    !intrigue
+                    Seriously?
+                agent:
+                    <i>My many tentacles may show mercy, from time to time.</>
+                    <i>See for yourself, once you return.</>
             ]],
             DIALOG_END = [[
                 agent:
@@ -1503,7 +1519,7 @@ QDEF:AddConvo("bad_event")
                 {leader_absent?
                     player:
                         !give
-                        What I'm have to say is "big bag of money".
+                        What I have to say is "big bag of money".
                         And what you're going to say is "Nothing to report".
                     agent:
                         !take
@@ -1545,7 +1561,7 @@ QDEF:AddConvo("bad_event")
                         I hope I've sufficiently beaten the idea I committed heresy out of your dense skull.
                     agent:
                         You have. Won't be dealing with us for a while.
-                        But keep that heresy talk to yourself if you don't want to see someone else's ugly mug asking the same thing I did.
+                        But keep that heresy talk to yourself if you don't want to see someone else asking the same thing I did.
                     * The cultish crew stumbles away, leaving the thinly veiled threat for you to ponder.
                 }
             ]],
