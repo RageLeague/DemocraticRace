@@ -899,8 +899,7 @@ QDEF:AddConvo("debate_people")
                                     cxt:Dialog("DIALOG_RESIST_ARREST_RUNAWAY")
                                     cxt.quest.param.poor_performance = true
                                     cxt.quest:Complete()
-                                    -- you get no quest reward for such hasty exit.
-                                    -- don't ask how it works.
+                                    ConvoUtil.GiveQuestRewards(cxt)
                                     StateGraphUtil.DoRunAwayEffects( cxt, battle, true )
                                 end,
                             }

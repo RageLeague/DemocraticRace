@@ -17,6 +17,7 @@ local QDEF = QuestDef.Define
     end,
     on_start = function(quest)
         -- quest:Activate("go_to_junction")
+        quest.param.total_visit_count = math.ceil(math.sqrt(math.random(4, 25)))
     end,
 
     on_complete = function( quest )
@@ -33,6 +34,20 @@ local QDEF = QuestDef.Define
     end,
 
     HOME_TYPES = {"BASIC_DORM", "SPREE_TENT", "SPARK_BARON_RESIDENCE", "PEARL_RICH_HOUSE", "PEARL_POOR_HOUSE"},
+    PATROL_TYPES = {
+        BASIC_DORM = "ADMIRALTY_PATROL",
+        PEARL_RICH_HOUSE = "ADMIRALTY_PATROL",
+        PEARL_POOR_HOUSE = "ADMIRALTY_PATROL",
+        SPREE_TENT = "BANDIT_PATROL",
+        SPARK_BARON_RESIDENCE = "SPARK_BARON_PATROL",
+    },
+    FALLBACKS = {
+        BASIC_DORM = {"ADMIRALTY_CLERK", "ADMIRALTY_GOON", "ADMIRALTY_GUARD"},
+        PEARL_RICH_HOUSE = {"WEALTHY_MERCHANT", "PRIEST"},
+        PEARL_POOR_HOUSE = {"LABORER", "PEARLIE", "HEAVY_LABORER"},
+        SPREE_TENT = {"BANDIT_GOON", "BANDIT_GOON2", "BANDIT_RAIDER"},
+        SPARK_BARON_RESIDENCE = {"SPARK_BARON_GOON", "SPARK_BARON_TASKMASTER"},
+    }
 }
 :AddCast{
     cast_id = "homeowner",
@@ -43,7 +58,7 @@ local QDEF = QuestDef.Define
             return false, "Not a bystander"
         end
         if agent:GetBrain().home_location then
-            if agent:GetBrain().home_location:GetContentID() ~= cxt.quest.param.home_type then
+            if agent:GetBrain().home_location:GetContentID() ~= quest.param.home_type then
                 return false, "Invalid home type"
             end
             for i, other in ipairs(quest.param.visited_people) do
@@ -53,7 +68,7 @@ local QDEF = QuestDef.Define
             end
         else
             local location_id = TheGame:GetGameState():GetWorldRegion():GetContent().home_generator(agent)
-            if location_id ~= cxt.quest.param.home_type then
+            if location_id ~= quest.param.home_type then
                 return false, "Invalid home type"
             end
         end
@@ -64,6 +79,12 @@ local QDEF = QuestDef.Define
     end,
     on_assign = function(quest, agent)
         agent:GetBrain():MoveToHome()
+    end,
+}
+:AddCastFallback{
+    cast_fn = function(quest, t)
+        local defs = quest:GetQuestDef().FALLBACKS[quest.param.home_type] or {"LABORER"}
+        table.insert( t, quest:CreateSkinnedAgent(table.arraypick(defs)) )
     end,
 }
 :AddObjective{
@@ -83,6 +104,11 @@ local QDEF = QuestDef.Define
         if in_location then
             local location = TheGame:GetGameState():GetPlayerAgent():GetLocation()
             for _, agent in location:Agents() do
+                if table.arraycontains(quest.param.convinced_people, agent) then
+                    return
+                end
+            end
+            for _, agent in location:Agents() do
                 if not table.arraycontains(quest.param.visited_people, agent) then
                     table.insert(t, agent)
                 end
@@ -92,7 +118,7 @@ local QDEF = QuestDef.Define
 }
 
 QDEF:AddConvo("go_to_neighbourhood")
-    :ConfrontState("STATE_CONF", function(cxt) return cxt.location == cxt:GetCastMember("homeowner"):GetHome() end)
+    :ConfrontState("STATE_CONF", function(cxt) return cxt.location == cxt.quest:GetCastMember("homeowner"):GetHomeLocation() end)
         :Loc{
             DIALOG_NEIGHBOURHOOD = [[
                 * [p] You arrived at the neighbourhood.
@@ -110,9 +136,26 @@ QDEF:AddConvo("talk_to_people")
     :Loc{
         OPT_NEXT = "Go to the next place",
         OPT_DONE = "Finish the campaign",
+
+        OPT_CONVINCE = "Convince {agent} of your ideology",
+        DIALOG_CONVINCE = [[
+            player:
+                [p] Here's why you should vote for me.
+        ]],
+        DIALOG_CONVINCE_SUCCESS = [[
+            agent:
+                [p] You're right!
+        ]],
+        DIALOG_CONVINCE_FAILURE = [[
+            agent:
+                [p] Get out of here!
+        ]],
     }
     :Hub_Location( function(cxt)
         cxt:Opt("OPT_NEXT")
+            :Fn(function(cxt)
+                UIHelpers.DoSpecificConvo( nil, cxt.convodef.id, "STATE_NEXT" ,nil,nil,cxt.quest)
+            end)
         if cxt.quest.param.convinced_people >= 1 then
             cxt:Opt("OPT_DONE")
                 :Fn(function(cxt)
@@ -120,6 +163,138 @@ QDEF:AddConvo("talk_to_people")
                 end)
         end
     end)
+    :Hub(function(cxt, who)
+        if not who then
+            return
+        end
+        for i, agent in ipairs(cxt.quest.param.visited_people) do
+            if who:GetHomeLocation() == agent:GetHomeLocation() then
+                return
+            end
+        end
+        for i, agent in ipairs(cxt.quest.param.convinced_people) do
+            if who:GetHomeLocation() == agent:GetHomeLocation() then
+                return
+            end
+        end
+    end)
+    :State("STATE_NEXT")
+        :Loc{
+            DIALOG_INTRO = [[
+                * [p] You decided to go to the next door to find people.
+            ]],
+            DIALOG_PATROL = [[
+                * [p] But not all is well as you run into a group of people!
+                player:
+                    !left
+                agent:
+                    !right
+                    !angry
+                * They are pissed at you.
+            ]],
+            OPT_BRIBE = "Bribe {agent}",
+            DIALOG_BRIBE = [[
+                player:
+                    [p] You never saw me.
+                agent:
+                    Of course.
+                * You are able to get out of trouble.
+            ]],
+            OPT_CONVINCE = "Convince {agent} to let you leave",
+            DIALOG_CONVINCE = [[
+                player:
+                    !placate
+                    Look, I mean no harm.
+                    Just let me go, okay?
+                agent:
+                    And why would I let you do that?
+            ]],
+            DIALOG_CONVINCE_WIN = [[
+                player:
+                    !exit
+                * [p] You leave before {agent} changes {agent.hisher} mind.
+            ]],
+            DIALOG_CONVINCE_LOSE = [[
+                agent:
+                    !fight
+                    [p] That's enough.
+                    You're going down!
+            ]],
+            OPT_RESIST = "Defend yourself!",
+            DIALOG_RESIST = [[
+                player:
+                    !fight
+                    [p] No.
+            ]],
+            DIALOG_RESIST_SUCCESS = [[
+                * Good job. You might still be free, but your reputation will suffer.
+            ]],
+            DIALOG_RESIST_RUNAWAY = [[
+                left:
+                    !exit
+                right:
+                    !exit
+                * You ran away from the scene.
+                * It might seem cowardly, but you did what you came here to do.
+                * And that's good enough for you.
+            ]],
+        }
+        :Fn(function(cxt)
+            cxt:Dialog("DIALOG_INTRO")
+            table.insert_unique(cxt.quest.param.visited_people, cxt:GetCastMember("homeowner"))
+            if #cxt.quest.param.visited_people < cxt.quest.param.total_visit_count then
+                cxt.quest:UnassignCastMember("homeowner")
+                cxt.quest:AssignCastMember("homeowner")
+                cxt:Opt("OPT_LEAVE_LOCATION")
+                    :Fn(function(cxt)
+                        cxt.encounter:DoLocationTransition(cxt.quest:GetCastMember("homeowner"):GetHomeLocation())
+                    end)
+                    :MakeUnder()
+            else
+                cxt.enc.scratch.opfor = CreateCombatParty(cxt.quest.param.home_type and cxt.quest:GetQuestDef().PATROL_TYPES[cxt.quest.param.home_type] or "ADMIRALTY_PATROL", cxt.quest:GetRank(), cxt.location, true)
+                cxt.enc:SetPrimaryCast(cxt.enc.scratch.opfor[1])
+                cxt:Dialog("DIALOG_PATROL")
+                cxt:Opt("OPT_BRIBE")
+                    :Dialog("DIALOG_BRIBE")
+                    :DeliverMoney(50 * cxt.quest:GetRank())
+                    :CompleteQuest()
+                    :Travel()
+                cxt:Opt("OPT_CONVINCE")
+                    :Dialog("DIALOG_CONVINCE")
+                    :Negotiation{
+                        cooldown = 0,
+                        on_success = function(cxt)
+                            cxt:Dialog("DIALOG_CONVINCE_WIN")
+                            cxt.quest:Complete()
+                            ConvoUtil.GiveQuestRewards(cxt)
+                            StateGraphUtil.AddLeaveLocation(cxt)
+                        end,
+                        on_fail = function(cxt)
+                            cxt:Dialog("DIALOG_CONVINCE_LOSE")
+
+                            cxt:Opt("OPT_RESIST")
+                                :Dialog("DIALOG_RESIST")
+                                :Battle{
+                                    flags = BATTLE_FLAGS.SELF_DEFENCE,
+                                    on_win = function(cxt)
+                                        cxt:Dialog("DIALOG_RESIST_SUCCESS")
+                                        cxt.quest.param.poor_performance = true
+                                        cxt.quest:Complete()
+                                        ConvoUtil.GiveQuestRewards(cxt)
+                                        StateGraphUtil.AddLeaveLocation(cxt)
+                                    end,
+                                    on_runaway = function(cxt, battle)
+                                        cxt:Dialog("DIALOG_RESIST_RUNAWAY")
+                                        cxt.quest.param.poor_performance = true
+                                        cxt.quest:Complete()
+                                        ConvoUtil.GiveQuestRewards(cxt)
+                                        StateGraphUtil.DoRunAwayEffects( cxt, battle, true )
+                                    end,
+                                }
+                        end,
+                    }
+            end
+        end)
     :State("STATE_DONE")
         :Loc{
             DIALOG_INTRO = [[
@@ -195,7 +370,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
                 [p] I want the wealthy and influential to be on my side.
         ]],
         OPT_PEARL_POOR_HOUSE = "The poor districts",
-        DIALOG_SPREE_TENT = [[
+        DIALOG_PEARL_POOR_HOUSE = [[
             player:
                 [p] I want the support of the common folks.
         ]],
@@ -213,6 +388,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
                         cxt.quest:AssignCastMember("homeowner")
                         cxt.quest:Activate("go_to_neighbourhood")
                     end)
+                    :DoneConvo()
             end
             for i, option in ipairs(options) do
                 AddLocationOption(cxt, option)
