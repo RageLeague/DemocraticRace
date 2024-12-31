@@ -3410,6 +3410,53 @@ local MODIFIERS =
             end,
         },
     },
+    DEM_POLITICAL_ENGAGEMENT =
+    {
+        name = "Political Engagement",
+        desc = "Decreases by 1 at the end of {1}'s turn. When it reaches zero, you lose the negotiation!",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOwnerName())
+        end,
+        modifier_type = MODIFIER_TYPE.PERMANENT,
+        -- win_on_turn = 7,
+        OnEndTurn = function( self, minigame )
+            self.negotiator:RemoveModifier(self, 1)
+            if self.stacks <= 0 then
+                minigame:Lose()
+                minigame.lost_interest = true
+            end
+        end,
+    },
+    DEM_RAISE_INTEREST =
+    {
+        name = "Raise Interest",
+        desc = "{MYRIAD_MODIFIER}.\n\nWhen destroyed, {1} gains {3} {DEM_POLITICAL_ENGAGEMENT}.",
+        -- icon = "negotiation/modifiers/dread.tex",
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+        init_max_resolve = 3,
+
+        bonus_per_generation = 0,
+
+        generation = 0,
+
+        desc_fn = function(self, fmt_str)
+            return loc.format( fmt_str, self:GetOwnerName(), CalculateBonusScale(self), self.stacks or 1)
+        end,
+        OnInit = function(self)
+            if (self.generation or 0) == 0 then
+                self.init_max_resolve = self.init_max_resolve + (self.engine.interest_resolve_mod or 0)
+            end
+            if (self.generation or 0) == 0 and self.engine:GetDifficulty() > 1 then
+                self.init_max_resolve = self.init_max_resolve + 2 * (self.engine:GetDifficulty() - 1)
+            end
+            MyriadInit(self)
+        end,
+        OnBounty = function(self)
+            self.negotiator:DeltaModifier("DEM_POLITICAL_ENGAGEMENT", self.stacks or 1)
+            CreateNewSelfMod(self)
+        end,
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
@@ -3419,7 +3466,7 @@ local FEATURES = {
     MYRIAD_MODIFIER =
     {
         name = "Myriad",
-        desc = "When this bounty is destroyed, create a bounty that is a copy of this bounty with full resolve, except it has an extra starting resolve equal to the number indicated by {MYRIAD_MODIFIER}.",
+        desc = "When this bounty is destroyed, create a bounty that is a copy of this bounty with full resolve, except it has an extra starting resolve equal to the number indicated by {MYRIAD_MODIFIER}, if any.",
         loc_strings = {
             NO_GAIN = "When this bounty is destroyed, create a bounty that is a copy of this bounty with full resolve.",
             STACKS = "When this bounty is destroyed, create a bounty that is a copy of this bounty with full resolve, except it has {1} extra starting resolve.",

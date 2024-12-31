@@ -442,7 +442,7 @@ QDEF:AddConvo("debate_people")
                         if minigame.impasse and resolve_left then
                             if cxt:GetAgent():HasAspect("bribed") then
                                 cxt:Dialog("DIALOG_DEBATE_IMPASSE_BRIBED")
-                            elseif resolve_left <= 10 then
+                            elseif resolve_left <= 10 + (cxt.quest:GetRank() - 1) * 5 then
                                 -- instead of random, we now have a scale.
                                 -- if opponent resolve is 10 or less when impasse, they will enjoy the debate.
                                 -- otherwise, you suck, and deserve a dislike

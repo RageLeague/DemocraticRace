@@ -104,12 +104,7 @@ local QDEF = QuestDef.Define
         if in_location then
             local location = TheGame:GetGameState():GetPlayerAgent():GetLocation()
             for _, agent in location:Agents() do
-                if table.arraycontains(quest.param.convinced_people, agent) then
-                    return
-                end
-            end
-            for _, agent in location:Agents() do
-                if not table.arraycontains(quest.param.visited_people, agent) then
+                if agent:IsSentient() and not table.arraycontains(quest.param.visited_people, agent) then
                     table.insert(t, agent)
                 end
             end
@@ -167,16 +162,37 @@ QDEF:AddConvo("talk_to_people")
         if not who then
             return
         end
+        if not who:IsSentient() then
+            return
+        end
         for i, agent in ipairs(cxt.quest.param.visited_people) do
             if who:GetHomeLocation() == agent:GetHomeLocation() then
                 return
             end
         end
-        for i, agent in ipairs(cxt.quest.param.convinced_people) do
-            if who:GetHomeLocation() == agent:GetHomeLocation() then
-                return
-            end
-        end
+        cxt:Opt("OPT_CONVINCE")
+            :Dialog("DIALOG_CONVINCE")
+            :Fn(function(cxt)
+                table.insert_unique(cxt.quest.param.visited_people, cxt:GetCastMember("homeowner"))
+            end)
+            :Negotiation{
+                on_start_negotiation = function(minigame)
+                    minigame.interest_resolve_mod = math.ceil((cxt.quest.param.convinced_people or 0) * (0.5 + cxt.quest:GetRank() * 0.5))
+                    minigame.opponent_negotiator:AddModifier("DEM_POLITICAL_ENGAGEMENT", 3)
+                    minigame.opponent_negotiator:AddModifier("DEM_RAISE_INTEREST", 1)
+                    if #cxt.quest.param.visited_people >= 3 then
+                        minigame.player_negotiator:AddModifier("FATIGUED")
+                    end
+                end,
+                on_success = function(cxt, minigame)
+                    cxt:Dialog("DIALOG_CONVINCE_SUCCESS")
+                    cxt.quest.param.convinced_people = (cxt.quest.param.convinced_people or 0) + 1
+                    who:OpinionEvent(OPINION.CONVINCE_SUPPORT)
+                end,
+                on_fail = function(cxt, minigame)
+                    cxt:Dialog("DIALOG_CONVINCE_FAILURE")
+                end,
+            }
     end)
     :State("STATE_NEXT")
         :Loc{
@@ -257,7 +273,14 @@ QDEF:AddConvo("talk_to_people")
                 cxt:Opt("OPT_BRIBE")
                     :Dialog("DIALOG_BRIBE")
                     :DeliverMoney(50 * cxt.quest:GetRank())
-                    :CompleteQuest()
+                    :Fn(function(cxt)
+                        if (cxt.quest.param.convinced_people or 0) >= 1 then
+                            cxt.quest:Complete()
+                            ConvoUtil.GiveQuestRewards(cxt)
+                        else
+                            cxt.quest:Fail()
+                        end
+                    end)
                     :Travel()
                 cxt:Opt("OPT_CONVINCE")
                     :Dialog("DIALOG_CONVINCE")
@@ -265,8 +288,12 @@ QDEF:AddConvo("talk_to_people")
                         cooldown = 0,
                         on_success = function(cxt)
                             cxt:Dialog("DIALOG_CONVINCE_WIN")
-                            cxt.quest:Complete()
-                            ConvoUtil.GiveQuestRewards(cxt)
+                            if (cxt.quest.param.convinced_people or 0) >= 1 then
+                                cxt.quest:Complete()
+                                ConvoUtil.GiveQuestRewards(cxt)
+                            else
+                                cxt.quest:Fail()
+                            end
                             StateGraphUtil.AddLeaveLocation(cxt)
                         end,
                         on_fail = function(cxt)
@@ -279,15 +306,23 @@ QDEF:AddConvo("talk_to_people")
                                     on_win = function(cxt)
                                         cxt:Dialog("DIALOG_RESIST_SUCCESS")
                                         cxt.quest.param.poor_performance = true
-                                        cxt.quest:Complete()
-                                        ConvoUtil.GiveQuestRewards(cxt)
+                                        if (cxt.quest.param.convinced_people or 0) >= 1 then
+                                            cxt.quest:Complete()
+                                            ConvoUtil.GiveQuestRewards(cxt)
+                                        else
+                                            cxt.quest:Fail()
+                                        end
                                         StateGraphUtil.AddLeaveLocation(cxt)
                                     end,
                                     on_runaway = function(cxt, battle)
                                         cxt:Dialog("DIALOG_RESIST_RUNAWAY")
                                         cxt.quest.param.poor_performance = true
-                                        cxt.quest:Complete()
-                                        ConvoUtil.GiveQuestRewards(cxt)
+                                        if (cxt.quest.param.convinced_people or 0) >= 1 then
+                                            cxt.quest:Complete()
+                                            ConvoUtil.GiveQuestRewards(cxt)
+                                        else
+                                            cxt.quest:Fail()
+                                        end
                                         StateGraphUtil.DoRunAwayEffects( cxt, battle, true )
                                     end,
                                 }
