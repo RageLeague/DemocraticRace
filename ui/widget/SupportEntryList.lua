@@ -3,7 +3,7 @@ local SupportEntryList = class( "DemocracyClass.Widget.SupportEntryList", Widget
 function SupportEntryList:init(widget_list, max_width, entry_per_row)
     SupportEntryList._base.init(self)
     self.max_width = max_width or 1200
-    
+
     self.spacing = 10
 
     self.entry_per_row = entry_per_row or 3
@@ -43,7 +43,7 @@ function SupportEntryList:Refresh(...)
     for i, widget in ipairs(self.widget_list) do
         if widget.Refresh then
             widget:SetWidth(self.entry_width):Refresh(...)
-                
+
         end
     end
     self:Layout()
@@ -156,16 +156,18 @@ local StancesEntryList = class( "DemocracyClass.Widget.StancesEntryList", Suppor
 function StancesEntryList:init(max_width)
 
     local widget_list = {}
-    for i, id, data in sorted_pairs(TheGame:GetGameState():GetMainQuest().param.stances) do
-        local widget = DemocracyClass.Widget.PoliticalIssueTrack(max_width)
-            :SetIssue(id)
-            :AddAgent(TheGame:GetGameState():GetPlayerAgent())
-        
-        for i, agent in ipairs(DemocracyUtil.GetStanceIntel()) do
-            widget:AddAgent(agent)
-        end
+    for i, id, data in sorted_pairs(DemocracyConstants.issue_data) do
+        if DemocracyUtil.SeenIssue(id) then
+            local widget = DemocracyClass.Widget.PoliticalIssueTrack(max_width)
+                :SetIssue(id)
+                :AddAgent(TheGame:GetGameState():GetPlayerAgent())
 
-        table.insert(widget_list,widget)
+            for i, agent in ipairs(DemocracyUtil.GetStanceIntel()) do
+                widget:AddAgent(agent)
+            end
+
+            table.insert(widget_list,widget)
+        end
     end
     StancesEntryList._base.init(self, widget_list, max_width, 1)
 end

@@ -1126,6 +1126,21 @@ local QDEF = QuestDef.Define
     GetMainQuestCast = function(quest, id)
         return quest:GetCastMember(id)
     end,
+
+    SeenIssue = function(quest, issue)
+        if type(issue) == "table" then
+            issue = issue.id
+        end
+        return quest.param.stances[issue] or (quest.param.seen_stances or {})[issue]
+    end,
+
+    MarkSeenIssue = function(quest, issue)
+        if type(issue) == "table" then
+            issue = issue.id
+        end
+        quest.param.seen_stances = quest.param.seen_stances or {}
+        quest.param.seen_stances[issue] = true
+    end,
 }
 :AddCast{
     cast_id = "random_opposition",

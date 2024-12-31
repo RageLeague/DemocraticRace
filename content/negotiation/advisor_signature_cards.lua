@@ -980,8 +980,8 @@ local CARDS = {
         modifier =
         {
 
-            desc = "Whenever one of your arguments is destroyed, deal {1} damage to a random opponent argument.\n\nWhen an opponent argument is destroyed, gain 1 stacks.",
-            alt_desc = "Whenever one of your arguments is destroyed, deal damage equal to the number of stacks of this argument to a random opponent argument.\n\nWhen an opponent argument is destroyed, gain 1 stacks.",
+            desc = "Whenever one of your arguments is destroyed, deal {1} damage to a random opponent argument and half the stacks, round up.\n\nWhen an opponent argument is destroyed, gain 1 stacks.",
+            alt_desc = "Whenever one of your arguments is destroyed, deal damage equal to the number of stacks of this argument to a random opponent argument and half the stacks, round up.\n\nWhen an opponent argument is destroyed, gain 1 stacks.",
             desc_fn = function(self, fmt_str)
                 if not self.stacks then
                     return loc.format((self.def or self):GetLocalizedString("ALT_DESC"))
@@ -1001,6 +1001,9 @@ local CARDS = {
                             self.target_enemy = TARGET_ANY_RESOLVE
                             self.engine:ApplyPersuasion( self, nil, self.stacks, self.stacks )
                             self.target_enemy = nil
+                            if self.stacks >= 2 then
+                                self.negotiator:AddModifier(self, math.floor(self.stacks / 2), self)
+                            end
                         else
                             self.negotiator:AddModifier(self, 1, self)
                         end

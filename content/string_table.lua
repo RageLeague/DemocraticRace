@@ -163,6 +163,7 @@ Content.AddStringTable("DEMOCRACY", {
 
 
             CURRENT_STANCE = "{1#agent}'s current stance is {2#pol_stance}",
+            NO_STANCE = "{1#agent} hasn't taken a stance on this issue",
             CURRENT_STANCE_LOOSE = "{1#agent}'s current stance is favoring {2#pol_stance}",
 
             GENERAL_SUPPORT_TITLE = "General Support",
