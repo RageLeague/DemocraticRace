@@ -2,7 +2,7 @@ local QDEF = QuestDef.Define
 {
     title = "Strong Arm of the Law",
     desc = "Investigate {target} for wrongdoing and/or eliminate {target.himher}.",
-    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/battle_of_wits.png"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/strong_arm_of_the_law.png"),
 
     qtype = QTYPE.SIDE,
 

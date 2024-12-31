@@ -20,7 +20,7 @@ local QDEF = QuestDef.Define
         return loc.format(str, name)
     end,
     desc = "Represent {giver} in a court of law.",
-    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/battle_of_wits.png"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/better_call_sal.png"),
 
     qtype = QTYPE.SIDE,
 

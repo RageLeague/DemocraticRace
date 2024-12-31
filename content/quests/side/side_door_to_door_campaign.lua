@@ -2,7 +2,7 @@ local QDEF = QuestDef.Define
 {
     title = "Door-to-door Campaign",
     desc = "Visit a neighbourhood and campaign for support there.",
-    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/roadside_preaching.png"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/door_to_door_campaign.png"),
 
     qtype = QTYPE.SIDE,
     act_filter = DemocracyUtil.DemocracyActFilter,

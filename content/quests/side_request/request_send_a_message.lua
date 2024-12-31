@@ -2,7 +2,7 @@ local QDEF = QuestDef.Define
 {
     title = "Send A Message",
     desc = "Make {target}'s life miserable for {giver}.",
-    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/battle_of_wits.png"),
+    icon = engine.asset.Texture("icons/quests/attack_rival.tex"),
 
     qtype = QTYPE.SIDE,
 
