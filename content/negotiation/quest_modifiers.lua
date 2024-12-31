@@ -3316,6 +3316,7 @@ local MODIFIERS =
     {
         name = "Loose Lips",
         desc = "{MYRIAD_MODIFIER {1}}\n\nWhen this bounty is destroyed, you create 1 {secret_intel}. Maybe.",
+        icon = "negotiation/modifiers/who.tex",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.bonus_per_generation)
         end,
@@ -3414,6 +3415,7 @@ local MODIFIERS =
     {
         name = "Political Engagement",
         desc = "Decreases by 1 at the end of {1}'s turn. When it reaches zero, you lose the negotiation!",
+        icon = "DEMOCRATICRACE:assets/modifiers/political_engagement.png",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self:GetOwnerName())
         end,
@@ -3431,7 +3433,7 @@ local MODIFIERS =
     {
         name = "Raise Interest",
         desc = "{MYRIAD_MODIFIER}.\n\nWhen destroyed, {1} gains {3} {DEM_POLITICAL_ENGAGEMENT}.",
-        -- icon = "negotiation/modifiers/dread.tex",
+        icon = "DEMOCRATICRACE:assets/modifiers/raise_interest.png",
 
         modifier_type = MODIFIER_TYPE.BOUNTY,
         init_max_resolve = 3,
