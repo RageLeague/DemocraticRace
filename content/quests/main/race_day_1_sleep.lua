@@ -810,7 +810,13 @@ QDEF:AddConvo("go_to_sleep", "primary_advisor")
                 :PostText(cxt.quest.param.advisor_intervention and "TT_DISTRACT_ADVISOR" or "TT_DISTRACT")
                 :Dialog("DIALOG_DISTRACT")
                 :Fn(function(cxt)
-                    TheGame:SetTempMusicOverride("DEMOCRATICRACE|event:/democratic_race/music/negotiation/assassin", cxt.enc)
+                    TheGame:SetTempMusicOverride(
+                        DemAudioAlt(
+                            "DEMOCRATICRACE|event:/democratic_race/music/negotiation/assassin",
+                            "event:/music/adaptive_negotiation_barter_night"
+                        ),
+                        cxt.enc
+                    )
                 end)
                 :Negotiation{
                     flags = NEGOTIATION_FLAGS.NO_CORE_RESOLVE | NEGOTIATION_FLAGS.WORDSMITH | NEGOTIATION_FLAGS.NO_IMPATIENCE, -- this is the boss

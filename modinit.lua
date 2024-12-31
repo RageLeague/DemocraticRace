@@ -4,6 +4,10 @@ local filepath = require "util/filepath"
 
 local bank_loading_handle
 
+rawset(_G, "DemAudioAlt", function(default_audio, alt_audio)
+    return DemocracyUtil.GetModSetting("enable_custom_audio") and default_audio or alt_audio
+end)
+
 local function OnNewGame( mod, game_state )
     -- Require this Mod to be installed to launch this save game.
     if DemocracyUtil.IsDemocracyCampaign(game_state:GetCurrentActID()) then
@@ -326,16 +330,6 @@ local MOD_OPTIONS =
         },
         per_save_file = true,
     },
-    -- {
-    --     title = "Collect Deck (Voluntary Deck Collection Program)",
-    --     button = true,
-    --     key = "collect_deck",
-    --     desc = "Copy the current deck information onto your clipboard.",
-    --     on_click = function()
-    --         local fn = require "DEMOCRATICRACE:content/collect_deck_script"
-    --         fn()
-    --     end,
-    -- },
     {
         title = "Enable Metrics Collection",
         spinner = true,
@@ -367,6 +361,17 @@ local MOD_OPTIONS =
         {
             { name="Disable", desc="Dual purpose functionality is only enabled in the Democratic Race campaign.", data = false },
             { name="Enable", desc="Dual purpose functionality is enabled everywhere, allowing you to get them even outside of a Democratic Race campaign.", data = true },
+        }
+    },
+    {
+        title = "Enable Custom Audio",
+        spinner = true,
+        key = "enable_custom_audio",
+        default_value = true,
+        values =
+        {
+            { name="Disable", desc="Custom audio isn't used. Instead, a default audio will replace the custom audio. <#PENALTY>Require restart to change.</>", data = false },
+            { name="Enable", desc="Custom audio for the Democratic Race will be used. <#PENALTY>Require restart to change.</>", data = true },
         }
     },
 }
