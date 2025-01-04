@@ -236,7 +236,7 @@ end
 local MINI_NEGOTIATOR =
 {
     name = "Candidate",
-    desc = "At the end of the turn, <b>{1.fullname}</> acts and plays {2} {2*card|cards}.",
+    desc = "{1.name} has {3} {3*point|points}.\n\nAt the end of the turn, <b>{1.fullname}</> acts and plays {2} {2*card|cards}.",
     -- loc_strings = {
     --     ADMIRALTY_BONUS = "Then, if the opponent has no {PLANTED_EVIDENCE}, {INCEPT} one.",
     --     SPREE_BONUS = "{1.name}'s cards deals 1 bonus damage for every 2 turns passed.",
@@ -257,7 +257,7 @@ local MINI_NEGOTIATOR =
         if self.alt_desc then
             fmt_str = fmt_str .. "\n\n" .. (self.def or self):GetLocalizedString("ALT_DESC")
         end
-        local res = loc.format(fmt_str, self.candidate_agent and self.candidate_agent:LocTable(),self.cards_played)
+        local res = loc.format(fmt_str, self.candidate_agent and self.candidate_agent:LocTable(),self.cards_played, self:CustomPersuasionLabel())
         return res
     end,
     modifier_type = MODIFIER_TYPE.CORE,

@@ -291,6 +291,13 @@ local QDEF = QuestDef.Define
         end
     end,
 }
+:AddOpinionEvents{
+    returned_ring =
+    {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Returned their ring to them",
+    },
+}
 
 QDEF:AddIntro(
     --attract spiel
@@ -344,6 +351,11 @@ QDEF:AddConvo("talk_to_defendant", "giver")
                 [p] Here's your ring.
             agent:
                 Thanks.
+            {not asked_ring?
+                Didn't realize I lost mine.
+                This ring is a wedding ring belonging to me and my partner, {spouse_name}.
+            }
+                This ring means a lot to me.
         ]],
         DIALOG_GIVE_RING_BACK_FALSE = [[
             player:
@@ -445,7 +457,10 @@ QDEF:AddConvo("talk_to_defendant", "giver")
                         if not cxt.quest.param.pros_forged_evidence then
                             cxt.player.negotiator:RemoveCard( card )
                             cxt:Dialog("DIALOG_GIVE_RING_BACK")
+                            cxt:GetAgent():OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("returned_ring"))
                             cxt.quest.param.defendant_has_ring = true
+                            cxt.quest.param.returned_true_ring = true
+                            cxt.quest.param.asked_ring = true
                         else
                             cxt:Dialog("DIALOG_GIVE_RING_BACK_FALSE")
                             cxt.quest.param.asked_ring = true
@@ -505,23 +520,41 @@ QDEF:AddConvo("talk_to_defendant", "giver")
             ]],
             OPT_ASK_RING = "Ask about {agent}'s ring",
             DIALOG_ASK_RING = [[
-                player:
-                    [p] Do you have a ring, by any chance?
-                agent:
-                    I do.
+                {not asked_ring?
+                    player:
+                        [p] Do you have a ring, by any chance?
+                    agent:
+                        I do.
+                }
+                {asked_ring?
+                    player:
+                        [p] Do you have your ring?
+                }
                 {defendant_has_ring?
                     agent:
                         It's right here with me.
                         This is an engagement ring with my partner, {spouse_name}.
+                        {returned_true_ring?
+                            Thanks for returning my ring to me, by the way.
+                        }
                         Why do you ask?
-                    player:
-                        That's strange. {plaintiff} said that the prosecutor has your ring as evidence.
-                    agent:
-                        Well that's just false.
-                        I only have one ring.
-                    player:
-                        It seems like we are dealing with a prosecutor who is willing to forge evidence to win a case.
-                        Don't worry. We will prove your innocence in court.
+                    {def_forged_evidence?
+                        player:
+                            Keep that ring with you.
+                            I spent a lot of effort finding this ring. Don't make my effort go to waste.
+                        agent:
+                            I wouldn't dream of doing that.
+                    }
+                    {not def_forged_evidence?
+                        player:
+                            That's strange. {plaintiff} said that the prosecutor has your ring as evidence.
+                        agent:
+                            Well that's just false.
+                            I only have one ring.
+                        player:
+                            It seems like we are dealing with a prosecutor who is willing to forge evidence to win a case.
+                            Don't worry. We will prove your innocence in court.
+                    }
                 }
                 {not defendant_has_ring?
                     agent:
@@ -573,9 +606,16 @@ QDEF:AddConvo("talk_to_defendant", "giver")
                             I distinctly remember still having the ring on Monday.
                         }
                         player:
-                            It seems like we are dealing with a prosecutor who is willing to forge evidence to win a case.
-                            Don't worry. We will prove your innocence in court.
-                            And hopefully find your ring in the process.
+                            {pros_forged_evidence?
+                                It seems like we are dealing with a prosecutor who is willing to forge evidence to win a case.
+                                Don't worry. We will prove your innocence in court.
+                                And hopefully find your ring in the process.
+                            }
+                            {not pros_forged_evidence?
+                                Don't worry. I have a plan.
+                                We will prove your innocence in court.
+                                And hopefully find your ring in the process.
+                            }
                         }
                         {not (pros_forged_evidence or def_forged_evidence)?
                             It's with the prosecutor as evidence.
