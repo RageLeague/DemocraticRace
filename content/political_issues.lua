@@ -367,8 +367,8 @@ local val =  {
                 desc = "Illegal trading of illicit substances has been going on for so long, and it is not going to end unless we do something. We should tighten the restrictions on illicit substances to stop these illegal tradings.",
             },
             [2] = {
-                name = "Heavily Enforced Restriction",
-                desc = "There are way too many illegal trading of substances, and it negatively impacts the health and morale of the people. To deal with such crisis, we need to increase restrictions on them, and ensure that we send people to properly enforce them.",
+                name = "Contraband Crackdown",
+                desc = "There are way too many illegal trading of substances, and it negatively impacts the health and morale of the people. To deal with such crisis, we need to crack down on contraband distribution heavily.",
             },
         },
     },
