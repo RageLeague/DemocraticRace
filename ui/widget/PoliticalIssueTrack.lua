@@ -125,9 +125,9 @@ function PoliticalIssueTrack:Refresh()
         if not stance then
             self.issue_title:SetText(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.ISSUE_NO_STANCE", self.issue:GetLocalizedName()))
         elseif has_freebie then
-            self.issue_title:SetText(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.ISSUE_FAVORING", self.issue:GetLocalizedName(), self.issue.stances[stance]))
+            self.issue_title:SetText(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.ISSUE_FAVORING", self.issue:GetLocalizedName(), self.issue.stances[stance]:GetLocalizedName()))
         else
-            self.issue_title:SetText(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.ISSUE_SUPPORT", self.issue:GetLocalizedName(), self.issue.stances[stance]))
+            self.issue_title:SetText(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.ISSUE_SUPPORT", self.issue:GetLocalizedName(), self.issue.stances[stance]:GetLocalizedName()))
         end
 
         self.issue_title:SetAutoSize( self.text_w )
