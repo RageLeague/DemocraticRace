@@ -120,8 +120,17 @@ function PoliticalIssueTrack:Refresh()
     self.opinion_track_secondary:SetSize(self.track_w_inner, self.track_h - OUTLINE_SIZE*2)
 
     if self.issue then
-        self.issue_title:SetText(self.issue:GetLocalizedName())
-            :SetAutoSize( self.text_w )
+        local stance = self.issue:GetAgentStanceIndex(TheGame:GetGameState():GetPlayerAgent())
+        local has_freebie = DemocracyUtil.GetStanceChangeFreebie(self.issue)
+        if not stance then
+            self.issue_title:SetText(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.ISSUE_NO_STANCE", self.issue:GetLocalizedName()))
+        elseif has_freebie then
+            self.issue_title:SetText(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.ISSUE_FAVORING", self.issue:GetLocalizedName(), self.issue.stances[stance]))
+        else
+            self.issue_title:SetText(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.ISSUE_SUPPORT", self.issue:GetLocalizedName(), self.issue.stances[stance]))
+        end
+
+        self.issue_title:SetAutoSize( self.text_w )
     end
     -- self.opinion_track_glow:SetSize(self.opinion_w_inner, self.opinion_h - OUTLINE_SIZE*2)
     self:Layout()

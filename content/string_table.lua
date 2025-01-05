@@ -161,6 +161,9 @@ Content.AddStringTable("DEMOCRACY", {
             TITLE = "Support Analysis",
             DESC = "To get elected, you need to have high support among the people. Your advisor has compiled the support breakdown for your campaign. Use this to carefully plan your campaign.",
 
+            ISSUE_NO_STANCE = "{1#pol_issue}: Unaligned",
+            ISSUE_FAVORING = "{1#pol_issue}: Favoring {2#pol_stance}",
+            ISSUE_SUPPORT = "{1#pol_issue}: Supporting {2#pol_stance}",
 
             CURRENT_STANCE = "{1#agent}'s current stance is {2#pol_stance}",
             NO_STANCE = "{1#agent} hasn't taken a stance on this issue",
