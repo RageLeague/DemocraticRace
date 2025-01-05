@@ -1002,7 +1002,7 @@ local CARDS = {
                             self.engine:ApplyPersuasion( self, nil, self.stacks, self.stacks )
                             self.target_enemy = nil
                             if self.stacks >= 2 then
-                                self.negotiator:AddModifier(self, math.floor(self.stacks / 2), self)
+                                self.negotiator:DeltaModifier(self, -math.floor(self.stacks / 2), self)
                             end
                         else
                             self.negotiator:AddModifier(self, 1, self)

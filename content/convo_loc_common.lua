@@ -235,7 +235,7 @@ Content.AddStringTable( "DEM_CONVO", {
         TT_UPDATE_STANCE_OLD = "Your stance regarding <b>{1#pol_issue}</> will be updated from <b>{3#pol_stance}</> to <b>{2#pol_stance}</>.",
         TT_UPDATE_STANCE_LOOSE = "Your stance regarding <b>{1#pol_issue}</> will be updated to favoring <b>{2#pol_stance}</>.",
         TT_UPDATE_STANCE_LOOSE_OLD = "Your stance regarding <b>{1#pol_issue}</> will be updated from <b>{3#pol_stance}</> to favoring <b>{2#pol_stance}</>.",
-        TT_UPDATE_STANCE_SAME = "You stance regarding <b>{1#pol_issue}</> will be reinforced.(<b>{2#pol_stance}</>)",
+        TT_UPDATE_STANCE_SAME = "You stance regarding <b>{1#pol_issue}</> will be reinforced. (<b>{2#pol_stance}</>)",
 
         TT_UPDATE_STANCE_WARNING = "<#PENALTY>Warning: Frequent change of stance might cause you to lose support!</>",
         TT_UPDATE_STANCE_BONUS = "<#BONUS>Having a consistent stance boosts your support.</>",

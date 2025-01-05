@@ -2,7 +2,7 @@ local QDEF = QuestDef.Define
 {
     title = "Bipartisan Showdown",
     desc = "The big debate between two prominent candidates is happening. Time to defeat your opposition in the debate.",
-    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/interview.png"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/bipartisan_showdown.png"),
 
     qtype = QTYPE.STORY,
 

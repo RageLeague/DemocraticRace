@@ -358,13 +358,18 @@ QDEF:AddConvo("spread_rumor")
             player:
                 It all lines up, doesn't it? {target}'s guilty as Hesh!
             agent:
-            {is_supporter?
-                !spit
-                Hesh dammit- To think I ever supported {target}.
+            {cult_of_hesh?
+                I don't appreciate you squandering the name of the all-consumer, but this...
             }
-            {not is_supporter?
-                !crossed
-                I didn't think there were more reasons to not support {target}, but this...
+            {not cult_of_hesh?
+                {is_supporter?
+                    !spit
+                    Hesh dammit- To think I ever supported {target}.
+                }
+                {not is_supporter?
+                    !crossed
+                    I didn't think there were more reasons to not support {target}, but this...
+                }
             }
                 Thanks for showing me what kind of person {target} truly is.
             * You've got one more person moving your gossip around their faction.

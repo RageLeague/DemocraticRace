@@ -220,7 +220,7 @@ local val =  {
                 desc = "The Admiralty has always abused their power and made many false arrests. It's better if the Admiralty is defunded, and measures must be put in place to prevent anyone else from taking this power.",
             },
             [-1] = {
-                name = "Cut Funding for the Admiralty",
+                name = "Cut Admiralty Funding",
                 desc = "While it's important to have some sort of public security, at the current state, the Admiralty has too much power and is abusing it. By cutting their funding, their influence will be reduced.",
             },
             [0] = {
@@ -228,7 +228,7 @@ local val =  {
                 desc = "The current system works just fine. There's no need to change it.",
             },
             [1] = {
-                name = "Increase Funding for the Admiralty",
+                name = "Increase Admiralty Funding",
                 desc = "Havaria is overrun with criminals of all kind. That's why we need to improve the security by increasing funding for the Admiralty. This way, the people can live in peace.",
             },
             [2] = {
@@ -255,8 +255,8 @@ local val =  {
                 desc = "The tension between Deltree and Havaria is too high, that no one will benefit if a decision is made immediately. It's probably better to not touch on this issue.",
             },
             [1] = {
-                name = "Vassal State",
-                desc = "It is undeniable that Havarian lives will be better under Deltrean protection. However, it is also important to Havarian autonomy that Havaria and Deltree are separate nations. Therefore, Havaria should become a vassal state of Deltree, but Deltree should respect Havaria's sovereignty.",
+                name = "Deltrean Alliance",
+                desc = "It is undeniable that Havarian lives will be better under Deltrean protection. However, it is also important to Havarian autonomy that Havaria and Deltree are separate nations. Therefore, Havaria should remain a sovereign state, but remain an ally of Deltree.",
             },
             [2] = {
                 name = "Havaria Independence",
@@ -367,8 +367,8 @@ local val =  {
                 desc = "Illegal trading of illicit substances has been going on for so long, and it is not going to end unless we do something. We should tighten the restrictions on illicit substances to stop these illegal tradings.",
             },
             [2] = {
-                name = "Heavily Enforced Restriction",
-                desc = "There are way too many illegal trading of substances, and it negatively impacts the health and morale of the people. To deal with such crisis, we need to increase restrictions on them, and ensure that we send people to properly enforce them.",
+                name = "Contraband Crackdown",
+                desc = "There are way too many illegal trading of substances, and it negatively impacts the health and morale of the people. To deal with such crisis, we need to crack down on contraband distribution heavily.",
             },
         },
     },
