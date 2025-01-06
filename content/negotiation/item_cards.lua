@@ -100,7 +100,7 @@ local CARDS = {
     {
         name = "Intimidating Blaster",
         flavour = "'A weak firearm, used more for self-defense than active violence. Whoever you point this at may not know that, though.'",
-        desc = "Counts as a Hostility cards for effects that cares about Hostility cards.\n{INCEPT} {1} {intimidated}.\nDraw a card.",
+        desc = "Counts as a Hostility card.\n{INCEPT} {1} {intimidated}.\nDraw a card.",
         desc_fn = function(self, fmt_str)
             return loc.format(fmt_str, self.intimidated_stack)
         end,
@@ -156,7 +156,7 @@ local CARDS = {
 
         cost = 1,
         item_tags = ITEM_TAGS.UTILITY,
-        flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND | CARD_FLAGS.REPLENISH,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.REPLENISH,
         rarity = CARD_RARITY.COMMON,
 
         max_charges = 3,
@@ -737,7 +737,7 @@ local CARDS = {
         max_charges = 1,
         flags = CARD_FLAGS.REPLENISH,
 
-        item_tags = ITEM_TAGS.CHEMICAL,
+        item_tags = ITEM_TAGS.CHEMICAL | ITEM_TAGS.ILLICIT,
         rarity = CARD_RARITY.COMMON,
 
         battle_counterpart = "speed_tonic",
@@ -814,6 +814,7 @@ local CARDS = {
 
         rarity = CARD_RARITY.UNIQUE,
         flags = CARD_FLAGS.ITEM,
+        item_tags = ITEM_TAGS.CHEMICAL | ITEM_TAGS.ILLICIT,
 
         battle_counterpart = "vapor_vial",
 

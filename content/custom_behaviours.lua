@@ -253,6 +253,61 @@ local t = {
             end
         end,
     },
+    COURT_OF_LAW =
+    {
+        OnInit = function( self, difficulty )
+            local modifier = self.negotiator:AddModifier("DEM_COURT_OF_LAW")
+
+            self.attacks = self:MakePicker()
+            self.attacks:AddArgument( "INTERROGATE", 1 )
+            self.attacks:AddArgument( "THOROUGH_SEARCH", 1 )
+
+            self.evidence_card = self:AddCard("dem_present_evidence")
+
+            if self.agent:GetContentID() == "ADMIRALTY_INVESTIGATOR" then
+                self:SetPattern( self.BasicCycle )
+            else
+                -- They are defending themselves. The pattern is significantly easier
+                self:SetPattern( self.EasyCycle )
+            end
+        end,
+
+        plaintiff_arguments = {},
+
+        BasicCycle = function( self, turns )
+            if turns % 2 == 1 then
+                if self.plaintiff_arguments and #self.plaintiff_arguments > 0 then
+                    self:ChooseCard(self.evidence_card)
+                else
+                    self.attacks:ChooseCards(1)
+                end
+                self:ChooseGrowingNumbers(1, 0)
+            else
+                if turns < self.engine:GetDifficulty() then
+                    self.attacks:ChooseCards(1)
+                else
+                    self:ChooseComposure( 1, 1 + self.difficulty, 1 + self.difficulty )
+                end
+                self:ChooseGrowingNumbers(2, -1)
+            end
+        end,
+        EasyCycle = function( self, turns )
+            if turns == 2 then
+                if self.plaintiff_arguments and #self.plaintiff_arguments > 0 then
+                    self:ChooseCard(self.evidence_card)
+                else
+                    self:ChooseComposure( 1, 1 + self.difficulty, 1 + self.difficulty )
+                end
+            end
+            if turns % 2 == 1 then
+                self:ChooseGrowingNumbers(1, 0)
+                self:ChooseComposure( 1, 1 + self.difficulty, 1 + self.difficulty )
+            else
+                self:ChooseGrowingNumbers(2, -1)
+            end
+        end,
+
+    },
 }
 
 DemocracyUtil.BEHAVIOURS = t

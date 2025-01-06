@@ -421,7 +421,7 @@ QDEF:AddConvo("do_interview")
 
             OPT_DO_INTERVIEW = "Do the interview",
             SIT_MOD = "Has a lot of questions prepared for you",
-            NEGOTIATION_REASON = "Survive the interview while answering as many questions as you can!({1} {1*question|questions} answered)",
+            NEGOTIATION_REASON = "Survive the interview while answering as many questions as you can! ({1} {1*question|questions} answered)",
 
             DIALOG_INTERVIEW_SUCCESS = [[
                 agent:
@@ -566,7 +566,13 @@ QDEF:AddConvo("do_interview")
                     }
 
                     DemocracyUtil.SendMetricsData("DAY_2_BOSS_START", METRIC_DATA)
-                    TheGame:SetTempMusicOverride("DEMOCRATICRACE|event:/democratic_race/music/negotiation/interview", cxt.enc)
+                    TheGame:SetTempMusicOverride(
+                        DemAudioAlt(
+                            "DEMOCRATICRACE|event:/democratic_race/music/negotiation/interview",
+                            "event:/music/adaptive_negotiation_barter_rook_night"
+                        ),
+                        cxt.enc
+                    )
                 end)
                 :Negotiation{
                     flags = NEGOTIATION_FLAGS.WORDSMITH,

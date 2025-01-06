@@ -166,9 +166,13 @@ local CARDS = {
 
             local old_stance = DemocracyUtil.TryMainQuestFn("GetStance", issue_data )
 
-            if old_stance and self.stance ~= old_stance then
-                self.flags = ClearBits( self.flags, CARD_FLAGS.DIPLOMACY )
-                self.flags = SetBits( self.flags, CARD_FLAGS.HOSTILE )
+            if old_stance then
+                if self.stance == old_stance then
+                elseif DemocracyUtil.GetStanceChangeFreebie(self.issue_data) and (self.stance * old_stance > 0) then
+                else
+                    self.flags = ClearBits( self.flags, CARD_FLAGS.DIPLOMACY )
+                    self.flags = SetBits( self.flags, CARD_FLAGS.HOSTILE )
+                end
             end
 
             self:NotifyChanged()
@@ -897,7 +901,277 @@ local CARDS = {
         cost = 1,
         flags = CARD_FLAGS.STATUS | CARD_FLAGS.CONSUME | CARD_FLAGS.SLEEP_IT_OFF,
         rarity = CARD_RARITY.UNIQUE,
+        event_handlers =
+        {
+            [ EVENT.END_PLAYER_TURN ] = function( self, minigame )
+                minigame:ExpendCard(self)
+            end,
+        },
     },
+    dem_weary_negotiation =
+    {
+        name = "Weary",
+        remove_on_rest = true,
+        desc = "When drawn, lose 1 action.",
+        flavour = "'I'm so tired.'",
+        icon = "battle/weary.tex",
+
+        cost = 1,
+        rarity = CARD_RARITY.BASIC,
+        flags = CARD_FLAGS.STATUS | CARD_FLAGS.CONSUME | CARD_FLAGS.SLEEP_IT_OFF,
+
+        battle_counterpart = "weary",
+        event_handlers =
+        {
+            [ EVENT.CARD_MOVED ] = function( self, card, source_deck, source_idx, target_deck, target_idx )
+                if card == self and target_deck == self.engine:GetHandDeck() and source_deck == self.engine:GetDrawDeck() then
+                    self:NotifyTriggeredPre()
+                    self.engine:ModifyActionCount( -1 )
+                    self:NotifyTriggeredPost()
+                end
+            end
+        },
+    },
+    dem_incriminating_evidence =
+    {
+        name = "Incriminating Evidence",
+        desc = "{dem_incriminating_evidence 2|}Create: At the start of your turn, {INCEPT} 2 {VULNERABILITY}. Must be targeted before anything else.",
+        flavour = "'Can't focus'",
+        icon = "DEMOCRATICRACE:assets/cards/incriminating_evidence.png",
+
+        cost = 1,
+        flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
+        item_tags = ITEM_TAGS.ILLICIT,
+        rarity = CARD_RARITY.UNIQUE,
+
+        OnPostResolve = function( self, minigame )
+            self.negotiator:CreateModifier(self.id, 2, self)
+        end,
+
+        modifier = {
+            desc = "Create: At the start of your turn, {INCEPT} {1} {VULNERABILITY}. Must be targeted before anything else.",
+            icon = "DEMOCRATICRACE:assets/modifiers/incriminating_evidence.png",
+
+            desc_fn = function(self, fmt_str)
+                return loc.format(fmt_str, self.stacks or 2)
+            end,
+
+            force_target = true,
+            max_resolve = 4,
+
+            OnBeginTurn = function( self, minigame )
+                self.anti_negotiator:InceptModifier("VULNERABILITY", self.stacks, self)
+            end,
+
+            CanPlayCard = function( self, source, engine, target )
+                -- Only verify forced targets if you are not targetting yourself
+                if source:IsAttack() and target:GetNegotiator() == self.negotiator then
+                    if source.modifier_type == MODIFIER_TYPE.INCEPTION or source:GetNegotiator() ~= self.negotiator then
+                        if not target.force_target then
+                            return false, loc.format( LOC "CONVO_COMMON.MUST_TARGET", self:GetName() )
+                        end
+                    end
+                end
+
+                return true
+            end,
+        },
+    },
+    dem_court_objection =
+    {
+        name = "Objection!",
+        desc = "{DEM_COUNTERARGUMENT}",
+        alt_desc = "{DEM_COUNTERARGUMENT}, {DEM_PERJURY}",
+        icon = "negotiation/ad_lib.tex",
+
+        desc_fn = function(self, fmt_str)
+            local argument_id = self.userdata.argument_id
+            local result = fmt_str
+            if argument_id and self.evidence[argument_id] and self.evidence[argument_id].perjury then
+                result = (self.def or self):GetLocalizedString("ALT_DESC")
+            end
+            if argument_id then
+                result = result .. "\n" .. (self.def or self):GetLocalizedString(argument_id:upper())
+            end
+            return result
+        end,
+
+        loc_strings =
+        {
+            NOT_AN_EVIDENCE = "Target is not an evidence",
+
+
+            -- The defendant is currently wearing a ring. Either because it's never lost, or you stole it from the prosecutor and gave it back
+            DEFENDANT_HAS_RING = "The defendant is currently wearing their ring, so it couldn't possibly be at the crime scene.",
+            -- The defendant is wearing a fake ring that they claim to be theirs. You must deliberately forge this evidence
+            DEFENDANT_HAS_FALSE_RING = "The defendant is currently wearing \"their ring\", so it couldn't possibly be at the crime scene.",
+            -- You casted doubt on the witness testimony
+            DOUBTFUL_TESTIMONY = "Even though the witness testified against the defendant, the witness is uncertain whether the person they saw is actually the defendant.",
+            -- You asked the defendant about their alibi, and it's airtight
+            AIRTIGHT_ALIBI = "The defendant was working at the time of the crime. Everyone at their worksite can attest to the fact.",
+            -- The defendant doesn't have an alibi, so you faked one
+            FORGED_ALIBI = "The defendant was at a friend's house at the time of the crime. The friend can attest to the \"fact\".",
+            -- You heard a description of the ring after asking the defendant about it
+            RING_DESC = "The defendant has a wedding ring of an elaborate design, with an engraving of the name of their partner and them.",
+            -- The client is not guilty and you asked them about their ring.
+            RING_LOSS_TIMELINE = "According to the defendant, they still have their ring, one day after the theft.",
+        },
+
+        evidence =
+        {
+            defendant_has_ring =
+            {
+                counterargument =
+                {
+                    evidence_ring_fake = 0.8,
+                    evidence_ring_real = 0.4,
+                },
+            },
+            defendant_has_false_ring =
+            {
+                counterargument =
+                {
+                    evidence_ring_fake = 0.4,
+                    evidence_ring_real = 0.4,
+                },
+                perjury = true,
+            },
+            doubtful_testimony =
+            {
+                counterargument =
+                {
+                    testimony = 0.6,
+                },
+            },
+            airtight_alibi =
+            {
+                counterargument =
+                {
+                    evidence_ring_fake = 0.9,
+                    evidence_ring_real = 0.9,
+                    testimony = 0.9,
+                },
+            },
+            forged_alibi =
+            {
+                counterargument =
+                {
+                    evidence_ring_fake = 0.6,
+                    evidence_ring_real = 0.6,
+                    testimony = 0.6,
+                },
+                perjury = true,
+            },
+            ring_desc =
+            {
+                counterargument =
+                {
+                    evidence_ring_fake = 0.6,
+                },
+            },
+            ring_loss_timeline =
+            {
+                counterargument =
+                {
+                    evidence_ring_fake = 0.4,
+                    evidence_ring_real = 0.4,
+                },
+            },
+        },
+
+        cost = 1,
+        flags = CARD_FLAGS.DIPLOMACY,
+        rarity = CARD_RARITY.UNIQUE,
+
+        target_enemy = TARGET_FLAG.ARGUMENT,
+
+        on_init = function( self )
+            if self.userdata.argument_id then
+                if self.evidence[self.userdata.argument_id] and self.evidence[self.userdata.argument_id].perjury then
+                    self.flags = ToggleBits(self.flags, CARD_FLAGS.DIPLOMACY | CARD_FLAGS.MANIPULATE)
+                end
+            end
+        end,
+
+        CanTarget = function(self, target)
+            if is_instance( target, Negotiation.Modifier ) and target.dem_evidence and target.max_resolve then
+                return true
+            end
+            return false, self.def:GetLocalizedString("NOT_AN_EVIDENCE")
+        end,
+
+        OnPostResolve = function( self, minigame, targets )
+            local argument_id = self.userdata.argument_id
+            if not argument_id then
+                return
+            end
+            for i, target in ipairs(targets) do
+                if is_instance( target, Negotiation.Modifier ) and target.dem_evidence and target.max_resolve then
+                    local evidence_id = target.evidence_id
+                    local resolve_loss = 0
+                    if self.evidence[argument_id] and self.evidence[argument_id].counterargument[evidence_id] then
+                        resolve_loss = self.evidence[argument_id].counterargument[evidence_id]
+                    end
+
+                    if resolve_loss > 0 then
+                        local true_loss = math.ceil(target.max_resolve * resolve_loss)
+                        true_loss = math.min(true_loss, target.resolve)
+                        target:ModifyResolve(-true_loss, self)
+                        minigame:ExpendCard(self)
+                    else
+                        local damage = Content.GetNegotiationCardFeature("DEM_COUNTERARGUMENT").core_damage
+                        self.negotiator:AttackResolve(damage, self)
+                    end
+                end
+            end
+            if self.evidence[argument_id] and self.evidence[argument_id].perjury then
+                self.negotiator:CreateModifier("DEM_FALSE_EVIDENCE", 1, self)
+            end
+        end,
+    },
+    dem_present_evidence =
+    {
+        flags = CARD_FLAGS.SPECIAL | CARD_FLAGS.OPPONENT,
+        cost = 0,
+        stacks = 1,
+        rarity = CARD_RARITY.UNIQUE,
+
+        series = CARD_SERIES.NPC,
+
+        CanPlayCard = function( self, card, engine, target )
+            if card == self then
+                if not table.arraycontains(self.negotiator.behaviour.plaintiff_arguments, self.argument) then
+                    self.argument = nil
+                end
+                if self.argument then
+                    return true
+                else
+                    self:TrySelectArgument()
+                    return self.argument ~= nil
+                end
+            end
+            return true
+        end,
+        TrySelectArgument = function(self)
+            if self.negotiator and self.negotiator.behaviour.plaintiff_arguments then
+                self.argument = table.arraypick(self.negotiator.behaviour.plaintiff_arguments)
+            end
+        end,
+
+        OnPostResolve = function( self, engine, targets )
+            local modifier = Negotiation.Modifier("DEM_CONCRETE_EVIDENCE_ARGUMENT", self.negotiator, self.stacks)
+            if modifier then
+                modifier:SetEvidence(self.argument)
+            end
+            if self.argument and self.negotiator.behaviour.plaintiff_arguments then
+                table.arrayremove(self.negotiator.behaviour.plaintiff_arguments, self.argument)
+                self.argument = nil
+            end
+
+            self.negotiator:CreateModifier(modifier, nil, self)
+        end,
+    },
+
 }
 for i, id, def in sorted_pairs( CARDS ) do
     if not def.series then
@@ -916,6 +1190,22 @@ local FEATURES = {
     {
         name = "Imprint",
         desc = "Some cards are imprinted on this object through special means, and they will affect the behaviour of this object.",
+    },
+    DEM_COUNTERARGUMENT =
+    {
+        name = "Counterargument",
+        desc = "Target an {DEM_EVIDENCE} argument. If the counterargument contradicts the argument, the target lose a proportion of resolve depending on the effectiveness of the counterargument and {EXPEND}. Otherwise, you core takes {1} damage.",
+
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.core_damage)
+        end,
+
+        core_damage = 3,
+    },
+    DEM_PERJURY =
+    {
+        name = "Perjury",
+        desc = "When this card is played, create 1 {DEM_FALSE_EVIDENCE}",
     },
 }
 for id, data in pairs(FEATURES) do

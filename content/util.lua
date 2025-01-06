@@ -1406,6 +1406,18 @@ function DemocracyUtil.IsFirstAid(card)
     return table.arraycontains(DemocracyUtil.FIRST_AID_CARDS, card.id)
 end
 
+DemocracyUtil.CONTRABAND_CARDS = {
+    "rise_manifesto",
+    "speed_tonic_negotiation",
+    "vial_of_slurry_negotiation",
+    "vapor_vial_negotiation",
+    "dem_incriminating_evidence",
+    "grisly_trophy",
+}
+function DemocracyUtil.IsContraband(card)
+    return table.arraycontains(DemocracyUtil.CONTRABAND_CARDS, card.id)
+end
+
 function DemocracyUtil.GetSignatureCardsDraft(signature_id, num_cards, player)
     local negotiation_defs = require "negotiation/negotiation_defs"
     local CARD_FLAGS = negotiation_defs.CARD_FLAGS

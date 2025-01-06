@@ -294,6 +294,7 @@ QDEF:AddConvo("action")
             agent:
                 !right
             player:
+                !left
                 It's over, {agent}.
                 You don't stand a chance against us.
             agent:
@@ -906,7 +907,7 @@ QDEF:AddConvo("action")
     :State("STATE_DEFEATED")
         :Loc{
             DIALOG_INTRO = [[
-                {is_unlawful?
+                {unlawful?
                     * You find an ironic scene, an officer of the Admiralty underneath the foot of {target}.
                     admiralty:
                         !left

@@ -120,8 +120,17 @@ function PoliticalIssueTrack:Refresh()
     self.opinion_track_secondary:SetSize(self.track_w_inner, self.track_h - OUTLINE_SIZE*2)
 
     if self.issue then
-        self.issue_title:SetText(self.issue:GetLocalizedName())
-            :SetAutoSize( self.text_w )
+        local stance = self.issue:GetAgentStanceIndex(TheGame:GetGameState():GetPlayerAgent())
+        local has_freebie = DemocracyUtil.GetStanceChangeFreebie(self.issue)
+        if not stance then
+            self.issue_title:SetText(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.ISSUE_NO_STANCE", self.issue:GetLocalizedName()))
+        elseif has_freebie then
+            self.issue_title:SetText(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.ISSUE_FAVORING", self.issue:GetLocalizedName(), self.issue.stances[stance]:GetLocalizedName()))
+        else
+            self.issue_title:SetText(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.ISSUE_SUPPORT", self.issue:GetLocalizedName(), self.issue.stances[stance]:GetLocalizedName()))
+        end
+
+        self.issue_title:SetAutoSize( self.text_w )
     end
     -- self.opinion_track_glow:SetSize(self.opinion_w_inner, self.opinion_h - OUTLINE_SIZE*2)
     self:Layout()
@@ -166,8 +175,10 @@ function PoliticalIssueTrack:Layout()
         end
         local player_special_index
         for i, widget in ipairs(self.agent_portraits) do
-            local stance = self.issue:GetAgentStanceIndex(widget.agent) or 0
-            if widget.agent:IsPlayer() and DemocracyUtil.GetStanceChangeFreebie(self.issue) then
+            local stance = self.issue:GetAgentStanceIndex(widget.agent)
+            if not stance then
+                widget:SetToolTip(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.NO_STANCE", widget.agent))
+            elseif widget.agent:IsPlayer() and DemocracyUtil.GetStanceChangeFreebie(self.issue) then
                 widget:SetToolTip(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.CURRENT_STANCE_LOOSE", widget.agent, self.issue.stances[stance]))
                 if stance > 0 then
                     player_special_index = 4.5
@@ -178,7 +189,7 @@ function PoliticalIssueTrack:Layout()
                 widget:SetToolTip(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.CURRENT_STANCE", widget.agent, self.issue.stances[stance]))
             end
             if not (widget.agent:IsPlayer() and player_special_index) then
-                table.insert(stance_groupings[stance + 3], widget)
+                table.insert(stance_groupings[(stance or 0) + 3], widget)
             else
                 table.insert(stance_groupings[player_special_index], widget)
             end

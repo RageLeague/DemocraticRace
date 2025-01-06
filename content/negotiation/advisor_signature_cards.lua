@@ -772,7 +772,12 @@ local CARDS = {
                         -- else
                         --     source.negotiator:AttackResolve(damage, self)
                         -- end
-                        target.composure = target.composure + damage
+                        local damage_to_negate = damage
+                        local damage_negated = params.damage_negated or 0
+                        if damage_to_negate > damage_negated then
+                            target.composure = target.composure + damage_to_negate - damage_negated
+                            params.damage_negated = damage_to_negate
+                        end
                         self.negotiator:DeltaModifier(self, -1, self)
                     end
                 end,
@@ -804,7 +809,7 @@ local CARDS = {
         icon = "DEMOCRATICRACE:assets/cards/ivory_tower.png",
 
         advisor = "ADVISOR_HOSTILE",
-        flags = CARD_FLAGS.HOSTILE,
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.EXPEND,
         cost = 1,
         max_xp = 7,
 
@@ -847,7 +852,7 @@ local CARDS = {
     advisor_hostile_ivory_tower_plus2 =
     {
         name = "Initial Ivory Tower",
-        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.AMBUSH,
+        flags = CARD_FLAGS.HOSTILE | CARD_FLAGS.AMBUSH | CARD_FLAGS.EXPEND,
     },
     advisor_hostile_duckspeak =
     {
@@ -975,8 +980,8 @@ local CARDS = {
         modifier =
         {
 
-            desc = "Whenever one of your arguments is destroyed, deal {1} damage to a random opponent argument.\n\nWhen an opponent argument is destroyed, gain 1 stacks.",
-            alt_desc = "Whenever one of your arguments is destroyed, deal damage equal to the number of stacks of this argument to a random opponent argument.\n\nWhen an opponent argument is destroyed, gain 1 stacks.",
+            desc = "Whenever one of your arguments is destroyed, deal {1} damage to a random opponent argument and half the stacks, round up.\n\nWhen an opponent argument is destroyed, gain 1 stacks.",
+            alt_desc = "Whenever one of your arguments is destroyed, deal damage equal to the number of stacks of this argument to a random opponent argument and half the stacks, round up.\n\nWhen an opponent argument is destroyed, gain 1 stacks.",
             desc_fn = function(self, fmt_str)
                 if not self.stacks then
                     return loc.format((self.def or self):GetLocalizedString("ALT_DESC"))
@@ -996,6 +1001,9 @@ local CARDS = {
                             self.target_enemy = TARGET_ANY_RESOLVE
                             self.engine:ApplyPersuasion( self, nil, self.stacks, self.stacks )
                             self.target_enemy = nil
+                            if self.stacks >= 2 then
+                                self.negotiator:DeltaModifier(self, -math.floor(self.stacks / 2), self)
+                            end
                         else
                             self.negotiator:AddModifier(self, 1, self)
                         end

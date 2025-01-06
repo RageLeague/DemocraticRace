@@ -14,7 +14,10 @@ local chars =
         gender = "MALE",
         species = "HUMAN",
 
-        theme_music = "DEMOCRATICRACE|event:/democratic_race/music/story/aellon_theme",
+        theme_music = DemAudioAlt(
+            "DEMOCRATICRACE|event:/democratic_race/music/story/aellon_theme",
+            "event:/music/story/rook/story_rook_fellemo"
+        ),
 
         build = "male_clust_trademaster",
         head = "head_male_shopkeep_002",
@@ -97,7 +100,10 @@ local chars =
         gender = "FEMALE",
         species = "KRADESHI",
 
-        theme_music = "DEMOCRATICRACE|event:/democratic_race/music/story/benni_theme",
+        theme_music = DemAudioAlt(
+            "DEMOCRATICRACE|event:/democratic_race/music/story/benni_theme",
+            "event:/music/story/smith/story_smith_tei"
+        ),
         -- theme_music = "event:/democratic_race/music/story/benni_theme",
 
         build = "female_benni_build",
@@ -189,7 +195,10 @@ local chars =
         gender = "MALE",
         species = "JARACKLE",
 
-        theme_music = "DEMOCRATICRACE|event:/democratic_race/music/story/dronumph_theme",
+        theme_music = DemAudioAlt(
+            "DEMOCRATICRACE|event:/democratic_race/music/story/dronumph_theme",
+            "event:/music/story/smith/story_smith_denikus"
+        ),
 
         build = "male_phicket",
         head = "head_male_jarackle_bandit_02",

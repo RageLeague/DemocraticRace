@@ -16,7 +16,7 @@ local QDEF = QuestDef.Define
 {
     title = "Fundraising",
     desc = "Sell merchandise to your supporters to raise funds for your campaign!",
-    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/roadside_preaching.png"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/fundraising.png"),
 
     qtype = QTYPE.SIDE,
     act_filter = DemocracyUtil.DemocracyActFilter,

@@ -70,6 +70,16 @@ local QDEF = QuestDef.Define
     desc = "Spread your rumor about {target} through different factions and locations to increase the credibility of your claim.",
     mark = function(quest, t, in_location)
         if in_location then
+            quest.param.convinced_factions = quest.param.convinced_factions or {}
+            quest.param.convinced_locations = quest.param.convinced_locations or {}
+            local location = TheGame:GetGameState():GetPlayerAgent():GetLocation()
+            if not table.arraycontains(quest.param.convinced_locations, location) then
+                for _, agent in location:Agents() do
+                    if not agent:IsCastInQuest(quest) and not table.arraycontains(quest.param.convinced_factions, agent:GetFactionID()) then
+                        table.insert(t, agent)
+                    end
+                end
+            end
         else
             DemocracyUtil.AddUnlockedLocationMarks(quest, t, function(location)
                 return not (quest.param.convinced_locations and table.arraycontains(quest.param.convinced_locations, location))
@@ -348,13 +358,18 @@ QDEF:AddConvo("spread_rumor")
             player:
                 It all lines up, doesn't it? {target}'s guilty as Hesh!
             agent:
-            {is_supporter?
-                !spit
-                Hesh dammit- To think I ever supported {target}.
+            {cult_of_hesh?
+                I don't appreciate you squandering the name of the all-consumer, but this...
             }
-            {not is_supporter?
-                !crossed
-                I didn't think there were more reasons to not support {target}, but this...
+            {not cult_of_hesh?
+                {is_supporter?
+                    !spit
+                    Hesh dammit- To think I ever supported {target}.
+                }
+                {not is_supporter?
+                    !crossed
+                    I didn't think there were more reasons to not support {target}, but this...
+                }
             }
                 Thanks for showing me what kind of person {target} truly is.
             * You've got one more person moving your gossip around their faction.

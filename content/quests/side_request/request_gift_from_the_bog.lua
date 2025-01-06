@@ -4,7 +4,7 @@ local QDEF = QuestDef.Define
 {
     title = "Gift From The Bog",
     desc = "Pick up a package for {giver} from {delivery}.",
-    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/battle_of_wits.png"),
+    icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/gift_from_the_bog.png"),
 
     qtype = QTYPE.SIDE,
 

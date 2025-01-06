@@ -105,7 +105,7 @@ local QDEF = QuestDef.Define
                         end
                         local workplace = who:GetBrain() and who:GetBrain():GetWorkplace()
                         local opt = cxt:Opt("OPT_"..opt_id)
-                            :ReqCondition(not unlock_type or not workplace or not table.arraycontains(unlocks.UNLOCK_LOCATIONS[unlock_type], workplace:GetContentID()), "REQ_NO_COMPETITOR")
+                            -- :ReqCondition(not unlock_type or not workplace or not table.arraycontains(unlocks.UNLOCK_LOCATIONS[unlock_type], workplace:GetContentID()), "REQ_NO_COMPETITOR")
                             :Dialog("DIALOG_"..opt_id)
                         if preicon then
                             opt:PreIcon(preicon)

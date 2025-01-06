@@ -57,7 +57,7 @@ local MODIFIERS =
     SELL_MERCH_CROWD =
     {
         name = "Potential Customers",
-        desc = "At the beginning of the player's turn, create a new <b>Potential Customer</> argument({1} left).",
+        desc = "At the beginning of the player's turn, create a new <b>Potential Customer</> argument ({1} left).",
         desc_fn = function(self, fmt_str )
 
             return loc.format(fmt_str, #self.agents)
@@ -242,8 +242,8 @@ local MODIFIERS =
     },
     PREACH_CROWD =
     {
-        name = "Crowd Mentality",
-        desc = "At the beginning of the player's turn, create a new <b>Potential Interest</> argument({1} left).",
+        name = "Bustling Throng",
+        desc = "At the beginning of the player's turn, create a new <b>Potential Interest</> argument ({1} left).",
         desc_fn = function(self, fmt_str )
 
             return loc.format(fmt_str, #self.agents)
@@ -2637,7 +2637,12 @@ local MODIFIERS =
         {
             [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
                 if target == self and source.negotiator == self.anti_negotiator then
-                    target.composure = target.composure + math.min(damage, self:CalculateDamageReduction())
+                    local damage_negated = params.damage_negated or 0
+                    local damage_to_negate = math.min(damage - damage_negated, self:CalculateDamageReduction())
+                    if damage_to_negate > 0 then
+                        target.composure = target.composure + damage_to_negate
+                        params.damage_negated = damage_to_negate + (params.damage_negated or 0)
+                    end
                 end
             end,
         },
@@ -2847,8 +2852,8 @@ local MODIFIERS =
         desc = "When {1}'s {VOICE_OF_THE_PEOPLE_KALANDRA} argument is destroyed, gain an <b>Unrest</>. The real revolution begins when <b>Unrest</> reaches {2} {2*stack|stacks}.",
         loc_strings =
         {
-            name_2 = "Flames of Revolution",
-            desc_2 = "When any argument is destroyed, deal {1} damage to every argument. This amount cannot be modified.",
+            NAME_2 = "Flames of Revolution",
+            DESC_2 = "When any argument is destroyed, deal {1} damage to every argument. This amount cannot be modified.",
         },
         desc_fn = function(self, fmt_str)
             if not (self.engine and self.engine.revolution_activated) then
@@ -3161,6 +3166,299 @@ local MODIFIERS =
             CreateNewSelfMod(self)
         end,
     },
+    DEM_COURT_OF_LAW =
+    {
+        name = "Court of Law",
+        desc = "As long as there is an {DEM_EVIDENCE} argument, damage from cards against the owner of the argument's core argument is capped at {1}.\n\nWhen {2}'s {DEM_EVIDENCE} argument is destroyed, this argument takes {4} damage.\n\nIf you remove {2}'s {DEM_CONCRETE_EVIDENCE} argument without reducing the resolve to zero, your core argument takes {3} damage.",
+        icon = "negotiation/modifiers/auctioneer.tex",
+
+        desc_fn = function(self, fmt_str)
+            return loc.format( fmt_str, self.cap_amount, self:GetOwnerName(), self.contempt_damage, self.core_damage)
+        end,
+
+        modifier_type = MODIFIER_TYPE.CORE,
+
+        cap_amount = 3,
+        contempt_damage = 15,
+        core_damage = 8,
+        core_damage_bonus = 4,
+
+        OnInit = function(self)
+            self.core_damage = self.core_damage + (self.engine:GetDifficulty() - 1) * self.core_damage_bonus
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+                if target.modifier_type == MODIFIER_TYPE.CORE and is_instance(source, Negotiation.Card) then
+                    -- Check for evidence
+                    local found_evidence = false
+                    for i, mod in target.negotiator:Modifiers() do
+                        if mod.dem_evidence then
+                            found_evidence = true
+                            break
+                        end
+                    end
+                    if found_evidence and damage > self.cap_amount then
+                        local damage_to_negate = damage - self.cap_amount
+                        local damage_negated = params.damage_negated or 0
+                        if damage_to_negate > damage_negated then
+                            target.composure = target.composure + damage_to_negate - damage_negated
+                            params.damage_negated = damage_to_negate
+                        end
+                    end
+                end
+            end,
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, card )
+                if modifier.negotiator == self.negotiator and modifier.dem_concrete_evidence and modifier.resolve > 0 then
+                    if card and card.negotiator == self.anti_negotiator then
+                        local core = self.negotiator:FindCoreArgument()
+                        if core then
+                            core:AttackResolve(self.contempt_damage, self)
+                        end
+                    end
+                end
+                if modifier.negotiator == self.negotiator and modifier.dem_evidence and modifier.stacks > 0 then
+                    self:AttackResolve(self.core_damage, self)
+                end
+            end,
+        },
+    },
+    DEM_CONCRETE_EVIDENCE_ARGUMENT =
+    {
+        name = "Evidence",
+        desc = "{DEM_CONCRETE_EVIDENCE}",
+        icon = "negotiation/modifiers/secret_intel.tex",
+
+        dem_evidence = true,
+        dem_concrete_evidence = true,
+
+        desc_fn = function(self, fmt_str)
+            local result = fmt_str
+            if self.evidence_id then
+                local evidence_desc = (self.def or self):GetLocalizedString(self.evidence_id:upper() .. "_DESC")
+                local evidence_desc_fn = self.evidence_desc_fn[self.evidence_id]
+                if evidence_desc_fn then
+                    evidence_desc = evidence_desc_fn(self, evidence_desc)
+                end
+                result = result .. "\n\n" .. evidence_desc
+            end
+            return result
+        end,
+
+        evidence_desc_fn =
+        {
+            evidence_ring_real = function(self, fmt_str)
+                local giver_name = self.quest and self.quest:GetCastMember("giver"):GetName() or "???"
+                local spouse_name = self.quest and self.quest.param.spouse_name or "???"
+                return loc.format(fmt_str, giver_name, spouse_name)
+            end,
+            evidence_ring_fake = function(self, fmt_str)
+                local giver_name = self.quest and self.quest:GetCastMember("giver"):GetName() or "???"
+                return loc.format(fmt_str, giver_name)
+            end,
+            testimony = function(self, fmt_str)
+                local witness_name = self.quest and self.quest:GetCastMember("witness"):GetName() or "???"
+                return loc.format(fmt_str, witness_name)
+            end,
+        },
+
+        loc_strings =
+        {
+            EVIDENCE_RING_REAL_NAME = "Evidence: Ring",
+            EVIDENCE_RING_REAL_DESC = "This is a ring left at the crime scene, presumably by the culprit. It has a unique design. Inside of it has the text \"{1}+{2}\" carved onto it. It is clearly an engagement ring belonging to {1}.",
+
+            EVIDENCE_RING_FAKE_NAME = "Evidence: Ring",
+            EVIDENCE_RING_FAKE_DESC = "This is a ring left at the crime scene, presumably by the culprit. It has a unique design. According to the prosecution, it belongs to {1}.",
+
+            TESTIMONY_NAME = "Witness Testimony",
+            TESTIMONY_DESC = "There is a witness, {1}, who saw the defendant leaving the plaintiff's estate at the time of the theft.",
+
+        },
+
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        max_resolve = 16,
+
+        OnInit = function(self)
+            self:SetResolve(self.max_resolve + (self.engine:GetDifficulty() - 1) * 8)
+        end,
+
+        SetEvidence = function(self, evidence_id)
+            self.evidence_id = evidence_id
+            self.quest = self.engine.start_params.quest
+            self.custom_name = (self.def or self):GetLocalizedString(evidence_id:upper() .. "_NAME")
+        end,
+
+        event_handlers =
+        {
+            [ EVENT.ATTACK_RESOLVE ] = function( self, source, target, damage, params, defended )
+                local feature = Content.GetNegotiationCardFeature("DEM_CONCRETE_EVIDENCE")
+                feature:AttackResolveMod(self, source, target, damage, params, defended)
+            end,
+        },
+    },
+    DEM_FALSE_EVIDENCE =
+    {
+        name = "False Evidence",
+        desc = "When this bounty is destroyed, you automatically lose the negotiation and you will be charged with presenting false evidence!",
+        icon = "DEMOCRATICRACE:assets/modifiers/false_evidence.png",
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+        max_resolve = 3,
+
+        OnBounty = function(self)
+            self.engine.false_evidence = true
+            self.engine:Lose()
+        end,
+    },
+    DEM_PROBE_EVIDENCE =
+    {
+        name = "Loose Lips",
+        desc = "{MYRIAD_MODIFIER {1}}\n\nWhen this bounty is destroyed, you create 1 {secret_intel}. Maybe.",
+        icon = "negotiation/modifiers/who.tex",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.bonus_per_generation)
+        end,
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+        init_max_resolve = 4,
+        bonus_per_generation = 1,
+
+        base_guilt_probability = {0.4, 0.25, 0.1},
+        bonus_prob = 0.05,
+
+        guilt_probability = 0.25,
+
+        OnInit = function(self)
+            if (self.generation or 0) == 0 and self.engine:GetDifficulty() > 1 then
+                self.init_max_resolve = self.init_max_resolve + 1 * (self.engine:GetDifficulty() - 1)
+            end
+            if not self.engine.base_guilt_probability then
+                self.engine.base_guilt_probability = table.arraypick(self.base_guilt_probability)
+            end
+            self.guilt_probability = self.engine.base_guilt_probability + (self.bonus_prob or 0) * (self.generation or 0)
+            MyriadInit(self)
+        end,
+
+        OnBounty = function(self)
+            if math.random() < self.guilt_probability then
+                local mod = self.anti_negotiator:CreateModifier( "secret_intel", 1, self )
+                mod:SetResolve( 5, MODIFIER_SCALING.LOW )
+            end
+            CreateNewSelfMod(self)
+        end,
+    },
+    DEM_CONTRABAND_TRACKER =
+    {
+        hidden = true,
+
+        OnInit = function(self)
+            for i, card in self.engine:GetDrawDeck():Cards() do
+                self:MarkContraband(card)
+            end
+            for i, card in self.engine:GetHandDeck():Cards() do
+                self:MarkContraband(card)
+            end
+            for i, card in self.engine:GetDiscardDeck():Cards() do
+                self:MarkContraband(card)
+            end
+        end,
+        MarkContraband = function(self, card)
+            if DemocracyUtil.IsContraband(card) and not card:IsTemporary() then
+                card.features = card.features or {}
+                card.features.DEM_CONTRABAND = 1
+            end
+        end,
+        event_handlers =
+        {
+            [ EVENT.CARD_DEALT ] = function( self, card, deck )
+                self:MarkContraband(card)
+            end,
+            [ EVENT.CARD_STOLEN ] = function( self, card, destination )
+                if card.features and card.features.DEM_CONTRABAND then
+                    self.tracked_mods = self.tracked_mods or {}
+                    self.tracked_intel = self.tracked_intel or {}
+                    table.insert(self.tracked_mods, destination)
+                    local mod = self.negotiator:CreateModifier("secret_intel", 1, self)
+                    mod:SetResolve( 5, MODIFIER_SCALING.LOW )
+                    table.insert(self.tracked_intel, mod)
+                end
+            end,
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, source )
+                local idx = table.find(self.tracked_mods or {}, modifier)
+                while idx do
+                    local mod = self.tracked_intel[idx]
+                    mod.negotiator:RemoveModifier(mod, nil, self)
+                    table.remove(self.tracked_mods, idx)
+                    table.remove(self.tracked_intel, idx)
+                    idx = table.find(self.tracked_mods, modifier)
+                end
+            end,
+            [ EVENT.END_NEGOTIATION ] = function( self, minigame )
+                self.tracked_mods = self.tracked_mods or {}
+                for i, mod in ipairs(self.tracked_mods) do
+                    for j, card in ipairs(mod.stolen_cards or {}) do
+                        if DemocracyUtil.IsContraband(card) then
+                            card:ConsumeCharge()
+                            if card:IsSpent() then
+                                card:Consume()
+                            end
+                            minigame.planted_evidence = true
+                        end
+                    end
+                end
+            end,
+        },
+    },
+    DEM_POLITICAL_ENGAGEMENT =
+    {
+        name = "Political Engagement",
+        desc = "Decreases by 1 at the end of {1}'s turn. When it reaches zero, you lose the negotiation!",
+        icon = "DEMOCRATICRACE:assets/modifiers/political_engagement.png",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOwnerName())
+        end,
+        modifier_type = MODIFIER_TYPE.PERMANENT,
+        -- win_on_turn = 7,
+        OnEndTurn = function( self, minigame )
+            self.negotiator:RemoveModifier(self, 1)
+            if self.stacks <= 0 then
+                minigame:Lose()
+                minigame.lost_interest = true
+            end
+        end,
+    },
+    DEM_RAISE_INTEREST =
+    {
+        name = "Raise Interest",
+        desc = "{MYRIAD_MODIFIER}.\n\nWhen destroyed, {1} gains {3} {DEM_POLITICAL_ENGAGEMENT}.",
+        icon = "DEMOCRATICRACE:assets/modifiers/raise_interest.png",
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+        init_max_resolve = 3,
+
+        bonus_per_generation = 0,
+
+        generation = 0,
+
+        desc_fn = function(self, fmt_str)
+            return loc.format( fmt_str, self:GetOwnerName(), CalculateBonusScale(self), self.stacks or 1)
+        end,
+        OnInit = function(self)
+            if (self.generation or 0) == 0 then
+                self.init_max_resolve = self.init_max_resolve + (self.engine.interest_resolve_mod or 0)
+            end
+            if (self.generation or 0) == 0 and self.engine:GetDifficulty() > 1 then
+                self.init_max_resolve = self.init_max_resolve + 2 * (self.engine:GetDifficulty() - 1)
+            end
+            MyriadInit(self)
+        end,
+        OnBounty = function(self)
+            self.negotiator:DeltaModifier("DEM_POLITICAL_ENGAGEMENT", self.stacks or 1)
+            CreateNewSelfMod(self)
+        end,
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
@@ -3170,7 +3468,7 @@ local FEATURES = {
     MYRIAD_MODIFIER =
     {
         name = "Myriad",
-        desc = "When this bounty is destroyed, create a bounty that is a copy of this bounty with full resolve, except it has an extra starting resolve equal to the number indicated by {MYRIAD_MODIFIER}.",
+        desc = "When this bounty is destroyed, create a bounty that is a copy of this bounty with full resolve, except it has an extra starting resolve equal to the number indicated by {MYRIAD_MODIFIER}, if any.",
         loc_strings = {
             NO_GAIN = "When this bounty is destroyed, create a bounty that is a copy of this bounty with full resolve.",
             STACKS = "When this bounty is destroyed, create a bounty that is a copy of this bounty with full resolve, except it has {1} extra starting resolve.",
@@ -3234,6 +3532,40 @@ local FEATURES = {
             card.features = card.features or {}
             card.features.FERVOR = 1
         end,
+    },
+    DEM_EVIDENCE =
+    {
+        name = "Evidence",
+        desc = "A type of argument. Does nothing on its own, but might affect some effects.",
+    },
+    DEM_CONCRETE_EVIDENCE =
+    {
+        name = "Concrete Evidence",
+        desc = "Counts as {DEM_EVIDENCE}. Additionally, damage from cards against this argument is capped at {1}.",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.cap_amount)
+        end,
+
+        cap_amount = 3,
+
+        AttackResolveMod = function(self, modifier, source, target, damage, params)
+            if target == modifier and is_instance(source, Negotiation.Card) then
+                if damage > self.cap_amount then
+                    local damage_to_negate = damage - self.cap_amount
+                    local damage_negated = params.damage_negated or 0
+                    if damage_to_negate > damage_negated then
+                        target.composure = target.composure + damage_to_negate - damage_negated
+                        params.damage_negated = damage_to_negate
+                    end
+                end
+            end
+        end,
+    },
+    DEM_CONTRABAND =
+    {
+        name = "Contraband",
+        desc = "Proof of wrongdoing. When <b>Appropriated</>, create 1 {secret_intel} that remains as long as the card is <b>Appropriated</>. Consume 1 use (if able) if it remains <b>Appropriated</> at the end of the negotiation.",
+        feature_desc = "{DEM_CONTRABAND}",
     },
 }
 for id, data in pairs(FEATURES) do
