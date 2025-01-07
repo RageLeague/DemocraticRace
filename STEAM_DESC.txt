@@ -4,7 +4,7 @@ A pioneer campaign mod for Griftlands, the Democratic Race is a mod for Griftlan
 
 This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
-Version: 0.13.0 (Alpha)
+Version: 0.13.1 (Alpha)
 
 Author: RageLeague
 
@@ -104,6 +104,15 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Flange Finnegan
 
 [h2]Changelog[/h2]
+
+[h3]0.13.1[/h3]
+
+* Added a new request: Strong Arm of the Law.
+* Added a new rally quest: Door-to-door Campaign.
+* Added a new option that allows you to replace custom music with one from the base game.
+* Political issues are now displayed when an option that can change your stance is offered or when you are asked a Contemporary Question during an interview, in addition to when you take a stance.
+* Updated dialog and descriptions.
+* Bug fixes.
 
 [h3]0.13.0 (Light Work Update)[/h3]
 
