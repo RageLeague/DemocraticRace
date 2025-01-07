@@ -455,6 +455,18 @@ lines:
       It's nothing personal, you know. I want to win the election, and you are just in my way.
       !angry
       But, if you want to make it personal, oh we can make it personal.
+      Not everything in this world revolve around you, you know?
+      But you took everything personally. Every slight opposition is a personal attack against you.
+    {pro_labor_law?
+      Then again, isn't this exact attitude that made you blind to the plight of the working class?
+    }
+    {not pro_labor_law?
+      News flash: you are just an out of touch old man who is blind to the troubles that the ordinary people faces.
+    }
+    player:
+      Even if it's not me, one of the other people would have stood up against you.
+      But given I'm here, why don't I finish the job?
+      Give you the backstab that you think that I am giving.
 
 - tags: [confront_argument]
   dialog:
