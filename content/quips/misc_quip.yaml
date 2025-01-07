@@ -422,6 +422,40 @@ lines:
       But we don't have to wait until you are inevitably consumed.
       I will end your delusional goals, right here, right now.
 
+- tags: [pre_dual_argument, player_rook, spark_contact]
+  - |
+    player:
+      [p] Didn't expect to see you here, old friend.
+    agent:
+      Indeed, "old friend".
+    {not pro_labor_law?
+      agent:
+        !angry
+        But, the word "friend" means nothing to you, does it?
+        Only future victims that you can backstab.
+        I guess the future is now. Isn't it, "captain"?
+    }
+    {pro_labor_law?
+      agent:
+        You know, when I found out the reason why you are dishonorably discharged, I almost couldn't believe it!
+        I thought, no way {player} actually supports the ideals of these terrorists, right?
+        He must have had his reasons. That is what I want to believe.
+      player:
+        !scared
+        How did you-
+      agent:
+        !angry
+        Oh, please. You might be the spy, but I'm the one with all the connections.
+        But now, seeing you openly parroting their ideals, I'm starting to doubt if I ever know the real "you".
+        But that's just how you always are, isn't it?
+        Never showing your true self, while you fulfill your own, twisted agenda.
+    }
+    player:
+      !shrug
+      It's nothing personal, you know. I want to win the election, and you are just in my way.
+      !angry
+      But, if you want to make it personal, oh we can make it personal.
+
 - tags: [confront_argument]
   dialog:
   - Your opinion is wrong!
