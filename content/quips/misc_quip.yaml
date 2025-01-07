@@ -390,6 +390,38 @@ lines:
       And change is coming, {player}. The fact that we are even having an election in the first place is the living proof of that.
       And by the looks of it, you will not be the part of the change.
 
+- tags: [pre_dual_argument, player_sal, vixmalli, anti_religious_policy]
+  - |
+    agent:
+      ...
+      [p] I thought I would debate someone who is more refined.
+      But you? Who even are you?
+    player:
+      My name is Sal Fallon.
+      Or, I suppose that's no longer my name now, is it?
+      !angry
+      I'm Sal <i>ik-Derrick</> now. Thanks to Cult.
+    agent:
+      Ah, an ik-Derrick.
+      You should be grateful, child.
+      Not many gets to work as closely to Hesh as you do.
+      Not many gets to do Its holy work as closely as you do.
+      Yet... despite our generosity, you trample Hesh's good will.
+      !angry
+      You ungrateful heathen.
+    player:
+      Grateful? I should be grateful?
+      I should be grateful of the lumin burns I got on the derricks?
+      I should be grateful of the years of abuse I endured?
+      You truly are out of touch.
+      But then... Isn't that how the Cult always operates?
+      Parading in the name of "holiness", while turning a blind eye to the atrocities you commit.
+    agent:
+      You ik-Derricks are all alike.
+      Always only seeing what is in front of you, while blind to Hesh's eternal embrace.
+      But we don't have to wait until you are inevitably consumed.
+      I will end your delusional goals, right here, right now.
+
 - tags: [confront_argument]
   dialog:
   - Your opinion is wrong!
