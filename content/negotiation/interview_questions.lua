@@ -195,6 +195,7 @@ local MODIFIERS = {
 
         SetIssue = function(self, issue_data)
             self.issue_data = issue_data
+            DemocracyUtil.MarkSeenIssue(self.issue_data)
         end,
         AddressQuestion = function(self)
             if self.issue_data ~= nil then

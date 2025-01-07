@@ -2,7 +2,7 @@ local QDEF = QuestDef.Define
 {
     title = "Send A Message",
     desc = "Make {target}'s life miserable for {giver}.",
-    -- icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/battle_of_wits.png"),
+    icon = engine.asset.Texture("icons/quests/attack_rival.tex"),
 
     qtype = QTYPE.SIDE,
 
@@ -145,14 +145,6 @@ local QDEF = QuestDef.Define
     on_complete = function(quest)
 
     end,
-}
-:AddOpinionEvents{
-
-    warned =
-    {
-        delta = OPINION_DELTAS.LIKE,
-        txt = "Warned them about their enemy",
-    },
 }
 
 QDEF:AddIntro(
@@ -298,7 +290,7 @@ QDEF:AddConvo("punish_target", "target")
                     :Dialog("DIALOG_WARN")
                     :ReceiveOpinion(OPINION.BETRAYED, nil, "giver")
                     :FailQuest()
-                    :ReceiveOpinion("warned")
+                    :ReceiveOpinion(OPINION.WARNED_ENEMY)
                     :Fn(ReassignQuest)
             elseif cxt:GetAgent():GetRelationship() == RELATIONSHIP.NEUTRAL then
                 cxt:Opt("OPT_WARN")
@@ -308,7 +300,7 @@ QDEF:AddConvo("punish_target", "target")
                     :Negotiation{}
                         :OnSuccess()
                             :Dialog("DIALOG_WARN_SUCCESS")
-                            :ReceiveOpinion("warned")
+                            :ReceiveOpinion(OPINION.WARNED_ENEMY)
                             :Fn(ReassignQuest)
                         :OnFailure()
                             :Dialog("DIALOG_WARN_FAILURE")

@@ -3312,6 +3312,153 @@ local MODIFIERS =
             self.engine:Lose()
         end,
     },
+    DEM_PROBE_EVIDENCE =
+    {
+        name = "Loose Lips",
+        desc = "{MYRIAD_MODIFIER {1}}\n\nWhen this bounty is destroyed, you create 1 {secret_intel}. Maybe.",
+        icon = "negotiation/modifiers/who.tex",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self.bonus_per_generation)
+        end,
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+        init_max_resolve = 4,
+        bonus_per_generation = 1,
+
+        base_guilt_probability = {0.4, 0.25, 0.1},
+        bonus_prob = 0.05,
+
+        guilt_probability = 0.25,
+
+        OnInit = function(self)
+            if (self.generation or 0) == 0 and self.engine:GetDifficulty() > 1 then
+                self.init_max_resolve = self.init_max_resolve + 1 * (self.engine:GetDifficulty() - 1)
+            end
+            if not self.engine.base_guilt_probability then
+                self.engine.base_guilt_probability = table.arraypick(self.base_guilt_probability)
+            end
+            self.guilt_probability = self.engine.base_guilt_probability + (self.bonus_prob or 0) * (self.generation or 0)
+            MyriadInit(self)
+        end,
+
+        OnBounty = function(self)
+            if math.random() < self.guilt_probability then
+                local mod = self.anti_negotiator:CreateModifier( "secret_intel", 1, self )
+                mod:SetResolve( 5, MODIFIER_SCALING.LOW )
+            end
+            CreateNewSelfMod(self)
+        end,
+    },
+    DEM_CONTRABAND_TRACKER =
+    {
+        hidden = true,
+
+        OnInit = function(self)
+            for i, card in self.engine:GetDrawDeck():Cards() do
+                self:MarkContraband(card)
+            end
+            for i, card in self.engine:GetHandDeck():Cards() do
+                self:MarkContraband(card)
+            end
+            for i, card in self.engine:GetDiscardDeck():Cards() do
+                self:MarkContraband(card)
+            end
+        end,
+        MarkContraband = function(self, card)
+            if DemocracyUtil.IsContraband(card) and not card:IsTemporary() then
+                card.features = card.features or {}
+                card.features.DEM_CONTRABAND = 1
+            end
+        end,
+        event_handlers =
+        {
+            [ EVENT.CARD_DEALT ] = function( self, card, deck )
+                self:MarkContraband(card)
+            end,
+            [ EVENT.CARD_STOLEN ] = function( self, card, destination )
+                if card.features and card.features.DEM_CONTRABAND then
+                    self.tracked_mods = self.tracked_mods or {}
+                    self.tracked_intel = self.tracked_intel or {}
+                    table.insert(self.tracked_mods, destination)
+                    local mod = self.negotiator:CreateModifier("secret_intel", 1, self)
+                    mod:SetResolve( 5, MODIFIER_SCALING.LOW )
+                    table.insert(self.tracked_intel, mod)
+                end
+            end,
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, source )
+                local idx = table.find(self.tracked_mods or {}, modifier)
+                while idx do
+                    local mod = self.tracked_intel[idx]
+                    mod.negotiator:RemoveModifier(mod, nil, self)
+                    table.remove(self.tracked_mods, idx)
+                    table.remove(self.tracked_intel, idx)
+                    idx = table.find(self.tracked_mods, modifier)
+                end
+            end,
+            [ EVENT.END_NEGOTIATION ] = function( self, minigame )
+                self.tracked_mods = self.tracked_mods or {}
+                for i, mod in ipairs(self.tracked_mods) do
+                    for j, card in ipairs(mod.stolen_cards or {}) do
+                        if DemocracyUtil.IsContraband(card) then
+                            card:ConsumeCharge()
+                            if card:IsSpent() then
+                                card:Consume()
+                            end
+                            minigame.planted_evidence = true
+                        end
+                    end
+                end
+            end,
+        },
+    },
+    DEM_POLITICAL_ENGAGEMENT =
+    {
+        name = "Political Engagement",
+        desc = "Decreases by 1 at the end of {1}'s turn. When it reaches zero, you lose the negotiation!",
+        icon = "DEMOCRATICRACE:assets/modifiers/political_engagement.png",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOwnerName())
+        end,
+        modifier_type = MODIFIER_TYPE.PERMANENT,
+        -- win_on_turn = 7,
+        OnEndTurn = function( self, minigame )
+            self.negotiator:RemoveModifier(self, 1)
+            if self.stacks <= 0 then
+                minigame:Lose()
+                minigame.lost_interest = true
+            end
+        end,
+    },
+    DEM_RAISE_INTEREST =
+    {
+        name = "Raise Interest",
+        desc = "{MYRIAD_MODIFIER}.\n\nWhen destroyed, {1} gains {3} {DEM_POLITICAL_ENGAGEMENT}.",
+        icon = "DEMOCRATICRACE:assets/modifiers/raise_interest.png",
+
+        modifier_type = MODIFIER_TYPE.BOUNTY,
+        init_max_resolve = 3,
+
+        bonus_per_generation = 0,
+
+        generation = 0,
+
+        desc_fn = function(self, fmt_str)
+            return loc.format( fmt_str, self:GetOwnerName(), CalculateBonusScale(self), self.stacks or 1)
+        end,
+        OnInit = function(self)
+            if (self.generation or 0) == 0 then
+                self.init_max_resolve = self.init_max_resolve + (self.engine.interest_resolve_mod or 0)
+            end
+            if (self.generation or 0) == 0 and self.engine:GetDifficulty() > 1 then
+                self.init_max_resolve = self.init_max_resolve + 2 * (self.engine:GetDifficulty() - 1)
+            end
+            MyriadInit(self)
+        end,
+        OnBounty = function(self)
+            self.negotiator:DeltaModifier("DEM_POLITICAL_ENGAGEMENT", self.stacks or 1)
+            CreateNewSelfMod(self)
+        end,
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
@@ -3321,7 +3468,7 @@ local FEATURES = {
     MYRIAD_MODIFIER =
     {
         name = "Myriad",
-        desc = "When this bounty is destroyed, create a bounty that is a copy of this bounty with full resolve, except it has an extra starting resolve equal to the number indicated by {MYRIAD_MODIFIER}.",
+        desc = "When this bounty is destroyed, create a bounty that is a copy of this bounty with full resolve, except it has an extra starting resolve equal to the number indicated by {MYRIAD_MODIFIER}, if any.",
         loc_strings = {
             NO_GAIN = "When this bounty is destroyed, create a bounty that is a copy of this bounty with full resolve.",
             STACKS = "When this bounty is destroyed, create a bounty that is a copy of this bounty with full resolve, except it has {1} extra starting resolve.",
@@ -3413,6 +3560,12 @@ local FEATURES = {
                 end
             end
         end,
+    },
+    DEM_CONTRABAND =
+    {
+        name = "Contraband",
+        desc = "Proof of wrongdoing. When <b>Appropriated</>, create 1 {secret_intel} that remains as long as the card is <b>Appropriated</>. Consume 1 use (if able) if it remains <b>Appropriated</> at the end of the negotiation.",
+        feature_desc = "{DEM_CONTRABAND}",
     },
 }
 for id, data in pairs(FEATURES) do

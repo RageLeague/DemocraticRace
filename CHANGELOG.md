@@ -1,5 +1,27 @@
 # Full Changelog
 
+### 0.13.1
+
+* Slightly updated localization for Chinese (still very much not finished).
+* Added new icon for quests and modifiers.
+* Improved information display during the interview for Contemporary Questions. You are able to see the political issue on the support screen once this argument is created, and if you are favoring a stance, it correctly shows now.
+* Changed some wordings for certain stances.
+* Giving the ring back in Better Call Sal now makes the giver like you (won't do anything most of the time since that person would like you most of the time already).
+* Political issue tracks now displays your current stance more clearly.
+* Updated strings.
+* Political issues are now displayed when an option that can change your stance is offered, in addition to when you take a stance.
+* Added a new option that allows you to replace custom music with one from the base game.
+* Whataboutism now halves the stacks upon triggering the damage.
+* Added a new rally quest: "Door-to-door Campaign".
+* Slightly changed how "Change My Mind" works.
+* Updated description for Myriad to account for the case when the keyword doesn't have a number.
+* Added a new request: Strong Arm of the Law.
+* Removed Expend from Gift Packaging.
+* Added illicit tags to several cards.
+* Cleaned up some item descriptions.
+* Added check in Better Call Sal to prevent incriminating evidence from being given before you acquire it from the prosecutor.
+* Fixed incorrect faction support gain for Send a Message and Better Call Sal.
+
 ### 0.13.0
 
 * Added two new request quests: Send a Message and Better Call Sal (or whoever the player character is).

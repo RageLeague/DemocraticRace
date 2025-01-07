@@ -166,9 +166,13 @@ local CARDS = {
 
             local old_stance = DemocracyUtil.TryMainQuestFn("GetStance", issue_data )
 
-            if old_stance and self.stance ~= old_stance then
-                self.flags = ClearBits( self.flags, CARD_FLAGS.DIPLOMACY )
-                self.flags = SetBits( self.flags, CARD_FLAGS.HOSTILE )
+            if old_stance then
+                if self.stance == old_stance then
+                elseif DemocracyUtil.GetStanceChangeFreebie(self.issue_data) and (self.stance * old_stance > 0) then
+                else
+                    self.flags = ClearBits( self.flags, CARD_FLAGS.DIPLOMACY )
+                    self.flags = SetBits( self.flags, CARD_FLAGS.HOSTILE )
+                end
             end
 
             self:NotifyChanged()
@@ -937,6 +941,7 @@ local CARDS = {
 
         cost = 1,
         flags = CARD_FLAGS.ITEM | CARD_FLAGS.EXPEND,
+        item_tags = ITEM_TAGS.ILLICIT,
         rarity = CARD_RARITY.UNIQUE,
 
         OnPostResolve = function( self, minigame )

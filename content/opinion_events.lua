@@ -116,6 +116,10 @@ local OPINIONS = {
         delta = OPINION_DELTAS.LIKE,
         txt = "Shared a meal with them",
     },
+    WARNED_ENEMY = {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Warned them about their enemy",
+    },
 }
 
 for id, data in pairs(OPINIONS) do
