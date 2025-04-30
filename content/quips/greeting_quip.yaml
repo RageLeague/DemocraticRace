@@ -129,3 +129,15 @@ lines:
     agent:
       !sigh
       I suppose that is a fair arrangement.
+
+- tags: [disliked, democratic_race, DISLIKE_IDEOLOGY]
+  dialog:
+  - Look, it's the person that will ruin Havaria.
+  - |
+    agent:
+      $neutralJoke
+      It's everyone's favorite wannabe politician.
+  - |
+    agent:
+      !crossed
+      Your dangerous politics aren't welcome here, grifter.
