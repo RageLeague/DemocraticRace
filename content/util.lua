@@ -1292,6 +1292,29 @@ function DemocracyUtil.RandomExp( mean )
     return - math.log(math.max(math.random(), 1e-3)) * mean
 end
 
+-- Perform numerically stable softmax on data
+-- base^{data / sigma}
+-- Returns a table with the same keys as data, except values sums up to 1
+-- Additionally, between two entries, the difference d results in a ratio of base^{d / sigma}
+function DemocracyUtil.Softmax( data, base, sigma )
+    local result = {}
+    local max_score = -math.huge
+    -- Init result table and find max score
+    for id, val in pairs(data) do
+        result[id] = val
+        max_score = max_score > val and max_score or val
+    end
+    local total = 0
+    for id, val in pairs(result) do
+        result[id] = math.pow(base, (val - max_score) / sigma)
+        total = total + result[id]
+    end
+    for id, val in pairs(result) do
+        result[id] = result[id] / total
+    end
+    return result
+end
+
 function DemocracyUtil.CalculateStrengthRatio(blue, red, blue_bonus, red_bonus)
     local blue_score = (blue:GetCombatStrength() + (blue:IsBoss() and 4 or 0)) * blue.health:GetPercent() + (blue_bonus or 0)
     local red_score = (red:GetCombatStrength() + (red:IsBoss() and 4 or 0)) * red.health:GetPercent() + (red_bonus or 0)
