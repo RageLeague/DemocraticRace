@@ -219,24 +219,6 @@ function ConvoOption:UpdatePoliticalStance(issue, newval, strict, autosupport, f
             end
             self:PostText("TT_UPDATE_STANCE_WARNING")
         end
-
-        -- if not strict or DemocracyUtil.TryMainQuestFn("GetStanceChangeFreebie", issue) then
-        --     if (old_stance < 0) == (newval < 0) and (old_stance > 0) == (newval > 0) then
-        --         self:PostText("TT_UPDATE_STANCE_SAME", issue, old_stance_data)
-        --         self:PostText("TT_UPDATE_STANCE_BONUS")
-        --     else
-        --         self:PostText("TT_UPDATE_STANCE_LOOSE_OLD", issue, new_stance_data, old_stance_data)
-        --         self:PostText("TT_UPDATE_STANCE_WARNING")
-        --     end
-        -- else
-        --     if old_stance == newval then
-        --         self:PostText("TT_UPDATE_STANCE_SAME", issue, old_stance_data)
-        --         self:PostText("TT_UPDATE_STANCE_BONUS")
-        --     else
-        --         self:PostText("TT_UPDATE_STANCE_OLD", issue, new_stance_data, old_stance_data)
-        --         self:PostText("TT_UPDATE_STANCE_WARNING")
-        --     end
-        -- end
     else
         local new_stance_data = issue.stances[newval]
         if strict then
