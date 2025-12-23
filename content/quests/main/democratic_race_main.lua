@@ -946,27 +946,42 @@ local QDEF = QuestDef.Define
             TheGame:GetGameState():LogNotification( NOTIFY.DEM_UPDATE_STANCE, issue, val, strict )
         else
             local stance_delta = val - quest.param.stances[issue]
-            if stance_delta == 0 or (not strict and (quest.param.stances[issue] > 0) == (val > 0) and (quest.param.stances[issue] < 0) == (val < 0)) then
+            local threshold = (not strict and 1 or 0) + (quest.param.stance_change_freebie[issue] and 1 or 0)
+            print(loc.format("stance_delta={1}, threshold={2}", stance_delta, threshold))
+            if math.abs(stance_delta) <= threshold then
+                -- If delta within threshold, it's consistent
                 -- A little bonus for being consistent with your ideology.
                 quest:DefFn("DeltaGeneralSupport", 1, "CONSISTENT_STANCE")
                 quest.param.stance_change[issue] = math.max(0, quest.param.stance_change[issue] - 0.5)
-                quest.param.stance_change_freebie[issue] = false
-            else
-                if quest.param.stance_change_freebie[issue]
-                    and (quest.param.stances[issue] > 0) == (val > 0)
-                    and (quest.param.stances[issue] < 0) == (val < 0) then
-
-                    quest:DefFn("DeltaGeneralSupport", 1, "CONSISTENT_STANCE")
-                    quest.param.stance_change[issue] = math.max(0, quest.param.stance_change[issue] - 0.5)
-                    -- quest.param.stances[issue] = val
+                if stance_delta == 0 then
+                    -- No change in stance
+                    -- Maintain freebie iff both are not strict.
+                    quest.param.stance_change_freebie[issue] = threshold >= 2
+                elseif math.abs(stance_delta) == 1 then
+                    -- Differ by one
+                    if threshold == 1 then
+                        -- Use the stricter one
+                        print("Differ by one")
+                        quest.param.stances[issue] = strict and val or quest.param.stances[issue]
+                        quest.param.stance_change_freebie[issue] = false
+                    else
+                        -- Use the more extreme one
+                        print("Differ by more")
+                        quest.param.stances[issue] = math.abs(val) > math.abs(quest.param.stances[issue]) and val or quest.param.stances[issue]
+                        quest.param.stance_change_freebie[issue] = true
+                    end
                 else
-                    -- Penalty for being inconsistent.
-                    -- If on the same side or going to/from neutral, add 1 to penalty
-                    -- If on opposite side, add 2 to penalty
-                    local penalty = (val * quest.param.stances[issue]) >= 0 and 1 or 2
-                    quest.param.stance_change[issue] = quest.param.stance_change[issue] + penalty
-                    quest:DefFn("DeltaGeneralSupport", -math.max(0, math.ceil(quest.param.stance_change[issue])), "INCONSISTENT_STANCE")
+                    -- Jump two stances. Take the average and no freebies
+                    quest.param.stances[issue] = math.round((quest.param.stances[issue] + val) / 2)
+                    quest.param.stance_change_freebie[issue] = false
                 end
+            else
+                -- Penalty for being inconsistent.
+                -- If on the same side or going to/from neutral, add 1 to penalty
+                -- If on opposite side, add 2 to penalty
+                local penalty = (val * quest.param.stances[issue]) >= 0 and 1 or 2
+                quest.param.stance_change[issue] = quest.param.stance_change[issue] + penalty
+                quest:DefFn("DeltaGeneralSupport", -math.max(0, math.ceil(quest.param.stance_change[issue])), "INCONSISTENT_STANCE")
                 quest.param.stances[issue] = val
                 quest.param.stance_change_freebie[issue] = not strict
                 TheGame:GetGameState():LogNotification( NOTIFY.DEM_UPDATE_STANCE, issue, val, strict )
