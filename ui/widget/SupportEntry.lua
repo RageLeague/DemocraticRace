@@ -7,7 +7,7 @@ function SupportEntry:init(icon_size, max_width)
 
     -- self.max_width = max_width or 400
     self.icon_size = icon_size or 72
-    
+
     self:SetWidth(max_width or 400, true)
     -- self.text_width = self.max_width - self.icon_size - self.spacing * 3 -- - 10 - SPACING.M1*2
 
@@ -19,7 +19,7 @@ function SupportEntry:init(icon_size, max_width)
 
     self.icon = self:AddChild(Widget.Image())
         :SetSize(self.icon_size, self.icon_size)
-        :SetBloom(0.1)
+        :SetBloom(0.05)
         -- :SetTexture(icon)
         -- :SetShown(icon ~= nil)
         -- :LayoutBounds("left", "center", 0, 0)
@@ -74,7 +74,7 @@ function SupportEntry:Refresh()
     local sizew, sizeh = self.icon:GetSize()
 
     self.text:SetFontSize(50)
-    
+
     local textw, texth = self.text:GetSize()
 
     -- self.text:SetSize(textw, texth)
@@ -82,7 +82,7 @@ function SupportEntry:Refresh()
     if textw > self.text_width then
         self.text:SetFontSize(math.min(50, 50 * self.text_width / textw))
     end
-    
+
     self.hitbox:SetSize(self.max_width, sizeh + self.spacing * 2)
     self.background:SetSize(self.max_width, sizeh + self.spacing * 2)
 
@@ -90,7 +90,7 @@ function SupportEntry:Refresh()
 end
 
 function SupportEntry:Layout()
-    
+
 
     self.icon:LayoutBounds("left", "top"):Offset(self.spacing * 2, -self.spacing)
     -- self.details:LayoutBounds("after","center")--:SetAutoSize( self.text_width ):LayoutBounds("after", "center")
@@ -117,7 +117,7 @@ end
 function SupportEntry:AdjustValue(value)
     if self.support_screen_mode == SUPPORT_SCREEN_MODE.RELATIVE_GENERAL then
         if self._classname ~= "DemocracyClass.Widget.GeneralSupportEntry" then
-            value = loc.format("{1%+d}", value - DemocracyUtil.TryMainQuestFn("GetGeneralSupport")) 
+            value = loc.format("{1%+d}", value - DemocracyUtil.TryMainQuestFn("GetGeneralSupport"))
         end
     elseif self.support_screen_mode == SUPPORT_SCREEN_MODE.RELATIVE_CURRENT then
         if self._classname ~= "DemocracyClass.Widget.SupportExpectationEntry" then
@@ -180,12 +180,12 @@ function FactionSupportEntry:Refresh(new_mode)
     self:SetMode(new_mode)
 
     if self.faction then
-        local support_level = self:AdjustValue(DemocracyUtil.TryMainQuestFn("GetFactionSupport", self.faction.id)) 
-        
+        local support_level = self:AdjustValue(DemocracyUtil.TryMainQuestFn("GetFactionSupport", self.faction.id))
+
         self:SetIcon(self.faction:GetIcon())
         self:SetText(
-            loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.FACTION_SUPPORT", 
-                self.faction, 
+            loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.FACTION_SUPPORT",
+                self.faction,
                 support_level
             )
         )
@@ -214,12 +214,12 @@ end
 function WealthSupportEntry:Refresh(new_mode)
     self:SetMode(new_mode)
 
-    local support_level = self:AdjustValue(DemocracyUtil.TryMainQuestFn("GetWealthSupport", self.renown)) 
+    local support_level = self:AdjustValue(DemocracyUtil.TryMainQuestFn("GetWealthSupport", self.renown))
 
     self:SetIcon(DemocracyUtil.GetWealthIcon(self.renown))
     self:SetText(
-        loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.WEALTH_SUPPORT", 
-            self.renown, 
+        loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.WEALTH_SUPPORT",
+            self.renown,
             support_level
         )
     )
@@ -255,11 +255,11 @@ end
 function GeneralSupportEntry:Refresh(new_mode)
     self:SetMode(new_mode)
 
-    local support_level = self:AdjustValue(DemocracyUtil.TryMainQuestFn("GetGeneralSupport")) 
+    local support_level = self:AdjustValue(DemocracyUtil.TryMainQuestFn("GetGeneralSupport"))
 
     self:SetIcon(DemocracyConstants.icons.support)
     self:SetText(
-        loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.GENERAL_SUPPORT", 
+        loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.GENERAL_SUPPORT",
             support_level
         )
     )
@@ -294,7 +294,7 @@ function SupportExpectationEntry:Refresh(new_mode)
 
     self:SetIcon(DemocracyConstants.icons.support)
     self:SetText(
-        loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.SUPPORT_EXPECTATION", 
+        loc.format(LOC"DEMOCRACY.SUPPORT_ENTRY.SUPPORT_EXPECTATION",
             current_exp,
             day_end_exp
         )
