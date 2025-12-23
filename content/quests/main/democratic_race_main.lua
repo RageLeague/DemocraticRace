@@ -947,7 +947,6 @@ local QDEF = QuestDef.Define
         else
             local stance_delta = val - quest.param.stances[issue]
             local threshold = (not strict and 1 or 0) + (quest.param.stance_change_freebie[issue] and 1 or 0)
-            print(loc.format("stance_delta={1}, threshold={2}", stance_delta, threshold))
             if math.abs(stance_delta) <= threshold then
                 -- If delta within threshold, it's consistent
                 -- A little bonus for being consistent with your ideology.
@@ -961,12 +960,10 @@ local QDEF = QuestDef.Define
                     -- Differ by one
                     if threshold == 1 then
                         -- Use the stricter one
-                        print("Differ by one")
                         quest.param.stances[issue] = strict and val or quest.param.stances[issue]
                         quest.param.stance_change_freebie[issue] = false
                     else
                         -- Use the more extreme one
-                        print("Differ by more")
                         quest.param.stances[issue] = math.abs(val) > math.abs(quest.param.stances[issue]) and val or quest.param.stances[issue]
                         quest.param.stance_change_freebie[issue] = true
                     end
