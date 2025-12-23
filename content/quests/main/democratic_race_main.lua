@@ -55,7 +55,7 @@ t.MAX_DAYS = #t.DAY_SCHEDULE-- 5
 ------------------------------------------------------------------------------------------------
 
 -- Determines the support level change when an agent's relationship changes.
--- The general support changes by this amount, while the faction and wealth support changes by double this amount.
+-- The general support changes by a third of this amount, while specific support changes by this amount.
 t.DELTA_SUPPORT = {
     [RELATIONSHIP.LOVED] = 6,
     [RELATIONSHIP.LIKED] = 3,
@@ -440,7 +440,7 @@ local QDEF = QuestDef.Define
                 support_level = quest.param.support_level,
                 faction_support = quest.param.faction_support,
                 wealth_support = quest.param.wealth_support,
-                stances = quest.param.wealth_support,
+                stances = quest.param.stances,
                 player_data = TheGame:GetGameState():GetPlayerState(),
             }
 
@@ -1054,7 +1054,7 @@ local QDEF = QuestDef.Define
             support_level = quest.param.support_level,
             faction_support = quest.param.faction_support,
             wealth_support = quest.param.wealth_support,
-            stances = quest.param.wealth_support,
+            stances = quest.param.stances,
         }
 
         DemocracyUtil.SendMetricsData("STORY_PROGRESS", METRIC_DATA)

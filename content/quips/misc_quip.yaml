@@ -391,6 +391,7 @@ lines:
       And by the looks of it, you will not be the part of the change.
 
 - tags: [pre_dual_argument, player_sal, vixmalli, anti_religious_policy]
+  dialog:
   - |
     agent:
       ...
@@ -423,6 +424,7 @@ lines:
       I will end your delusional goals, right here, right now.
 
 - tags: [pre_dual_argument, player_rook, spark_contact]
+  dialog:
   - |
     player:
       [p] Didn't expect to see you here, old friend.

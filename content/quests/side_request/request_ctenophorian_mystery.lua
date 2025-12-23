@@ -1045,7 +1045,7 @@ QDEF:AddConvo("ask_info", nil, "HOOK_SLEEP")
                 * That night, you didn't have any more dreams, which is quite a relief.
                 * Yet, no matter how hard you try, you can never forget your attempt to understand Hesh that almost drives you to madness.
             ]],
-            SIT_MOD = "Hard to understand",
+            SIT_MOD = "Beyond comprehension",
         }
         :Fn(function(cxt)
             cxt:TalkTo(TheGame:GetGameState():AddSkinnedAgent("COGNITIVE_HESH"))
