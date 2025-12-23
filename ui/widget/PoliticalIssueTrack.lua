@@ -15,9 +15,9 @@ local STANCE_ALIGNMENT =
 {
     [-2] = 0,
     [-1.5] = 0.15,
-    [-1] = 0.3,
+    [-1] = 0.25,
     [0] = 0.5,
-    [1] = 0.7,
+    [1] = 0.75,
     [1.5] = 0.85,
     [2] = 1,
 }
@@ -47,10 +47,10 @@ function PoliticalIssueTrack:init(max_width, max_height, spacing)
     self.opinion_outline_rect = self.opinion_track:AddChild( Widget.SolidBox( 100, 100, UICOLOURS.BLACK ) )
 
     self.opinion_track_rect = self.opinion_track:AddChild( Widget.Image( assets.white ) )
-        :Bloom( 0.15 )
+        :Bloom( 0.1 )
         :SetTintColour(0xff0000ff)
     self.opinion_track_secondary = self.opinion_track:AddChild( Widget.Image( assets.track ) )
-        :Bloom( 0.15 )
+        :Bloom( 0.1 )
         :SetTintColour(0x0000ffff)
 
     self.issue_title = self:AddChild(Widget.Label("body", 48 ):LeftAlign())
@@ -151,6 +151,12 @@ function PoliticalIssueTrack:SetIssue(issue)
         for i = -2, 2 do
             self.stance_icons[i + 3]:SetStance(self.issue.stances[i], i)
         end
+        if self.issue.hated_color then
+            self.opinion_track_rect:SetTintColour(self.issue.hated_color)
+        end
+        if self.issue.loved_color then
+            self.opinion_track_secondary:SetTintColour(self.issue.loved_color)
+        end
     end
 
     self:Refresh()
@@ -178,20 +184,33 @@ function PoliticalIssueTrack:Layout()
             local stance = self.issue:GetAgentStanceIndex(widget.agent)
             if not stance then
                 widget:SetToolTip(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.NO_STANCE", widget.agent))
+                widget:Hide()
             elseif widget.agent:IsPlayer() and DemocracyUtil.GetStanceChangeFreebie(self.issue) then
+                widget:Show()
                 widget:SetToolTip(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.CURRENT_STANCE_LOOSE", widget.agent, self.issue.stances[stance]))
-                if stance > 0 then
-                    player_special_index = 4.5
-                elseif stance < 0 then
-                    player_special_index = 1.5
-                end
+                -- if stance > 0 then
+                --     player_special_index = 4.5
+                -- elseif stance < 0 then
+                --     player_special_index = 1.5
+                -- end
             else
+                widget:Show()
                 widget:SetToolTip(loc.format(LOC"DEMOCRACY.SUPPORT_SCREEN.CURRENT_STANCE", widget.agent, self.issue.stances[stance]))
             end
-            if not (widget.agent:IsPlayer() and player_special_index) then
-                table.insert(stance_groupings[(stance or 0) + 3], widget)
-            else
-                table.insert(stance_groupings[player_special_index], widget)
+            if widget.agent:IsPlayer() then
+                if DemocracyUtil.GetStanceChangeFreebie(self.issue) then
+                    widget.portrait_bg:SetTexture( engine.asset.Texture ("DEMOCRATICRACE:assets/ui/location_portrait_arrow_bg.png" ) )
+                else
+                    widget.portrait_bg:SetTexture( engine.asset.Texture ("DEMOCRATICRACE:assets/ui/location_portrait_bg.png" ) )
+                end
+                widget.portrait_top:SetTexture( engine.asset.Texture ("DEMOCRATICRACE:assets/ui/location_portrait_top.png" ) )
+            end
+            if stance then
+                if not (widget.agent:IsPlayer() and player_special_index) then
+                    table.insert(stance_groupings[(stance or 0) + 3], widget)
+                else
+                    table.insert(stance_groupings[player_special_index], widget)
+                end
             end
         end
         local barx, bary = self.stance_icons[1]:TransformFromWidget(self.opinion_track)

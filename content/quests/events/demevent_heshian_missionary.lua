@@ -263,7 +263,7 @@ QDEF:AddConvo()
             if not cxt.quest.param.tried_debate and not cxt.quest.param.tried_convince then
                 cxt:Opt("OPT_DEBATE")
                     :Dialog("DIALOG_DEBATE")
-                    :UpdatePoliticalStance("RELIGIOUS_POLICY", -2)
+                    :UpdatePoliticalStance("RELIGIOUS_POLICY", -1)
                     :Negotiation{
 
                     }

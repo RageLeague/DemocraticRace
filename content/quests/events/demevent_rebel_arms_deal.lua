@@ -327,7 +327,7 @@ QDEF:AddConvo()
 
             cxt:Opt("OPT_CONVINCE_DONATE")
                 :Dialog("DIALOG_CONVINCE_DONATE")
-                :UpdatePoliticalStance("LABOR_LAW", 2)
+                :UpdatePoliticalStance("LABOR_LAW", 1)
                 :Negotiation{
                     target_agent = cxt:GetCastMember("jakes"),
                     helpers = {"rise"},
@@ -348,17 +348,22 @@ QDEF:AddConvo()
                             cxt:GetCastMember("jakes"):OpinionEvent(OPINION.SUGGEST_UNREASONABLE_REQUEST)
                         end)
 
-            cxt:BasicNegotiation("CONVINCE_CALL_OFF", {
-                target_agent = cxt:GetCastMember("rise"),
-                hinders = {"jakes"},
-            })
-                :OnSuccess()
-                    :DeltaSupport(4)
-                    :Travel()
-                :OnFailure()
-                    :Fn(function(cxt)
-                        cxt:GetCastMember("jakes"):OpinionEvent(OPINION.ATTEMPT_TO_RUIN_BUSINESS)
-                    end)
+            cxt:Opt("OPT_CONVINCE_CALL_OFF")
+                :Dialog("DIALOG_CONVINCE_CALL_OFF")
+                :UpdatePoliticalStance("SECURITY", 1)
+                :Negotiation({
+                    target_agent = cxt:GetCastMember("rise"),
+                    hinders = {"jakes"},
+                })
+                    :OnSuccess()
+                        :Dialog("DIALOG_CONVINCE_CALL_OFF_SUCCESS")
+                        :DeltaSupport(4)
+                        :Travel()
+                    :OnFailure()
+                        :Dialog("DIALOG_CONVINCE_CALL_OFF_FAILURE")
+                        :Fn(function(cxt)
+                            cxt:GetCastMember("jakes"):OpinionEvent(OPINION.ATTEMPT_TO_RUIN_BUSINESS)
+                        end)
 
             if not cxt.quest.param.did_confront then
                 cxt:Opt("OPT_ARREST")
@@ -476,14 +481,14 @@ QDEF:AddConvo()
                 :Dialog("DIALOG_PAY")
                 :ReceiveOpinion("bought_weapons_for_them", nil, "rise")
                 :ReceiveOpinion(OPINION.HELP_COMPLETE_DEAL, nil, "jakes")
-                :UpdatePoliticalStance("LABOR_LAW", 2)
+                :UpdatePoliticalStance("LABOR_LAW", 1)
                 :Travel()
 
             if #cards > 0 then
                 cxt:Opt("OPT_DONATE")
                     :ReceiveOpinion("gifted_them_weapons", {only_show = true}, "rise")
                     :ReceiveOpinion(OPINION.RID_ANNOYING_CUSTOMER, {only_show = true}, "jakes")
-                    :UpdatePoliticalStance("LABOR_LAW", 2, nil, nil, true)
+                    :UpdatePoliticalStance("LABOR_LAW", 1, nil, nil, true)
                     :Fn(function(cxt)
                         cxt:Wait()
                         DemocracyUtil.InsertSelectCardScreen(
@@ -503,7 +508,7 @@ QDEF:AddConvo()
                             cxt:GetCastMember("rise"):OpinionEvent(cxt.quest:GetQuestDef():GetOpinionEvent("gifted_them_weapons"))
                             cxt:GetCastMember("jakes"):OpinionEvent(OPINION.RID_ANNOYING_CUSTOMER)
 
-                            DemocracyUtil.TryMainQuestFn("UpdateStance", "LABOR_LAW", 2)
+                            DemocracyUtil.TryMainQuestFn("UpdateStance", "LABOR_LAW", 1)
 
                             StateGraphUtil.AddLeaveLocation(cxt)
                         end

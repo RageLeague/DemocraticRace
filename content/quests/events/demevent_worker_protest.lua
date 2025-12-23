@@ -179,7 +179,7 @@ QDEF:AddConvo()
             cxt:Opt("OPT_THREATEN")
                 :Dialog("DIALOG_THREATEN")
                 :ReqCondition(not cxt.quest.param.convince_worker_compromise or cxt.quest.param.compromise_failed, "REQ_READY_TO_COMPROMISE" )
-                :UpdatePoliticalStance("LABOR_LAW", -2)
+                :UpdatePoliticalStance("LABOR_LAW", -1)
                 :Negotiation{
                     suppressed = {cxt.quest.param.barons[1] },
                     flags = NEGOTIATION_FLAGS.INTIMIDATION,
@@ -346,7 +346,7 @@ QDEF:AddConvo()
             cxt:Opt("OPT_THREATEN")
                 :ReqCondition(not cxt.quest.param.convince_baron_compromise or cxt.quest.param.compromise_failed, "REQ_READY_TO_COMPROMISE" )
                 :Dialog("DIALOG_THREATEN")
-                :UpdatePoliticalStance("LABOR_LAW", 2)
+                :UpdatePoliticalStance("LABOR_LAW", 1)
                 :Negotiation{
                     flags = NEGOTIATION_FLAGS.INTIMIDATION,
                     subject = cxt.quest.param.workers[1],

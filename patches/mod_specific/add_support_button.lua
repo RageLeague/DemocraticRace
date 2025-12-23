@@ -36,6 +36,8 @@ function MainOverlayTopBar:init(main_overlay)
         :SetFocusable( true )
         :SetToolTipLayoutFn( function( w, tooltip_widget ) tooltip_widget:LayoutBounds( "right", "below", w ):Offset( 0, -SPACING.M1 ) end )
 
+    self.btn_dem_support.box:SetSize(50, 20)
+
     self:OnControlModeChange( TheGame:FE():GetControlMode(), TheGame:FE():GetControlDeviceID() )
     self:OnScreenModeChange( TheGame:FE():GetScreenMode() )
 end
