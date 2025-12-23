@@ -947,6 +947,7 @@ local QDEF = QuestDef.Define
         else
             local stance_delta = val - quest.param.stances[issue]
             local threshold = (not strict and 1 or 0) + (quest.param.stance_change_freebie[issue] and 1 or 0)
+            print(stance_delta, threshold)
             if math.abs(stance_delta) <= threshold then
                 -- If delta within threshold, it's consistent
                 -- A little bonus for being consistent with your ideology.

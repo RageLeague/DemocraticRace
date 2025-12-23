@@ -6,6 +6,7 @@ Convo("DEBUG_ENDING_TEST")
                 Something interesting is going on here.
                 !<unlock_agent_info;ADVISOR_MANIPULATE;lore_husband>
         ]],
+        OPT_SET_OPINION = "Set opinion of SECURITY to {1}",
     }
     :Hub(function(cxt)
         if TheGame:GetLocalSettings().DEBUG then
@@ -18,6 +19,11 @@ Convo("DEBUG_ENDING_TEST")
             --         difficulty = 5,
             --     }
             cxt:Opt("OPT_TEST")
-                :Dialog("DIALOG_TEST")
+                :Fn(function(cxt)
+                    for i = -2, 2 do
+                        cxt:Opt("OPT_SET_OPINION")
+                            :UpdatePoliticalStance("SECURITY", i)
+                    end
+                end)
         end
     end)

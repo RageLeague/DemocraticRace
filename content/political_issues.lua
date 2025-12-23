@@ -173,28 +173,72 @@ function ConvoOption:UpdatePoliticalStance(issue, newval, strict, autosupport, f
     DemocracyUtil.MarkSeenIssue(issue)
     -- assert(issue, "issue must be non-nil")
     local old_stance = DemocracyUtil.TryMainQuestFn("GetStance", issue)
-    local new_stance_data = issue.stances[newval]
+
     if old_stance then
         local old_stance_data = issue.stances[old_stance]
+        local stance_delta = newval - old_stance
+        local threshold = (not strict and 1 or 0) + (DemocracyUtil.TryMainQuestFn("GetStanceChangeFreebie", issue) and 1 or 0)
 
-        if not strict or DemocracyUtil.TryMainQuestFn("GetStanceChangeFreebie", issue) then
-            if (old_stance < 0) == (newval < 0) and (old_stance > 0) == (newval > 0) then
-                self:PostText("TT_UPDATE_STANCE_SAME", issue, old_stance_data)
-                self:PostText("TT_UPDATE_STANCE_BONUS")
+        if math.abs(stance_delta) <= threshold then
+            local new_strict = false
+            local display_val = newval
+            if stance_delta == 0 then
+                new_strict = threshold < 2
+            elseif math.abs(stance_delta) == 1 then
+                if threshold == 1 then
+                    -- Use the stricter one
+                    display_val = strict and newval or old_stance
+                    new_strict = true
+                else
+                    -- Use the more extreme one
+                    display_val = math.abs(newval) > math.abs(old_stance) and newval or old_stance
+                    new_strict = false
+                end
             else
-                self:PostText("TT_UPDATE_STANCE_LOOSE_OLD", issue, new_stance_data, old_stance_data)
-                self:PostText("TT_UPDATE_STANCE_WARNING")
+                display_val = math.round((newval + old_stance) / 2)
+                new_strict = true
             end
+            local new_stance_data = issue.stances[display_val]
+            if new_strict then
+                self:PostText("TT_UPDATE_STANCE_SAME", issue, new_stance_data)
+            else
+                if old_stance == display_val then
+                    self:PostText("TT_UPDATE_STANCE_LOOSE_SAME", issue, new_stance_data)
+                else
+                    self:PostText("TT_UPDATE_STANCE_LOOSE_OLD", issue, new_stance_data, old_stance_data)
+                end
+            end
+
+            self:PostText("TT_UPDATE_STANCE_BONUS")
         else
-            if old_stance == newval then
-                self:PostText("TT_UPDATE_STANCE_SAME", issue, old_stance_data)
-                self:PostText("TT_UPDATE_STANCE_BONUS")
+            local new_stance_data = issue.stances[newval]
+            if not strict then
+                self:PostText("TT_UPDATE_STANCE_LOOSE_OLD", issue, new_stance_data, old_stance_data)
             else
                 self:PostText("TT_UPDATE_STANCE_OLD", issue, new_stance_data, old_stance_data)
-                self:PostText("TT_UPDATE_STANCE_WARNING")
             end
+            self:PostText("TT_UPDATE_STANCE_WARNING")
         end
+
+        -- if not strict or DemocracyUtil.TryMainQuestFn("GetStanceChangeFreebie", issue) then
+        --     if (old_stance < 0) == (newval < 0) and (old_stance > 0) == (newval > 0) then
+        --         self:PostText("TT_UPDATE_STANCE_SAME", issue, old_stance_data)
+        --         self:PostText("TT_UPDATE_STANCE_BONUS")
+        --     else
+        --         self:PostText("TT_UPDATE_STANCE_LOOSE_OLD", issue, new_stance_data, old_stance_data)
+        --         self:PostText("TT_UPDATE_STANCE_WARNING")
+        --     end
+        -- else
+        --     if old_stance == newval then
+        --         self:PostText("TT_UPDATE_STANCE_SAME", issue, old_stance_data)
+        --         self:PostText("TT_UPDATE_STANCE_BONUS")
+        --     else
+        --         self:PostText("TT_UPDATE_STANCE_OLD", issue, new_stance_data, old_stance_data)
+        --         self:PostText("TT_UPDATE_STANCE_WARNING")
+        --     end
+        -- end
     else
+        local new_stance_data = issue.stances[newval]
         if strict then
             self:PostText("TT_UPDATE_STANCE", issue, new_stance_data)
         else
