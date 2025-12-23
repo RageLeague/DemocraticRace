@@ -989,7 +989,8 @@ local QDEF = QuestDef.Define
             local multiplier = type(autosupport) == "number" and autosupport or 1
             local issue_data = DemocracyConstants.issue_data[issue]
             if issue_data then
-                local stance = issue_data.stances[val]
+                local new_val = quest.param.stances[issue]
+                local stance = issue_data.stances[new_val]
                 if stance.faction_support then
                     DemocracyUtil.TryMainQuestFn("DeltaGroupFactionSupport", stance.faction_support, multiplier, false, "STANCE_TAKEN")
                 end
