@@ -30,17 +30,29 @@ QDEF:AddConvo()
 
             ]],
 
-            OPT_MEDITATE = "Meditate by the shrine",
+            OPT_MEDITATE = "Study the shrine",
             TT_MEDITATE = "Upgrade a chosen negotiation card.",
             DIALOG_MEDITATE = [[
                 player:
                     !left
-                * You place a hand on the worn pedestal and take a moment to reflect on the here and now.
+                * You place a hand on the worn pedestal and take a moment to study the shrine.
+                player:
+                    !happy_call_pet
+                * You were hoping for the shrine to hold some sort of ancient power, but alas, it is just a dilapidated shrine to a forgotten god.
                 player:
                     !sigh
                     $miscNostalgic
                     Guess even old gods die eventually, huh?
                 * Surprisingly the notion brings you comfort. You spend the rest of your walk mulling it over.
+            ]],
+
+            OPT_DESTROY = "Destroy the shrine",
+            DIALOG_DESTROY = [[
+                player:
+                    !left
+                    !right
+                * You destroyed the heretical mockery of Hesh.
+                * Your mind is clear from such a cleansing act.
             ]],
 
             OPT_SKIP = "Leave the shrine",
@@ -70,6 +82,7 @@ QDEF:AddConvo()
             cxt:Opt("OPT_OFFER")
                 :PreIcon( global_images.removenegotiation )
                 :PostText( "TT_OFFER" )
+                :UpdatePoliticalStance("RELIGIOUS_POLICY", 0, nil, nil, true)
                 :Fn( function( cxt )
                     cxt:Wait()
                     AgentUtil.RemoveNegotiationCard( cxt.player, function( card )
@@ -79,6 +92,7 @@ QDEF:AddConvo()
                     local card = cxt.enc:YieldEncounter()
                     if card then
                         cxt:Dialog("DIALOG_OFFER")
+                        DemocracyUtil.TryMainQuestFn("UpdateStance", "RELIGIOUS_POLICY", 0)
                         cxt.quest:Complete()
                         local leave_opt = StateGraphUtil.AddLeaveLocation(cxt)
                         leave_opt:Fn(function( cxt ) cxt.location:SetPlax(nil) end)
@@ -88,6 +102,7 @@ QDEF:AddConvo()
             cxt:Opt("OPT_MEDITATE")
                 :PostText( "TT_MEDITATE" )
                 :PreIcon( global_images.upgradenegotiation )
+                :UpdatePoliticalStance("RELIGIOUS_POLICY", -2, nil, nil, true)
                 :Fn( function( cxt )
                     cxt:Wait()
                     AgentUtil.UpgradeNegotiationCard( function( card )
@@ -97,11 +112,22 @@ QDEF:AddConvo()
                     local card = cxt.enc:YieldEncounter()
                     if card then
                         cxt:Dialog("DIALOG_MEDITATE")
+                        DemocracyUtil.TryMainQuestFn("UpdateStance", "RELIGIOUS_POLICY", -2)
                         cxt.quest:Complete()
                         local leave_opt = StateGraphUtil.AddLeaveLocation(cxt)
                         leave_opt:Fn(function( cxt ) cxt.location:SetPlax(nil) end)
                     end
                 end )
+
+            cxt:Opt("OPT_DESTROY")
+                :Dialog("DIALOG_DESTROY")
+                :UpdatePoliticalStance("RELIGIOUS_POLICY", 2)
+                :DeltaResolve(5)
+                :Fn(function()
+                    cxt.quest:Complete()
+                    local leave_opt = StateGraphUtil.AddLeaveLocation(cxt)
+                    leave_opt:Fn(function( cxt ) cxt.location:SetPlax(nil) end)
+                end)
 
             cxt:Opt("OPT_SKIP")
                 :PreIcon( global_images.close )
