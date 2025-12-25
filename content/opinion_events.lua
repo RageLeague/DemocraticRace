@@ -29,6 +29,14 @@ local OPINIONS = {
         delta = OPINION_DELTAS.LIKE,
         txt = "Shares an ideology with you",
     },
+    SUPPORT_IDEOLOGY = {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Supported their ideology",
+    },
+    DEFENDED = {
+        delta = OPINION_DELTAS.LIKE,
+        txt = "Defended them",
+    },
     USED_HEAVY_HANDED = {
         delta = OPINION_DELTAS.TO_DISLIKED,
         txt = "Used <!negotiationcard_heavy_handed>Heavy Handed</> tactics during a negotiation",

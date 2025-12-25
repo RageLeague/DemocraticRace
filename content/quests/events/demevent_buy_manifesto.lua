@@ -105,18 +105,18 @@ local convo = QDEF:AddConvo()
 
             cxt:Opt("OPT_EXPRESS_SUPPORT")
                 :Dialog("DIALOG_EXPRESS_SUPPORT")
-                :UpdatePoliticalStance("LABOR_LAW", 1, false, true)
+                :UpdatePoliticalStance("LABOR_LAW", 2, false, true)
                 :Fn(function(cxt)cxt.quest.param.support = true end)
                 :GoTo("STATE_BUY_IT")
 
             cxt:Opt("OPT_EXPRESS_IGNORANCE")
                 :Dialog("DIALOG_EXPRESS_IGNORANCE")
-                :DeltaSupport(-2)
+                :DeltaSupport(-1)
                 :GoTo("STATE_BUY_IT")
 
             cxt:Opt("OPT_EXPRESS_DOUBT")
                 :Dialog("DIALOG_EXPRESS_DOUBT")
-                :UpdatePoliticalStance("LABOR_LAW", -1, false, true)
+                :UpdatePoliticalStance("LABOR_LAW", -2, false, true)
                 :Fn(function(cxt)cxt.quest.param.doubt = true end)
                 :GoTo("STATE_BUY_IT")
 

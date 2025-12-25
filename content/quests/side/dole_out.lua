@@ -8,7 +8,7 @@ end
 
 local QDEF = QuestDef.Define{
     title = "Dole Out",
-    desc = "Give out bread to the poor to gain support.",
+    desc = "Give out bread to the poor to gain support and show your administration's dedication to <!pol_stance_fiscal_policy_1>supporting the unfortunate</>.",
     icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/dole_out.png"),
 
     qtype = QTYPE.SIDE,
@@ -113,14 +113,29 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.INTRO )
     :Loc{
         DIALOG_INTRO = [[
             {has_primary_advisor?
-                agent:
-                    Here's an idea for what you can do.
-                    You gift out people dole loaves.
-                player:
-                    You think this is going to help gather support?
-                agent:
-                    Yeah.
-                    Plenty of people only care about what is in front of them, and if you give them something to eat, they will just support you.
+                {advisor_diplomacy?
+                    agent:
+                        !palm
+                        Here's a cringe, but potentially helpful idea.
+                        You gift out people dole loaves.
+                    player:
+                        !crossed
+                        "Cringe"? What do you mean?
+                    agent:
+                        You shouldn't just give people free stuff. That makes them reliant on you.
+                        !thought
+                        Which, I suppose is the point here, isn't it? Normies eat up these kind of charity all the time.
+                }
+                {not advisor_diplomacy?
+                    agent:
+                        Here's an idea for what you can do.
+                        You gift out people dole loaves.
+                    player:
+                        You think this is going to help gather support?
+                    agent:
+                        Yeah.
+                        Plenty of people only care about what is in front of them, and if you give them something to eat, they will just support you.
+                }
             }
         ]],
     }
@@ -154,6 +169,7 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
             cxt.quest:Activate("buy_loaves")
             cxt.quest:Activate("time_countdown")
             cxt.quest:Activate("request_funds")
+            DemocracyUtil.TryMainQuestFn("UpdateStance", "FISCAL_POLICY", 1)
             if cxt:GetAgent():GetContentID() == "ADVISOR_MANIPULATE" then
                 cxt.quest.param.access_to_upgrade = true
             end

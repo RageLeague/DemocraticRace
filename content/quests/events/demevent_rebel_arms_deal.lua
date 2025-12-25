@@ -357,7 +357,7 @@ QDEF:AddConvo()
                 })
                     :OnSuccess()
                         :Dialog("DIALOG_CONVINCE_CALL_OFF_SUCCESS")
-                        :DeltaSupport(4)
+                        :DeltaSupport(2)
                         :Travel()
                     :OnFailure()
                         :Dialog("DIALOG_CONVINCE_CALL_OFF_FAILURE")
@@ -647,10 +647,11 @@ QDEF:AddConvo()
                 rise:
                     !left
                     Wait, what's going-
-                * You quickly grab {rise}'s arms behind {rise.himher}, and with {guard} holding back {jakes}, you have 2 new prisoners.
+                * You quickly grab {rise}'s arms behind {rise.himher}, and with {guard} holding back {jakes}, you have two new prisoners.
                 jakes:
                     I bet you like this kind of grunt work, switch.
                 guard:
+                    !left
                     !shrug
                     Pays the bills, what can I say.
                 * You and {guard} hold both of your new friends down while waiting for the authorities to come and see you both doing your civic duty.
@@ -673,8 +674,8 @@ QDEF:AddConvo()
                     cxt:GetCastMember("jakes"):OpinionEvent(OPINION.SOLD_OUT_TO_ADMIRALTY, nil, hate_target)
                     cxt:GetCastMember("jakes"):Retire()
                 end
-                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 6)
-                DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 8, "ADMIRALTY")
+                DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 3)
+                DemocracyUtil.TryMainQuestFn("DeltaFactionSupport", 5, "ADMIRALTY")
                 DemocracyUtil.DeltaGameplayStats("ARRESTED_PEOPLE_TIMES", 1)
             end
 
