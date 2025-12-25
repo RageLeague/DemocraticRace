@@ -647,10 +647,11 @@ QDEF:AddConvo()
                 rise:
                     !left
                     Wait, what's going-
-                * You quickly grab {rise}'s arms behind {rise.himher}, and with {guard} holding back {jakes}, you have 2 new prisoners.
+                * You quickly grab {rise}'s arms behind {rise.himher}, and with {guard} holding back {jakes}, you have two new prisoners.
                 jakes:
                     I bet you like this kind of grunt work, switch.
                 guard:
+                    !left
                     !shrug
                     Pays the bills, what can I say.
                 * You and {guard} hold both of your new friends down while waiting for the authorities to come and see you both doing your civic duty.
