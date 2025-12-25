@@ -316,7 +316,6 @@ QDEF:AddConvo()
 
             cxt:Opt("OPT_GIVE_A_LITTLE")
                 :Dialog("DIALOG_GIVE_A_LITTLE")
-                :UpdatePoliticalStance("FISCAL_POLICY", 0, false, true)
                 :DeliverMoney(SMALL_AMT, {no_scale = true})
                 :ReceiveOpinion(cxt.quest:GetQuestDef():GetOpinionEvent("gave_little"))
                 :Travel()
