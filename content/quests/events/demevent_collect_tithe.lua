@@ -81,6 +81,27 @@ QDEF:AddConvo()
                     !hesh_greeting
                     Hesh thanks you. May you walk in the shallows.
             ]],
+            OPT_QUESTION = "Question {agent}'s use for the tithes",
+            DIALOG_QUESTION = [[
+                player:
+                    [p] What do you even plan to do with the tithes?
+            ]],
+            DIALOG_QUESTION_SUCCESS = [[
+                player:
+                    [p] You don't deserve demanding tithes from honest citizens and use it for your own benefit!
+                agent:
+                    So what if we are? What are you going to do about it?
+                    Look around you and think about your situation.
+                player:
+                    Oh I guess it's completely mask-off here.
+                * Exposing the Cult of Hesh's hypocrisy will surely garner you support.
+                * Assuming you get out of this one, that is.
+            ]],
+            DIALOG_QUESTION_FAILURE = [[
+                agent:
+                    [p] I assure you, the tithes will be put into proper use.
+                    So please, perform your duty to Hesh.
+            ]],
             OPT_CONVINCE_EXEMPT = "Convince {agent} to leave you alone",
             DIALOG_CONVINCE_EXEMPT = [[
                 {not paid_all?
@@ -316,6 +337,31 @@ QDEF:AddConvo()
                 end
             end
             if not cxt.quest.param.tried_negotiate then
+                cxt:Opt("OPT_QUESTION")
+                    :Dialog("DIALOG_QUESTION")
+                    :UpdatePoliticalStance("FISCAL_POLICY", -2)
+                    :Negotiation{
+
+                    }
+                        :OnSuccess()
+                            :Dialog("DIALOG_QUESTION_SUCCESS")
+                            :DeltaSupport(2)
+                            :Fn(function(cxt)
+                                DemocracyUtil.TryMainQuestFn("DeltaOppositionSupport", "candidate_cult", -2)
+                                cxt.quest.param.tried_negotiate = true
+                                if cxt.quest.param.paid_all then
+                                    cxt:GoTo("STATE_DEFEND")
+                                end
+                            end)
+                        :OnFailure()
+                            :Dialog("DIALOG_QUESTION_FAILURE")
+                            :Fn(function(cxt)
+                                cxt.quest.param.tried_negotiate = true
+                                if cxt.quest.param.paid_all then
+                                    cxt:GoTo("STATE_DEFEND")
+                                end
+                            end)
+
                 cxt:BasicNegotiation("CONVINCE_EXEMPT", {
                     situation_modifiers =
                     {
