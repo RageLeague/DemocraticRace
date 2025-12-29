@@ -3459,6 +3459,59 @@ local MODIFIERS =
             CreateNewSelfMod(self)
         end,
     },
+    DEM_PRECISE_PROGRAMMING =
+    {
+        name = "Precise Programming",
+        desc = "{1}'s intents and arguments focus on one opponent argument or bounty if possible until that argument is destroyed.",
+        icon = "negotiation/modifiers/recruit_spark_baron_automech.tex",
+
+
+        desc_fn = function(self, fmt_str)
+            local res = loc.format( fmt_str, self:GetOwnerName() )
+            return res
+        end,
+
+        modifier_type = MODIFIER_TYPE.CORE,
+        target_enemy = TARGET_FLAG.ARGUMENT | TARGET_FLAG.BOUNTY,
+
+        UpdateFocus = function (self)
+            if self.focus_argument and self.focus_argument:IsApplied() then
+                return
+            end
+            self.focus_argument = nil
+            if self.engine:AssignPrimaryTarget( self ) then
+                self.focus_argument = self.target
+            end
+        end,
+        ForceAllTarget = function(self)
+            if self.focus_argument and self.focus_argument:IsApplied() then
+                for i, intent in ipairs(self.negotiator:GetIntents()) do
+                    if intent:NeedsTarget() and self.engine:CanTarget(intent, self.focus_argument) then
+                        self.engine:AssignPrimaryTarget(intent, self.focus_argument)
+                    end
+                end
+                for i, modifier in self.negotiator:Modifiers() do
+                    if modifier:NeedsTarget() and self.engine:CanTarget(modifier, self.focus_argument) then
+                        self.engine:AssignPrimaryTarget(modifier, self.focus_argument)
+                    end
+                end
+            end
+        end,
+        event_handlers =
+        {
+            [ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
+                self:UpdateFocus()
+                self:ForceAllTarget()
+            end,
+            [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, source )
+                self:UpdateFocus()
+                self:ForceAllTarget()
+            end,
+            [ EVENT.ON_PREPARE_TURN ] = function( self, negotiator )
+                self:ForceAllTarget()
+            end,
+        },
+    },
 }
 for id, def in pairs( MODIFIERS ) do
     Content.AddNegotiationModifier( id, def )
