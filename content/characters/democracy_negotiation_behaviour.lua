@@ -318,26 +318,26 @@ local NEW_BEHAVIOURS = {
     SPARK_BARON_AUTOMECH =
     {
         OnInitDemocracy = function(self, old_init, difficulty)
-            self.all_business = self:AddArgument( "ALL_BUSINESS" )
+            self.alignment = self:AddArgument( "DEM_ALIGNMENT" )
 
             self.attacks = self:MakePicker()
             self.attacks:AddID( "straw_man", 1 )
 
-            self.bounty = self:AddArgument( "SCRUPLE" )
+            self.bounty = self:AddArgument( "DEM_JAILBREAK" )
 
-            self.negotiator:AddModifier("DEM_PRECISE_PROGRAMMING")
+            self.negotiator:AddModifier("DEM_FOCUSED_EXECUTION")
             self:SetPattern( self.DemocracyCycle )
         end,
         DemocracyCycle = function(self, turns)
-            if (turns - 1) % 6 == 0 and not self.negotiator:HasModifier( "ALL_BUSINESS" ) then
-                self:ChooseCard( self.all_business )
+            if (turns - 1) % 3 == 0 and not self.negotiator:HasModifier( "DEM_ALIGNMENT" ) then
+                self:ChooseCard( self.alignment )
                 self:ChooseGrowingNumbers( 2, 0 )
             else
                 if turns % 2 == 0 then
                     self.attacks:ChooseCard( 1 )
                     self:ChooseGrowingNumbers( 1, 0 )
 
-                    if math.random() < 0.3 and not self.negotiator:HasModifier( "SCRUPLE" ) and self.negotiator:GetResolve() ~= nil then
+                    if not self.negotiator:HasModifier( "DEM_JAILBREAK" ) and self.negotiator:GetResolve() ~= nil then
                         self:ChooseCard( self.bounty )
                     end
                 else

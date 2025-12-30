@@ -3459,10 +3459,10 @@ local MODIFIERS =
             CreateNewSelfMod(self)
         end,
     },
-    DEM_PRECISE_PROGRAMMING =
+    DEM_FOCUSED_EXECUTION =
     {
-        name = "Precise Programming",
-        desc = "{1}'s intents and arguments focus on one opponent argument or bounty if possible until that argument is destroyed.",
+        name = "Focused Execution",
+        desc = "At the start of each turn, choose an opponent argument or bounty if no target is chosen. {1}'s intents and arguments focus on the target if possible until it is destroyed.",
         icon = "negotiation/modifiers/recruit_spark_baron_automech.tex",
 
 
@@ -3500,17 +3500,97 @@ local MODIFIERS =
         event_handlers =
         {
             [ EVENT.MODIFIER_ADDED ] = function( self, modifier, source )
-                self:UpdateFocus()
                 self:ForceAllTarget()
             end,
             [ EVENT.MODIFIER_REMOVED ] = function( self, modifier, source )
-                self:UpdateFocus()
                 self:ForceAllTarget()
+            end,
+            [ EVENT.BEGIN_PLAYER_TURN ] = function( self, minigame )
+                self:UpdateFocus()
             end,
             [ EVENT.ON_PREPARE_TURN ] = function( self, negotiator )
                 self:ForceAllTarget()
             end,
         },
+    },
+    DEM_ALIGNMENT =
+    {
+        name = "Alignment",
+        desc = "Whenever {1} plays a Manipulate card, increase the damage done by this argument by 1. Reset this bonus after attack.",
+        icon = "DEMOCRATICRACE:assets/modifiers/alignment.png",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOpponentName())
+        end,
+
+        target_enemy = TARGET_ANY_RESOLVE,
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+
+        bonus_damage = 0,
+        hide_stacks = true,
+        max_stacks = 1,
+
+        OnInit = function( self )
+            self:SetResolve( 1, MODIFIER_SCALING.HIGH )
+            local difficulty = self.engine and self.engine:GetDifficulty() or 1
+            self.min_persuasion = 0 + math.ceil(difficulty/2)
+            self.max_persuasion = 1 + math.floor(difficulty/2)
+        end,
+
+        OnBeginTurn = function( self, minigame )
+            self:ApplyPersuasion()
+            self.bonus_damage = 0
+        end,
+        event_priorities =
+        {
+            [ EVENT.CALC_PERSUASION ] = EVENT_PRIORITY_ADDITIVE,
+        },
+
+        event_handlers =
+        {
+            [ EVENT.CALC_PERSUASION ] = function( self, source, persuasion )
+                if source == self then
+                    persuasion:AddPersuasion( self.bonus_damage, self.bonus_damage, self )
+                end
+            end,
+            [ EVENT.POST_RESOLVE ] = function( self, minigame, card )
+                if card.negotiator == self.anti_negotiator and card:IsFlagged( CARD_FLAGS.MANIPULATE ) then
+                    self.bonus_damage = self.bonus_damage + 1
+                    self:NotifyChanged()
+                end
+            end,
+        },
+    },
+    DEM_JAILBREAK =
+    {
+        name = "Jailbreak",
+        desc = "When destroyed, remove a random damage intent and deal its damage to {1}'s core argument.",
+        icon = "negotiation/modifiers/arint_weakness_telegraphed.tex",
+        desc_fn = function(self, fmt_str)
+            return loc.format(fmt_str, self:GetOwnerName())
+        end,
+
+        modifier_type = MODIFIER_TYPE.ARGUMENT,
+        max_stacks = 1,
+
+        OnInit = function( self )
+            self:SetResolve( 2, MODIFIER_SCALING.LOW )
+        end,
+
+        OnBounty = function( self )
+            local targets = {}
+            for i, intent in ipairs(self.negotiator:GetIntents()) do
+                if intent.min_persuasion and intent.max_persuasion then
+                    table.insert(targets, intent)
+                end
+            end
+            if #targets > 0 then
+                local choice = targets[math.random(#targets)]
+                if self.negotiator:FindCoreArgument() then
+                    self.engine:ApplyPersuasion(self, self.negotiator:FindCoreArgument(), choice.min_persuasion, choice.max_persuasion)
+                end
+                self.negotiator:DismissIntent(choice)
+            end
+        end,
     },
 }
 for id, def in pairs( MODIFIERS ) do
