@@ -2,8 +2,8 @@ function DemocracyUtil.AddDemocracyNegotiationBehaviour(id, additional_data)
     assert(type(additional_data.OnInitDemocracy) == "function", "Behaviour must have OnInitDemocracy as an init function")
 
     local char_data = Content.GetCharacterDef( id )
-    char_data.negotiation_data = char_data.negotiation_data or {}
-    char_data.negotiation_data.behaviour = char_data.negotiation_data.behaviour or {}
+    char_data.negotiation_data = shallowcopy(char_data.negotiation_data) or {}
+    char_data.negotiation_data.behaviour = shallowcopy(char_data.negotiation_data.behaviour) or {}
 
     for id, entry in pairs(additional_data) do
         char_data.negotiation_data.behaviour[id] = entry
@@ -312,6 +312,37 @@ local NEW_BEHAVIOURS = {
             else
                 self:ChooseGrowingNumbers(2, -1)
                 self:ChooseComposure(1, 2, 5)
+            end
+        end,
+    },
+    SPARK_BARON_AUTOMECH =
+    {
+        OnInitDemocracy = function(self, old_init, difficulty)
+            self.alignment = self:AddArgument( "DEM_ALIGNMENT" )
+
+            self.attacks = self:MakePicker()
+            self.attacks:AddID( "straw_man", 1 )
+
+            self.bounty = self:AddArgument( "DEM_JAILBREAK" )
+
+            self.negotiator:AddModifier("DEM_FOCUSED_EXECUTION")
+            self:SetPattern( self.DemocracyCycle )
+        end,
+        DemocracyCycle = function(self, turns)
+            if (turns - 1) % 3 == 0 and not self.negotiator:HasModifier( "DEM_ALIGNMENT" ) then
+                self:ChooseCard( self.alignment )
+                self:ChooseGrowingNumbers( 2, 0 )
+            else
+                if turns % 2 == 0 then
+                    self.attacks:ChooseCard( 1 )
+                    self:ChooseGrowingNumbers( 1, 0 )
+
+                    if not self.negotiator:HasModifier( "DEM_JAILBREAK" ) and self.negotiator:GetResolve() ~= nil then
+                        self:ChooseCard( self.bounty )
+                    end
+                else
+                    self:ChooseGrowingNumbers( 3, 0, 0.75 )
+                end
             end
         end,
     },

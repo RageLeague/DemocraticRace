@@ -317,6 +317,7 @@ QDEF:AddConvo()
 
             cxt:Opt("OPT_REJECT_DIRECTLY")
                 :Dialog("DIALOG_REJECT_DIRECTLY")
+                :UpdatePoliticalStance("RELIGIOUS_POLICY", -2)
                 :ReceiveOpinion(OPINION.INSULT)
                 :Travel()
         end)

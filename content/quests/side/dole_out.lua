@@ -8,7 +8,7 @@ end
 
 local QDEF = QuestDef.Define{
     title = "Dole Out",
-    desc = "Give out bread to the poor to gain support and show your administration's dedication to <!pol_stance_fiscal_policy_1>supporting the unfortunate</>.",
+    desc = "Give out bread to the poor to gain support.",
     icon = engine.asset.Texture("DEMOCRATICRACE:assets/quests/dole_out.png"),
 
     qtype = QTYPE.SIDE,
@@ -169,7 +169,6 @@ QDEF:AddConvo( nil, nil, QUEST_CONVO_HOOK.ACCEPTED )
             cxt.quest:Activate("buy_loaves")
             cxt.quest:Activate("time_countdown")
             cxt.quest:Activate("request_funds")
-            DemocracyUtil.TryMainQuestFn("UpdateStance", "FISCAL_POLICY", 1)
             if cxt:GetAgent():GetContentID() == "ADVISOR_MANIPULATE" then
                 cxt.quest.param.access_to_upgrade = true
             end

@@ -167,8 +167,8 @@ local CARDS = {
             local old_stance = DemocracyUtil.TryMainQuestFn("GetStance", issue_data )
 
             if old_stance then
-                if self.stance == old_stance then
-                elseif DemocracyUtil.GetStanceChangeFreebie(self.issue_data) and (self.stance * old_stance > 0) then
+                local max_deviation = DemocracyUtil.GetStanceChangeFreebie(self.issue_data) and 1 or 0
+                if math.abs(self.stance - old_stance) <= max_deviation then
                 else
                     self.flags = ClearBits( self.flags, CARD_FLAGS.DIPLOMACY )
                     self.flags = SetBits( self.flags, CARD_FLAGS.HOSTILE )

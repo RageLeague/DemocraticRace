@@ -402,7 +402,7 @@ function DemocracyUtil.IsDemocracyCampaign(act_id)
     if not act_id then
         return false
     end
-    return string.find(act_id, "DEMOCRATIC_RACE")
+    return string.find(act_id, "DEMOCRATIC_RACE") and true or false
 end
 function DemocracyUtil.DemocracyActFilter(self, act_id)
     return DemocracyUtil.IsDemocracyCampaign(act_id)
