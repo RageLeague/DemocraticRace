@@ -218,6 +218,12 @@ Content.AddStringTable("DEMOCRACY", {
             BODY = "Congratulations! You have now finished what the mod has to offer as of right now. Please leave a feedback at the steam workshop page, on GitHub, or on Klei's forum, so I can improve this mod.",
             BUTTON = "I win!",
         },
+        CANDIDATE_STATUS_TOOLTIP =
+        {
+            ACTIVE = "<#TITLE><b>Active</></>\nAn active candidate, campaigning for leadership in the upcoming election.",
+            ALLIED = "<#TITLE><b>Allied</></>\nA candidate who supports your cause and is allied with you.",
+            DROPPED = "<#TITLE><b>Dropped Out</></>\nA candidate who has dropped out of the campaign and won't be competing against you.",
+        },
     },
     UI = {
         RELATIONSHIP_SCREEN = {

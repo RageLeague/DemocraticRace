@@ -24,6 +24,7 @@ local assets =
 
     candidate_active = engine.asset.Texture( "DEMOCRATICRACE:assets/ui/candidate_status_active.png" ),
     candidate_allied = engine.asset.Texture( "DEMOCRATICRACE:assets/ui/candidate_status_allied.png" ),
+    candidate_dropped = engine.asset.Texture( "DEMOCRATICRACE:assets/ui/candidate_status_dropped.png" ),
 }
 
 local CandidatePortrait = class( "DemocracyClass.Widget.CandidatePortrait", Widget.Clickable )
@@ -136,11 +137,22 @@ function CandidatePortrait:OnRemoved()
 end
 
 function CandidatePortrait:UpdateCandidateStatus( char )
-    if TheGame:GetGameState() and DemocracyUtil.GetAlliance(char) then
-        self.opinion_icon:SetTexture(assets.candidate_allied)
-    else
-        self.opinion_icon:SetTexture(assets.candidate_active)
+    if not TheGame:GetGameState() then
+        return self
     end
+    if DemocracyUtil.GetAlliance(char) then
+        self.opinion_icon:SetTexture(assets.candidate_allied)
+        self.opinion_icon:SetToolTip(LOC"DEMOCRACY.CANDIDATE_STATUS_TOOLTIP.ALLIED")
+    else
+        if DemocracyUtil.IsCandidateInRace(char) then
+            self.opinion_icon:SetTexture(assets.candidate_active)
+            self.opinion_icon:SetToolTip(LOC"DEMOCRACY.CANDIDATE_STATUS_TOOLTIP.ACTIVE")
+        else
+            self.opinion_icon:SetTexture(assets.candidate_dropped)
+            self.opinion_icon:SetToolTip(LOC"DEMOCRACY.CANDIDATE_STATUS_TOOLTIP.DROPPED")
+        end
+    end
+    return self
 end
 
 function CandidatePortrait:SetCharacter( char )
