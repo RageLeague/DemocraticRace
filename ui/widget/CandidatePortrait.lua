@@ -20,7 +20,10 @@ local assets =
     },
 
     portrait_frame_player = engine.asset.Texture( "UI/portrait_frame_player.tex" ),
-    portrait_frame_default = engine.asset.Texture( "UI/portrait_frame.tex" )
+    portrait_frame_default = engine.asset.Texture( "UI/portrait_frame.tex" ),
+
+    candidate_active = engine.asset.Texture( "DEMOCRATICRACE:assets/ui/candidate_status_active.png" ),
+    candidate_allied = engine.asset.Texture( "DEMOCRATICRACE:assets/ui/candidate_status_allied.png" ),
 }
 
 local CandidatePortrait = class( "DemocracyClass.Widget.CandidatePortrait", Widget.Clickable )
@@ -47,7 +50,7 @@ function CandidatePortrait:init( simple_bg_colour )
     self.masking_container = Widget()
     self.portrait = Widget.AgentPortrait()
 
-    self.opinion_icon = Widget.OpinionIndicator( ICON_SIZE )
+    self.opinion_icon = Widget.Image(assets.candidate_active, ICON_SIZE, ICON_SIZE)
     self.faction_icon = Widget.Image(nil, ICON_SIZE, ICON_SIZE)
     self.captive_icon = Widget.Image(assets.portrait_captive, ICON_SIZE, ICON_SIZE):SetBloom(0.15):SetToolTip(LOC"UI.CHARACTER_PORTRAIT.CAPTIVE_TOOLTIP"):SetHiddenBoundingBox(true)
 
@@ -88,7 +91,7 @@ function CandidatePortrait:SetHeight( h )
     self.portrait_gradient:SetSize(self.artw, self.arth)
 
     ICON_SIZE = self.artw * 0.18
-    self.opinion_icon:SetIconSize( ICON_SIZE*1.25 )
+    self.opinion_icon:SetSize( ICON_SIZE*1.4, ICON_SIZE*1.4 )
     self.faction_icon:SetSize( ICON_SIZE*1.53, ICON_SIZE*1.53 )
     self.captive_icon:SetSize( ICON_SIZE*1.4, ICON_SIZE*1.4 )
 
@@ -132,6 +135,14 @@ function CandidatePortrait:OnRemoved()
     end
 end
 
+function CandidatePortrait:UpdateCandidateStatus( char )
+    if TheGame:GetGameState() and DemocracyUtil.GetAlliance(char) then
+        self.opinion_icon:SetTexture(assets.candidate_allied)
+    else
+        self.opinion_icon:SetTexture(assets.candidate_active)
+    end
+end
+
 function CandidatePortrait:SetCharacter( char )
     if self.character then
         self.character:RemoveListener(self)
@@ -163,7 +174,7 @@ function CandidatePortrait:SetCharacter( char )
     --     self.anim:Play( "portrait_neutral" )
     else
         self.portrait:SetAgent(char):Show()
-        self.opinion_icon:UpdateOpinion( char )
+        self:UpdateCandidateStatus( char )
 
         local rel = char:GetRelationship()
         local tint_colour = RELATIONSHIP_COLOURS[ rel ] or RELATIONSHIP_COLOURS[ RELATIONSHIP.NEUTRAL ]
