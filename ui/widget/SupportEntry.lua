@@ -333,10 +333,17 @@ end
 function CandidateEntry:Refresh(new_mode)
     self:SetMode(new_mode)
 
-    self:SetText(
-        "TEST"
-    )
-    self:SetColour(0x00ccccff)
+    if not TheGame:GetGameState() or (TheGame:GetGameState():GetPlayerAgent() ~= self.character and not DemocracyUtil.IsCandidateInRace(self.character)) then
+        self:SetText(
+            LOC"DEMOCRACY.CANDIDATE_INFO.DROPPED"
+        )
+        self:SetColour(0xaaaaaaff)
+    else
+        self:SetText(
+            "TEST"
+        )
+        self:SetColour(0x00ccccff)
+    end
     -- if self.faction:GetColour() then
     --     self:SetColour(self.faction:GetColour())
     -- end

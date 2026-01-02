@@ -177,7 +177,10 @@ local CandidateEntryList = class( "DemocracyClass.Widget.CandidateEntryList", Su
 function CandidateEntryList:init(max_width)
 
     local widget_list = {}
-    local characters = { TheGame:GetGameState():GetPlayerAgent(), TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_admiralty"), TheGame:GetGameState():GetMainQuest():GetCastMember("candidate_baron") }
+    local characters = { TheGame:GetGameState():GetPlayerAgent() }
+    for i, id, data in sorted_pairs(DemocracyConstants.opposition_data) do
+        table.insert(characters, TheGame:GetGameState():GetMainQuest():GetCastMember(id))
+    end
     for i, candidate in ipairs(characters) do
         table.insert(widget_list, DemocracyClass.Widget.CandidateEntry(candidate, 80))
     end

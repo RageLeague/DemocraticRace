@@ -224,6 +224,10 @@ Content.AddStringTable("DEMOCRACY", {
             ALLIED = "<#TITLE><b>Allied</></>\nA candidate who supports your cause and is allied with you.",
             DROPPED = "<#TITLE><b>Dropped Out</></>\nA candidate who has dropped out of the campaign and won't be competing against you.",
         },
+        CANDIDATE_INFO =
+        {
+            DROPPED = "Dropped Out",
+        },
     },
     UI = {
         RELATIONSHIP_SCREEN = {

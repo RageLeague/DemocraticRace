@@ -140,6 +140,11 @@ function CandidatePortrait:UpdateCandidateStatus( char )
     if not TheGame:GetGameState() then
         return self
     end
+    if char == TheGame:GetGameState():GetPlayerAgent() then
+        self.opinion_icon:SetTexture(assets.candidate_active)
+        self.opinion_icon:SetToolTip(LOC"DEMOCRACY.CANDIDATE_STATUS_TOOLTIP.ACTIVE")
+        return self
+    end
     if DemocracyUtil.GetAlliance(char) then
         self.opinion_icon:SetTexture(assets.candidate_allied)
         self.opinion_icon:SetToolTip(LOC"DEMOCRACY.CANDIDATE_STATUS_TOOLTIP.ALLIED")
