@@ -1,5 +1,27 @@
 # Full Changelog
 
+### 0.14.0
+
+* Added new dialog.
+* Fixed bug for metrics report.
+* Updated dialog.
+* Changed vote decision algorithm. It now uses a version of the Softmax function to determine the odds of a person voting for someone based on their support level.
+* Fixed bug of "Send a Message" quest being able to cast the target as the giver.
+* Reworked how stances work. Now, to "favor" a stance means that you possibly support either that stance, or the ones adjacent to it. This means that when you favor an extremist stance, you can take the extremist or moderate version of that stance; when you favor a moderate stance, you can also take the centrist stance; when you favor a centrist stance, you can take the centrist stance or the moderate stance of either side.
+* Updated UI for the stance track to reflect the new way stances work.
+* Improved clarity for stance track.
+* Adjusted some choices to use a more moderate position.
+* Fixed support widget when displaying support level of three digits.
+* Added different colors for stance tracks (they are vaguely based on faction colors but some are completely arbitrary).
+* Adjusted support gain/stances from options (including marking options to compromise or moderation as "favoring centrism").
+* Added new options for some events to reflect your political opinions.
+* Fixed one instance of pronoun used to refer to Hesh (along some other minor dialog changes).
+* Added a new event internally called "Separatist".
+* Added new event: Robot Trap. Triggers when your support among the Spark Barons is low.
+* Fixed internal issue with implementing custom negotiation behavior in the mod.
+* Updated interview stance display to reflect the new system.
+* Changed some options to include stances.
+
 ### 0.13.1
 
 * Slightly updated localization for Chinese (still very much not finished).
