@@ -4,7 +4,7 @@ A pioneer campaign mod for Griftlands, the Democratic Race is a mod for Griftlan
 
 This campaign is designed for experienced players of Griftlands, as it expects you to know the mechanics of the game. Also, you might not get certain references or jokes if you're new.
 
-Version: 0.13.1 (Alpha)
+Version: 0.14.0 (Alpha)
 
 Author: RageLeague
 
@@ -104,6 +104,20 @@ Note: The Steam workshop version of the game will not be constantly updated. It 
 * Flange Finnegan
 
 ## Changelog
+
+### 0.14.0 (Democracy Update)
+
+Major Changes:
+
+* Reworked how stances work. Now, to "favor" a stance means that you possibly support either that stance, or the ones adjacent to it. This means that when you favor an extremist stance, you can take the extremist or moderate version of that stance; when you favor a moderate stance, you can also take the centrist stance; when you favor a centrist stance, you can take the centrist stance or the moderate stance of either side. Some options and UI are adjusted to reflect this change.
+* Changed vote decision algorithm. It now uses a version of the Softmax function to determine the odds of a person voting for someone based on their support level.
+* Added two new events: "Separatist" and "Robot Trap".
+
+Minor Changes:
+
+* Updated event options to reflect stances.
+* Dialog changes.
+* UI Changes.
 
 ### 0.13.1
 
