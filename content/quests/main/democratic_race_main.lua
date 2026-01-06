@@ -824,14 +824,44 @@ local QDEF = QuestDef.Define
         end
     end,
     -- Getters
-    GetGeneralSupport = function(quest) return quest.param.support_level end,
-    GetFactionSupport = function(quest, faction)
-        faction = DemocracyUtil.ToFactionID(faction)
-        return quest.param.support_level + (quest.param.faction_support[faction] or 0)
+    GetOppositionSupportScaling = function(quest)
+        return math.min(quest.param.day, 5)
     end,
-    GetWealthSupport = function(quest, renown)
+    GetGeneralSupport = function(quest, opposition_id)
+        opposition_id = DemocracyUtil.GetOppositionID(opposition_id)
+        if not opposition_id then
+            return quest.param.support_level
+        else
+            return quest:DefFn("GetCurrentExpectation") + (quest.param.opposition_support[opposition_id] or 0)
+        end
+    end,
+    GetFactionSupport = function(quest, faction, opposition_id)
+        opposition_id = DemocracyUtil.GetOppositionID(opposition_id)
+        faction = DemocracyUtil.ToFactionID(faction)
+        if not opposition_id then
+            return quest.param.support_level + (quest.param.faction_support[faction] or 0)
+        else
+            local faction_offset = 0
+            local opposition_data = DemocracyConstants.opposition_data[opponent_id]
+            if opposition_data and opposition_data.faction_support and opposition_data.faction_support[faction] then
+                faction_offset = opposition_data.faction_support[faction]
+            end
+            return quest:DefFn("GetGeneralSupport", opposition_id) + faction_offset * quest:DefFn("GetOppositionSupportScaling")
+        end
+    end,
+    GetWealthSupport = function(quest, renown, opposition_id)
+        opposition_id = DemocracyUtil.GetOppositionID(opposition_id)
         local r = DemocracyUtil.GetWealth(renown)
-        return quest.param.support_level + (quest.param.wealth_support[r] or 0)
+        if not opposition_id then
+            return quest.param.support_level + (quest.param.wealth_support[r] or 0)
+        else
+            local wealth_offset = 0
+            local opposition_data = DemocracyConstants.opposition_data[opponent_id]
+            if opposition_data and opposition_data.wealth_support and opposition_data.wealth_support[r] then
+                wealth_offset = opposition_data.wealth_support[r]
+            end
+            return quest:DefFn("GetGeneralSupport", opposition_id) + wealth_offset * quest:DefFn("GetOppositionSupportScaling")
+        end
     end,
     GetGeneralSupportBreakdown = function(quest)
         return {gain_table = quest.param.support_gain_source, loss_table = quest.param.support_loss_source}
