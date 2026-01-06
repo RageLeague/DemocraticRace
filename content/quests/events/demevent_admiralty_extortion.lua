@@ -315,7 +315,7 @@ QDEF:AddConvo()
             end
 
             cxt:Opt("OPT_EXTORT")
-                :UpdatePoliticalStance("SECURITY", 1, false, true)
+                :UpdatePoliticalStance("SECURITY", 2, false, true)
                 :Dialog("DIALOG_EXTORT")
 
                 :Negotiation{
@@ -367,7 +367,7 @@ QDEF:AddConvo()
                 -- :ReceiveOpinion(OPINION.EXTORTION, {only_show = true}, "laborer")
 
             cxt:Opt("OPT_DEFEND")
-                :UpdatePoliticalStance("SECURITY", -1, false, true)
+                :UpdatePoliticalStance("SECURITY", -2, false, true)
                 :Dialog("DIALOG_DEFEND")
 
                 :Negotiation{

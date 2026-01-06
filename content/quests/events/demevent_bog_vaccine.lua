@@ -259,7 +259,7 @@ QDEF:AddConvo()
             if not cxt.quest.param.asked_info then
                 cxt:Opt("OPT_REFUSE")
                     :Dialog("DIALOG_REFUSE")
-                    :UpdatePoliticalStance("RELIGIOUS_POLICY", -2)
+                    :UpdatePoliticalStance("RELIGIOUS_POLICY", -1)
                     :ReceiveOpinion("refused_vaccine")
                     :Travel()
             else

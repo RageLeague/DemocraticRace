@@ -390,6 +390,86 @@ lines:
       And change is coming, {player}. The fact that we are even having an election in the first place is the living proof of that.
       And by the looks of it, you will not be the part of the change.
 
+- tags: [pre_dual_argument, player_sal, vixmalli, anti_religious_policy]
+  dialog:
+  - |
+    agent:
+      ...
+      [p] I thought I would debate someone who is more refined.
+      But you? Who even are you?
+    player:
+      My name is Sal Fallon.
+      Or, I suppose that's no longer my name now, is it?
+      !angry
+      I'm Sal <i>ik-Derrick</> now. Thanks to Cult.
+    agent:
+      Ah, an ik-Derrick.
+      You should be grateful, child.
+      Not many gets to work as closely to Hesh as you do.
+      Not many gets to do Its holy work as closely as you do.
+      Yet... despite our generosity, you trample Hesh's good will.
+      !angry
+      You ungrateful heathen.
+    player:
+      Grateful? I should be grateful?
+      I should be grateful of the lumin burns I got on the derricks?
+      I should be grateful of the years of abuse I endured?
+      You truly are out of touch.
+      But then... Isn't that how the Cult always operates?
+      Parading in the name of "holiness", while turning a blind eye to the atrocities you commit.
+    agent:
+      You ik-Derricks are all alike.
+      Always only seeing what is in front of you, while blind to Hesh's eternal embrace.
+      But we don't have to wait until you are inevitably consumed.
+      I will end your delusional goals, right here, right now.
+
+- tags: [pre_dual_argument, player_rook, spark_contact]
+  dialog:
+  - |
+    player:
+      [p] Didn't expect to see you here, old friend.
+    agent:
+      Indeed, "old friend".
+    {not pro_labor_law?
+      agent:
+        !angry
+        But, the word "friend" means nothing to you, does it?
+        Only future victims that you can backstab.
+        I guess the future is now. Isn't it, "captain"?
+    }
+    {pro_labor_law?
+      agent:
+        You know, when I found out the reason why you are dishonorably discharged, I almost couldn't believe it!
+        I thought, no way {player} actually supports the ideals of these terrorists, right?
+        He must have had his reasons. That is what I want to believe.
+      player:
+        !scared
+        How did you-
+      agent:
+        !angry
+        Oh, please. You might be the spy, but I'm the one with all the connections.
+        But now, seeing you openly parroting their ideals, I'm starting to doubt if I ever know the real "you".
+        But that's just how you always are, isn't it?
+        Never showing your true self, while you fulfill your own, twisted agenda.
+    }
+    player:
+      !shrug
+      It's nothing personal, you know. I want to win the election, and you are just in my way.
+      !angry
+      But, if you want to make it personal, oh we can make it personal.
+      Not everything in this world revolve around you, you know?
+      But you took everything personally. Every slight opposition is a personal attack against you.
+    {pro_labor_law?
+      Then again, isn't this exact attitude that made you blind to the plight of the working class?
+    }
+    {not pro_labor_law?
+      News flash: you are just an out of touch old man who is blind to the troubles that the ordinary people faces.
+    }
+    player:
+      Even if it's not me, one of the other people would have stood up against you.
+      But given I'm here, why don't I finish the job?
+      Give you the backstab that you think that I am giving.
+
 - tags: [confront_argument]
   dialog:
   - Your opinion is wrong!

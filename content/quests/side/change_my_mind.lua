@@ -656,7 +656,7 @@ QDEF:AddConvo("debate_people")
 
             cxt:Opt("OPT_CONVINCE")
                 :Dialog("DIALOG_CONVINCE")
-                :UpdatePoliticalStance("SECURITY", 1)
+                :UpdatePoliticalStance("SECURITY", 2)
                 :DeltaSupport(-1)
                 :Negotiation{
                     target_agent = cxt:GetCastMember("patrol"),

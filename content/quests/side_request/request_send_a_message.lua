@@ -72,6 +72,9 @@ local QDEF = QuestDef.Define
         if agent:GetRelationship(quest:GetCastMember("giver")) > RELATIONSHIP.NEUTRAL then
             return false, "Friends, can't target"
         end
+        if agent == quest:GetCastMember("giver") then
+            return false, "Don't hate yourself lol"
+        end
         return not AgentUtil.HasPlotArmour(agent)
     end,
     on_assign = function(quest, agent)

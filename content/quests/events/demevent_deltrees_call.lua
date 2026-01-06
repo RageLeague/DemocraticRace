@@ -284,7 +284,7 @@ QDEF:AddConvo()
                         end,
                         on_success = function(cxt)
                             cxt:Dialog("DIALOG_INSULT_SUCCESS")
-                            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 4)
+                            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 2)
                             cxt.quest:OpinionEvent("delto", "actively_pushing_separatism")
                             -- Enable special flag for main quest
                             -- Probably lead to a special ending

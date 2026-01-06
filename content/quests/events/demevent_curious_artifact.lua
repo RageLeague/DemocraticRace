@@ -180,7 +180,7 @@ FOLLOW_QUEST:AddConvo()
                     I'm not really prepared for nothing from something as a trade.
                 agent:
                     !hesh_greeting
-                    Hesh may differ, but he does not interfere. If you wish to donate it at anytime, I will help.
+                    Hesh may differ, but it does not interfere. If you wish to donate it at anytime, I will help.
             ]],
         }
         :Fn(function(cxt)

@@ -198,12 +198,17 @@ QDEF:AddConvo()
                         cxt:Dialog("DIALOG_THREATEN_FAIL")
                     end,
                 }
-
-            cxt:Opt("OPT_COMPROMISE")
+            local opt = cxt:Opt("OPT_COMPROMISE")
                 :PostText("TT_COMPROMISE")
                 :Dialog("DIALOG_COMPROMISE")
                 :ReqCondition(not cxt.quest.param.compromise_failed, "REQ_COMPROMISE_FAILED" )
-                :Negotiation{
+            if not cxt.quest.param.tried_compromise then
+                opt:UpdatePoliticalStance("LABOR_LAW", 0)
+                    :Fn(function(cxt)
+                        cxt.quest.param.tried_compromise = true
+                    end)
+            end
+            opt:Negotiation{
                     suppressed = {cxt.quest.param.barons[1] },
                     on_success = function()
                         cxt:Dialog("DIALOG_COMPROMISE_SUCCESS")
@@ -361,11 +366,17 @@ QDEF:AddConvo()
                     end,
                 }
 
-            cxt:Opt("OPT_CONVINCE_COMPROMISE")
+            local opt = cxt:Opt("OPT_CONVINCE_COMPROMISE")
                 :Dialog("DIALOG_CONVINCE_COMPROMISE")
                 :PostText("TT_COMPROMISE")
                 :ReqCondition(not cxt.quest.param.compromise_failed, "REQ_COMPROMISE_FAILED" )
-                :Negotiation{
+            if not cxt.quest.param.tried_compromise then
+                opt:UpdatePoliticalStance("LABOR_LAW", 0)
+                    :Fn(function(cxt)
+                        cxt.quest.param.tried_compromise = true
+                    end)
+            end
+            opt:Negotiation{
                     subject = cxt.quest.param.workers[1],
                     on_success = function()
                         cxt:Dialog("DIALOG_CONVINCE_COMPROMISE_SUCCESS")
@@ -416,6 +427,6 @@ QDEF:AddConvo()
         :Fn(function(cxt)
             cxt:Dialog( cxt:GetCastMember("right") == cxt.quest.param.workers[1] and "DIALOG_INTRO_WORKER" or "DIALOG_INTRO_BARON" )
             cxt:Dialog("DIALOG_INTRO_COMMON")
-            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 4)
+            DemocracyUtil.TryMainQuestFn("DeltaGeneralSupport", 2)
             StateGraphUtil.AddLeaveLocation(cxt)
         end)

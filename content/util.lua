@@ -402,7 +402,7 @@ function DemocracyUtil.IsDemocracyCampaign(act_id)
     if not act_id then
         return false
     end
-    return string.find(act_id, "DEMOCRATIC_RACE")
+    return string.find(act_id, "DEMOCRATIC_RACE") and true or false
 end
 function DemocracyUtil.DemocracyActFilter(self, act_id)
     return DemocracyUtil.IsDemocracyCampaign(act_id)
@@ -899,17 +899,27 @@ function DemocracyUtil.GetOppositionVoterSupport(agent, opponent_id, base_suppor
     end
     return support
 end
+-- Given support levels, calculate the odds of voting each candidate
+-- Uses softmax with base 1.5 and sigma 25 (An increase of 25 support is about a 60/40 split in vote)
+function DemocracyUtil.GetVoteOdds(t)
+    return DemocracyUtil.Softmax(t, 1.5, 25)
+end
+-- Calculate the odds of voting each person based on softmax.
 function DemocracyUtil.SimulateVoterChoice(agent, param)
     local choice_table = {}
     local loved_person = nil
+    local candidate_count = 0
+    local total_score = 0
     param = param or {}
     local available_opponents = param.available_opponents
     local score_bias = param.score_bias or function(x) return x end
     -- Will always vote a loved person, and will never vote a hated person
     if agent:GetRelationship() > RELATIONSHIP.HATED then
-        local score = DemocracyUtil.GetSupportForAgent(agent) + SUPPORT_DELTA[agent:GetRelationship()] + DemocracyUtil.RandomGauss(0, 100)
+        local score = DemocracyUtil.GetSupportForAgent(agent) + SUPPORT_DELTA[agent:GetRelationship()]
         score = score_bias(score, TheGame:GetGameState():GetPlayerAgent())
-        table.insert(choice_table, { TheGame:GetGameState():GetPlayerAgent(), score })
+        choice_table[TheGame:GetGameState():GetPlayerAgent()] = score
+        candidate_count = candidate_count + 1
+        total_score = total_score + score
         if agent:GetRelationship() >= RELATIONSHIP.LOVED then
             loved_person = TheGame:GetGameState():GetPlayerAgent()
         end
@@ -917,9 +927,11 @@ function DemocracyUtil.SimulateVoterChoice(agent, param)
     for i, id in ipairs(available_opponents or DemocracyUtil.GetAllOppositions()) do
         local opponent = TheGame:GetGameState():GetMainQuest():GetCastMember(id)
         if agent:GetRelationship(opponent) > RELATIONSHIP.HATED then
-            local score = DemocracyUtil.GetOppositionVoterSupport(agent, id) + SUPPORT_DELTA[agent:GetRelationship(opponent)] + DemocracyUtil.RandomGauss(0, 100)
+            local score = DemocracyUtil.GetOppositionVoterSupport(agent, id) + SUPPORT_DELTA[agent:GetRelationship(opponent)]
             score = score_bias(score, opponent)
-            table.insert(choice_table, { opponent, score })
+            choice_table[opponent] = score
+            candidate_count = candidate_count + 1
+            total_score = total_score + score
             if agent:GetRelationship(opponent) >= RELATIONSHIP.LOVED then
                 if loved_person then
                     return false, "CONFLICTING_LOVED" -- If love two candidates somehow, don't vote
@@ -932,15 +944,18 @@ function DemocracyUtil.SimulateVoterChoice(agent, param)
     if loved_person then
         return loved_person, "LOVED_VOTE"
     end
-    table.sort(choice_table, function(a, b) return a[2] > b[2] end)
-    if #choice_table == 0 then
+    choice_table["apathy"] = total_score / candidate_count
+
+    if candidate_count == 0 then
         return false, "NO_GOOD_CHOICES" -- No choice at all
-    elseif #choice_table == 1 then
-        return choice_table[1][1], "SINGLE_CANDIDATE" -- Lmao one candidate
-    elseif choice_table[1][2] - choice_table[#choice_table][2] <= 80 then
+    end
+
+    local choice = weightedpick(DemocracyUtil.GetVoteOdds(choice_table))
+
+    if choice == "apathy" then
         return false, "VOTER_APATHY" -- Voter apathy
     else
-        return choice_table[1][1], "VOTE_CASTED"
+        return choice, "VOTE_CASTED"
     end
 end
 function DemocracyUtil.SimulateVoting(param, include_phantoms)
@@ -1290,6 +1305,29 @@ end
 -- Choose a random number in an exponential distribution
 function DemocracyUtil.RandomExp( mean )
     return - math.log(math.max(math.random(), 1e-3)) * mean
+end
+
+-- Perform numerically stable softmax on data
+-- base^{data / sigma}
+-- Returns a table with the same keys as data, except values sums up to 1
+-- Additionally, between two entries, the difference d results in a ratio of base^{d / sigma}
+function DemocracyUtil.Softmax( data, base, sigma )
+    local result = {}
+    local max_score = -math.huge
+    -- Init result table and find max score
+    for id, val in pairs(data) do
+        result[id] = val
+        max_score = max_score > val and max_score or val
+    end
+    local total = 0
+    for id, val in pairs(result) do
+        result[id] = math.pow(base, (val - max_score) / sigma)
+        total = total + result[id]
+    end
+    for id, val in pairs(result) do
+        result[id] = result[id] / total
+    end
+    return result
 end
 
 function DemocracyUtil.CalculateStrengthRatio(blue, red, blue_bonus, red_bonus)

@@ -173,28 +173,54 @@ function ConvoOption:UpdatePoliticalStance(issue, newval, strict, autosupport, f
     DemocracyUtil.MarkSeenIssue(issue)
     -- assert(issue, "issue must be non-nil")
     local old_stance = DemocracyUtil.TryMainQuestFn("GetStance", issue)
-    local new_stance_data = issue.stances[newval]
+
     if old_stance then
         local old_stance_data = issue.stances[old_stance]
+        local stance_delta = newval - old_stance
+        local threshold = (not strict and 1 or 0) + (DemocracyUtil.TryMainQuestFn("GetStanceChangeFreebie", issue) and 1 or 0)
 
-        if not strict or DemocracyUtil.TryMainQuestFn("GetStanceChangeFreebie", issue) then
-            if (old_stance < 0) == (newval < 0) and (old_stance > 0) == (newval > 0) then
-                self:PostText("TT_UPDATE_STANCE_SAME", issue, old_stance_data)
-                self:PostText("TT_UPDATE_STANCE_BONUS")
+        if math.abs(stance_delta) <= threshold then
+            local new_strict = false
+            local display_val = newval
+            if stance_delta == 0 then
+                new_strict = threshold < 2
+            elseif math.abs(stance_delta) == 1 then
+                if threshold == 1 then
+                    -- Use the stricter one
+                    display_val = strict and newval or old_stance
+                    new_strict = true
+                else
+                    -- Use the more extreme one
+                    display_val = math.abs(newval) > math.abs(old_stance) and newval or old_stance
+                    new_strict = false
+                end
             else
-                self:PostText("TT_UPDATE_STANCE_LOOSE_OLD", issue, new_stance_data, old_stance_data)
-                self:PostText("TT_UPDATE_STANCE_WARNING")
+                display_val = math.round((newval + old_stance) / 2)
+                new_strict = true
             end
+            local new_stance_data = issue.stances[display_val]
+            if new_strict then
+                self:PostText("TT_UPDATE_STANCE_SAME", issue, new_stance_data)
+            else
+                if old_stance == display_val then
+                    self:PostText("TT_UPDATE_STANCE_LOOSE_SAME", issue, new_stance_data)
+                else
+                    self:PostText("TT_UPDATE_STANCE_LOOSE_OLD", issue, new_stance_data, old_stance_data)
+                end
+            end
+
+            self:PostText("TT_UPDATE_STANCE_BONUS")
         else
-            if old_stance == newval then
-                self:PostText("TT_UPDATE_STANCE_SAME", issue, old_stance_data)
-                self:PostText("TT_UPDATE_STANCE_BONUS")
+            local new_stance_data = issue.stances[newval]
+            if not strict then
+                self:PostText("TT_UPDATE_STANCE_LOOSE_OLD", issue, new_stance_data, old_stance_data)
             else
                 self:PostText("TT_UPDATE_STANCE_OLD", issue, new_stance_data, old_stance_data)
-                self:PostText("TT_UPDATE_STANCE_WARNING")
             end
+            self:PostText("TT_UPDATE_STANCE_WARNING")
         end
     else
+        local new_stance_data = issue.stances[newval]
         if strict then
             self:PostText("TT_UPDATE_STANCE", issue, new_stance_data)
         else
@@ -214,6 +240,8 @@ local val =  {
         name = "Security Funding",
         desc = "Security is a big issue in Havaria. On the one hand, improving security can drastically reduce crime and improve everyone's lives. On the other hand, it can leads to corruption and abuse of power.",
         importance = 10,
+        hated_color = 0x9c1d0fFF,
+        loved_color = 0x192b9eFF,
         stances = {
             [-2] = {
                 name = "Defund the Admiralty",
@@ -241,6 +269,8 @@ local val =  {
         name = "Deltrean-Havarian Annex",
         desc = "The annexation of Havaria into Deltree has stroke controversies across Havaria. On the one hand, a full integration of Havaria to Deltree will likely improve Havaria's living conditions, and makes paperworks easier. On the other hand, it is a blatant disregard to Havaria's sovereignty.",
         importance = 8,
+        hated_color = 0x862ccdFF,
+        loved_color = 0xdfa011FF,
         stances = {
             [-2] = {
                 name = "Total Annexation",
@@ -268,6 +298,8 @@ local val =  {
         name = "Fiscal Policy",
         desc = "Fiscal policies describes how much the government intervenes with the economy. To little intervention will cause those in need to be unable to get the support they need from the government, while too much intervention will cause an increase in governmental spending and taxes.",
         importance = 9,
+        hated_color = 0xcda81aFF,
+        loved_color = 0x1b61c5FF,
         stances = {
             [-2] = {
                 name = "Laissez Faire",
@@ -295,6 +327,8 @@ local val =  {
         name = "Labor Laws",
         desc = "There are a lot of conflicts in workplaces, so it is an important issue to set up laws that regulates them. On the one hand, laws that are pro-employer can ensure that the efficiency of the workplace aren't disrupted by random elements, but it can lead to discontent among the workers.",
         importance = 9,
+        hated_color = 0xc86f21FF,
+        loved_color = 0x5a7512FF,
         stances = {
             [-2] = {
                 name = "State-Enforced Employer Protection",
@@ -322,6 +356,8 @@ local val =  {
         name = "Religious Policy",
         desc = "The Cult of Hesh is the dominant religion in Havaria, and naturally, policy maker need to be aware of it when making policies. Making policies around the religion can make those religious happy, but it can obstruct activities that are otherwise not a problem like free trade.",
         importance = 8,
+        hated_color = 0xcd8416FF,
+        loved_color = 0x1cc8c8FF,
         stances = {
             [-2] = {
                 name = "Atheism",
@@ -349,6 +385,8 @@ local val =  {
         name = "Substance Regulation",
         desc = "Certain substances are more problematic than others, and it is important to figure out what to do with them. On the one hand, the government has the responsibility to protect the citizens from harmful substances. On the other hand, having too much restriction means more money spent on enforcements, and it makes many people unhappy.",
         importance = 8,
+        hated_color = 0xa67736FF,
+        loved_color = 0x295ec3FF,
         stances = {
             [-2] = {
                 name = "Legalize Everything",
