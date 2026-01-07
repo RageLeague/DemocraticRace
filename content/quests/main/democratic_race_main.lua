@@ -874,9 +874,24 @@ local QDEF = QuestDef.Define
         local r = DemocracyUtil.GetWealth(wealth)
         return {gain_table = quest.param.wealth_support_gain_source[r], loss_table = quest.param.wealth_support_loss_source[r]}
     end,
-    GetCompoundSupport = function(quest, faction, renown)
+    GetCompoundSupport = function(quest, faction, renown, opposition_id)
+        opposition_id = DemocracyUtil.GetOppositionID(opposition_id)
         faction = DemocracyUtil.ToFactionID(faction)
-        return quest.param.support_level + (quest.param.faction_support[faction] or 0) + (quest.param.wealth_support[DemocracyUtil.GetWealth(renown)] or 0)
+        local r = DemocracyUtil.GetWealth(renown)
+        if not opposition_id then
+            return quest.param.support_level + (quest.param.faction_support[faction] or 0) + (quest.param.wealth_support[r] or 0)
+        else
+            local faction_offset = 0
+            local wealth_offset = 0
+            local opposition_data = DemocracyConstants.opposition_data[opponent_id]
+            if opposition_data and opposition_data.faction_support and opposition_data.faction_support[faction] then
+                faction_offset = opposition_data.faction_support[faction]
+            end
+            if opposition_data and opposition_data.wealth_support and opposition_data.wealth_support[r] then
+                wealth_offset = opposition_data.wealth_support[r]
+            end
+            return quest:DefFn("GetGeneralSupport", opposition_id) + (faction_offset + wealth_offset) * quest:DefFn("GetOppositionSupportScaling")
+        end
     end,
     -- GetFactionSupportAgent = function(quest, agent)
     --     return quest:DefFn("GetFactionSupport", agent:GetFactionID())
