@@ -171,3 +171,18 @@ function StancesEntryList:init(max_width)
     end
     StancesEntryList._base.init(self, widget_list, max_width, 1)
 end
+
+local CandidateEntryList = class( "DemocracyClass.Widget.CandidateEntryList", SupportEntryList )
+
+function CandidateEntryList:init(max_width)
+
+    local widget_list = {}
+    local characters = { TheGame:GetGameState():GetPlayerAgent() }
+    for i, id, data in sorted_pairs(DemocracyConstants.opposition_data) do
+        table.insert(characters, TheGame:GetGameState():GetMainQuest():GetCastMember(id))
+    end
+    for i, candidate in ipairs(characters) do
+        table.insert(widget_list, DemocracyClass.Widget.CandidateEntry(candidate, 80))
+    end
+    CandidateEntryList._base.init(self, widget_list, max_width)
+end

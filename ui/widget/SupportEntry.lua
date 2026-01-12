@@ -3,7 +3,7 @@ local SupportEntry = class( "DemocracyClass.Widget.SupportEntry", Widget.Clickab
 function SupportEntry:init(icon_size, max_width)
     SupportEntry._base.init( self )
 
-    self.spacing = 5
+    self.spacing = 6
 
     -- self.max_width = max_width or 400
     self.icon_size = icon_size or 72
@@ -304,4 +304,55 @@ function SupportExpectationEntry:Refresh(new_mode)
     --     self:SetColour(self.faction:GetColour())
     -- end
     return SupportExpectationEntry._base.Refresh(self)
+end
+
+local CandidateEntry = class( "DemocracyClass.Widget.CandidateEntry", DemocracyClass.Widget.SupportEntry )
+
+function CandidateEntry:init(character, icon_size, max_width)
+    CandidateEntry._base.init(self, icon_size, max_width)
+
+    self.character = character or TheGame:GetGameState():GetPlayerAgent()
+
+    -- self:RemoveChild(self.icon)
+    self.candidate_icon = self:AddChild(DemocracyClass.Widget.CandidatePortrait())
+        :SetHeight(self.icon_size)
+        :SetCharacter(self.character)
+        -- :SetFacing(true)
+
+    -- self:SetToolTipClass(DemocracyClass.Widget.TooltipSupport)
+    -- local breakdown = {}
+    -- breakdown.title = LOC"DEMOCRACY.SUPPORT_SCREEN.EXPECTED_SUPPORT_TITLE"
+    -- breakdown.desc = LOC"DEMOCRACY.SUPPORT_SCREEN.EXPECTED_SUPPORT_DESC"
+    -- self:SetToolTip(breakdown)
+    -- -- self:SetToolTip(LOC"DEMOCRACY.SUPPORT_SCREEN.EXPECTED_SUPPPRT_TT")
+    -- -- self.renown = renown or 1
+
+    self:Refresh()
+end
+
+function CandidateEntry:Refresh(new_mode)
+    self:SetMode(new_mode)
+
+    if not TheGame:GetGameState() or (TheGame:GetGameState():GetPlayerAgent() ~= self.character and not DemocracyUtil.IsCandidateInRace(self.character)) then
+        self:SetText(
+            LOC"DEMOCRACY.CANDIDATE_INFO.DROPPED"
+        )
+        self:SetColour(0xaaaaaaff)
+    else
+        self:SetText(
+            "TEST"
+        )
+        self:SetColour(0x00ccccff)
+    end
+    -- if self.faction:GetColour() then
+    --     self:SetColour(self.faction:GetColour())
+    -- end
+    return CandidateEntry._base.Refresh(self)
+end
+
+function CandidateEntry:Layout()
+    CandidateEntry._base.Layout(self)
+    if self.candidate_icon then
+        self.candidate_icon:LayoutBounds("center", "center", self.icon)--:Offset(self.spacing / 2, 0)
+    end
 end
